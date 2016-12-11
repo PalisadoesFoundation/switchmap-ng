@@ -1,0 +1,13 @@
+# Sample logrotate file for switchmap-ngd
+
+/opt/switchmap-ng/log/*.log {
+    daily
+    rotate 14
+    dateext
+    dateformat -%Y%m%d
+    create
+    compress
+    missingok
+    notifempty
+}
+

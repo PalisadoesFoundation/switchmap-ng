@@ -1,0 +1,73 @@
+main:
+    log_file: /opt/switchmap-ng/log/switchmap-ng.log
+    log_level: info
+    cache_directory: /opt/switchmap-ng/cache
+    agent_threads: 20
+    bind_port: 7000
+    listent_address: 0.0.0.0
+    hostnames:
+      - 192.168.1.1
+      - 192.168.1.2
+      - 192.168.1.3
+      - 192.168.1.4
+
+snmp_groups:
+    - group_name: HOME
+      snmp_version: 2
+      snmp_secname:
+      snmp_community: zYDsg7t4BqbegY6
+      snmp_port: 161
+      snmp_authprotocol:
+      snmp_authpassword:
+      snmp_privprotocol:
+      snmp_privpassword:
+
+    - group_name: PRIV_01
+      snmp_version: 3
+      snmp_secname: user_priv_01
+      snmp_community:
+      snmp_port: 161
+      snmp_authprotocol: md5
+      snmp_authpassword: dW97hNrL8mFkjxRT
+      snmp_privprotocol: des
+      snmp_privpassword: 5wjUShs8jEy9v3WE
+
+    - group_name: V2
+      snmp_version: 2
+      snmp_secname:
+      snmp_community: Q6RNgKDntG77xseZ
+      snmp_port: 161
+      snmp_authprotocol:
+      snmp_authpassword:
+      snmp_privprotocol:
+      snmp_privpassword:
+
+    - group_name: PRIV_00
+      snmp_version: 3
+      snmp_secname: user_priv_00
+      snmp_community:
+      snmp_port: 161
+      snmp_authprotocol: sha
+      snmp_authpassword: Kj7PSgHSwCgPErxq
+      snmp_privprotocol: aes
+      snmp_privpassword: CdgkMAvYTd7qPWVy
+
+    - group_name: AUTH_00
+      snmp_version: 3
+      snmp_secname: user_auth_00
+      snmp_community:
+      snmp_port: 161
+      snmp_authprotocol: sha
+      snmp_authpassword: 7g8aYMhS29MHJzvS
+      snmp_privprotocol:
+      snmp_privpassword:
+
+    - group_name: NOAUTH_00
+      snmp_version: 3
+      snmp_secname: user_noauth
+      snmp_community:
+      snmp_port: 161
+      snmp_authprotocol:
+      snmp_authpassword:
+      snmp_privprotocol:
+      snmp_privpassword:
