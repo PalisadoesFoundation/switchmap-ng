@@ -1,0 +1,35 @@
+################################################################################
+#
+# READ ALL STEPS BEFORE PROCEEDING
+#
+# 1) Copy this file to the /etc/systemd/system directory
+# 2) Edit the PYTHONPATH path
+# 3) Edit the User and Group to match the POSIX user you want the daemon
+#    to run as.
+# 4) Edit the ExecStart statement (Leave the first one blank!)
+# 5) Run the command "systemctl daemon-reload". This needs to be run only once
+# 6) Run the command "systemctl start switchmap-ng-web.service" to start
+# 7) Run the command "systemctl stop switchmap-ng-web.service" to stop
+# 8) Run the command "systemctl restart switchmap-ng-web.service" to restart
+# 9) Run the command "systemctl enable switchmap-ng-web.service" to make
+#    switchmap-ng-web start automatically on boot
+#
+################################################################################
+
+[Unit]
+Description=switchmap-ng-web: Network state web application
+
+[Service]
+User=switchmap-ng
+Group=switchmap-ng
+Environment=PYTHONPATH=/home/switchmap-ng START=--start STOP=--stop RESTART=--restart
+ExecStart=
+ExecStart=/home/switchmap-ng/bin/switchmap-ng-web $START
+ExecStop=/home/switchmap-ng/bin/switchmap-ng-web $STOP
+ExecReload=/home/switchmap-ng/bin/switchmap-ng-web $RESTART
+RemainAfterExit=yes
+GuessMainPID=yes
+Type=forking
+
+[Install]
+WantedBy=default.target

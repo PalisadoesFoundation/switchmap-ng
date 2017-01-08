@@ -185,7 +185,7 @@ def read_yaml_files(directories):
             log_message = (
                 'Configuration directory "%s" '
                 'doesn\'t exist!' % config_directory)
-            log.log2die(1009, log_message)
+            log.log2die_safe(1009, log_message)
 
         # Cycle through list of files in directory
         for filename in os.listdir(config_directory):
@@ -204,7 +204,7 @@ def read_yaml_files(directories):
                         'Error reading file %s. Check permissions, '
                         'existence and file syntax.'
                         '') % (file_path)
-                    log.log2die(1065, log_message)
+                    log.log2die_safe(1065, log_message)
 
                 # Append yaml from file to all yaml previously read
                 all_yaml_read = ('%s\n%s') % (all_yaml_read, yaml_from_file)
@@ -214,7 +214,7 @@ def read_yaml_files(directories):
             log_message = (
                 'No files found in directory "%s" with ".yaml" '
                 'extension.') % (config_directory)
-            log.log2die(1010, log_message)
+            log.log2die_safe(1010, log_message)
 
     # Return
     config_dict = yaml.load(all_yaml_read)
@@ -274,9 +274,9 @@ def delete_files(target_dir):
     if os.path.exists(target_dir) is False:
         log_message = ('Directory %s does not exist.') % (
             target_dir)
-        log.log2die(1013, log_message)
+        log.log2die_safe(1013, log_message)
 
-    # Delete all files in the tmp folder
+    # Delete all files in the target folder
     for the_file in os.listdir(target_dir):
         file_path = os.path.join(target_dir, the_file)
         try:
@@ -285,10 +285,10 @@ def delete_files(target_dir):
         except Exception as exception_error:
             log_message = ('Error: deleting files in %s. Error: %s') % (
                 target_dir, exception_error)
-            log.log2die(1014, log_message)
+            log.log2die_safe(1014, log_message)
         except:
             log_message = ('Unexpected error')
-            log.log2die(1015, log_message)
+            log.log2die_safe(1015, log_message)
 
 
 def dict2yaml(data_dict):

@@ -377,8 +377,19 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     # Get result
     result = None
 
+    # Verify config_dict is indeed a dict.
+    # Die safely as log_directory is not defined
+    if isinstance(config_dict, dict) is False:
+        log.log2die_safe(1021, 'Invalid configuration file. YAML not found')
+
     # Get new result
     if key in config_dict:
+        # Make sure we don't have a None value
+        if config_dict[key] is None:
+            log_message = ('%s: value in configuration is blank. Please fix')
+            log.log2die_safe(1022, log_message)
+
+        # Get value we need
         if sub_key in config_dict[key]:
             result = config_dict[key][sub_key]
 
@@ -386,7 +397,7 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     if result is None and die is True:
         log_message = (
             '%s:%s not defined in configuration') % (key, sub_key)
-        log.log2die(1016, log_message)
+        log.log2die_safe(1016, log_message)
 
     # Return
     return result
