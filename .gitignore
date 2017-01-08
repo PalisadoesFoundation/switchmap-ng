@@ -32,8 +32,9 @@ __pycache__/
 *.switchmap
 
 # Ignore files in these directories and ALL subdirectories
-data/**
+cache/**
 etc/**
+log/**
 www/static/img/**
 bin/agents/non-standard/**
 

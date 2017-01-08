@@ -173,6 +173,33 @@ class Config(object):
         # Return
         return result
 
+    def log_directory(self):
+        """Determine the log_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured log_directory
+
+        """
+        # Initialize key variables
+        key = 'main'
+        sub_key = 'log_directory'
+
+        # Process configuration
+        value = _key_sub_key(key, sub_key, self.config_dict)
+
+        # Check if value exists
+        if os.path.isdir(value) is False:
+            log_message = (
+                'log_directory: "%s" '
+                'in configuration doesn\'t exist!') % (value)
+            log.log2die(1030, log_message)
+
+        # Return
+        return value
+
     def log_file(self):
         """Get log_file.
 
@@ -183,13 +210,8 @@ class Config(object):
             result: result
 
         """
-        # Get result
-        sub_key = 'log_file'
-        result = None
-        key = 'main'
-
         # Get new result
-        result = _key_sub_key(key, sub_key, self.config_dict)
+        result = ('%s/switchmap-ng.log') % (self.log_directory())
 
         # Return
         return result
