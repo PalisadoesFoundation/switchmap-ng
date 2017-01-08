@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Infoset ORM classes.
+"""Switchmap-NG ORM classes.
 
 Manages connection pooling among other things.
 
@@ -17,7 +17,7 @@ import re
 # Pip3 libraries
 import yaml
 
-# Infoset libraries
+# Switchmap-NG libraries
 try:
     from switchmap.utils import log
 except:
@@ -33,7 +33,7 @@ class _Configuration(object):
 
     NOTE! We cannot use the configuration.Config class here. The aim
     of this class is to read in the configuration found in etc/ or
-    $INFOSET_CONFIGDIR and set any missing values to values that are
+    $SWITCHMAP_CONFIGDIR and set any missing values to values that are
     known to work in most cases.
 
     """
@@ -486,7 +486,8 @@ You can start switchmap-ng daemons with these commands:
     # systemctl start switchmap-ng-web.service
     # systemctl start switchmap-ng-poller.service
 
-You can enable switchmap-ng daemons to start on system boot with these commands:
+You can enable switchmap-ng daemons to start on system boot \
+with these commands:
 
     # systemctl enable switchmap-ng-web.service
     # systemctl enable switchmap-ng-poller.service

@@ -11,7 +11,7 @@ from os import walk
 # Pip imports
 from flask import Flask, url_for, render_template
 
-# Infoset imports
+# Switchmap-NG imports
 from switchmap.utils.configuration import Config
 from switchmap.topology import pages
 
@@ -84,5 +84,6 @@ def _get_yaml_hosts():
     for root, _, files in walk(cache_directory):
         for filename in files:
             filepath = path.join(root, filename)
-            hosts[filename[:-5]] = filepath  # Add it to the list.
+            if filepath.endswith('.yaml'):
+                hosts[filename[:-5]] = filepath  # Add it to the list.
     return hosts

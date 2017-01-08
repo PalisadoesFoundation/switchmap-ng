@@ -6,7 +6,7 @@ import sys
 import os
 import time
 
-# Infoset imports
+# Switchmap-NG imports
 from switchmap.utils import log
 from switchmap.utils import general
 

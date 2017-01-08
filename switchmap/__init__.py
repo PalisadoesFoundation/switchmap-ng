@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Infoset setup.
+"""Switchmap-NG setup.
 
 Manages parameters required by all classes in the module.
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Infoset general library."""
+"""Switchmap-NG general library."""
 
 import os
 import time
@@ -11,7 +11,7 @@ import json
 # PIP libraries
 import yaml
 
-# Infoset libraries
+# Switchmap-NG libraries
 from switchmap.utils import log
 from switchmap import switchmap
 
@@ -26,7 +26,7 @@ def root_directory():
         root_dir: Root directory
 
     """
-    # Get the directory of the switchmap.library
+    # Get the directory of the switchmap library
     switchmap_dir = switchmap.__path__[0]
     components = switchmap_dir.split(os.sep)
 
@@ -455,12 +455,12 @@ def config_directories():
     """
     #####################################################################
     # Update the configuration directory
-    # 'INFOSET_CONFIGDIR' is used for setting a non-default config
+    # 'SWITCHMAP_CONFIGDIR' is used for setting a non-default config
     # directory location. A good example of this is using a new config
     # directory for unit testing
     #####################################################################
-    if 'INFOSET_CONFIGDIR' in os.environ:
-        config_directory = os.environ['INFOSET_CONFIGDIR']
+    if 'SWITCHMAP_CONFIGDIR' in os.environ:
+        config_directory = os.environ['SWITCHMAP_CONFIGDIR']
     else:
         config_directory = ('%s/etc') % (root_directory())
     directories = [config_directory]

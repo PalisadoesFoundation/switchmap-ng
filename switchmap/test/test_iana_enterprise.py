@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Test the jm_iana_enterprise module."""
+"""Test the iana_enterprise module."""
 
 import unittest
 
-from switchmap.snmp import jm_iana_enterprise as test_class
+from switchmap.snmp import iana_enterprise as test_class
 
 
 class KnownValues(unittest.TestCase):

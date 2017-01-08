@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Infoset ingest cache daemon.
+"""Switchmap-NG ingest cache daemon.
 
 Extracts agent data from cache directory files.
 
@@ -16,7 +16,7 @@ from multiprocessing import Pool
 try:
     from switchmap.agents import agent as Agent
 except:
-    print('You need to set your PYTHONPATH to include the switchmap.library')
+    print('You need to set your PYTHONPATH to include the switchmap library')
     sys.exit(2)
 from switchmap.utils import configuration
 from switchmap.utils import general
@@ -26,7 +26,7 @@ from switchmap.snmp import snmp_manager
 
 
 class PollingAgent(object):
-    """Infoset agent that gathers data.
+    """Switchmap-NG agent that gathers data.
 
     Args:
         None
@@ -102,7 +102,7 @@ class PollingAgent(object):
 
 
 class Poller(object):
-    """Infoset agent that gathers data.
+    """Switchmap-NG agent that gathers data.
 
     Args:
         None
@@ -132,7 +132,7 @@ class Poller(object):
         snmp_config = configuration.ConfigSNMP()
         self.hostname = hostname
 
-        # Get snmp configuration information from infoset
+        # Get snmp configuration information from Switchmap-NG
         validate = snmp_manager.Validate(hostname, snmp_config.snmp_auth())
         self.snmp_params = validate.credentials()
         self.snmp_object = snmp_manager.Interact(self.snmp_params)

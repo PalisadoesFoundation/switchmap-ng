@@ -1,4 +1,4 @@
-"""Infoset cisco mibs package."""
+"""Switchmap-NG cisco mibs package."""
 
 from switchmap.snmp.cisco.mib_ciscoc2900 import CiscoC2900Query
 from switchmap.snmp.cisco.mib_ciscocdp import CiscoCdpQuery
