@@ -11,27 +11,15 @@ Description:
 """
 # Standard libraries
 import textwrap
-import os
 import sys
-import logging
 import time
 import argparse
-import queue as Queue
-import threading
 
 # pip3 libraries
 
 # switchmap.libraries
 from switchmap.utils import daemon
 from switchmap.utils.daemon import Daemon
-from switchmap.utils import log
-from switchmap.utils import configuration
-
-# Define a key global variable
-THREAD_QUEUE = Queue.Queue()
-
-logging.getLogger('requests').setLevel(logging.WARNING)
-logging.basicConfig(level=logging.DEBUG)
 
 
 class AgentDaemon(Daemon):
