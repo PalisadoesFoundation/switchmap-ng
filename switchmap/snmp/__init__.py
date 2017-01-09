@@ -1,8 +1,8 @@
-"""Infoset snmp package."""
+"""Switchmap-NG snmp package."""
 
 from switchmap.snmp.base_query import Query
 
-from switchmap.snmp import jm_iana_enterprise
+from switchmap.snmp import iana_enterprise
 
 from switchmap.snmp.mib_bridge import BridgeQuery
 from switchmap.snmp.mib_entity import EntityQuery

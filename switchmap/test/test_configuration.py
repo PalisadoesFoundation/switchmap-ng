@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the jm_configuration module."""
+"""Test the configuration module."""
 
 import os
 import os.path
@@ -9,7 +9,7 @@ import random
 import string
 import tempfile
 import yaml
-from switchmap.utils import jm_configuration as test_class
+from switchmap.utils import configuration as test_class
 
 
 class TestConfig(unittest.TestCase):

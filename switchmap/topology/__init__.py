@@ -1,4 +1,4 @@
-"""Infoset utilities package.
+"""Switchmap-NG utilities package.
 
 This package's modules which perform important tasks within
 the project but are either not specific enough or not large

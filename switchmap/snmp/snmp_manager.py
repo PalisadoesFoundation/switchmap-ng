@@ -11,7 +11,7 @@ from pysnmp.smi import rfc1902 as smi
 # Import project libraries
 from switchmap.utils import log
 from switchmap.utils import daemon
-from switchmap.snmp import jm_iana_enterprise
+from switchmap.snmp import iana_enterprise
 
 
 class Validate(object):
@@ -171,7 +171,7 @@ class Interact(object):
         sysid = self.sysobjectid()
 
         # Get the vendor ID
-        enterprise_obj = jm_iana_enterprise.Query(sysobjectid=sysid)
+        enterprise_obj = iana_enterprise.Query(sysobjectid=sysid)
         enterprise = enterprise_obj.enterprise()
 
         # Return

@@ -1,3 +1,3 @@
-"""Infoset juniper mibs package."""
+"""Switchmap-NG juniper mibs package."""
 
 from switchmap.snmp.juniper.mib_junipervlan import JuniperVlanQuery

@@ -5,7 +5,7 @@ import os
 import yaml
 
 
-# Infoset imports
+# Switchmap-NG imports
 from switchmap.utils import log
 
 

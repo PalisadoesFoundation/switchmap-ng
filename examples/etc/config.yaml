@@ -1,5 +1,5 @@
 main:
-    log_dir: /home/switchmap-ng/log
+    log_directory: /home/switchmap-ng/log
     log_level: info
     cache_directory: /opt/switchmap-ng/cache
     agent_threads: 20

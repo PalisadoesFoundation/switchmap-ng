@@ -9,21 +9,28 @@ from os import path
 from os import walk
 
 # Pip imports
-from flask import render_template
+from flask import Flask, url_for, render_template
 
-# Infoset imports
+# Switchmap-NG imports
 from switchmap.utils.configuration import Config
 from switchmap.topology import pages
-from www import APP
+
+# Initializes the Flask Object
+API = Flask(__name__)
+
+# Function to easily find your assests
+API.jinja_env.globals['static'] = (
+    lambda filename: url_for('static', filename=filename)
+)
 
 
-@APP.template_filter('strftime')
+@API.template_filter('strftime')
 def _jinja2_filter_datetime(timestamp):
     timestamp = time.strftime('%H:%M (%d-%m-%Y) ', time.localtime(timestamp))
     return timestamp
 
 
-@APP.route('/')
+@API.route('/')
 def tables():
     """Function for creating host tables.
 
@@ -41,7 +48,7 @@ def tables():
                            hosts=hosts)
 
 
-@APP.route('/fetch/agent/<ip_address>/table', methods=["GET"])
+@API.route('/fetch/agent/<ip_address>/table', methods=["GET"])
 def fetch_table(ip_address):
     """Return Network Layout tables.
 
@@ -77,5 +84,6 @@ def _get_yaml_hosts():
     for root, _, files in walk(cache_directory):
         for filename in files:
             filepath = path.join(root, filename)
-            hosts[filename[:-5]] = filepath  # Add it to the list.
+            if filepath.endswith('.yaml'):
+                hosts[filename[:-5]] = filepath  # Add it to the list.
     return hosts

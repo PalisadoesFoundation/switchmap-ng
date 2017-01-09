@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the jm_general module."""
+"""Test the general module."""
 
 import unittest
 import shutil
@@ -7,7 +7,7 @@ import random
 import os
 import string
 
-from switchmap.utils import jm_general as testimport
+from switchmap.utils import general as testimport
 
 
 class KnownValues(unittest.TestCase):
@@ -36,76 +36,6 @@ two: test 2
         # Do test with good dict
         yaml_result = testimport.dict2yaml(data_dict)
         self.assertEqual(yaml_result, data_yaml)
-
-    def test_move_files(self):
-        """Testing function move_files."""
-        # Initialize key variables
-        source_filenames = {}
-        target_filenames = {}
-
-        #################################################
-        # Test with invalid source directory
-        #################################################
-
-        invalid_path = ('/tmp/%s.%s') % (
-            self.random_string,
-            self.random_string)
-
-        with self.assertRaises(SystemExit):
-            testimport.move_files(invalid_path, '/tmp')
-
-        #################################################
-        # Test with invalid destination directory
-        #################################################
-
-        invalid_path = ('/tmp/%s.%s') % (
-            self.random_string,
-            self.random_string)
-
-        with self.assertRaises(SystemExit):
-            testimport.move_files('/tmp', invalid_path)
-
-        #################################################
-        # Test with valid directory
-        #################################################
-
-        # Create a source directory
-        source_dir = ('/tmp/%s.1') % (self.random_string)
-        if os.path.exists(source_dir) is False:
-            os.makedirs(source_dir)
-
-        # Create a target directory
-        target_dir = ('/tmp/%s.2') % (self.random_string)
-        if os.path.exists(target_dir) is False:
-            os.makedirs(target_dir)
-
-        # Place files in the directory
-        for count in range(0, 4):
-            filename = ''.join([random.choice(
-                string.ascii_letters + string.digits) for n in range(15)])
-            source_filenames[count] = ('%s/%s') % (source_dir, filename)
-            target_filenames[count] = ('%s/%s') % (target_dir, filename)
-            open(source_filenames[count], 'a').close()
-
-            # Check files in directory
-            self.assertEqual(os.path.isfile(source_filenames[count]), True)
-
-        # Delete files in directory
-        testimport.move_files(source_dir, target_dir)
-
-        # Check that files are not in source_dir
-        for filename in source_filenames.values():
-            self.assertEqual(os.path.isfile(filename), False)
-
-        # Check that files are in in target_dir
-        for filename in target_filenames.values():
-            self.assertEqual(os.path.isfile(filename), True)
-
-        # Delete directory
-        shutil.rmtree(source_dir)
-
-        # Delete directory
-        shutil.rmtree(target_dir)
 
     def test_delete_files(self):
         """Testing function delete_files."""

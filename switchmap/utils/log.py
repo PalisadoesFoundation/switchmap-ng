@@ -10,7 +10,7 @@ import threading
 import traceback
 
 
-# Infoset libraries
+# Switchmap-NG libraries
 from switchmap.utils import configuration
 
 # Define global variable

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Infoset queries."""
+"""Switchmap-NG queries."""
 
 import time
 from collections import defaultdict
 
-from switchmap.snmp import jm_iana_enterprise
+from switchmap.snmp import iana_enterprise
 from switchmap.snmp import get_queries
 
 
@@ -74,7 +74,7 @@ class Query(object):
 
         # Get vendor information
         sysobjectid = self.snmp_object.sysobjectid()
-        vendor = jm_iana_enterprise.Query(sysobjectid=sysobjectid)
+        vendor = iana_enterprise.Query(sysobjectid=sysobjectid)
         data['IANAEnterpriseNumber'] = vendor.enterprise()
 
         # Return

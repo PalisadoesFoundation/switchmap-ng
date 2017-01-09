@@ -200,6 +200,22 @@ class Config(object):
         # Return
         return value
 
+    def web_log_file(self):
+        """Get web_log_file.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get new result
+        result = ('%s/web.log') % (self.log_directory())
+
+        # Return
+        return result
+
     def log_file(self):
         """Get log_file.
 

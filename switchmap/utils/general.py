@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Infoset general library."""
+"""Switchmap-NG general library."""
 
 import os
 import time
@@ -11,7 +11,7 @@ import json
 # PIP libraries
 import yaml
 
-# Infoset libraries
+# Switchmap-NG libraries
 from switchmap.utils import log
 from switchmap import switchmap
 
@@ -26,7 +26,7 @@ def root_directory():
         root_dir: Root directory
 
     """
-    # Get the directory of the switchmap.library
+    # Get the directory of the switchmap library
     switchmap_dir = switchmap.__path__[0]
     components = switchmap_dir.split(os.sep)
 
@@ -391,3 +391,79 @@ def run_script(cli_string, shell=False, die=True):
 
     # Return
     return stdoutdata
+
+
+def delete_files(directory, extension='.yaml'):
+    """Delete all files of a specfic extension in a directory.
+
+    Args:
+        directory: Directory name
+        extension: File extension
+
+    Returns:
+        None
+
+    """
+    # Determine whether directory is valid
+    if os.path.isdir(directory) is False:
+        log_message = ('Directory %s does not exist') % (directory)
+        log.log2die_safe(1023, log_message)
+
+    # Get list of files
+    filelist = [
+        next_file for next_file in os.listdir(
+            directory) if next_file.endswith(extension)]
+
+    # Delete files
+    for delete_file in filelist:
+        file_path = ('%s/%s') % (directory, delete_file)
+        try:
+            if os.path.isfile(file_path):
+                os.unlink(file_path)
+        except Exception as exception_error:
+            log_message = ('Error: deleting files in %s. Error: %s') % (
+                target_dir, exception_error)
+            log.log2die_safe(1014, log_message)
+        except:
+            log_message = ('Unexpected error')
+            log.log2die_safe(1015, log_message)
+
+
+def delete_yaml_files(directory):
+    """Delete all yaml files in a directory.
+
+    Args:
+        directory: Directory name
+
+    Returns:
+        None
+
+    """
+    # Delete files
+    delete_files(directory, extension='.yaml')
+
+
+def config_directories():
+    """Get the directories where we expect to find configuration files.
+
+    Args:
+        None
+
+    Returns:
+        directories: List of directories
+
+    """
+    #####################################################################
+    # Update the configuration directory
+    # 'SWITCHMAP_CONFIGDIR' is used for setting a non-default config
+    # directory location. A good example of this is using a new config
+    # directory for unit testing
+    #####################################################################
+    if 'SWITCHMAP_CONFIGDIR' in os.environ:
+        config_directory = os.environ['SWITCHMAP_CONFIGDIR']
+    else:
+        config_directory = ('%s/etc') % (root_directory())
+    directories = [config_directory]
+
+    # Return
+    return directories
