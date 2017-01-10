@@ -1,3 +1,4 @@
+# No sudo
 sudo: false
 
 # Define the language and versions that switchmap is written in
