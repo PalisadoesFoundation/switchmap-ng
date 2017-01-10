@@ -20,8 +20,12 @@ import os
 import sys
 import subprocess
 
-# Import Colovore libraries
-from switchmap.utils import general
+# Infoset libraries
+try:
+    from switchmap.utils import general
+except:
+    print('You need to set your PYTHONPATH to include the switchmap library')
+    sys.exit(2)
 from switchmap.test import unittest_setup
 
 

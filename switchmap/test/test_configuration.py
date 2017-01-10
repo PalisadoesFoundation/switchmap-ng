@@ -9,375 +9,298 @@ import random
 import string
 import tempfile
 import yaml
-from switchmap.utils import configuration as test_class
+
+
+from switchmap.utils import configuration
 
 
 class TestConfig(unittest.TestCase):
     """Checks all functions and methods."""
 
-    # ---------------------------------------------------------------------- #
+    #########################################################################
     # General object setup
-    # ---------------------------------------------------------------------- #
-
-    # Required
-    maxDiff = None
+    #########################################################################
 
     random_string = ''.join([random.choice(
         string.ascii_letters + string.digits) for n in range(9)])
 
-    @classmethod
-    def setUpClass(cls):
-        # Create logfile
-        cls.log_file = tempfile.NamedTemporaryFile(delete=False).name
+    log_directory = tempfile.mkdtemp()
+    cache_directory = tempfile.mkdtemp()
+    good_config = ("""\
+main:
+    log_directory: %s
+    cache_directory: %s
+    agent_threads: 20
+    bind_port: 3000
+    hostnames:
+    - 192.168.1.1
+    - 192.168.1.2
+    - 192.168.1.3
+    - 192.168.1.4
+    listen_address: 0.0.0.0
+    log_level: debug
+""") % (log_directory, cache_directory)
 
-        # Create temporary configuration directory
-        cls.test_config_dir = tempfile.mkdtemp()
-        cls.test_cache_dir = tempfile.mkdtemp()
+    # Convert good_config to dictionary
+    good_dict = yaml.load(bytes(good_config, 'utf-8'))
 
-        # Convert the configuration YAML to Python dict
-        configuration = (
-            """
-            common:
-                log_file: %s
-                language: en
-                server: True
+    # Set the environmental variable for the configuration directory
+    directory = tempfile.mkdtemp()
+    os.environ['SWITCHMAP_CONFIGDIR'] = directory
+    config_file = ('%s/test_config.yaml') % (directory)
 
-            server:
-                data_directory: %s/6maYNHCVZyQ9yJFm/data
-                ingest_cache_directory: %s/p9ZuZrRzWAd8GeSc
-                agent_threads: 20
-                ingest_threads: 20
-                db_hostname: localhost_TEST
-                db_username: Qc5QRNkkgQzcWUEF
-                db_password: P8jsCuVH2krrVdqQ
-                db_name: 5xjyjPAwPNmGsY3Z
-            """) % (cls.log_file, cls.test_cache_dir, cls.test_cache_dir)
-        cls.configuration_dict = yaml.load(configuration)
+    # Write good_config to file
+    with open(config_file, 'w') as f_handle:
+        yaml.dump(good_dict, f_handle, default_flow_style=True)
 
-        # Create the configuration file on disk
-        test_config_file = ('%s/config.yaml') % (cls.test_config_dir)
-        with open(test_config_file, 'w') as f_handle:
-            f_handle.write(configuration)
-
-        # Instantiate object to test
-        os.environ['SWITCHMAP_CONFIGDIR'] = cls.test_config_dir
-        cls.testobj = test_class.Config()
+    # Create configuration object
+    config = configuration.Config()
 
     @classmethod
     def tearDownClass(cls):
-        # Cleanup temporary files when done
-        shutil.rmtree(cls.test_config_dir)
-        shutil.rmtree(cls.test_cache_dir)
-        os.remove(cls.log_file)
+        """Post test cleanup."""
+        os.rmdir(cls.log_directory)
+        os.rmdir(cls.config.topology_directory())
+        os.rmdir(cls.cache_directory)
+        os.remove(cls.config_file)
+        os.rmdir(cls.directory)
 
-    def test_server(self):
-        """Testing function server."""
-        # Check known good value
-        result = self.testobj.server()
-        expected = self.configuration_dict['common']['server']
-        self.assertEqual(result, expected)
-
-    def test_language(self):
-        """Testing function language."""
-        # Check known good value
-        result = self.testobj.language()
-        expected = self.configuration_dict['common']['language']
-        self.assertEqual(result, expected)
-
-    def test_data_directory(self):
-        """Testing function data_directory."""
-        # Fails because directory doesn't exist
+    def test_init(self):
+        """Testing method init."""
+        # Testing with non-existant directory
+        directory = 'bogus'
+        os.environ['SWITCHMAP_CONFIGDIR'] = directory
         with self.assertRaises(SystemExit):
-            self.testobj.data_directory()
+            configuration.Config()
 
-        # Doesn't fail because directory now exists
-        os.makedirs(self.configuration_dict['server']['data_directory'])
-        result = self.testobj.data_directory()
-        expected = self.configuration_dict['server']['data_directory']
-        self.assertEqual(result, expected)
+        # Testing with an empty directory
+        empty_directory = tempfile.mkdtemp()
+        os.environ['SWITCHMAP_CONFIGDIR'] = empty_directory
+        with self.assertRaises(SystemExit):
+            configuration.Config()
+
+        # Write bad_config to file
+        empty_config_file = ('%s/test_config.yaml') % (empty_directory)
+        with open(empty_config_file, 'w') as f_handle:
+            f_handle.write('')
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.log_file()
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
+
+    def test_log_file(self):
+        """Testing method log_file."""
+        # Test the log_file with a good_dict
+        # good key and key_value
+        result = self.config.log_file()
+        self.assertEqual(
+            result, ('%s/switchmap-ng.log') % (self.log_directory))
+
+    def test_web_log_file(self):
+        """Testing method web_log_file ."""
+        # Testing web_log_file with a good dictionary.
+        result = self.config.web_log_file()
+        self.assertEqual(result, ('%s/web.log') % (self.log_directory))
+
+    def test_log_level(self):
+        """Testing method log_level."""
+        # Tesing with a good_dictionary
+        # good key and good key_value
+        result = self.config.log_level()
+        self.assertEqual(result, 'debug')
+        self.assertEqual(result, self.good_dict['main']['log_level'])
+
+        # Set the environmental variable for the configuration directory
+        directory = tempfile.mkdtemp()
+        os.environ['SWITCHMAP_CONFIGDIR'] = directory
+        config_file = ('%s/test_config.yaml') % (directory)
+
+        # Testing log_level with blank key and blank key_value
+        key = ''
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.log_level()
+
+        # Testing log_level with good key and blank key_value
+        key = 'log_level:'
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.log_level()
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
+
+    def test_cache_directory(self):
+        """Testing method cache_directory."""
+        # Testing cache_directory with temp directory
+        # Set the environmental variable for the configuration directory
+        directory = tempfile.mkdtemp()
+        os.environ['SWITCHMAP_CONFIGDIR'] = directory
+        config_file = ('%s/test_config.yaml') % (directory)
+
+        # Testing cache_directory with blank key_value(filepath)
+        key = ''
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.cache_directory()
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
+
+    def test_agent_threads(self):
+        """Testing method agent_threads."""
+        # Testing agent_threads with good_dict
+        # good key and key_value
+        result = self.config.agent_threads()
+        self.assertEqual(result, 20)
+        self.assertEqual(result, self.good_dict['main']['agent_threads'])
+
+    def test_bind_port(self):
+        """Testing method bind_port."""
+        # Testing bind_port with good_dictionary
+        # good key and key_value
+        result = self.config.bind_port()
+        self.assertEqual(result, 3000)
+        self.assertEqual(result, self.good_dict['main']['bind_port'])
+
+        # Set the environmental variable for the configuration directory
+        directory = tempfile.mkdtemp()
+        os.environ['SWITCHMAP_CONFIGDIR'] = directory
+        config_file = ('%s/test_config.yaml') % (directory)
+
+        # Testing bind_port with blank key and blank key_value
+        key = ''
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.bind_port()
+
+        # Testing bind_port with good key and blank key_value
+        key = 'bind_port:'
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        result = config.bind_port()
+        self.assertEqual(result, 7000)
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
 
     def test_topology_directory(self):
         """Testing function topology_directory."""
         # Verify that directory exists
-        result = self.testobj.topology_directory()
+        result = self.config.topology_directory()
         self.assertEqual(os.path.exists(result), True)
         self.assertEqual(os.path.isdir(result), True)
 
         # Doesn't fail because directory now exists
-        result = self.testobj.topology_directory()
+        result = self.config.topology_directory()
         expected = ('%s/topology') % (
-            self.configuration_dict['server']['data_directory'])
+            self.good_dict['main']['cache_directory'])
         self.assertEqual(result, expected)
 
     def test_topology_device_file(self):
         """Testing function topology_device_file."""
         # Recreate the path to the device file
-        result = self.testobj.topology_device_file(self.random_string)
+        result = self.config.topology_device_file(self.random_string)
         expected = ('%s/%s.yaml') % (
-            self.testobj.topology_directory(), self.random_string)
+            self.config.topology_directory(), self.random_string)
         self.assertEqual(result, expected)
 
-    def test_ingest_cache_directory(self):
-        """Testing function ingest_cache_directory."""
-        # Fails because directory doesn't exist
+    def test_hostnames(self):
+        """Testing function hostnames."""
+        # Test expected versus returned values
+        result = self.config.hostnames()
+        expected = sorted(self.good_dict['main']['hostnames'])
+        self.assertEqual(result, expected)
+
+    def test_log_directory(self):
+        """Testing method log_directory."""
+        # Testing log_directory with temp directory
+        # Set the environmental variable for the configuration directory
+        directory = tempfile.mkdtemp()
+        os.environ['SWITCHMAP_CONFIGDIR'] = directory
+        config_file = ('%s/test_config.yaml') % (directory)
+
+        # Testing log_directory with blank key_value(filepath)
+        key = ''
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
         with self.assertRaises(SystemExit):
-            self.testobj.ingest_cache_directory()
+            config.log_directory()
 
-        # Doesn't fail because directory now exists
-        os.makedirs(self.configuration_dict[
-            'server']['ingest_cache_directory'])
-        result = self.testobj.ingest_cache_directory()
-        expected = self.configuration_dict[
-            'server']['ingest_cache_directory']
-        self.assertEqual(result, expected)
-
-    def test_ingest_failures_directory(self):
-        """Testing function ingest_failures_directory."""
-        # Verify that directory exists
-        result = self.testobj. ingest_failures_directory()
-        self.assertEqual(os.path.exists(result), True)
-        self.assertEqual(os.path.isdir(result), True)
-
-        # Doesn't fail because directory now exists
-        result = self.testobj. ingest_failures_directory()
-        expected = ('%s/failures') % (
-            self.configuration_dict['server']['ingest_cache_directory'])
-        self.assertEqual(result, expected)
-
-    def test_db_name(self):
-        """Testing for db_name."""
-        # Initializing key variables
-        result = self.testobj.db_name()
-        expected = self.configuration_dict['server']['db_name']
-        self.assertEqual(result, expected)
-
-    def test_db_username(self):
-        """Testing for db_username."""
-        # Initializing key variables
-        result = self.testobj.db_username()
-        expected = self.configuration_dict['server']['db_username']
-        self.assertEqual(result, expected)
-
-    def test_db_password(self):
-        """Testing for db_password."""
-        # Initializing key variables
-        result = self.testobj.db_password()
-        expected = self.configuration_dict['server']['db_password']
-        self.assertEqual(result, expected)
-
-    def test_db_hostname(self):
-        """Testing for db_hostname."""
-        # Initializing key variables
-        result = self.testobj.db_hostname()
-        expected = self.configuration_dict['server']['db_hostname']
-        self.assertEqual(result, expected)
-
-    def test_agent_threads(self):
-        """Testing function agent_threads."""
-        # Initializing key variables
-        result = self.testobj.agent_threads()
-        expected = self.configuration_dict['server']['agent_threads']
-        self.assertEqual(result, expected)
-
-    def test_ingest_threads(self):
-        """Testing function ingest_threads."""
-        # Initializing key variables
-        result = self.testobj.ingest_threads()
-        expected = self.configuration_dict['server']['ingest_threads']
-        self.assertEqual(result, expected)
-
-    def test_log_file(self):
-        """Testing function log_file."""
-        # Initializing key variables
-        result = self.testobj.log_file()
-        expected = self.configuration_dict['common']['log_file']
-        self.assertEqual(result, expected)
-
-
-class TestConfigAgent(unittest.TestCase):
-    """Checks configuration information."""
-
-    # ---------------------------------------------------------------------- #
-    # General object setup
-    # ---------------------------------------------------------------------- #
-
-    # Required
-    maxDiff = None
-
-    @classmethod
-    def setUpClass(cls):
-        # Define agent name
-        cls.agent_name = ''.join([random.choice(
-            string.ascii_letters + string.digits) for n in range(9)])
-
-        # Create logfile
-        cls.log_file = tempfile.NamedTemporaryFile(delete=False).name
-
-        # Create temporary configuration directory
-        cls.test_config_dir = tempfile.mkdtemp()
-        cls.test_cache_dir = tempfile.mkdtemp()
-
-        # Convert the configuration YAML to Python dict
-        configuration = (
-            """
-            common:
-                log_file: %s
-                language: en
-
-            agents_common:
-                server_name: 192.168.1.218
-                server_port: 5000
-                server_https: False
-                agent_cache_directory: %s/1234113241
-
-            agents:
-
-            - agent_name: %s
-              agent_enabled: True
-              agent_filename: bin/agents/_switchmap.py
-              agent_port: 5001
-              monitor_agent_pid: True
-              agent_hostnames:
-                - 192.168.1.1
-                - 192.168.1.2
-                - 192.168.1.3
-                - 192.168.1.4
-            """) % (cls.log_file, cls.test_cache_dir, cls.agent_name)
-        cls.configuration_dict = yaml.load(configuration)
-
-        # Create the configuration file on disk
-        test_config_file = ('%s/config.yaml') % (cls.test_config_dir)
-        with open(test_config_file, 'w') as f_handle:
-            f_handle.write(configuration)
-
-        # Instantiate object to test
-        os.environ['SWITCHMAP_CONFIGDIR'] = cls.test_config_dir
-        cls.testobj = test_class.ConfigAgent(cls.agent_name)
-
-    @classmethod
-    def tearDownClass(cls):
-        # Cleanup temporary files when done
-        shutil.rmtree(cls.test_config_dir)
-        shutil.rmtree(cls.test_cache_dir)
-        os.remove(cls.log_file)
-
-    def test_agents(self):
-        """Testing function agents."""
-        pass
-
-    def test_agent_name(self):
-        """Testing function agent_name."""
-        # Initializing key variables
-        result = self.testobj.agent_name()
-        expected = self.agent_name
-        self.assertEqual(result, expected)
-
-    def test_server_name(self):
-        """Testing for server_name."""
-        # Initializing key variables
-        result = self.testobj.server_name()
-        expected = self.configuration_dict['agents_common']['server_name']
-        self.assertEqual(result, expected)
-
-    def test_server_port(self):
-        """Testing for server_port."""
-        # Initializing key variables
-        result = self.testobj.server_port()
-        expected = self.configuration_dict['agents_common']['server_port']
-        self.assertEqual(result, expected)
-
-    def test_server_https(self):
-        """Testing for server_https."""
-        # Initializing key variables
-        result = self.testobj.server_https()
-        expected = self.configuration_dict['agents_common']['server_https']
-        self.assertEqual(result, expected)
-
-    def test_agent_cache_directory(self):
-        """Testing function agent_cache_directory."""
-        # Fails because directory doesn't exist
-        with self.assertRaises(SystemExit):
-            self.testobj.agent_cache_directory()
-
-        # Doesn't fail because directory now exists
-        os.makedirs(self.configuration_dict[
-            'agents_common']['agent_cache_directory'])
-        result = self.testobj.agent_cache_directory()
-        expected = self.configuration_dict[
-            'agents_common']['agent_cache_directory']
-        self.assertEqual(result, expected)
-
-    def test_language(self):
-        """Testing function language."""
-        # Check known good value
-        result = self.testobj.language()
-        expected = self.configuration_dict['common']['language']
-        self.assertEqual(result, expected)
-
-    def test_log_file(self):
-        """Testing function log_file."""
-        # Initializing key variables
-        result = self.testobj.log_file()
-        expected = self.configuration_dict['common']['log_file']
-        self.assertEqual(result, expected)
-
-    def test_agent_enabled(self):
-        """Testing function agent_enabled."""
-        # Get agent config
-        agent_config = _agent_config(
-            self.agent_name, self.configuration_dict)
-
-        # Test expected versus returned values
-        result = self.testobj.agent_enabled()
-        expected = agent_config['agent_enabled']
-        self.assertEqual(result, expected)
-
-    def test_monitor_agent_pid(self):
-        """Testing function monitor_agent_pid."""
-        # Get agent config
-        agent_config = _agent_config(
-            self.agent_name, self.configuration_dict)
-
-        # Test expected versus returned values
-        result = self.testobj.monitor_agent_pid()
-        expected = agent_config['monitor_agent_pid']
-        self.assertEqual(result, expected)
-
-    def test_agent_filename(self):
-        """Testing function agent_filename."""
-        # Get agent config
-        agent_config = _agent_config(
-            self.agent_name, self.configuration_dict)
-
-        # Test expected versus returned values
-        result = self.testobj.agent_filename()
-        expected = agent_config['agent_filename']
-        self.assertEqual(result, expected)
-
-    def test_agent_hostnames(self):
-        """Testing function agent_hostnames."""
-        agent_config = _agent_config(
-            self.agent_name, self.configuration_dict)
-
-        # Test expected versus returned values
-        result = self.testobj.agent_hostnames()
-        expected = sorted(agent_config['agent_hostnames'])
-        self.assertEqual(result, expected)
-
-    def test_agent_port(self):
-        """Testing function agent_port."""
-        # Get agent config
-        agent_config = _agent_config(
-            self.agent_name, self.configuration_dict)
-
-        # Test expected versus returned values
-        result = self.testobj.agent_port()
-        expected = agent_config['agent_port']
-        self.assertEqual(result, expected)
-
-    def test_agent_metadata(self):
-        """Testing function agent_metadata."""
-        pass
+        # Cleanup files in temp directories
+        _delete_files(directory)
 
 
 class TestConfigSNMP(unittest.TestCase):
@@ -403,7 +326,7 @@ class TestConfigSNMP(unittest.TestCase):
         cls.test_config_dir = tempfile.mkdtemp()
 
         # Initializing key variables
-        configuration = ("""
+        text_configuration = ("""
             snmp_groups:
                 - group_name: %s
                   snmp_version: 3
@@ -425,16 +348,16 @@ class TestConfigSNMP(unittest.TestCase):
                   snmp_privprotocol: aes
                   snmp_privpassword: 123priv
             """) % (cls.group_name)
-        cls.configuration_dict = yaml.load(configuration)
+        cls.configuration_dict = yaml.load(text_configuration)
 
         # Create the configuration file on disk
         test_config_file = ('%s/config.yaml') % (cls.test_config_dir)
         with open(test_config_file, 'w') as f_handle:
-            f_handle.write(configuration)
+            f_handle.write(text_configuration)
 
         # Instantiate object to test
         os.environ['SWITCHMAP_CONFIGDIR'] = cls.test_config_dir
-        cls.testobj = test_class.ConfigSNMP()
+        cls.testobj = configuration.ConfigSNMP()
 
     @classmethod
     def tearDownClass(cls):
@@ -471,42 +394,36 @@ class TestConfigSNMP(unittest.TestCase):
             ]
 
         # Get results from configuration file
-        result = self.testobj.snmp_auth()
+        groups = self.testobj.snmp_auth()
 
         # Iterate through each item in the snmp parameters list received
-        for index, result_dict in enumerate(result):
-            expected_dict = expected_list[index]
-            for key in expected_dict.keys():
-                    self.assertEqual(result_dict[key], expected_dict[key])
+        for group in groups:
+            for expected_dict in expected_list:
+                if expected_dict['group_name'] == group['group_name']:
+                    for key in expected_dict.keys():
+                        self.assertEqual(
+                            group[key], expected_dict[key])
 
 
-def _agent_config(agent_name, config_dict):
-    """Get agent config parameter from YAML.
+def _delete_files(directory):
+    """Delete all files in directory."""
+    # Verify that directory exists
+    if os.path.isdir(directory) is False:
+        return
 
-    Args:
-        agent_name: Agent Name
-        config_dict: Dictionary to explore
-        die: Die if true and the result encountered is None
+    # Cleanup files in temp directories
+    filenames = [filename for filename in os.listdir(
+        directory) if os.path.isfile(
+            os.path.join(directory, filename))]
 
-    Returns:
-        result: result
+    # Get the full filepath for the cache file and remove filepath
+    for filename in filenames:
+        filepath = os.path.join(directory, filename)
+        os.remove(filepath)
 
-    """
-    # Get result
-    key = 'agents'
-    result = None
+    # Remove directory after files are deleted.
+    os.rmdir(directory)
 
-    # Get new result
-    if key in config_dict:
-        configurations = config_dict[key]
-        for configuration in configurations:
-            if 'agent_name' in configuration:
-                if configuration['agent_name'] == agent_name:
-                    result = configuration
-                    break
-
-    # Return
-    return result
 
 if __name__ == '__main__':
 

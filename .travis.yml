@@ -1,0 +1,26 @@
+sudo: false
+
+# Define the language and versions that switchmap is written in
+language: python
+python:
+  - 3.5
+
+# Run tests only against the master branch
+branches:
+  only:
+    - master
+
+# Setup global environmental variables
+env:
+    - PYTHONPATH=./ SWITCHMAP_CONFIGDIR=$HOME/.switchmap_unittests/config
+
+# Install PIP packages and create a temporary config file before installing
+before_install:
+    - pip install -r requirements.txt
+    - switchmap/test/create_test_config.py
+
+# Install switchmap-ng
+install: python3 setup.py
+
+# Run the unittest scripts
+script: switchmap/test/_do_all_tests.py

@@ -260,37 +260,6 @@ def search_file(filename):
     return result
 
 
-def delete_files(target_dir):
-    """Delete files in a directory.
-
-    Args:
-        target_dir: Directory in which files must be deleted
-
-    Returns:
-        Nothing
-
-    """
-    # Make sure target directory exists
-    if os.path.exists(target_dir) is False:
-        log_message = ('Directory %s does not exist.') % (
-            target_dir)
-        log.log2die_safe(1013, log_message)
-
-    # Delete all files in the target folder
-    for the_file in os.listdir(target_dir):
-        file_path = os.path.join(target_dir, the_file)
-        try:
-            if os.path.isfile(file_path):
-                os.unlink(file_path)
-        except Exception as exception_error:
-            log_message = ('Error: deleting files in %s. Error: %s') % (
-                target_dir, exception_error)
-            log.log2die_safe(1014, log_message)
-        except:
-            log_message = ('Unexpected error')
-            log.log2die_safe(1015, log_message)
-
-
 def dict2yaml(data_dict):
     """Convert a dict to a YAML string.
 
@@ -422,7 +391,7 @@ def delete_files(directory, extension='.yaml'):
                 os.unlink(file_path)
         except Exception as exception_error:
             log_message = ('Error: deleting files in %s. Error: %s') % (
-                target_dir, exception_error)
+                directory, exception_error)
             log.log2die_safe(1014, log_message)
         except:
             log_message = ('Unexpected error')

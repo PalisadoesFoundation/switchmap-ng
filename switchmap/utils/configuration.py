@@ -67,7 +67,25 @@ class Config(object):
             log_message = (
                 'cache_directory: "%s" '
                 'in configuration doesn\'t exist!') % (value)
-            log.log2die(1030, log_message)
+            log.log2die(1011, log_message)
+
+        # Return
+        return value
+
+    def topology_directory(self):
+        """Determine the topology_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured topology_directory
+
+        """
+        # Get parameter
+        value = ('%s/topology') % (self.cache_directory())
+        if not os.path.exists(value):
+            os.makedirs(value)
 
         # Return
         return value
@@ -83,7 +101,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = ('%s/%s.yaml') % (self.cache_directory(), host)
+        value = ('%s/%s.yaml') % (self.topology_directory(), host)
 
         # Return
         return value
@@ -123,7 +141,7 @@ class Config(object):
         sub_key = 'bind_port'
         result = _key_sub_key(key, sub_key, self.config_dict, die=False)
 
-        # Default to 6000
+        # Default to 7000
         if result is None:
             result = 7000
         return result
@@ -424,7 +442,9 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     if key in config_dict:
         # Make sure we don't have a None value
         if config_dict[key] is None:
-            log_message = ('%s: value in configuration is blank. Please fix')
+            log_message = (
+                'Configuration value {}: is blank. Please fix.'
+                ''.format(key))
             log.log2die_safe(1022, log_message)
 
         # Get value we need

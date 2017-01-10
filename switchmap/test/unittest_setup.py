@@ -171,17 +171,23 @@ def _environment():
     # Make sure the SWITCHMAP_CONFIGDIR environment variable is set
     if 'SWITCHMAP_CONFIGDIR' not in os.environ:
         log_message = (
-            'The SWITCHMAP_CONFIGDIR is not set. Run this command to do so: '
-            '"export SWITCHMAP_CONFIGDIR={}"'.format(CONFIG_DIRECTORY))
+            '\nThe SWITCHMAP_CONFIGDIR is set to the wrong directory. '
+            'Run this command to do so:\n\n'
+            '$ export SWITCHMAP_CONFIGDIR={}'
+            '\n\nThen run this command again, followed by.\n\n'
+            '$ ./_do_all_tests.py\n'
+            ''.format(CONFIG_DIRECTORY))
         print(log_message)
         sys.exit(2)
 
     # Make sure the SWITCHMAP_CONFIGDIR environment variable is set correctly
     if os.environ['SWITCHMAP_CONFIGDIR'] != CONFIG_DIRECTORY:
         log_message = (
-            'The SWITCHMAP_CONFIGDIR is set to the wrong directory ("{}"). '
-            'Run this command to do so: '
-            '"export SWITCHMAP_CONFIGDIR={}"'.format(
+            '\nThe SWITCHMAP_CONFIGDIR is set to the wrong directory ("{}"). '
+            'Run this command to do so:\n\n'
+            '$ export SWITCHMAP_CONFIGDIR={}'
+            '\n\nThen run this command again, followed by.\n\n'
+            ''.format(
                 os.environ['SWITCHMAP_CONFIGDIR'], CONFIG_DIRECTORY))
         print(log_message)
         sys.exit(2)
