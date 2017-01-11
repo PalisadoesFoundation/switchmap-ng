@@ -10,7 +10,12 @@ Welcome to Switchmap-NG's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   introduction
+   installation
+   configuration
+   operation
+   community
+   
 
 Indices and tables
 ==================
