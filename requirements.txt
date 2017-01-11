@@ -18,6 +18,7 @@ ply
 pyasn1
 pycrypto
 pyflakes
+pysnmp
 pysmi
 python-dateutil
 PyYAML

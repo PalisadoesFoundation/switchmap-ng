@@ -85,7 +85,7 @@ Edit the SNMP credential information in the configuration file.
           snmp_authpassword: testing123
           snmp_privprotocol: des
           snmp_privpassword: secret_password
-        
+
 
 Run Installation Script
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -109,6 +109,26 @@ This example assumes you have downloaded ``switchmap-ng`` in the ``/home/switchm
     $ sudo su -
     # cd /home/switchmap-ng
     # python3 setup.py
+
+
+Setup Webserver For ``switchmap-ng``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``switchmap-ng`` has sample configurations for the Apache webserver. This step is mandatory.
+
+:Apache: Run the following commands from the top directory of ``switchmap-ng``
+
+::
+
+    $ sudo cp examples/linux/apache/switchmap-ng-apache.conf /etc/apache2/conf-available
+    $ sudo ln -s /etc/apache2/conf-available/switchmap-ng-apache.conf /etc/apache2/conf-enabled/switchmap-ng-apache.conf 
+
+    # (Ubuntu only)
+    $ sudo a2enmod proxy_http
+    $ systemctl restart apache2.service
+
+    # (RedHat / CentOS)    
+    $ systemctl restart httpd.service
 
 
 

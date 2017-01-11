@@ -20,7 +20,7 @@ try:
 except:
     print('You need to set your PYTHONPATH to include the switchmap library')
     sys.exit(2)
-from switchmap.www.views import API
+from switchmap.api.routes import API
 from switchmap.utils import configuration
 from switchmap.utils import log
 from switchmap.utils import daemon
@@ -68,7 +68,7 @@ def number_of_workers():
 
 
 class _APIAgent(object):
-    """Garnet agent that gathers data.
+    """switchmap-ng API agent that serves web pages.
 
     Args:
         None
@@ -82,19 +82,20 @@ class _APIAgent(object):
         post:
     """
 
-    def __init__(self):
+    def __init__(self, pidfile_gunicorn):
         """Method initializing the class.
 
         Args:
-            None
+            pid_gunicorn: PID file for Gunicorn
 
         Returns:
             None
 
         """
         # Initialize key variables
+        self.pidfile_gunicorn = pidfile_gunicorn
         self.config = configuration.Config()
-        self.agent_name = 'switchmap_ng_web'
+        self.agent_name = 'switchmap-ng-api'
 
     def name(self):
         """Return agent name.
@@ -158,6 +159,7 @@ class _APIAgent(object):
             'accesslog': config.web_log_file(),
             'errorlog': config.web_log_file(),
             'capture_output': True,
+            'pidfile': self.pidfile_gunicorn,
             'loglevel': config.log_level(),
             'workers': number_of_workers(),
         }
@@ -176,14 +178,63 @@ class _APIAgent(object):
         StandaloneApplication(API, options).run()
 
 
+class _APIAgentGunicorn(object):
+    """Gunicorn agent to control process"""
+
+    def __init__(self):
+        """Method initializing the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        self.agent_name = 'switchmap-ng-gunicorn'
+
+    def name(self):
+        """Return agent name.
+
+        Args:
+            None
+
+        Returns:
+            value: Name of agent
+
+        """
+        # Return
+        value = self.agent_name
+        return value
+
+    def query(self):
+        """Dummy query.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Do nothing
+        pass
+
+
 def main():
     """Main function to start the Gunicorn WSGI."""
+    # Get PID filenename for Gunicorn
+    poller_gunicorn = _APIAgentGunicorn()
+    pidfile_gunicorn = daemon.pid_file(poller_gunicorn.name())
+
     # Get configuration
     cli = Agent.AgentCLI()
-    poller = _APIAgent()
+    poller_api = _APIAgent(pidfile_gunicorn=pidfile_gunicorn)
 
     # Do control
-    cli.control(poller)
+    cli.control(poller_api)
+    cli.control(poller_gunicorn)
 
 
 if __name__ == '__main__':

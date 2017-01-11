@@ -19,7 +19,7 @@ Features
 2. Written in python, a modern language.
 3. Easy configuration.
 4. Threaded polling of devices for data. Fast.
-5. Support for Cisco and Juniper gear. More expected to added with time.
+5. Support for Cisco and Juniper gear. More are expected to be added with time.
 6. Support for SNMPv2 and/or SNMPv3 for all configured network devices.
 
 We are always looking for more contributors!
