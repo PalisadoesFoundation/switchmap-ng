@@ -41,7 +41,7 @@
     </div>
 
     <script type="text/javascript">
-	$.get("/fetch/agent/192.168.1.1/table", function (data) {
+	$.get("/switchmap-ng/fetch/agent/default/table", function (data) {
 		$(data.split('</table>')).each(function(index, value){
 		  if (index < 1) {
 		    $('.network-table-info').append(value);
@@ -56,7 +56,7 @@
 	   $(".hostLink").click(function (e) {
 		e.preventDefault();
 		var ip = $(this).attr("href");
-		var url = "/fetch/agent/" + ip + "/table";
+		var url = "/switchmap-ng/fetch/agent/" + ip + "/table";
 
 		$.get(url, function (data) {
 		    $('.network-table-info').empty();

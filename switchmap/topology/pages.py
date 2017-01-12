@@ -1,13 +1,11 @@
 #!usr/bin/env python3
 """Class for creating device web pages."""
 
-import tempfile
 import textwrap
 import os
 
 # Import switchmap.libraries
 from switchmap.utils import log
-from switchmap.utils import general
 from switchmap.topology.translator import Translator
 
 
@@ -31,10 +29,18 @@ class HTMLTable(object):
             None
 
         """
+        # Initialize key variables
+        self.default_action = False
+
+        # Define default action
+        if host.lower() == 'default':
+            self.default_action = True
+
         # Process YAML file for host
-        translation = Translator(config, host)
-        self.ports = translation.ethernet_data()
-        self.summary = translation.system_summary()
+        if self.default_action is False:
+            translation = Translator(config, host)
+            self.ports = translation.ethernet_data()
+            self.summary = translation.system_summary()
 
     def ethernet(self):
         """Create the ports table for the device.
@@ -48,7 +54,10 @@ class HTMLTable(object):
 
         """
         # Initialize key variables
-        html = _port_table(self.ports)
+        if self.default_action is False:
+            html = _port_table(self.ports)
+        else:
+            html = ''
 
         # Return
         return html
@@ -65,7 +74,10 @@ class HTMLTable(object):
 
         """
         # Initialize key variables
-        html = _device_table(self.summary)
+        if self.default_action is False:
+            html = _device_table(self.summary)
+        else:
+            html = ''
 
         # Return
         return html
@@ -84,12 +96,11 @@ def create(config, host):
     """
     # Initialize key variables
     device_file_found = False
+    html = ''
 
-    # Create directory if needed
-    temp_dir = tempfile.mkdtemp()
-
-    # Delete all files in temporary directory
-    general.delete_files(temp_dir)
+    # Define default action
+    if host.lower() == 'default':
+        return html
 
     # Skip if device file not found
     if os.path.isfile(config.topology_device_file(host)) is False:
@@ -97,28 +108,20 @@ def create(config, host):
             'No YAML device file for host %s found in %s. '
             'topoloy agent has not discovered it yet.'
             '') % (host, config.cache_directory())
-        log.log2info(1018, log_message)
+        log.log2debug(1018, log_message)
     else:
         device_file_found = True
 
-    ####################################################################
-    #
-    # Define variables that will be required for the database update
-    # We have to initialize the dict during every loop to prevent
-    # data corruption
-    #
-    ####################################################################
-    table = HTMLTable(config, host)
-
-    # Create HTML output
-    html = ('%s%s\n%s\n\n%s\n') % (
-        _html_header(host), host, table.device(),
-        table.ethernet())
-
-    # Do the rest if device_file_found
+    # Process information for host
     if device_file_found is True:
-        # Wait on the queue until everything has been processed
-        return html
+        # Create HTML output
+        table = HTMLTable(config, host)
+        html = ('%s%s\n%s\n\n%s\n') % (
+            _html_header(host), host, table.device(),
+            table.ethernet())
+
+    # Return
+    return html
 
 
 def _port_enabled(port_data):

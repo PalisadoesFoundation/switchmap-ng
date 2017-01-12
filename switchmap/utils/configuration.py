@@ -85,7 +85,7 @@ class Config(object):
         # Get parameter
         value = ('%s/topology') % (self.cache_directory())
         if not os.path.exists(value):
-            os.makedirs(value)
+            os.makedirs(value, mode=0o750)
 
         # Return
         return value
@@ -229,7 +229,7 @@ class Config(object):
 
         """
         # Get new result
-        result = ('%s/web.log') % (self.log_directory())
+        result = ('%s/switchmap-ng-api.log') % (self.log_directory())
 
         # Return
         return result

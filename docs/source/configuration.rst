@@ -63,7 +63,7 @@ This is the section of the configuration file that governs the general operation
 Parameter                           Description
 =================================== ========
 ``main:``                           YAML key describing the server configuration.
-``log_directory:``                  The directory where ``infoset-ng`` places its log files
+``log_directory:``                  The directory where ``switchmap-ng`` places its log files
 ``log_level:``                      Defines the logging level. ``debug`` level is the most verbose, followed by ``info``, ``warning`` and ``critical``
 ``cache_directory:``                Location where data retrieved from devices will be stored.
 ``agent_threads:``                  The maximum number of threads used to collect data from devices

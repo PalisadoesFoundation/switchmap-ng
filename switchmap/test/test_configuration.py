@@ -104,7 +104,7 @@ main:
         """Testing method web_log_file ."""
         # Testing web_log_file with a good dictionary.
         result = self.config.web_log_file()
-        self.assertEqual(result, ('%s/web.log') % (self.log_directory))
+        self.assertEqual(result, ('%s/switchmap-ng-api.log') % (self.log_directory))
 
     def test_log_level(self):
         """Testing method log_level."""
