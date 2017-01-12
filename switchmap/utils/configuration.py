@@ -229,7 +229,7 @@ class Config(object):
 
         """
         # Get new result
-        result = ('%s/web.log') % (self.log_directory())
+        result = ('%s/switchmap-ng-api.log') % (self.log_directory())
 
         # Return
         return result

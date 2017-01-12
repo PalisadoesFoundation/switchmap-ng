@@ -20,7 +20,7 @@ import os
 import sys
 import subprocess
 
-# Infoset libraries
+# switchmap-ng libraries
 try:
     from switchmap.utils import general
 except:

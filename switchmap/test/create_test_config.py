@@ -5,7 +5,7 @@
 import sys
 import os
 
-# Infoset libraries
+# switchmap-ng libraries
 try:
     from switchmap.test import unittest_setup
 except:
