@@ -429,7 +429,7 @@ class SystemTable(Table):
 
     # Initialize class variables
     parameter = Col('Parameter')
-    value = Col('value')
+    value = Col('Value')
 
     # Define the CSS class to use for the header row
     thead_classes = ['tblHead']
