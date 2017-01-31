@@ -73,17 +73,18 @@ def _get_yaml_hosts():
         None
 
     Returns:
-        hosts: Dict of hostnames
+        hosts: List of hostnames
 
     """
     # Read configuration
     config = Config()
     cache_directory = config.cache_directory()
 
-    hosts = {}
+    hosts = []
     for root, _, files in walk(cache_directory):
         for filename in files:
             filepath = path.join(root, filename)
             if filepath.endswith('.yaml'):
-                hosts[filename[:-5]] = filepath  # Add it to the list.
-    return hosts
+                hostname = filename[:-5]
+                hosts.append(hostname)
+    return sorted(hosts)

@@ -4,7 +4,7 @@ main:
     cache_directory: /opt/switchmap-ng/cache
     agent_threads: 20
     bind_port: 7000
-    listen_address: 0.0.0.0
+    listen_address: localhost
     hostnames:
       - 192.168.1.1
       - 192.168.1.2

@@ -26,12 +26,12 @@ class Translator(object):
 
     """
 
-    def __init__(self, config, host, ifindices=None):
+    def __init__(self, config, hostname, ifindices=None):
         """Initialize class.
 
         Args:
             config: Configuration file object
-            host: Hostname to process
+            hostname: Hostname to process
             ifindices: List of ifindices to process
 
         Returns:
@@ -104,13 +104,14 @@ class Translator(object):
         """
         # Initialize key variables
         self.ports = {}
-        yaml_file = config.topology_device_file(host)
+        self.hostname = hostname
+        yaml_file = config.topology_device_file(self.hostname)
 
         # Fail if yaml file doesn't exist
         if os.path.isfile(yaml_file) is False:
             log_message = (
                 'YAML file %s for host %s doesn\'t exist! '
-                'Try polling devices first.') % (yaml_file, host)
+                'Try polling devices first.') % (yaml_file, self.hostname)
             log.log2die(1017, log_message)
 
         # Read file
@@ -211,6 +212,9 @@ class Translator(object):
         v2mib = self.system['SNMPv2-MIB']
         for key in v2mib.keys():
             data_dict[key] = v2mib[key]['0']
+
+        # Add the hostname to the dictionary
+        data_dict['hostname'] = self.hostname
 
         # Return
         return data_dict

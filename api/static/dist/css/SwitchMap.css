@@ -1,0 +1,106 @@
+body { font-family: Times, serif; }
+
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.small {
+    font-style: oblique;
+    font-size: 0.8em;
+    display: block;
+    padding-bottom: 5px; }
+
+/* Table Attributes */
+table {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: small;
+    border-collapse: collapse;
+    border: 1px solid #cccccc;
+}
+
+td.mac-address { font-family: Courier New, Courier; }
+.section-title { font-size: x-large; font-weight: bold; }
+.page-title    { font-size: xx-large; font-weight: bold; }
+
+/* Table captions */
+caption       { font-size: large; }
+caption.stats { font-size: medium; font-weight: bold; }
+
+/* Table Header Colors */
+th { padding-left: 5px; padding-right: 5px; }
+thead.tblHead          {background: #ccccff;} /* Table Header */
+
+/* Table Colors */
+td.cellMacLimit     {background: #ff0000; color:#ffffff;} /* Mac Limit Color */
+td.cellDisabled     {background: #ff4444;} /* Disabled Port */
+td.cellEtherChannel {background: #ffff55;} /* EtherChannel */
+td.cellUnused       {background: #dddddd;} /* Unused Port */
+td.cellWarning      {background: #ffcccc;} /* Warning */
+td.tblHead          {background: #ccccff;} /* Table Header */
+tr.cellActive       {background: #ccffcc;} /* Active Port */
+tr.cellInactive     {background:##FFFFE0;} /* Inactive Port */
+tr.cellDefault      {background: #ffffff;} /* Default Table */
+tr.cellUnused       {background: #dddddd;} /* Unused Port */
+tr.tblHead          {background: #ccccff;} /* Table Header */
+tr.sitetotals       {background: #ffdddd;} /* site totals row of "Switch Details" table */
+tr.grandtotals      {background: #ddffdd;} /* grand totals row of "Switch Details" table */
+
+td { white-space:pre; padding-left: 5px; padding-right: 5px; border: 1px solid #cccccc; }
+
+table.noborder {
+    border-style: none;
+}
+table.noborder td {
+    border-width: 0px;
+}
+table.Stats td {
+    border-width: 1px;
+}
+
+table. {
+    cellpadding="3px";
+    align="center";
+}
+table.SwitchList {
+    border: 0px;
+    font-size: medium;
+}
+table.SwitchList td {
+    text-align: left;
+    border: 0px;
+    padding-left: 20px; padding-right: 20px;
+}
+table.SwitchList td:hover { background-color: #B0C6D7; }
+table.SwitchList td a:hover { text-decoration: none; }
+table.SwitchList td a .small { font-weight: normal; }
+
+span.searchresult { background-color: cyan; }
+
+div.trailer { font-size: x-small; }
+
+/* Navigation bar ("toc" means "table of contents"), found at the top of each page */
+
+ul.toc {
+    margin-left:auto;
+    margin-right:auto;
+    padding-bottom: 20px;
+}
+
+ul.toc li {
+    width: auto;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: palegoldenrod;
+    border: 1px solid black;
+    float: left;
+    text-align: center;
+    list-style-type: none;
+    font-weight: bold;
+}
+ul.toc a {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+ul.toc a:hover {
+    background-color: #FFFFE0;
+    text-decoration: none;
+}
