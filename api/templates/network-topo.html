@@ -4,23 +4,11 @@
       <div class="data-box" id="home-box">
         <div class="container-fluid">
           <div class="row">
-            <div class="col-lg-4">
-              <p><b>Host Name:</b></p>
-            </div>
-            <div class="col-lg-8">
-              {{ hostname }}
-            </div>
-          </div>
+        {% for host in hosts %}
+        <div class="col-lg-12">
+            <a class="hostLink" href="{{host}}">{{host}}</a>
         </div>
-      </div>
-      <div class="data-box" id="home-box">
-        <div class="container-fluid">
-          <div class="row">
-		{% for host in hosts %}
-		<div class="col-lg-12">
-			<a class="hostLink" href="{{host}}">{{host}}</a>
-		</div>
-		{% endfor  %}
+        {% endfor  %}
           </div>
         </div>
       </div>
@@ -41,33 +29,33 @@
     </div>
 
     <script type="text/javascript">
-	$.get("/switchmap-ng/fetch/agent/default/table", function (data) {
-		$(data.split('</table>')).each(function(index, value){
-		  if (index < 1) {
-		    $('.network-table-info').append(value);
-		  }
-		  else {
-		    $('.network-table').append(value);
-		  }
-		});
-	      });
-	   $(".hostLink").click(function (e) {
-		e.preventDefault();
-		var ip = $(this).attr("href");
-		var url = "/switchmap-ng/fetch/agent/" + ip + "/table";
+    $.get("/switchmap-ng/api/v1/page/devices/{{defaulthost}}", function (data) {
+        $(data.split('</table>')).each(function(index, value){
+          if (index < 1) {
+            $('.network-table-info').append(value);
+          }
+          else {
+            $('.network-table').append(value);
+          }
+        });
+          });
+       $(".hostLink").click(function (e) {
+        e.preventDefault();
+        var ip = $(this).attr("href");
+        var url = "/switchmap-ng/api/v1/page/devices/" + ip;
 
-		$.get(url, function (data) {
-		    $('.network-table-info').empty();
-		    $('.network-table').empty();
-			$(data.split('</table>')).each(function(index, value){
-			  if (index < 1) {
-			    $('.network-table-info').append(value);
-			  }
-			  else {
-			    $('.network-table').append(value);
-			  }
-			});
-		      });
-	    });
+        $.get(url, function (data) {
+            $('.network-table-info').empty();
+            $('.network-table').empty();
+            $(data.split('</table>')).each(function(index, value){
+              if (index < 1) {
+                $('.network-table-info').append(value);
+              }
+              else {
+                $('.network-table').append(value);
+              }
+            });
+              });
+        });
     </script>
 {% endblock %}

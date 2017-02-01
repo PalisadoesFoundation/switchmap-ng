@@ -13,7 +13,7 @@ from flask import Flask, url_for, render_template
 
 # Switchmap-NG imports
 from switchmap.utils.configuration import Config
-from switchmap.topology import pages
+from switchmap.html.pages import device
 
 # Initializes the Flask Object
 API = Flask(__name__)
@@ -43,12 +43,11 @@ def tables():
 
     """
     hosts = _get_yaml_hosts()
-    return render_template('network-topo.html',
-                           hostname='Switchmap-NG',
-                           hosts=hosts)
+    defaulthost = hosts[0]
+    return render_template('network-topo.html', defaulthost=defaulthost, hosts=hosts)
 
 
-@API.route('/fetch/agent/<ip_address>/table', methods=["GET"])
+@API.route('/api/v1/page/devices/<ip_address>', methods=["GET"])
 def fetch_table(ip_address):
     """Return Network Layout tables.
 
@@ -61,7 +60,7 @@ def fetch_table(ip_address):
     """
     # Config Object
     config = Config()
-    html = pages.create(config, ip_address)
+    html = device.create(config, ip_address)
 
     return html
 
