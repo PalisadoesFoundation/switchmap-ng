@@ -29,7 +29,7 @@
     </div>
 
     <script type="text/javascript">
-    $.get("/switchmap-ng/api/v1/page/devices/{{defaulthost}}", function (data) {
+    $.get("{{ prefix }}/devices/{{defaulthost}}", function (data) {
         $(data.split('</table>')).each(function(index, value){
           if (index < 1) {
             $('.network-table-info').append(value);
@@ -42,7 +42,7 @@
        $(".hostLink").click(function (e) {
         e.preventDefault();
         var ip = $(this).attr("href");
-        var url = "/switchmap-ng/api/v1/page/devices/" + ip;
+        var url = "{{ prefix }}/devices/" + ip;
 
         $.get(url, function (data) {
             $('.network-table-info').empty();

@@ -10,13 +10,13 @@
     <title>{% block title %}{% endblock %}</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    <link rel="stylesheet" href="/switchmap-ng{{ static('dist/css/bootstrap.min.css') }}" type="text/css" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="/switchmap-ng{{ static('dist/css/font-awesome.min.css') }}" type="text/css" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="/switchmap-ng{{ static('dist/css/styles.min.css') }}" type="text/css" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="/switchmap-ng{{ static('dist/css/SwitchMap.css') }}" type="text/css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="{{ static('dist/css/bootstrap.min.css') }}" type="text/css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="{{ static('dist/css/font-awesome.min.css') }}" type="text/css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="{{ static('dist/css/styles.min.css') }}" type="text/css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="{{ static('dist/css/SwitchMap.css') }}" type="text/css" media="screen" title="no title" charset="utf-8">
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-<script>window.jQuery || document.write('<script src="/switchmap-ng{{ static('js/vendors/jquery.min.js') }}"><\/script>')</script>
+<script>window.jQuery || document.write('<script src="{{ static('js/vendors/jquery.min.js') }}"><\/script>')</script>
 
 <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
 <script>
@@ -28,23 +28,23 @@
     }(document, 'script'));
 </script>
 
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-affix.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-alert.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-dropdown.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-tooltip.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-modal.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-transition.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-button.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-popover.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-typeahead.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-carousel.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-scrollspy.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-collapse.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap-tab.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/bootstrap/bootstrap.min.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/vendors/d3.v3.min.js') }}"></script>
-<script src="/switchmap-ng{{ static('js/chart/index.js') }}"></script>
-<script src="/switchmap-ng{{ static('dist/js/app.min.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-affix.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-alert.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-dropdown.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-tooltip.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-modal.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-transition.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-button.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-popover.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-typeahead.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-carousel.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-scrollspy.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-collapse.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap-tab.js') }}"></script>
+<script src="{{ static('js/vendors/bootstrap/bootstrap.min.js') }}"></script>
+<script src="{{ static('js/vendors/d3.v3.min.js') }}"></script>
+<script src="{{ static('js/chart/index.js') }}"></script>
+<script src="{{ static('dist/js/app.min.js') }}"></script>
 
 </head>
 <body>

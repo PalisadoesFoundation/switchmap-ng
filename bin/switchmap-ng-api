@@ -31,7 +31,7 @@ try:
 except:
     print('You need to set your PYTHONPATH to include the switchmap library')
     sys.exit(2)
-from api.routes import API
+from www import API
 from switchmap.utils import configuration
 from switchmap.utils import log
 from switchmap.utils import daemon
