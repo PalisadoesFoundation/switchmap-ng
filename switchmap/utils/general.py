@@ -2,10 +2,8 @@
 """Switchmap-NG general library."""
 
 import os
-import time
 import subprocess
 import locale
-import hashlib
 import json
 
 # PIP libraries
@@ -13,6 +11,7 @@ import yaml
 
 # Switchmap-NG libraries
 from switchmap.utils import log
+from switchmap.utils import configuration
 from switchmap import switchmap
 
 
@@ -37,130 +36,27 @@ def root_directory():
     return root_dir
 
 
-def encode(value):
-    """Encode string value to utf-8.
+def get_hosts():
+    """Get hosts listed in toplogy YAML files.
 
     Args:
-        value: String to encode
+        None
 
     Returns:
-        result: encoded value
+        hosts: List of hostnames
 
     """
-    # Initialize key variables
-    result = value
+    # Read configuration
+    cache_directory = configuration.Config().topology_directory()
 
-    # Start decode
-    if value is not None:
-        if isinstance(value, str) is True:
-            result = value.encode()
-
-    # Return
-    return result
-
-
-def decode(value):
-    """Decode utf-8 value to string.
-
-    Args:
-        value: String to decode
-
-    Returns:
-        result: decoded value
-
-    """
-    # Initialize key variables
-    result = value
-
-    # Start decode
-    if value is not None:
-        if isinstance(value, bytes) is True:
-            result = value.decode('utf-8')
-
-    # Return
-    return result
-
-
-def hashstring(string, sha=256, utf8=False):
-    """Create a UTF encoded SHA hash string.
-
-    Args:
-        string: String to hash
-        length: Length of SHA hash
-        utf8: Return utf8 encoded string if true
-
-    Returns:
-        result: Result of hash
-
-    """
-    # Initialize key variables
-    listing = [1, 224, 384, 256, 512]
-
-    # Select SHA type
-    if sha in listing:
-        index = listing.index(sha)
-        if listing[index] == 1:
-            hasher = hashlib.sha1()
-        elif listing[index] == 224:
-            hasher = hashlib.sha224()
-        elif listing[index] == 384:
-            hasher = hashlib.sha512()
-        elif listing[index] == 512:
-            hasher = hashlib.sha512()
-        else:
-            hasher = hashlib.sha256()
-
-    # Encode the string
-    hasher.update(bytes(string.encode()))
-    host_hash = hasher.hexdigest()
-    if utf8 is True:
-        result = host_hash.encode()
-    else:
-        result = host_hash
-
-    # Return
-    return result
-
-
-def validate_timestamp(timestamp):
-    """Validate timestamp to be a multiple of 300 seconds.
-
-    Args:
-        timestamp: epoch timestamp in seconds
-
-    Returns:
-        valid: True if valid
-
-    """
-    # Initialize key variables
-    valid = False
-
-    # Process data
-    test = (int(timestamp) // 300) * 300
-    if test == timestamp:
-        valid = True
-
-    # Return
-    return valid
-
-
-def normalized_timestamp(timestamp=None):
-    """Normalize timestamp to a multiple of 300 seconds.
-
-    Args:
-        timestamp: epoch timestamp in seconds
-
-    Returns:
-        value: Normalized value
-
-    """
-    # Process data
-    if timestamp is None:
-        value = (int(time.time()) // 300) * 300
-    else:
-        value = (int(timestamp) // 300) * 300
-    # Return
-    return value
+    hosts = []
+    for root, _, files in os.walk(cache_directory):
+        for filename in files:
+            filepath = os.path.join(root, filename)
+            if filepath.endswith('.yaml'):
+                hostname = filename[:-5]
+                hosts.append(hostname)
+    return sorted(hosts)
 
 
 def read_yaml_files(directories):
@@ -221,45 +117,6 @@ def read_yaml_files(directories):
     return config_dict
 
 
-def all_same(items):
-    """Determine if all items of a list are the same item.
-
-    Args:
-        items: List to verify
-
-    Returns:
-        result: Result
-
-    """
-    # Do test and return
-    result = all(item == items[0] for item in items)
-    return result
-
-
-def search_file(filename):
-    """Run the cli_string UNIX CLI command and record output.
-
-    Args:
-        filename: File to find
-
-    Returns:
-        result: Result
-
-    """
-    # Initialize key variables
-    result = None
-    search_path = os.environ['PATH']
-
-    paths = search_path.split(os.pathsep)
-    for path in paths:
-        if os.path.exists(os.path.join(path, filename)) is True:
-            result = os.path.abspath(os.path.join(path, filename))
-            break
-
-    # Return
-    return result
-
-
 def dict2yaml(data_dict):
     """Convert a dict to a YAML string.
 
@@ -275,25 +132,6 @@ def dict2yaml(data_dict):
 
     # Return
     return yaml_string
-
-
-def cleanstring(data):
-    """Remove multiple whitespaces and linefeeds from string.
-
-    Args:
-        data: String to process
-
-    Returns:
-        result: Stipped data
-
-    """
-    # Initialize key variables
-    nolinefeeds = data.replace('\n', ' ').replace('\r', '').strip()
-    words = nolinefeeds.split()
-    result = ' '.join(words)
-
-    # Return
-    return result
 
 
 def run_script(cli_string, shell=False, die=True):
@@ -436,3 +274,46 @@ def config_directories():
 
     # Return
     return directories
+
+
+def cleanstring(data):
+    """Remove multiple whitespaces and linefeeds from string.
+
+    Args:
+        data: String to process
+
+    Returns:
+        result: Stipped data
+
+    """
+    # Initialize key variables
+    nolinefeeds = data.replace('\n', ' ').replace('\r', '').strip()
+    words = nolinefeeds.split()
+    result = ' '.join(words)
+
+    # Return
+    return result
+
+
+def search_file(filename):
+    """Run the cli_string UNIX CLI command and record output.
+
+    Args:
+        filename: File to find
+
+    Returns:
+        result: Result
+
+    """
+    # Initialize key variables
+    result = None
+    search_path = os.environ['PATH']
+
+    paths = search_path.split(os.pathsep)
+    for path in paths:
+        if os.path.exists(os.path.join(path, filename)) is True:
+            result = os.path.abspath(os.path.join(path, filename))
+            break
+
+    # Return
+    return result
