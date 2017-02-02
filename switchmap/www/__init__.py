@@ -12,9 +12,9 @@ from switchmap.utils import general
 CONFIG = configuration.Config()
 
 # Do remaining switchmap-ng importations
-from www.routes.api.devices import API_DEVICES
-from www.routes.pages.index import INDEX
-from www.routes.pages.devices import DEVICES
+from switchmap.www.routes.api.devices import API_DEVICES
+from switchmap.www.routes.pages.index import INDEX
+from switchmap.www.routes.pages.devices import DEVICES
 from switchmap.constants import (
     SITE_PREFIX, API_PREFIX, API_STATIC_FOLDER, API_TEMPLATE_FOLDER
     )

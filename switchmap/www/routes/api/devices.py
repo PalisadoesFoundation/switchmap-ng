@@ -8,8 +8,8 @@ Contains all routes that switchmap.s Flask webserver uses
 from flask import Blueprint
 
 # Infoset-ng imports
-from www import CONFIG
-from www.pages import device
+from switchmap.www import CONFIG
+from switchmap.www.pages import device
 
 # Define the API_DEVICES global variable
 API_DEVICES = Blueprint('API_DEVICES', __name__)
