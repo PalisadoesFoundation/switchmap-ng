@@ -11,11 +11,11 @@ from flask import Blueprint
 from www import CONFIG
 from www.pages import device
 
-# Define the DEVICES global variable
-DEVICES = Blueprint('DEVICES', __name__)
+# Define the API_DEVICES global variable
+API_DEVICES = Blueprint('API_DEVICES', __name__)
 
 
-@DEVICES.route('/devices/<ip_address>', methods=["GET"])
+@API_DEVICES.route('/devices/<ip_address>', methods=["GET"])
 def fetch_table(ip_address):
     """Return Network Layout tables.
 

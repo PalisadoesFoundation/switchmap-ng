@@ -2,10 +2,8 @@
 """Switchmap-NG general library."""
 
 import os
-import time
 import subprocess
 import locale
-import hashlib
 import json
 
 # PIP libraries
@@ -276,3 +274,46 @@ def config_directories():
 
     # Return
     return directories
+
+
+def cleanstring(data):
+    """Remove multiple whitespaces and linefeeds from string.
+
+    Args:
+        data: String to process
+
+    Returns:
+        result: Stipped data
+
+    """
+    # Initialize key variables
+    nolinefeeds = data.replace('\n', ' ').replace('\r', '').strip()
+    words = nolinefeeds.split()
+    result = ' '.join(words)
+
+    # Return
+    return result
+
+
+def search_file(filename):
+    """Run the cli_string UNIX CLI command and record output.
+
+    Args:
+        filename: File to find
+
+    Returns:
+        result: Result
+
+    """
+    # Initialize key variables
+    result = None
+    search_path = os.environ['PATH']
+
+    paths = search_path.split(os.pathsep)
+    for path in paths:
+        if os.path.exists(os.path.join(path, filename)) is True:
+            result = os.path.abspath(os.path.join(path, filename))
+            break
+
+    # Return
+    return result

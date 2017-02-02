@@ -110,6 +110,7 @@ class PortTable(Table):
 
     # Define the CSS class to use for the header row
     thead_classes = ['tblHead']
+    classes = ['table']
 
     def get_tr_attrs(self, item):
         """Apply CSS class attributes to regular table row.
@@ -125,13 +126,13 @@ class PortTable(Table):
         if item.enabled() is True:
             if item.active() is True:
                 # Port with link
-                return {'class': 'cellActive'}
+                return {'class': 'success'}
             else:
                 # Port without link
-                return {'class': 'cellInactive'}
+                return {'class': 'info'}
         else:
             # Disabled port
-            return {'class': 'cellUnused'}
+            return {'class': 'warning'}
 
 
 class PortRow(object):
@@ -433,6 +434,7 @@ class SystemTable(Table):
 
     # Define the CSS class to use for the header row
     thead_classes = ['tblHead']
+    classes = ['table']
 
 
 class SystemRow(object):
@@ -496,7 +498,7 @@ class System(object):
             SystemRow(
                 'System Description',
                 textwrap.fill(
-                    self.system_data['sysDescr']).replace('\n', '\n')))
+                    self.system_data['sysDescr']).replace('\n', '\n\n')))
 
         # System Object ID
         rows.append(
