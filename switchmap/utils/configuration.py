@@ -210,6 +210,7 @@ class Config(object):
 
         # Check if value exists
         if os.path.isdir(value) is False:
+            print('\n\n', value, '\n\n')
             log_message = (
                 'log_directory: "%s" '
                 'in configuration doesn\'t exist!') % (value)

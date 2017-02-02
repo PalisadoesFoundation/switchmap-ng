@@ -7,8 +7,8 @@ Contains all routes that switchmap.s Flask webserver uses
 from flask import Blueprint, render_template
 
 # Switchmap-NG imports
-from www.pages.device import Device
-from www import CONFIG
+from switchmap.www.pages.device import Device
+from switchmap.www import CONFIG
 
 # Define the DEVICES global variable
 DEVICES = Blueprint('DEVICES', __name__)
