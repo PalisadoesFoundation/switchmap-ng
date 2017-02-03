@@ -5,6 +5,7 @@ import os
 import subprocess
 import locale
 import json
+import shutil
 
 # PIP libraries
 import yaml
@@ -317,3 +318,33 @@ def search_file(filename):
 
     # Return
     return result
+
+
+def move_files(source_dir, target_dir):
+    """Delete files in a directory.
+
+    Args:
+        source_dir: Directory where files are currently
+        target_dir: Directory where files need to be
+
+    Returns:
+        Nothing
+
+    """
+    # Make sure source directory exists
+    if os.path.exists(source_dir) is False:
+        log_message = ('Directory %s does not exist.') % (
+            source_dir)
+        log.log2die(1435, log_message)
+
+    # Make sure target directory exists
+    if os.path.exists(target_dir) is False:
+        log_message = ('Directory %s does not exist.') % (
+            target_dir)
+        log.log2die(1436, log_message)
+
+    source_files = os.listdir(source_dir)
+    for filename in source_files:
+        full_path = ('%s/%s') % (source_dir, filename)
+        if os.path.isfile(full_path) is True:
+            shutil.move(full_path, target_dir)

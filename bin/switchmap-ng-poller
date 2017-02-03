@@ -8,7 +8,6 @@ Extracts agent data from cache directory files.
 # Standard libraries
 import sys
 import os
-import tempfile
 from multiprocessing import Pool
 
 # Try to create a working PYTHONPATH
@@ -67,14 +66,6 @@ class PollingAgent(object):
         self.server_config = configuration.Config()
         self.snmp_config = configuration.ConfigSNMP()
 
-        # Cleanup, move temporary files to clean permanent directory.
-        # Delete temporary directory
-        cache_directory = self.server_config.cache_directory()
-        if os.path.isdir(cache_directory):
-            general.delete_files(cache_directory)
-        else:
-            os.makedirs(cache_directory, 0o755)
-
     def name(self):
         """Return agent name.
 
@@ -104,8 +95,23 @@ class PollingAgent(object):
 
         # Post data to the remote server
         while True:
+            # Delete temporary topology directory files
+            temp_topology_directory = (
+                self.server_config.temp_topology_directory())
+            if os.path.isdir(temp_topology_directory):
+                general.delete_files(temp_topology_directory)
+
             # Poll after sleeping
             poll_devices()
+
+            # Delete permanent topology directory files
+            topology_directory = self.server_config.topology_directory()
+            if os.path.isdir(topology_directory):
+                general.delete_files(topology_directory)
+
+            # Move files to topology directory
+            general.move_files(
+                temp_topology_directory, topology_directory)
 
             # Sleep for "delay" seconds
             Agent.agent_sleep(self.name(), delay)
@@ -177,9 +183,8 @@ class Poller(object):
 
         """
         # Initialize key variables
-        temp_dir = tempfile.mkdtemp()
+        temp_dir = self.server_config.temp_topology_directory()
         temp_file = ('%s/%s.yaml') % (temp_dir, self.hostname)
-        perm_file = self.server_config.topology_device_file(self.hostname)
 
         # Get data
         log_message = (
@@ -201,10 +206,6 @@ class Poller(object):
             'Completed topology query from host %s.'
             '') % (self.hostname)
         log.log2info(1019, log_message)
-
-        # Clean up files
-        os.rename(temp_file, perm_file)
-        os.rmdir(temp_dir)
 
 
 def poll_devices():
