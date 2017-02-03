@@ -90,6 +90,24 @@ class Config(object):
         # Return
         return value
 
+    def temp_topology_directory(self):
+        """Determine the temp_topology_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured temp_topology_directory
+
+        """
+        # Get parameter
+        value = ('%s/temp') % (self.topology_directory())
+        if not os.path.exists(value):
+            os.makedirs(value, mode=0o750)
+
+        # Return
+        return value
+
     def topology_device_file(self, host):
         """Determine the topology_device_file.
 
