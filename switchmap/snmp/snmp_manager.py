@@ -607,9 +607,19 @@ def _format_results(normalized=False, get=False, var_binds=None):
     else:
         # Returns a list of tuples
         for var_row in var_binds:
-            for oid_returned, value in var_row:
-                oid_fixed = ('.%s') % (oid_returned)
-                return_results[oid_fixed] = _convert(value)
+            # These if-statements protect against:
+            #
+            # 'Error in packet. Reason: authorizationError
+            # (access denied to that object)'
+            #
+            # errors that occur when trying to access a part of the MIB that
+            # hasn't been authorized due to MIB access lists on the
+            # remote agent
+            if isinstance(var_row, list) is True:
+                if len(var_row) == 1:
+                    for oid_returned, value in var_row:
+                        oid_fixed = ('.%s') % (oid_returned)
+                        return_results[oid_fixed] = _convert(value)
     # ####################################################################
     # ### Stop ###########################################################
 

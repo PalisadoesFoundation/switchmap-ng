@@ -114,6 +114,7 @@ class PortTable(Table):
     speed = Col('Speed')
     duplex = Col('Duplex')
     label = Col('Port Label')
+    trunk = Col('Trunk')
     cdp = Col('CDP')
     lldp = Col('LLDP')
 
@@ -149,7 +150,7 @@ class PortRow(object):
 
     def __init__(
             self, port, vlan, state,
-            days_inactive, speed, duplex, label, cdp, lldp):
+            days_inactive, speed, duplex, label, trunk, cdp, lldp):
         """Method initializing the class.
 
         Args:
@@ -160,6 +161,7 @@ class PortRow(object):
             speed: Speed of port string
             duplex: Duplex of port string
             label: Label given to the port by the network manager
+            trunk: Whether a trunk or not
             cdp: CDP data string
             lldp: LLDP data string
 
@@ -175,6 +177,7 @@ class PortRow(object):
         self.speed = speed
         self.duplex = duplex
         self.label = label
+        self.trunk = trunk
         self.cdp = cdp
         self.lldp = lldp
 
@@ -229,12 +232,14 @@ class Port(object):
             vlan = port.vlan()
             state = port.state()
             duplex = port.duplex()
+            trunk = port.trunk()
             cdp = port.cdp()
             lldp = port.lldp()
 
             # Append row of data
             rows.append(PortRow(
-                name, vlan, state, inactive, speed, duplex, label, cdp, lldp))
+                name, vlan, state, inactive, speed, duplex,
+                label, trunk, cdp, lldp))
 
         # Return
         return rows
@@ -255,6 +260,27 @@ class _Port(object):
         """
         # Initialize key variables
         self.port_data = port_data
+
+    def trunk(self):
+        """Return string for trunk status of port.
+
+        Args:
+            None
+
+        Returns:
+            trunk: Trunk state
+
+        """
+        # Assign key variables
+        trunk = ''
+        port_data = self.port_data
+
+        # Get trunk string
+        if bool(port_data['jm_trunk']) is True:
+            trunk = 'Trunk'
+
+        # Return
+        return trunk
 
     def speed(self):
         """Return port speed.

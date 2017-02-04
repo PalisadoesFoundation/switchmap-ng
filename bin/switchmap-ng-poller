@@ -228,7 +228,7 @@ def poll_devices():
     threads_in_pool = config.agent_threads()
 
     # Create a list of polling objects
-    hostnames = config.hostnames()
+    hostnames = sorted(config.hostnames())
 
     # Create a pool of sub process resources
     with Pool(processes=threads_in_pool) as pool:
@@ -270,4 +270,6 @@ def main():
     cli.control(poller)
 
 if __name__ == "__main__":
+    # Poller('absw03.sjc01.prod.colovore.net')._create_yaml()
+    # poll_devices()
     main()

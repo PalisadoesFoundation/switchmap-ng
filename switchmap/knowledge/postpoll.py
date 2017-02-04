@@ -2,6 +2,7 @@
 """Class for normalizing the data read from YAML files."""
 
 from copy import deepcopy
+from pprint import pprint
 
 # Switchmap-NG imports
 
@@ -23,11 +24,11 @@ class Process(object):
 
     """
 
-    def __init__(self, polled_data):
+    def __init__(self, device_data):
         """Initialize class.
 
         Args:
-            polled_data: Recently polled device data to processs
+            device_data: Recently polled device data to processs
 
         Returns:
             None
@@ -98,14 +99,15 @@ class Process(object):
 
         """
         # Initialize key variables
-        device_data = deepcopy(polled_data)
+        updated_device_data = deepcopy(device_data)
 
         # Create dict for layer1 Ethernet data
         for ifindex, layer1_data in device_data['layer1'].items():
+            updated_layer1_data = deepcopy(layer1_data)
             # Process layer1_data
             if _is_ethernet(layer1_data) is True:
                 # Update Ethernet status
-                layer1_data['jm_ethernet'] = True
+                updated_layer1_data['jm_ethernet'] = True
 
                 # Get the ifIndex of the lower layer interface
                 ifstacklowerlayer = ifindex
@@ -131,33 +133,34 @@ class Process(object):
                     # This is an Ethernet port with no higher level
                     # interfaces. Use lower level ifIndex
                     if ifstackhigherlayer == '0':
-                        layer1_data['jm_vlan'] = _vlan(
-                            device_data, ifstacklowerlayer)
+                        updated_layer1_data['jm_vlan'] = _vlan(
+                            deepcopy(device_data), ifstacklowerlayer)
 
-                        layer1_data['jm_nativevlan'] = _nativevlan(
-                            device_data, ifstacklowerlayer)
+                        updated_layer1_data['jm_nativevlan'] = _nativevlan(
+                            deepcopy(device_data), ifstacklowerlayer)
 
-                        layer1_data['jm_trunk'] = _trunk(
-                            device_data, ifstacklowerlayer)
+                        updated_layer1_data['jm_trunk'] = _trunk(
+                            deepcopy(device_data), ifstacklowerlayer)
                     else:
                         # Assign native VLAN to higer layer
-                        layer1_data['jm_nativevlan'] = _nativevlan(
-                            device_data, ifstackhigherlayer)
+                        updated_layer1_data['jm_nativevlan'] = _nativevlan(
+                            deepcopy(device_data), ifstackhigherlayer)
 
                         # Update trunk status to universal layer1_data value
-                        layer1_data['jm_trunk'] = _trunk(
-                            device_data, ifstackhigherlayer)
+                        updated_layer1_data['jm_trunk'] = _trunk(
+                            deepcopy(device_data), ifstackhigherlayer)
 
                         # This is an Ethernet port with a single higher level
                         # interface
                         if len(higherlayers) == 1:
-                            layer1_data['jm_vlan'] = _vlan(
-                                device_data, ifstackhigherlayer)
+                            updated_layer1_data['jm_vlan'] = _vlan(
+                                deepcopy(device_data), ifstackhigherlayer)
                         # This is an Ethernet port with multiple higher level
                         # interfaces
                         else:
-                            layer1_data['jm_vlan'].extend(
-                                _vlan(device_data, ifstackhigherlayer))
+                            updated_layer1_data['jm_vlan'].extend(
+                                _vlan(
+                                    deepcopy(device_data), ifstackhigherlayer))
 
                 #############################################################
                 #
@@ -166,18 +169,19 @@ class Process(object):
                 #############################################################
 
                 # Update duplex to universal switchmap.layer1_data value
-                layer1_data['jm_duplex'] = _duplex(layer1_data)
+                updated_layer1_data['jm_duplex'] = _duplex(
+                    deepcopy(layer1_data))
 
             else:
                 # Update Ethernet status
-                layer1_data['jm_ethernet'] = False
+                updated_layer1_data['jm_ethernet'] = False
 
             # Update the data
-            new_layer1_data = deepcopy(layer1_data)
-            device_data['layer1'][ifindex] = new_layer1_data
+            new_layer1_data = deepcopy(updated_layer1_data)
+            updated_device_data['layer1'][ifindex] = new_layer1_data
 
         # Done
-        self.data = deepcopy(device_data)
+        self.data = updated_device_data
 
     def augmented_data(self):
         """Return updated data.
