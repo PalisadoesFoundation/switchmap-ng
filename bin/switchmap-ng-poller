@@ -32,7 +32,7 @@ from switchmap.utils import general
 from switchmap.utils import log
 from switchmap.snmp import snmp_info
 from switchmap.snmp import snmp_manager
-
+from switchmap.knowledge import postpoll
 
 class PollingAgent(object):
     """Switchmap-NG agent that gathers data.
@@ -195,7 +195,10 @@ class Poller(object):
         # Create YAML file by polling device
         status = snmp_info.Query(self.snmp_object)
         data = status.everything()
-        yaml_string = general.dict2yaml(data)
+
+        # Add additional switchmap-ng specific fields to the dict
+        augmented_data = postpoll.Process(data).augmented_data()
+        yaml_string = general.dict2yaml(augmented_data)
 
         # Dump data
         with open(temp_file, 'w') as file_handle:

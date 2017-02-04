@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Class interacts with devices supporting BRIDGE-MIB."""
 
-
 from collections import defaultdict
 import binascii
 
@@ -48,10 +47,32 @@ class BridgeQuery(Query):
             None
 
         """
+        # Assign SNMP object
+        self.snmp_object = snmp_object
+        self.context_names = ['']
+
         # Get one OID entry in MIB (dot1dBasePortIfIndex)
         test_oid = '.1.3.6.1.2.1.17.4.3.1.2'
 
         super().__init__(snmp_object, test_oid, tags=['layer1'])
+
+        # Check if Cisco VLANS are supported
+        oid_vtpvlanstate = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
+        oid_exists = self.snmp_object.oid_exists_walk(oid_vtpvlanstate)
+        if bool(oid_exists) is True:
+            # Get the vlantype
+            oid_vtpvlantype = '.1.3.6.1.4.1.9.9.46.1.3.1.1.3'
+            vtpvlantype = self.snmp_object.walk(
+                oid_vtpvlantype, normalized=True)
+
+            # Append additonal vlan context names to query.
+            # Only if Ethernet VLANs (pysnmp dies silently otherwise)
+            vtpvlanstate = self.snmp_object.walk(
+                oid_vtpvlanstate, normalized=True)
+            for vlan, state in vtpvlanstate.items():
+                if state == 1 and vtpvlantype[vlan] == 1:
+                    cisco_context = 'vlan-{}'.format(vlan)
+                    self.context_names.append(cisco_context)
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -79,14 +100,17 @@ class BridgeQuery(Query):
         # Initialize key variables
         data_dict = defaultdict(lambda: defaultdict(dict))
         final = defaultdict(lambda: defaultdict(dict))
-        baseport = self._dot1dtpfdbport()
+
+        # Get key information
         macs = self._dot1dtpfdbaddress()
+        dot1dtpfdbport = self._dot1dtpfdbport()
         baseportifindex = self.dot1dbaseport_2_ifindex()
 
         # Create a dict keyed by ifIndex
-        for key, value in macs.items():
+        for dot1dtpfdbport_key, value in macs.items():
             # Get ifIndex from dot1dBasePort
-            ifindex = baseportifindex[int(baseport[key])]
+            dot1dbaseport = int(dot1dtpfdbport[dot1dtpfdbport_key])
+            ifindex = baseportifindex[dot1dbaseport]
 
             # With multi-threading sometimes baseportifindex has empty values.
             if bool(ifindex) is False:
@@ -123,10 +147,12 @@ class BridgeQuery(Query):
 
         # Process values
         oid = '.1.3.6.1.2.1.17.4.3.1.2'
-        results = self.snmp_object.walk(oid, normalized=False)
-        for key, value in results.items():
-            new_key = key[len(oid):]
-            data_dict[new_key] = value
+        for context_name in sorted(self.context_names):
+            results = self.snmp_object.walk(
+                oid, normalized=False, context_name=context_name)
+            for key, value in results.items():
+                new_key = key[len(oid):]
+                data_dict[new_key] = value
 
         # Return data
         return data_dict
@@ -147,11 +173,13 @@ class BridgeQuery(Query):
 
         # Process values
         oid = '.1.3.6.1.2.1.17.4.3.1.1'
-        results = self.snmp_object.walk(oid, normalized=False)
-        for key, value in results.items():
-            new_key = key[len(oid):]
-            macaddress = binascii.hexlify(value).decode('utf-8')
-            data_dict[new_key] = macaddress.lower()
+        for context_name in sorted(self.context_names):
+            results = self.snmp_object.walk(
+                oid, normalized=False, context_name=context_name)
+            for key, value in results.items():
+                new_key = key[len(oid):]
+                macaddress = binascii.hexlify(value).decode('utf-8')
+                data_dict[new_key] = macaddress.lower()
 
         # Return data
         return data_dict
@@ -171,9 +199,11 @@ class BridgeQuery(Query):
 
         # Process values
         oid = '.1.3.6.1.2.1.17.1.4.1.2'
-        results = self.snmp_object.walk(oid, normalized=True)
-        for key, value in results.items():
-            data_dict[int(key)] = value
+        for context_name in sorted(self.context_names):
+            results = self.snmp_object.walk(
+                oid, normalized=True, context_name=context_name)
+            for key, value in results.items():
+                data_dict[int(key)] = value
 
         # Return data
         return data_dict

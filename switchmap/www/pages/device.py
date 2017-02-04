@@ -12,6 +12,15 @@ from switchmap.utils import log
 from switchmap.topology.translator import Translator
 
 
+class _RawCol(Col):
+    """Class that will just output whatever it is given and
+    will not escape it.
+    """
+
+    def td_format(self, content):
+        return content
+
+
 class Device(object):
     """Class that creates the device's various HTML tables."""
 
@@ -430,7 +439,7 @@ class SystemTable(Table):
 
     # Initialize class variables
     parameter = Col('Parameter')
-    value = Col('Value')
+    value = _RawCol('Value')
 
     # Define the CSS class to use for the header row
     thead_classes = ['tblHead']
@@ -498,7 +507,7 @@ class System(object):
             SystemRow(
                 'System Description',
                 textwrap.fill(
-                    self.system_data['sysDescr']).replace('\n', '\n\n')))
+                    self.system_data['sysDescr']).replace('\n', '<br>')))
 
         # System Object ID
         rows.append(
