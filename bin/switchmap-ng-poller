@@ -32,7 +32,7 @@ from switchmap.utils import general
 from switchmap.utils import log
 from switchmap.snmp import snmp_info
 from switchmap.snmp import snmp_manager
-from switchmap.knowledge import postpoll
+from switchmap.topology import postpoll
 
 class PollingAgent(object):
     """Switchmap-NG agent that gathers data.
