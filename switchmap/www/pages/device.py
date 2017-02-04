@@ -13,9 +13,7 @@ from switchmap.topology.translator import Translator
 
 
 class _RawCol(Col):
-    """Class that will just output whatever it is given and
-    will not escape it.
-    """
+    """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
         return content
@@ -35,42 +33,29 @@ class Device(object):
             None
 
         """
-        # Initialize key variables
-        self.default_action = False
-
-        # Define default action
-        if host.lower() == 'default':
-            self.default_action = True
-
         # Process YAML file for host
-        if self.default_action is False:
-            translation = Translator(config, host)
-            self.port_data = translation.ethernet_data()
-            self.system_data = translation.system_summary()
+        translation = Translator(config, host)
+        self.port_data = translation.ethernet_data()
+        self.system_data = translation.system_summary()
 
     def ports(self):
         """Create the ports table for the device.
 
         Args:
-            config: Configuration object
-            host: Hostname to process
+            None
 
         Returns:
             html: HTML table string
 
         """
         # Initialize key variables
-        if self.default_action is False:
-            # Get data
-            data = Port(self.port_data).data()
+        data = Port(self.port_data).data()
 
-            # Populate the table
-            table = PortTable(data)
+        # Populate the table
+        table = PortTable(data)
 
-            # Get HTML
-            html = table.__html__()
-        else:
-            html = ''
+        # Get HTML
+        html = table.__html__()
 
         # Return
         return html
@@ -79,25 +64,20 @@ class Device(object):
         """Create summary table for the devie.
 
         Args:
-            config: Configuration object
-            host: Hostname to process
+            None
 
         Returns:
             html: HTML table string
 
         """
         # Initialize key variables
-        if self.default_action is False:
-            # Get data
-            data = System(self.system_data).data()
+        data = System(self.system_data).data()
 
-            # Populate the table
-            table = SystemTable(data)
+        # Populate the table
+        table = SystemTable(data)
 
-            # Get HTML
-            html = table.__html__()
-        else:
-            html = ''
+        # Get HTML
+        html = table.__html__()
 
         # Return
         return html
@@ -194,7 +174,7 @@ class Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, device_data):
-        """Return whether port is enabled.
+        """Method instantiating the class.
 
         Args:
             device_data: Dictionary of device data
@@ -249,10 +229,10 @@ class _Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, port_data):
-        """Return whether port is enabled.
+        """Method instantiating the class.
 
         Args:
-            device_data: Dictionary of device data
+            port_data: Dictionary of port data
 
         Returns:
             None
@@ -495,10 +475,10 @@ class System(object):
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, system_data):
-        """Return whether port is enabled.
+        """Method instantiating the class.
 
         Args:
-            data_dict: Dictionary of device data
+            system_data: Dictionary of system data
 
         Returns:
             None
@@ -612,42 +592,3 @@ def _uptime(seconds):
     result = ('%.f Days, %d:%02d:%02d') % (
         days, remainder_hours, remainder_minutes, remainder_seconds)
     return result
-
-
-def create(config, host):
-    """Create topology page for host.
-
-    Args:
-        config: Configuration object
-        host: Hostname to create pages for
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    device_file_found = False
-    html = ''
-
-    # Define default action
-    if host.lower() == 'default':
-        return html
-
-    # Skip if device file not found
-    if os.path.isfile(config.topology_device_file(host)) is False:
-        log_message = (
-            'No YAML device file for host %s found in %s. '
-            'topoloy agent has not discovered it yet.'
-            '') % (host, config.cache_directory())
-        log.log2debug(1018, log_message)
-    else:
-        device_file_found = True
-
-    # Process information for host
-    if device_file_found is True:
-        # Create HTML output
-        table = Device(config, host)
-        html = '{}\n<br>\n{}'.format(table.system(), table.ports())
-
-    # Return
-    return html
