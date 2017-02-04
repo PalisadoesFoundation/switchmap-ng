@@ -12,6 +12,13 @@ from switchmap.utils import log
 from switchmap.topology.translator import Translator
 
 
+class _RawCol(Col):
+    """Class outputs whatever it is given and will not escape it."""
+
+    def td_format(self, content):
+        return content
+
+
 class Device(object):
     """Class that creates the device's various HTML tables."""
 
@@ -26,42 +33,29 @@ class Device(object):
             None
 
         """
-        # Initialize key variables
-        self.default_action = False
-
-        # Define default action
-        if host.lower() == 'default':
-            self.default_action = True
-
         # Process YAML file for host
-        if self.default_action is False:
-            translation = Translator(config, host)
-            self.port_data = translation.ethernet_data()
-            self.system_data = translation.system_summary()
+        translation = Translator(config, host)
+        self.port_data = translation.ethernet_data()
+        self.system_data = translation.system_summary()
 
     def ports(self):
         """Create the ports table for the device.
 
         Args:
-            config: Configuration object
-            host: Hostname to process
+            None
 
         Returns:
             html: HTML table string
 
         """
         # Initialize key variables
-        if self.default_action is False:
-            # Get data
-            data = Port(self.port_data).data()
+        data = Port(self.port_data).data()
 
-            # Populate the table
-            table = PortTable(data)
+        # Populate the table
+        table = PortTable(data)
 
-            # Get HTML
-            html = table.__html__()
-        else:
-            html = ''
+        # Get HTML
+        html = table.__html__()
 
         # Return
         return html
@@ -70,25 +64,20 @@ class Device(object):
         """Create summary table for the devie.
 
         Args:
-            config: Configuration object
-            host: Hostname to process
+            None
 
         Returns:
             html: HTML table string
 
         """
         # Initialize key variables
-        if self.default_action is False:
-            # Get data
-            data = System(self.system_data).data()
+        data = System(self.system_data).data()
 
-            # Populate the table
-            table = SystemTable(data)
+        # Populate the table
+        table = SystemTable(data)
 
-            # Get HTML
-            html = table.__html__()
-        else:
-            html = ''
+        # Get HTML
+        html = table.__html__()
 
         # Return
         return html
@@ -105,6 +94,7 @@ class PortTable(Table):
     speed = Col('Speed')
     duplex = Col('Duplex')
     label = Col('Port Label')
+    trunk = Col('Trunk')
     cdp = Col('CDP')
     lldp = Col('LLDP')
 
@@ -140,7 +130,7 @@ class PortRow(object):
 
     def __init__(
             self, port, vlan, state,
-            days_inactive, speed, duplex, label, cdp, lldp):
+            days_inactive, speed, duplex, label, trunk, cdp, lldp):
         """Method initializing the class.
 
         Args:
@@ -151,6 +141,7 @@ class PortRow(object):
             speed: Speed of port string
             duplex: Duplex of port string
             label: Label given to the port by the network manager
+            trunk: Whether a trunk or not
             cdp: CDP data string
             lldp: LLDP data string
 
@@ -166,6 +157,7 @@ class PortRow(object):
         self.speed = speed
         self.duplex = duplex
         self.label = label
+        self.trunk = trunk
         self.cdp = cdp
         self.lldp = lldp
 
@@ -182,7 +174,7 @@ class Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, device_data):
-        """Return whether port is enabled.
+        """Method instantiating the class.
 
         Args:
             device_data: Dictionary of device data
@@ -220,12 +212,14 @@ class Port(object):
             vlan = port.vlan()
             state = port.state()
             duplex = port.duplex()
+            trunk = port.trunk()
             cdp = port.cdp()
             lldp = port.lldp()
 
             # Append row of data
             rows.append(PortRow(
-                name, vlan, state, inactive, speed, duplex, label, cdp, lldp))
+                name, vlan, state, inactive, speed, duplex,
+                label, trunk, cdp, lldp))
 
         # Return
         return rows
@@ -235,10 +229,10 @@ class _Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, port_data):
-        """Return whether port is enabled.
+        """Method instantiating the class.
 
         Args:
-            device_data: Dictionary of device data
+            port_data: Dictionary of port data
 
         Returns:
             None
@@ -246,6 +240,27 @@ class _Port(object):
         """
         # Initialize key variables
         self.port_data = port_data
+
+    def trunk(self):
+        """Return string for trunk status of port.
+
+        Args:
+            None
+
+        Returns:
+            trunk: Trunk state
+
+        """
+        # Assign key variables
+        trunk = ''
+        port_data = self.port_data
+
+        # Get trunk string
+        if bool(port_data['jm_trunk']) is True:
+            trunk = 'Trunk'
+
+        # Return
+        return trunk
 
     def speed(self):
         """Return port speed.
@@ -430,7 +445,7 @@ class SystemTable(Table):
 
     # Initialize class variables
     parameter = Col('Parameter')
-    value = Col('Value')
+    value = _RawCol('Value')
 
     # Define the CSS class to use for the header row
     thead_classes = ['tblHead']
@@ -460,10 +475,10 @@ class System(object):
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, system_data):
-        """Return whether port is enabled.
+        """Method instantiating the class.
 
         Args:
-            data_dict: Dictionary of device data
+            system_data: Dictionary of system data
 
         Returns:
             None
@@ -498,7 +513,7 @@ class System(object):
             SystemRow(
                 'System Description',
                 textwrap.fill(
-                    self.system_data['sysDescr']).replace('\n', '\n\n')))
+                    self.system_data['sysDescr']).replace('\n', '<br>')))
 
         # System Object ID
         rows.append(
@@ -577,42 +592,3 @@ def _uptime(seconds):
     result = ('%.f Days, %d:%02d:%02d') % (
         days, remainder_hours, remainder_minutes, remainder_seconds)
     return result
-
-
-def create(config, host):
-    """Create topology page for host.
-
-    Args:
-        config: Configuration object
-        host: Hostname to create pages for
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    device_file_found = False
-    html = ''
-
-    # Define default action
-    if host.lower() == 'default':
-        return html
-
-    # Skip if device file not found
-    if os.path.isfile(config.topology_device_file(host)) is False:
-        log_message = (
-            'No YAML device file for host %s found in %s. '
-            'topoloy agent has not discovered it yet.'
-            '') % (host, config.cache_directory())
-        log.log2debug(1018, log_message)
-    else:
-        device_file_found = True
-
-    # Process information for host
-    if device_file_found is True:
-        # Create HTML output
-        table = Device(config, host)
-        html = '{}\n<br>\n{}'.format(table.system(), table.ports())
-
-    # Return
-    return html

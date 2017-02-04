@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Class interacts with devices supporting BRIDGE-MIB."""
 
-
 from collections import defaultdict
 import binascii
+from pprint import pprint
 
 from switchmap.snmp.base_query import Query
 
@@ -48,6 +48,9 @@ class BridgeQuery(Query):
             None
 
         """
+        # Assign SNMP object
+        self.snmp_object = snmp_object
+
         # Get one OID entry in MIB (dot1dBasePortIfIndex)
         test_oid = '.1.3.6.1.2.1.17.4.3.1.2'
 
@@ -79,14 +82,43 @@ class BridgeQuery(Query):
         # Initialize key variables
         data_dict = defaultdict(lambda: defaultdict(dict))
         final = defaultdict(lambda: defaultdict(dict))
-        baseport = self._dot1dtpfdbport()
-        macs = self._dot1dtpfdbaddress()
-        baseportifindex = self.dot1dbaseport_2_ifindex()
+        context_names = ['']
+
+        # Check if Cisco VLANS are supported
+        oid_vtpvlanstate = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
+        oid_exists = self.snmp_object.oid_exists_walk(oid_vtpvlanstate)
+        if bool(oid_exists) is True:
+            # Get the vlantype
+            oid_vtpvlantype = '.1.3.6.1.4.1.9.9.46.1.3.1.1.3'
+            vtpvlantype = self.snmp_object.swalk(
+                oid_vtpvlantype, normalized=True)
+
+            # Append additonal vlan context names to query.
+            # Only if Ethernet VLANs (pysnmp dies silently otherwise)
+            vtpvlanstate = self.snmp_object.swalk(
+                oid_vtpvlanstate, normalized=True)
+            for vlan, state in vtpvlanstate.items():
+                if int(state) == 1 and int(vtpvlantype[vlan]) == 1:
+                    cisco_context = 'vlan-{}'.format(vlan)
+                    context_names.append(cisco_context)
+
+        # Get key information
+        macs = self._dot1dtpfdbaddress(context_names=context_names)
+        dot1dtpfdbport = self._dot1dtpfdbport(context_names=context_names)
+        baseportifindex = self.dot1dbaseport_2_ifindex(
+            context_names=context_names)
 
         # Create a dict keyed by ifIndex
-        for key, value in macs.items():
+        for dot1dtpfdbport_key, value in macs.items():
+            # Sometimes an overloaded system running this script may have
+            # timeouts retrieving data that should normally be there.
+            # This prevents the script from crashing when this occurs
+            if bool(dot1dtpfdbport[dot1dtpfdbport_key]) is False:
+                continue
+
             # Get ifIndex from dot1dBasePort
-            ifindex = baseportifindex[int(baseport[key])]
+            dot1dbaseport = int(dot1dtpfdbport[dot1dtpfdbport_key])
+            ifindex = baseportifindex[dot1dbaseport]
 
             # With multi-threading sometimes baseportifindex has empty values.
             if bool(ifindex) is False:
@@ -107,7 +139,7 @@ class BridgeQuery(Query):
         # Return
         return final
 
-    def _dot1dtpfdbport(self):
+    def _dot1dtpfdbport(self, context_names=None):
         """Return dict of BRIDGE-MIB dot1dtpfdbport data.
 
         Args:
@@ -119,19 +151,23 @@ class BridgeQuery(Query):
 
         """
         # Initialize key variables
+        if context_names is None:
+            context_names = []
         data_dict = defaultdict(dict)
 
         # Process values
         oid = '.1.3.6.1.2.1.17.4.3.1.2'
-        results = self.snmp_object.walk(oid, normalized=False)
-        for key, value in results.items():
-            new_key = key[len(oid):]
-            data_dict[new_key] = value
+        for context_name in context_names:
+            results = self.snmp_object.swalk(
+                oid, normalized=False, context_name=context_name)
+            for key, value in results.items():
+                new_key = key[len(oid):]
+                data_dict[new_key] = value
 
         # Return data
         return data_dict
 
-    def _dot1dtpfdbaddress(self):
+    def _dot1dtpfdbaddress(self, context_names=None):
         """Return dict of BRIDGE-MIB dot1dTpFdbAddress data.
 
         Args:
@@ -143,20 +179,24 @@ class BridgeQuery(Query):
 
         """
         # Initialize key variables
+        if context_names is None:
+            context_names = []
         data_dict = defaultdict(dict)
 
         # Process values
         oid = '.1.3.6.1.2.1.17.4.3.1.1'
-        results = self.snmp_object.walk(oid, normalized=False)
-        for key, value in results.items():
-            new_key = key[len(oid):]
-            macaddress = binascii.hexlify(value).decode('utf-8')
-            data_dict[new_key] = macaddress.lower()
+        for context_name in context_names:
+            results = self.snmp_object.swalk(
+                oid, normalized=False, context_name=context_name)
+            for key, value in results.items():
+                new_key = key[len(oid):]
+                macaddress = binascii.hexlify(value).decode('utf-8')
+                data_dict[new_key] = macaddress.lower()
 
         # Return data
         return data_dict
 
-    def dot1dbaseport_2_ifindex(self):
+    def dot1dbaseport_2_ifindex(self, context_names=None):
         """Return dict of BRIDGE-MIB dot1dBasePortIfIndex data.
 
         Args:
@@ -167,13 +207,17 @@ class BridgeQuery(Query):
 
         """
         # Initialize key variables
+        if context_names is None:
+            context_names = []
         data_dict = defaultdict(dict)
 
         # Process values
         oid = '.1.3.6.1.2.1.17.1.4.1.2'
-        results = self.snmp_object.walk(oid, normalized=True)
-        for key, value in results.items():
-            data_dict[int(key)] = value
+        for context_name in context_names:
+            results = self.snmp_object.swalk(
+                oid, normalized=True, context_name=context_name)
+            for key, value in results.items():
+                data_dict[int(key)] = value
 
         # Return data
         return data_dict

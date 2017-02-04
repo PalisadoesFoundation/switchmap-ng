@@ -317,7 +317,7 @@ class Interact(object):
         # Return
         return validity
 
-    def swalk(self, oid_to_get, normalized=False):
+    def swalk(self, oid_to_get, normalized=False, context_name=''):
         """Do a failsafe SNMPwalk.
 
         Args:
@@ -328,6 +328,9 @@ class Interact(object):
                 when trying to create multidimensional dicts where the
                 primary key is a universal value such as IF-MIB::ifIndex
                 or BRIDGE-MIB::dot1dBasePort
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
 
         Returns:
             results: Results
@@ -338,7 +341,9 @@ class Interact(object):
 
         # Process data
         data = self.walk(
-            oid_to_get, normalized=normalized, connectivity_check=True)
+            oid_to_get,
+            normalized=normalized, connectivity_check=True,
+            context_name=context_name)
 
         # If oid not found then return blank dict
         for value in data.values():
@@ -352,7 +357,9 @@ class Interact(object):
         # Return
         return results
 
-    def walk(self, oid_to_get, normalized=False, connectivity_check=False):
+    def walk(
+            self, oid_to_get, normalized=False,
+            connectivity_check=False, context_name=''):
         """Do an SNMPwalk.
 
         Args:
@@ -366,6 +373,9 @@ class Interact(object):
             connectivity_check:
                 Set if testing for connectivity. Some session
                 errors are ignored so that a null result is returned
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
 
         Returns:
             Dictionary of tuples (OID, value)
@@ -373,22 +383,28 @@ class Interact(object):
         """
         return self.query(
             oid_to_get, get=False,
-            connectivity_check=connectivity_check, normalized=normalized)
+            connectivity_check=connectivity_check,
+            normalized=normalized, context_name=context_name)
 
-    def get(self, oid_to_get, connectivity_check=False, normalized=False):
+    def get(
+            self, oid_to_get, connectivity_check=False,
+            normalized=False, context_name=''):
         """Do an SNMPget.
 
         Args:
             oid_to_get: OID to get
+            connectivity_check:
+                Set if testing for connectivity. Some session
+                errors are ignored so that a null result is returned
             normalized: If True, then return results as a dict keyed by
                 only the last node of an OID, otherwise return results
                 keyed by the entire OID string. Normalization is useful
                 when trying to create multidimensional dicts where the
                 primary key is a universal value such as IF-MIB::ifIndex
                 or BRIDGE-MIB::dot1dBasePort
-            connectivity_check:
-                Set if testing for connectivity. Some session
-                errors are ignored so that a null result is returned
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
 
         Returns:
             Dictionary of tuples (OID, value)
@@ -396,25 +412,29 @@ class Interact(object):
         """
         return self.query(
             oid_to_get, get=True,
-            connectivity_check=connectivity_check, normalized=normalized)
+            connectivity_check=connectivity_check, normalized=normalized,
+            context_name=context_name)
 
     def query(
             self, oid_to_get, get=False, connectivity_check=False,
-            normalized=False):
+            normalized=False, context_name=''):
         """Do an SNMP query.
 
         Args:
             oid_to_get: OID to walk
             get: Flag determining whether to do a GET or WALK
+            connectivity_check:
+                Set if testing for connectivity. Some session
+                errors are ignored so that a null result is returned
             normalized: If True, then return results as a dict keyed by
                 only the last node of an OID, otherwise return results
                 keyed by the entire OID string. Normalization is useful
                 when trying to create multidimensional dicts where the
                 primary key is a universal value such as IF-MIB::ifIndex
                 or BRIDGE-MIB::dot1dBasePort
-            connectivity_check:
-                Set if testing for connectivity. Some session
-                errors are ignored so that a null result is returned
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
 
         Returns:
             Dictionary of tuples (OID, value)
@@ -447,12 +467,15 @@ class Interact(object):
                 (session_error_string, session_error_status,
                  session_error_index, var_binds) = \
                     snmp_object.getCmd(
-                        authentication_object, transport_object, oid_to_get)
+                        authentication_object, transport_object, oid_to_get,
+                        contextName=context_name)
+
             else:
                 (session_error_string, session_error_status,
                  session_error_index, var_binds) = \
                     snmp_object.nextCmd(
-                        authentication_object, transport_object, oid_to_get)
+                        authentication_object, transport_object, oid_to_get,
+                        contextName=context_name)
 
         # Do something here
         except Exception as exception_error:
@@ -584,9 +607,19 @@ def _format_results(normalized=False, get=False, var_binds=None):
     else:
         # Returns a list of tuples
         for var_row in var_binds:
-            for oid_returned, value in var_row:
-                oid_fixed = ('.%s') % (oid_returned)
-                return_results[oid_fixed] = _convert(value)
+            # These if-statements protect against:
+            #
+            # 'Error in packet. Reason: authorizationError
+            # (access denied to that object)'
+            #
+            # errors that occur when trying to access a part of the MIB that
+            # hasn't been authorized due to MIB access lists on the
+            # remote agent
+            if isinstance(var_row, list) is True:
+                if len(var_row) == 1:
+                    for oid_returned, value in var_row:
+                        oid_fixed = ('.%s') % (oid_returned)
+                        return_results[oid_fixed] = _convert(value)
     # ####################################################################
     # ### Stop ###########################################################
 
