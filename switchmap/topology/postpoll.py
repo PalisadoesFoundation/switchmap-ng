@@ -2,7 +2,6 @@
 """Class for normalizing the data read from YAML files."""
 
 from copy import deepcopy
-from pprint import pprint
 
 # Switchmap-NG imports
 
@@ -24,11 +23,12 @@ class Process(object):
 
     """
 
-    def __init__(self, device_data):
+    def __init__(self, device_data, oui):
         """Initialize class.
 
         Args:
             device_data: Recently polled device data to processs
+            oui: OUI data for lookups
 
         Returns:
             None
@@ -171,6 +171,10 @@ class Process(object):
                 # Update duplex to universal switchmap.layer1_data value
                 updated_layer1_data['jm_duplex'] = _duplex(
                     deepcopy(layer1_data))
+
+                # Update manufacturer of MAC
+                updated_layer1_data['jm_manufacturer'] = _manufacturer(
+                    deepcopy(layer1_data), oui)
 
             else:
                 # Update Ethernet status
@@ -378,3 +382,30 @@ def _trunk(layer1_data, ifindex):
 
     # Return
     return trunk
+
+
+def _manufacturer(layer1_data, oui):
+    """Return manufacturer of MAC address' device.
+
+    Args:
+        layer1_data: Data dict related to the port
+        oui: OUI dict {oui, manufacturer}
+
+    Returns:
+        manufacturer: Name of manufacturer
+
+    """
+    # Initialize key variables
+    manufacturer = ''
+
+    # Process data
+    if 'jm_macs' in layer1_data:
+        if bool(layer1_data['jm_macs']) is True:
+            jm_macs = layer1_data['jm_macs']
+            if len(jm_macs) == 1:
+                mac_oui = jm_macs[0:5]
+                if mac_oui in oui:
+                    manufacturer = oui[mac_oui]
+
+    # Return
+    return manufacturer

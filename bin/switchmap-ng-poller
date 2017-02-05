@@ -10,6 +10,9 @@ import sys
 import os
 from multiprocessing import Pool
 
+# PIP3 imports
+import yaml
+
 # Try to create a working PYTHONPATH
 script_directory = os.path.dirname(os.path.realpath(__file__))
 root_directory = os.path.abspath(os.path.join(script_directory, os.pardir))
@@ -33,6 +36,10 @@ from switchmap.utils import log
 from switchmap.snmp import snmp_info
 from switchmap.snmp import snmp_manager
 from switchmap.topology import postpoll
+
+# Get OUI value
+OUI = _oui()
+
 
 class PollingAgent(object):
     """Switchmap-NG agent that gathers data.
@@ -137,7 +144,6 @@ class Poller(object):
 
         Args:
             hostname: Hostname to poll
-            perm_dir: Directory where permanent YAML files should reside.
 
         Returns:
             None
@@ -197,7 +203,7 @@ class Poller(object):
         data = status.everything()
 
         # Add additional switchmap-ng specific fields to the dict
-        augmented_data = postpoll.Process(data).augmented_data()
+        augmented_data = postpoll.Process(data, OUI).augmented_data()
         yaml_string = general.dict2yaml(augmented_data)
 
         # Dump data
@@ -247,9 +253,32 @@ def poll_single_device(hostname):
         None
 
     """
-    # Get configuration
+    # Poll data
     poller = Poller(hostname)
     poller.query()
+
+
+def _oui():
+    """Get dictionary of OUI values.
+
+    Args:
+        None
+
+    Returns:
+        oui: OUI dictionary
+
+    """
+    # Get configuration
+    config = configuration.Config()
+    mac_address_file = config.mac_address_file()
+
+    # Read file
+    with open(mac_address_file, 'r') as file_handle:
+        yaml_from_file = file_handle.read()
+    oui = yaml.load(yaml_from_file)
+
+    # Return
+    return oui
 
 
 def main():

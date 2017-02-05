@@ -2,13 +2,11 @@
 """Class for creating device web pages."""
 
 import textwrap
-import os
 
 # PIP3 imports
 from flask_table import Table, Col
 
 # Import switchmap.libraries
-from switchmap.utils import log
 from switchmap.topology.translator import Translator
 
 
@@ -97,6 +95,7 @@ class PortTable(Table):
     trunk = Col('Trunk')
     cdp = Col('CDP')
     lldp = Col('LLDP')
+    mac_address = Col('Mac Address')
 
     # Define the CSS class to use for the header row
     thead_classes = ['tblHead']
@@ -130,7 +129,8 @@ class PortRow(object):
 
     def __init__(
             self, port, vlan, state,
-            days_inactive, speed, duplex, label, trunk, cdp, lldp):
+            days_inactive, speed, duplex, label, trunk, cdp, lldp,
+            mac_address):
         """Method initializing the class.
 
         Args:
@@ -144,6 +144,7 @@ class PortRow(object):
             trunk: Whether a trunk or not
             cdp: CDP data string
             lldp: LLDP data string
+            mac_address: LLDP data string
 
         Returns:
             None
@@ -160,6 +161,7 @@ class PortRow(object):
         self.trunk = trunk
         self.cdp = cdp
         self.lldp = lldp
+        self.mac_address = mac_address
 
     def active(self):
         """Active ports."""
@@ -215,11 +217,12 @@ class Port(object):
             trunk = port.trunk()
             cdp = port.cdp()
             lldp = port.lldp()
+            mac_address = port.mac_address()
 
             # Append row of data
             rows.append(PortRow(
                 name, vlan, state, inactive, speed, duplex,
-                label, trunk, cdp, lldp))
+                label, trunk, cdp, lldp, mac_address))
 
         # Return
         return rows
@@ -241,6 +244,28 @@ class _Port(object):
         # Initialize key variables
         self.port_data = port_data
 
+    def is_trunk(self):
+        """Return trunk status of port.
+
+        Args:
+            None
+
+        Returns:
+            result: True if Trunk
+
+        """
+        # Assign key variables
+        result = False
+        port_data = self.port_data
+
+        # Get trunk string
+        if 'jm_trunk' in port_data:
+            if bool(port_data['jm_trunk']) is True:
+                result = True
+
+        # Return
+        return result
+
     def trunk(self):
         """Return string for trunk status of port.
 
@@ -253,14 +278,34 @@ class _Port(object):
         """
         # Assign key variables
         trunk = ''
-        port_data = self.port_data
 
         # Get trunk string
-        if bool(port_data['jm_trunk']) is True:
+        if bool(self.is_trunk()) is True:
             trunk = 'Trunk'
 
         # Return
         return trunk
+
+    def mac_address(self):
+        """Return string for mac_address on port.
+
+        Args:
+            None
+
+        Returns:
+            mac_address: mac_address state
+
+        """
+        # Assign key variables
+        mac_address = ''
+        port_data = self.port_data
+
+        if bool(self.is_trunk()) is False:
+            if 'jm_macs' in port_data:
+                if len(port_data['jm_macs']) == 1:
+                    mac_address = port_data['jm_macs'][0]
+        # Return
+        return mac_address
 
     def speed(self):
         """Return port speed.
