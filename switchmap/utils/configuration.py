@@ -93,6 +93,24 @@ class Config(object):
         # Return
         return value
 
+    def arp_directory(self):
+        """Determine the arp_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured arp_directory
+
+        """
+        # Get parameter
+        value = ('%s/arp') % (self.cache_directory())
+        if not os.path.exists(value):
+            os.makedirs(value, mode=0o750)
+
+        # Return
+        return value
+
     def temp_topology_directory(self):
         """Determine the temp_topology_directory.
 
