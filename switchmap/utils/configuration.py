@@ -34,12 +34,15 @@ class Config(object):
             None
 
         """
+        # Initialize key variables
+        self.root_directory = general.root_directory()
+
         # Update the configuration directory
         # 'SWITCHMAP_CONFIGDIR' is used for unittesting
         if 'SWITCHMAP_CONFIGDIR' in os.environ:
             config_directory = os.environ['SWITCHMAP_CONFIGDIR']
         else:
-            config_directory = ('%s/etc') % (general.root_directory())
+            config_directory = '{}/etc'.format(self.root_directory)
         directories = [config_directory]
 
         # Return
@@ -253,6 +256,24 @@ class Config(object):
         # Return
         return result
 
+    def mac_address_file(self):
+        """Get mac_address_file.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get new result
+        result = (
+            '{}/switchmap/metadata/mac_address_file.txt'
+            ''.format(self.root_directory))
+
+        # Return
+        return result
+
     def log_file(self):
         """Get log_file.
 
@@ -318,13 +339,13 @@ class ConfigSNMP(object):
         """
         # Initialize key variables
         self.none = None
-
+        self.root_directory = general.root_directory()
         # Update the configuration directory
         # 'SWITCHMAP_CONFIGDIR' is used for unittesting
         if 'SWITCHMAP_CONFIGDIR' in os.environ:
             config_directory = os.environ['SWITCHMAP_CONFIGDIR']
         else:
-            config_directory = ('%s/etc') % (general.root_directory())
+            config_directory = '{}/etc'.format(self.root_directory)
         directories = [config_directory]
 
         # Return
@@ -369,7 +390,7 @@ class ConfigSNMP(object):
 
             # Assign good data
             new_dict = {}
-            for key in seed_dict.keys():
+            for key, _ in seed_dict.items():
                 if key in read_dict:
                     new_dict[key] = read_dict[key]
                 else:

@@ -3,9 +3,12 @@
 
 from collections import defaultdict
 import binascii
-from pprint import pprint
 
 from switchmap.snmp.base_query import Query
+
+from switchmap.utils import log
+from pprint import pprint
+import sys
 
 
 def get_query():
@@ -99,7 +102,7 @@ class BridgeQuery(Query):
                 oid_vtpvlanstate, normalized=True)
             for vlan, state in vtpvlanstate.items():
                 if int(state) == 1 and int(vtpvlantype[vlan]) == 1:
-                    cisco_context = 'vlan-{}'.format(vlan)
+                    cisco_context = '{}'.format(vlan)
                     context_names.append(cisco_context)
 
         # Get key information
@@ -152,7 +155,7 @@ class BridgeQuery(Query):
         """
         # Initialize key variables
         if context_names is None:
-            context_names = []
+            context_names = ['']
         data_dict = defaultdict(dict)
 
         # Process values
@@ -180,7 +183,7 @@ class BridgeQuery(Query):
         """
         # Initialize key variables
         if context_names is None:
-            context_names = []
+            context_names = ['']
         data_dict = defaultdict(dict)
 
         # Process values
@@ -208,7 +211,7 @@ class BridgeQuery(Query):
         """
         # Initialize key variables
         if context_names is None:
-            context_names = []
+            context_names = ['']
         data_dict = defaultdict(dict)
 
         # Process values
