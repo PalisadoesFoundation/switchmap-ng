@@ -8,6 +8,7 @@ Extracts agent data from cache directory files.
 # Standard libraries
 import sys
 import os
+import csv
 from multiprocessing import Pool
 
 # PIP3 imports
@@ -36,6 +37,34 @@ from switchmap.utils import log
 from switchmap.snmp import snmp_info
 from switchmap.snmp import snmp_manager
 from switchmap.topology import postpoll
+
+
+def _oui():
+    """Get dictionary of OUI values.
+
+    Args:
+        None
+
+    Returns:
+        oui: OUI dictionary
+
+    """
+    # Get configuration
+    config = configuration.Config()
+    mac_address_file = config.mac_address_file()
+    oui = {}
+
+    # Read file
+    with open(mac_address_file, 'r') as csvfile:
+        spamreader = csv.reader(csvfile, delimiter=':')
+        for row in spamreader:
+            mac_address = row[0]
+            manufacturer = row[1]
+            oui[mac_address] = manufacturer
+
+    # Return
+    return oui
+
 
 # Get OUI value
 OUI = _oui()
@@ -189,6 +218,7 @@ class Poller(object):
 
         """
         # Initialize key variables
+        global OUI
         temp_dir = self.server_config.temp_topology_directory()
         temp_file = ('%s/%s.yaml') % (temp_dir, self.hostname)
 
@@ -256,29 +286,6 @@ def poll_single_device(hostname):
     # Poll data
     poller = Poller(hostname)
     poller.query()
-
-
-def _oui():
-    """Get dictionary of OUI values.
-
-    Args:
-        None
-
-    Returns:
-        oui: OUI dictionary
-
-    """
-    # Get configuration
-    config = configuration.Config()
-    mac_address_file = config.mac_address_file()
-
-    # Read file
-    with open(mac_address_file, 'r') as file_handle:
-        yaml_from_file = file_handle.read()
-    oui = yaml.load(yaml_from_file)
-
-    # Return
-    return oui
 
 
 def main():

@@ -403,7 +403,7 @@ def _manufacturer(layer1_data, oui):
         if bool(layer1_data['jm_macs']) is True:
             jm_macs = layer1_data['jm_macs']
             if len(jm_macs) == 1:
-                mac_oui = jm_macs[0:5]
+                mac_oui = jm_macs[0][0:6]
                 if mac_oui in oui:
                     manufacturer = oui[mac_oui]
 

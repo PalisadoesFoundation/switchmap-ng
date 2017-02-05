@@ -93,12 +93,12 @@ class PortTable(Table):
     duplex = Col('Duplex')
     label = Col('Port Label')
     trunk = Col('Trunk')
-    cdp = Col('CDP')
-    lldp = Col('LLDP')
+    cdp = _RawCol('CDP')
+    lldp = _RawCol('LLDP')
     mac_address = Col('Mac Address')
+    manufacturer = Col('Manufacturer')
 
     # Define the CSS class to use for the header row
-    thead_classes = ['tblHead']
     classes = ['table']
 
     def get_tr_attrs(self, item):
@@ -130,7 +130,7 @@ class PortRow(object):
     def __init__(
             self, port, vlan, state,
             days_inactive, speed, duplex, label, trunk, cdp, lldp,
-            mac_address):
+            mac_address, manufacturer):
         """Method initializing the class.
 
         Args:
@@ -144,7 +144,8 @@ class PortRow(object):
             trunk: Whether a trunk or not
             cdp: CDP data string
             lldp: LLDP data string
-            mac_address: LLDP data string
+            mac_address: MAC Address
+            manufacturer: Name of the manufacturer
 
         Returns:
             None
@@ -162,6 +163,7 @@ class PortRow(object):
         self.cdp = cdp
         self.lldp = lldp
         self.mac_address = mac_address
+        self.manufacturer = manufacturer
 
     def active(self):
         """Active ports."""
@@ -218,11 +220,12 @@ class Port(object):
             cdp = port.cdp()
             lldp = port.lldp()
             mac_address = port.mac_address()
+            manufacturer = port.manufacturer()
 
             # Append row of data
             rows.append(PortRow(
                 name, vlan, state, inactive, speed, duplex,
-                label, trunk, cdp, lldp, mac_address))
+                label, trunk, cdp, lldp, mac_address, manufacturer))
 
         # Return
         return rows
@@ -326,6 +329,12 @@ class _Port(object):
         else:
             if 'ifHighSpeed' in port_data:
                 value = port_data['ifHighSpeed']
+            elif 'ifSpeed' in port_data:
+                value = int(port_data['ifSpeed']) / 1000000
+            else:
+                value = None
+
+            if bool(value) is True:
                 if value >= 1000:
                     speed = ('%.0fG') % (value / 1000)
                 elif value > 0 and value < 1000:
@@ -405,6 +414,27 @@ class _Port(object):
         # Return
         return state
 
+    def manufacturer(self):
+        """Return port manufacturer string.
+
+        Args:
+            None
+
+        Returns:
+            manufacturer: manufacturer string
+
+        """
+        # Assign key variables
+        manufacturer = ''
+        port_data = self.port_data
+
+        # Assign manufacturer
+        if 'jm_manufacturer' in port_data:
+            manufacturer = port_data['jm_manufacturer']
+
+        # Return
+        return manufacturer
+
     def duplex(self):
         """Return port duplex string.
 
@@ -452,7 +482,7 @@ class _Port(object):
 
         # Determine whether CDP is enabled and update string
         if 'cdpCacheDeviceId' in port_data:
-            value = ('%s, %s, %s') % (
+            value = ('%s<br>%s<br>%s') % (
                 port_data['cdpCacheDeviceId'],
                 port_data['cdpCachePlatform'],
                 port_data['cdpCacheDevicePort'])
@@ -476,7 +506,7 @@ class _Port(object):
 
         # Determine whether LLDP is enabled and update string
         if 'lldpRemSysDesc' in port_data:
-            value = ('<p>%s<br>%s<br>%s</p>') % (
+            value = ('%s<br>%s<br>%s') % (
                 port_data['lldpRemSysName'],
                 port_data['lldpRemPortDesc'],
                 port_data['lldpRemSysDesc'])

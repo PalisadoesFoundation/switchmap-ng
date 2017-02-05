@@ -251,11 +251,14 @@ class Interact(object):
         # Return
         return object_id
 
-    def oid_exists(self, oid_to_get):
+    def oid_exists(self, oid_to_get, context_name=''):
         """Determine existence of OID on device.
 
         Args:
             oid_to_get: OID to get
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
 
         Returns:
             validity: True if exists
@@ -265,21 +268,26 @@ class Interact(object):
         validity = False
 
         # Validate OID
-        if self.oid_exists_get(oid_to_get) is True:
+        if self.oid_exists_get(
+                oid_to_get, context_name=context_name) is True:
             validity = True
 
         if validity is False:
-            if self.oid_exists_walk(oid_to_get) is True:
+            if self.oid_exists_walk(
+                    oid_to_get, context_name=context_name) is True:
                 validity = True
 
         # Return
         return validity
 
-    def oid_exists_get(self, oid_to_get):
+    def oid_exists_get(self, oid_to_get, context_name=''):
         """Determine existence of OID on device.
 
         Args:
             oid_to_get: OID to get
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
 
         Returns:
             validity: True if exists
@@ -289,18 +297,22 @@ class Interact(object):
         validity = False
 
         # Process
-        results = self.get(oid_to_get, connectivity_check=True)
+        results = self.get(
+            oid_to_get, connectivity_check=True, context_name=context_name)
         if _instance_found(results) is True:
             validity = True
 
         # Return
         return validity
 
-    def oid_exists_walk(self, oid_to_get):
+    def oid_exists_walk(self, oid_to_get, context_name=''):
         """Determine existence of OID on device.
 
         Args:
             oid_to_get: OID to get
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
 
         Returns:
             validity: True if exists
@@ -310,7 +322,8 @@ class Interact(object):
         validity = False
 
         # Process
-        results = self.walk(oid_to_get, connectivity_check=True)
+        results = self.walk(
+            oid_to_get, connectivity_check=True, context_name=context_name)
         if _instance_found(results) is True:
             validity = True
 
@@ -442,6 +455,7 @@ class Interact(object):
         """
         # Initialize variables
         return_results = {}
+        session_error_string = None
         snmp_params = self.snmp_params
 
         # Check if OID is valid
@@ -479,13 +493,17 @@ class Interact(object):
 
         # Do something here
         except Exception as exception_error:
-            # Check for errors and print out results
-            log_message = (
-                'Error occurred during SNMPget on host '
-                'OID %s from %s: (%s)') % (oid_to_get,
-                                           snmp_params['snmp_hostname'],
-                                           exception_error)
-            log.log2die(1023, log_message)
+            if connectivity_check is False:
+                # Check for errors and print out results
+                log_message = (
+                    'Error occurred during SNMPget on host '
+                    'OID {} from {} for context "{}": ({})'
+                    ''.format(
+                        oid_to_get, snmp_params['snmp_hostname'],
+                        context_name, exception_error))
+                log.log2die(1023, log_message)
+            else:
+                var_binds = {}
         except:
             log_message = ('Unexpected error')
             log.log2die(1002, log_message)

@@ -11,6 +11,7 @@ ARGV[1] must be the out.txt file
 import sys
 import re
 import os
+import csv
 
 # Try to create a working PYTHONPATH
 script_directory = os.path.dirname(os.path.realpath(__file__))
@@ -69,17 +70,17 @@ def main():
         if bool(regex.match(line)) is True:
             (field1, field2) = line.split('(hex)')
             mac_address = field1.strip().lower().replace('-', '')
-            company = field2.strip()
+            company = field2.strip().replace(':', ' ')
             mac_addresses[mac_address] = company
 
     # Output the file to the metadata directory
     output_file = config.mac_address_file()
     if bool(mac_addresses) is True:
-        yaml_string = general.dict2yaml(mac_addresses)
-
-        # Dump data
-        with open(output_file, 'w') as file_handle:
-            file_handle.write(yaml_string)
+        with open(output_file, 'w') as csvfile:
+            spamwriter = csv.writer(
+                csvfile, delimiter=':', quoting=csv.QUOTE_NONE)
+            for key, value in sorted(mac_addresses.items()):
+                spamwriter.writerow([key, value])
 
 
 if __name__ == '__main__':

@@ -268,7 +268,7 @@ class Config(object):
         """
         # Get new result
         result = (
-            '{}/switchmap/metadata/mac_address_file.yaml'
+            '{}/switchmap/metadata/mac_address_file.txt'
             ''.format(self.root_directory))
 
         # Return
