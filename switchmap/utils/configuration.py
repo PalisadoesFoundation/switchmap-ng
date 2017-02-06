@@ -93,18 +93,18 @@ class Config(object):
         # Return
         return value
 
-    def arp_directory(self):
-        """Determine the arp_directory.
+    def search_directory(self):
+        """Determine the search_directory.
 
         Args:
             None
 
         Returns:
-            value: configured arp_directory
+            value: configured search_directory
 
         """
         # Get parameter
-        value = ('%s/arp') % (self.cache_directory())
+        value = ('%s/search') % (self.cache_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -141,6 +141,70 @@ class Config(object):
         """
         # Get parameter
         value = ('%s/%s.yaml') % (self.topology_directory(), host)
+
+        # Return
+        return value
+
+    def arp_file(self):
+        """Determine the arp_file.
+
+        Args:
+            None
+
+        Returns:
+            value: configured arp_file
+
+        """
+        # Get parameter
+        value = '{}/arp.yaml'.format(self.search_directory())
+
+        # Return
+        return value
+
+    def rarp_file(self):
+        """Determine the rarp_file.
+
+        Args:
+            None
+
+        Returns:
+            value: configured rarp_file
+
+        """
+        # Get parameter
+        value = '{}/rarp.yaml'.format(self.search_directory())
+
+        # Return
+        return value
+
+    def ifindex_file(self):
+        """Determine the ifindex_file.
+
+        Args:
+            None
+
+        Returns:
+            value: configured ifindex_file
+
+        """
+        # Get parameter
+        value = '{}/ifindex.yaml'.format(self.search_directory())
+
+        # Return
+        return value
+
+    def hosts_file(self):
+        """Determine the hosts_file.
+
+        Args:
+            None
+
+        Returns:
+            value: configured hosts_file
+
+        """
+        # Get parameter
+        value = '{}/hosts.yaml'.format(self.search_directory())
 
         # Return
         return value

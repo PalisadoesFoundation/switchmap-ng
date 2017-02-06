@@ -348,3 +348,22 @@ def move_files(source_dir, target_dir):
         full_path = ('%s/%s') % (source_dir, filename)
         if os.path.isfile(full_path) is True:
             shutil.move(full_path, target_dir)
+
+
+def create_yaml_file(data_dict, filepath):
+    """Initialize the class.
+
+    Args:
+        data_dict: Dictionary to write
+        filepath: Name of output file
+
+    Returns:
+        None
+
+    """    # Output the file to the ARP file
+    if bool(data_dict) is True:
+        yaml_string = dict2yaml(data_dict)
+
+        # Dump data
+        with open(filepath, 'w') as file_handle:
+            file_handle.write(yaml_string)

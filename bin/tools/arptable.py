@@ -13,8 +13,7 @@ import yaml
 import os
 from collections import defaultdict
 import socket
-from copy import deepcopy
-from pprint import pprint
+
 
 # Try to create a working PYTHONPATH
 script_directory = os.path.dirname(os.path.realpath(__file__))
@@ -48,26 +47,28 @@ def main():
     # Initialize key variables
     config = configuration.Config()
     topology_directory = config.topology_directory()
-    arp_directory = config.arp_directory()
+    search_directory = config.search_directory()
     arp_table = defaultdict(lambda: defaultdict(dict))
+    host_table = defaultdict(lambda: defaultdict(dict))
     rarp_table = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
-    rarp_device_table = defaultdict(
+    ifindex_table = defaultdict(
         lambda: defaultdict(lambda: defaultdict(dict)))
 
+    # Create ARP and RARP table files
     # Cycle through list of files in directory
     for filename in os.listdir(topology_directory):
         # Examine all the '.yaml' files in directory
         if filename.endswith('.yaml'):
             # Read file and add to string
-            file_path = ('%s/%s') % (topology_directory, filename)
+            filepath = config.topology_device_file(filename[0:-5])
             try:
-                with open(file_path, 'r') as file_handle:
+                with open(filepath, 'r') as file_handle:
                     yaml_from_file = file_handle.read()
             except:
                 log_message = (
                     'Error reading file %s. Check permissions, '
                     'existence and file syntax.'
-                    '') % (file_path)
+                    '') % (filepath)
                 log.log2die_safe(1065, log_message)
 
             device_dict = yaml.load(yaml_from_file)
@@ -83,8 +84,11 @@ def main():
                             try:
                                 ip_results = socket.gethostbyaddr(ip_address)
                                 if len(ip_results) > 1:
+                                    hostname = ip_results[0]
                                     arp_table[
-                                        ip_address]['hostname'] = ip_results[0]
+                                        ip_address]['hostname'] = hostname
+                                    host_table[hostname] = ip_address
+
                             except:
                                 arp_table[ip_address]['hostname'] = None
 
@@ -96,7 +100,26 @@ def main():
                             else:
                                 rarp_table[mac_address] = [ip_address]
 
-            # Populate RARP table
+    # Create ifIndex file after creating complete ARP and RARP table files
+    # Cycle through list of files in directory
+    for filename in os.listdir(topology_directory):
+        # Examine all the '.yaml' files in directory
+        if filename.endswith('.yaml'):
+            # Read file and add to string
+            filepath = config.topology_device_file(filename[0:-5])
+            try:
+                with open(filepath, 'r') as file_handle:
+                    yaml_from_file = file_handle.read()
+            except:
+                log_message = (
+                    'Error reading file %s. Check permissions, '
+                    'existence and file syntax.'
+                    '') % (filepath)
+                log.log2die_safe(1065, log_message)
+
+            device_dict = yaml.load(yaml_from_file)
+
+            # Populate ifIndex table
             if 'layer1' in device_dict:
                 layer1_dict = device_dict['layer1']
                 for ifindex, port_dict in layer1_dict.items():
@@ -111,40 +134,25 @@ def main():
                     if ('jm_macs' in port_dict) and (
                             bool(port_dict['jm_macs']) is True):
                         # Create an ifIndex and device entry
-                        # for each rarp entry
+                        # for each RARP entry
                         for mac_address in port_dict['jm_macs']:
                             device_name = device_dict['misc']['host']
 
                             for ip_address in rarp_table[mac_address]:
-                                rarp_device_table[mac_address][device_name][
-                                    ifindex] = ip_address
+                                if bool(ifindex_table[mac_address][
+                                        device_name][ifindex]) is True:
+                                    ifindex_table[mac_address][device_name][
+                                        ifindex].append(ip_address)
+                                else:
+                                    ifindex_table[mac_address][device_name][
+                                        ifindex] = [ip_address]
 
-    # Output the file to the ARP file
-    output_file = '{}/arpfile.yaml'.format(arp_directory)
-    if bool(arp_table) is True:
-        yaml_string = general.dict2yaml(arp_table)
+    # Create yaml files
+    general.create_yaml_file(arp_table, config.arp_file())
+    general.create_yaml_file(rarp_table, config.rarp_file())
+    general.create_yaml_file(ifindex_table, config.ifindex_file())
+    general.create_yaml_file(host_table, config.hosts_file())
 
-        # Dump data
-        with open(output_file, 'w') as file_handle:
-            file_handle.write(yaml_string)
-
-    # Output the file to the RARP file
-    output_file = '{}/rarpfile.yaml'.format(arp_directory)
-    if bool(rarp_table) is True:
-        yaml_string = general.dict2yaml(rarp_table)
-
-        # Dump data
-        with open(output_file, 'w') as file_handle:
-            file_handle.write(yaml_string)
-
-    # Output the file to the RARP_DEVICE file
-    output_file = '{}/rarp_device_file.yaml'.format(arp_directory)
-    if bool(rarp_device_table) is True:
-        yaml_string = general.dict2yaml(rarp_device_table)
-
-        # Dump data
-        with open(output_file, 'w') as file_handle:
-            file_handle.write(yaml_string)
 
 if __name__ == '__main__':
     # Run main
