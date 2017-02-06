@@ -102,6 +102,11 @@ class BridgeQuery(Query):
                 oid_vtpvlanstate, normalized=True)
             for vlan, state in vtpvlanstate.items():
                 if int(state) == 1 and int(vtpvlantype[vlan]) == 1:
+                    # Create context for older Cisco systems
+                    cisco_context = '{}'.format(vlan)
+                    context_names.append(cisco_context)
+
+                    # Create context for newer Cisco systems
                     cisco_context = 'vlan-{}'.format(vlan)
                     context_names.append(cisco_context)
 

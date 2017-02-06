@@ -11,7 +11,10 @@ ARGV[1] must be the out.txt file
 import sys
 import yaml
 import os
-import csv
+from collections import defaultdict
+import socket
+from copy import deepcopy
+from pprint import pprint
 
 # Try to create a working PYTHONPATH
 script_directory = os.path.dirname(os.path.realpath(__file__))
@@ -46,8 +49,10 @@ def main():
     config = configuration.Config()
     topology_directory = config.topology_directory()
     arp_directory = config.arp_directory()
-    arp_table = {}
-    rarp_table = {}
+    arp_table = defaultdict(lambda: defaultdict(dict))
+    rarp_table = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
+    rarp_device_table = defaultdict(
+        lambda: defaultdict(lambda: defaultdict(dict)))
 
     # Cycle through list of files in directory
     for filename in os.listdir(topology_directory):
@@ -66,20 +71,55 @@ def main():
                 log.log2die_safe(1065, log_message)
 
             device_dict = yaml.load(yaml_from_file)
+            # Populate ARP table
             if 'layer3' in device_dict:
                 keys = ['cInetNetToMediaPhysAddress', 'ipNetToMediaTable']
                 for key in keys:
                     if key in device_dict['layer3']:
                         arp_dict = device_dict['layer3'][key]
                         for ip_address, mac_address in arp_dict.items():
-                            arp_table[ip_address] = mac_address
-                            if mac_address in rarp_table:
+                            # Populate ARP table
+                            arp_table[ip_address]['mac_address'] = mac_address
+                            try:
+                                ip_results = socket.gethostbyaddr(ip_address)
+                                if len(ip_results) > 1:
+                                    arp_table[
+                                        ip_address]['hostname'] = ip_results[0]
+                            except:
+                                arp_table[ip_address]['hostname'] = None
+
+                            # Populate RARP table
+                            if bool(rarp_table[mac_address]) is True:
+                                # Only append unique entries
                                 if ip_address not in rarp_table[mac_address]:
                                     rarp_table[mac_address].append(ip_address)
                             else:
                                 rarp_table[mac_address] = [ip_address]
 
-    # Output the file to the arp file
+            # Populate RARP table
+            if 'layer1' in device_dict:
+                layer1_dict = device_dict['layer1']
+                for ifindex, port_dict in layer1_dict.items():
+                    # Only interested in Ethernet ports
+                    if bool(port_dict['jm_ethernet']) is False:
+                        continue
+
+                    # We are not interested in populating trunk port MAC data
+                    if bool(port_dict['jm_trunk']) is True:
+                        continue
+
+                    if ('jm_macs' in port_dict) and (
+                            bool(port_dict['jm_macs']) is True):
+                        # Create an ifIndex and device entry
+                        # for each rarp entry
+                        for mac_address in port_dict['jm_macs']:
+                            device_name = device_dict['misc']['host']
+
+                            for ip_address in rarp_table[mac_address]:
+                                rarp_device_table[mac_address][device_name][
+                                    ifindex] = ip_address
+
+    # Output the file to the ARP file
     output_file = '{}/arpfile.yaml'.format(arp_directory)
     if bool(arp_table) is True:
         yaml_string = general.dict2yaml(arp_table)
@@ -88,15 +128,23 @@ def main():
         with open(output_file, 'w') as file_handle:
             file_handle.write(yaml_string)
 
-    # Output the file to the arp file
+    # Output the file to the RARP file
     output_file = '{}/rarpfile.yaml'.format(arp_directory)
-    if bool(arp_table) is True:
+    if bool(rarp_table) is True:
         yaml_string = general.dict2yaml(rarp_table)
 
         # Dump data
         with open(output_file, 'w') as file_handle:
             file_handle.write(yaml_string)
 
+    # Output the file to the RARP_DEVICE file
+    output_file = '{}/rarp_device_file.yaml'.format(arp_directory)
+    if bool(rarp_device_table) is True:
+        yaml_string = general.dict2yaml(rarp_device_table)
+
+        # Dump data
+        with open(output_file, 'w') as file_handle:
+            file_handle.write(yaml_string)
 
 if __name__ == '__main__':
     # Run main
