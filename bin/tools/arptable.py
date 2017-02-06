@@ -37,8 +37,7 @@ def main():
     """Initialize the class.
 
     Args:
-        config: Configuration object
-        host: Hostname to process
+        None
 
     Returns:
         None
@@ -49,8 +48,9 @@ def main():
     topology_directory = config.topology_directory()
     search_directory = config.search_directory()
     arp_table = defaultdict(lambda: defaultdict(dict))
-    host_table = defaultdict(lambda: defaultdict(dict))
-    rarp_table = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
+    host_table = {}
+    ifalias_table = defaultdict(lambda: defaultdict(dict))
+    rarp_table = {}
     ifindex_table = defaultdict(
         lambda: defaultdict(lambda: defaultdict(dict)))
 
@@ -92,8 +92,8 @@ def main():
                             except:
                                 arp_table[ip_address]['hostname'] = None
 
-                            # Populate RARP table
-                            if bool(rarp_table[mac_address]) is True:
+                            # Populate RARP table (Using ARP entries)
+                            if mac_address in rarp_table:
                                 # Only append unique entries
                                 if ip_address not in rarp_table[mac_address]:
                                     rarp_table[mac_address].append(ip_address)
@@ -119,9 +119,13 @@ def main():
 
             device_dict = yaml.load(yaml_from_file)
 
+            # Get the device name
+            device_name = device_dict['misc']['host']
+
             # Populate ifIndex table
             if 'layer1' in device_dict:
                 layer1_dict = device_dict['layer1']
+                # Process each port on device
                 for ifindex, port_dict in layer1_dict.items():
                     # Only interested in Ethernet ports
                     if bool(port_dict['jm_ethernet']) is False:
@@ -131,13 +135,31 @@ def main():
                     if bool(port_dict['jm_trunk']) is True:
                         continue
 
+                    # Create ifalias entry
+                    ifalias = port_dict['ifAlias'].strip()
+                    if bool(ifalias) is True:
+                        if ifalias not in ifalias_table:
+                            ifalias_table[ifalias][device_name] = [ifindex]
+                        else:
+                            if device_name not in ifalias_table[ifalias]:
+                                ifalias_table[ifalias][device_name] = [ifindex]
+                            else:
+                                ifalias_table[
+                                    ifalias][device_name].append(ifindex)
+
+                    # Process MAC addresses
                     if ('jm_macs' in port_dict) and (
                             bool(port_dict['jm_macs']) is True):
+
                         # Create an ifIndex and device entry
                         # for each RARP entry
                         for mac_address in port_dict['jm_macs']:
-                            device_name = device_dict['misc']['host']
+                            # Populate RARP table. Not all MACs have
+                            # an associated ARP IP address (eg. multicast)
+                            if mac_address not in rarp_table:
+                                rarp_table[mac_address] = []
 
+                            # Create ifindex entry
                             for ip_address in rarp_table[mac_address]:
                                 if bool(ifindex_table[mac_address][
                                         device_name][ifindex]) is True:
@@ -151,6 +173,7 @@ def main():
     general.create_yaml_file(arp_table, config.arp_file())
     general.create_yaml_file(rarp_table, config.rarp_file())
     general.create_yaml_file(ifindex_table, config.ifindex_file())
+    general.create_yaml_file(ifalias_table, config.ifalias_file())
     general.create_yaml_file(host_table, config.hosts_file())
 
 

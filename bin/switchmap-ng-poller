@@ -10,6 +10,8 @@ import sys
 import os
 import csv
 from multiprocessing import Pool
+from collections import defaultdict
+import socket
 
 # PIP3 imports
 import yaml
@@ -138,8 +140,12 @@ class PollingAgent(object):
                 general.delete_files(temp_topology_directory)
 
             # Poll after sleeping
-            poll_devices()
+            _poll_devices()
 
+            # Create search files
+            _create_search_files()
+
+            # Modify temp yaml files to include IP address and 
             # Delete permanent topology directory files
             topology_directory = self.server_config.topology_directory()
             if os.path.isdir(topology_directory):
@@ -247,7 +253,7 @@ class Poller(object):
         log.log2info(1019, log_message)
 
 
-def poll_devices():
+def _poll_devices():
     """Poll all devices for data using subprocesses and create YAML files.
 
     Args:
@@ -270,10 +276,10 @@ def poll_devices():
     with Pool(processes=threads_in_pool) as pool:
 
         # Create sub processes from the pool
-        pool.map(poll_single_device, hostnames)
+        pool.map(_poll_single_device, hostnames)
 
 
-def poll_single_device(hostname):
+def _poll_single_device(hostname):
     """Poll single device for data and create YAML files.
 
     Args:
@@ -286,6 +292,149 @@ def poll_single_device(hostname):
     # Poll data
     poller = Poller(hostname)
     poller.query()
+
+
+def _create_search_files():
+    """Initialize the class.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    config = configuration.Config()
+    topology_directory = config.topology_directory()
+    arp_table = defaultdict(lambda: defaultdict(dict))
+    host_table = {}
+    ifalias_table = defaultdict(lambda: defaultdict(dict))
+    rarp_table = {}
+    ifindex_table = defaultdict(
+        lambda: defaultdict(lambda: defaultdict(dict)))
+
+    # Create ARP and RARP table files
+    # Cycle through list of files in directory
+    for filename in os.listdir(topology_directory):
+        # Examine all the '.yaml' files in directory
+        if filename.endswith('.yaml'):
+            # Read file and add to string
+            filepath = config.topology_device_file(filename[0:-5])
+            try:
+                with open(filepath, 'r') as file_handle:
+                    yaml_from_file = file_handle.read()
+            except:
+                log_message = (
+                    'Error reading file %s. Check permissions, '
+                    'existence and file syntax.'
+                    '') % (filepath)
+                log.log2die_safe(1065, log_message)
+
+            device_dict = yaml.load(yaml_from_file)
+            # Populate ARP table
+            if 'layer3' in device_dict:
+                keys = ['cInetNetToMediaPhysAddress', 'ipNetToMediaTable']
+                for key in keys:
+                    if key in device_dict['layer3']:
+                        arp_dict = device_dict['layer3'][key]
+                        for ip_address, mac_address in arp_dict.items():
+                            # Populate ARP table
+                            arp_table[ip_address]['mac_address'] = mac_address
+                            try:
+                                ip_results = socket.gethostbyaddr(ip_address)
+                                if len(ip_results) > 1:
+                                    hostname = ip_results[0]
+                                    arp_table[
+                                        ip_address]['hostname'] = hostname
+                                    host_table[hostname] = ip_address
+
+                            except:
+                                arp_table[ip_address]['hostname'] = None
+
+                            # Populate RARP table (Using ARP entries)
+                            if mac_address in rarp_table:
+                                # Only append unique entries
+                                if ip_address not in rarp_table[mac_address]:
+                                    rarp_table[mac_address].append(ip_address)
+                            else:
+                                rarp_table[mac_address] = [ip_address]
+
+    # Create ifIndex file after creating complete ARP and RARP table files
+    # Cycle through list of files in directory
+    for filename in os.listdir(topology_directory):
+        # Examine all the '.yaml' files in directory
+        if filename.endswith('.yaml'):
+            # Read file and add to string
+            filepath = config.topology_device_file(filename[0:-5])
+            try:
+                with open(filepath, 'r') as file_handle:
+                    yaml_from_file = file_handle.read()
+            except:
+                log_message = (
+                    'Error reading file %s. Check permissions, '
+                    'existence and file syntax.'
+                    '') % (filepath)
+                log.log2die_safe(1065, log_message)
+
+            device_dict = yaml.load(yaml_from_file)
+
+            # Get the device name
+            device_name = device_dict['misc']['host']
+
+            # Populate ifIndex table
+            if 'layer1' in device_dict:
+                layer1_dict = device_dict['layer1']
+                # Process each port on device
+                for ifindex, port_dict in layer1_dict.items():
+                    # Only interested in Ethernet ports
+                    if bool(port_dict['jm_ethernet']) is False:
+                        continue
+
+                    # We are not interested in populating trunk port MAC data
+                    if bool(port_dict['jm_trunk']) is True:
+                        continue
+
+                    # Create ifalias entry
+                    ifalias = port_dict['ifAlias'].strip()
+                    if bool(ifalias) is True:
+                        if ifalias not in ifalias_table:
+                            ifalias_table[ifalias][device_name] = [ifindex]
+                        else:
+                            if device_name not in ifalias_table[ifalias]:
+                                ifalias_table[ifalias][device_name] = [ifindex]
+                            else:
+                                ifalias_table[
+                                    ifalias][device_name].append(ifindex)
+
+                    # Process MAC addresses
+                    if ('jm_macs' in port_dict) and (
+                            bool(port_dict['jm_macs']) is True):
+
+                        # Create an ifIndex and device entry
+                        # for each RARP entry
+                        for mac_address in port_dict['jm_macs']:
+                            # Populate RARP table. Not all MACs have
+                            # an associated ARP IP address (eg. multicast)
+                            if mac_address not in rarp_table:
+                                rarp_table[mac_address] = []
+
+                            # Create ifindex entry
+                            for ip_address in rarp_table[mac_address]:
+                                if bool(ifindex_table[mac_address][
+                                        device_name][ifindex]) is True:
+                                    ifindex_table[mac_address][device_name][
+                                        ifindex].append(ip_address)
+                                else:
+                                    ifindex_table[mac_address][device_name][
+                                        ifindex] = [ip_address]
+
+    # Create yaml files
+    general.create_yaml_file(arp_table, config.arp_file())
+    general.create_yaml_file(rarp_table, config.rarp_file())
+    general.create_yaml_file(ifindex_table, config.ifindex_file())
+    general.create_yaml_file(ifalias_table, config.ifalias_file())
+    general.create_yaml_file(host_table, config.hosts_file())
 
 
 def main():
@@ -307,5 +456,5 @@ def main():
 
 if __name__ == "__main__":
     # Poller('absw03.sjc01.prod.colovore.net')._create_yaml()
-    # poll_devices()
+    # _poll_devices()
     main()

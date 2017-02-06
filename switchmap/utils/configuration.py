@@ -193,6 +193,22 @@ class Config(object):
         # Return
         return value
 
+    def ifalias_file(self):
+        """Determine the ifalias_file.
+
+        Args:
+            None
+
+        Returns:
+            value: configured ifalias_file
+
+        """
+        # Get parameter
+        value = '{}/ifalias.yaml'.format(self.search_directory())
+
+        # Return
+        return value
+
     def hosts_file(self):
         """Determine the hosts_file.
 
