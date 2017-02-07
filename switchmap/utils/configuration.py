@@ -145,6 +145,22 @@ class Config(object):
         # Return
         return value
 
+    def temp_topology_device_file(self, host):
+        """Determine the temp_topology_device_file.
+
+        Args:
+            host: Hostname
+
+        Returns:
+            value: configured temp_topology_device_file
+
+        """
+        # Get parameter
+        value = ('%s/%s.yaml') % (self.temp_topology_directory(), host)
+
+        # Return
+        return value
+
     def arp_file(self):
         """Determine the arp_file.
 

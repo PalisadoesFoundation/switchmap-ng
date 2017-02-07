@@ -60,6 +60,50 @@ def get_hosts():
     return sorted(hosts)
 
 
+def read_yaml_file(filepath, as_string=False):
+    """Read the contents of a YAML file.
+
+    Args:
+        filepath: Path to file to be read
+        as_string: Return a string if True
+
+    Returns:
+        result: Dict of yaml read
+
+    """
+    # Initialize key variables
+    if as_string is False:
+        result = {}
+    else:
+        result = ''
+
+    # Read file
+    if filepath.endswith('.yaml'):
+        try:
+            with open(filepath, 'r') as file_handle:
+                yaml_from_file = file_handle.read()
+        except:
+            log_message = (
+                'Error reading file %s. Check permissions, '
+                'existence and file syntax.'
+                '') % (filepath)
+            log.log2die_safe(1065, log_message)
+
+        # Get result
+        if as_string is False:
+            result = yaml.load(yaml_from_file)
+        else:
+            result = yaml_from_file
+
+    else:
+        # Die if not a YAML file
+        log_message = '{} is not a YAML file.'.format(filepath)
+        log.log2die_safe(1065, log_message)
+
+    # Return
+    return result
+
+
 def read_yaml_files(directories):
     """Read the contents of all yaml files in a directory.
 
@@ -88,20 +132,10 @@ def read_yaml_files(directories):
         for filename in os.listdir(config_directory):
             # Examine all the '.yaml' files in directory
             if filename.endswith('.yaml'):
-                # YAML files found
+                # Read YAML data
+                filepath = ('%s/%s') % (config_directory, filename)
+                yaml_from_file = read_yaml_file(filepath, as_string=True)
                 yaml_found = True
-
-                # Read file and add to string
-                file_path = ('%s/%s') % (config_directory, filename)
-                try:
-                    with open(file_path, 'r') as file_handle:
-                        yaml_from_file = file_handle.read()
-                except:
-                    log_message = (
-                        'Error reading file %s. Check permissions, '
-                        'existence and file syntax.'
-                        '') % (file_path)
-                    log.log2die_safe(1065, log_message)
 
                 # Append yaml from file to all yaml previously read
                 all_yaml_read = ('%s\n%s') % (all_yaml_read, yaml_from_file)

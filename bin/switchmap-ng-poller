@@ -145,7 +145,10 @@ class PollingAgent(object):
             # Create search files
             _create_search_files()
 
-            # Modify temp yaml files to include IP address and 
+            # Add Hostname and IP address data to temp files
+            postpoll.all_devices()
+
+            # Modify temp yaml files to include IP address and
             # Delete permanent topology directory files
             topology_directory = self.server_config.topology_directory()
             if os.path.isdir(topology_directory):
@@ -295,7 +298,7 @@ def _poll_single_device(hostname):
 
 
 def _create_search_files():
-    """Initialize the class.
+    """Creates YAML files used for Switchmap-NG search.
 
     Args:
         None
@@ -319,19 +322,10 @@ def _create_search_files():
     for filename in os.listdir(topology_directory):
         # Examine all the '.yaml' files in directory
         if filename.endswith('.yaml'):
-            # Read file and add to string
+            # Read file
             filepath = config.topology_device_file(filename[0:-5])
-            try:
-                with open(filepath, 'r') as file_handle:
-                    yaml_from_file = file_handle.read()
-            except:
-                log_message = (
-                    'Error reading file %s. Check permissions, '
-                    'existence and file syntax.'
-                    '') % (filepath)
-                log.log2die_safe(1065, log_message)
+            device_dict = general.read_yaml_file(filepath)
 
-            device_dict = yaml.load(yaml_from_file)
             # Populate ARP table
             if 'layer3' in device_dict:
                 keys = ['cInetNetToMediaPhysAddress', 'ipNetToMediaTable']
@@ -365,19 +359,9 @@ def _create_search_files():
     for filename in os.listdir(topology_directory):
         # Examine all the '.yaml' files in directory
         if filename.endswith('.yaml'):
-            # Read file and add to string
+            # Read file
             filepath = config.topology_device_file(filename[0:-5])
-            try:
-                with open(filepath, 'r') as file_handle:
-                    yaml_from_file = file_handle.read()
-            except:
-                log_message = (
-                    'Error reading file %s. Check permissions, '
-                    'existence and file syntax.'
-                    '') % (filepath)
-                log.log2die_safe(1065, log_message)
-
-            device_dict = yaml.load(yaml_from_file)
+            device_dict = general.read_yaml_file(filepath)
 
             # Get the device name
             device_name = device_dict['misc']['host']
@@ -455,6 +439,6 @@ def main():
     cli.control(poller)
 
 if __name__ == "__main__":
-    # Poller('absw03.sjc01.prod.colovore.net')._create_yaml()
+    # Poller('absw01.sjc01.corp.colovore.net')._create_yaml()
     # _poll_devices()
     main()
