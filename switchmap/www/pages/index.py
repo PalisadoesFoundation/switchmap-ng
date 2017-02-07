@@ -139,7 +139,7 @@ class Device(object):
                 column = 0
 
         # Append a row if max number of columns wasn't reached before
-        if column > 1 and column < max_columns:
+        if column > 0 and column <= max_columns:
             rows.append(DeviceRow(row_data))
 
         # Return
