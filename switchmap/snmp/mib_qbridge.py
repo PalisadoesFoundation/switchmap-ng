@@ -82,6 +82,27 @@ class QbridgeQuery(Query):
         # Return
         return final
 
+    def layer2(self):
+        """Get layer 2 data from device.
+
+        Args:
+            None
+
+        Returns:
+            final: Final results
+
+        """
+        # Initialize key variables
+        final = defaultdict(lambda: defaultdict(dict))
+
+        # Get interface dot1qVlanStaticName data
+        values = self.dot1qvlanstaticname()
+        for key, value in values.items():
+            final[key]['dot1qVlanStaticName'] = value
+
+        # Return
+        return final
+
     def dot1qpvid(self):
         """Return dict of Q-BRIDGE-MIB dot1qPvid per port.
 
@@ -101,6 +122,28 @@ class QbridgeQuery(Query):
         for key, value in results.items():
             ifindex = self.baseportifindex[int(key)]
             data_dict[ifindex] = value
+
+        # Return
+        return data_dict
+
+    def dot1qvlanstaticname(self):
+        """Return dict of Q-BRIDGE-MIB dot1qVlanStaticName per port.
+
+        Args:
+            None
+
+        Returns:
+            data_dict: Dict of dot1qVlanStaticName using ifIndex as key
+
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+
+        # Process OID
+        oid = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+        results = self.snmp_object.walk(oid, normalized=True)
+        for key, value in results.items():
+            data_dict[key] = str(bytes(value), encoding='utf-8')
 
         # Return
         return data_dict

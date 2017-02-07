@@ -83,6 +83,38 @@ class BridgeQuery(Query):
 
         """
         # Initialize key variables
+        final = defaultdict(lambda: defaultdict(dict))
+        done = False
+
+        # Check if Cisco VLANS are supported
+        oid_vtpvlanstate = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
+        oid_exists = self.snmp_object.oid_exists_walk(oid_vtpvlanstate)
+        if bool(oid_exists) is True:
+            final = self._macaddresstable_cisco()
+            done = True
+
+        # Check if Juniper VLANS are supported
+        if done is False:
+            oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+            oid_exists = self.snmp_object.oid_exists_walk(
+                oid_dot1qvlanstaticname)
+            if bool(oid_exists) is True:
+                final = self._macaddresstable_juniper()
+
+        # Return
+        return final
+
+    def _macaddresstable_cisco(self):
+        """Return dict of the Cisco device's MAC address table.
+
+        Args:
+            None
+
+        Returns:
+            final: Dict of MAC addresses keyed by ifIndex
+
+        """
+        # Initialize key variables
         data_dict = defaultdict(lambda: defaultdict(dict))
         final = defaultdict(lambda: defaultdict(dict))
         context_names = ['']
@@ -102,7 +134,12 @@ class BridgeQuery(Query):
                 oid_vtpvlanstate, normalized=True)
             for vlan, state in vtpvlanstate.items():
                 if int(state) == 1 and int(vtpvlantype[vlan]) == 1:
+                    # Create context for older Cisco systems
                     cisco_context = '{}'.format(vlan)
+                    context_names.append(cisco_context)
+
+                    # Create context for newer Cisco systems
+                    cisco_context = 'vlan-{}'.format(vlan)
                     context_names.append(cisco_context)
 
         # Get key information
@@ -112,15 +149,15 @@ class BridgeQuery(Query):
             context_names=context_names)
 
         # Create a dict keyed by ifIndex
-        for dot1dtpfdbport_key, value in macs.items():
+        for decimal_macaddress, hex_macaddress in macs.items():
             # Sometimes an overloaded system running this script may have
             # timeouts retrieving data that should normally be there.
             # This prevents the script from crashing when this occurs
-            if bool(dot1dtpfdbport[dot1dtpfdbport_key]) is False:
+            if bool(dot1dtpfdbport[decimal_macaddress]) is False:
                 continue
 
             # Get ifIndex from dot1dBasePort
-            dot1dbaseport = int(dot1dtpfdbport[dot1dtpfdbport_key])
+            dot1dbaseport = int(dot1dtpfdbport[decimal_macaddress])
             ifindex = baseportifindex[dot1dbaseport]
 
             # With multi-threading sometimes baseportifindex has empty values.
@@ -129,27 +166,74 @@ class BridgeQuery(Query):
 
             # Assign MAC addresses to ifIndex
             if ifindex not in data_dict:
-                data_dict[ifindex] = [value]
+                data_dict[ifindex] = [hex_macaddress]
             else:
-                data_dict[ifindex].append(value)
+                data_dict[ifindex].append(hex_macaddress)
 
         # Assign MACs to secondary key for final result
-        for key, value in data_dict.items():
-            final[key]['jm_macs'] = []
-            for next_mac in value:
-                final[key]['jm_macs'].append(next_mac)
+        for ifindex, hex_macaddresses in data_dict.items():
+            final[ifindex]['jm_macs'] = []
+            for next_mac in hex_macaddresses:
+                final[ifindex]['jm_macs'].append(next_mac)
 
         # Return
         return final
 
-    def _dot1dtpfdbport(self, context_names=None):
-        """Return dict of BRIDGE-MIB dot1dtpfdbport data.
+    def _macaddresstable_juniper(self):
+        """Return dict of the Juniper device's MAC address table.
 
         Args:
             None
 
         Returns:
-            data_dict: Dict of dot1dtpfdbport using the OID nodes
+            final: Dict of MAC addresses keyed by ifIndex
+
+        """
+        # Initialize key variables
+        final = defaultdict(lambda: defaultdict(dict))
+        dot1dbaseport_macs = {}
+
+        # Check if Jnuiper VLANS are supported
+        oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+        oid_exists = self.snmp_object.oid_exists_walk(oid_dot1qvlanstaticname)
+        if bool(oid_exists) is True:
+            # Create a dict of MAC addresses found
+            mac_dict = self._dot1qtpfdbport()
+            for decimal_macaddress, dot1dbaseport in mac_dict.items():
+                # Convert decimal mac to hex
+                # (Only use the last 6 digits in the decimal_macaddress, first
+                # digit is the vlan number)
+                hex_macaddress = ''
+                mac_bytes = decimal_macaddress.split('.')[-6:]
+                for mac_byte in mac_bytes:
+                    hex_macaddress = (
+                        '{}{}'.format(
+                            hex_macaddress, hex(int(mac_byte))[2:].zfill(2)))
+
+                # Assign MAC to baseport index
+                if dot1dbaseport in dot1dbaseport_macs:
+                    dot1dbaseport_macs[dot1dbaseport].append(hex_macaddress)
+                else:
+                    dot1dbaseport_macs[dot1dbaseport] = [hex_macaddress]
+
+            # Assign MACs to ifindex
+            baseportifindex = self.dot1dbaseport_2_ifindex()
+            for dot1dbaseport, ifindex in baseportifindex.items():
+                if dot1dbaseport in dot1dbaseport_macs:
+                    final[ifindex][
+                        'jm_macs'] = dot1dbaseport_macs[dot1dbaseport]
+
+        # Return
+        return final
+
+    def _dot1dtpfdbport(self, context_names=None):
+        """Return dict of BRIDGE-MIB dot1dTpFdbPort data.
+
+        Args:
+            None
+
+        Returns:
+            data_dict: Dict of dot1dTpFdbPort using the OID nodes
                 excluding the OID root as key
 
         """
@@ -166,6 +250,45 @@ class BridgeQuery(Query):
             for key, value in results.items():
                 new_key = key[len(oid):]
                 data_dict[new_key] = value
+
+        # Return data
+        return data_dict
+
+    def _dot1qtpfdbport(self):
+        """Return dict of BRIDGE-MIB dot1qTpFdbPort data.
+
+        Args:
+            None
+
+        Returns:
+            data_dict: Dict of dot1qTpFdbPort using the OID nodes
+                excluding the OID root as key
+
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+        vlan_dict = defaultdict(dict)
+        vlans = []
+
+        # Process dot1qvlanstaticname OID
+        oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+        oid_exists = self.snmp_object.oid_exists_walk(oid_dot1qvlanstaticname)
+        if bool(oid_exists) is True:
+            results = self.snmp_object.walk(
+                oid_dot1qvlanstaticname, normalized=True)
+            for key, value in results.items():
+                vlan_dict[key] = value
+            for key, _ in vlan_dict.items():
+                vlans.append(key)
+
+            # Process values
+            oid = '.1.3.6.1.2.1.17.7.1.2.2.1.2'
+            for vlan in vlans:
+                new_oid = '{}.{}'.format(oid, vlan)
+                results = self.snmp_object.swalk(new_oid, normalized=False)
+                for key, value in results.items():
+                    new_key = key[len(oid):]
+                    data_dict[new_key] = value
 
         # Return data
         return data_dict

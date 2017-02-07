@@ -97,6 +97,8 @@ class PortTable(Table):
     lldp = _RawCol('LLDP')
     mac_address = Col('Mac Address')
     manufacturer = Col('Manufacturer')
+    ip_address = Col('IP Address')
+    hostname = Col('DNS Name')
 
     # Define the CSS class to use for the header row
     classes = ['table']
@@ -127,43 +129,34 @@ class PortTable(Table):
 class PortRow(object):
     """Declaration of the rows in the Ports table."""
 
-    def __init__(
-            self, port, vlan, state,
-            days_inactive, speed, duplex, label, trunk, cdp, lldp,
-            mac_address, manufacturer):
+    def __init__(self, row):
         """Method initializing the class.
 
         Args:
-            port: Port name string
-            vlan: VLAN of port string
-            state: State of port string
-            days_inactive: Number of days the port's inactive string
-            speed: Speed of port string
-            duplex: Duplex of port string
-            label: Label given to the port by the network manager
-            trunk: Whether a trunk or not
-            cdp: CDP data string
-            lldp: LLDP data string
-            mac_address: MAC Address
-            manufacturer: Name of the manufacturer
+            row: List of row values
+                port: Port name string
+                vlan: VLAN of port string
+                state: State of port string
+                days_inactive: Number of days the port's inactive string
+                speed: Speed of port string
+                duplex: Duplex of port string
+                label: Label given to the port by the network manager
+                trunk: Whether a trunk or not
+                cdp: CDP data string
+                lldp: LLDP data string
+                mac_address: MAC Address
+                manufacturer: Name of the manufacturer
 
         Returns:
             None
 
         """
         # Initialize key variables
-        self.port = port
-        self.vlan = vlan
-        self.state = state
-        self.days_inactive = days_inactive
-        self.speed = speed
-        self.duplex = duplex
-        self.label = label
-        self.trunk = trunk
-        self.cdp = cdp
-        self.lldp = lldp
-        self.mac_address = mac_address
-        self.manufacturer = manufacturer
+        [
+            self.port, self.vlan, self.state, self.days_inactive, self.speed,
+            self.duplex, self.label, self.trunk, self.cdp, self.lldp,
+            self.mac_address, self.manufacturer, self.ip_address,
+            self.hostname] = row
 
     def active(self):
         """Active ports."""
@@ -221,11 +214,14 @@ class Port(object):
             lldp = port.lldp()
             mac_address = port.mac_address()
             manufacturer = port.manufacturer()
+            ip_address = port.ip_address()
+            hostname = port.hostname()
 
             # Append row of data
-            rows.append(PortRow(
+            rows.append(PortRow([
                 name, vlan, state, inactive, speed, duplex,
-                label, trunk, cdp, lldp, mac_address, manufacturer))
+                label, trunk, cdp, lldp, mac_address, manufacturer,
+                ip_address, hostname]))
 
         # Return
         return rows
@@ -434,6 +430,48 @@ class _Port(object):
 
         # Return
         return manufacturer
+
+    def hostname(self):
+        """Return port hostname string.
+
+        Args:
+            None
+
+        Returns:
+            hostname: hostname string
+
+        """
+        # Assign key variables
+        hostname = ''
+        port_data = self.port_data
+
+        # Assign hostname
+        if 'jm_hostname' in port_data:
+            hostname = port_data['jm_hostname']
+
+        # Return
+        return hostname
+
+    def ip_address(self):
+        """Return port ip_address string.
+
+        Args:
+            None
+
+        Returns:
+            ip_address: ip_address string
+
+        """
+        # Assign key variables
+        ip_address = ''
+        port_data = self.port_data
+
+        # Assign ip_address
+        if 'jm_ip_address' in port_data:
+            ip_address = port_data['jm_ip_address']
+
+        # Return
+        return ip_address
 
     def duplex(self):
         """Return port duplex string.
