@@ -7,6 +7,7 @@ from copy import deepcopy
 # Switchmap-NG imports
 from switchmap.utils import configuration
 from switchmap.utils import general
+from switchmap.utils import log
 
 
 def all_devices():
@@ -24,6 +25,10 @@ def all_devices():
     ifindex_hostname_found = False
     config = configuration.Config()
 
+    # Send log message
+    log_message = ('Starting Layer3 updates of device files.')
+    log.log2info(1125, log_message)
+
     # Read ARP, RARP tables
     rarp_table = general.read_yaml_file(config.rarp_file())
     hosts_table = general.read_yaml_file(config.hosts_file())
@@ -32,8 +37,15 @@ def all_devices():
     for filename in os.listdir(config.temp_topology_directory()):
         # Examine all the '.yaml' files in directory
         if filename.endswith('.yaml'):
+            devicename = filename[0:-5]
+
+            # Log message
+            log_message = (
+                'Starting Layer3 updates for device {}.'.format(devicename))
+            log.log2debug(1125, log_message)
+
             # Read file and add to string
-            filepath = config.temp_topology_device_file(filename[0:-5])
+            filepath = config.temp_topology_device_file(devicename)
             device_dict = general.read_yaml_file(filepath)
             loop_dict = deepcopy(device_dict)
 
@@ -96,6 +108,15 @@ def all_devices():
 
             # Write updated file back
             general.create_yaml_file(device_dict, filepath)
+
+            # Log message
+            log_message = (
+                'Completed Layer3 updates for device {}.'.format(devicename))
+            log.log2debug(1125, log_message)
+
+    # Send log message
+    log_message = ('Completed Layer3 updates of device files.')
+    log.log2info(1125, log_message)
 
 
 class Process(object):

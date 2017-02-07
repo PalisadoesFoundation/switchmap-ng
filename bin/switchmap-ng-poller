@@ -317,6 +317,10 @@ def _create_search_files():
     ifindex_table = defaultdict(
         lambda: defaultdict(lambda: defaultdict(dict)))
 
+    # Send log message
+    log_message = ('Starting search file creation.')
+    log.log2info(1125, log_message)
+
     # Create ARP and RARP table files
     # Cycle through list of files in directory
     for filename in os.listdir(topology_directory):
@@ -419,6 +423,10 @@ def _create_search_files():
     general.create_yaml_file(ifindex_table, config.ifindex_file())
     general.create_yaml_file(ifalias_table, config.ifalias_file())
     general.create_yaml_file(host_table, config.hosts_file())
+
+    # Send log message
+    log_message = ('Completed search file creation.')
+    log.log2info(1125, log_message)
 
 
 def main():
