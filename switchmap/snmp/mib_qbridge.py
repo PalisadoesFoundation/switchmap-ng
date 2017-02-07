@@ -143,7 +143,7 @@ class QbridgeQuery(Query):
         oid = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
-            data_dict[key] = value
+            data_dict[key] = str(bytes(value), encoding='utf-8')
 
         # Return
         return data_dict
