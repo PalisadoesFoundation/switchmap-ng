@@ -15,6 +15,7 @@ CONFIG = configuration.Config()
 from switchmap.www.routes.api.devices import API_DEVICES
 from switchmap.www.routes.pages.index import INDEX
 from switchmap.www.routes.pages.devices import DEVICES
+from switchmap.www.routes.pages.search import SEARCH
 from switchmap.constants import (
     SITE_PREFIX, API_PREFIX, API_STATIC_FOLDER, API_TEMPLATE_FOLDER
     )
@@ -32,6 +33,7 @@ API = Flask(
 API.register_blueprint(API_DEVICES, url_prefix=API_PREFIX)
 API.register_blueprint(INDEX, url_prefix=SITE_PREFIX)
 API.register_blueprint(DEVICES, url_prefix=SITE_PREFIX)
+API.register_blueprint(SEARCH, url_prefix=SITE_PREFIX)
 
 # Function to easily find your assests
 API.jinja_env.globals['static'] = (
