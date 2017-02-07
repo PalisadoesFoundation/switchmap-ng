@@ -133,6 +133,9 @@ class PollingAgent(object):
 
         # Post data to the remote server
         while True:
+            log_message = ('Starting device polling sequence.')
+            log.log2info(1125, log_message)
+
             # Delete temporary topology directory files
             temp_topology_directory = (
                 self.server_config.temp_topology_directory())
@@ -157,6 +160,9 @@ class PollingAgent(object):
             # Move files to topology directory
             general.move_files(
                 temp_topology_directory, topology_directory)
+
+            log_message = ('Completed device polling sequence.')
+            log.log2info(1125, log_message)
 
             # Sleep for "delay" seconds
             Agent.agent_sleep(self.name(), delay)
