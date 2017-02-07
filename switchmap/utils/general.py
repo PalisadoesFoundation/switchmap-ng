@@ -87,7 +87,7 @@ def read_yaml_file(filepath, as_string=False):
                 'Error reading file %s. Check permissions, '
                 'existence and file syntax.'
                 '') % (filepath)
-            log.log2die_safe(1065, log_message)
+            log.log2die_safe(1024, log_message)
 
         # Get result
         if as_string is False:
@@ -249,7 +249,7 @@ def delete_files(directory, extension='.yaml'):
     # Determine whether directory is valid
     if os.path.isdir(directory) is False:
         log_message = ('Directory %s does not exist') % (directory)
-        log.log2die_safe(1023, log_message)
+        log.log2die_safe(1007, log_message)
 
     # Get list of files
     filelist = [
@@ -268,7 +268,7 @@ def delete_files(directory, extension='.yaml'):
             log.log2die_safe(1014, log_message)
         except:
             log_message = ('Unexpected error')
-            log.log2die_safe(1015, log_message)
+            log.log2die_safe(1006, log_message)
 
 
 def delete_yaml_files(directory):
