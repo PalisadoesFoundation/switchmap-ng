@@ -5,7 +5,6 @@ from collections import defaultdict
 import binascii
 
 from switchmap.snmp.base_query import Query
-from switchmap.snmp import mib_qbridge
 
 from switchmap.utils import log
 from pprint import pprint
@@ -85,12 +84,22 @@ class BridgeQuery(Query):
         """
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
+        done = False
 
         # Check if Cisco VLANS are supported
         oid_vtpvlanstate = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
         oid_exists = self.snmp_object.oid_exists_walk(oid_vtpvlanstate)
         if bool(oid_exists) is True:
             final = self._macaddresstable_cisco()
+            done = True
+
+        # Check if Juniper VLANS are supported
+        if done is False:
+            oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+            oid_exists = self.snmp_object.oid_exists_walk(
+                oid_dot1qvlanstaticname)
+            if bool(oid_exists) is True:
+                final = self._macaddresstable_juniper()
 
         # Return
         return final
@@ -254,23 +263,28 @@ class BridgeQuery(Query):
         """
         # Initialize key variables
         data_dict = defaultdict(dict)
+        vlan_dict = defaultdict(dict)
         vlans = []
 
-        # Get Juniper VLANs
-        qbridge = mib_qbridge.QbridgeQuery(self.snmp_object)
-        vlan_dict = qbridge.dot1qvlanstaticname()
-        for key, _ in vlan_dict.items():
-            vlans.append(key)
-
-        # Process values
-        oid = '.1.3.6.1.2.1.17.7.1.2.2.1.2'
-
-        for vlan in vlans:
-            new_oid = '{}.{}'.format(oid, vlan)
-            results = self.snmp_object.swalk(new_oid, normalized=False)
+        # Process dot1qvlanstaticname OID
+        oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+        oid_exists = self.snmp_object.oid_exists_walk(oid_dot1qvlanstaticname)
+        if bool(oid_exists) is True:
+            results = self.snmp_object.walk(
+                oid_dot1qvlanstaticname, normalized=True)
             for key, value in results.items():
-                new_key = key[len(oid):]
-                data_dict[new_key] = value
+                vlan_dict[key] = value
+            for key, _ in vlan_dict.items():
+                vlans.append(key)
+
+            # Process values
+            oid = '.1.3.6.1.2.1.17.7.1.2.2.1.2'
+            for vlan in vlans:
+                new_oid = '{}.{}'.format(oid, vlan)
+                results = self.snmp_object.swalk(new_oid, normalized=False)
+                for key, value in results.items():
+                    new_key = key[len(oid):]
+                    data_dict[new_key] = value
 
         # Return data
         return data_dict
