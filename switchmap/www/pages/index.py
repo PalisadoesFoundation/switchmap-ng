@@ -132,13 +132,11 @@ class Device(object):
             row_data[column] = links[index]
 
             # Create new row when max number of columns reached
-            if column >= max_columns:
+            column += 1
+            if column > max_columns:
                 rows.append(DeviceRow(row_data))
                 row_data = [''] * (max_columns + 1)
                 column = 0
-
-            # Increment column we are on
-            column += 1
 
         # Append a row if max number of columns wasn't reached before
         if column > 0 and column <= max_columns:
