@@ -201,8 +201,10 @@ class BridgeQuery(Query):
             mac_dict = self._dot1qtpfdbport()
             for decimal_macaddress, dot1dbaseport in mac_dict.items():
                 # Convert decimal mac to hex
+                # (Only use the last 6 digits in the decimal_macaddress, first
+                # digit is the vlan number)
                 hex_macaddress = ''
-                mac_bytes = decimal_macaddress.split('.')
+                mac_bytes = decimal_macaddress.split('.')[-6:]
                 for mac_byte in mac_bytes:
                     hex_macaddress = (
                         '{}{}'.format(
