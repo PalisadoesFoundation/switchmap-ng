@@ -419,10 +419,24 @@ def _create_search_files():
 
     # Create yaml files
     general.create_yaml_file(arp_table, config.arp_file())
+    log_message = ('Created ARP table.')
+    log.log2debug(1125, log_message)
+
     general.create_yaml_file(rarp_table, config.rarp_file())
+    log_message = ('Created RARP table.')
+    log.log2debug(1125, log_message)
+
     general.create_yaml_file(ifindex_table, config.ifindex_file())
+    log_message = ('Created ifIndex table.')
+    log.log2debug(1125, log_message)
+
     general.create_yaml_file(ifalias_table, config.ifalias_file())
+    log_message = ('Created ifAlias table.')
+    log.log2debug(1125, log_message)
+
     general.create_yaml_file(host_table, config.hosts_file())
+    log_message = ('Created hosts table.')
+    log.log2debug(1125, log_message)
 
     # Send log message
     log_message = ('Completed search file creation.')
