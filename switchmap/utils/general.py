@@ -384,20 +384,23 @@ def move_files(source_dir, target_dir):
             shutil.move(full_path, target_dir)
 
 
-def create_yaml_file(data_dict, filepath):
+def create_yaml_file(data_dict, filepath, ignore_blanks=True):
     """Initialize the class.
 
     Args:
         data_dict: Dictionary to write
         filepath: Name of output file
+        ignore_blanks: Write file even if data_dict is empty
 
     Returns:
         None
 
-    """    # Output the file to the ARP file
-    if bool(data_dict) is True:
-        yaml_string = dict2yaml(data_dict)
+    """
+    # Determine whether file should be created
+    if ignore_blanks is False and bool(data_dict) is True:
+        return
 
-        # Dump data
-        with open(filepath, 'w') as file_handle:
-            file_handle.write(yaml_string)
+    # Create file
+    yaml_string = dict2yaml(data_dict)
+    with open(filepath, 'w') as file_handle:
+        file_handle.write(yaml_string)
