@@ -219,7 +219,9 @@ class BridgeQuery(Query):
             # Assign MACs to ifindex
             baseportifindex = self.dot1dbaseport_2_ifindex()
             for dot1dbaseport, ifindex in baseportifindex.items():
-                final[ifindex]['jm_macs'] = dot1dbaseport_macs[dot1dbaseport]
+                if dot1dbaseport in dot1dbaseport_macs:
+                    final[ifindex][
+                        'jm_macs'] = dot1dbaseport_macs[dot1dbaseport]
 
         # Return
         return final
