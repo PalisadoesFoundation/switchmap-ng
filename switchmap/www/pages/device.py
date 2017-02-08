@@ -299,6 +299,7 @@ class _Port(object):
         mac_address = ''
         port_data = self.port_data
 
+        # Don't show manufacturer on trunk ports
         if bool(self.is_trunk()) is False:
             if 'jm_macs' in port_data:
                 if len(port_data['jm_macs']) == 1:
@@ -424,9 +425,11 @@ class _Port(object):
         manufacturer = ''
         port_data = self.port_data
 
-        # Assign manufacturer
-        if 'jm_manufacturer' in port_data:
-            manufacturer = port_data['jm_manufacturer']
+        # Don't show manufacturer on trunk ports
+        if bool(self.is_trunk()) is False:
+            # Assign manufacturer
+            if 'jm_manufacturer' in port_data:
+                manufacturer = port_data['jm_manufacturer']
 
         # Return
         return manufacturer
