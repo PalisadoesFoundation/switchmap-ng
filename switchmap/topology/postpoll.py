@@ -47,6 +47,8 @@ def all_devices():
             # Read file and add to string
             filepath = config.temp_topology_device_file(devicename)
             device_dict = general.read_yaml_file(filepath)
+
+            # Update dict with values
             loop_dict = deepcopy(device_dict)
 
             # Populate ifIndex table
@@ -88,7 +90,6 @@ def all_devices():
                                 # This indicates we have found a match in the
                                 # hosts file
                                 if key in ifindex_ips:
-                                    print('boo')
                                     # Assign values to a meaningful
                                     # IP / hostname pair
                                     device_dict['layer1'][ifindex][
@@ -136,11 +137,11 @@ class Process(object):
 
     """
 
-    def __init__(self, device_data, oui):
+    def __init__(self, input_data, oui):
         """Initialize class.
 
         Args:
-            device_data: Recently polled device data to processs
+            input_data: Recently polled device data to processs
             oui: OUI data for lookups
 
         Returns:
@@ -211,8 +212,17 @@ class Process(object):
             jm_duplex: A vendor agnostic status code for the duplex setting
 
         """
-        # Initialize key variables
-        updated_device_data = deepcopy(device_data)
+        # Send log message
+        devicename = input_data['misc']['host']
+        log_message = (
+            'Processing data from host {}'.format(devicename))
+        log.log2debug(1125, log_message)
+
+        # Fix known issues with Juniper devices where certain layer 1
+        # parameters such as MAC addresses are assigned to virtual
+        # non Ethernet ifIndex values.
+        updated_device_data = _fixup(input_data)
+        device_data = deepcopy(updated_device_data)
 
         # Create dict for layer1 Ethernet data
         for ifindex, layer1_data in device_data['layer1'].items():
@@ -238,14 +248,10 @@ class Process(object):
                     'system']['IF-MIB']['ifStackStatus'][ifindex]
 
                 # Update vlan to universal switchmap.layer1_data value
-                for higherlayer in higherlayers:
-                    # All numeric keys in YAML need to be strings. Prepare
-                    # for key checking.
-                    ifstackhigherlayer = str(higherlayer)
-
+                for ifstackhigherlayer in higherlayers:
                     # This is an Ethernet port with no higher level
                     # interfaces. Use lower level ifIndex
-                    if ifstackhigherlayer == '0':
+                    if bool(ifstackhigherlayer) is False:
                         updated_layer1_data['jm_vlan'] = _vlan(
                             deepcopy(device_data), ifstacklowerlayer)
 
@@ -300,6 +306,11 @@ class Process(object):
         # Done
         self.data = updated_device_data
 
+        # Send log message
+        log_message = (
+            'Completed processing data from host {}'.format(devicename))
+        log.log2debug(1125, log_message)
+
     def augmented_data(self):
         """Return updated data.
 
@@ -312,6 +323,67 @@ class Process(object):
         """
         # Return
         return self.data
+
+
+def _fixup(device_data):
+    """Assign layer 1 values to the correct Ethernet port.
+
+    Args:
+        device_data: Data dict related to the device
+
+    Returns:
+        result: Result of assignments
+
+    """
+    # Initialize key variables
+    source = deepcopy(device_data)
+    result = deepcopy(device_data)
+    valid = False
+
+    # Send log message
+    devicename = source['misc']['host']
+    log_message = (
+        'Starting data fixup of host {}'.format(devicename))
+    log.log2debug(1125, log_message)
+
+    # Get ifStackStatus data
+    if 'system' in source:
+        if 'IF-MIB' in source['system']:
+            if 'ifStackStatus' in source['system']['IF-MIB']:
+                valid = True
+
+    # Return if not valid
+    if valid is False:
+        # Send log message
+        devicename = source['misc']['host']
+        log_message = (
+            'Completed data fixup of host {}'.format(devicename))
+        log.log2debug(1125, log_message)
+        return result
+
+    # Get a list of ifIndex values to Process
+    status_values = source['system']['IF-MIB']['ifStackStatus']
+
+    # Get the ones that are non Ethernet and have Ethernet parents
+    for parent, children in status_values.items():
+        for child in children:
+            if bool(child) is False:
+                continue
+            else:
+                # Copy key values from child to parent
+                if source['layer1'][parent]['ifType'] == 6:
+                    for parameter, value in source['layer1'][child].items():
+                        if parameter not in result['layer1'][parent]:
+                            result['layer1'][parent][parameter] = value
+
+    # Send log message
+    devicename = source['misc']['host']
+    log_message = (
+        'Completed data fixup of host {}'.format(devicename))
+    log.log2debug(1125, log_message)
+
+    # Return
+    return result
 
 
 def _is_ethernet(layer1_data):
@@ -356,6 +428,10 @@ def _vlan(layer1_data, ifindex):
     # Initialize key variables
     vlans = None
 
+    # Failsafe
+    if ifindex not in layer1_data['layer1']:
+        return vlans
+
     # Determine vlan number for Cisco devices
     if 'vmVlan' in layer1_data['layer1'][ifindex]:
         vlans = [int(layer1_data['layer1'][ifindex]['vmVlan'])]
@@ -383,6 +459,10 @@ def _nativevlan(layer1_data, ifindex):
     """
     # Initialize key variables
     vlan = None
+
+    # Failsafe
+    if ifindex not in layer1_data['layer1']:
+        return vlan
 
     # Determine native VLAN tag number for Cisco devices
     if 'vlanTrunkPortNativeVlan' in layer1_data['layer1'][ifindex]:
@@ -482,6 +562,10 @@ def _trunk(layer1_data, ifindex):
     """
     # Initialize key variables
     trunk = False
+
+    # Failsafe
+    if ifindex not in layer1_data['layer1']:
+        return trunk
 
     # Determine if trunk for Cisco devices
     if 'vlanTrunkPortDynamicStatus' in layer1_data['layer1'][ifindex]:

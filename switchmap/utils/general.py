@@ -48,15 +48,14 @@ def get_hosts():
 
     """
     # Read configuration
-    cache_directory = configuration.Config().topology_directory()
-
     hosts = []
-    for root, _, files in os.walk(cache_directory):
-        for filename in files:
-            filepath = os.path.join(root, filename)
-            if filepath.endswith('.yaml'):
-                hostname = filename[:-5]
-                hosts.append(hostname)
+    topology_directory = configuration.Config().topology_directory()
+
+    # Cycle through list of files in directory
+    for filename in os.listdir(topology_directory):
+        if filename.endswith('.yaml'):
+            hostname = filename[:-5]
+            hosts.append(hostname)
     return sorted(hosts)
 
 
