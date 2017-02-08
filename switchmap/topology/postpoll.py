@@ -27,7 +27,7 @@ def all_devices():
 
     # Send log message
     log_message = ('Starting Layer3 updates of device files.')
-    log.log2info(1125, log_message)
+    log.log2info(1013, log_message)
 
     # Read ARP, RARP tables
     rarp_table = general.read_yaml_file(config.rarp_file())
@@ -113,11 +113,11 @@ def all_devices():
             # Log message
             log_message = (
                 'Completed Layer3 updates for device {}.'.format(devicename))
-            log.log2debug(1125, log_message)
+            log.log2debug(1019, log_message)
 
     # Send log message
     log_message = ('Completed Layer3 updates of device files.')
-    log.log2info(1125, log_message)
+    log.log2info(1012, log_message)
 
 
 class Process(object):
