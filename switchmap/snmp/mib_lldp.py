@@ -8,6 +8,7 @@ import binascii
 from switchmap.snmp.base_query import Query
 from switchmap.snmp.mib_bridge import BridgeQuery
 from switchmap.utils import general
+from switchmap.snmp import mib_if
 
 
 def get_query():
@@ -52,6 +53,7 @@ class LldpQuery(Query):
         """
         # Define query object
         self.snmp_object = snmp_object
+        self.use_ifindex = True
 
         # Get one OID entry in MIB (lldpRemSysName)
         test_oid = '.1.0.8802.1.1.2.1.4.1.1.9'
@@ -63,6 +65,16 @@ class LldpQuery(Query):
 
         if self.supported() and bridge_mib.supported():
             self.baseportifindex = bridge_mib.dot1dbaseport_2_ifindex()
+
+            # Determine whether LLDP is keyed on ifIndex or BasePortIndex
+            # If the ifindex method is being used, all the lldpLocPortIds
+            # will match the ifindex values
+            ifindex = mib_if.IfQuery(snmp_object).ifindex()
+            lldplocportid = self._lldplocportid()
+            for key, _ in lldplocportid.items():
+                if key not in ifindex:
+                    self.use_ifindex = False
+                    break
         else:
             self.baseportifindex = None
 
@@ -128,11 +140,7 @@ class LldpQuery(Query):
         results = self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
-            if self.baseportifindex is not None:
-                bridgeport = _penultimate_node(key)
-                ifindex = self.baseportifindex[bridgeport]
-            else:
-                ifindex = _penultimate_node(key)
+            ifindex = self._ifindex(key)
 
             # We have seen issues where self.baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
@@ -168,11 +176,7 @@ class LldpQuery(Query):
         results = self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
-            if self.baseportifindex is not None:
-                bridgeport = _penultimate_node(key)
-                ifindex = self.baseportifindex[bridgeport]
-            else:
-                ifindex = _penultimate_node(key)
+            ifindex = self._ifindex(key)
 
             # We have seen issues where self.baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
@@ -214,11 +218,7 @@ class LldpQuery(Query):
         results = self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
-            if self.baseportifindex is not None:
-                bridgeport = _penultimate_node(key)
-                ifindex = self.baseportifindex[bridgeport]
-            else:
-                ifindex = _penultimate_node(key)
+            ifindex = self._ifindex(key)
 
             # We have seen issues where self.baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
@@ -252,11 +252,8 @@ class LldpQuery(Query):
         # Process results
         results = self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
-            if self.baseportifindex is not None:
-                bridgeport = _penultimate_node(key)
-                ifindex = self.baseportifindex[bridgeport]
-            else:
-                ifindex = _penultimate_node(key)
+            # Check if this OID is indexed using iFindex or dot1dBasePort
+            ifindex = self._ifindex(key)
 
             # We have seen issues where self.baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
@@ -266,6 +263,61 @@ class LldpQuery(Query):
 
         # Return the interface descriptions
         return data_dict
+
+    def _lldplocportid(self, oidonly=False):
+        """Return dict of LLDP-MIB lldpLocPortId for each port.
+
+        Args:
+            oidonly: Return OID's value, not results, if True
+
+        Returns:
+            data_dict: Dict of lldpLocPortId using ifIndex as key
+
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+
+        # Descriptions
+        oid = '.1.0.8802.1.1.2.1.3.7.1.3'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
+        results = self.snmp_object.swalk(oid, normalized=True)
+        for key, value in results.items():
+            data_dict[int(key)] = general.cleanstring(
+                str(bytes(value), encoding='utf-8'))
+
+        # Return the interface descriptions
+        return data_dict
+
+    def _ifindex(self, key):
+        """Return ifindex of port.
+
+        Args:
+            key: Key from SNMP walk
+
+        Returns:
+            ifindex: The ifindex of the port
+
+        """
+        # Initialize key variables
+        ifindex = None
+
+        # Check if this OID is indexed using iFindex or dot1dBasePort
+        if self.baseportifindex is not None:
+            if self.use_ifindex is True:
+                ifindex = _penultimate_node(key)
+            else:
+                bridgeport = _penultimate_node(key)
+                ifindex = self.baseportifindex[bridgeport]
+        else:
+            ifindex = _penultimate_node(key)
+
+        # Return
+        return ifindex
 
 
 def _penultimate_node(oid):
