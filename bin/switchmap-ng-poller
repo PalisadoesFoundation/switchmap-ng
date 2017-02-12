@@ -29,16 +29,16 @@ else:
 
 # switchmap.libraries
 try:
-    from switchmap.agents import agent as Agent
+    from switchmap.utils import log
 except:
     print('You need to set your PYTHONPATH to include the switchmap library')
     sys.exit(2)
 from switchmap.utils import configuration
 from switchmap.utils import general
-from switchmap.utils import log
 from switchmap.snmp import snmp_info
 from switchmap.snmp import snmp_manager
 from switchmap.topology import postpoll
+from switchmap.main import agent as Agent
 
 
 def _oui():

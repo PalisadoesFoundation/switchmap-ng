@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Class for normalizing the data read from YAML files."""
 
+# Standard imports
 import os
 from copy import deepcopy
 
