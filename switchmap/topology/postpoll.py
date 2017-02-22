@@ -43,7 +43,7 @@ def all_devices():
             # Log message
             log_message = (
                 'Starting Layer3 updates for device {}.'.format(devicename))
-            log.log2debug(1125, log_message)
+            log.log2debug(1034, log_message)
 
             # Read file and add to string
             filepath = config.temp_topology_device_file(devicename)
@@ -217,7 +217,7 @@ class Process(object):
         devicename = input_data['misc']['host']
         log_message = (
             'Processing data from host {}'.format(devicename))
-        log.log2debug(1125, log_message)
+        log.log2debug(1028, log_message)
 
         # Fix known issues with Juniper devices where certain layer 1
         # parameters such as MAC addresses are assigned to virtual
@@ -310,7 +310,7 @@ class Process(object):
         # Send log message
         log_message = (
             'Completed processing data from host {}'.format(devicename))
-        log.log2debug(1125, log_message)
+        log.log2debug(1029, log_message)
 
     def augmented_data(self):
         """Return updated data.
@@ -345,7 +345,7 @@ def _fixup(device_data):
     devicename = source['misc']['host']
     log_message = (
         'Starting data fixup of host {}'.format(devicename))
-    log.log2debug(1125, log_message)
+    log.log2debug(1031, log_message)
 
     # Get ifStackStatus data
     if 'system' in source:
@@ -359,7 +359,7 @@ def _fixup(device_data):
         devicename = source['misc']['host']
         log_message = (
             'Completed data fixup of host {}'.format(devicename))
-        log.log2debug(1125, log_message)
+        log.log2debug(1032, log_message)
         return result
 
     # Get a list of ifIndex values to Process
@@ -381,7 +381,7 @@ def _fixup(device_data):
     devicename = source['misc']['host']
     log_message = (
         'Completed data fixup of host {}'.format(devicename))
-    log.log2debug(1125, log_message)
+    log.log2debug(1033, log_message)
 
     # Return
     return result

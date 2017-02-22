@@ -72,7 +72,7 @@ def _create_search_files():
                     'Error reading file %s. Check permissions, '
                     'existence and file syntax.'
                     '') % (filepath)
-                log.log2die_safe(1065, log_message)
+                log.log2die_safe(1001, log_message)
 
             device_dict = yaml.load(yaml_from_file)
             # Populate ARP table
@@ -118,7 +118,7 @@ def _create_search_files():
                     'Error reading file %s. Check permissions, '
                     'existence and file syntax.'
                     '') % (filepath)
-                log.log2die_safe(1065, log_message)
+                log.log2die_safe(1027, log_message)
 
             device_dict = yaml.load(yaml_from_file)
 

@@ -54,7 +54,7 @@ def main():
     # Ingest file
     if os.path.isfile(input_filename) is False:
         log_message = 'Filename {} not found.'.format(input_filename)
-        log.log2die(1000, log_message)
+        log.log2die(1025, log_message)
     if input_filename.endswith('oui.txt') is False:
         log_message = (
             'Filename {} is invalid. It must end with '
