@@ -35,7 +35,7 @@ from switchmap.www import API
 from switchmap.utils import configuration
 from switchmap.utils import log
 from switchmap.utils import daemon
-from switchmap.agents import agent as Agent
+from switchmap.main import agent as Agent
 
 
 class StandaloneApplication(BaseApplication):

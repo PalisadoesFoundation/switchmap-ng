@@ -4,22 +4,22 @@
  <div class="row">
      <div class="col-lg-12">
          <h1 class="page-header">
-             {{hostname}}
-             <small>Ports List</small>
+             Search Results
          </h1>
      </div>
  </div>
 
+{% for hostname, port_table in results_dict.items() %}
     <div class="row">
-      <div class="col-lg-6">
+      <div class="col-lg-12">
           <div class="panel panel-default">
               <div class="panel-heading">
-                  Search
+                  {{hostname}}
               </div>
               <!-- /.panel-heading -->
               <div class="panel-body">
                   <div class="table-responsive table-bordered">
-                      {{search_term}}
+                      {{port_table|safe}}
                   </div>
                   <!-- /.table-responsive -->
               </div>
@@ -28,25 +28,7 @@
           <!-- /.panel -->
       </div>
     </div>
-
-    <div class="row">
-       <div class="col-lg-12">
-           <div class="panel panel-default">
-               <div class="panel-heading">
-                   Port Information
-               </div>
-               <!-- /.panel-heading -->
-               <div class="panel-body">
-                   <div class="table-responsive">
-                       {{port_table|safe}}
-                   </div>
-                   <!-- /.table-responsive -->
-               </div>
-               <!-- /.panel-body -->
-           </div>
-           <!-- /.panel -->
-       </div>
-    </div>
+{% endfor %}
 
  <!-- /.row -->
 {% endblock %}

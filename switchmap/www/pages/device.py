@@ -20,12 +20,13 @@ class _RawCol(Col):
 class Device(object):
     """Class that creates the device's various HTML tables."""
 
-    def __init__(self, config, host):
+    def __init__(self, config, host, ifindexes=None):
         """Initialize the class.
 
         Args:
             config: Configuration object
             host: Hostname to process
+            ifindexes: List of ifindexes to retrieve. If None, then do all.
 
         Returns:
             None
@@ -35,6 +36,7 @@ class Device(object):
         translation = Translator(config, host)
         self.port_data = translation.ethernet_data()
         self.system_data = translation.system_summary()
+        self.ifindexes = ifindexes
 
     def ports(self):
         """Create the ports table for the device.
@@ -47,7 +49,7 @@ class Device(object):
 
         """
         # Initialize key variables
-        data = Port(self.port_data).data()
+        data = Port(self.port_data, ifindexes=self.ifindexes).data()
 
         # Populate the table
         table = PortTable(data)
@@ -170,11 +172,12 @@ class PortRow(object):
 class Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
-    def __init__(self, device_data):
+    def __init__(self, device_data, ifindexes=None):
         """Method instantiating the class.
 
         Args:
             device_data: Dictionary of device data
+            ifindexes: List of ifindexes to retrieve. If None, then do all.
 
         Returns:
             None
@@ -182,6 +185,10 @@ class Port(object):
         """
         # Initialize key variables
         self.device_data = device_data
+        if bool(ifindexes) is True and isinstance(ifindexes, list) is True:
+            self.ifindexes = ifindexes
+        else:
+            self.ifindexes = []
 
     def data(self):
         """Return data for the device's ports.
@@ -198,6 +205,11 @@ class Port(object):
 
         # Create rows of data
         for _, port_data in sorted(self.device_data.items()):
+            # Filter results if required
+            if bool(self.ifindexes) is True:
+                if int(port_data['ifIndex']) not in self.ifindexes:
+                    continue
+
             # Assign values for Ethernet ports only
             name = port_data['ifName']
             label = port_data['ifAlias']
