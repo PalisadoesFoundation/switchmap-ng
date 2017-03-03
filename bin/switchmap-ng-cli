@@ -1,0 +1,812 @@
+#!/usr/bin/env python3
+"""switchmap  classes.
+
+Manages the verification of required packages.
+
+"""
+
+# Main python libraries
+import textwrap
+import sys
+from getpass import getpass
+import subprocess
+import argparse
+import os
+from collections import defaultdict
+from pprint import pprint
+
+
+# Try to create a working PYTHONPATH
+script_directory = os.path.dirname(os.path.realpath(__file__))
+root_directory = os.path.abspath(os.path.join(script_directory, os.pardir))
+if script_directory.endswith('/switchmap-ng/bin') is True:
+    sys.path.append(root_directory)
+else:
+    print(
+        'This script is not installed in the "switchmap-ng/bin" directory. '
+        'Please fix.')
+    sys.exit(2)
+
+# Do switchmap-ng imports
+from switchmap.utils import log
+from switchmap.utils import general
+from switchmap.utils import setup
+
+
+def main():
+    """Run basic tests.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    #
+    cli = CLI()
+    cli.process()
+
+    # Test validity
+    # version = _PreCheck()
+    # version.version()
+
+
+class CLI(object):
+    """Class that manages the CLI."""
+
+    def __init__(self, additional_help=''):
+        """Method initializing the class.
+
+        Args:
+            additional_help: String for additional help information
+
+        Returns:
+            None
+
+        """
+        # Header for the help menu of the application
+        self.parser = argparse.ArgumentParser(
+            prog='switchmap-ng-cli',
+            description=additional_help,
+            formatter_class=argparse.RawTextHelpFormatter)
+
+        # Subparser for subcommands
+        subparsers = self.parser.add_subparsers(dest='action')
+
+        # Parse install parameters
+        _Install(subparsers)
+
+        # Return the CLI arguments
+        self.args = self.parser.parse_args()
+
+    def process(self):
+        """Act on CLI arguments.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        args = self.args
+        parser = self.parser
+
+        # Process each option
+        if args.action == 'install':
+            self._install_cli()
+            sys.exit(0)
+        elif args.action == 'serve':
+            self._serve_cli()
+            sys.exit(0)
+        elif args.action == 'logs':
+            self._logs_cli()
+            sys.exit(0)
+        elif args.action == 'test':
+            self._test_cli()
+            sys.exit(0)
+        else:
+            parser.print_help()
+            sys.exit(0)
+        sys.exit(2)
+
+    def _logo(self):
+        pass
+
+    def _install_cli(self):
+        """Install switchmap-ng.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        #######################################################################
+        # Check prerequisite package versions
+        #######################################################################
+        # Initialize key variables
+        precheck = _PreCheck()
+        precheck.validate()
+
+        # Create a configuration
+        config = _Config()
+        config.validate()
+        config.write()
+
+        # Run setup
+        setup.run()
+
+        # Start daemons
+        daemon = _Daemon()
+        daemon.start()
+
+    def _serve_cli(self):
+        pass
+
+    def _logs_cli(self):
+        pass
+
+    def _test_cli(self):
+        print('Test')
+
+
+class _Install(object):
+    """Class processes CLI 'install' option."""
+
+    def __init__(self, subparsers, width=80):
+        """Function for intializing the class."""
+        # Initialize key variables
+        subparsers.add_parser(
+            'install',
+            help=textwrap.fill(
+                'Build and installs switchmap-ng dependencies.', width=width)
+        )
+
+
+class _Daemon(object):
+    """Class to start switchmap-ng daemons."""
+
+    def __init__(self):
+        """Function for intializing the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+
+    def start(self):
+        """Write the config to file.
+
+        Args:
+            None
+
+
+        Returns:
+            None
+        """
+        # Get daemon status
+        daemons = ['switchmap-ng-api', 'switchmap-ng-ingester']
+        for daemon in daemons:
+
+            running = self._running(daemon)
+
+            # Prompt to restart if already running
+            if running is True:
+                restart = input(
+                    '\nINPUT - Daemon {} is running. Restart? [(Y)/N] '
+                    ''.format(daemon))
+                if bool(restart) is False:
+                    self._restart(daemon)
+                    setup.print_ok(
+                        'Successfully restarted daemon {}.'.format(daemon))
+                elif restart[0].lower() != 'n':
+                    self._restart(daemon)
+                    setup.print_ok(
+                        'Successfully restarted daemon {}.'.format(daemon))
+            else:
+                self._start(daemon)
+                setup.print_ok(
+                    'Successfully started daemon {}.'.format(daemon))
+
+    def _restart(self, daemon):
+        """Start or restart daemon.
+
+        Args:
+            daemon: Name of daemon
+
+        Returns:
+            None
+
+        """
+        # restart
+        self._start(daemon, restart=True)
+
+    def _start(self, daemon, restart=False):
+        """Start or restart daemon.
+
+        Args:
+            daemon: Name of daemon
+            restart: Restart if True
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        running = False
+        if restart is True:
+            attempt = 'restart'
+        else:
+            attempt = 'start'
+
+        # Get status
+        _root_directory = general.root_directory()
+        if restart is False:
+            script_name = '{}/bin/{} --start'.format(_root_directory, daemon)
+        else:
+            script_name = '{}/bin/{} --restart'.format(_root_directory, daemon)
+
+        # Attempt to restart / start
+        response = _run_script(script_name)
+        if bool(response['error_code']) is True:
+            log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
+            log.log2see_safe(1032, log_message)
+
+        # Return
+        return running
+
+    def _running(self, daemon):
+        """Determine status of daemon.
+
+        Args:
+            daemon: Name of daemon
+
+        Returns:
+            running: True if running
+
+        """
+        # Initialize key variables
+        running = False
+
+        # Get status
+        _root_directory = general.root_directory()
+        script_name = '{}/bin/{} --status'.format(_root_directory, daemon)
+        response = _run_script(script_name)
+        for key, value in response.items():
+            if key == 'output':
+                if 'running' in str(value).lower():
+                    running = True
+
+        # Return
+        return running
+
+
+class _Config(object):
+    """Class to test setup."""
+
+    def __init__(self):
+        """Function for intializing the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Do key import
+        import yaml
+
+        # Initialize key variables
+        valid_directories = []
+        config = ("""\
+main:
+    log_directory:
+    log_level: debug
+    ingest_cache_directory:
+    ingest_pool_size: 20
+    listen_address: 0.0.0.0
+    bind_port: 6000
+    interval: 300
+    memcached_hostname: localhost
+    memcached_port: 11211
+    sqlalchemy_pool_size: 10
+    sqlalchemy_max_overflow: 10
+    db_hostname: localhost
+    db_username: switchmap_ng
+    db_password:
+    db_name: switchmap_ng
+""")
+        self.config_dict = yaml.load(config)
+        directory_dict = defaultdict(lambda: defaultdict(dict))
+
+        # Read yaml files from configuration directory
+        self.directories = general.config_directories()
+
+        # Check each directory in sequence
+        for config_directory in self.directories:
+            # Check if config_directory exists
+            if os.path.isdir(config_directory) is False:
+                continue
+
+            # Cycle through list of files in directory
+            for filename in os.listdir(config_directory):
+                # Examine all the '.yaml' files in directory
+                if filename.endswith('.yaml'):
+                    # YAML files found
+                    valid_directories.append(config_directory)
+
+        if bool(valid_directories) is True:
+            directory_dict = general.read_yaml_files(valid_directories)
+
+        # Populate config_dict with any values found in directory_dict
+        for _main, data_dict in directory_dict.items():
+            if _main != 'main':
+                log_message = (
+                    'Invalid files found in configuration directory')
+                log.log2die_safe(1033, log_message)
+
+            for key, value in data_dict.items():
+                self.config_dict[_main][key] = value
+
+    def validate(self):
+        """Validate all pre-requisites are OK.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Verify db credentials
+        self._db_credentials()
+
+        # Attempt to connect to the MySQL database
+        self._db_connectivity()
+
+    def write(self):
+        """Write the config to file.
+
+        Args:
+            None
+
+
+        Returns:
+            None
+        """
+        # Do key import
+        import yaml
+
+        # Initialize key variables
+        directory = self.directories[0]
+
+        # Update configuration file if required
+        for next_directory in self.directories:
+            # Delete all YAML files in the configuration directory
+            general.delete_yaml_files(next_directory)
+
+        # Write config back to directory
+        filepath = ('%s/config.yaml') % (directory)
+        with open(filepath, 'w') as outfile:
+            yaml.dump(self.config_dict, outfile, default_flow_style=False)
+
+            # Write status Update
+            setup.print_ok('Created configuration file {}.'.format(filepath))
+
+    def _db_credentials(self):
+        """Validate database credentials.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        missing = False
+        parameters = [
+            'db_hostname', 'db_password', 'db_username', 'db_password']
+
+        # Give warning message if no parameters found
+        for parameter in parameters:
+            if bool(self.config_dict['main'][parameter]) is False:
+                missing = True
+        if missing is True:
+            print('\nMISSING - Database parameters need to be updated.')
+
+        # Prompt for any missing database parameters
+        for parameter in sorted(parameters):
+            if bool(self.config_dict['main'][parameter]) is False:
+                if parameter != 'db_password':
+                    self.config_dict['main'][parameter] = input(
+                        'Input database {}: '.format(parameter[3:]))
+                else:
+                    self.config_dict['main'][parameter] = getpass(
+                        'Input database password: ')
+
+        # Print a space
+        if missing is True:
+            print('')
+
+    def _db_connectivity(self):
+        """Validate we can connect to the database.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Do key imports
+        import pymysql
+
+        # Initialize key variables
+        valid = False
+        db_hostname = self.config_dict['main']['db_hostname']
+        db_password = self.config_dict['main']['db_password']
+        db_username = self.config_dict['main']['db_username']
+        db_name = self.config_dict['main']['db_name']
+
+        # Do test
+        try:
+            # Open database connection. Prepare cursor
+            database = pymysql.connect(
+                host=db_hostname,
+                user=db_username,
+                passwd=db_password,
+                db=db_name)
+            cursor = database.cursor()
+
+            # Do a basic check
+            cursor.execute('SELECT VERSION()')
+            results = cursor.fetchone()
+
+            # Check result
+            valid = bool(results)
+
+            # disconnect from server
+            database.close()
+
+        except Exception as _:
+            valid = False
+
+        except:
+            valid = False
+
+        # Process validity
+        if valid is True:
+            log_message = 'Database connectivity successfully verified.'
+            setup.print_ok(log_message)
+        else:
+            log_message = (
+                'Cannot connect to the database. Verify your credentials. '
+                'Database Hostname: "{}", Database Username: "{}", '
+                'Database Name: "{}", Database Password: "******"'
+                ''.format(db_hostname, db_username, db_name))
+            log.log2die_safe(1067, log_message)
+
+
+class _PreCheck(object):
+    """Class to test setup."""
+
+    def __init__(self):
+        """Function for intializing the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+
+    def validate(self):
+        """Validate all pre-requisites are OK.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Test Python version
+        self._python()
+
+        # Test Python pip version
+        self._pip()
+
+        # Test MySQL version
+        self._mysql()
+
+        # Test MySQL version
+        self._memcached()
+
+    def _memcached(self):
+        """Determine pip3 version.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Find pip3 executable
+        cli_string = 'which memcached'
+        response = _run_script(cli_string)
+
+        # Not OK if not found
+        if bool(response['error_code']) is True:
+            log_message = (
+                'memcached is not installed. switchmap-ng runs best with it.')
+            log.log2see_safe(1076, log_message)
+        else:
+            log_message = 'memcached executable found.'
+            setup.print_ok(log_message)
+
+            # Check whether the server is running
+            cli_string = 'ps aux | grep /usr/bin/memcached | grep -v grep'
+            response = bool(os.popen(cli_string).read())
+
+            # Not OK if not fount
+            if response is False:
+                log_message = (
+                    'memcached is not running. switchmap-ng runs best with it.')
+                log.log2see_safe(1077, log_message)
+            else:
+                log_message = 'memcached is running.'
+                setup.print_ok(log_message)
+
+    def _pip(self):
+        """Determine pip3 version.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Find pip3 executable
+        cli_string = 'which pip3'
+        response = _run_script(cli_string)
+
+        # Not OK if not fount
+        if bool(response['error_code']) is True:
+            log_message = ('python pip3 not installed.')
+            log.log2die_safe(1094, log_message)
+        else:
+            log_message = 'Python pip3 executable found.'
+            setup.print_ok(log_message)
+
+            # install pip3 modules
+            modules = [
+                'setuptools', 'PyYAML', 'PyMySQL',
+                'SQLAlchemy', 'SQLAlchemy-Utils']
+            for module in modules:
+                _pip3_install(module)
+
+    def _python(self):
+        """Determine Python version.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        valid = True
+        major = 3
+        minor = 5
+        major_installed = sys.version_info[0]
+        minor_installed = sys.version_info[1]
+
+        # Determine whether python version is too low
+        if major_installed < major:
+            valid = False
+        elif major_installed == major and minor_installed < minor:
+            valid = False
+
+        # Process validity
+        if valid is False:
+            log_message = (
+                'Required python version must be >= {}.{}. '
+                'Python version {}.{} installed'
+                ''.format(major, minor, major_installed, minor_installed))
+            log.log2die_safe(1095, log_message)
+        else:
+            log_message = (
+                'Python version {}.{}.'
+                ''.format(major_installed, minor_installed))
+            setup.print_ok(log_message)
+
+    def _mysql(self):
+        """Determine MySQL version.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        valid = True
+        versions = {
+            'maria': {'major': 10, 'minor': 0},
+            'mysql': {'major': 5, 'minor': 7}
+        }
+
+        # Get response from mysql command
+        cli_string = '/usr/bin/mysql --version'
+        response = _run_script(cli_string)
+
+        # Not OK if not fount
+        if bool(response['error_code']) is True:
+            valid = False
+            log_message = ('MySQL / MariaDB not installed.')
+            log.log2die_safe(1096, log_message)
+
+        else:
+            # Determine major and minor versions of software
+            version_string = response['output'].split()[4]
+            version_list = version_string.split('.')
+            major_installed = int(version_list[0])
+            minor_installed = int(version_list[1])
+
+            # We are running MariaDB
+            if 'maria' in version_string.lower():
+                major = versions['maria']['major']
+                minor = versions['maria']['minor']
+
+                # Exit if  version is too low
+                if major_installed < major:
+                    valid = False
+                elif major_installed == major and minor_installed < minor:
+                    valid = False
+                else:
+                    valid = True
+
+                if valid is False:
+                    log_message = (
+                        'MariaDB version needs to be >= than {}.{}.'
+                        ''.format(major, minor))
+                    log.log2die_safe(1097, log_message)
+                else:
+                    log_message = (
+                        'MariaDB version {}.{}.'
+                        ''.format(major_installed, minor_installed))
+                    setup.print_ok(log_message)
+
+            # We are running MySQL
+            else:
+                major = versions['mysql']['major']
+                minor = versions['mysql']['minor']
+
+                # Exit if  version is too low
+                if major_installed < major:
+                    valid = False
+                elif major_installed == major and minor_installed < minor:
+                    valid = False
+                else:
+                    valid = True
+
+                if valid is False:
+                    log_message = (
+                        'MySQL version needs to be >= than {}.{}.'
+                        ''.format(major, minor))
+                    log.log2die_safe(1098, log_message)
+                else:
+                    log_message = (
+                        'MySQL version {}.{}.'
+                        ''.format(major_installed, minor_installed))
+                    setup.print_ok(log_message)
+
+        # Check whether the server is running
+        cli_string = 'ps aux | grep /usr/sbin/mysqld | grep -v grep'
+        response = bool(os.popen(cli_string).read())
+
+        # Not OK if not fount
+        if response is False:
+            log_message = ('MySQL / MariaDB is not running.')
+            log.log2die_safe(1099, log_message)
+        else:
+            log_message = 'MySQL / MariaDB is running.'
+            setup.print_ok(log_message)
+
+
+def _pip3_install(module):
+    """Install python module using pip3.
+
+    Args:
+        module: module to install
+
+    Returns:
+        None
+
+    """
+    # Determine version of pip3
+    cli_string = 'pip3 --version'
+    response = os.popen(cli_string).read()
+    version = response.split()[1]
+
+    # Attempt to install module
+    if version < '9.0.0':
+        cli_string = 'pip3 list | grep {}'.format(module)
+    else:
+        cli_string = 'pip3 list --format columns | grep {}'.format(module)
+    response = bool(os.popen(cli_string).read())
+
+    if response is False:
+        # YAML is not installed try to install it
+        cli_string = 'pip3 install --user {}'.format(module)
+        response_install = _run_script(cli_string)
+
+        # Fail if module cannot be installed
+        if bool(response_install['error_code']) is True:
+            log_message = ('python pip3 cannot install "{}".'.format(module))
+            log.log2die_safe(1100, log_message)
+        else:
+            log_message = (
+                'Python module "{}" is installed.'.format(module))
+            setup.print_ok(log_message)
+    else:
+        log_message = 'Python module "{}" is installed.'.format(module)
+        setup.print_ok(log_message)
+
+
+def _run_script(cli_string, shell=False):
+    """Run the cli_string UNIX CLI command and record output.
+
+    Args:
+        cli_string: Command to run on the CLI
+        die: Die if command runs with an error
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    data = {}
+
+    # Create the subprocess object
+    if shell is False:
+        do_command_list = list(cli_string.split(' '))
+        process = subprocess.Popen(
+            do_command_list,
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+    else:
+        process = subprocess.Popen(
+            cli_string,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
+    stdoutdata, _ = process.communicate()
+    returncode = process.returncode
+
+    # Return
+    data = {
+        'output': stdoutdata.decode(),
+        'error_code': returncode
+    }
+    return data
+
+
+if __name__ == '__main__':
+    # Run main
+    main()
