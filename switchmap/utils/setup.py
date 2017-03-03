@@ -19,16 +19,21 @@ try:
     import yaml
 except ImportError:
     import pip
-    pip.main(['install', '--user', 'yaml'])
+    _packages = ['yaml']
+    for _package in _packages:
+        pip.main(['install', '--user', _package])
     import yaml
 
 # Try to create a working PYTHONPATH
-root_directory = os.path.dirname(os.path.realpath(__file__))
-if root_directory.endswith('/switchmap-ng') is True:
-    sys.path.append(root_directory)
+_lib_directory = os.path.dirname(os.path.realpath(__file__))
+_switchmap_directory = os.path.abspath(os.path.join(_lib_directory, os.pardir))
+_root_directory = os.path.abspath(
+    os.path.join(_switchmap_directory, os.pardir))
+if _root_directory.endswith('/switchmap-ng') is True:
+    sys.path.append(_root_directory)
 else:
     print(
-        'This script is not installed in the "switchmap-ng/" directory. '
+        'Switchmap-NG is not installed in a "switchmap-ng/" directory. '
         'Please fix.')
     sys.exit(2)
 
@@ -82,19 +87,16 @@ class _Configuration(object):
         updated_list = []
         config = copy.deepcopy(self.config)
         directory = self.directories[0]
+        directory_keys = ['log_directory', 'cache_directory']
 
         # Update log_directory and cache_directory
         if isinstance(config, dict) is True:
             if 'main' in config:
-                # Setup the log_directory to a known good default
-                (updated, config) = self._create_directory_entries(
-                    'log_directory', config)
-                updated_list.append(updated)
-
-                # Setup the cache_directory to a known good default
-                (updated, config) = self._create_directory_entries(
-                    'cache_directory', config)
-                updated_list.append(updated)
+                for next_key in directory_keys:
+                    # Setup the log_directory to a known good default
+                    (updated, config) = self._create_directory_entries(
+                        next_key, config)
+                    updated_list.append(updated)
             else:
                 valid = False
         else:
@@ -108,7 +110,7 @@ class _Configuration(object):
             log.log2die_safe(1015, log_message)
 
         # Update configuration file if required
-        if len(updated_list) == updated_list.count(True):
+        if True in updated_list:
             for next_directory in self.directories:
                 # Delete all YAML files in the directory
                 general.delete_yaml_files(next_directory)
@@ -118,12 +120,12 @@ class _Configuration(object):
             with open(filepath, 'w') as outfile:
                 yaml.dump(config, outfile, default_flow_style=False)
 
-    def _create_directory_entries(self, key, config):
+    def _create_directory_entries(self, key, _config):
         """Update the configuration with good defaults for directories.
 
         Args:
             key: Configuration key related to a directory.
-            config: Configuration dictionary
+            _config: Configuration dictionary
 
         Returns:
             updated: True if we have to update a value
@@ -131,6 +133,7 @@ class _Configuration(object):
         """
         # Initialize key variables
         updated = False
+        config = copy.deepcopy(_config)
         dir_dict = {
             'log_directory': 'log',
             'cache_directory': 'cache',
@@ -157,7 +160,7 @@ class _Configuration(object):
         return (updated, config)
 
 
-class _Python(object):
+class _PythonSetup(object):
     """Class to setup Python."""
 
     def __init__(self):
@@ -222,7 +225,7 @@ class _Python(object):
             return
 
         # Determine whether PIP3 exists
-        print('Installing required pip3 packages')
+        print_ok('Installing required pip3 packages')
         pip3 = general.search_file('pip3')
         if pip3 is None:
             log_message = ('Cannot find python "pip3". Please install.')
@@ -243,7 +246,7 @@ class _Python(object):
         general.run_script(script_name)
 
 
-class _Daemon(object):
+class _DaemonSetup(object):
     """Class to setup switchmap-ng daemon."""
 
     def __init__(self):
@@ -410,7 +413,7 @@ class _Daemon(object):
             general.run_script(system_command)
 
 
-def main():
+def run():
     """Process agent data.
 
     Args:
@@ -420,47 +423,37 @@ def main():
         None
 
     """
-    # Initialize key variables
-    username = getpass.getuser()
+    # Prevent running as sudo user
+    if 'SUDO_UID' in os.environ:
+        message = (
+            'Cannot run setup using "sudo". Run as a regular user to '
+            'install in this directory or as user "root".')
+        log.log2die_safe(1078, message)
 
     # Determine whether version of python is valid
-    _Python().setup()
+    _PythonSetup().setup()
 
     # Do specific setups for root user
-    _Daemon().setup()
+    _DaemonSetup().setup()
 
     # Update configuration if required
     _Configuration().setup()
 
-    # Give suggestions as to what to do
-    if username == 'root':
-        suggestions = """\
 
-You can start switchmap-ng daemons with these commands:
+def print_ok(message):
+    """Install python module using pip3.
 
-    # systemctl start switchmap-ng-web.service
-    # systemctl start switchmap-ng-poller.service
+    Args:
+        module: module to install
 
-You can enable switchmap-ng daemons to start on system boot \
-with these commands:
+    Returns:
+        None
 
-    # systemctl enable switchmap-ng-web.service
-    # systemctl enable switchmap-ng-poller.service
-
-"""
-        print(suggestions)
-
-    # All done
-    print('\nOK\n')
+    """
+    # Print message
+    print('OK - {}'.format(message))
 
 
 if __name__ == '__main__':
-    # Prevent running as sudo user
-    if 'SUDO_UID' in os.environ:
-        MESSAGE = (
-            'Cannot run setup using "sudo". Run as a regular user to '
-            'install in this directory or as user "root".')
-        log.log2die_safe(1078, MESSAGE)
-
-    # Run main
-    main()
+    # Run setup
+    run()

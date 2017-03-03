@@ -201,7 +201,40 @@ class Poller(object):
         # Get snmp configuration information from Switchmap-NG
         validate = snmp_manager.Validate(hostname, snmp_config.snmp_auth())
         self.snmp_params = validate.credentials()
-        self.snmp_object = snmp_manager.Interact(self.snmp_params)
+
+        # Create an SNMP object for querying
+        if self._do_poll() is True:
+            self.snmp_object = snmp_manager.Interact(self.snmp_params)
+        else:
+            log_message = (
+                'Uncontactable or disabled host {}, or no valid SNMP '
+                'credentials found for it.'.format(self.hostname))
+            log.log2info(1021, log_message)
+
+    def _do_poll(self):
+        """Determine whether doing a poll is valid.
+
+        Args:
+            None
+
+        Returns:
+            poll: True if a poll should be done
+
+        """
+        # Initialize key variables
+        poll = False
+
+        if bool(self.snmp_params) is True:
+            if isinstance(self.snmp_params, dict) is True:
+                if ['enabled'] in self.snmp_params:
+                    if bool(self.snmp_params['enabled']) is True:
+                        poll = True
+                else:
+                    # Default to poll unless otherwise stated
+                    poll = True
+
+        # Return
+        return poll
 
     def query(self):
         """Query all remote hosts for data.
@@ -213,6 +246,10 @@ class Poller(object):
             None
 
         """
+        # Only query if wise
+        if self._do_poll() is False:
+            return
+
         # Check SNMP supported
         if bool(self.snmp_params) is True:
             # Get datapoints

@@ -8,12 +8,11 @@ Manages the verification of required packages.
 # Main python libraries
 import textwrap
 import sys
-from getpass import getpass
 import subprocess
 import argparse
 import os
 from collections import defaultdict
-from pprint import pprint
+import getpass
 
 
 # Try to create a working PYTHONPATH
@@ -43,13 +42,9 @@ def main():
         None
 
     """
-    #
+    # Run stuff
     cli = CLI()
     cli.process()
-
-    # Test validity
-    # version = _PreCheck()
-    # version.version()
 
 
 class CLI(object):
@@ -128,7 +123,7 @@ class CLI(object):
         #######################################################################
         # Check prerequisite package versions
         #######################################################################
-        # Initialize key variables
+        # Do precheck
         precheck = _PreCheck()
         precheck.validate()
 
@@ -143,6 +138,10 @@ class CLI(object):
         # Start daemons
         daemon = _Daemon()
         daemon.start()
+
+        # Run the post check
+        postcheck = _PostCheck()
+        postcheck.validate()
 
     def _serve_cli(self):
         pass
@@ -192,7 +191,7 @@ class _Daemon(object):
             None
         """
         # Get daemon status
-        daemons = ['switchmap-ng-api', 'switchmap-ng-ingester']
+        daemons = ['switchmap-ng-api', 'switchmap-ng-poller']
         for daemon in daemons:
 
             running = self._running(daemon)
@@ -308,21 +307,37 @@ class _Config(object):
         valid_directories = []
         config = ("""\
 main:
+    agent_subprocesses: 20
+    bind_port: 7000
+    cache_directory:
+    hostnames:
+      - 1.1.1.1
+    listen_address: localhost
     log_directory:
     log_level: debug
-    ingest_cache_directory:
-    ingest_pool_size: 20
-    listen_address: 0.0.0.0
-    bind_port: 6000
-    interval: 300
-    memcached_hostname: localhost
-    memcached_port: 11211
-    sqlalchemy_pool_size: 10
-    sqlalchemy_max_overflow: 10
-    db_hostname: localhost
-    db_username: switchmap_ng
-    db_password:
-    db_name: switchmap_ng
+
+snmp_groups:
+    - group_name: SAMPLE_SNMPv2
+      snmp_version: 2
+      snmp_secname:
+      snmp_community: SAMPLE
+      snmp_port: 161
+      snmp_authprotocol:
+      snmp_authpassword:
+      snmp_privprotocol:
+      snmp_privpassword:
+      enabled: False
+
+    - group_name: SAMPLE_SNMPv3
+      snmp_version: 3
+      snmp_secname: SAMPLE
+      snmp_community:
+      snmp_port: 161
+      snmp_authprotocol: SAMPLE
+      snmp_authpassword: SAMPLE
+      snmp_privprotocol: SAMPLE
+      snmp_privpassword: SAMPLE
+      enabled: False
 """)
         self.config_dict = yaml.load(config)
         directory_dict = defaultdict(lambda: defaultdict(dict))
@@ -347,14 +362,39 @@ main:
             directory_dict = general.read_yaml_files(valid_directories)
 
         # Populate config_dict with any values found in directory_dict
-        for _main, data_dict in directory_dict.items():
-            if _main != 'main':
-                log_message = (
-                    'Invalid files found in configuration directory')
-                log.log2die_safe(1033, log_message)
+        for _file_key, _file_value in directory_dict.items():
+            if isinstance(_file_value, dict) is True:
+                # Process the subkeys under the primary key
+                for _sub_key, value in _file_value.items():
+                    # Add values from file to the seeded self.config_dict
+                    # configuration value
+                    if isinstance(value, list) is False:
+                        self.config_dict[_file_key][_sub_key] = value
+                    else:
+                        if _sub_key == 'hostnames':
+                            # Add newly found hostnames to the
+                            # list without duplicates
+                            found_hostnames = value
+                            existing_hostnames = self.config_dict[
+                                _file_key][_sub_key]
+                            for hostname in found_hostnames:
+                                if hostname not in existing_hostnames:
+                                    self.config_dict[_file_key][
+                                        _sub_key].append(hostname)
+                        else:
+                            # Extend other lists that may have been found
+                            self.config_dict[
+                                _file_key][_sub_key].extend(value)
 
-            for key, value in data_dict.items():
-                self.config_dict[_main][key] = value
+            elif isinstance(_file_value, list) is True:
+                # Process 'snmp_groups:' key
+                if _file_key == 'snmp_groups':
+                    for item in _file_value:
+                        if _snmp_group_found(
+                                item, self.config_dict[_file_key]) is False:
+                            self.config_dict[_file_key].append(item)
+                else:
+                    self.config_dict[_file_key].extend(_file_value)
 
     def validate(self):
         """Validate all pre-requisites are OK.
@@ -366,11 +406,8 @@ main:
             None
 
         """
-        # Verify db credentials
-        self._db_credentials()
-
-        # Attempt to connect to the MySQL database
-        self._db_connectivity()
+        # Returns
+        pass
 
     def write(self):
         """Write the config to file.
@@ -400,100 +437,6 @@ main:
 
             # Write status Update
             setup.print_ok('Created configuration file {}.'.format(filepath))
-
-    def _db_credentials(self):
-        """Validate database credentials.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        missing = False
-        parameters = [
-            'db_hostname', 'db_password', 'db_username', 'db_password']
-
-        # Give warning message if no parameters found
-        for parameter in parameters:
-            if bool(self.config_dict['main'][parameter]) is False:
-                missing = True
-        if missing is True:
-            print('\nMISSING - Database parameters need to be updated.')
-
-        # Prompt for any missing database parameters
-        for parameter in sorted(parameters):
-            if bool(self.config_dict['main'][parameter]) is False:
-                if parameter != 'db_password':
-                    self.config_dict['main'][parameter] = input(
-                        'Input database {}: '.format(parameter[3:]))
-                else:
-                    self.config_dict['main'][parameter] = getpass(
-                        'Input database password: ')
-
-        # Print a space
-        if missing is True:
-            print('')
-
-    def _db_connectivity(self):
-        """Validate we can connect to the database.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Do key imports
-        import pymysql
-
-        # Initialize key variables
-        valid = False
-        db_hostname = self.config_dict['main']['db_hostname']
-        db_password = self.config_dict['main']['db_password']
-        db_username = self.config_dict['main']['db_username']
-        db_name = self.config_dict['main']['db_name']
-
-        # Do test
-        try:
-            # Open database connection. Prepare cursor
-            database = pymysql.connect(
-                host=db_hostname,
-                user=db_username,
-                passwd=db_password,
-                db=db_name)
-            cursor = database.cursor()
-
-            # Do a basic check
-            cursor.execute('SELECT VERSION()')
-            results = cursor.fetchone()
-
-            # Check result
-            valid = bool(results)
-
-            # disconnect from server
-            database.close()
-
-        except Exception as _:
-            valid = False
-
-        except:
-            valid = False
-
-        # Process validity
-        if valid is True:
-            log_message = 'Database connectivity successfully verified.'
-            setup.print_ok(log_message)
-        else:
-            log_message = (
-                'Cannot connect to the database. Verify your credentials. '
-                'Database Hostname: "{}", Database Username: "{}", '
-                'Database Name: "{}", Database Password: "******"'
-                ''.format(db_hostname, db_username, db_name))
-            log.log2die_safe(1067, log_message)
 
 
 class _PreCheck(object):
@@ -526,48 +469,6 @@ class _PreCheck(object):
         # Test Python pip version
         self._pip()
 
-        # Test MySQL version
-        self._mysql()
-
-        # Test MySQL version
-        self._memcached()
-
-    def _memcached(self):
-        """Determine pip3 version.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Find pip3 executable
-        cli_string = 'which memcached'
-        response = _run_script(cli_string)
-
-        # Not OK if not found
-        if bool(response['error_code']) is True:
-            log_message = (
-                'memcached is not installed. switchmap-ng runs best with it.')
-            log.log2see_safe(1076, log_message)
-        else:
-            log_message = 'memcached executable found.'
-            setup.print_ok(log_message)
-
-            # Check whether the server is running
-            cli_string = 'ps aux | grep /usr/bin/memcached | grep -v grep'
-            response = bool(os.popen(cli_string).read())
-
-            # Not OK if not fount
-            if response is False:
-                log_message = (
-                    'memcached is not running. switchmap-ng runs best with it.')
-                log.log2see_safe(1077, log_message)
-            else:
-                log_message = 'memcached is running.'
-                setup.print_ok(log_message)
-
     def _pip(self):
         """Determine pip3 version.
 
@@ -591,9 +492,7 @@ class _PreCheck(object):
             setup.print_ok(log_message)
 
             # install pip3 modules
-            modules = [
-                'setuptools', 'PyYAML', 'PyMySQL',
-                'SQLAlchemy', 'SQLAlchemy-Utils']
+            modules = ['setuptools', 'PyYAML']
             for module in modules:
                 _pip3_install(module)
 
@@ -633,8 +532,23 @@ class _PreCheck(object):
                 ''.format(major_installed, minor_installed))
             setup.print_ok(log_message)
 
-    def _mysql(self):
-        """Determine MySQL version.
+
+class _PostCheck(object):
+    """Class to test post setup."""
+
+    def __init__(self):
+        """Method for intializing the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+
+    def validate(self):
+        """Validate .
 
         Args:
             None
@@ -644,89 +558,62 @@ class _PreCheck(object):
 
         """
         # Initialize key variables
-        valid = True
-        versions = {
-            'maria': {'major': 10, 'minor': 0},
-            'mysql': {'major': 5, 'minor': 7}
-        }
+        username = getpass.getuser()
+        line = '*' * 80
 
-        # Get response from mysql command
-        cli_string = '/usr/bin/mysql --version'
-        response = _run_script(cli_string)
+        prefix = """\
+Edit file {}/etc/config.yaml with correct SNMP parameters \
+and then restart the daemons.\n""".format(general.root_directory())
 
-        # Not OK if not fount
-        if bool(response['error_code']) is True:
-            valid = False
-            log_message = ('MySQL / MariaDB not installed.')
-            log.log2die_safe(1096, log_message)
+        # Give suggestions as to what to do
+        if username == 'root':
+            suggestions = """{}
+You can restart switchmap-ng daemons with these commands:
 
+    # systemctl restart switchmap-ng-web.service
+    # systemctl restart switchmap-ng-poller.service
+
+You can enable switchmap-ng daemons to start on system boot \
+with these commands:
+
+    # systemctl enable switchmap-ng-web.service
+    # systemctl enable switchmap-ng-poller.service""".format(prefix)
         else:
-            # Determine major and minor versions of software
-            version_string = response['output'].split()[4]
-            version_list = version_string.split('.')
-            major_installed = int(version_list[0])
-            minor_installed = int(version_list[1])
+            suggestions = """{}
+You can restart switchmap-ng daemons with these commands:
 
-            # We are running MariaDB
-            if 'maria' in version_string.lower():
-                major = versions['maria']['major']
-                minor = versions['maria']['minor']
+    $ bin/switchmap-ng-api --restart
+    $ bin/switchmap-ng-poller --restart
 
-                # Exit if  version is too low
-                if major_installed < major:
-                    valid = False
-                elif major_installed == major and minor_installed < minor:
-                    valid = False
-                else:
-                    valid = True
+Switchmap-NG will not automatically restart after a reboot. \
+You need to re-install as the "root" user for this to occur.""".format(prefix)
 
-                if valid is False:
-                    log_message = (
-                        'MariaDB version needs to be >= than {}.{}.'
-                        ''.format(major, minor))
-                    log.log2die_safe(1097, log_message)
-                else:
-                    log_message = (
-                        'MariaDB version {}.{}.'
-                        ''.format(major_installed, minor_installed))
-                    setup.print_ok(log_message)
+        print('{}\n{}\n{}'.format(line, suggestions, line))
 
-            # We are running MySQL
-            else:
-                major = versions['mysql']['major']
-                minor = versions['mysql']['minor']
+        # All done
+        setup.print_ok(
+            'Installation complete, pending changes mentioned above.')
 
-                # Exit if  version is too low
-                if major_installed < major:
-                    valid = False
-                elif major_installed == major and minor_installed < minor:
-                    valid = False
-                else:
-                    valid = True
 
-                if valid is False:
-                    log_message = (
-                        'MySQL version needs to be >= than {}.{}.'
-                        ''.format(major, minor))
-                    log.log2die_safe(1098, log_message)
-                else:
-                    log_message = (
-                        'MySQL version {}.{}.'
-                        ''.format(major_installed, minor_installed))
-                    setup.print_ok(log_message)
+def _snmp_group_found(item, listing):
+    """Install python module using pip3.
 
-        # Check whether the server is running
-        cli_string = 'ps aux | grep /usr/sbin/mysqld | grep -v grep'
-        response = bool(os.popen(cli_string).read())
+    Args:
+        module: module to install
 
-        # Not OK if not fount
-        if response is False:
-            log_message = ('MySQL / MariaDB is not running.')
-            log.log2die_safe(1099, log_message)
-        else:
-            log_message = 'MySQL / MariaDB is running.'
-            setup.print_ok(log_message)
+    Returns:
+        found: True if found
 
+    """
+    # Initialize key variables
+    found = False
+
+    for next_item in listing:
+        if next_item['group_name'] == item['group_name']:
+            found = True
+
+    # Return
+    return found
 
 def _pip3_install(module):
     """Install python module using pip3.
