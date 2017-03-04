@@ -13,9 +13,6 @@ from multiprocessing import Pool
 from collections import defaultdict
 import socket
 
-# PIP3 imports
-import yaml
-
 # Try to create a working PYTHONPATH
 script_directory = os.path.dirname(os.path.realpath(__file__))
 root_directory = os.path.abspath(os.path.join(script_directory, os.pardir))
@@ -226,7 +223,7 @@ class Poller(object):
 
         if bool(self.snmp_params) is True:
             if isinstance(self.snmp_params, dict) is True:
-                if ['enabled'] in self.snmp_params:
+                if 'enabled' in self.snmp_params:
                     if bool(self.snmp_params['enabled']) is True:
                         poll = True
                 else:
@@ -504,6 +501,6 @@ def main():
     cli.control(poller)
 
 if __name__ == "__main__":
-    # Poller('absw01.sjc01.corp.colovore.net')._create_yaml()
+    # Poller('192.168.1.1')._create_yaml()
     # _poll_devices()
     main()

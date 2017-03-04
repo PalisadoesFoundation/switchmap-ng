@@ -30,6 +30,8 @@ else:
 from switchmap.utils import log
 from switchmap.utils import general
 from switchmap.utils import setup
+from switchmap.utils import input_output
+from switchmap.utils import configuration
 
 
 def main():
@@ -72,6 +74,9 @@ class CLI(object):
         # Parse install parameters
         _Install(subparsers)
 
+        # Parse log parameters
+        _Logs(subparsers)
+
         # Return the CLI arguments
         self.args = self.parser.parse_args()
 
@@ -97,14 +102,22 @@ class CLI(object):
             self._serve_cli()
             sys.exit(0)
         elif args.action == 'logs':
-            self._logs_cli()
-            sys.exit(0)
+            # Process log files
+            config = configuration.Config()
+            if args.poller is True:
+                filename = config.log_file()
+                self._logs_cli(filename)
+                sys.exit(0)
+            elif args.api is True:
+                filename = config.web_log_file()
+                self._logs_cli(filename)
+                sys.exit(0)
         elif args.action == 'test':
             self._test_cli()
             sys.exit(0)
-        else:
-            parser.print_help()
-            sys.exit(0)
+
+        # Show help otherwise
+        parser.print_help()
         sys.exit(2)
 
     def _logo(self):
@@ -146,8 +159,9 @@ class CLI(object):
     def _serve_cli(self):
         pass
 
-    def _logs_cli(self):
-        pass
+    def _logs_cli(self, filename):
+        tail = input_output.File(filename)
+        tail.tail()
 
     def _test_cli(self):
         print('Test')
@@ -165,6 +179,34 @@ class _Install(object):
                 'Build and installs switchmap-ng dependencies.', width=width)
         )
 
+
+class _Logs(object):
+    """Class processes CLI 'log' option."""
+
+    def __init__(self, subparsers, width=80):
+        """Function for intializing the class."""
+        # Initialize key variables
+        parser = subparsers.add_parser(
+            'logs',
+            help=textwrap.fill(
+                'Read the most recent entries in a log file. '
+                'Equivalent to Linux "tail -f" command.', width=width)
+        )
+
+        # Tail the API logs
+        parser.add_argument(
+            '--api',
+            help=textwrap.fill(
+                'View most recent entries in the API log file.', width=width),
+            action='store_true')
+
+        # Tail the poller logs
+        parser.add_argument(
+            '--poller',
+            help=textwrap.fill(
+                'View most recent entries in the poller log file.'
+                '', width=width),
+            action='store_true')
 
 class _Daemon(object):
     """Class to start switchmap-ng daemons."""
@@ -199,7 +241,7 @@ class _Daemon(object):
             # Prompt to restart if already running
             if running is True:
                 restart = input(
-                    '\nINPUT - Daemon {} is running. Restart? [(Y)/N] '
+                    '\nINPUT - Daemon {} is running. Restart? [Y/n] '
                     ''.format(daemon))
                 if bool(restart) is False:
                     self._restart(daemon)
@@ -209,6 +251,9 @@ class _Daemon(object):
                     self._restart(daemon)
                     setup.print_ok(
                         'Successfully restarted daemon {}.'.format(daemon))
+                else:
+                    setup.print_ok(
+                        'Leaving daemon {} unchanged.'.format(daemon))
             else:
                 self._start(daemon)
                 setup.print_ok(
@@ -250,7 +295,8 @@ class _Daemon(object):
         if restart is False:
             script_name = '{}/bin/{} --start'.format(_root_directory, daemon)
         else:
-            script_name = '{}/bin/{} --restart'.format(_root_directory, daemon)
+            script_name = (
+                '{}/bin/{} --restart --force'.format(_root_directory, daemon))
 
         # Attempt to restart / start
         response = _run_script(script_name)
@@ -315,6 +361,7 @@ main:
     listen_address: localhost
     log_directory:
     log_level: debug
+    polling_interval: 3600
 
 snmp_groups:
     - group_name: SAMPLE_SNMPv2

@@ -281,6 +281,26 @@ class Config(object):
             result = 7000
         return result
 
+    def polling_interval(self):
+        """Get polling_interval.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        key = 'main'
+        sub_key = 'polling_interval'
+        result = _key_sub_key(key, sub_key, self.config_dict, die=False)
+
+        # Default to 3600
+        if result is None:
+            result = 3600
+        return result
+
     def agent_threads(self):
         """Get agent_threads.
 
