@@ -15,6 +15,7 @@ from switchmap.main.agent import Agent, AgentAPI, AgentDaemon
 from switchmap.constants import (
     API_EXECUTABLE, API_GUNICORN_AGENT, POLLER_EXECUTABLE)
 
+
 def run(parser, args):
     """Process 'show' command.
 

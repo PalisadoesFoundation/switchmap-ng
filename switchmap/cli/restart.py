@@ -15,7 +15,7 @@ from switchmap.constants import (
 
 
 def run(parser, args):
-    """Process 'stop' command.
+    """Process 'restart' command.
 
     Args:
         parser: Argparse parser
@@ -37,7 +37,7 @@ def run(parser, args):
 
 
 def api(args):
-    """Process 'stop api' commands.
+    """Process 'restart api' commands.
 
     Args:
         args: Argparse arguments
@@ -50,21 +50,21 @@ def api(args):
     agent_gunicorn = Agent(API_GUNICORN_AGENT)
     agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
 
-    # Stop daemons
+    # Restart daemons
     daemon_gunicorn = AgentDaemon(agent_gunicorn)
     daemon_api = AgentDaemon(agent_api)
     if args.force is True:
         daemon_gunicorn.force()
         daemon_api.force()
-    daemon_gunicorn.stop()
-    daemon_api.stop()
+    daemon_gunicorn.restart()
+    daemon_api.restart()
 
     # Done
     sys.exit(0)
 
 
 def poller(args):
-    """Process 'stop poller' commands.
+    """Process 'restart poller' commands.
 
     Args:
         args: Argparse arguments
@@ -76,11 +76,11 @@ def poller(args):
     # Create agent object
     agent_poller = Agent(POLLER_EXECUTABLE)
 
-    # Stop daemon
+    # Restart daemon
     daemon_poller = AgentDaemon(agent_poller)
     if args.force is True:
         daemon_poller.force()
-    daemon_poller.stop()
+    daemon_poller.restart()
 
     # Done
     sys.exit(0)
