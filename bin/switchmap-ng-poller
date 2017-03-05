@@ -35,7 +35,9 @@ from switchmap.utils import general
 from switchmap.snmp import snmp_info
 from switchmap.snmp import snmp_manager
 from switchmap.topology import postpoll
-from switchmap.main import agent as Agent
+from switchmap.main import agent
+from switchmap.main.agent import Agent
+from switchmap.constants import POLLER_EXECUTABLE
 
 
 def _oui():
@@ -69,7 +71,7 @@ def _oui():
 OUI = _oui()
 
 
-class PollingAgent(object):
+class PollingAgent(Agent):
     """Switchmap-NG agent that gathers data.
 
     Args:
@@ -84,7 +86,7 @@ class PollingAgent(object):
         post:
     """
 
-    def __init__(self):
+    def __init__(self, parent):
         """Method initializing the class.
 
         Args:
@@ -95,25 +97,11 @@ class PollingAgent(object):
 
         """
         # Initialize key variables
-        self.agent_name = 'topology'
+        Agent.__init__(self, parent)
 
         # Get configuration
         self.server_config = configuration.Config()
         self.snmp_config = configuration.ConfigSNMP()
-
-    def name(self):
-        """Return agent name.
-
-        Args:
-            None
-
-        Returns:
-            value: Name of agent
-
-        """
-        # Return
-        value = self.agent_name
-        return value
 
     def query(self):
         """Query all remote hosts for data.
@@ -494,11 +482,11 @@ def main():
 
     """
     # Get configuration
-    cli = Agent.AgentCLI()
-    poller = PollingAgent()
+    agent_poller = PollingAgent(POLLER_EXECUTABLE)
 
     # Do control
-    cli.control(poller)
+    cli = agent.AgentCLI()
+    cli.control(agent_poller)
 
 if __name__ == "__main__":
     # Poller('192.168.1.1')._create_yaml()

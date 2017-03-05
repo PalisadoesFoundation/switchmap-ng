@@ -231,7 +231,12 @@ def run_script(cli_string, shell=False, die=True):
             log.log2die(1074, log_message)
 
     # Return
-    return stdoutdata
+    data = {
+        'stdout': stdoutdata.decode(),
+        'stderr': stderrdata.decode(),
+        'returncode': returncode
+    }
+    return data
 
 
 def delete_files(directory, extension='.yaml'):

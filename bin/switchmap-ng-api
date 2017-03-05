@@ -8,17 +8,12 @@ Serves as a Gunicorn WSGI entry point for switchmap-ng-web
 # Standard libraries
 import sys
 import os
-import multiprocessing
-
-# PIP libraries
-from gunicorn.app.base import BaseApplication
-from gunicorn.six import iteritems
 
 # Try to create a working PYTHONPATH
-script_directory = os.path.dirname(os.path.realpath(__file__))
-root_directory = os.path.abspath(os.path.join(script_directory, os.pardir))
-if script_directory.endswith('/switchmap-ng/bin') is True:
-    sys.path.append(root_directory)
+_script_directory = os.path.dirname(os.path.realpath(__file__))
+_root_directory = os.path.abspath(os.path.join(_script_directory, os.pardir))
+if _script_directory.endswith('/switchmap-ng/bin') is True:
+    sys.path.append(_root_directory)
 else:
     print(
         'This script is not installed in the "switchmap-ng/bin" directory. '
@@ -26,226 +21,23 @@ else:
     sys.exit(2)
 
 # Switchmap libraries
-try:
-    from switchmap.utils import log
-except:
-    print('You need to set your PYTHONPATH to include the switchmap library')
-    sys.exit(2)
-from switchmap.www import API
-from switchmap.utils import configuration
-from switchmap.utils import log
-from switchmap.utils import daemon
-from switchmap.main import agent as Agent
-
-
-class StandaloneApplication(BaseApplication):
-    """Class to integrate the Gunicorn WSGI with the Switchmap Flask application.
-
-    Modified from: http://docs.gunicorn.org/en/latest/custom.html
-
-    """
-
-    def __init__(self, app, options=None):
-        """Method initializing the class.
-
-        args:
-            app: Flask application object of type Flask(__name__)
-            options: Gunicorn CLI options
-
-        """
-        # Initialize key variables
-        self.options = options or {}
-        self.application = app
-        super(StandaloneApplication, self).__init__()
-
-    def load_config(self):
-        """Load the configuration."""
-        # Initialize key variables
-        config = dict([(key, value) for key, value in iteritems(self.options)
-                       if key in self.cfg.settings and value is not None])
-
-        # Assign configuration parameters
-        for key, value in iteritems(config):
-            self.cfg.set(key.lower(), value)
-
-    def load(self):
-        """Run the Flask application throught the Gunicorn WSGI."""
-        return self.application
-
-
-def number_of_workers():
-    """Get the number of CPU cores on this server."""
-    return (multiprocessing.cpu_count() * 2) + 1
-
-
-class _APIAgent(object):
-    """switchmap-ng API agent that serves web pages.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        populate:
-        post:
-    """
-
-    def __init__(self, pidfile_gunicorn):
-        """Method initializing the class.
-
-        Args:
-            pid_gunicorn: PID file for Gunicorn
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        self.pidfile_gunicorn = pidfile_gunicorn
-        self.config = configuration.Config()
-        self.agent_name = 'switchmap-ng-api'
-
-    def name(self):
-        """Return agent name.
-
-        Args:
-            None
-
-        Returns:
-            value: Name of agent
-
-        """
-        # Return
-        value = self.agent_name
-        return value
-
-    def query(self):
-        """Query all remote devices for data.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        config = self.config
-
-        # Check for lock and pid files
-        lockfile = daemon.lock_file(self.agent_name)
-        if os.path.exists(lockfile) is True:
-            log_message = (
-                'Lock file %s exists. Multiple API daemons running '
-                'API may have died '
-                'catastrophically in the past, in which case the lockfile '
-                'should be deleted. '
-                '') % (lockfile)
-            log.log2see(1083, log_message)
-
-        pidfile = daemon.pid_file(self.agent_name)
-        if os.path.exists(pidfile) is True:
-            log_message = (
-                'PID file: %s already exists. Daemon already running? '
-                'If not, it may have died catastrophically in the past '
-                'in which case you should use --stop --force to fix.'
-                '') % (pidfile)
-            log.log2see(1084, log_message)
-
-        ######################################################################
-        #
-        # Assign options in format that the Gunicorn WSGI will accept
-        #
-        # NOTE! to get a full set of valid options pprint(self.cfg.settings)
-        # in the instantiation of StandaloneApplication. The option names
-        # do not exactly match the CLI options found at
-        # http://docs.gunicorn.org/en/stable/settings.html
-        #
-        ######################################################################
-        options = {
-            'bind': '%s:%s' % (config.listen_address(), config.bind_port()),
-            'accesslog': config.web_log_file(),
-            'errorlog': config.web_log_file(),
-            'capture_output': True,
-            'pidfile': self.pidfile_gunicorn,
-            'loglevel': config.log_level(),
-            'workers': number_of_workers(),
-        }
-
-        # Log so that user running the script from the CLI knows that something
-        # is happening
-        log_message = (
-            'Switchmap API running on %s:%s and logging to file %s.'
-            '') % (
-                config.listen_address(),
-                config.bind_port(),
-                config.web_log_file())
-        log.log2info(1022, log_message)
-
-        # Run
-        StandaloneApplication(API, options).run()
-
-
-class _APIAgentGunicorn(object):
-    """Gunicorn agent to control process"""
-
-    def __init__(self):
-        """Method initializing the class.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        self.agent_name = 'switchmap-ng-gunicorn'
-
-    def name(self):
-        """Return agent name.
-
-        Args:
-            None
-
-        Returns:
-            value: Name of agent
-
-        """
-        # Return
-        value = self.agent_name
-        return value
-
-    def query(self):
-        """Dummy query.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Do nothing
-        pass
+from switchmap.main import agent
+from switchmap.main.agent import Agent, AgentAPI
+from switchmap.constants import API_EXECUTABLE, API_GUNICORN_AGENT
 
 
 def main():
     """Main function to start the Gunicorn WSGI."""
     # Get PID filenename for Gunicorn
-    poller_gunicorn = _APIAgentGunicorn()
-    pidfile_gunicorn = daemon.pid_file(poller_gunicorn.name())
+    agent_gunicorn = Agent(API_GUNICORN_AGENT)
 
     # Get configuration
-    cli = Agent.AgentCLI()
-    poller_api = _APIAgent(pidfile_gunicorn=pidfile_gunicorn)
+    agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
 
     # Do control
-    cli.control(poller_api)
-    cli.control(poller_gunicorn)
+    cli = agent.AgentCLI()
+    cli.control(agent_api)
+    cli.control(agent_gunicorn)
 
 
 if __name__ == '__main__':
