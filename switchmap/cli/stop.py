@@ -9,22 +9,26 @@ Manages the verification of required packages.
 import sys
 
 # Switchmap-NG imports
+from switchmap.utils import general
 from switchmap.main.agent import Agent, AgentAPI, AgentDaemon
 from switchmap.constants import (
     API_EXECUTABLE, API_GUNICORN_AGENT, POLLER_EXECUTABLE)
 
 
-def run(parser, args):
+def run(args):
     """Process 'stop' command.
 
     Args:
-        parser: Argparse parser
         args: Argparse arguments
 
     Returns:
         None
 
     """
+    # Show help if no arguments provided
+    if args.qualifier is None:
+        general.cli_help()
+
     # Process 'show api' command
     if args.qualifier == 'api':
         api(args)
@@ -32,8 +36,7 @@ def run(parser, args):
         poller(args)
 
     # Show help if there are no matches
-    parser.print_help()
-    sys.exit(2)
+    general.cli_help()
 
 
 def api(args):

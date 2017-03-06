@@ -459,13 +459,13 @@ and then restart the daemons.\n""".format(general.root_directory())
             suggestions = """{}
 You can restart switchmap-ng daemons with these commands:
 
-    # systemctl restart switchmap-ng-web.service
+    # systemctl restart switchmap-ng-api.service
     # systemctl restart switchmap-ng-poller.service
 
 You can enable switchmap-ng daemons to start on system boot \
 with these commands:
 
-    # systemctl enable switchmap-ng-web.service
+    # systemctl enable switchmap-ng-api.service
     # systemctl enable switchmap-ng-poller.service""".format(prefix)
         else:
             suggestions = """{}

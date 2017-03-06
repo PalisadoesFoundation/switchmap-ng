@@ -370,7 +370,7 @@ class _DaemonSetup(object):
             '{}/examples/linux/systemd/switchmap-ng-poller.service'
             ''.format(self.root_directory))
         service_api = (
-            '{}/examples/linux/systemd/switchmap-ng-web.service'
+            '{}/examples/linux/systemd/switchmap-ng-api.service'
             ''.format(self.root_directory))
 
         # Read in file

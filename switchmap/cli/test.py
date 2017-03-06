@@ -9,12 +9,13 @@ Manages the verification of required packages.
 import sys
 
 # Switchmap-NG imports
+from switchmap.utils import general
 from switchmap.utils import configuration
 from switchmap.utils import log
 from switchmap.snmp import snmp_manager
 
 
-def run(parser, args):
+def run(args):
     """Process 'test' command.
 
     Args:
@@ -28,6 +29,10 @@ def run(parser, args):
     # Process the config
     snmp_config = configuration.ConfigSNMP()
     config = configuration.Config()
+
+    # Show help if no arguments provided
+    if args.qualifier is None:
+        general.cli_help()
 
     # Test a single host
     if bool(args.hostname) is True:
@@ -54,8 +59,7 @@ def run(parser, args):
             log.log2see(1026, log_message)
 
     # Show help if there are no matches
-    parser.print_help()
-    sys.exit(2)
+    general.cli_help()
 
 
 def test_hostname(hostname, snmp_config):
@@ -73,7 +77,9 @@ def test_hostname(hostname, snmp_config):
     snmp_params = validate.credentials()
 
     if bool(snmp_params) is True:
-        print('Valid credentials found: {}'.format(hostname))
+        print(
+            'OK - Valid credentials found, successfully contacted: {}'
+            ''.format(hostname))
     else:
         # Error, host problems
         log_message = (

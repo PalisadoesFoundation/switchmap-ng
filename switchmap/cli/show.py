@@ -11,31 +11,55 @@ import sys
 # Switchmap-NG imports
 from switchmap.utils import configuration
 from switchmap.utils import input_output
+from switchmap.utils import general
 from switchmap.main.agent import Agent, AgentAPI, AgentDaemon
 from switchmap.constants import (
     API_EXECUTABLE, API_GUNICORN_AGENT, POLLER_EXECUTABLE)
 
 
-def run(parser, args):
+def run(args):
     """Process 'show' command.
 
     Args:
-        parser: Argparse parser
         args: Argparse arguments
 
     Returns:
         None
 
     """
+    # Show help if no arguments provided
+    if args.qualifier is None:
+        general.cli_help()
+
     # Process 'show api' command
     if args.qualifier == 'api':
         api(args)
     elif args.qualifier == 'poller':
         poller(args)
+    elif args.qualifier == 'hostnames':
+        hostnames()
 
     # Show help if there are no matches
-    parser.print_help()
-    sys.exit(2)
+    general.cli_help()
+
+
+def hostnames():
+    """Process 'show hostnames' commands.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    config = configuration.Config()
+    _hostnames = config.hostnames()
+    for _hostname in _hostnames:
+        print(_hostname)
+
+    # Done
+    sys.exit(0)
 
 
 def api(args):
@@ -72,6 +96,9 @@ def api(args):
         # Done
         sys.exit(0)
 
+    # Show help if there are no matches
+    general.cli_help()
+
 
 def poller(args):
     """Process 'show poller' commands.
@@ -103,3 +130,6 @@ def poller(args):
 
         # Done
         sys.exit(0)
+
+    # Show help if there are no matches
+    general.cli_help()

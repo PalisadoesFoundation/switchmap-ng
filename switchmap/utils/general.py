@@ -6,6 +6,7 @@ import subprocess
 import locale
 import json
 import shutil
+import sys
 
 # PIP libraries
 import yaml
@@ -16,8 +17,22 @@ from switchmap.utils import configuration
 from switchmap import switchmap
 
 
+def cli_help():
+    """Print help for CLI options.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    print('Try using command: {} --help'.format(' '.join(sys.argv)))
+    sys.exit(2)
+
+
 def root_directory():
-    """Getermine the root directory in which switchmap.is installed.
+    """Determine the root directory in which switchmap.is installed.
 
     Args:
         None
