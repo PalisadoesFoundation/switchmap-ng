@@ -34,7 +34,7 @@ def main():
     # Get configuration
     agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
 
-    # Do control
+    # Do control (API first, Gunicorn second)
     cli = agent.AgentCLI()
     cli.control(agent_api)
     cli.control(agent_gunicorn)

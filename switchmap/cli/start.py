@@ -53,12 +53,11 @@ def api():
     agent_gunicorn = Agent(API_GUNICORN_AGENT)
     agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
 
-    # Start daemons
-    daemon_gunicorn = AgentDaemon(agent_gunicorn)
-    daemon_gunicorn.start()
+    # Start daemons (API first, Gunicorn second)
     daemon_api = AgentDaemon(agent_api)
     daemon_api.start()
-
+    daemon_gunicorn = AgentDaemon(agent_gunicorn)
+    daemon_gunicorn.start()
     # Done
     sys.exit(0)
 

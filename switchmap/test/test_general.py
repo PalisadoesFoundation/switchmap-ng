@@ -2,7 +2,6 @@
 """Test the general module."""
 
 import unittest
-import shutil
 import random
 import os
 import string
@@ -23,6 +22,61 @@ class KnownValues(unittest.TestCase):
 
     random_string = ''.join([random.choice(
         string.ascii_letters + string.digits) for n in range(9)])
+
+    def test_cli_help(self):
+        """Testing method / function cli_help."""
+        # Initializing key variables
+        pass
+
+    def test_root_directory(self):
+        """Testing method / function root_directory."""
+        # Initializing key variables
+        pass
+
+    def test_get_hosts(self):
+        """Testing method / function get_hosts."""
+        # Initializing key variables
+        pass
+
+    def test_read_yaml_file(self):
+        """Testing method / function read_yaml_file."""
+        # Initializing key variables
+        pass
+
+    def test_read_yaml_files(self):
+        """Testing method / function read_yaml_files."""
+        # Initializing key variables
+        pass
+
+    def test_run_script(self):
+        """Testing method / function run_script."""
+        # Initializing key variables
+        pass
+
+    def test_delete_files(self):
+        """Testing method / function delete_files."""
+        # Initializing key variables
+        pass
+
+    def test_config_directories(self):
+        """Testing method / function config_directories."""
+        # Initializing key variables
+        pass
+
+    def test_search_file(self):
+        """Testing method / function search_file."""
+        # Initializing key variables
+        pass
+
+    def test_move_files(self):
+        """Testing method / function move_files."""
+        # Initializing key variables
+        pass
+
+    def test_create_yaml_file(self):
+        """Testing method / function create_yaml_file."""
+        # Initializing key variables
+        pass
 
     def test_dict2yaml(self):
         """Testing method / function dict2yaml."""
