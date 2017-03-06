@@ -25,10 +25,9 @@ except ImportError:
     import yaml
 
 # Try to create a working PYTHONPATH
-_lib_directory = os.path.dirname(os.path.realpath(__file__))
-_switchmap_directory = os.path.abspath(os.path.join(_lib_directory, os.pardir))
+_maint_directory = os.path.dirname(os.path.realpath(__file__))
 _root_directory = os.path.abspath(
-    os.path.join(_switchmap_directory, os.pardir))
+    os.path.join(_maint_directory, os.pardir))
 if _root_directory.endswith('/switchmap-ng') is True:
     sys.path.append(_root_directory)
 else:
@@ -365,8 +364,12 @@ class _DaemonSetup(object):
         system_directory = '/etc/systemd/system'
         system_command = '/bin/systemctl daemon-reload'
 
+        # Do nothing if systemd isn't installed
+        if os.path.isdir(system_directory) is False:
+            return
+
         # Copy system files to systemd directory and activate
-        service_ingester = (
+        service_poller = (
             '{}/examples/linux/systemd/switchmap-ng-poller.service'
             ''.format(self.root_directory))
         service_api = (
@@ -377,7 +380,7 @@ class _DaemonSetup(object):
         # 1) Convert home directory to that of user
         # 2) Convert username in file
         # 3) Convert group in file
-        filenames = [service_ingester, service_api]
+        filenames = [service_poller, service_api]
         for filename in filenames:
             # Read next file
             with open(filename, 'r') as f_handle:

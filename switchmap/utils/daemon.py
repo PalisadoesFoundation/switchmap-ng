@@ -77,12 +77,10 @@ class Daemon(object):
         sys.stdout.flush()
         sys.stderr.flush()
         f_handle_si = open(os.devnull, 'r')
-        # f_handle_so = open(os.devnull, 'a+')
         f_handle_so = open(os.devnull, 'a+')
         f_handle_se = open(os.devnull, 'a+')
 
         os.dup2(f_handle_si.fileno(), sys.stdin.fileno())
-        # os.dup2(f_handle_so.fileno(), sys.stdout.fileno())
         os.dup2(f_handle_so.fileno(), sys.stdout.fileno())
         os.dup2(f_handle_se.fileno(), sys.stderr.fileno())
 

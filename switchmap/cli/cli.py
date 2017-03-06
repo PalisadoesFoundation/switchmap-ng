@@ -12,7 +12,7 @@ import argparse
 from inspect import ismethod
 
 # Do switchmap-ng imports
-from switchmap.cli import show, start, test, stop, restart, install
+from switchmap.cli import show, start, test, stop, restart
 
 
 class CLI(object):
@@ -36,9 +36,6 @@ class CLI(object):
 
         # Subparser for subcommands
         subparsers = self.parser.add_subparsers(dest='action')
-
-        # Parse install parameters
-        _Install(subparsers)
 
         # Parse show parameters
         _Show(subparsers)
@@ -73,11 +70,7 @@ class CLI(object):
         parser = self.parser
 
         # Process each option
-        if args.action == 'install':
-            # Process install command
-            install.run()
-            sys.exit(0)
-        elif args.action == 'start':
+        if args.action == 'start':
             # Process start command
             start.run(args)
             sys.exit(0)
@@ -100,19 +93,6 @@ class CLI(object):
         # Show help otherwise
         parser.print_help()
         sys.exit(2)
-
-
-class _Install(object):
-    """Class processes CLI 'install' option."""
-
-    def __init__(self, subparsers, width=80):
-        """Function for intializing the class."""
-        # Initialize key variables
-        subparsers.add_parser(
-            'install',
-            help=textwrap.fill(
-                'Build and installs switchmap-ng dependencies.', width=width)
-        )
 
 
 class _Show(object):

@@ -11,10 +11,23 @@ import os
 from collections import defaultdict
 import getpass
 
+# Try to create a working PYTHONPATH
+_maint_directory = os.path.dirname(os.path.realpath(__file__))
+_root_directory = os.path.abspath(
+    os.path.join(_maint_directory, os.pardir))
+if _root_directory.endswith('/switchmap-ng') is True:
+    sys.path.append(_root_directory)
+else:
+    print(
+        'Switchmap-NG is not installed in a "switchmap-ng/" directory. '
+        'Please fix.')
+    sys.exit(2)
+
 # Do switchmap-ng imports
 from switchmap.utils import log
-from switchmap.utils import setup
+from maintenance import setup
 from switchmap.utils import general
+
 
 def run():
     """Do the installation.
@@ -133,16 +146,16 @@ class _Daemon(object):
             attempt = 'start'
 
         # Get status
-        _root_directory = general.root_directory()
+        root_directory = general.root_directory()
         if restart is False:
-            script_name = '{}/bin/{} --start'.format(_root_directory, daemon)
+            script_name = '{}/bin/{} --start'.format(root_directory, daemon)
         else:
             script_name = (
-                '{}/bin/{} --restart --force'.format(_root_directory, daemon))
+                '{}/bin/{} --restart --force'.format(root_directory, daemon))
 
         # Attempt to restart / start
         response = general.run_script(script_name, die=False)
-        if bool(response['error_code']) is True:
+        if bool(response['returncode']) is True:
             log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
             log.log2see_safe(1032, log_message)
 
@@ -163,8 +176,8 @@ class _Daemon(object):
         running = False
 
         # Get status
-        _root_directory = general.root_directory()
-        script_name = '{}/bin/{} --status'.format(_root_directory, daemon)
+        root_directory = general.root_directory()
+        script_name = '{}/bin/{} --status'.format(root_directory, daemon)
         response = general.run_script(script_name, die=False)
         for key, value in response.items():
             if key == 'output':
@@ -373,7 +386,7 @@ class _PreCheck(object):
         response = general.run_script(cli_string, die=False)
 
         # Not OK if not fount
-        if bool(response['error_code']) is True:
+        if bool(response['returncode']) is True:
             log_message = ('python pip3 not installed.')
             log.log2die_safe(1094, log_message)
         else:
@@ -448,6 +461,7 @@ class _PostCheck(object):
         """
         # Initialize key variables
         username = getpass.getuser()
+        system_directory = '/etc/systemd/system'
         line = '*' * 80
 
         prefix = """\
@@ -456,7 +470,8 @@ and then restart the daemons.\n""".format(general.root_directory())
 
         # Give suggestions as to what to do
         if username == 'root':
-            suggestions = """{}
+            if os.path.isdir(system_directory) is True:
+                suggestions = """{}
 You can restart switchmap-ng daemons with these commands:
 
     # systemctl restart switchmap-ng-api.service
@@ -467,8 +482,8 @@ with these commands:
 
     # systemctl enable switchmap-ng-api.service
     # systemctl enable switchmap-ng-poller.service""".format(prefix)
-        else:
-            suggestions = """{}
+            else:
+                suggestions = """{}
 You can restart switchmap-ng daemons with these commands:
 
     $ bin/switchmap-ng-api --restart
@@ -533,7 +548,7 @@ def _pip3_install(module):
         response_install = general.run_script(cli_string, die=False)
 
         # Fail if module cannot be installed
-        if bool(response_install['error_code']) is True:
+        if bool(response_install['returncode']) is True:
             log_message = ('python pip3 cannot install "{}".'.format(module))
             log.log2die_safe(1100, log_message)
         else:

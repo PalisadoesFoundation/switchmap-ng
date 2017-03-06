@@ -140,3 +140,24 @@ You can get the status of the API like this:
 **Note:** Refer to the Troubleshooting page for details on how to test the functionality of your installation.
 
 
+
+Setup Webserver For ``switchmap-ng``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``switchmap-ng`` has sample configurations for the Apache webserver. This step is mandatory.
+
+:Apache: Run the following commands from the top directory of ``switchmap-ng``
+
+::
+
+    $ sudo cp examples/linux/apache/switchmap-ng-apache.conf /etc/apache2/conf-available
+    $ sudo ln -s /etc/apache2/conf-available/switchmap-ng-apache.conf /etc/apache2/conf-enabled/switchmap-ng-apache.conf 
+
+    # (Ubuntu only)
+    $ sudo a2enmod proxy_http
+    $ systemctl restart apache2.service
+
+    # (RedHat / CentOS)    
+    $ systemctl restart httpd.service
+
+

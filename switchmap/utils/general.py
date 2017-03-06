@@ -9,15 +9,7 @@ import shutil
 import sys
 
 # PIP libraries
-try:
-    # Requred to make installation smooth
-    import yaml
-except ImportError:
-    import pip
-    _packages = ['yaml']
-    for _package in _packages:
-        pip.main(['install', '--user', _package])
-    import yaml
+import yaml
 
 # Switchmap-NG libraries
 from switchmap.utils import log
