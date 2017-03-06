@@ -13,8 +13,8 @@ import getpass
 
 # Do switchmap-ng imports
 from switchmap.utils import log
-from switchmap.utils import general
 from switchmap.utils import setup
+from switchmap.utils import general
 
 def run():
     """Do the installation.
