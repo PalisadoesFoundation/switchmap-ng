@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""switchmap  classes.
+"""switchmap CLI functions for 'restart'.
 
-Manages the verification of required packages.
+Functions to restart daemons
 
 """
 

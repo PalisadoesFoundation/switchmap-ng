@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""switchmap  classes.
+"""switchmap CLI funtions for 'show'.
 
-Manages the verification of required packages.
+Functions to show operational data
 
 """
 
