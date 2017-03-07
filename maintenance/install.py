@@ -19,7 +19,7 @@ try:
     import yaml
 except ImportError:
     import pip
-    _packages = ['yaml']
+    _packages = ['PyYAML']
     for _package in _packages:
         pip.main(['install', '--user', _package])
     import yaml
