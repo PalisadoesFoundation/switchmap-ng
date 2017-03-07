@@ -127,6 +127,8 @@ You can test whether the API is working by visiting this url. (You will need to 
 
    http://localhost:7000/switchmap-ng/
 
+The Webserver help page provides the necessary steps to view switchmap on port 80 using Apache or Nginx
+
 
 Next Steps
 ----------

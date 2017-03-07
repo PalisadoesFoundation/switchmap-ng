@@ -25,7 +25,7 @@ class File(object):
         self.check_file_validity()
         self.tailed_file = tailed_file
 
-    def tail(self, seconds=1):
+    def tail(self, seconds=1, max_lines=50):
         """Do a tail follow.
 
         If a callback function is registered it is called with every new line,
@@ -33,8 +33,24 @@ class File(object):
 
         Args:
             seconds: Seconds to wait between each iteration. Default 1.
+            max_lines: maximum number of lines to show at start of tail
 
         """
+        # Read file
+        with open(self.tailed_file, 'r') as file_:
+            # Go to EOF and get file size
+            file_.seek(0, 2)
+            fsize = file_.tell()
+
+            # Get position of last 10K characters, then read to the end
+            file_.seek(max(fsize-10000, 0), 0)
+            lines = file_.readlines()       # Read to end
+
+        # Print last max_lines number of lines
+        lines = lines[-max_lines:]
+        for line in lines:
+            print(line.strip())
+
         # Process file
         with open(self.tailed_file) as file_:
             # Go to the end of file
@@ -43,12 +59,15 @@ class File(object):
                 # Tail file. Exit if CTRL-C is pressed
                 try:
                     # Get the byte offset of the most recent file read op
-                    # Read line
+                    # In other words get current size of file
                     curr_position = file_.tell()
+
+                    # Read line
                     line = file_.readline().strip()
 
                     # If nothing new, then sleep
                     if not line:
+                        # Go to the current end of file
                         file_.seek(curr_position)
                         time.sleep(seconds)
                     else:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""switchmap  classes.
+"""switchmap CLI classes.
 
-Manages the verification of required packages.
+Manages basic CLI parsing.
 
 """
 
@@ -187,6 +187,22 @@ class _Show(object):
         self.subcommand.add_parser(
             'hostnames',
             help=textwrap.fill('Show configured hostnames.', width=width)
+        )
+
+    def configuration(self, width=80):
+        """Process 'show configuration' CLI commands.
+
+        Args:
+            width: Width of the help text string to STDIO before wrapping
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        self.subcommand.add_parser(
+            'configuration',
+            help=textwrap.fill('Show configuration.', width=width)
         )
 
 

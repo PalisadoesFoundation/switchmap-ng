@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""switchmap  classes.
+"""switchmap CLI funtions for 'show'.
 
-Manages the verification of required packages.
+Functions to show operational data
 
 """
 
 # Main python libraries
 import sys
+from pprint import pprint
 
 # Switchmap-NG imports
 from switchmap.utils import configuration
@@ -37,13 +38,15 @@ def run(args):
     elif args.qualifier == 'poller':
         poller(args)
     elif args.qualifier == 'hostnames':
-        hostnames()
+        _hostnames()
+    elif args.qualifier == 'configuration':
+        _configuration()
 
     # Show help if there are no matches
     general.cli_help()
 
 
-def hostnames():
+def _hostnames():
     """Process 'show hostnames' commands.
 
     Args:
@@ -57,6 +60,28 @@ def hostnames():
     _hostnames = config.hostnames()
     for _hostname in _hostnames:
         print(_hostname)
+
+    # Done
+    sys.exit(0)
+
+
+def _configuration():
+    """Process 'show hostnames' commands.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    config = configuration.Config()
+    contents = config.configuration()
+    print('')
+    pprint(contents, indent=2)
+    print(
+        '\n# Configuration read from directory: {}\n'
+        ''.format(config.configuration_directory()))
 
     # Done
     sys.exit(0)

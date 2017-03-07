@@ -14,6 +14,18 @@ import os
 import sys
 import yaml
 
+# Try to create a working PYTHONPATH
+TEST_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+SWITCHMAP_DIRECTORY = os.path.abspath(os.path.join(TEST_DIRECTORY, os.pardir))
+ROOT_DIRECTORY = os.path.abspath(os.path.join(SWITCHMAP_DIRECTORY, os.pardir))
+if TEST_DIRECTORY.endswith('/switchmap-ng/switchmap/test') is True:
+    sys.path.append(ROOT_DIRECTORY)
+else:
+    print(
+        'This script is not installed in the "switchmap-ng/bin" directory. '
+        'Please fix.')
+    sys.exit(2)
+
 # Initialize GLOBAL variables
 CONFIG_SUFFIX = '.switchmap_unittests/config'
 CONFIG_DIRECTORY = '{}/{}'.format(os.environ['HOME'], CONFIG_SUFFIX)
