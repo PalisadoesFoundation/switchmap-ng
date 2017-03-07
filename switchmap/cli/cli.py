@@ -188,6 +188,22 @@ class _Show(object):
             'hostnames',
             help=textwrap.fill('Show configured hostnames.', width=width)
         )
+        
+    def configuration(self, width=80):
+        """Process 'show configuration' CLI commands.
+
+        Args:
+            width: Width of the help text string to STDIO before wrapping
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        self.subcommand.add_parser(
+            'configuration',
+            help=textwrap.fill('Show configuration.', width=width)
+        )
 
 
 class _Start(object):

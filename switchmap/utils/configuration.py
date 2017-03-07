@@ -40,13 +40,41 @@ class Config(object):
         # Update the configuration directory
         # 'SWITCHMAP_CONFIGDIR' is used for unittesting
         if 'SWITCHMAP_CONFIGDIR' in os.environ:
-            config_directory = os.environ['SWITCHMAP_CONFIGDIR']
+            self.config_directory = os.environ['SWITCHMAP_CONFIGDIR']
         else:
-            config_directory = '{}/etc'.format(self.root_directory)
-        directories = [config_directory]
+            self.config_directory = '{}/etc'.format(self.root_directory)
+        directories = [self.config_directory]
 
         # Return
         self.config_dict = general.read_yaml_files(directories)
+
+    def configuration_directory(self):
+        """Determine the configuration_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured configuration_directory
+
+        """
+        # Initialize key variables
+        value = self.config_directory
+        return value
+
+    def configuration(self):
+        """Return configuration.
+
+        Args:
+            None
+
+        Returns:
+            value: configuration
+
+        """
+        # Initialize key variables
+        value = self.config_dict
+        return value
 
     def cache_directory(self):
         """Determine the cache_directory.

@@ -13,6 +13,7 @@ Welcome to Switchmap-NG's documentation!
    introduction
    installation
    configuration
+   cli
    operation
    webserver
    troubleshooting
