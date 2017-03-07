@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""switchmap  classes.
+"""switchmap CLI classes for 'test'.
 
-Manages the verification of required packages.
+Functions to test poller
 
 """
 
