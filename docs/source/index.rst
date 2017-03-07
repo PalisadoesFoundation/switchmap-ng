@@ -14,6 +14,7 @@ Welcome to Switchmap-NG's documentation!
    installation
    configuration
    operation
+   webserver
    troubleshooting
    community
    
