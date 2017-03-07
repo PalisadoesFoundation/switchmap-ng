@@ -11,6 +11,19 @@ import os
 from collections import defaultdict
 import getpass
 
+# PIP3 libraries
+###############################################################################
+# YAML needs to be installed for the general library to be used
+###############################################################################
+try:
+    import yaml
+except ImportError:
+    import pip
+    _packages = ['yaml']
+    for _package in _packages:
+        pip.main(['install', '--user', _package])
+    import yaml
+
 # Try to create a working PYTHONPATH
 _maint_directory = os.path.dirname(os.path.realpath(__file__))
 _root_directory = os.path.abspath(
@@ -22,6 +35,7 @@ else:
         'Switchmap-NG is not installed in a "switchmap-ng/" directory. '
         'Please fix.')
     sys.exit(2)
+
 
 # Do switchmap-ng imports
 from switchmap.utils import log
