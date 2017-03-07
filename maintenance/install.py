@@ -476,6 +476,7 @@ class _PostCheck(object):
         # Initialize key variables
         username = getpass.getuser()
         system_directory = '/etc/systemd/system'
+        suggestions = ''
         line = '*' * 80
 
         prefix = """\
@@ -496,12 +497,12 @@ with these commands:
 
     # systemctl enable switchmap-ng-api.service
     # systemctl enable switchmap-ng-poller.service""".format(prefix)
-            else:
-                suggestions = """{}
+        else:
+            suggestions = """{}
 You can restart switchmap-ng daemons with these commands:
 
-    $ bin/switchmap-ng-api --restart
-    $ bin/switchmap-ng-poller --restart
+$ bin/switchmap-ng-api --restart
+$ bin/switchmap-ng-poller --restart
 
 Switchmap-NG will not automatically restart after a reboot. \
 You need to re-install as the "root" user for this to occur.""".format(prefix)
