@@ -3,8 +3,8 @@ Installation
 
 This section outlines how to install and do basic configuration of ``switchmap-ng``.
 
-Dependencies
-------------
+Install Prerequisite Packages
+-----------------------------
 
 ``switchmap-ng`` has the following requirements:
 
@@ -34,23 +34,11 @@ The commands for installing the dependencies are:
     $ sudo dnf -y install python3 python3-pip python3-dev memcached
 
 
-The Installation Process
-------------------------
+Install Switchmap-NG
+--------------------
 
 Installation is simple. Follow these steps
 
-Verify Dependencies
-~~~~~~~~~~~~~~~~~~~
-
-The first thing to do is verify that your system has the correct prerequisites. Run this command to make sure all is OK:
-
-::
-
-    $ bin/tools/prerequisites.py
-
-Do the appropriate remediation to fix any reported issues. Run any commands this script suggests.
-
-Be prepared to install ``switchmap-ng`` on a newer version of your operating system.
 
 Clone the Repository
 ~~~~~~~~~~~~~~~~~~~~
@@ -62,7 +50,6 @@ final location.
 
     $ git clone https://github.com/PalisadoesFoundation/switchmap-ng
     $ cd switchmap-ng
-    $ export PYTHONPATH=`pwd`
 
 
 Edit Configuration File
@@ -92,44 +79,55 @@ Run Installation Script
 
 Run the installation script. There are two alternatives:
 
-:Run Interactively: This is the preferred method if you don't have ``root`` access to your system. ``switchmap-ng`` `will not` automatically restart on reboot using this method. To make ``switchmap-ng`` run with your username, then execute this command:
+**Installing as a regular user**
+
+There are some things to keep in mind when installing `switchmap-ng` as a regular user.
+
+1) Use this method if you don't have ``root`` access to your system. 
+2) The ``switchmap-ng`` daemons `will not` automatically restart on reboot using this method. 
+
+To make ``switchmap-ng`` run with your username, then execute this command:
 
 ::
 
-    $ python3 setup.py
+    $ maintenance/install.py
 
-:Run as System Daemon: If you want ``switchmap-ng`` to be run as a system daemon, then execute these commands. ``switchmap-ng`` `will` automatically restart on reboot using this installation method. (**Note**: Do not run setup using ``sudo``. Use ``sudo`` to become the root user first)
+**Installing as the "root" user**
 
-This example assumes you have downloaded ``switchmap-ng`` in the ``/home/switchmap-ng`` directory. Change this to the appropiate directory in your case.
+There are some things to keep in mind when installing `switchmap-ng` as the `root` user.
 
-::
+1) The ``switchmap-ng`` daemons `will` automatically restart on reboot using this installation method.
+2) **Note**: Do not run setup using ``sudo``. Use ``sudo`` to become the ``root`` user first.
 
-    $ pwd
-    /home/switchmap-ng
-    $ sudo su -
-    # cd /home/switchmap-ng
-    # python3 setup.py
-
-
-Setup Webserver For ``switchmap-ng``
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-``switchmap-ng`` has sample configurations for the Apache webserver. This step is mandatory.
-
-:Apache: Run the following commands from the top directory of ``switchmap-ng``
+To install ``switchmap-ng`` as the ``root`` user execute this command:
 
 ::
 
-    $ sudo cp examples/linux/apache/switchmap-ng-apache.conf /etc/apache2/conf-available
-    $ sudo ln -s /etc/apache2/conf-available/switchmap-ng-apache.conf /etc/apache2/conf-enabled/switchmap-ng-apache.conf 
+    # maintenance/install.py
 
-    # (Ubuntu only)
-    $ sudo a2enmod proxy_http
-    $ systemctl restart apache2.service
 
-    # (RedHat / CentOS)    
-    $ systemctl restart httpd.service
+Testing Installation
+--------------------
 
+There are a number of ways to test your installation. 
+
+Testing Polling
+~~~~~~~~~~~~~~~
+You can test your SNMP configuration and connectivity to your devices using the ``switchmap-ng-cli`` utility like this:
+
+::
+
+    $ bin/switchmap-ng-cli test poller --all
+
+Testing the Web Interface
+~~~~~~~~~~~~~~~~~~~~~~~~~
+You can test whether the API is working by visiting this url. (You will need to make adjustments if you installed the application on a remote server):
+
+::
+
+   http://localhost:7000/switchmap-ng/
+
+The Webserver help page provides the necessary steps to view switchmap on port 80 using Apache or Nginx
 
 
 Next Steps

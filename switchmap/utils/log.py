@@ -214,6 +214,22 @@ def log2see(code, message):
     _logit(code, message, error=False)
 
 
+def log2see_safe(code, message):
+    """Log message to STDOUT only and die.
+
+    Args:
+        code: Message code
+        message: Message text
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    output = _message(code, message, error=False)
+    print(output)
+
+
 def log2die(code, message):
     """Log to STDOUT and file, then die.
 

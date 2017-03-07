@@ -21,7 +21,7 @@ before_install:
     - switchmap/test/create_test_config.py
 
 # Install switchmap-ng
-install: python3 setup.py
+install: python3 maintenance/setup.py
 
 # Run the unittest scripts
 script: switchmap/test/_do_all_tests.py

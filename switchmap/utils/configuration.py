@@ -40,13 +40,41 @@ class Config(object):
         # Update the configuration directory
         # 'SWITCHMAP_CONFIGDIR' is used for unittesting
         if 'SWITCHMAP_CONFIGDIR' in os.environ:
-            config_directory = os.environ['SWITCHMAP_CONFIGDIR']
+            self.config_directory = os.environ['SWITCHMAP_CONFIGDIR']
         else:
-            config_directory = '{}/etc'.format(self.root_directory)
-        directories = [config_directory]
+            self.config_directory = '{}/etc'.format(self.root_directory)
+        directories = [self.config_directory]
 
         # Return
         self.config_dict = general.read_yaml_files(directories)
+
+    def configuration_directory(self):
+        """Determine the configuration_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured configuration_directory
+
+        """
+        # Initialize key variables
+        value = self.config_directory
+        return value
+
+    def configuration(self):
+        """Return configuration.
+
+        Args:
+            None
+
+        Returns:
+            value: configuration
+
+        """
+        # Initialize key variables
+        value = self.config_dict
+        return value
 
     def cache_directory(self):
         """Determine the cache_directory.
@@ -281,6 +309,26 @@ class Config(object):
             result = 7000
         return result
 
+    def polling_interval(self):
+        """Get polling_interval.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        key = 'main'
+        sub_key = 'polling_interval'
+        result = _key_sub_key(key, sub_key, self.config_dict, die=False)
+
+        # Default to 3600
+        if result is None:
+            result = 3600
+        return result
+
     def agent_threads(self):
         """Get agent_threads.
 
@@ -345,11 +393,10 @@ class Config(object):
 
         # Check if value exists
         if os.path.isdir(value) is False:
-            print('\n\n', value, '\n\n')
             log_message = (
-                'log_directory: "%s" '
-                'in configuration doesn\'t exist!') % (value)
-            log.log2die(1030, log_message)
+                'log_directory: "{}" '
+                'in configuration doesn\'t exist!').format(value)
+            log.log2die_safe(1030, log_message)
 
         # Return
         return value
@@ -486,6 +533,7 @@ class ConfigSNMP(object):
         seed_dict['snmp_privpassword'] = None
         seed_dict['snmp_port'] = 161
         seed_dict['group_name'] = None
+        seed_dict['enabled'] = True
 
         # Read configuration's SNMP information. Return 'None' if none found
         if 'snmp_groups' in self.config_dict:

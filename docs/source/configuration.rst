@@ -23,7 +23,7 @@ parameter sets in the ``snmp_group`` section till successful.
         log_directory: /home/switchmap-ng/log
         log_level: info
         cache_directory: /opt/switchmap-ng/cache
-        agent_threads: 20
+        agent_subprocesses: 20
         bind_port: 7000
         listen_address: 0.0.0.0
         hostnames:
@@ -31,6 +31,7 @@ parameter sets in the ``snmp_group`` section till successful.
           - 192.168.1.2
           - 192.168.1.3
           - 192.168.1.4
+        polling_interval: 3600
 
     snmp_groups:
         - group_name: Corporate Campus
@@ -66,10 +67,11 @@ Parameter                           Description
 ``log_directory:``                  The directory where ``switchmap-ng`` places its log files
 ``log_level:``                      Defines the logging level. ``debug`` level is the most verbose, followed by ``info``, ``warning`` and ``critical``
 ``cache_directory:``                Location where data retrieved from devices will be stored.
-``agent_threads:``                  The maximum number of threads used to collect data from devices
+``agent_subprocesses:``             The maximum number of subprocesses used to collect data from devices
 ``listen_address:``                 IP address the API will be using. The default is ``localhhost``. This should not need to be changed.
 ``bind_port:``                      The TCP port the API will use. This should not need to be changed.
 ``hostnames:``                      A list of hosts that will be polled for data.
+``polling_interval:``               The frequency in seconds with which the poller will query devices
 =================================== ========
 
 The ``snmp_groups:`` Section

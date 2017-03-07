@@ -20,20 +20,19 @@ class Daemon(object):
 
     """
 
-    def __init__(self, pidfile, lockfile=None):
+    def __init__(self, agent):
         """Method for intializing the class.
 
         Args:
-            pidfile: Name of PID file
-            lockfile: Name of lock file
+            agent: Agent object
 
         Returns:
             None
 
         """
-        # Initialize key variables
-        self.pidfile = pidfile
-        self.lockfile = lockfile
+        self.name = agent.name()
+        self.pidfile = agent.pidfile_parent
+        self.lockfile = agent.lockfile_parent
 
     def daemonize(self):
         """Deamonize class. UNIX double fork mechanism.
@@ -78,12 +77,10 @@ class Daemon(object):
         sys.stdout.flush()
         sys.stderr.flush()
         f_handle_si = open(os.devnull, 'r')
-        # f_handle_so = open(os.devnull, 'a+')
         f_handle_so = open(os.devnull, 'a+')
         f_handle_se = open(os.devnull, 'a+')
 
         os.dup2(f_handle_si.fileno(), sys.stdin.fileno())
-        # os.dup2(f_handle_so.fileno(), sys.stdout.fileno())
         os.dup2(f_handle_so.fileno(), sys.stdout.fileno())
         os.dup2(f_handle_se.fileno(), sys.stderr.fileno())
 
@@ -149,7 +146,9 @@ class Daemon(object):
         self.daemonize()
 
         # Log success
-        log_message = ('Daemon Started - PID file: %s') % (self.pidfile)
+        log_message = (
+            'Daemon {} started - PID file: {}'
+            ''.format(self.name, self.pidfile))
         log.log2info(1070, log_message)
 
         # Run code for daemon
@@ -223,7 +222,9 @@ class Daemon(object):
         # Log success
         self.delpid()
         self.dellock()
-        log_message = ('Daemon Stopped - PID file: %s') % (self.pidfile)
+        log_message = (
+            'Daemon {} stopped - PID file: {}'
+            ''.format(self.name, self.pidfile))
         log.log2info(1071, log_message)
 
     def restart(self):
@@ -250,9 +251,9 @@ class Daemon(object):
         """
         # Get status
         if os.path.exists(self.pidfile) is True:
-            print('Daemon is running')
+            print('Daemon is running - {}'.format(self.name))
         else:
-            print('Daemon is stopped')
+            print('Daemon is stopped - {}'.format(self.name))
 
     def run(self):
         """You should override this method when you subclass Daemon.

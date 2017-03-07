@@ -13,9 +13,6 @@ from multiprocessing import Pool
 from collections import defaultdict
 import socket
 
-# PIP3 imports
-import yaml
-
 # Try to create a working PYTHONPATH
 script_directory = os.path.dirname(os.path.realpath(__file__))
 root_directory = os.path.abspath(os.path.join(script_directory, os.pardir))
@@ -38,7 +35,9 @@ from switchmap.utils import general
 from switchmap.snmp import snmp_info
 from switchmap.snmp import snmp_manager
 from switchmap.topology import postpoll
-from switchmap.main import agent as Agent
+from switchmap.main import agent
+from switchmap.main.agent import Agent
+from switchmap.constants import POLLER_EXECUTABLE
 
 
 def _oui():
@@ -72,7 +71,7 @@ def _oui():
 OUI = _oui()
 
 
-class PollingAgent(object):
+class PollingAgent(Agent):
     """Switchmap-NG agent that gathers data.
 
     Args:
@@ -87,7 +86,7 @@ class PollingAgent(object):
         post:
     """
 
-    def __init__(self):
+    def __init__(self, parent):
         """Method initializing the class.
 
         Args:
@@ -98,25 +97,11 @@ class PollingAgent(object):
 
         """
         # Initialize key variables
-        self.agent_name = 'topology'
+        Agent.__init__(self, parent)
 
         # Get configuration
         self.server_config = configuration.Config()
         self.snmp_config = configuration.ConfigSNMP()
-
-    def name(self):
-        """Return agent name.
-
-        Args:
-            None
-
-        Returns:
-            value: Name of agent
-
-        """
-        # Return
-        value = self.agent_name
-        return value
 
     def query(self):
         """Query all remote hosts for data.
@@ -165,7 +150,7 @@ class PollingAgent(object):
             log.log2info(1125, log_message)
 
             # Sleep for "delay" seconds
-            Agent.agent_sleep(self.name(), delay)
+            agent.agent_sleep(self.name(), delay)
 
 
 class Poller(object):
@@ -201,7 +186,40 @@ class Poller(object):
         # Get snmp configuration information from Switchmap-NG
         validate = snmp_manager.Validate(hostname, snmp_config.snmp_auth())
         self.snmp_params = validate.credentials()
-        self.snmp_object = snmp_manager.Interact(self.snmp_params)
+
+        # Create an SNMP object for querying
+        if self._do_poll() is True:
+            self.snmp_object = snmp_manager.Interact(self.snmp_params)
+        else:
+            log_message = (
+                'Uncontactable or disabled host {}, or no valid SNMP '
+                'credentials found for it.'.format(self.hostname))
+            log.log2info(1021, log_message)
+
+    def _do_poll(self):
+        """Determine whether doing a poll is valid.
+
+        Args:
+            None
+
+        Returns:
+            poll: True if a poll should be done
+
+        """
+        # Initialize key variables
+        poll = False
+
+        if bool(self.snmp_params) is True:
+            if isinstance(self.snmp_params, dict) is True:
+                if 'enabled' in self.snmp_params:
+                    if bool(self.snmp_params['enabled']) is True:
+                        poll = True
+                else:
+                    # Default to poll unless otherwise stated
+                    poll = True
+
+        # Return
+        return poll
 
     def query(self):
         """Query all remote hosts for data.
@@ -213,6 +231,10 @@ class Poller(object):
             None
 
         """
+        # Only query if wise
+        if self._do_poll() is False:
+            return
+
         # Check SNMP supported
         if bool(self.snmp_params) is True:
             # Get datapoints
@@ -460,13 +482,13 @@ def main():
 
     """
     # Get configuration
-    cli = Agent.AgentCLI()
-    poller = PollingAgent()
+    agent_poller = PollingAgent(POLLER_EXECUTABLE)
 
     # Do control
-    cli.control(poller)
+    cli = agent.AgentCLI()
+    cli.control(agent_poller)
 
 if __name__ == "__main__":
-    # Poller('absw01.sjc01.corp.colovore.net')._create_yaml()
+    # Poller('192.168.1.1')._create_yaml()
     # _poll_devices()
     main()

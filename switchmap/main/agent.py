@@ -14,45 +14,84 @@ import textwrap
 import sys
 import time
 import argparse
+import multiprocessing
+import os
 
-# pip3 libraries
+# PIP3 libraries
+from gunicorn.app.base import BaseApplication
+from gunicorn.six import iteritems
 
 # switchmap.libraries
 from switchmap.utils import daemon
 from switchmap.utils.daemon import Daemon
+from switchmap.utils import configuration
+from switchmap.utils import log
+from switchmap.www import API
 
 
-class AgentDaemon(Daemon):
-    """Class that manages polling.
+class Agent(object):
+    """Agent class for daemons."""
 
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-
-    def __init__(self, poller):
+    def __init__(self, parent, child=None):
         """Method initializing the class.
 
         Args:
-            poller: PollingAgent object
+            parent: Name of parent daemon
+            child: Name of child daemon
 
         Returns:
             None
 
         """
-        # Instantiate poller
-        self.poller = poller
+        # Initialize key variables (Parent)
+        self.parent = parent
+        self.pidfile_parent = daemon.pid_file(parent)
+        self.lockfile_parent = daemon.lock_file(parent)
 
-        # Get PID filename
-        agent_name = self.poller.name()
-        pidfile = daemon.pid_file(agent_name)
-        lockfile = daemon.lock_file(agent_name)
+        # Initialize key variables (Child)
+        if bool(child) is None:
+            self.pidfile_child = None
+        else:
+            self.pidfile_child = daemon.pid_file(child)
+
+    def name(self):
+        """Return agent name.
+
+        Args:
+            None
+
+        Returns:
+            value: Name of agent
+
+        """
+        # Return
+        value = self.parent
+        return value
+
+    def query(self):
+        """Placeholder method."""
+        # Do nothing
+        pass
+
+
+class AgentDaemon(Daemon):
+    """Class that manages agent deamonization."""
+
+    def __init__(self, agent):
+        """Method initializing the class.
+
+        Args:
+            agent: agent object
+
+        Returns:
+            None
+
+        """
+        # Initialize variables to be used by daemon
+        self.agent = agent
 
         # Call up the base daemon
-        Daemon.__init__(self, pidfile, lockfile=lockfile)
+        Daemon.__init__(self, agent)
 
     def run(self):
         """Start polling.
@@ -66,7 +105,7 @@ class AgentDaemon(Daemon):
         """
         # Start polling. (Poller decides frequency)
         while True:
-            self.poller.query()
+            self.agent.query()
 
 
 class AgentCLI(object):
@@ -159,11 +198,11 @@ class AgentCLI(object):
         # Get the parser value
         self.parser = parser
 
-    def control(self, poller):
-        """Start the switchmap.agent.
+    def control(self, agent):
+        """Control the switchmap agent from the CLI.
 
         Args:
-            poller: PollingAgent object
+            agent: Agent object
 
         Returns:
             None
@@ -175,7 +214,7 @@ class AgentCLI(object):
         args = parser.parse_args()
 
         # Run daemon
-        _daemon = AgentDaemon(poller)
+        _daemon = AgentDaemon(agent)
         if args.start is True:
             _daemon.start()
         elif args.stop is True:
@@ -194,6 +233,141 @@ class AgentCLI(object):
         else:
             parser.print_help()
             sys.exit(2)
+
+
+class AgentAPI(Agent):
+    """switchmap-ng API agent that serves web pages.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Functions:
+        __init__:
+        populate:
+        post:
+    """
+
+    def __init__(self, parent, child):
+        """Method initializing the class.
+
+        Args:
+            parent: Name of parent daemon
+            child: Name of child daemon
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        Agent.__init__(self, parent, child)
+        self.config = configuration.Config()
+
+    def query(self):
+        """Query all remote devices for data.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        config = self.config
+
+        # Check for lock and pid files
+        if os.path.exists(self.lockfile_parent) is True:
+            log_message = (
+                'Lock file %s exists. Multiple API daemons running '
+                'API may have died '
+                'catastrophically in the past, in which case the lockfile '
+                'should be deleted. '
+                '') % (self.lockfile_parent)
+            log.log2see(1083, log_message)
+
+        if os.path.exists(self.pidfile_parent) is True:
+            log_message = (
+                'PID file: %s already exists. Daemon already running? '
+                'If not, it may have died catastrophically in the past '
+                'in which case you should use --stop --force to fix.'
+                '') % (self.pidfile_parent)
+            log.log2see(1084, log_message)
+
+        ######################################################################
+        #
+        # Assign options in format that the Gunicorn WSGI will accept
+        #
+        # NOTE! to get a full set of valid options pprint(self.cfg.settings)
+        # in the instantiation of StandaloneApplication. The option names
+        # do not exactly match the CLI options found at
+        # http://docs.gunicorn.org/en/stable/settings.html
+        #
+        ######################################################################
+        options = {
+            'bind': '%s:%s' % (config.listen_address(), config.bind_port()),
+            'accesslog': config.web_log_file(),
+            'errorlog': config.web_log_file(),
+            'capture_output': True,
+            'pidfile': self.pidfile_child,
+            'loglevel': config.log_level(),
+            'workers': _number_of_workers(),
+        }
+
+        # Log so that user running the script from the CLI knows that something
+        # is happening
+        log_message = (
+            'Switchmap API running on %s:%s and logging to file %s.'
+            '') % (
+                config.listen_address(),
+                config.bind_port(),
+                config.web_log_file())
+        log.log2info(1022, log_message)
+
+        # Run
+        StandaloneApplication(API, options).run()
+
+
+class StandaloneApplication(BaseApplication):
+    """Class to integrate the Gunicorn WSGI with the Switchmap Flask application.
+
+    Modified from: http://docs.gunicorn.org/en/latest/custom.html
+
+    """
+
+    def __init__(self, app, options=None):
+        """Method initializing the class.
+
+        args:
+            app: Flask application object of type Flask(__name__)
+            options: Gunicorn CLI options
+
+        """
+        # Initialize key variables
+        self.options = options or {}
+        self.application = app
+        super(StandaloneApplication, self).__init__()
+
+    def load_config(self):
+        """Load the configuration."""
+        # Initialize key variables
+        config = dict([(key, value) for key, value in iteritems(self.options)
+                       if key in self.cfg.settings and value is not None])
+
+        # Assign configuration parameters
+        for key, value in iteritems(config):
+            self.cfg.set(key.lower(), value)
+
+    def load(self):
+        """Run the Flask application throught the Gunicorn WSGI."""
+        return self.application
+
+
+def _number_of_workers():
+    """Get the number of CPU cores on this server."""
+    return (multiprocessing.cpu_count() * 2) + 1
 
 
 def agent_sleep(agent_name, seconds=300):

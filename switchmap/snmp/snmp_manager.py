@@ -100,6 +100,10 @@ class Validate(object):
 
         # Probe device with all SNMP options
         for params_dict in self.snmp_config:
+            # Only process enabled SNMP values
+            if bool(params_dict['enabled']) is False:
+                continue
+
             # Update credentials
             params_dict['snmp_hostname'] = self.hostname
 

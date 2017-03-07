@@ -2,6 +2,7 @@
 """Test the configuration module."""
 
 import os
+import sys
 import os.path
 import unittest
 import shutil
@@ -10,6 +11,17 @@ import string
 import tempfile
 import yaml
 
+# Try to create a working PYTHONPATH
+TEST_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+SWITCHMAP_DIRECTORY = os.path.abspath(os.path.join(TEST_DIRECTORY, os.pardir))
+ROOT_DIRECTORY = os.path.abspath(os.path.join(SWITCHMAP_DIRECTORY, os.pardir))
+if TEST_DIRECTORY.endswith('/switchmap-ng/switchmap/test') is True:
+    sys.path.append(ROOT_DIRECTORY)
+else:
+    print(
+        'This script is not installed in the "switchmap-ng/bin" directory. '
+        'Please fix.')
+    sys.exit(2)
 
 from switchmap.utils import configuration
 
@@ -39,6 +51,7 @@ main:
     - 192.168.1.4
     listen_address: 0.0.0.0
     log_level: debug
+    polling_interval: 20
 """) % (log_directory, cache_directory)
 
     # Convert good_config to dictionary
@@ -104,7 +117,8 @@ main:
         """Testing method web_log_file ."""
         # Testing web_log_file with a good dictionary.
         result = self.config.web_log_file()
-        self.assertEqual(result, ('%s/switchmap-ng-api.log') % (self.log_directory))
+        self.assertEqual(
+            result, ('%s/switchmap-ng-api.log') % (self.log_directory))
 
     def test_log_level(self):
         """Testing method log_level."""
@@ -193,6 +207,58 @@ main:
         result = self.config.agent_threads()
         self.assertEqual(result, 20)
         self.assertEqual(result, self.good_dict['main']['agent_threads'])
+
+    def test_polling_interval(self):
+        """Testing method polling_interval."""
+        # Testing polling_interval with good_dictionary
+        # good key and key_value
+        result = self.config.polling_interval()
+        self.assertEqual(result, 20)
+        self.assertEqual(result, self.good_dict['main']['polling_interval'])
+
+        # Set the environmental variable for the configuration directory
+        directory = tempfile.mkdtemp()
+        os.environ['SWITCHMAP_CONFIGDIR'] = directory
+        config_file = ('%s/test_config.yaml') % (directory)
+
+        # Testing polling_interval with blank key and blank key_value
+        key = ''
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        with self.assertRaises(SystemExit):
+            config.polling_interval()
+
+        # Testing polling_interval with good key and blank key_value
+        key = 'polling_interval:'
+        key_value = ''
+        bad_config = ("""\
+main:
+    %s %s
+""") % (key, key_value)
+        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+
+        # Write bad_config to file
+        with open(config_file, 'w') as f_handle:
+            yaml.dump(bad_dict, f_handle, default_flow_style=True)
+
+        # Create configuration object
+        config = configuration.Config()
+        result = config.polling_interval()
+        self.assertEqual(result, 3600)
+
+        # Cleanup files in temp directories
+        _delete_files(directory)
 
     def test_bind_port(self):
         """Testing method bind_port."""
@@ -315,6 +381,7 @@ class TestConfigSNMP(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        """Setup the environmental before testing begins."""
         # Define agent name
         cls.group_name = ''.join([random.choice(
             string.ascii_letters + string.digits) for n in range(9)])
@@ -361,6 +428,7 @@ class TestConfigSNMP(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        """Cleanup the environmental after testing ends."""
         # Cleanup temporary files when done
         shutil.rmtree(cls.test_config_dir)
         os.remove(cls.log_file)

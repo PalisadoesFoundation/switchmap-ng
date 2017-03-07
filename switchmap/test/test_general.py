@@ -2,13 +2,27 @@
 """Test the general module."""
 
 import unittest
-import shutil
 import random
 import os
+import sys
 import string
 import tempfile
+import yaml
+
+# Try to create a working PYTHONPATH
+TEST_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+SWITCHMAP_DIRECTORY = os.path.abspath(os.path.join(TEST_DIRECTORY, os.pardir))
+ROOT_DIRECTORY = os.path.abspath(os.path.join(SWITCHMAP_DIRECTORY, os.pardir))
+if TEST_DIRECTORY.endswith('/switchmap-ng/switchmap/test') is True:
+    sys.path.append(ROOT_DIRECTORY)
+else:
+    print(
+        'This script is not installed in the "switchmap-ng/bin" directory. '
+        'Please fix.')
+    sys.exit(2)
 
 from switchmap.utils import general
+from switchmap import switchmap
 
 
 class KnownValues(unittest.TestCase):
@@ -23,6 +37,162 @@ class KnownValues(unittest.TestCase):
 
     random_string = ''.join([random.choice(
         string.ascii_letters + string.digits) for n in range(9)])
+
+    def test_cli_help(self):
+        """Testing method / function cli_help."""
+        # Initializing key variables
+        pass
+
+    def test_root_directory(self):
+        """Testing method / function root_directory."""
+        # Initializing key variables
+        # Determine root directory for switchmap
+        switchmap_dir = switchmap.__path__[0]
+        components = switchmap_dir.split(os.sep)
+        # Determine root directory 2 levels above
+        root_dir = os.sep.join(components[0:-2])
+        result = general.root_directory()
+        self.assertEqual(result, root_dir)
+
+    def test_get_hosts(self):
+        """Testing method / function get_hosts."""
+        # Initializing key variables
+        pass
+
+    def test_read_yaml_file(self):
+        """Testing method / function read_yaml_file."""
+        # Initializing key variables
+        dict_1 = {
+            'key1': 1,
+            'key2': 2,
+            'key3': 3,
+            'key4': 4,
+        }
+
+        # Create temp file with known data
+        directory = tempfile.mkdtemp()
+        file_data = [
+            (('{}/file_1.yaml').format(directory), dict_1)
+        ]
+        for item in file_data:
+            filename = item[0]
+            data_dict = item[1]
+            with open(filename, 'w') as filehandle:
+                yaml.dump(data_dict, filehandle, default_flow_style=False)
+
+            # Get Results
+            result = general.read_yaml_file(filename)
+
+            # Test equivalence
+            for key in result.keys():
+                self.assertEqual(data_dict[key], result[key])
+
+        # Clean up
+        filelist = [
+            next_file for next_file in os.listdir(
+                directory) if next_file.endswith('.yaml')]
+        for delete_file in filelist:
+            delete_path = ('{}/{}').format(directory, delete_file)
+            os.remove(delete_path)
+        os.removedirs(directory)
+
+    def test_read_yaml_files(self):
+        """Testing method / function read_yaml_files."""
+        # Initializing key variables
+        # Initializing key variables
+        dict_1 = {
+            'key1': 1,
+            'key2': 2,
+            'key3': 3,
+            'key4': 4,
+        }
+
+        dict_2 = {
+            'key6': 6,
+            'key7': 7,
+        }
+        dict_3 = {}
+
+        # Populate a third dictionary with contents of other dictionaries.
+        for key, value in dict_1.items():
+            dict_3[key] = value
+
+        for key, value in dict_2.items():
+            dict_3[key] = value
+
+        # Create temp file with known data
+        directory = tempfile.mkdtemp()
+        filenames = {
+            ('%s/file_1.yaml') % (directory): dict_1,
+            ('%s/file_2.yaml') % (directory): dict_2
+        }
+        for filename, data_dict in filenames.items():
+            with open(filename, 'w') as filehandle:
+                yaml.dump(data_dict, filehandle, default_flow_style=False)
+
+        # Get Results
+        result = general.read_yaml_files([directory])
+
+        # Clean up
+        for key in result.keys():
+            self.assertEqual(dict_3[key], result[key])
+        filelist = [
+            next_file for next_file in os.listdir(
+                directory) if next_file.endswith('.yaml')]
+        for delete_file in filelist:
+            delete_path = ('%s/%s') % (directory, delete_file)
+            os.remove(delete_path)
+        os.removedirs(directory)
+
+    def test_run_script(self):
+        """Testing method / function run_script."""
+        # Initializing key variables
+        pass
+
+    def test_delete_files(self):
+        """Testing method / function delete_files."""
+        # Initializing key variables
+        pass
+
+    def test_config_directories(self):
+        """Testing method / function config_directories."""
+        # Initializing key variables
+        # Initialize key variables
+        save_directory = None
+
+        if 'SWITCHMAP_CONFIGDIR' in os.environ:
+            save_directory = os.environ['SWITCHMAP_CONFIGDIR']
+
+            # Try with no SWITCHMAP_CONFIGDIR
+            os.environ.pop('SWITCHMAP_CONFIGDIR', None)
+            directory = '{}/etc'.format(general.root_directory())
+            result = general.config_directories()
+            self.assertEqual(result, [directory])
+
+        # Test with SWITCHMAP_CONFIGDIR set
+        directory = tempfile.mkdtemp()
+        os.environ['SWITCHMAP_CONFIGDIR'] = directory
+        result = general.config_directories()
+        self.assertEqual(result, [directory])
+
+        # Restore state
+        if save_directory is not None:
+            os.environ['SWITCHMAP_CONFIGDIR'] = save_directory
+
+    def test_search_file(self):
+        """Testing method / function search_file."""
+        # Initializing key variables
+        pass
+
+    def test_move_files(self):
+        """Testing method / function move_files."""
+        # Initializing key variables
+        pass
+
+    def test_create_yaml_file(self):
+        """Testing method / function create_yaml_file."""
+        # Initializing key variables
+        pass
 
     def test_dict2yaml(self):
         """Testing method / function dict2yaml."""
