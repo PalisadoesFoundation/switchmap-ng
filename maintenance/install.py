@@ -11,6 +11,27 @@ import os
 from collections import defaultdict
 import getpass
 
+# PIP3 libraries
+###############################################################################
+# YAML needs to be installed for the general library to be used
+###############################################################################
+try:
+    import yaml
+except ImportError:
+    import pip
+    _username = getpass.getuser()
+    _packages = ['PyYAML']
+    for _package in _packages:
+        # Install package globally if user 'root'
+        if _username == 'root':
+            pip.main(['install', _package])
+        else:
+            pip.main(['install', '--user', _package])
+    print(
+        'New Python packages installed. Please run this script again to '
+        'complete the Switchmap-NG installation.')
+    sys.exit(0)
+
 # Try to create a working PYTHONPATH
 _maint_directory = os.path.dirname(os.path.realpath(__file__))
 _root_directory = os.path.abspath(
@@ -23,10 +44,12 @@ else:
         'Please fix.')
     sys.exit(2)
 
+
 # Do switchmap-ng imports
 from switchmap.utils import log
 from maintenance import setup
 from switchmap.utils import general
+from switchmap.utils import daemon as daemon_lib
 
 
 def run():
@@ -90,7 +113,8 @@ class _Daemon(object):
         # Get daemon status
         daemons = ['switchmap-ng-api', 'switchmap-ng-poller']
         for daemon in daemons:
-
+            # Initialize key variables
+            success = False
             running = self._running(daemon)
 
             # Prompt to restart if already running
@@ -99,20 +123,29 @@ class _Daemon(object):
                     '\nINPUT - Daemon {} is running. Restart? [Y/n] '
                     ''.format(daemon))
                 if bool(restart) is False:
-                    self._restart(daemon)
-                    setup.print_ok(
-                        'Successfully restarted daemon {}.'.format(daemon))
+                    success = self._restart(daemon)
+                    if success is True:
+                        setup.print_ok(
+                            'Successfully restarted daemon {}.'.format(daemon))
                 elif restart[0].lower() != 'n':
-                    self._restart(daemon)
-                    setup.print_ok(
-                        'Successfully restarted daemon {}.'.format(daemon))
+                    success = self._restart(daemon)
+                    if success is True:
+                        setup.print_ok(
+                            'Successfully restarted daemon {}.'.format(daemon))
                 else:
                     setup.print_ok(
                         'Leaving daemon {} unchanged.'.format(daemon))
+                    success = True
             else:
-                self._start(daemon)
-                setup.print_ok(
-                    'Successfully started daemon {}.'.format(daemon))
+                success = self._start(daemon)
+                if success is True:
+                    setup.print_ok(
+                        'Successfully started daemon {}.'.format(daemon))
+
+            # Message if no success
+            if success is False:
+                log_message = ('Failed to start daemon {}.'.format(daemon))
+                log.log2see_safe(1001, log_message)
 
     def _restart(self, daemon):
         """Start or restart daemon.
@@ -125,7 +158,7 @@ class _Daemon(object):
 
         """
         # restart
-        self._start(daemon, restart=True)
+        return self._start(daemon, restart=True)
 
     def _start(self, daemon, restart=False):
         """Start or restart daemon.
@@ -139,6 +172,7 @@ class _Daemon(object):
 
         """
         # Initialize key variables
+        username = getpass.getuser()
         running = False
         if restart is True:
             attempt = 'restart'
@@ -148,18 +182,29 @@ class _Daemon(object):
         # Get status
         root_directory = general.root_directory()
         if restart is False:
-            script_name = '{}/bin/{} --start'.format(root_directory, daemon)
+            if username == 'root':
+                script_name = (
+                    '/bin/systemctl start {}.service'.format(daemon))
+            else:
+                script_name = (
+                    '{}/bin/{} --start'.format(root_directory, daemon))
         else:
-            script_name = (
-                '{}/bin/{} --restart --force'.format(root_directory, daemon))
+            if username == 'root':
+                script_name = (
+                    '/bin/systemctl restart {}.service'.format(daemon))
+            else:
+                script_name = (
+                    '{}/bin/{} --restart --force'
+                    ''.format(root_directory, daemon))
 
         # Attempt to restart / start
         response = general.run_script(script_name, die=False)
         if bool(response['returncode']) is True:
             log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
-            log.log2see_safe(1032, log_message)
+            log.log2see_safe(1026, log_message)
 
-        # Return
+        # Return after waiting for daemons to startup properly
+        running = self._running(daemon)
         return running
 
     def _running(self, daemon):
@@ -175,14 +220,9 @@ class _Daemon(object):
         # Initialize key variables
         running = False
 
-        # Get status
-        root_directory = general.root_directory()
-        script_name = '{}/bin/{} --status'.format(root_directory, daemon)
-        response = general.run_script(script_name, die=False)
-        for key, value in response.items():
-            if key == 'output':
-                if 'running' in str(value).lower():
-                    running = True
+        # Get status of file (Don't create directories)
+        if daemon_lib.pid_file_exists(daemon) is True:
+            running = True
 
         # Return
         return running
@@ -201,9 +241,6 @@ class _Config(object):
             None
 
         """
-        # Do key import
-        import yaml
-
         # Initialize key variables
         valid_directories = []
         config = ("""\
@@ -212,7 +249,8 @@ main:
     bind_port: 7000
     cache_directory:
     hostnames:
-      - 1.1.1.1
+      - {}
+      - {}
     listen_address: localhost
     log_directory:
     log_level: debug
@@ -240,7 +278,8 @@ snmp_groups:
       snmp_privprotocol: SAMPLE
       snmp_privpassword: SAMPLE
       enabled: False
-""")
+""").format(None, None)
+
         self.config_dict = yaml.load(config)
         directory_dict = defaultdict(lambda: defaultdict(dict))
 
@@ -321,9 +360,6 @@ snmp_groups:
         Returns:
             None
         """
-        # Do key import
-        import yaml
-
         # Initialize key variables
         directory = self.directories[0]
 
@@ -381,22 +417,10 @@ class _PreCheck(object):
             None
 
         """
-        # Find pip3 executable
-        cli_string = 'which pip3'
-        response = general.run_script(cli_string, die=False)
-
-        # Not OK if not fount
-        if bool(response['returncode']) is True:
-            log_message = ('python pip3 not installed.')
-            log.log2die_safe(1094, log_message)
-        else:
-            log_message = 'Python pip3 executable found.'
-            setup.print_ok(log_message)
-
-            # install pip3 modules
-            modules = ['setuptools', 'PyYAML']
-            for module in modules:
-                _pip3_install(module)
+        # install pip3 modules
+        modules = ['setuptools', 'PyYAML']
+        for module in modules:
+            _pip3_install(module)
 
     def _python(self):
         """Determine Python version.
@@ -462,32 +486,43 @@ class _PostCheck(object):
         # Initialize key variables
         username = getpass.getuser()
         system_directory = '/etc/systemd/system'
+        suggestions = ''
         line = '*' * 80
 
         prefix = """\
 Edit file {}/etc/config.yaml with correct SNMP parameters \
 and then restart the daemons.\n""".format(general.root_directory())
 
+        #######################################################################
+        #
         # Give suggestions as to what to do
+        #
+        # NOTE!
+        #
+        # The root user should only use the systemctl commands as the daemons
+        # could be running as another user and lock and pid files will be owned
+        # by that user. We don't want the daemons to crash at some other time
+        # because these files are owned by root with denied delete privileges
+        #######################################################################
         if username == 'root':
             if os.path.isdir(system_directory) is True:
                 suggestions = """{}
-You can restart switchmap-ng daemons with these commands:
+You can start switchmap-ng daemons with these commands:
 
-    # systemctl restart switchmap-ng-api.service
-    # systemctl restart switchmap-ng-poller.service
+    # systemctl start switchmap-ng-api.service
+    # systemctl start switchmap-ng-poller.service
 
 You can enable switchmap-ng daemons to start on system boot \
 with these commands:
 
     # systemctl enable switchmap-ng-api.service
     # systemctl enable switchmap-ng-poller.service""".format(prefix)
-            else:
-                suggestions = """{}
+        else:
+            suggestions = """{}
 You can restart switchmap-ng daemons with these commands:
 
-    $ bin/switchmap-ng-api --restart
-    $ bin/switchmap-ng-poller --restart
+$ bin/switchmap-ng-api --restart
+$ bin/switchmap-ng-poller --restart
 
 Switchmap-NG will not automatically restart after a reboot. \
 You need to re-install as the "root" user for this to occur.""".format(prefix)
@@ -530,6 +565,18 @@ def _pip3_install(module):
         None
 
     """
+    # Find pip3 executable
+    cli_string = 'which pip3'
+    response = general.run_script(cli_string, die=False)
+
+    # Not OK if not fount
+    if bool(response['returncode']) is True:
+        log_message = ('python pip3 not installed.')
+        log.log2die_safe(1041, log_message)
+    else:
+        log_message = 'Python pip3 executable found.'
+        setup.print_ok(log_message)
+
     # Determine version of pip3
     cli_string = 'pip3 --version'
     response = os.popen(cli_string).read()

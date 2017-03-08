@@ -340,48 +340,54 @@ class _File:
         # Initialize key variables
         self.directory = _Directory()
 
-    def pid(self, prefix):
+    def pid(self, prefix, create=True):
         """Method for defining the hidden pid directory.
 
         Args:
             prefix: Prefix of file
+            create: Create file if True
 
         Returns:
             value: pid directory
 
         """
         # Return
-        _mkdir(self.directory.pid())
+        if create is True:
+            _mkdir(self.directory.pid())
         value = ('%s/%s.pid') % (self.directory.pid(), prefix)
         return value
 
-    def snmp(self, prefix):
+    def snmp(self, prefix, create=True):
         """Method for defining the hidden snmp directory.
 
         Args:
             prefix: Prefix of file
+            create: Create file if True
 
         Returns:
             value: snmp directory
 
         """
         # Return
-        _mkdir(self.directory.snmp())
+        if create is True:
+            _mkdir(self.directory.snmp())
         value = ('%s/%s.snmp') % (self.directory.snmp(), prefix)
         return value
 
-    def lock(self, prefix):
+    def lock(self, prefix, create=True):
         """Method for defining the hidden lock directory.
 
         Args:
             prefix: Prefix of file
+            create: Create file if True
 
         Returns:
             value: lock directory
 
         """
         # Return
-        _mkdir(self.directory.lock())
+        if create is True:
+            _mkdir(self.directory.lock())
         value = ('%s/%s.lock') % (self.directory.lock(), prefix)
         return value
 
@@ -423,6 +429,7 @@ def lock_file(agent_name):
 
     Args:
         agent_name: Agent name
+        create: Create directory for file if True
 
     Returns:
         result: Name of lock file
@@ -448,6 +455,27 @@ def pid_file(agent_name):
     f_obj = _File()
     result = f_obj.pid(agent_name)
     return result
+
+
+def pid_file_exists(agent_name):
+    """Get the existence state of the pid_file.
+
+    Args:
+        agent_name: Agent name
+
+    Returns:
+        result: Name of pid file
+
+    """
+    # Initialize key variables
+    exists = False
+    
+    # Return
+    f_obj = _File()
+    result = f_obj.pid(agent_name, create=False)
+    if os.path.isfile(result) is True:
+        exists = True
+    return exists
 
 
 def snmp_file(hostname):

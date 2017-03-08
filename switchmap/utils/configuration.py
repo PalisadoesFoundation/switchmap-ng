@@ -647,7 +647,7 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
             log_message = (
                 'Configuration value {}: is blank. Please fix.'
                 ''.format(key))
-            log.log2die_safe(1022, log_message)
+            log.log2die_safe(1037, log_message)
 
         # Get value we need
         if sub_key in config_dict[key]:

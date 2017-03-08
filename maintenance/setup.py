@@ -19,10 +19,13 @@ try:
     import yaml
 except ImportError:
     import pip
-    _packages = ['yaml']
+    _packages = ['PyYAML']
     for _package in _packages:
         pip.main(['install', '--user', _package])
-    import yaml
+    print(
+        'New Python packages installed. Please run this script again to '
+        'complete the Switchmap-NG installation.')
+    sys.exit(0)
 
 # Try to create a working PYTHONPATH
 _maint_directory = os.path.dirname(os.path.realpath(__file__))
@@ -190,7 +193,7 @@ class _PythonSetup(object):
                 'Required python version must be >= {}.{}. '
                 'Python version {}.{} installed'
                 ''.format(major, minor, major_installed, minor_installed))
-            log.log2die_safe(1018, log_message)
+            log.log2die_safe(1027, log_message)
 
     def setup(self):
         """Setup Python.
@@ -224,7 +227,8 @@ class _PythonSetup(object):
             return
 
         # Determine whether PIP3 exists
-        print_ok('Installing required pip3 packages')
+        print_ok(
+            'Installing required pip3 packages from requirements.txt file.')
         pip3 = general.search_file('pip3')
         if pip3 is None:
             log_message = ('Cannot find python "pip3". Please install.')
@@ -363,24 +367,26 @@ class _DaemonSetup(object):
         groupname = grp.getgrgid(self.gid).gr_name
         system_directory = '/etc/systemd/system'
         system_command = '/bin/systemctl daemon-reload'
+        poller_service = 'switchmap-ng-poller.service'
+        api_service = 'switchmap-ng-api.service'
 
         # Do nothing if systemd isn't installed
         if os.path.isdir(system_directory) is False:
             return
 
         # Copy system files to systemd directory and activate
-        service_poller = (
-            '{}/examples/linux/systemd/switchmap-ng-poller.service'
-            ''.format(self.root_directory))
-        service_api = (
-            '{}/examples/linux/systemd/switchmap-ng-api.service'
-            ''.format(self.root_directory))
+        poller_startup_script = (
+            '{}/examples/linux/systemd/{}'
+            ''.format(self.root_directory, poller_service))
+        api_startup_script = (
+            '{}/examples/linux/systemd/{}'
+            ''.format(self.root_directory, api_service))
 
         # Read in file
         # 1) Convert home directory to that of user
         # 2) Convert username in file
         # 3) Convert group in file
-        filenames = [service_poller, service_api]
+        filenames = [poller_startup_script, api_startup_script]
         for filename in filenames:
             # Read next file
             with open(filename, 'r') as f_handle:
@@ -414,6 +420,12 @@ class _DaemonSetup(object):
         # Make systemd recognize new files
         if os.path.isdir(system_directory):
             general.run_script(system_command)
+
+        # Enable serices
+        services = [poller_service, api_service]
+        for service in services:
+            enable_command = 'systemctl enable {}'.format(service)
+            general.run_script(enable_command)
 
 
 def run():
