@@ -400,22 +400,10 @@ class _PreCheck(object):
             None
 
         """
-        # Find pip3 executable
-        cli_string = 'which pip3'
-        response = general.run_script(cli_string, die=False)
-
-        # Not OK if not fount
-        if bool(response['returncode']) is True:
-            log_message = ('python pip3 not installed.')
-            log.log2die_safe(1094, log_message)
-        else:
-            log_message = 'Python pip3 executable found.'
-            setup.print_ok(log_message)
-
-            # install pip3 modules
-            modules = ['setuptools', 'PyYAML']
-            for module in modules:
-                _pip3_install(module)
+        # install pip3 modules
+        modules = ['setuptools', 'PyYAML']
+        for module in modules:
+            _pip3_install(module)
 
     def _python(self):
         """Determine Python version.
@@ -550,6 +538,18 @@ def _pip3_install(module):
         None
 
     """
+    # Find pip3 executable
+    cli_string = 'which pip3'
+    response = general.run_script(cli_string, die=False)
+
+    # Not OK if not fount
+    if bool(response['returncode']) is True:
+        log_message = ('python pip3 not installed.')
+        log.log2die_safe(1094, log_message)
+    else:
+        log_message = 'Python pip3 executable found.'
+        setup.print_ok(log_message)
+
     # Determine version of pip3
     cli_string = 'pip3 --version'
     response = os.popen(cli_string).read()
