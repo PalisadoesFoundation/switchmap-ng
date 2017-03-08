@@ -226,7 +226,8 @@ main:
     bind_port: 7000
     cache_directory:
     hostnames:
-      - 1.1.1.1
+      - {}
+      - {}
     listen_address: localhost
     log_directory:
     log_level: debug
@@ -254,7 +255,8 @@ snmp_groups:
       snmp_privprotocol: SAMPLE
       snmp_privpassword: SAMPLE
       enabled: False
-""")
+""").format(None, None)
+
         self.config_dict = yaml.load(config)
         directory_dict = defaultdict(lambda: defaultdict(dict))
 
