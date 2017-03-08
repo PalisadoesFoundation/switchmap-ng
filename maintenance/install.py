@@ -8,7 +8,6 @@ Manages the verification of required packages.
 # Main python libraries
 import sys
 import os
-import time
 from collections import defaultdict
 import getpass
 
@@ -20,9 +19,14 @@ try:
     import yaml
 except ImportError:
     import pip
+    _username = getpass.getuser()
     _packages = ['PyYAML']
     for _package in _packages:
-        pip.main(['install', '--user', _package])
+        # Install package globally if user 'root'
+        if _username == 'root':
+            pip.main(['install', _package])
+        else:
+            pip.main(['install', '--user', _package])
     print(
         'New Python packages installed. Please run this script again to '
         'complete the Switchmap-NG installation.')
@@ -199,7 +203,6 @@ class _Daemon(object):
             log.log2see_safe(1026, log_message)
 
         # Return after waiting for daemons to startup properly
-        time.sleep(1)
         running = self._running(daemon)
         return running
 
