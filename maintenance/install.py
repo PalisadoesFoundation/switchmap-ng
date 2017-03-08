@@ -219,7 +219,7 @@ class _Daemon(object):
         script_name = '{}/bin/{} --status'.format(root_directory, daemon)
         response = general.run_script(script_name, die=False)
         for key, value in response.items():
-            if key == 'output':
+            if key == 'stdout':
                 if 'running' in str(value).lower():
                     running = True
 
