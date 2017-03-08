@@ -21,8 +21,13 @@ except ImportError:
     import pip
     _packages = ['PyYAML']
     for _package in _packages:
-        pip.main(['install', '--user', _package])
+        # pip.main(['install', '--user', _package])
+        _pip3_install(_package)
     import yaml
+    # print(
+    #     'New Python packages installed. Please run this script again to '
+    #     'complete the Switchmap-NG installation.')
+    # sys.exit(0)
 
 # Try to create a working PYTHONPATH
 _maint_directory = os.path.dirname(os.path.realpath(__file__))
