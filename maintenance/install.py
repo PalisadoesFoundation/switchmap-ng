@@ -178,14 +178,14 @@ class _Daemon(object):
         if restart is False:
             if username == 'root':
                 script_name = (
-                    '/bin/systemctl restart {}.service'.format(daemon))
+                    '/bin/systemctl start {}.service'.format(daemon))
             else:
                 script_name = (
                     '{}/bin/{} --start'.format(root_directory, daemon))
         else:
             if username == 'root':
                 script_name = (
-                    '/bin/systemctl start {}.service'.format(daemon))
+                    '/bin/systemctl restart {}.service'.format(daemon))
             else:
                 script_name = (
                     '{}/bin/{} --restart --force'
@@ -492,14 +492,24 @@ class _PostCheck(object):
 Edit file {}/etc/config.yaml with correct SNMP parameters \
 and then restart the daemons.\n""".format(general.root_directory())
 
+        #######################################################################
+        #
         # Give suggestions as to what to do
+        #
+        # NOTE!
+        #
+        # The root user should only use the systemctl commands as the daemons
+        # could be running as another user and lock and pid files will be owned
+        # by that user. We don't want the daemons to crash at some other time
+        # because these files are owned by root with denied delete privileges
+        #######################################################################
         if username == 'root':
             if os.path.isdir(system_directory) is True:
                 suggestions = """{}
-You can restart switchmap-ng daemons with these commands:
+You can start switchmap-ng daemons with these commands:
 
-    # systemctl restart switchmap-ng-api.service
-    # systemctl restart switchmap-ng-poller.service
+    # systemctl start switchmap-ng-api.service
+    # systemctl start switchmap-ng-poller.service
 
 You can enable switchmap-ng daemons to start on system boot \
 with these commands:

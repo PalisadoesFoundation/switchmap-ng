@@ -26,7 +26,7 @@ except ImportError:
         'New Python packages installed. Please run this script again to '
         'complete the Switchmap-NG installation.')
     sys.exit(0)
-    
+
 # Try to create a working PYTHONPATH
 _maint_directory = os.path.dirname(os.path.realpath(__file__))
 _root_directory = os.path.abspath(
