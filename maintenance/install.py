@@ -107,7 +107,8 @@ class _Daemon(object):
         # Get daemon status
         daemons = ['switchmap-ng-api', 'switchmap-ng-poller']
         for daemon in daemons:
-
+            # Initialize key variables
+            success = False
             running = self._running(daemon)
 
             # Prompt to restart if already running
@@ -116,20 +117,29 @@ class _Daemon(object):
                     '\nINPUT - Daemon {} is running. Restart? [Y/n] '
                     ''.format(daemon))
                 if bool(restart) is False:
-                    self._restart(daemon)
-                    setup.print_ok(
-                        'Successfully restarted daemon {}.'.format(daemon))
+                    success = self._restart(daemon)
+                    if success is True:
+                        setup.print_ok(
+                            'Successfully restarted daemon {}.'.format(daemon))
                 elif restart[0].lower() != 'n':
-                    self._restart(daemon)
-                    setup.print_ok(
-                        'Successfully restarted daemon {}.'.format(daemon))
+                    success = self._restart(daemon)
+                    if success is True:
+                        setup.print_ok(
+                            'Successfully restarted daemon {}.'.format(daemon))
                 else:
                     setup.print_ok(
                         'Leaving daemon {} unchanged.'.format(daemon))
+                    success = True
             else:
-                self._start(daemon)
-                setup.print_ok(
-                    'Successfully started daemon {}.'.format(daemon))
+                success = self._start(daemon)
+                if success is True:
+                    setup.print_ok(
+                        'Successfully started daemon {}.'.format(daemon))
+
+            # Message if no success
+            if success is False:
+                log_message = ('Failed to start daemon {}.'.format(daemon))
+                log.log2see_safe(1001, log_message)
 
     def _restart(self, daemon):
         """Start or restart daemon.
@@ -142,7 +152,7 @@ class _Daemon(object):
 
         """
         # restart
-        self._start(daemon, restart=True)
+        return self._start(daemon, restart=True)
 
     def _start(self, daemon, restart=False):
         """Start or restart daemon.
@@ -156,6 +166,7 @@ class _Daemon(object):
 
         """
         # Initialize key variables
+        username = getpass.getuser()
         running = False
         if restart is True:
             attempt = 'restart'
@@ -165,10 +176,20 @@ class _Daemon(object):
         # Get status
         root_directory = general.root_directory()
         if restart is False:
-            script_name = '{}/bin/{} --start'.format(root_directory, daemon)
+            if username == 'root':
+                script_name = (
+                    '/bin/systemctl restart {}.service'.format(daemon))
+            else:
+                script_name = (
+                    '{}/bin/{} --start'.format(root_directory, daemon))
         else:
-            script_name = (
-                '{}/bin/{} --restart --force'.format(root_directory, daemon))
+            if username == 'root':
+                script_name = (
+                    '/bin/systemctl start {}.service'.format(daemon))
+            else:
+                script_name = (
+                    '{}/bin/{} --restart --force'
+                    ''.format(root_directory, daemon))
 
         # Attempt to restart / start
         response = general.run_script(script_name, die=False)
@@ -177,6 +198,7 @@ class _Daemon(object):
             log.log2see_safe(1015, log_message)
 
         # Return
+        running = self._running(daemon)
         return running
 
     def _running(self, daemon):
