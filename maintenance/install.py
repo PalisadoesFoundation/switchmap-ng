@@ -21,8 +21,8 @@ except ImportError:
     import pip
     _packages = ['PyYAML']
     for _package in _packages:
-        # pip.main(['install', '--user', _package])
-        _pip3_install(_package)
+        pip.main(['install', '--user', _package])
+        # _pip3_install(_package)
     import yaml
     # print(
     #     'New Python packages installed. Please run this script again to '
