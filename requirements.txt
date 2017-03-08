@@ -3,3 +3,4 @@ flask-table
 pysnmp>=4.3.2
 PyYAML
 Werkzeug
+gunicorn

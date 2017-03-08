@@ -174,7 +174,7 @@ class _Daemon(object):
         response = general.run_script(script_name, die=False)
         if bool(response['returncode']) is True:
             log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
-            log.log2see_safe(1032, log_message)
+            log.log2see_safe(1015, log_message)
 
         # Return
         return running

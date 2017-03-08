@@ -91,14 +91,14 @@ class File(object):
         # Check if exists
         if os.path.exists(file_) is False:
             log_message = 'File {} does not exist.'.format(file_)
-            log.log2die(1000, log_message)
+            log.log2die(1018, log_message)
 
         # Check if file
         if os.path.isfile(file_) is False:
             log_message = '{} is not a file.'.format(file_)
-            log.log2die(1000, log_message)
+            log.log2die(1035, log_message)
 
         # Check if readable
         if not os.access(file_, os.R_OK):
             log_message = 'File {} is not readable.'.format(file_)
-            log.log2die(1000, log_message)
+            log.log2die(1036, log_message)

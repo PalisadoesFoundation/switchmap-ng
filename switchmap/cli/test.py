@@ -51,12 +51,12 @@ def run(args):
             else:
                 # No hosts found
                 log_message = 'No hosts found in configuration'
-                log.log2see(1026, log_message)
+                log.log2see(1038, log_message)
 
         else:
             # No hosts found
             log_message = 'No hosts found in configuration'
-            log.log2see(1026, log_message)
+            log.log2see(1039, log_message)
 
     # Show help if there are no matches
     general.cli_help()
@@ -85,4 +85,4 @@ def test_hostname(hostname, snmp_config):
         log_message = (
             'Uncontactable host %s or no valid SNMP '
             'credentials found for it.') % (hostname)
-        log.log2see(1026, log_message)
+        log.log2see(1040, log_message)
