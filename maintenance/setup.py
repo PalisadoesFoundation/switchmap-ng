@@ -22,8 +22,11 @@ except ImportError:
     _packages = ['PyYAML']
     for _package in _packages:
         pip.main(['install', '--user', _package])
-    import yaml
-
+    print(
+        'New Python packages installed. Please run this script again to '
+        'complete the Switchmap-NG installation.')
+    sys.exit(0)
+    
 # Try to create a working PYTHONPATH
 _maint_directory = os.path.dirname(os.path.realpath(__file__))
 _root_directory = os.path.abspath(
@@ -224,7 +227,8 @@ class _PythonSetup(object):
             return
 
         # Determine whether PIP3 exists
-        print_ok('Installing required pip3 packages')
+        print_ok(
+            'Installing required pip3 packages from requirements.txt file.')
         pip3 = general.search_file('pip3')
         if pip3 is None:
             log_message = ('Cannot find python "pip3". Please install.')
