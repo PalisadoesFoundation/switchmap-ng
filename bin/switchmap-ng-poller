@@ -322,8 +322,10 @@ def _poll_single_device(hostname):
     """
     # Poll data for obviously valid hostnames (eg. "None" used in installation)
     if bool(hostname) is True:
-        poller = Poller(hostname)
-        poller.query()
+        if isinstance(hostname, str) is True:
+            if hostname.lower() != 'none':
+                poller = Poller(hostname)
+                poller.query()
 
 
 def _create_search_files():
