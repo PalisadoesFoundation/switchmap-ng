@@ -220,19 +220,9 @@ class _Daemon(object):
         # Initialize key variables
         running = False
 
-        # Get status
+        # Get status of file (Don't create directories)
         if daemon_lib.pid_file_exists(daemon) is True:
             running = True
-
-        """
-        root_directory = general.root_directory()
-        script_name = '{}/bin/{} --status'.format(root_directory, daemon)
-        response = general.run_script(script_name, die=False)
-        for key, value in response.items():
-            if key == 'stdout':
-                if 'running' in str(value).lower():
-                    running = True
-        """
 
         # Return
         return running
