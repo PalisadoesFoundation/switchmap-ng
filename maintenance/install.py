@@ -49,6 +49,7 @@ else:
 from switchmap.utils import log
 from maintenance import setup
 from switchmap.utils import general
+from switchmap.utils import daemon as daemon_lib
 
 
 def run():
@@ -220,6 +221,10 @@ class _Daemon(object):
         running = False
 
         # Get status
+        if daemon_lib.pid_file_exists(daemon) is True:
+            running = True
+
+        """
         root_directory = general.root_directory()
         script_name = '{}/bin/{} --status'.format(root_directory, daemon)
         response = general.run_script(script_name, die=False)
@@ -227,6 +232,7 @@ class _Daemon(object):
             if key == 'stdout':
                 if 'running' in str(value).lower():
                     running = True
+        """
 
         # Return
         return running
