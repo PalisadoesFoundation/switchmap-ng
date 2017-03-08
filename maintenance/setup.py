@@ -193,7 +193,7 @@ class _PythonSetup(object):
                 'Required python version must be >= {}.{}. '
                 'Python version {}.{} installed'
                 ''.format(major, minor, major_installed, minor_installed))
-            log.log2die_safe(1018, log_message)
+            log.log2die_safe(1027, log_message)
 
     def setup(self):
         """Setup Python.

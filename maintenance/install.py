@@ -8,6 +8,7 @@ Manages the verification of required packages.
 # Main python libraries
 import sys
 import os
+import time
 from collections import defaultdict
 import getpass
 
@@ -195,9 +196,10 @@ class _Daemon(object):
         response = general.run_script(script_name, die=False)
         if bool(response['returncode']) is True:
             log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
-            log.log2see_safe(1015, log_message)
+            log.log2see_safe(1026, log_message)
 
-        # Return
+        # Return after waiting for daemons to startup properly
+        time.sleep(1)
         running = self._running(daemon)
         return running
 
@@ -571,7 +573,7 @@ def _pip3_install(module):
     # Not OK if not fount
     if bool(response['returncode']) is True:
         log_message = ('python pip3 not installed.')
-        log.log2die_safe(1094, log_message)
+        log.log2die_safe(1041, log_message)
     else:
         log_message = 'Python pip3 executable found.'
         setup.print_ok(log_message)
