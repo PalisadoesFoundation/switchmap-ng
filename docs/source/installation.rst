@@ -20,7 +20,7 @@ The commands for installing the dependencies are:
 
 ::
 
-    $ sudo apt-get -y install python3 python3-pip python3-dev
+    $ sudo apt-get -y install python3 snmp
 
 
 
@@ -31,7 +31,7 @@ The commands for installing the dependencies are:
 
 ::
 
-    $ sudo dnf -y install python3 python3-pip python3-dev memcached
+    $ sudo dnf -y install python3 python3-pip net-snmp-utils
 
 
 Install Switchmap-NG
