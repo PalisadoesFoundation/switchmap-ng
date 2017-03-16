@@ -20,7 +20,7 @@ try:
 except ImportError:
     import pip
     _username = getpass.getuser()
-    _packages = ['PyYAML']
+    _packages = ['PyYAML', 'setuptools']
     for _package in _packages:
         # Install package globally if user 'root'
         if _username == 'root':
