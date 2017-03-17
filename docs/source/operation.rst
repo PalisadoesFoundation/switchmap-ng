@@ -6,7 +6,7 @@ The ``switchmap-ng`` CLI is meant for ease of use. This page shows some advanced
 
 Operating the Poller as a System Daemon
 ---------------------------------------
-This is the preferred mode of operation for production systems. This mode is automatically configured if you installed ``switchmap-ng`` using the ``root`` user.
+This is the preferred mode of operation for **production systems**. This mode is automatically configured if you installed ``switchmap-ng`` using the ``root`` user.
 
 **Note:** Sample ``systemd`` files can be found in the ``examples/linux/systemd/`` directory.
 
@@ -34,7 +34,7 @@ You can get the ``poller`` to automatically restart on boot like this:
 ::
 
     $ sudo systemctl enable switchmap-ng-poller.service
-    
+
 
 
 Operating the API as a System Daemon
