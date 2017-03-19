@@ -272,20 +272,20 @@ class _DaemonSetup(object):
         # Set the username we need to be running as
         try:
             # Get GID and UID for user
-            self.infoset_user = username
-            self.gid = getpwnam(self.infoset_user).pw_gid
-            self.uid = getpwnam(self.infoset_user).pw_uid
+            self.switchmap_user = username
+            self.gid = getpwnam(self.switchmap_user).pw_gid
+            self.uid = getpwnam(self.switchmap_user).pw_uid
         except KeyError:
-            self.infoset_user_exists = False
+            self.switchmap_user_exists = False
 
         # Die if user doesn't exist
-        if self.infoset_user_exists is False:
+        if self.switchmap_user_exists is False:
             log_message = (
                 'User {} not found. Please try again.'
-                ''.format(self.infoset_user))
+                ''.format(self.switchmap_user))
             log.log2die_safe(1049, log_message)
 
-        # If running as the root user, then the infoset user needs to exist
+        # If running as the root user, then the switchmap user needs to exist
         if running_username == 'root':
             self.running_as_root = True
             return
