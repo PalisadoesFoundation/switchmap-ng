@@ -1,4 +1,5 @@
 main:
+    username: USERNAME
     agent_subprocesses: 20
     bind_port: 7000
     cache_directory: /opt/switchmap-ng/cache

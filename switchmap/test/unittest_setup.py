@@ -179,6 +179,7 @@ def _environment():
     """
     # Initialize key variables
     global CONFIG_DIRECTORY
+    os.environ['INFOSET_CONFIGDIR'] = CONFIG_DIRECTORY
 
     # Make sure the SWITCHMAP_CONFIGDIR environment variable is set
     if 'SWITCHMAP_CONFIGDIR' not in os.environ:
@@ -209,6 +210,9 @@ def ready():
     """Verify that we are ready to run tests."""
     # Check environment
     _environment()
+
+    # Create configuration
+    TestConfig().create()
 
 
 def main():

@@ -76,6 +76,26 @@ class Config(object):
         value = self.config_dict
         return value
 
+    def username(self):
+        """Get username.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        key = 'main'
+        sub_key = 'username'
+        result = _key_sub_key(key, sub_key, self.config_dict, die=False)
+
+        # Default to None
+        if result is None:
+            result = None
+        return result
+
     def cache_directory(self):
         """Determine the cache_directory.
 

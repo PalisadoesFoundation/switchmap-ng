@@ -20,7 +20,7 @@ The commands for installing the dependencies are:
 
 ::
 
-    $ sudo apt-get -y install python3 snmp
+    $ sudo apt-get -y install python3 python3-pip snmp
 
 
 
@@ -83,8 +83,8 @@ Run the installation script. There are two alternatives:
 
 There are some things to keep in mind when installing `switchmap-ng` as a regular user.
 
-1) Use this method if you don't have ``root`` access to your system. 
-2) The ``switchmap-ng`` daemons `will not` automatically restart on reboot using this method. 
+1) Use this method if you don't have ``root`` access to your system.
+2) The ``switchmap-ng`` daemons `will not` automatically restart on reboot using this method.
 
 To make ``switchmap-ng`` run with your username, then execute this command:
 
@@ -109,7 +109,7 @@ To install ``switchmap-ng`` as the ``root`` user execute this command:
 Testing Installation
 --------------------
 
-There are a number of ways to test your installation. 
+There are a number of ways to test your installation.
 
 Testing Polling
 ~~~~~~~~~~~~~~~

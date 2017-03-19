@@ -10,6 +10,7 @@ import sys
 import os
 from collections import defaultdict
 import getpass
+from pwd import getpwnam
 
 # PIP3 libraries
 ###############################################################################
@@ -19,25 +20,25 @@ try:
     import yaml
 except ImportError:
     import pip
-    _username = getpass.getuser()
-    _packages = ['PyYAML']
-    for _package in _packages:
+    _USERNAME = getpass.getuser()
+    _PACKAGES = ['PyYAML', 'setuptools']
+    for _PACKAGE in _PACKAGES:
         # Install package globally if user 'root'
-        if _username == 'root':
-            pip.main(['install', _package])
+        if _USERNAME == 'root':
+            pip.main(['install', _PACKAGE])
         else:
-            pip.main(['install', '--user', _package])
+            pip.main(['install', '--user', _PACKAGE])
     print(
         'New Python packages installed. Please run this script again to '
         'complete the Switchmap-NG installation.')
     sys.exit(0)
 
 # Try to create a working PYTHONPATH
-_maint_directory = os.path.dirname(os.path.realpath(__file__))
-_root_directory = os.path.abspath(
-    os.path.join(_maint_directory, os.pardir))
-if _root_directory.endswith('/switchmap-ng') is True:
-    sys.path.append(_root_directory)
+_MAINT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_ROOT_DIRECTORY = os.path.abspath(
+    os.path.join(_MAINT_DIRECTORY, os.pardir))
+if _ROOT_DIRECTORY.endswith('/switchmap-ng') is True:
+    sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
         'Switchmap-NG is not installed in a "switchmap-ng/" directory. '
@@ -62,15 +63,39 @@ def run():
         None
 
     """
-    #######################################################################
-    # Check prerequisite package versions
-    #######################################################################
+    # Initialize key variables
+    username = getpass.getuser()
+
+    # Prevent running as sudo user
+    if 'SUDO_UID' in os.environ:
+        log_message = (
+            'Cannot run installation using "sudo". Run as a regular user to '
+            'install in this directory or as user "root".')
+        log.log2die_safe(1078, log_message)
+
+    # If running as the root user, then the infoset user needs to exist
+    if username == 'root':
+        try:
+            daemon_username = input(
+                'Please enter the username under which '
+                'infoset-ng will run: ')
+
+            # Get GID and UID for user
+            _ = getpwnam(daemon_username).pw_gid
+        except:
+            log_message = (
+                'User {} not found. Please try again.'
+                ''.format(daemon_username))
+            log.log2die_safe(1049, log_message)
+    else:
+        daemon_username = username
+
     # Do precheck
     precheck = _PreCheck()
     precheck.validate()
 
     # Create a configuration
-    config = _Config()
+    config = _Config(username=daemon_username)
     config.validate()
     config.write()
 
@@ -201,7 +226,7 @@ class _Daemon(object):
         response = general.run_script(script_name, die=False)
         if bool(response['returncode']) is True:
             log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
-            log.log2see_safe(1026, log_message)
+            log.log2see_safe(1012, log_message)
 
         # Return after waiting for daemons to startup properly
         running = self._running(daemon)
@@ -231,11 +256,11 @@ class _Daemon(object):
 class _Config(object):
     """Class to test setup."""
 
-    def __init__(self):
+    def __init__(self, username=None):
         """Function for intializing the class.
 
         Args:
-            None
+            username: Username to run scripts as
 
         Returns:
             None
@@ -245,6 +270,7 @@ class _Config(object):
         valid_directories = []
         config = ("""\
 main:
+    username: {}
     agent_subprocesses: 20
     bind_port: 7000
     cache_directory:
@@ -278,7 +304,7 @@ snmp_groups:
       snmp_privprotocol: SAMPLE
       snmp_privpassword: SAMPLE
       enabled: False
-""").format(None, None)
+""").format(username, None, None)
 
         self.config_dict = yaml.load(config)
         directory_dict = defaultdict(lambda: defaultdict(dict))
