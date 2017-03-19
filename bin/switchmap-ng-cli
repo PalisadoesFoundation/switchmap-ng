@@ -10,10 +10,10 @@ import sys
 import os
 
 # Try to create a working PYTHONPATH
-script_directory = os.path.dirname(os.path.realpath(__file__))
-root_directory = os.path.abspath(os.path.join(script_directory, os.pardir))
-if script_directory.endswith('/switchmap-ng/bin') is True:
-    sys.path.append(root_directory)
+_BIN_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_ROOT_DIRECTORY = os.path.abspath(os.path.join(_BIN_DIRECTORY, os.pardir))
+if _BIN_DIRECTORY.endswith('/switchmap-ng/bin') is True:
+    sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
         'This script is not installed in the "switchmap-ng/bin" directory. '
@@ -22,6 +22,7 @@ else:
 
 # Do switchmap-ng imports
 from switchmap.cli import cli
+from switchmap.utils import general
 
 
 def main():
@@ -34,6 +35,9 @@ def main():
         None
 
     """
+    # Check user
+    general.check_user()
+
     # Run stuff
     commands = cli.CLI()
     commands.process()

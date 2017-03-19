@@ -10,10 +10,10 @@ import sys
 import os
 
 # Try to create a working PYTHONPATH
-_script_directory = os.path.dirname(os.path.realpath(__file__))
-_root_directory = os.path.abspath(os.path.join(_script_directory, os.pardir))
-if _script_directory.endswith('/switchmap-ng/bin') is True:
-    sys.path.append(_root_directory)
+_BIN_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_ROOT_DIRECTORY = os.path.abspath(os.path.join(_BIN_DIRECTORY, os.pardir))
+if _BIN_DIRECTORY.endswith('/switchmap-ng/bin') is True:
+    sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
         'This script is not installed in the "switchmap-ng/bin" directory. '
@@ -24,10 +24,14 @@ else:
 from switchmap.main import agent
 from switchmap.main.agent import Agent, AgentAPI
 from switchmap.constants import API_EXECUTABLE, API_GUNICORN_AGENT
+from switchmap.utils import general
 
 
 def main():
     """Main function to start the Gunicorn WSGI."""
+    # Check user
+    general.check_user()
+
     # Get PID filenename for Gunicorn
     agent_gunicorn = Agent(API_GUNICORN_AGENT)
 

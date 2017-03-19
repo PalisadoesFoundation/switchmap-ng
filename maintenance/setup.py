@@ -19,20 +19,20 @@ try:
     import yaml
 except ImportError:
     import pip
-    _packages = ['PyYAML']
-    for _package in _packages:
-        pip.main(['install', '--user', _package])
+    _PACKAGES = ['PyYAML']
+    for _PACKAGE in _PACKAGES:
+        pip.main(['install', '--user', _PACKAGE])
     print(
         'New Python packages installed. Please run this script again to '
         'complete the Switchmap-NG installation.')
     sys.exit(0)
 
 # Try to create a working PYTHONPATH
-_maint_directory = os.path.dirname(os.path.realpath(__file__))
-_root_directory = os.path.abspath(
-    os.path.join(_maint_directory, os.pardir))
-if _root_directory.endswith('/switchmap-ng') is True:
-    sys.path.append(_root_directory)
+_MAINT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_ROOT_DIRECTORY = os.path.abspath(
+    os.path.join(_MAINT_DIRECTORY, os.pardir))
+if _ROOT_DIRECTORY.endswith('/switchmap-ng') is True:
+    sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
         'Switchmap-NG is not installed in a "switchmap-ng/" directory. '
@@ -252,44 +252,43 @@ class _PythonSetup(object):
 class _DaemonSetup(object):
     """Class to setup switchmap-ng daemon."""
 
-    def __init__(self):
+    def __init__(self, username=None):
         """Function for intializing the class.
 
         Args:
-            None
+            username: Username to run as
 
         Returns:
             None
 
         """
         # Initialize key variables
-        username = getpass.getuser()
+        running_username = getpass.getuser()
         self.root_directory = general.root_directory()
         self.switchmap_user_exists = True
         self.switchmap_user = None
         self.running_as_root = False
 
-        # If running as the root user, then the switchmap user needs to exist
-        if username == 'root':
-            self.running_as_root = True
-            try:
-                self.switchmap_user = input(
-                    'Please enter the username under which '
-                    'switchmap-ng will run: ')
-
-                # Get GID and UID for user
-                self.gid = getpwnam(self.switchmap_user).pw_gid
-                self.uid = getpwnam(self.switchmap_user).pw_uid
-            except KeyError:
-                self.switchmap_user_exists = False
-            return
+        # Set the username we need to be running as
+        try:
+            # Get GID and UID for user
+            self.infoset_user = username
+            self.gid = getpwnam(self.infoset_user).pw_gid
+            self.uid = getpwnam(self.infoset_user).pw_uid
+        except KeyError:
+            self.infoset_user_exists = False
 
         # Die if user doesn't exist
-        if self.switchmap_user_exists is False:
+        if self.infoset_user_exists is False:
             log_message = (
                 'User {} not found. Please try again.'
-                ''.format(self.switchmap_user))
+                ''.format(self.infoset_user))
             log.log2die_safe(1049, log_message)
+
+        # If running as the root user, then the infoset user needs to exist
+        if running_username == 'root':
+            self.running_as_root = True
+            return
 
     def setup(self):
         """Setup daemon scripts and file permissions.
@@ -428,11 +427,11 @@ class _DaemonSetup(object):
             general.run_script(enable_command)
 
 
-def run():
+def run(username=None):
     """Process agent data.
 
     Args:
-        None
+        username: Username to run as
 
     Returns:
         None
@@ -440,16 +439,22 @@ def run():
     """
     # Prevent running as sudo user
     if 'SUDO_UID' in os.environ:
-        message = (
+        log_message = (
             'Cannot run setup using "sudo". Run as a regular user to '
             'install in this directory or as user "root".')
-        log.log2die_safe(1078, message)
+        log.log2die_safe(1078, log_message)
+
+    # Initialize key variables
+    if username is None:
+        daemon_username = getpass.getuser()
+    else:
+        daemon_username = username
 
     # Determine whether version of python is valid
     _PythonSetup().setup()
 
     # Do specific setups for root user
-    _DaemonSetup().setup()
+    _DaemonSetup(username=daemon_username).setup()
 
     # Update configuration if required
     _Configuration().setup()

@@ -18,7 +18,7 @@ env:
 # Install PIP packages and create a temporary config file before installing
 before_install:
     - pip install -r requirements.txt
-    - switchmap/test/create_test_config.py
+    - switchmap/test/_travis_ci_setup.py
 
 # Install switchmap-ng
 install: python3 maintenance/setup.py
