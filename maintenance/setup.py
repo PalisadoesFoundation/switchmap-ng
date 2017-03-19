@@ -252,11 +252,11 @@ class _PythonSetup(object):
 class _DaemonSetup(object):
     """Class to setup switchmap-ng daemon."""
 
-    def __init__(self, username=None):
+    def __init__(self, daemon_username):
         """Function for intializing the class.
 
         Args:
-            username: Username to run as
+            daemon_username: Username to run as
 
         Returns:
             None
@@ -265,25 +265,28 @@ class _DaemonSetup(object):
         # Initialize key variables
         running_username = getpass.getuser()
         self.root_directory = general.root_directory()
-        self.switchmap_user_exists = True
+        switchmap_user_exists = True
         self.switchmap_user = None
         self.running_as_root = False
 
         # Set the username we need to be running as
-        try:
-            # Get GID and UID for user
-            self.switchmap_user = username
-            self.gid = getpwnam(self.switchmap_user).pw_gid
-            self.uid = getpwnam(self.switchmap_user).pw_uid
-        except KeyError:
-            self.switchmap_user_exists = False
+        if running_username == 'root':
+            try:
+                # Get GID and UID for user
+                self.switchmap_user = daemon_username
+                self.gid = getpwnam(self.switchmap_user).pw_gid
+                self.uid = getpwnam(self.switchmap_user).pw_uid
+            except KeyError:
+                switchmap_user_exists = False
 
-        # Die if user doesn't exist
-        if self.switchmap_user_exists is False:
-            log_message = (
-                'User {} not found. Please try again.'
-                ''.format(self.switchmap_user))
-            log.log2die_safe(1049, log_message)
+            # Die if user doesn't exist
+            if switchmap_user_exists is False:
+                log_message = (
+                    'User {} not found. Please try again.'
+                    ''.format(self.switchmap_user))
+                log.log2die_safe(1049, log_message)
+        else:
+            self.switchmap_user = daemon_username
 
         # If running as the root user, then the switchmap user needs to exist
         if running_username == 'root':
@@ -302,10 +305,6 @@ class _DaemonSetup(object):
         """
         # Return if not running script as root user
         if self.running_as_root is False:
-            return
-
-        # Return if user prompted doesn't exist
-        if self.switchmap_user_exists is False:
             return
 
         # Set file permissions
@@ -454,7 +453,7 @@ def run(username=None):
     _PythonSetup().setup()
 
     # Do specific setups for root user
-    _DaemonSetup(username=daemon_username).setup()
+    _DaemonSetup(daemon_username).setup()
 
     # Update configuration if required
     _Configuration().setup()
