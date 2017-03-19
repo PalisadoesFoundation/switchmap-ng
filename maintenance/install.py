@@ -95,12 +95,12 @@ def run():
     precheck.validate()
 
     # Create a configuration
-    config = _Config(username=daemon_username)
+    config = _Config(daemon_username)
     config.validate()
     config.write()
 
     # Run setup
-    setup.run()
+    setup.run(daemon_username)
 
     # Start daemons
     daemon = _Daemon()
@@ -256,11 +256,11 @@ class _Daemon(object):
 class _Config(object):
     """Class to test setup."""
 
-    def __init__(self, username=None):
+    def __init__(self, daemon_username):
         """Function for intializing the class.
 
         Args:
-            username: Username to run scripts as
+            daemon_username: Username to run scripts as
 
         Returns:
             None
@@ -304,7 +304,7 @@ snmp_groups:
       snmp_privprotocol: SAMPLE
       snmp_privpassword: SAMPLE
       enabled: False
-""").format(username, None, None)
+""").format(daemon_username, None, None)
 
         self.config_dict = yaml.load(config)
         directory_dict = defaultdict(lambda: defaultdict(dict))
