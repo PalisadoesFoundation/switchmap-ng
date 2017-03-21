@@ -388,14 +388,14 @@ class _Daemons(object):
                     '/bin/systemctl start {}.service'.format(daemon))
             else:
                 script_name = (
-                    '{}/bin/{} --start'.format(root_directory, daemon))
+                    '{}/bin/systemd/{} --start'.format(root_directory, daemon))
         else:
             if username == 'root':
                 script_name = (
                     '/bin/systemctl restart {}.service'.format(daemon))
             else:
                 script_name = (
-                    '{}/bin/{} --restart --force'
+                    '{}/bin/systemd/{} --restart --force'
                     ''.format(root_directory, daemon))
 
         # Attempt to restart / start
