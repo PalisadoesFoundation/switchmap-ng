@@ -31,8 +31,8 @@ except ImportError:
         else:
             pip.main(['install', '--user', _PACKAGE])
     print(
-        'New Python packages installed. Please run this script again to '
-        'complete the Switchmap-NG installation.')
+        '\nNew Python packages installed. Please run this script again to '
+        'complete the Switchmap-NG installation.\n')
     sys.exit(0)
 
 # Try to create a working PYTHONPATH
@@ -692,8 +692,14 @@ class _PostCheck(object):
         line = '*' * 80
 
         prefix = """\
+        
 Edit file {}/etc/config.yaml with correct SNMP parameters \
-and then restart the daemons.\n""".format(general.root_directory())
+and then restart the daemons.
+
+You can restart switchmap-ng daemons with these commands:
+
+$ bin/switchmap-ng-cil restart api
+$ bin/switchmap-ng-cli restart poller""".format(general.root_directory())
 
         #######################################################################
         #
@@ -706,30 +712,12 @@ and then restart the daemons.\n""".format(general.root_directory())
         # by that user. We don't want the daemons to crash at some other time
         # because these files are owned by root with denied delete privileges
         #######################################################################
-        if username == 'root':
-            if os.path.isdir(system_directory) is True:
-                suggestions = """{}
-You can start switchmap-ng daemons with these commands:
-
-    # systemctl start switchmap-ng-api.service
-    # systemctl start switchmap-ng-poller.service
-
-You can enable switchmap-ng daemons to start on system boot \
-with these commands:
-
-    # systemctl enable switchmap-ng-api.service
-    # systemctl enable switchmap-ng-poller.service""".format(prefix)
-        else:
+        if username != 'root':
             suggestions = """{}
-You can restart switchmap-ng daemons with these commands:
-
-$ bin/switchmap-ng-api --restart
-$ bin/switchmap-ng-poller --restart
-
 Switchmap-NG will not automatically restart after a reboot. \
 You need to re-install as the "root" user for this to occur.""".format(prefix)
 
-        print('{}\n{}\n{}'.format(line, suggestions, line))
+        print('{}\n{}\n{}\n'.format(line, suggestions, line))
 
         # All done
         setup.print_ok(
