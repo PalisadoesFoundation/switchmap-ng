@@ -697,8 +697,8 @@ class _PostCheck(object):
 and then restart the daemons.
 2) You can restart switchmap-ng daemons with these commands:
 
-$ bin/switchmap-ng-cil restart api
-$ bin/switchmap-ng-cli restart poller
+   $ bin/switchmap-ng-cil restart api
+   $ bin/switchmap-ng-cli restart poller
 """.format(general.root_directory())
 
         #######################################################################
@@ -715,9 +715,10 @@ $ bin/switchmap-ng-cli restart poller
         if username != 'root':
             suggestions = """{}
 3) Switchmap-NG will not automatically restart after a reboot. \
-You need to re-install as the "root" user for this to occur.""".format(prefix)
+You need to re-install as the "root" user for this to occur.
+""".format(prefix)
 
-        print('{}\n{}\n{}\n\n'.format(line, suggestions, line))
+        print('{}\n{}\n{}\n'.format(line, suggestions, line))
 
         # All done
         setup.print_ok(
