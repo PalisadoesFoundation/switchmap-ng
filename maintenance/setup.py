@@ -436,13 +436,6 @@ def run(username=None):
         None
 
     """
-    # Prevent running as sudo user
-    if 'SUDO_UID' in os.environ:
-        log_message = (
-            'Cannot run setup using "sudo". Run as a regular user to '
-            'install in this directory or as user "root".')
-        log.log2die_safe(1078, log_message)
-
     # Initialize key variables
     if username is None:
         daemon_username = getpass.getuser()

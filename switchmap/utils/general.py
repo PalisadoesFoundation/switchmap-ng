@@ -18,6 +18,65 @@ from switchmap.utils import configuration
 from switchmap import switchmap
 
 
+def systemd_daemon(agent_name, action=None):
+    """Manage systemd daemon for agent.
+
+    Args:
+        agent_name: Name of agent
+        action: Action to occur
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    executable = '/bin/systemctl'
+    options = ['start', 'stop', 'restart']
+    fixed_action = action.lower()
+
+    # Check user is root
+    running_username = getpass.getuser()
+    if running_username != 'root':
+        log_message = 'You can only run this command as the \'root\' user.'
+        log.log2die(1133, log_message)
+
+    # Check if agent exists
+    if systemd_exists(agent_name) is False:
+        log_message = 'systemd not configured for daemon {}'.format(agent_name)
+        log.log2die(1026, log_message)
+
+    # Process request
+    if fixed_action in options:
+        command = '{} {} {}.service'.format(
+            executable, fixed_action, agent_name)
+        run_script(command)
+    else:
+        log_message = (
+            'Invalid action "{}" for systemd daemon {}'
+            ''.format(action, agent_name))
+        log.log2die(1126, log_message)
+
+
+def systemd_exists(agent_name):
+    """Check if a systemd entry exists for a specific agent.
+
+    Args:
+        agent_name: Name of agent
+
+    Returns:
+        exists: True if file exists
+
+    """
+    # Initialize key variables
+    exists = False
+    file_path = '/etc/systemd/system/{}'.format(agent_name)
+
+    # Do check
+    if os.path.isfile(file_path) is True:
+        exists = True
+    return exists
+
+
 def check_user():
     """Check to make sure the user environment is correct.
 
@@ -37,7 +96,7 @@ def check_user():
     if 'SUDO_UID' in os.environ:
         log_message = (
             'Cannot run script using "sudo".')
-        log.log2die(1078, log_message)
+        log.log2die(1132, log_message)
 
     # Prevent others from running the script
     if username != configured_username:

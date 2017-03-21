@@ -69,13 +69,6 @@ def run():
     # Initialize key variables
     running_username = getpass.getuser()
 
-    # Prevent running as sudo user
-    if 'SUDO_UID' in os.environ:
-        log_message = (
-            'Cannot run installation using "sudo". Run as a regular user to '
-            'install in this directory or as user "root".')
-        log.log2die_safe(1078, log_message)
-
     # If running as the root user, then the infoset user needs to exist
     if running_username == 'root':
         try:
@@ -89,7 +82,7 @@ def run():
             log_message = (
                 'User {} not found. Please try again.'
                 ''.format(daemon_username))
-            log.log2die_safe(1049, log_message)
+            log.log2die_safe(1128, log_message)
     else:
         daemon_username = running_username
 
@@ -153,7 +146,7 @@ class _DaemonSystemD(object):
                 log_message = (
                     'User {} not found. Please try again.'
                     ''.format(self.switchmap_user))
-                log.log2die_safe(1049, log_message)
+                log.log2die_safe(1129, log_message)
         else:
             self.switchmap_user = daemon_username
 
@@ -205,7 +198,7 @@ class _DaemonSystemD(object):
         # Abort if necessary
         if response.lower() != 'y':
             log_message = ('Aborting as per user request.')
-            log.log2die_safe(1050, log_message)
+            log.log2die_safe(1130, log_message)
 
         # Change ownership of files under root_directory
         for parent_directory, directories, files in os.walk(root_directory):
@@ -409,7 +402,7 @@ class _Daemons(object):
         response = general.run_script(script_name, die=False)
         if bool(response['returncode']) is True:
             log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
-            log.log2see_safe(1012, log_message)
+            log.log2see_safe(1127, log_message)
 
         # Return after waiting for daemons to startup properly
         running = self._running(daemon)

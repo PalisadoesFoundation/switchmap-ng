@@ -35,9 +35,6 @@ def main():
         None
 
     """
-    # Check user
-    general.check_user()
-
     # Run stuff
     commands = cli.CLI()
     commands.process()
