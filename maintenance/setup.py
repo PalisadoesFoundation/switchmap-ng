@@ -452,11 +452,11 @@ def run(username=None):
     # Determine whether version of python is valid
     _PythonSetup().setup()
 
-    # Do specific setups for root user
-    _DaemonSetup(daemon_username).setup()
-
     # Update configuration if required
     _Configuration().setup()
+
+    # Do specific setups for root user
+    _DaemonSetup(daemon_username).setup()
 
 
 def print_ok(message):
