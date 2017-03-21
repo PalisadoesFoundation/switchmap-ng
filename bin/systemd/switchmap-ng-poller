@@ -14,9 +14,10 @@ from collections import defaultdict
 import socket
 
 # Try to create a working PYTHONPATH
-_BIN_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_SYS_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_BIN_DIRECTORY = os.path.abspath(os.path.join(_SYS_DIRECTORY, os.pardir))
 _ROOT_DIRECTORY = os.path.abspath(os.path.join(_BIN_DIRECTORY, os.pardir))
-if _BIN_DIRECTORY.endswith('/switchmap-ng/bin') is True:
+if _SYS_DIRECTORY.endswith('/switchmap-ng/bin/systemd') is True:
     sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
