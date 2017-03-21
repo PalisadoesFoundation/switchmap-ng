@@ -69,7 +69,7 @@ def systemd_exists(agent_name):
     """
     # Initialize key variables
     exists = False
-    file_path = '/etc/systemd/system/{}'.format(agent_name)
+    file_path = '/etc/systemd/system/{}.service'.format(agent_name)
 
     # Do check
     if os.path.isfile(file_path) is True:

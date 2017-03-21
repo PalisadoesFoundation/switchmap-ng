@@ -713,12 +713,14 @@ and then restart the daemons.
         # because these files are owned by root with denied delete privileges
         #######################################################################
         if username != 'root':
-            suggestions = """{}
+            added_suggestions = """{}
 3) Switchmap-NG will not automatically restart after a reboot. \
 You need to re-install as the "root" user for this to occur.
 """.format(prefix)
 
-        print('{}\n{}\n{}\n'.format(line, suggestions, line))
+            print('{}\n{}\n{}\n'.format(line, added_suggestions, line))
+        else:
+            print('{}\n{}\n{}\n'.format(line, prefix, line))
 
         # All done
         setup.print_ok(
