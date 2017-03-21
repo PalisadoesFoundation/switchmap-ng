@@ -49,15 +49,23 @@ def api():
         None
 
     """
-    # Create agent objects
-    agent_gunicorn = Agent(API_GUNICORN_AGENT)
-    agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
+    # Check existence of systemd file
+    if general.systemd_exists(API_EXECUTABLE) is True:
+        general.systemd_daemon(API_EXECUTABLE, action='start')
+    else:
+        # Check user
+        general.check_user()
 
-    # Start daemons (API first, Gunicorn second)
-    daemon_api = AgentDaemon(agent_api)
-    daemon_api.start()
-    daemon_gunicorn = AgentDaemon(agent_gunicorn)
-    daemon_gunicorn.start()
+        # Create agent objects
+        agent_gunicorn = Agent(API_GUNICORN_AGENT)
+        agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
+
+        # Start daemons (API first, Gunicorn second)
+        daemon_api = AgentDaemon(agent_api)
+        daemon_api.start()
+        daemon_gunicorn = AgentDaemon(agent_gunicorn)
+        daemon_gunicorn.start()
+
     # Done
     sys.exit(0)
 
@@ -72,12 +80,19 @@ def poller():
         None
 
     """
-    # Create agent object
-    agent_poller = Agent(POLLER_EXECUTABLE)
+    # Check existence of systemd file
+    if general.systemd_exists(POLLER_EXECUTABLE) is True:
+        general.systemd_daemon(POLLER_EXECUTABLE, action='start')
+    else:
+        # Check user
+        general.check_user()
 
-    # Start agent
-    daemon_poller = AgentDaemon(agent_poller)
-    daemon_poller.start()
+        # Create agent object
+        agent_poller = Agent(POLLER_EXECUTABLE)
+
+        # Start agent
+        daemon_poller = AgentDaemon(agent_poller)
+        daemon_poller.start()
 
     # Done
     sys.exit(0)

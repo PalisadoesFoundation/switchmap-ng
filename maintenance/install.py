@@ -31,8 +31,8 @@ except ImportError:
         else:
             pip.main(['install', '--user', _PACKAGE])
     print(
-        'New Python packages installed. Please run this script again to '
-        'complete the Switchmap-NG installation.')
+        '\nNew Python packages installed. Please run this script again to '
+        'complete the Switchmap-NG installation.\n')
     sys.exit(0)
 
 # Try to create a working PYTHONPATH
@@ -69,13 +69,6 @@ def run():
     # Initialize key variables
     running_username = getpass.getuser()
 
-    # Prevent running as sudo user
-    if 'SUDO_UID' in os.environ:
-        log_message = (
-            'Cannot run installation using "sudo". Run as a regular user to '
-            'install in this directory or as user "root".')
-        log.log2die_safe(1078, log_message)
-
     # If running as the root user, then the infoset user needs to exist
     if running_username == 'root':
         try:
@@ -89,7 +82,7 @@ def run():
             log_message = (
                 'User {} not found. Please try again.'
                 ''.format(daemon_username))
-            log.log2die_safe(1049, log_message)
+            log.log2die_safe(1128, log_message)
     else:
         daemon_username = running_username
 
@@ -153,7 +146,7 @@ class _DaemonSystemD(object):
                 log_message = (
                     'User {} not found. Please try again.'
                     ''.format(self.switchmap_user))
-                log.log2die_safe(1049, log_message)
+                log.log2die_safe(1129, log_message)
         else:
             self.switchmap_user = daemon_username
 
@@ -205,7 +198,7 @@ class _DaemonSystemD(object):
         # Abort if necessary
         if response.lower() != 'y':
             log_message = ('Aborting as per user request.')
-            log.log2die_safe(1050, log_message)
+            log.log2die_safe(1130, log_message)
 
         # Change ownership of files under root_directory
         for parent_directory, directories, files in os.walk(root_directory):
@@ -395,21 +388,21 @@ class _Daemons(object):
                     '/bin/systemctl start {}.service'.format(daemon))
             else:
                 script_name = (
-                    '{}/bin/{} --start'.format(root_directory, daemon))
+                    '{}/bin/systemd/{} --start'.format(root_directory, daemon))
         else:
             if username == 'root':
                 script_name = (
                     '/bin/systemctl restart {}.service'.format(daemon))
             else:
                 script_name = (
-                    '{}/bin/{} --restart --force'
+                    '{}/bin/systemd/{} --restart --force'
                     ''.format(root_directory, daemon))
 
         # Attempt to restart / start
         response = general.run_script(script_name, die=False)
         if bool(response['returncode']) is True:
             log_message = ('Could not {} daemon {}.'.format(attempt, daemon))
-            log.log2see_safe(1012, log_message)
+            log.log2see_safe(1127, log_message)
 
         # Return after waiting for daemons to startup properly
         running = self._running(daemon)
@@ -699,8 +692,14 @@ class _PostCheck(object):
         line = '*' * 80
 
         prefix = """\
-Edit file {}/etc/config.yaml with correct SNMP parameters \
-and then restart the daemons.\n""".format(general.root_directory())
+
+1) Edit file {}/etc/config.yaml with correct SNMP parameters \
+and then restart the daemons.
+2) You can restart switchmap-ng daemons with these commands:
+
+   $ bin/switchmap-ng-cil restart api
+   $ bin/switchmap-ng-cli restart poller
+""".format(general.root_directory())
 
         #######################################################################
         #
@@ -713,30 +712,15 @@ and then restart the daemons.\n""".format(general.root_directory())
         # by that user. We don't want the daemons to crash at some other time
         # because these files are owned by root with denied delete privileges
         #######################################################################
-        if username == 'root':
-            if os.path.isdir(system_directory) is True:
-                suggestions = """{}
-You can start switchmap-ng daemons with these commands:
+        if username != 'root':
+            added_suggestions = """{}
+3) Switchmap-NG will not automatically restart after a reboot. \
+You need to re-install as the "root" user for this to occur.
+""".format(prefix)
 
-    # systemctl start switchmap-ng-api.service
-    # systemctl start switchmap-ng-poller.service
-
-You can enable switchmap-ng daemons to start on system boot \
-with these commands:
-
-    # systemctl enable switchmap-ng-api.service
-    # systemctl enable switchmap-ng-poller.service""".format(prefix)
+            print('{}\n{}\n{}\n'.format(line, added_suggestions, line))
         else:
-            suggestions = """{}
-You can restart switchmap-ng daemons with these commands:
-
-$ bin/switchmap-ng-api --restart
-$ bin/switchmap-ng-poller --restart
-
-Switchmap-NG will not automatically restart after a reboot. \
-You need to re-install as the "root" user for this to occur.""".format(prefix)
-
-        print('{}\n{}\n{}'.format(line, suggestions, line))
+            print('{}\n{}\n{}\n'.format(line, prefix, line))
 
         # All done
         setup.print_ok(

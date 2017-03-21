@@ -24,9 +24,9 @@ User=switchmap-ng
 Group=switchmap-ng
 Environment=PYTHONPATH=/home/switchmap-ng START=--start STOP=--stop RESTART=--restart
 ExecStart=
-ExecStart=/home/switchmap-ng/bin/switchmap-ng-api $START
-ExecStop=/home/switchmap-ng/bin/switchmap-ng-api $STOP
-ExecReload=/home/switchmap-ng/bin/switchmap-ng-api $RESTART
+ExecStart=/home/switchmap-ng/bin/systemd/switchmap-ng-api $START
+ExecStop=/home/switchmap-ng/bin/systemd/switchmap-ng-api $STOP
+ExecReload=/home/switchmap-ng/bin/systemd/switchmap-ng-api $RESTART
 RemainAfterExit=yes
 GuessMainPID=yes
 Type=forking

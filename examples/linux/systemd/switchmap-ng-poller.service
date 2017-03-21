@@ -19,9 +19,9 @@ User=switchmap-ng
 Group=switchmap-ng
 Environment=PYTHONPATH=/home/switchmap-ng START=--start STOP=--stop RESTART=--restart
 ExecStart=
-ExecStart=/home/switchmap-ng/bin/switchmap-ng-poller $START
-ExecStop=/home/switchmap-ng/bin/switchmap-ng-poller $STOP
-ExecReload=/home/switchmap-ng/bin/switchmap-ng-poller $RESTART
+ExecStart=/home/switchmap-ng/bin/systemd/switchmap-ng-poller $START
+ExecStop=/home/switchmap-ng/bin/systemd/switchmap-ng-poller $STOP
+ExecReload=/home/switchmap-ng/bin/systemd/switchmap-ng-poller $RESTART
 RemainAfterExit=yes
 GuessMainPID=yes
 Type=forking
