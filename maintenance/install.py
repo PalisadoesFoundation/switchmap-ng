@@ -11,6 +11,8 @@ import os
 from collections import defaultdict
 import getpass
 from pwd import getpwnam
+import grp
+import re
 
 # PIP3 libraries
 ###############################################################################
@@ -50,6 +52,7 @@ else:
 from switchmap.utils import log
 from maintenance import setup
 from switchmap.utils import general
+from switchmap.utils import configuration
 from switchmap.utils import daemon as daemon_lib
 
 
@@ -64,7 +67,7 @@ def run():
 
     """
     # Initialize key variables
-    username = getpass.getuser()
+    running_username = getpass.getuser()
 
     # Prevent running as sudo user
     if 'SUDO_UID' in os.environ:
@@ -74,7 +77,7 @@ def run():
         log.log2die_safe(1078, log_message)
 
     # If running as the root user, then the infoset user needs to exist
-    if username == 'root':
+    if running_username == 'root':
         try:
             daemon_username = input(
                 'Please enter the username under which '
@@ -88,7 +91,7 @@ def run():
                 ''.format(daemon_username))
             log.log2die_safe(1049, log_message)
     else:
-        daemon_username = username
+        daemon_username = running_username
 
     # Do precheck
     precheck = _PreCheck()
@@ -102,16 +105,196 @@ def run():
     # Run setup
     setup.run(daemon_username)
 
+    # Do specific setups for root user
+    if running_username != 'root':
+        _DaemonSystemD().enable()
+
     # Start daemons
-    daemon = _Daemon()
-    daemon.start()
+    _Daemons().start()
 
     # Run the post check
     postcheck = _PostCheck()
     postcheck.validate()
 
 
-class _Daemon(object):
+class _DaemonSystemD(object):
+    """Class to setup switchmap-ng daemon."""
+
+    def __init__(self):
+        """Function for intializing the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        running_username = getpass.getuser()
+        daemon_username = configuration.Config().username()
+        self.root_directory = general.root_directory()
+        switchmap_user_exists = True
+        self.switchmap_user = None
+        self.running_as_root = False
+
+        # Set the username we need to be running as
+        if running_username == 'root':
+            try:
+                # Get GID and UID for user
+                self.switchmap_user = daemon_username
+                self.gid = getpwnam(self.switchmap_user).pw_gid
+                self.uid = getpwnam(self.switchmap_user).pw_uid
+            except KeyError:
+                switchmap_user_exists = False
+
+            # Die if user doesn't exist
+            if switchmap_user_exists is False:
+                log_message = (
+                    'User {} not found. Please try again.'
+                    ''.format(self.switchmap_user))
+                log.log2die_safe(1049, log_message)
+        else:
+            self.switchmap_user = daemon_username
+
+        # If running as the root user, then the switchmap user needs to exist
+        if running_username == 'root':
+            self.running_as_root = True
+            return
+
+    def enable(self):
+        """Enable systemd.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Return if not running script as root user
+        if self.running_as_root is False:
+            return
+
+        # Set file permissions
+        self._file_permissions()
+
+        # Setup systemd
+        self._systemd()
+
+    def _file_permissions(self):
+        """Set file permissions.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        switchmap_user = self.switchmap_user
+        root_directory = self.root_directory
+
+        # Prompt to change ownership of root_directory
+        groupname = grp.getgrgid(self.gid).gr_name
+        response = input(
+            'Change ownership of {} directory to user:{} group:{} (y,N) ?: '
+            ''.format(root_directory, switchmap_user, groupname))
+
+        # Abort if necessary
+        if response.lower() != 'y':
+            log_message = ('Aborting as per user request.')
+            log.log2die_safe(1050, log_message)
+
+        # Change ownership of files under root_directory
+        for parent_directory, directories, files in os.walk(root_directory):
+            for directory in directories:
+                os.chown(os.path.join(
+                    parent_directory, directory), self.uid, self.gid)
+            for next_file in files:
+                os.chown(os.path.join(
+                    parent_directory, next_file), self.uid, self.gid)
+
+        # Change ownership of root_directory
+        os.chown(root_directory, self.uid, self.gid)
+
+    def _systemd(self):
+        """Setup systemd configuration.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        username = self.switchmap_user
+        groupname = grp.getgrgid(self.gid).gr_name
+        system_directory = '/etc/systemd/system'
+        system_command = '/bin/systemctl daemon-reload'
+        poller_service = 'switchmap-ng-poller.service'
+        api_service = 'switchmap-ng-api.service'
+
+        # Do nothing if systemd isn't installed
+        if os.path.isdir(system_directory) is False:
+            return
+
+        # Copy system files to systemd directory and activate
+        poller_startup_script = (
+            '{}/examples/linux/systemd/{}'
+            ''.format(self.root_directory, poller_service))
+        api_startup_script = (
+            '{}/examples/linux/systemd/{}'
+            ''.format(self.root_directory, api_service))
+
+        # Read in file
+        # 1) Convert home directory to that of user
+        # 2) Convert username in file
+        # 3) Convert group in file
+        filenames = [poller_startup_script, api_startup_script]
+        for filename in filenames:
+            # Read next file
+            with open(filename, 'r') as f_handle:
+                contents = f_handle.read()
+
+            # Substitute home directory
+            contents = re.sub(
+                r'/home/switchmap-ng',
+                self.root_directory,
+                contents)
+
+            # Substitute username
+            contents = re.sub(
+                'User=switchmap-ng',
+                'User={}'.format(username),
+                contents)
+
+            # Substitute group
+            contents = re.sub(
+                'Group=switchmap-ng',
+                'Group={}'.format(groupname),
+                contents)
+
+            # Write contents
+            filepath = (
+                '{}/{}'.format(system_directory, os.path.basename(filename)))
+            if os.path.isdir(system_directory):
+                with open(filepath, 'w') as f_handle:
+                    f_handle.write(contents)
+
+        # Make systemd recognize new files
+        if os.path.isdir(system_directory):
+            general.run_script(system_command)
+
+        # Enable serices
+        services = [poller_service, api_service]
+        for service in services:
+            enable_command = 'systemctl enable {}'.format(service)
+            general.run_script(enable_command)
+
+class _Daemons(object):
     """Class to start switchmap-ng daemons."""
 
     def __init__(self):
