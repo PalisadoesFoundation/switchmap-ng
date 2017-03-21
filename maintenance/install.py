@@ -692,14 +692,14 @@ class _PostCheck(object):
         line = '*' * 80
 
         prefix = """\
-        
-Edit file {}/etc/config.yaml with correct SNMP parameters \
-and then restart the daemons.
 
-You can restart switchmap-ng daemons with these commands:
+1) Edit file {}/etc/config.yaml with correct SNMP parameters \
+and then restart the daemons.
+2) You can restart switchmap-ng daemons with these commands:
 
 $ bin/switchmap-ng-cil restart api
-$ bin/switchmap-ng-cli restart poller""".format(general.root_directory())
+$ bin/switchmap-ng-cli restart poller
+""".format(general.root_directory())
 
         #######################################################################
         #
@@ -714,10 +714,10 @@ $ bin/switchmap-ng-cli restart poller""".format(general.root_directory())
         #######################################################################
         if username != 'root':
             suggestions = """{}
-Switchmap-NG will not automatically restart after a reboot. \
+3) Switchmap-NG will not automatically restart after a reboot. \
 You need to re-install as the "root" user for this to occur.""".format(prefix)
 
-        print('{}\n{}\n{}\n'.format(line, suggestions, line))
+        print('{}\n{}\n{}\n\n'.format(line, suggestions, line))
 
         # All done
         setup.print_ok(
