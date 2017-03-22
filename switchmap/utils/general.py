@@ -77,6 +77,23 @@ def systemd_exists(agent_name):
     return exists
 
 
+def check_sudo():
+    """Check user isn't running as sudo.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Prevent running as sudo user
+    if 'SUDO_UID' in os.environ:
+        log_message = (
+            'Cannot run script using "sudo".')
+        log.log2die(1132, log_message)
+
+
 def check_user():
     """Check to make sure the user environment is correct.
 
@@ -93,10 +110,7 @@ def check_user():
     configured_username = config.username()
 
     # Prevent running as sudo user
-    if 'SUDO_UID' in os.environ:
-        log_message = (
-            'Cannot run script using "sudo".')
-        log.log2die(1132, log_message)
+    check_sudo()
 
     # Prevent others from running the script
     if username != configured_username:
