@@ -550,6 +550,9 @@ class _PreCheck(object):
             None
 
         """
+        # Test systemd is present
+        self._systemd()
+
         # Test Python version
         self._python()
 
@@ -570,6 +573,31 @@ class _PreCheck(object):
         modules = ['setuptools', 'PyYAML']
         for module in modules:
             _pip3_install(module)
+
+    def _systemd(self):
+        """Determine whether systemd is installed.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables.
+        directory = '/etc/systemd/system'
+
+        # Do nothing if this is not the root user.
+        username = getpass.getuser()
+        if username != 'root':
+            return
+
+        # Test
+        if os.path.isdir(directory) is True:
+            setup.print_ok('Systemd installed.')
+        else:
+            log_message = 'Systemd not installed. Directory {} not found'
+            log.log2die_safe(1234, log_message)
 
     def _python(self):
         """Determine Python version.
