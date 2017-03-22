@@ -758,6 +758,10 @@ def _system_daemon_prompt():
     # Initialize key variables
     running_username = getpass.getuser()
 
+    # Return if running as root. We'll run as a daemon
+    if running_username == 'root':
+        return
+
     # Get the user's intention
     prompt = input(
         'Do you want switchmap-ng to start automatically '
@@ -768,13 +772,10 @@ def _system_daemon_prompt():
         if response == 'n':
             return
         elif response == 'y':
-            if running_username == 'root':
-                return
-            else:
-                log_message = (
-                    'Run this script as the "root" user to '
-                    'get the automatic functionality.')
-                log.log2die_safe(1128, log_message)
+            log_message = (
+                'Run this script as the "root" user to '
+                'get the automatic functionality.')
+            log.log2die_safe(1128, log_message)
 
     log_message = 'Please answer "Y" or "N", and try again.'
     log.log2die_safe(1128, log_message)
