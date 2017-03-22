@@ -72,8 +72,8 @@ def api():
         daemon_gunicorn.start()
 
     # Change the log file permissions
-    print('boo')
     os.chmod(config.web_log_file(), 0o0644)
+    log.log2info(2222222222222222222, 'boo 2')
 
     # Done
     sys.exit(0)
@@ -107,8 +107,8 @@ def poller():
         daemon_poller.start()
 
     # Change the log file permissions
-    print('boo 2')
     os.chmod(config.log_file(), 0o0644)
+    log.log2info(111111111111111111111111, 'boo 2')
 
     # Done
     sys.exit(0)
