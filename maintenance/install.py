@@ -233,6 +233,7 @@ class _DaemonSystemD(object):
             enable_command = 'systemctl enable {}'.format(service)
             general.run_script(enable_command)
 
+
 class _Daemons(object):
     """Class to start switchmap-ng daemons."""
 
@@ -633,10 +634,8 @@ class _PostCheck(object):
         """
         # Initialize key variables
         username = getpass.getuser()
-        system_directory = '/etc/systemd/system'
-        suggestions = ''
+        added_suggestions = ''
         line = '*' * 80
-
         prefix = """\
 
 1) Edit file {}/etc/config.yaml with correct SNMP parameters \
@@ -746,6 +745,34 @@ def _pip3_install(module):
         setup.print_ok(log_message)
 
 
+def _system_daemon_prompt():
+    """Prompt user to see whether they want to run as a system daemon.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Get the user's intention
+    intention = input(
+        'Do you want switchmap-ng to start automatically '
+        'after a reboot?: (Yes,No) ')
+    if bool(intention) is True:
+        response = intention.lower()[0]
+        if response == 'y':
+            return
+        elif response == 'n':
+            log_message = (
+                'Run this script as the "root" user to '
+                'get the automatic functionality.')
+            log.log2die_safe(1128, log_message)
+        else:
+            log_message = 'Please answer "yes" or "no", and try again.'
+            log.log2die_safe(1128, log_message)
+
+
 def _get_daemon_username():
     """Get the daemon's username.
 
@@ -795,6 +822,9 @@ def run():
 
     # Make sure we are not running as sudo
     general.check_sudo()
+
+    # Ask about daemon status
+    _system_daemon_prompt()
     
     # Get the daemon username
     daemon_username = _get_daemon_username()
