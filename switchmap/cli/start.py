@@ -12,6 +12,7 @@ import os
 # Switchmap-NG imports
 from switchmap.utils import general
 from switchmap.utils import configuration
+from switchmap.utils import log
 from switchmap.main.agent import Agent, AgentAPI, AgentDaemon
 from switchmap.constants import (
     API_EXECUTABLE, API_GUNICORN_AGENT, POLLER_EXECUTABLE)
