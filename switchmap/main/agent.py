@@ -314,7 +314,7 @@ class AgentAPI(Agent):
             'pidfile': self.pidfile_child,
             'loglevel': config.log_level(),
             'workers': _number_of_workers(),
-            'umask': '0644',
+            'umask': 0o0644,
         }
 
         # Log so that user running the script from the CLI knows that something
