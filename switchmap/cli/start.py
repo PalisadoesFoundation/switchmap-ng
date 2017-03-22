@@ -7,9 +7,11 @@ Functions to start daemons
 
 # Main python libraries
 import sys
+import os
 
 # Switchmap-NG imports
 from switchmap.utils import general
+from switchmap.utils import configuration
 from switchmap.main.agent import Agent, AgentAPI, AgentDaemon
 from switchmap.constants import (
     API_EXECUTABLE, API_GUNICORN_AGENT, POLLER_EXECUTABLE)
@@ -49,6 +51,9 @@ def api():
         None
 
     """
+    # Initialize key variables
+    config = configuration.Config()
+
     # Check existence of systemd file
     if general.systemd_exists(API_EXECUTABLE) is True:
         general.systemd_daemon(API_EXECUTABLE, action='start')
@@ -66,6 +71,9 @@ def api():
         daemon_gunicorn = AgentDaemon(agent_gunicorn)
         daemon_gunicorn.start()
 
+    # Change the log file permissions
+    os.chmod(config.web_log_file(), 0o0644)
+
     # Done
     sys.exit(0)
 
@@ -80,6 +88,9 @@ def poller():
         None
 
     """
+    # Initialize key variables
+    config = configuration.Config()
+
     # Check existence of systemd file
     if general.systemd_exists(POLLER_EXECUTABLE) is True:
         general.systemd_daemon(POLLER_EXECUTABLE, action='start')
@@ -93,6 +104,9 @@ def poller():
         # Start agent
         daemon_poller = AgentDaemon(agent_poller)
         daemon_poller.start()
+
+    # Change the log file permissions
+    os.chmod(config.log_file(), 0o0644)
 
     # Done
     sys.exit(0)
