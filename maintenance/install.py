@@ -756,10 +756,11 @@ def _system_daemon_prompt():
 
     """
     # Get the user's intention
-    intention = input(
+    prompt = input(
         'Do you want switchmap-ng to start automatically '
-        'after a reboot?: (Yes,No) ')
-    if bool(intention) is True:
+        'after a reboot?: (Y, N) ')
+    intention = prompt.strip()
+    if bool(intention) is True and len(intention) == 1:
         response = intention.lower()[0]
         if response == 'y':
             return
@@ -768,9 +769,9 @@ def _system_daemon_prompt():
                 'Run this script as the "root" user to '
                 'get the automatic functionality.')
             log.log2die_safe(1128, log_message)
-        else:
-            log_message = 'Please answer "yes" or "no", and try again.'
-            log.log2die_safe(1128, log_message)
+    else:
+        log_message = 'Please answer "Y" or "N", and try again.'
+        log.log2die_safe(1128, log_message)
 
 
 def _get_daemon_username():
@@ -825,7 +826,7 @@ def run():
 
     # Ask about daemon status
     _system_daemon_prompt()
-    
+
     # Get the daemon username
     daemon_username = _get_daemon_username()
 
