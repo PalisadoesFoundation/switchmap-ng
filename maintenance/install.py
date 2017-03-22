@@ -56,60 +56,6 @@ from switchmap.utils import configuration
 from switchmap.utils import daemon as daemon_lib
 
 
-def run():
-    """Do the installation.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    running_username = getpass.getuser()
-
-    # If running as the root user, then the infoset user needs to exist
-    if running_username == 'root':
-        try:
-            daemon_username = input(
-                'Please enter the username under which '
-                'infoset-ng will run: ')
-
-            # Get GID and UID for user
-            _ = getpwnam(daemon_username).pw_gid
-        except:
-            log_message = (
-                'User {} not found. Please try again.'
-                ''.format(daemon_username))
-            log.log2die_safe(1128, log_message)
-    else:
-        daemon_username = running_username
-
-    # Do precheck
-    precheck = _PreCheck()
-    precheck.validate()
-
-    # Create a configuration
-    config = _Config(daemon_username)
-    config.validate()
-    config.write()
-
-    # Run setup
-    setup.run(daemon_username)
-
-    # Do specific setups for root user
-    if running_username != 'root':
-        _DaemonSystemD().enable()
-
-    # Start daemons
-    _Daemons().start()
-
-    # Run the post check
-    postcheck = _PostCheck()
-    postcheck.validate()
-
-
 class _DaemonSystemD(object):
     """Class to setup switchmap-ng daemon."""
 
@@ -286,6 +232,7 @@ class _DaemonSystemD(object):
         for service in services:
             enable_command = 'systemctl enable {}'.format(service)
             general.run_script(enable_command)
+
 
 class _Daemons(object):
     """Class to start switchmap-ng daemons."""
@@ -687,10 +634,8 @@ class _PostCheck(object):
         """
         # Initialize key variables
         username = getpass.getuser()
-        system_directory = '/etc/systemd/system'
-        suggestions = ''
+        added_suggestions = ''
         line = '*' * 80
-
         prefix = """\
 
 1) Edit file {}/etc/config.yaml with correct SNMP parameters \
@@ -798,6 +743,122 @@ def _pip3_install(module):
     else:
         log_message = 'Python module "{}" is installed.'.format(module)
         setup.print_ok(log_message)
+
+
+def _system_daemon_prompt():
+    """Prompt user to see whether they want to run as a system daemon.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    running_username = getpass.getuser()
+
+    # Return if running as root. We'll run as a daemon
+    if running_username == 'root':
+        return
+
+    # Get the user's intention
+    prompt = input(
+        'Do you want switchmap-ng to start automatically '
+        'after a reboot?: (Y, N) ')
+    intention = prompt.strip()
+    if bool(intention) is True and len(intention) == 1:
+        response = intention.lower()[0]
+        if response == 'n':
+            return
+        elif response == 'y':
+            log_message = (
+                'Run this script as the "root" user to '
+                'get the automatic functionality.')
+            log.log2die_safe(1128, log_message)
+
+    log_message = 'Please answer "Y" or "N", and try again.'
+    log.log2die_safe(1128, log_message)
+
+
+def _get_daemon_username():
+    """Get the daemon's username.
+
+    Args:
+        None
+
+    Returns:
+        daemon_username: Username daemon will run as
+
+    """
+    # Initialize key variables
+    running_username = getpass.getuser()
+
+    # If running as the root user, then the infoset user needs to exist
+    if running_username == 'root':
+        try:
+            daemon_username = input(
+                'Please enter the username under which '
+                'infoset-ng will run: ')
+
+            # Get GID and UID for user
+            _ = getpwnam(daemon_username).pw_gid
+        except:
+            log_message = (
+                'User {} not found. Please try again.'
+                ''.format(daemon_username))
+            log.log2die_safe(1128, log_message)
+    else:
+        daemon_username = running_username
+
+    # Return
+    return daemon_username
+
+
+def run():
+    """Do the installation.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    running_username = getpass.getuser()
+
+    # Make sure we are not running as sudo
+    general.check_sudo()
+
+    # Ask about daemon status
+    _system_daemon_prompt()
+
+    # Get the daemon username
+    daemon_username = _get_daemon_username()
+
+    # Do precheck
+    precheck = _PreCheck()
+    precheck.validate()
+
+    # Create a configuration
+    config = _Config(daemon_username)
+    config.validate()
+    config.write()
+
+    # Run setup
+    setup.run(daemon_username)
+
+    # Do specific setups for root user
+    if running_username != 'root':
+        _DaemonSystemD().enable()
+
+    # Start daemons
+    _Daemons().start()
+
+    # Run the post check
+    postcheck = _PostCheck()
+    postcheck.validate()
 
 
 if __name__ == '__main__':

@@ -329,6 +329,9 @@ class AgentAPI(Agent):
         # Run
         StandaloneApplication(API, options).run()
 
+        # Change the log file permissions
+        os.chmod(config.web_log_file(), 0o0644)
+
 
 class StandaloneApplication(BaseApplication):
     """Class to integrate the Gunicorn WSGI with the Switchmap Flask application.
