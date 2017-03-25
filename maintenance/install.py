@@ -803,10 +803,10 @@ def _system_daemon_prompt():
             log_message = (
                 'Run this script as the "root" user to '
                 'get the automatic functionality.')
-            log.log2die_safe(1128, log_message)
+            log.log2die_safe(1012, log_message)
 
     log_message = 'Please answer "Y" or "N", and try again.'
-    log.log2die_safe(1128, log_message)
+    log.log2die_safe(1013, log_message)
 
 
 def _get_daemon_username():
@@ -835,7 +835,7 @@ def _get_daemon_username():
             log_message = (
                 'User {} not found. Please try again.'
                 ''.format(daemon_username))
-            log.log2die_safe(1128, log_message)
+            log.log2die_safe(1019, log_message)
     else:
         daemon_username = running_username
 

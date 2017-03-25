@@ -117,11 +117,11 @@ class If64Query(Query):
         # Return
         return final
 
-    def ifhighspeed(self):
+    def ifhighspeed(self, oidonly=False):
         """Return dict of IFMIB ifHighSpeed for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifHighSpeed using the oid's last node as key
@@ -132,6 +132,12 @@ class If64Query(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.15'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -140,11 +146,11 @@ class If64Query(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifhcinucastpkts(self):
+    def ifhcinucastpkts(self, oidonly=False):
         """Return dict of IFMIB ifHCInUcastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifHCInUcastPkts using the oid's last node as key
@@ -155,6 +161,12 @@ class If64Query(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.7'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -163,11 +175,11 @@ class If64Query(Query):
         # Return
         return data_dict
 
-    def ifhcoutucastpkts(self):
+    def ifhcoutucastpkts(self, oidonly=False):
         """Return dict of IFMIB ifHCOutUcastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifHCOutUcastPkts. Key = OID's last node.
@@ -178,6 +190,12 @@ class If64Query(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.11'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -186,11 +204,11 @@ class If64Query(Query):
         # Return
         return data_dict
 
-    def ifhcinmulticastpkts(self):
+    def ifhcinmulticastpkts(self, oidonly=False):
         """Return dict of IFMIB ifHCInMulticastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifHCInMulticastPkts. Key = OID's last node.
@@ -201,6 +219,12 @@ class If64Query(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.8'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -209,11 +233,11 @@ class If64Query(Query):
         # Return
         return data_dict
 
-    def ifhcoutmulticastpkts(self):
+    def ifhcoutmulticastpkts(self, oidonly=False):
         """Return dict of IFMIB ifHCOutMulticastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifHCOutMulticastPkts. Key = OID's last node.
@@ -224,6 +248,12 @@ class If64Query(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.12'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -232,11 +262,11 @@ class If64Query(Query):
         # Return
         return data_dict
 
-    def ifhcinbroadcastpkts(self):
+    def ifhcinbroadcastpkts(self, oidonly=False):
         """Return dict of IFMIB ifHCInBroadcastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifHCInBroadcastPkts. Key = OID's last node.
@@ -247,6 +277,12 @@ class If64Query(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.9'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -255,11 +291,11 @@ class If64Query(Query):
         # Return
         return data_dict
 
-    def ifhcoutbroadcastpkts(self):
+    def ifhcoutbroadcastpkts(self, oidonly=False):
         """Return dict of IFMIB ifHCOutBroadcastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifHCOutBroadcastPkts. Key = OID's last node.
@@ -270,6 +306,12 @@ class If64Query(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.13'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -278,11 +320,12 @@ class If64Query(Query):
         # Return
         return data_dict
 
-    def ifhcinoctets(self, safe=False):
+    def ifhcinoctets(self, safe=False, oidonly=False):
         """Return dict of IFMIB ifHCInOctets for each ifIndex for device.
 
         Args:
             safe: Do a failsafe walk if True
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifHCInOctets. Key = OID's last node.
@@ -293,6 +336,12 @@ class If64Query(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.6'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         if safe is False:
             results = self.snmp_object.walk(oid, normalized=True)
         else:
@@ -304,11 +353,12 @@ class If64Query(Query):
         # Return
         return data_dict
 
-    def ifhcoutoctets(self, safe=False):
+    def ifhcoutoctets(self, safe=False, oidonly=False):
         """Return dict of IFMIB ifHCOutOctets for each ifIndex for device.
 
         Args:
             safe: Do a failsafe walk if True
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifHCOutOctets. Key = OID's last node.
@@ -319,6 +369,12 @@ class If64Query(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.10'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         if safe is False:
             results = self.snmp_object.walk(oid, normalized=True)
         else:
