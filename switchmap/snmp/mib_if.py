@@ -137,11 +137,11 @@ class IfQuery(Query):
         # Return
         return final
 
-    def iflastchange(self):
+    def iflastchange(self, oidonly=False):
         """Return dict of IFMIB ifLastChange for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifLastChange using the oid's last node as key
@@ -152,6 +152,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.9'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -160,11 +166,12 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifinoctets(self, safe=False):
+    def ifinoctets(self, safe=False, oidonly=False):
         """Return dict of IFMIB ifInOctets for each ifIndex for device.
 
         Args:
             safe: Do a failsafe walk if True
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifInOctets using the oid's last node as key
@@ -175,6 +182,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.10'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         if safe is False:
             results = self.snmp_object.walk(oid, normalized=True)
         else:
@@ -186,11 +199,12 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifoutoctets(self, safe=False):
+    def ifoutoctets(self, safe=False, oidonly=False):
         """Return dict of IFMIB ifOutOctets for each ifIndex for device.
 
         Args:
             safe: Do a failsafe walk if True
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifOutOctets using the oid's last node as key
@@ -201,6 +215,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.16'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         if safe is False:
             results = self.snmp_object.walk(oid, normalized=True)
         else:
@@ -212,11 +232,12 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifdescr(self, safe=False):
-        """Return dict of IFMIB ifDesc for each ifIndex for device.
+    def ifdescr(self, safe=False, oidonly=False):
+        """Return dict of IFMIB ifDescr for each ifIndex for device.
 
         Args:
             safe: Do a failsafe walk if True
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifDescr using the oid's last node as key
@@ -227,6 +248,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.2'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         if safe is False:
             results = self.snmp_object.walk(oid, normalized=True)
         else:
@@ -238,11 +265,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def iftype(self):
+    def iftype(self, oidonly=False):
         """Return dict of IFMIB ifType for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifType using the oid's last node as key
@@ -253,6 +280,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.3'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -261,11 +294,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifspeed(self):
+    def ifspeed(self, oidonly=False):
         """Return dict of IFMIB ifSpeed for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifSpeed using the oid's last node as key
@@ -276,6 +309,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.5'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -284,11 +323,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifadminstatus(self):
+    def ifadminstatus(self, oidonly=False):
         """Return dict of IFMIB ifAdminStatus for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifAdminStatus using the oid's last node as key
@@ -299,6 +338,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.7'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -307,11 +352,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifoperstatus(self):
+    def ifoperstatus(self, oidonly=False):
         """Return dict of IFMIB ifOperStatus for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifOperStatus using the oid's last node as key
@@ -322,6 +367,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.8'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -330,11 +381,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifalias(self):
+    def ifalias(self, oidonly=False):
         """Return dict of IFMIB ifAlias for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifAlias using the oid's last node as key
@@ -345,6 +396,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.18'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -353,11 +410,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifname(self):
+    def ifname(self, oidonly=False):
         """Return dict of IFMIB ifName for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifName using the oid's last node as key
@@ -368,6 +425,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.1'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -376,11 +439,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifindex(self):
+    def ifindex(self, oidonly=False):
         """Return dict of IFMIB ifindex for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifindex using the oid's last node as key
@@ -391,6 +454,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.1'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -399,11 +468,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifphysaddress(self):
+    def ifphysaddress(self, oidonly=False):
         """Return dict of IFMIB ifPhysAddress for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifPhysAddress using the oid's last node as key
@@ -414,6 +483,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.2.2.1.6'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -423,11 +498,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifinmulticastpkts(self):
+    def ifinmulticastpkts(self, oidonly=False):
         """Return dict of IFMIB ifInMulticastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifInMulticastPkts. Key = OID's last node.
@@ -438,6 +513,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.2'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -446,11 +527,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifoutmulticastpkts(self):
+    def ifoutmulticastpkts(self, oidonly=False):
         """Return dict of IFMIB ifOutMulticastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifOutMulticastPkts. Key = OID's last node.
@@ -461,6 +542,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.4'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -469,11 +556,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifinbroadcastpkts(self):
+    def ifinbroadcastpkts(self, oidonly=False):
         """Return dict of IFMIB ifInBroadcastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifInBroadcastPkts. Key = OID's last node.
@@ -484,6 +571,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.3'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -492,11 +585,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifoutbroadcastpkts(self):
+    def ifoutbroadcastpkts(self, oidonly=False):
         """Return dict of IFMIB ifOutBroadcastPkts for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of ifOutBroadcastPkts. Key = OID's last node.
@@ -507,6 +600,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.1.1.5'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -515,11 +614,11 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifstackstatus(self):
+    def ifstackstatus(self, oidonly=False):
         """Return dict of IFMIB ifStackStatus for each ifIndex for device.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             final: Dict of ifStackStatus keyed by the ifIndex of the
@@ -577,6 +676,12 @@ class IfQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.31.1.2.1.3'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=False)
         for key in results.keys():
             # Get higher and lower layer index values
@@ -611,7 +716,7 @@ def _get_data(title, func, dest):
         dest: The modified destination dict
 
     """
-    # Get interface ifDescr data
+    # Get interface data
     values = func()
     for key, value in values.items():
         dest[key][title] = value

@@ -95,11 +95,11 @@ class IpQuery(Query):
         # Return
         return final
 
-    def ipnettomediatable(self):
+    def ipnettomediatable(self, oidonly=False):
         """Return dict of ipNetToMediaTable, the device's ARP table.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of MAC addresses keyed by IPv4 address
@@ -110,6 +110,12 @@ class IpQuery(Query):
 
         # Process
         oid = '.1.3.6.1.2.1.4.22.1.2'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.walk(oid, normalized=False)
         for key, value in results.items():
             # Determine IP address
@@ -126,11 +132,11 @@ class IpQuery(Query):
         # Return data
         return data_dict
 
-    def ipnettophysicalphysaddress(self):
+    def ipnettophysicalphysaddress(self, oidonly=False):
         """Return dict of the device's ipNetToPhysicalPhysAddress ARP table.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of MAC addresses keyed by IPv6 Address
@@ -140,7 +146,11 @@ class IpQuery(Query):
         data_dict = {}
         oid = '.1.3.6.1.2.1.4.35.1.4'
 
-        # Get results
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
+        # Process results
         results = self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Get IP address, first 12 characters
@@ -149,6 +159,12 @@ class IpQuery(Query):
 
             # Convert IP address from decimal to hex
             nodes = key.split('.')
+
+            # We want to remove IPv4 addresses from results
+            if len(nodes) < 16 + len(oid.split('.')):
+                continue
+
+            # Process IPv6
             nodes_decimal = nodes[-16:]
             nodes_hex = []
             nodes_final = []
