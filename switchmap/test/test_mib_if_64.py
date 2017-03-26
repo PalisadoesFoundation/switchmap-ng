@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the mib_essswitch module."""
+"""Test the mib_if_64 module."""
 
 import os
 import sys
@@ -112,8 +112,16 @@ class KnownValues(unittest.TestCase):
 
     def test_layer1(self):
         """Testing method / function layer1."""
-        # Initializing key variables
-        pass
+        # Get results
+        testobj = testimport.init_query(self.snmpobj_integer)
+        results = testobj.layer1()
+
+        # Basic testing of results
+        for primary in results.keys():
+            for secondary in results[primary].keys():
+                self.assertEqual(
+                    results[primary][secondary],
+                    self.expected_dict[primary][secondary])
 
     def test_ifhighspeed(self):
         """Testing method / function ifhighspeed."""

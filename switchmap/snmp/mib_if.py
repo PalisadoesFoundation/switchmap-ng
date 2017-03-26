@@ -233,7 +233,7 @@ class IfQuery(Query):
         return data_dict
 
     def ifdescr(self, safe=False, oidonly=False):
-        """Return dict of IFMIB ifDesc for each ifIndex for device.
+        """Return dict of IFMIB ifDescr for each ifIndex for device.
 
         Args:
             safe: Do a failsafe walk if True
@@ -716,7 +716,7 @@ def _get_data(title, func, dest):
         dest: The modified destination dict
 
     """
-    # Get interface ifDescr data
+    # Get interface data
     values = func()
     for key, value in values.items():
         dest[key][title] = value

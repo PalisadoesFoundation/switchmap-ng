@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the mib_essswitch module."""
+"""Test the mib_if module."""
 
 import os
 import sys

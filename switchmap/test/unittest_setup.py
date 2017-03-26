@@ -13,6 +13,8 @@ import tempfile
 import os
 import sys
 import yaml
+import socket
+import struct
 
 # Try to create a working PYTHONPATH
 TEST_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -204,6 +206,12 @@ def _environment():
                 os.environ['SWITCHMAP_CONFIGDIR'], CONFIG_DIRECTORY))
         print(log_message)
         sys.exit(2)
+
+
+def ip2long(ipv4):
+    """Convert an IP string to long."""
+    packed_ip = socket.inet_aton(ipv4)
+    return struct.unpack('!L', packed_ip)[0]
 
 
 def ready():
