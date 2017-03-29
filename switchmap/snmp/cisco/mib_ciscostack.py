@@ -75,11 +75,11 @@ class CiscoStackQuery(Query):
         # Return
         return final
 
-    def portduplex(self):
+    def portduplex(self, oidonly=False):
         """Return dict of CISCO-STACK-MIB portDuplex for each port.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of portDuplex using ifIndex as key
@@ -91,6 +91,11 @@ class CiscoStackQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.4.1.9.5.1.4.1.1.10'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Assign duplex value to ifindex key
@@ -100,11 +105,11 @@ class CiscoStackQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def _portifindex(self):
+    def _portifindex(self, oidonly=False):
         """Return dict of CISCO-STACK-MIB portIfIndex for each port.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of portIfIndex using dot1dBasePort as key
@@ -115,6 +120,11 @@ class CiscoStackQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.4.1.9.5.1.4.1.1.11'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value

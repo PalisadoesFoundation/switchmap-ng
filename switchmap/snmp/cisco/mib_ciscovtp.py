@@ -131,11 +131,11 @@ class CiscoVtpQuery(Query):
         # Return
         return final
 
-    def vlantrunkportencapsulationtype(self):
+    def vlantrunkportencapsulationtype(self, oidonly=False):
         """Return CISCO-VTP-MIB vlanTrunkPortEncapsulationType per ifIndex.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vlanTrunkPortEncapsulationType
@@ -148,6 +148,10 @@ class CiscoVtpQuery(Query):
         # Descriptions
         oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.3'
 
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         # Process results
         results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -156,11 +160,11 @@ class CiscoVtpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def vlantrunkportnativevlan(self):
+    def vlantrunkportnativevlan(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vlanTrunkPortNativeVlan per ifIndex.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vlanTrunkPortNativeVlan
@@ -173,6 +177,10 @@ class CiscoVtpQuery(Query):
         # Descriptions
         oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.5'
 
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         # Process results
         results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -181,11 +189,11 @@ class CiscoVtpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def vlantrunkportdynamicstatus(self):
+    def vlantrunkportdynamicstatus(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vlanTrunkPortDynamicStatus per ifIndex.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vlanTrunkPortDynamicStatus
@@ -198,6 +206,10 @@ class CiscoVtpQuery(Query):
         # Descriptions
         oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.14'
 
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         # Process results
         results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -206,11 +218,11 @@ class CiscoVtpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def vlantrunkportdynamicstate(self):
+    def vlantrunkportdynamicstate(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vlanTrunkPortDynamicState per ifIndex.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vlanTrunkPortDynamicState
@@ -223,6 +235,10 @@ class CiscoVtpQuery(Query):
         # Descriptions
         oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.13'
 
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         # Process results
         results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -231,11 +247,11 @@ class CiscoVtpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def vtpvlanname(self):
+    def vtpvlanname(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vtpVlanName for each VLAN.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vtpVlanName using the oid's last node as key
@@ -247,6 +263,10 @@ class CiscoVtpQuery(Query):
         # Descriptions
         oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.4'
 
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         # Process results
         results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -255,11 +275,11 @@ class CiscoVtpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def vtpvlantype(self):
+    def vtpvlantype(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vtpVlanType for each VLAN.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vtpVlanType using the oid's last node as key
@@ -271,6 +291,10 @@ class CiscoVtpQuery(Query):
         # Descriptions
         oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.3'
 
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         # Process results
         results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -279,11 +303,11 @@ class CiscoVtpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def vtpvlanstate(self):
+    def vtpvlanstate(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vtpVlanState for each VLAN.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vtpVlanState using the oid's last node as key
@@ -295,6 +319,10 @@ class CiscoVtpQuery(Query):
         # Descriptions
         oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
 
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         # Process results
         results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -303,11 +331,11 @@ class CiscoVtpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def vlantrunkportvlansenabled(self):
+    def vlantrunkportvlansenabled(self, oidonly=False):
         """Return CISCO-VTP-MIB vlanTrunkPortVlansEnabled data per ifIndex.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vlanTrunkPortVlansEnabled keyed by ifIndex
@@ -324,6 +352,10 @@ class CiscoVtpQuery(Query):
 
         # OID to Process
         oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.4'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
 
         # Process results
         results = self.snmp_object.swalk(oid, normalized=True)
