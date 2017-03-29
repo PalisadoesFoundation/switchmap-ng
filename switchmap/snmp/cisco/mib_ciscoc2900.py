@@ -80,11 +80,11 @@ class CiscoC2900Query(Query):
         # Return
         return final
 
-    def c2900portlinkbeatstatus(self):
+    def c2900portlinkbeatstatus(self, oidonly=False):
         """Return dict of CISCO-C2900-MIB c2900PortLinkbeatStatus per port.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of c2900PortLinkbeatStatus using ifIndex as key
@@ -95,6 +95,11 @@ class CiscoC2900Query(Query):
 
         # Descriptions
         oid = '.1.3.6.1.4.1.9.9.87.1.4.1.1.18'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
@@ -102,11 +107,11 @@ class CiscoC2900Query(Query):
         # Return the interface descriptions
         return data_dict
 
-    def c2900portduplexstatus(self):
+    def c2900portduplexstatus(self, oidonly=False):
         """Return dict of CISCO-C2900-MIB c2900PortDuplexStatus for each port.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of c2900PortDuplexStatus using ifIndex as key
@@ -117,6 +122,11 @@ class CiscoC2900Query(Query):
 
         # Descriptions
         oid = '.1.3.6.1.4.1.9.9.87.1.4.1.1.32'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
