@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Test the general module."""
 
+import getpass
 import unittest
 import random
 import os
@@ -8,6 +9,7 @@ import sys
 import string
 import tempfile
 import yaml
+import shutil
 
 # Try to create a working PYTHONPATH
 TEST_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -40,7 +42,32 @@ class KnownValues(unittest.TestCase):
 
     def test_cli_help(self):
         """Testing method / function cli_help."""
-        # Initializing key variables
+        pass
+
+    def test_systemd_daemon(self):
+        """Testing function systemd_daemon."""
+        pass
+
+    def test_systemd_exists(self):
+        """Testing function systemd_exists."""
+        # Get result for unknown service
+        agent_name = self.random_string
+        result = general.systemd_exists(agent_name)
+        self.assertEqual(result, False)
+
+    def test_check_sudo(self):
+        """Testing function check_sudo."""
+        # Test with sudo variable set
+        result = 'SUDO_UID' in os.environ
+        self.assertEqual(result, False)
+
+        # Test with sudo variable set
+        os.environ['SUDO_UID'] = getpass.getuser()
+        with self.assertRaises(SystemExit):
+            general.check_sudo()
+
+    def test_check_user(self):
+        """Testing function check_user."""
         pass
 
     def test_root_directory(self):
@@ -99,7 +126,6 @@ class KnownValues(unittest.TestCase):
     def test_read_yaml_files(self):
         """Testing method / function read_yaml_files."""
         # Initializing key variables
-        # Initializing key variables
         dict_1 = {
             'key1': 1,
             'key2': 2,
@@ -151,8 +177,55 @@ class KnownValues(unittest.TestCase):
 
     def test_delete_files(self):
         """Testing method / function delete_files."""
-        # Initializing key variables
-        pass
+        # Testing with a known invalid directory
+        directory = self.random_string
+        with self.assertRaises(SystemExit):
+            general.delete_files(directory)
+
+        # Creating temporary yaml and json files for testing
+        directory = tempfile.mkdtemp()
+        testfiles = ['test1.yaml', 'test2.yaml', 'test3.json']
+
+        for filename in testfiles:
+            filepath = '{}/{}'.format(directory, filename)
+            open(filepath, 'a').close()
+
+        # Testing if all yaml files were created
+        count = len([name for name in os.listdir(
+            directory) if name.endswith('.yaml')])
+        self.assertEqual(count, 2)
+
+        # Test if json file was created
+        jcount = len([name for name in os.listdir(
+            directory) if name.endswith('.json')])
+        self.assertEqual(jcount, 1)
+
+        # Deleting all yaml files using function
+        general.delete_files(directory)
+
+        # Test if  all yaml files were deleted
+        result = len([name for name in os.listdir(
+            directory) if name.endswith('.yaml')])
+        self.assertEqual(result, 0)
+
+        # Test if json file was not deleted
+        jcount = len([name for name in os.listdir(
+            directory) if name.endswith('.json')])
+        self.assertEqual(jcount, 1)
+
+        # Delete json file
+        general.delete_files(directory, extension='.json')
+
+        # Test if json file was deleted
+        jcount = len([name for name in os.listdir(
+            directory) if name.endswith('.json')])
+        self.assertEqual(jcount, 0)
+
+        # Removing test directory
+        os.removedirs(directory)
+
+        # Test if directory has been deleted
+        self.assertEqual(os.path.isdir(directory), False)
 
     def test_config_directories(self):
         """Testing method / function config_directories."""
@@ -182,12 +255,78 @@ class KnownValues(unittest.TestCase):
     def test_search_file(self):
         """Testing method / function search_file."""
         # Initializing key variables
-        pass
+        result = general.search_file('cp')
+        self.assertEqual(result, '/bin/cp')
 
     def test_move_files(self):
         """Testing method / function move_files."""
-        # Initializing key variables
-        pass
+        # Initialize key variables
+        source_filenames = {}
+        target_filenames = {}
+
+        #################################################
+        # Test with invalid source directory
+        #################################################
+
+        invalid_path = ('/tmp/%s.%s') % (
+            self.random_string,
+            self.random_string)
+
+        with self.assertRaises(SystemExit):
+            general.move_files(invalid_path, '/tmp')
+
+        #################################################
+        # Test with invalid destination directory
+        #################################################
+
+        invalid_path = ('/tmp/%s.%s') % (
+            self.random_string,
+            self.random_string)
+
+        with self.assertRaises(SystemExit):
+            general.move_files('/tmp', invalid_path)
+
+        #################################################
+        # Test with valid directory
+        #################################################
+
+        # Create a source directory
+        source_dir = ('/tmp/%s.1') % (self.random_string)
+        if os.path.exists(source_dir) is False:
+            os.makedirs(source_dir)
+
+        # Create a target directory
+        target_dir = ('/tmp/%s.2') % (self.random_string)
+        if os.path.exists(target_dir) is False:
+            os.makedirs(target_dir)
+
+        # Place files in the directory
+        for count in range(0, 4):
+            filename = ''.join([random.choice(
+                string.ascii_letters + string.digits) for n in range(15)])
+            source_filenames[count] = ('%s/%s') % (source_dir, filename)
+            target_filenames[count] = ('%s/%s') % (target_dir, filename)
+            open(source_filenames[count], 'a').close()
+
+            # Check files in directory
+            self.assertEqual(os.path.isfile(source_filenames[count]), True)
+
+        # Delete files in directory
+        general.move_files(source_dir, target_dir)
+
+        # Check that files are not in source_dir
+        for filename in source_filenames.values():
+            self.assertEqual(os.path.isfile(filename), False)
+
+        # Check that files are in in target_dir
+        for filename in target_filenames.values():
+            self.assertEqual(os.path.isfile(filename), True)
+
+        # Delete directory
+        shutil.rmtree(source_dir)
+
+        # Delete directory
+        shutil.rmtree(target_dir)
 
     def test_create_yaml_file(self):
         """Testing method / function create_yaml_file."""
