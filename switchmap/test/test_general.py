@@ -50,11 +50,6 @@ class KnownValues(unittest.TestCase):
 
     def test_systemd_exists(self):
         """Testing function systemd_exists."""
-        # Get result for known service
-        agent_name = 'sshd'
-        result = general.systemd_exists(agent_name)
-        self.assertEqual(result, True)
-
         # Get result for unknown service
         agent_name = self.random_string
         result = general.systemd_exists(agent_name)
