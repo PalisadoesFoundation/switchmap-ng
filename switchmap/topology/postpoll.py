@@ -21,6 +21,133 @@ def all_devices():
         None
 
     """
+    # Add Layer3 information
+    _layer3()
+
+    # Add port idle information
+    
+
+
+def _idle():
+    """Add ifindex idle information.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    ifindex_ip_found = False
+    ifindex_hostname_found = False
+    config = configuration.Config()
+
+    # Send log message
+    log_message = ('Starting Layer3 updates of device files.')
+    log.log2info(1013, log_message)
+
+    # Read ARP, RARP tables
+    rarp_table = general.read_yaml_file(config.rarp_file())
+    hosts_table = general.read_yaml_file(config.hosts_file())
+
+    # Cycle through list of files in directory
+    for filename in os.listdir(config.temp_topology_directory()):
+        # Examine all the '.yaml' files in directory
+        if filename.endswith('.yaml'):
+            devicename = filename[0:-5]
+
+            # Log message
+            log_message = (
+                'Starting Layer3 updates for device {}.'.format(devicename))
+            log.log2debug(1034, log_message)
+
+            # Read file and add to string
+            filepath = config.temp_topology_device_file(devicename)
+            device_dict = general.read_yaml_file(filepath)
+
+            # Update dict with values
+            loop_dict = deepcopy(device_dict)
+
+            # Populate ifIndex table
+            if 'layer1' in loop_dict:
+                layer1_dict = device_dict['layer1']
+                # Process each port on device
+                for ifindex, port_dict in layer1_dict.items():
+                    # Only interested in Ethernet ports
+                    if bool(port_dict['jm_ethernet']) is False:
+                        continue
+
+                    # We are not interested in populating trunk port MAC data
+                    if bool(port_dict['jm_trunk']) is True:
+                        continue
+
+                    # Try to update jm_ip and jm_hostname
+                    if 'jm_macs' in port_dict:
+                        for mac_address in port_dict['jm_macs']:
+                            if mac_address in rarp_table:
+                                # Get the list of RARP IP addresses
+                                ifindex_ips = rarp_table[mac_address]
+
+                                # Only process RARP entries with an IP
+                                if bool(ifindex_ips) is True:
+                                    device_dict['layer1'][ifindex][
+                                        'jm_ip'] = ifindex_ips[0]
+                                    ifindex_ip_found = True
+                                    break
+
+                        # Set a precautionary value for 'jm_ip'
+                        if ifindex_ip_found is False:
+                            device_dict['layer1'][ifindex]['jm_ip'] = ''
+                        # Attempt to find a hostname
+                        else:
+                            # A MAC can be assigned to many IP addresses
+                            # We check to see whether and of these IP addresses
+                            # has a DNS entry
+                            for hostname, key in hosts_table.items():
+                                # This indicates we have found a match in the
+                                # hosts file
+                                if key in ifindex_ips:
+                                    # Assign values to a meaningful
+                                    # IP / hostname pair
+                                    device_dict['layer1'][ifindex][
+                                        'jm_hostname'] = hostname
+                                    device_dict['layer1'][ifindex][
+                                        'jm_ip'] = key
+                                    ifindex_hostname_found = True
+                                    break
+
+                        # Set a precautionary value for 'jm_ip'
+                        if ifindex_hostname_found is False:
+                            device_dict['layer1'][ifindex]['jm_hostname'] = ''
+
+                    # Reset values
+                    ifindex_ip_found = False
+                    ifindex_hostname_found = False
+
+            # Write updated file back
+            general.create_yaml_file(device_dict, filepath)
+
+            # Log message
+            log_message = (
+                'Completed Layer3 updates for device {}.'.format(devicename))
+            log.log2debug(1019, log_message)
+
+    # Send log message
+    log_message = ('Completed Layer3 updates of device files.')
+    log.log2info(1012, log_message)
+
+
+def _layer3():
+    """Add IP address and Hostname data to device files.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
     # Initialize key variables
     ifindex_ip_found = False
     ifindex_hostname_found = False
