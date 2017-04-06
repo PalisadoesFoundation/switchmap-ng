@@ -120,6 +120,10 @@ class Translator(object):
 
         # Create dict for layer1 Ethernet data
         for ifindex, metadata in yaml_data['layer1'].items():
+            # Skip non Ethernet ports
+            if 'jm_ethernet' not in metadata:
+                continue
+
             # Process metadata
             if bool(metadata['jm_ethernet']) is True:
                 # Update ports
