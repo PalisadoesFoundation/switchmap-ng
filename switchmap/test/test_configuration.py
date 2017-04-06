@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Test the configuration module."""
 
+import multiprocessing
 import os
 import sys
 import os.path
@@ -205,7 +206,11 @@ main:
         # Testing agent_threads with good_dict
         # good key and key_value
         result = self.config.agent_threads()
-        self.assertEqual(result, 20)
+
+        # We don't want a value that's too big that the CPU cannot cope
+        expected = min(result, (multiprocessing.cpu_count() * 2) + 1)
+
+        self.assertEqual(result, expected)
         self.assertEqual(result, self.good_dict['main']['agent_threads'])
 
     def test_polling_interval(self):
