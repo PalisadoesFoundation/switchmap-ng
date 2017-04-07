@@ -2,12 +2,17 @@
 """Class for creating device web pages."""
 
 import textwrap
+import os
+import time
 
 # PIP3 imports
 from flask_table import Table, Col
 
 # Import switchmap.libraries
 from switchmap.topology.translator import Translator
+from switchmap.constants import CONFIG
+from switchmap.utils import general
+from switchmap.utils import log
 
 
 class _RawCol(Col):
@@ -33,7 +38,8 @@ class Device(object):
 
         """
         # Process YAML file for host
-        translation = Translator(config, host)
+        self.hostname = host
+        translation = Translator(config, self.hostname)
         self.port_data = translation.ethernet_data()
         self.system_data = translation.system_summary()
         self.ifindexes = ifindexes
@@ -49,7 +55,8 @@ class Device(object):
 
         """
         # Initialize key variables
-        data = Port(self.port_data, ifindexes=self.ifindexes).data()
+        data = Port(
+            self.port_data, self.hostname, ifindexes=self.ifindexes).data()
 
         # Populate the table
         table = PortTable(data)
@@ -172,11 +179,12 @@ class PortRow(object):
 class Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
-    def __init__(self, device_data, ifindexes=None):
+    def __init__(self, device_data, hostname, ifindexes=None):
         """Method instantiating the class.
 
         Args:
             device_data: Dictionary of device data
+            hostname: Name of host to which this data belongs
             ifindexes: List of ifindexes to retrieve. If None, then do all.
 
         Returns:
@@ -185,6 +193,7 @@ class Port(object):
         """
         # Initialize key variables
         self.device_data = device_data
+        self.hostname = hostname
         if bool(ifindexes) is True and isinstance(ifindexes, list) is True:
             self.ifindexes = ifindexes
         else:
@@ -202,9 +211,18 @@ class Port(object):
         """
         # Initialize key variables
         rows = []
+        idle_history = {}
+        config = CONFIG
+
+        # Get idle data for device
+        idle_filepath = (
+            '{}/{}.yaml'.format(config.idle_directory(), self.hostname)
+            )
+        if os.path.isfile(idle_filepath) is True:
+            idle_history = general.read_yaml_file(idle_filepath)
 
         # Create rows of data
-        for _, port_data in sorted(self.device_data.items()):
+        for ifindex, port_data in sorted(self.device_data.items()):
             # Filter results if required
             if bool(self.ifindexes) is True:
                 if int(port_data['ifIndex']) not in self.ifindexes:
@@ -217,7 +235,7 @@ class Port(object):
             # Get port data
             port = _Port(port_data)
             speed = port.speed()
-            inactive = port.inactive()
+            inactive = self._inactive(ifindex, idle_history)
             vlan = port.vlan()
             state = port.state()
             duplex = port.duplex()
@@ -237,6 +255,31 @@ class Port(object):
 
         # Return
         return rows
+
+    def _inactive(self, ifindex, idle_history):
+        """Return days inactive for port.
+
+        Args:
+            ifindex: IfIndex of port (String)
+            idle_history: History of idleness of port
+
+        Returns:
+            inactive: Days the port has been inactive
+
+        """
+        # Initialize key variables
+        inactive = 'TBD'
+        s_ifindex = str(ifindex)
+
+        # Return
+        if s_ifindex in idle_history:
+            if bool(idle_history[s_ifindex]) is False:
+                inactive = ''
+            else:
+                seconds = int(time.time()) - idle_history[s_ifindex]
+                inactive = int(round(seconds / 86400, 0))
+
+        return inactive
 
 
 class _Port(object):
@@ -355,19 +398,6 @@ class _Port(object):
 
         # Return
         return speed
-
-    def inactive(self):
-        """Return days inactive for port.
-
-        Args:
-            None
-
-        Returns:
-            inactive: Days the port has been inactive
-
-        """
-        # Return
-        return 'TBD'
 
     def vlan(self):
         """Return VLAN number.

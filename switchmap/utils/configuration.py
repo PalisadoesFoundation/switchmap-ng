@@ -3,6 +3,7 @@
 
 import os.path
 import os
+import multiprocessing
 
 # Import project libraries
 from switchmap.utils import general
@@ -135,6 +136,24 @@ class Config(object):
         """
         # Get parameter
         value = ('%s/topology') % (self.cache_directory())
+        if not os.path.exists(value):
+            os.makedirs(value, mode=0o750)
+
+        # Return
+        return value
+
+    def idle_directory(self):
+        """Determine the idle_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured idle_directory
+
+        """
+        # Get parameter
+        value = ('%s/idle') % (self.cache_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -362,11 +381,16 @@ class Config(object):
         # Get result
         key = 'main'
         sub_key = 'agent_threads'
-        result = _key_sub_key(key, sub_key, self.config_dict, die=False)
+        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=False)
 
         # Default to 20
-        if result is None:
-            result = 20
+        if intermediate is None:
+            intermediate = 20
+
+        # We don't want a value that's too big that the CPU cannot cope
+        result = min(intermediate, (multiprocessing.cpu_count() * 2) + 1)
+
+        # Return
         return result
 
     def hostnames(self):

@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Test the configuration module."""
 
+import multiprocessing
 import os
 import sys
 import os.path
@@ -74,6 +75,7 @@ main:
         """Post test cleanup."""
         os.rmdir(cls.log_directory)
         os.rmdir(cls.config.topology_directory())
+        os.rmdir(cls.config.idle_directory())
         os.rmdir(cls.cache_directory)
         os.remove(cls.config_file)
         os.rmdir(cls.directory)
@@ -205,8 +207,11 @@ main:
         # Testing agent_threads with good_dict
         # good key and key_value
         result = self.config.agent_threads()
-        self.assertEqual(result, 20)
-        self.assertEqual(result, self.good_dict['main']['agent_threads'])
+
+        # We don't want a value that's too big that the CPU cannot cope
+        expected = min(result, (multiprocessing.cpu_count() * 2) + 1)
+
+        self.assertEqual(result, expected)
 
     def test_polling_interval(self):
         """Testing method polling_interval."""
@@ -311,6 +316,19 @@ main:
 
         # Cleanup files in temp directories
         _delete_files(directory)
+
+    def test_idle_directory(self):
+        """Testing function idle_directory."""
+        # Verify that directory exists
+        result = self.config.idle_directory()
+        self.assertEqual(os.path.exists(result), True)
+        self.assertEqual(os.path.isdir(result), True)
+
+        # Doesn't fail because directory now exists
+        result = self.config.idle_directory()
+        expected = ('%s/idle') % (
+            self.good_dict['main']['cache_directory'])
+        self.assertEqual(result, expected)
 
     def test_topology_directory(self):
         """Testing function topology_directory."""

@@ -31,7 +31,7 @@ try:
 except:
     print('You need to set your PYTHONPATH to include the switchmap library')
     sys.exit(2)
-from switchmap.utils import configuration
+from switchmap.constants import CONFIG, CONFIG_SNMP
 from switchmap.utils import general
 from switchmap.snmp import snmp_info
 from switchmap.snmp import snmp_manager
@@ -52,7 +52,7 @@ def _oui():
 
     """
     # Get configuration
-    config = configuration.Config()
+    config = CONFIG
     mac_address_file = config.mac_address_file()
     oui = {}
 
@@ -101,8 +101,8 @@ class PollingAgent(Agent):
         Agent.__init__(self, parent)
 
         # Get configuration
-        self.server_config = configuration.Config()
-        self.snmp_config = configuration.ConfigSNMP()
+        self.server_config = CONFIG
+        self.snmp_config = CONFIG_SNMP
 
     def query(self):
         """Query all remote hosts for data.
@@ -180,8 +180,8 @@ class Poller(object):
 
         """
         # Initialize key variables
-        self.server_config = configuration.Config()
-        snmp_config = configuration.ConfigSNMP()
+        self.server_config = CONFIG
+        snmp_config = CONFIG_SNMP
         self.hostname = hostname
 
         # Get snmp configuration information from Switchmap-NG
@@ -296,7 +296,7 @@ def _poll_devices():
 
     """
     # Get configuration
-    config = configuration.Config()
+    config = CONFIG
 
     # Get the number of threads to use in the pool
     threads_in_pool = config.agent_threads()
@@ -340,7 +340,7 @@ def _create_search_files():
 
     """
     # Initialize key variables
-    config = configuration.Config()
+    config = CONFIG
     topology_directory = config.topology_directory()
     arp_table = defaultdict(lambda: defaultdict(dict))
     host_table = {}

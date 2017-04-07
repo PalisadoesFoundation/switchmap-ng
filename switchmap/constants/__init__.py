@@ -1,3 +1,11 @@
+# Do library imports
+from switchmap.utils import configuration
+
+# Create global variables used by all applications
+CONFIG = configuration.Config()
+CONFIG_SNMP = configuration.ConfigSNMP()
+
+# Create global variables for the API
 SITE_PREFIX = '/switchmap-ng'
 API_PREFIX = '{}/api/v1'.format(SITE_PREFIX)
 API_STATIC_FOLDER = 'static/default'

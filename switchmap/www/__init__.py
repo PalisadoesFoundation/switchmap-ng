@@ -7,9 +7,8 @@ Contains all routes that switchmap.s Flask webserver uses
 from flask import Flask, url_for
 
 # Switchmap-NG imports
-from switchmap.utils import configuration
+from switchmap.constants import CONFIG
 from switchmap.utils import general
-CONFIG = configuration.Config()
 
 # Do remaining switchmap-ng importations
 from switchmap.www.routes.api.devices import API_DEVICES

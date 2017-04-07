@@ -49,10 +49,10 @@ else:
 
 
 # Do switchmap-ng imports
+from switchmap.constants import CONFIG
 from switchmap.utils import log
 from maintenance import setup
 from switchmap.utils import general
-from switchmap.utils import configuration
 from switchmap.utils import daemon as daemon_lib
 
 
@@ -71,7 +71,7 @@ class _DaemonSystemD(object):
         """
         # Initialize key variables
         running_username = getpass.getuser()
-        daemon_username = configuration.Config().username()
+        daemon_username = CONFIG.username()
         self.root_directory = general.root_directory()
         switchmap_user_exists = True
         self.switchmap_user = None

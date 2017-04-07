@@ -4,9 +4,10 @@
 # Standard imports
 import os
 from copy import deepcopy
+import time
 
 # Switchmap-NG imports
-from switchmap.utils import configuration
+from switchmap.constants import CONFIG
 from switchmap.utils import general
 from switchmap.utils import log
 
@@ -21,10 +22,112 @@ def all_devices():
         None
 
     """
+    # Add Layer3 information
+    _layer3()
+
+    # Add port idle information
+    _idle()
+
+
+def _idle():
+    """Add ifindex idle information.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    config = CONFIG
+    idle_history = {}
+
+    # Send log message
+    log_message = ('Evaluating port idle times for devices.')
+    log.log2info(1013, log_message)
+
+    # Cycle through list of files in directory
+    for filename in os.listdir(config.temp_topology_directory()):
+        # Initialize idle dictionary
+        idle_since = {}
+
+        # Examine all the '.yaml' files in directory
+        if filename.endswith('.yaml'):
+            devicename = filename[0:-5]
+
+            # Log message
+            log_message = (
+                'Starting port idle times for device {}.'.format(devicename))
+            log.log2debug(1034, log_message)
+
+            # Read file and add to string
+            filepath = config.temp_topology_device_file(devicename)
+            device_dict = general.read_yaml_file(filepath)
+
+            # Get all the status of all the Ethernet ports
+            if 'layer1' in device_dict:
+                for ifindex, data_dict in device_dict['layer1'].items():
+                    if 'jm_ethernet' in data_dict:
+                        if data_dict['jm_ethernet'] is True:
+                            idle_since[ifindex] = int(time.time())
+                            if data_dict['ifOperStatus'] == 1:
+                                if data_dict['ifAdminStatus'] == 1:
+                                    idle_since[ifindex] = None
+
+            # Read data from idle file
+            idle_filepath = (
+                '{}/{}.yaml'.format(config.idle_directory(), devicename)
+                )
+            if os.path.isfile(idle_filepath) is True:
+                idle_history = general.read_yaml_file(idle_filepath)
+
+            # Update idle_since values depending on history
+            for ifindex, timestamp in idle_since.items():
+                if ifindex in idle_history:
+                    # Initialize key variables
+                    timestamp_historical = idle_history[ifindex]
+
+                    if bool(timestamp) is False:
+                        # Do nothing if the timestamp is None
+                        # Interface is operational
+                        pass
+                    else:
+                        if bool(timestamp_historical) is True:
+                            # Update history value
+                            idle_since[ifindex] = min(
+                                timestamp, timestamp_historical)
+                        else:
+                            # Do nothing. Use current idle_since value
+                            pass
+
+            # Update idle_since file
+            general.create_yaml_file(idle_since, idle_filepath)
+
+            # Log message
+            log_message = (
+                'Completed port idle times for device {}.'.format(devicename))
+            log.log2debug(1019, log_message)
+
+    # Send log message
+    log_message = ('Completed port idle times for devices.')
+    log.log2info(1012, log_message)
+
+
+def _layer3():
+    """Add IP address and Hostname data to device files.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
     # Initialize key variables
     ifindex_ip_found = False
     ifindex_hostname_found = False
-    config = configuration.Config()
+    config = CONFIG
 
     # Send log message
     log_message = ('Starting Layer3 updates of device files.')
@@ -122,7 +225,7 @@ def all_devices():
 
 
 class Process(object):
-    """Process configuration file for a host.
+    """Process data polled from a device.
 
     The aim of this class is to process the YAML file consistently
     across multiple manufacturers and present it to other classes

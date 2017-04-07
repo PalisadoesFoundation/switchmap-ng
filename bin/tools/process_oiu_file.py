@@ -27,7 +27,7 @@ else:
 
 # Switchmap-NG standard imports
 from switchmap.utils import log
-from switchmap.utils import configuration
+from switchmap.constants import CONFIG
 from switchmap.utils import general
 
 
@@ -44,7 +44,7 @@ def main():
     """
     # Initialize key variables
     input_filename = sys.argv[1]
-    config = configuration.Config()
+    config = CONFIG
     mac_addresses = {}
     mac_hex_regex = (
         '[0-9a-fA-F][0-9a-fA-F]-[0-9a-fA-F][0-9a-fA-F]-[0-9a-fA-F][0-9a-fA-F]')
