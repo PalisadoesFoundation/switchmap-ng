@@ -363,9 +363,9 @@ class Config(object):
         sub_key = 'polling_interval'
         result = _key_sub_key(key, sub_key, self.config_dict, die=False)
 
-        # Default to 3600
+        # Default to 86400
         if result is None:
-            result = 3600
+            result = 86400
         return result
 
     def agent_threads(self):

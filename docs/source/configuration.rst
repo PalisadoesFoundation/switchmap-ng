@@ -31,7 +31,7 @@ parameter sets in the ``snmp_group`` section till successful.
           - 192.168.1.2
           - 192.168.1.3
           - 192.168.1.4
-        polling_interval: 3600
+        polling_interval: 86400
 
     snmp_groups:
         - group_name: Corporate Campus

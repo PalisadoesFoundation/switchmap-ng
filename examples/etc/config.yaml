@@ -11,7 +11,7 @@ main:
     listen_address: localhost
     log_directory: /home/switchmap-ng/log
     log_level: info
-    polling_interval: 3600
+    polling_interval: 86400
 
 snmp_groups:
     - group_name: HOME
