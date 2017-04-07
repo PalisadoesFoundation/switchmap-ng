@@ -142,6 +142,24 @@ class Config(object):
         # Return
         return value
 
+    def idle_directory(self):
+        """Determine the idle_directory.
+
+        Args:
+            None
+
+        Returns:
+            value: configured idle_directory
+
+        """
+        # Get parameter
+        value = ('%s/idle') % (self.cache_directory())
+        if not os.path.exists(value):
+            os.makedirs(value, mode=0o750)
+
+        # Return
+        return value
+
     def search_directory(self):
         """Determine the search_directory.
 

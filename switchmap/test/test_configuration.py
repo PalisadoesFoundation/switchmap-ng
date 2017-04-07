@@ -317,6 +317,19 @@ main:
         # Cleanup files in temp directories
         _delete_files(directory)
 
+    def test_idle_directory(self):
+        """Testing function idle_directory."""
+        # Verify that directory exists
+        result = self.config.idle_directory()
+        self.assertEqual(os.path.exists(result), True)
+        self.assertEqual(os.path.isdir(result), True)
+
+        # Doesn't fail because directory now exists
+        result = self.config.idle_directory()
+        expected = ('%s/idle') % (
+            self.good_dict['main']['cache_directory'])
+        self.assertEqual(result, expected)
+
     def test_topology_directory(self):
         """Testing function topology_directory."""
         # Verify that directory exists

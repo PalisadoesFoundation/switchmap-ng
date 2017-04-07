@@ -173,7 +173,8 @@ def get_hosts():
     """
     # Read configuration
     hosts = []
-    topology_directory = configuration.Config().topology_directory()
+    config = configuration.Config()
+    topology_directory = config.topology_directory()
 
     # Cycle through list of files in directory
     for filename in os.listdir(topology_directory):

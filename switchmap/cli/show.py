@@ -10,7 +10,7 @@ import sys
 from pprint import pprint
 
 # Switchmap-NG imports
-from switchmap.utils import configuration
+from switchmap.constants import CONFIG
 from switchmap.utils import input_output
 from switchmap.utils import general
 from switchmap.main.agent import Agent, AgentAPI, AgentDaemon
@@ -56,7 +56,7 @@ def _hostnames():
         None
 
     """
-    config = configuration.Config()
+    config = CONFIG
     _hostnames = config.hostnames()
     for _hostname in _hostnames:
         print(_hostname)
@@ -75,7 +75,7 @@ def _configuration():
         None
 
     """
-    config = configuration.Config()
+    config = CONFIG
     contents = config.configuration()
     print('')
     pprint(contents, indent=2)
@@ -99,7 +99,7 @@ def api(args):
     """
     if args.subqualifier == 'logs':
         # Process logs
-        config = configuration.Config()
+        config = CONFIG
         filename = config.web_log_file()
         tail = input_output.File(filename)
         tail.tail()
@@ -137,7 +137,7 @@ def poller(args):
     """
     if args.subqualifier == 'logs':
         # Process logs
-        config = configuration.Config()
+        config = CONFIG
         filename = config.log_file()
         tail = input_output.File(filename)
         tail.tail()

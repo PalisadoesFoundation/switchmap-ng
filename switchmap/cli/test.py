@@ -10,7 +10,7 @@ import sys
 
 # Switchmap-NG imports
 from switchmap.utils import general
-from switchmap.utils import configuration
+from switchmap.constants import CONFIG_SNMP, CONFIG
 from switchmap.utils import log
 from switchmap.snmp import snmp_manager
 
@@ -27,8 +27,8 @@ def run(args):
 
     """
     # Process the config
-    snmp_config = configuration.ConfigSNMP()
-    config = configuration.Config()
+    snmp_config = CONFIG_SNMP
+    config = CONFIG
 
     # Show help if no arguments provided
     if args.qualifier is None:

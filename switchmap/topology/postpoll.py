@@ -4,9 +4,10 @@
 # Standard imports
 import os
 from copy import deepcopy
+import time
 
 # Switchmap-NG imports
-from switchmap.utils import configuration
+from switchmap.constants import CONFIG
 from switchmap.utils import general
 from switchmap.utils import log
 
@@ -25,7 +26,7 @@ def all_devices():
     _layer3()
 
     # Add port idle information
-    
+    _idle()
 
 
 def _idle():
@@ -39,102 +40,77 @@ def _idle():
 
     """
     # Initialize key variables
-    ifindex_ip_found = False
-    ifindex_hostname_found = False
-    config = configuration.Config()
+    config = CONFIG
+    idle_history = {}
 
     # Send log message
-    log_message = ('Starting Layer3 updates of device files.')
+    log_message = ('Evaluating port idle times for devices.')
     log.log2info(1013, log_message)
-
-    # Read ARP, RARP tables
-    rarp_table = general.read_yaml_file(config.rarp_file())
-    hosts_table = general.read_yaml_file(config.hosts_file())
 
     # Cycle through list of files in directory
     for filename in os.listdir(config.temp_topology_directory()):
+        # Initialize idle dictionary
+        idle_since = {}
+
         # Examine all the '.yaml' files in directory
         if filename.endswith('.yaml'):
             devicename = filename[0:-5]
 
             # Log message
             log_message = (
-                'Starting Layer3 updates for device {}.'.format(devicename))
+                'Starting port idle times for device {}.'.format(devicename))
             log.log2debug(1034, log_message)
 
             # Read file and add to string
             filepath = config.temp_topology_device_file(devicename)
             device_dict = general.read_yaml_file(filepath)
 
-            # Update dict with values
-            loop_dict = deepcopy(device_dict)
+            # Get all the status of all the Ethernet ports
+            if 'layer1' in device_dict:
+                for ifindex, data_dict in device_dict['layer1'].items():
+                    if 'jm_ethernet' in data_dict:
+                        if data_dict['jm_ethernet'] is True:
+                            idle_since[ifindex] = int(time.time())
+                            if data_dict['ifOperStatus'] == 1:
+                                if data_dict['ifAdminStatus'] == 1:
+                                    idle_since[ifindex] = None
 
-            # Populate ifIndex table
-            if 'layer1' in loop_dict:
-                layer1_dict = device_dict['layer1']
-                # Process each port on device
-                for ifindex, port_dict in layer1_dict.items():
-                    # Only interested in Ethernet ports
-                    if bool(port_dict['jm_ethernet']) is False:
-                        continue
+            # Read data from idle file
+            idle_filepath = (
+                '{}/{}.yaml'.format(config.idle_directory(), devicename)
+                )
+            if os.path.isfile(idle_filepath) is True:
+                idle_history = general.read_yaml_file(idle_filepath)
 
-                    # We are not interested in populating trunk port MAC data
-                    if bool(port_dict['jm_trunk']) is True:
-                        continue
+            # Update idle_since values depending on history
+            for ifindex, timestamp in idle_since.items():
+                if ifindex in idle_history:
+                    # Initialize key variables
+                    timestamp_historical = idle_history[ifindex]
 
-                    # Try to update jm_ip and jm_hostname
-                    if 'jm_macs' in port_dict:
-                        for mac_address in port_dict['jm_macs']:
-                            if mac_address in rarp_table:
-                                # Get the list of RARP IP addresses
-                                ifindex_ips = rarp_table[mac_address]
-
-                                # Only process RARP entries with an IP
-                                if bool(ifindex_ips) is True:
-                                    device_dict['layer1'][ifindex][
-                                        'jm_ip'] = ifindex_ips[0]
-                                    ifindex_ip_found = True
-                                    break
-
-                        # Set a precautionary value for 'jm_ip'
-                        if ifindex_ip_found is False:
-                            device_dict['layer1'][ifindex]['jm_ip'] = ''
-                        # Attempt to find a hostname
+                    if bool(timestamp) is False:
+                        # Do nothing if the timestamp is None
+                        # Interface is operational
+                        pass
+                    else:
+                        if bool(timestamp_historical) is True:
+                            # Update history value
+                            idle_since[ifindex] = min(
+                                timestamp, timestamp_historical)
                         else:
-                            # A MAC can be assigned to many IP addresses
-                            # We check to see whether and of these IP addresses
-                            # has a DNS entry
-                            for hostname, key in hosts_table.items():
-                                # This indicates we have found a match in the
-                                # hosts file
-                                if key in ifindex_ips:
-                                    # Assign values to a meaningful
-                                    # IP / hostname pair
-                                    device_dict['layer1'][ifindex][
-                                        'jm_hostname'] = hostname
-                                    device_dict['layer1'][ifindex][
-                                        'jm_ip'] = key
-                                    ifindex_hostname_found = True
-                                    break
+                            # Do nothing. Use current idle_since value
+                            pass
 
-                        # Set a precautionary value for 'jm_ip'
-                        if ifindex_hostname_found is False:
-                            device_dict['layer1'][ifindex]['jm_hostname'] = ''
-
-                    # Reset values
-                    ifindex_ip_found = False
-                    ifindex_hostname_found = False
-
-            # Write updated file back
-            general.create_yaml_file(device_dict, filepath)
+            # Update idle_since file
+            general.create_yaml_file(idle_since, idle_filepath)
 
             # Log message
             log_message = (
-                'Completed Layer3 updates for device {}.'.format(devicename))
+                'Completed port idle times for device {}.'.format(devicename))
             log.log2debug(1019, log_message)
 
     # Send log message
-    log_message = ('Completed Layer3 updates of device files.')
+    log_message = ('Completed port idle times for devices.')
     log.log2info(1012, log_message)
 
 
@@ -151,7 +127,7 @@ def _layer3():
     # Initialize key variables
     ifindex_ip_found = False
     ifindex_hostname_found = False
-    config = configuration.Config()
+    config = CONFIG
 
     # Send log message
     log_message = ('Starting Layer3 updates of device files.')
@@ -249,7 +225,7 @@ def _layer3():
 
 
 class Process(object):
-    """Process configuration file for a host.
+    """Process data polled from a device.
 
     The aim of this class is to process the YAML file consistently
     across multiple manufacturers and present it to other classes

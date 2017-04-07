@@ -13,7 +13,7 @@ Description:
 import re
 
 # Switchmap-NG imports
-from switchmap.utils import configuration
+from switchmap.constants import CONFIG
 from switchmap.utils import general
 
 
@@ -44,7 +44,7 @@ class Search(object):
         """
         # Initialize key variables
         self._search = []
-        self.config = configuration.Config()
+        self.config = CONFIG
 
         # Generate various possible strings that could be used for searches
         self._search = _search_list(searchstring)

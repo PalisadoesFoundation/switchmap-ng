@@ -24,7 +24,7 @@ from gunicorn.six import iteritems
 # switchmap.libraries
 from switchmap.utils import daemon
 from switchmap.utils.daemon import Daemon
-from switchmap.utils import configuration
+from switchmap.constants import CONFIG
 from switchmap.utils import log
 from switchmap.www import API
 
@@ -263,7 +263,7 @@ class AgentAPI(Agent):
         """
         # Initialize key variables
         Agent.__init__(self, parent, child)
-        self.config = configuration.Config()
+        self.config = CONFIG
 
     def query(self):
         """Query all remote devices for data.
