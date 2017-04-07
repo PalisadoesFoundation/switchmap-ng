@@ -75,6 +75,7 @@ main:
         """Post test cleanup."""
         os.rmdir(cls.log_directory)
         os.rmdir(cls.config.topology_directory())
+        os.rmdir(cls.config.idle_directory())
         os.rmdir(cls.cache_directory)
         os.remove(cls.config_file)
         os.rmdir(cls.directory)
@@ -211,7 +212,6 @@ main:
         expected = min(result, (multiprocessing.cpu_count() * 2) + 1)
 
         self.assertEqual(result, expected)
-        self.assertEqual(result, self.good_dict['main']['agent_threads'])
 
     def test_polling_interval(self):
         """Testing method polling_interval."""
