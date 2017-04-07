@@ -512,8 +512,8 @@ class _Port(object):
         port_data = self.port_data
 
         # Assign ip_address
-        if 'jm_ip_address' in port_data:
-            ip_address = port_data['jm_ip_address']
+        if 'jm_ip' in port_data:
+            ip_address = port_data['jm_ip']
 
         # Return
         return ip_address
