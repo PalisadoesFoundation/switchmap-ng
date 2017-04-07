@@ -367,7 +367,7 @@ def _create_search_files():
             log_message = (
                 'Creating ARP table entries for device {}.'
                 ''.format(device_name))
-            log.log2info(1064, log_message)
+            log.log2debug(1064, log_message)
 
             # Populate ARP table
             if 'layer3' in device_dict:
@@ -401,7 +401,7 @@ def _create_search_files():
             log_message = (
                 'Completed ARP table entries for device {}.'
                 ''.format(device_name))
-            log.log2info(1067, log_message)
+            log.log2debug(1067, log_message)
 
     # Create ifIndex file after creating complete ARP and RARP table files
     # Cycle through list of files in directory
@@ -420,7 +420,7 @@ def _create_search_files():
             log_message = (
                 'Creating RARP, ifAlias, ifIndex table entries for device {}.'
                 ''.format(device_name))
-            log.log2info(1072, log_message)
+            log.log2debug(1072, log_message)
 
             # Populate ifIndex table
             if 'layer1' in device_dict:
@@ -473,7 +473,7 @@ def _create_search_files():
             log_message = (
                 'Completed RARP, ifAlias, ifIndex table entries for device {}.'
                 ''.format(device_name))
-            log.log2info(1046, log_message)
+            log.log2debug(1046, log_message)
 
     # Create yaml files
     general.create_yaml_file(arp_table, config.arp_file())
