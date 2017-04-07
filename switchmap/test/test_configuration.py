@@ -260,7 +260,7 @@ main:
         # Create configuration object
         config = configuration.Config()
         result = config.polling_interval()
-        self.assertEqual(result, 3600)
+        self.assertEqual(result, 86400)
 
         # Cleanup files in temp directories
         _delete_files(directory)

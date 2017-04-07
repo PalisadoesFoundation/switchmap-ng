@@ -115,7 +115,7 @@ class PollingAgent(Agent):
 
         """
         # Initialize key variables
-        delay = 3600
+        delay = self.server_config.polling_interval()
 
         # Post data to the remote server
         while True:
@@ -351,7 +351,7 @@ def _create_search_files():
 
     # Send log message
     log_message = ('Starting search file creation.')
-    log.log2info(1046, log_message)
+    log.log2info(1059, log_message)
 
     # Create ARP and RARP table files
     # Cycle through list of files in directory
@@ -359,8 +359,15 @@ def _create_search_files():
         # Examine all the '.yaml' files in directory
         if filename.endswith('.yaml'):
             # Read file
-            filepath = config.topology_device_file(filename[0:-5])
+            device_name = filename[0:-5]
+            filepath = config.topology_device_file(device_name)
             device_dict = general.read_yaml_file(filepath)
+
+            # Send log message
+            log_message = (
+                'Creating ARP table entries for device {}.'
+                ''.format(device_name))
+            log.log2debug(1064, log_message)
 
             # Populate ARP table
             if 'layer3' in device_dict:
@@ -390,17 +397,30 @@ def _create_search_files():
                             else:
                                 rarp_table[mac_address] = [ip_address]
 
+            # Send log message
+            log_message = (
+                'Completed ARP table entries for device {}.'
+                ''.format(device_name))
+            log.log2debug(1067, log_message)
+
     # Create ifIndex file after creating complete ARP and RARP table files
     # Cycle through list of files in directory
     for filename in os.listdir(topology_directory):
         # Examine all the '.yaml' files in directory
         if filename.endswith('.yaml'):
             # Read file
-            filepath = config.topology_device_file(filename[0:-5])
+            device_name = filename[0:-5]
+            filepath = config.topology_device_file(device_name)
             device_dict = general.read_yaml_file(filepath)
 
             # Get the device name
             device_name = device_dict['misc']['host']
+
+            # Send log message
+            log_message = (
+                'Creating RARP, ifAlias, ifIndex table entries for device {}.'
+                ''.format(device_name))
+            log.log2debug(1072, log_message)
 
             # Populate ifIndex table
             if 'layer1' in device_dict:
@@ -449,25 +469,31 @@ def _create_search_files():
                                     ifindex_table[mac_address][device_name][
                                         ifindex] = [ip_address]
 
+            # Send log message
+            log_message = (
+                'Completed RARP, ifAlias, ifIndex table entries for device {}.'
+                ''.format(device_name))
+            log.log2debug(1046, log_message)
+
     # Create yaml files
     general.create_yaml_file(arp_table, config.arp_file())
-    log_message = ('Created ARP table.')
+    log_message = ('Created ARP table search file.')
     log.log2debug(1047, log_message)
 
     general.create_yaml_file(rarp_table, config.rarp_file())
-    log_message = ('Created RARP table.')
+    log_message = ('Created RARP table search file.')
     log.log2debug(1048, log_message)
 
     general.create_yaml_file(ifindex_table, config.ifindex_file())
-    log_message = ('Created ifIndex table.')
+    log_message = ('Created ifIndex table search file.')
     log.log2debug(1051, log_message)
 
     general.create_yaml_file(ifalias_table, config.ifalias_file())
-    log_message = ('Created ifAlias table.')
+    log_message = ('Created ifAlias table search file.')
     log.log2debug(1053, log_message)
 
     general.create_yaml_file(host_table, config.hosts_file())
-    log_message = ('Created hosts table.')
+    log_message = ('Created hosts table search file.')
     log.log2debug(1054, log_message)
 
     # Send log message

@@ -45,7 +45,7 @@ def _idle():
 
     # Send log message
     log_message = ('Evaluating port idle times for devices.')
-    log.log2info(1013, log_message)
+    log.log2info(1069, log_message)
 
     # Cycle through list of files in directory
     for filename in os.listdir(config.temp_topology_directory()):
@@ -107,11 +107,11 @@ def _idle():
             # Log message
             log_message = (
                 'Completed port idle times for device {}.'.format(devicename))
-            log.log2debug(1019, log_message)
+            log.log2debug(1042, log_message)
 
     # Send log message
     log_message = ('Completed port idle times for devices.')
-    log.log2info(1012, log_message)
+    log.log2info(1058, log_message)
 
 
 def _layer3():
@@ -131,7 +131,7 @@ def _layer3():
 
     # Send log message
     log_message = ('Starting Layer3 updates of device files.')
-    log.log2info(1013, log_message)
+    log.log2info(1045, log_message)
 
     # Read ARP, RARP tables
     rarp_table = general.read_yaml_file(config.rarp_file())
@@ -146,7 +146,7 @@ def _layer3():
             # Log message
             log_message = (
                 'Starting Layer3 updates for device {}.'.format(devicename))
-            log.log2debug(1034, log_message)
+            log.log2debug(1046, log_message)
 
             # Read file and add to string
             filepath = config.temp_topology_device_file(devicename)
@@ -217,11 +217,11 @@ def _layer3():
             # Log message
             log_message = (
                 'Completed Layer3 updates for device {}.'.format(devicename))
-            log.log2debug(1019, log_message)
+            log.log2debug(1044, log_message)
 
     # Send log message
     log_message = ('Completed Layer3 updates of device files.')
-    log.log2info(1012, log_message)
+    log.log2info(1047, log_message)
 
 
 class Process(object):

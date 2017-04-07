@@ -403,7 +403,7 @@ main:
     listen_address: localhost
     log_directory:
     log_level: debug
-    polling_interval: 3600
+    polling_interval: 86400
 
 snmp_groups:
     - group_name: SAMPLE_SNMPv2
