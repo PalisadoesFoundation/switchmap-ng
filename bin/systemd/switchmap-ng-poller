@@ -456,8 +456,8 @@ def _create_search_files():
                         if key not in port_dict:
                             log_message = (
                                 'Device {} has a corrupted device YAML file '
-                                'for ifindex {}. Skipping.'
-                                ''.format(device_name, ifindex))
+                                'for ifindex {}. No key {}.Skipping.'
+                                ''.format(device_name, ifindex, key))
                             log.log2debug(1064, log_message)
                             continue
 
