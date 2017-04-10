@@ -12,6 +12,7 @@ import csv
 from multiprocessing import Pool
 from collections import defaultdict
 import socket
+import pprint
 
 # Try to create a working PYTHONPATH
 _SYS_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -555,6 +556,7 @@ def _is_dict(variable, device_name):
             ''.format(device_name))
         log.log2debug(1067, log_message)
         valid = False
+        log.log2debug(9999999999999999999999, variable)
     else:
         valid = True
 
