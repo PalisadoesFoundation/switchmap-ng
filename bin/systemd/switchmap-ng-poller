@@ -363,6 +363,10 @@ def _create_search_files():
             filepath = config.topology_device_file(device_name)
             device_dict = general.read_yaml_file(filepath)
 
+            # Validate we have a dict
+            if _is_dict(device_dict, device_name) is False:
+                continue
+
             # Send log message
             log_message = (
                 'Creating ARP table entries for device {}.'
@@ -375,6 +379,11 @@ def _create_search_files():
                 for key in keys:
                     if key in device_dict['layer3']:
                         arp_dict = device_dict['layer3'][key]
+
+                        # Validate we have a dict
+                        if _is_dict(arp_dict, device_name) is False:
+                            continue
+
                         for ip_address, mac_address in arp_dict.items():
                             # Populate ARP table
                             arp_table[ip_address]['mac_address'] = mac_address
@@ -413,6 +422,10 @@ def _create_search_files():
             filepath = config.topology_device_file(device_name)
             device_dict = general.read_yaml_file(filepath)
 
+            # Validate we have a dict
+            if _is_dict(device_dict, device_name) is False:
+                continue
+
             # Get the device name
             device_name = device_dict['misc']['host']
 
@@ -425,12 +438,26 @@ def _create_search_files():
             # Populate ifIndex table
             if 'layer1' in device_dict:
                 layer1_dict = device_dict['layer1']
+
+                # Validate we have a dict
+                if _is_dict(layer1_dict, device_name) is False:
+                    continue
+
                 # Process each port on device
                 for ifindex, port_dict in layer1_dict.items():
+                    # Validate we have a dict
+                    if _is_dict(port_dict, device_name) is False:
+                        continue
+
                     # Do a quick validation of required keys
                     keys = ['jm_trunk', 'jm_ethernet', 'ifAlias']
                     for key in keys:
                         if key not in port_dict:
+                            log_message = (
+                                'Device {} has a corrupted device YAML file. '
+                                'Skipping.'
+                                ''.format(device_name))
+                            log.log2debug(1064, log_message)
                             continue
 
                     # Only interested in Ethernet ports
@@ -505,6 +532,34 @@ def _create_search_files():
     # Send log message
     log_message = ('Completed search file creation.')
     log.log2info(1055, log_message)
+
+
+def _is_dict(variable, device_name):
+    """Deterimine whether the variable is a dictionary.
+
+    Args:
+        device_name: Name of device_name
+        varibable: Variable to test
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    valid = False
+
+    # Validate we have a dict
+    if isinstance(variable, dict) is False:
+        log_message = (
+            'Device {} has a corrupted device YAML file. Skipping.'
+            ''.format(device_name))
+        log.log2debug(1067, log_message)
+        valid = False
+    else:
+        valid = True
+
+    # Return
+    return valid
 
 
 def main():
