@@ -133,7 +133,7 @@ class PollingAgent(Agent):
             _poll_devices()
 
             # Create search files
-            _create_search_files()
+            _SearchFiles().create()
 
             # Add Hostname and IP address data to temp files
             postpoll.all_devices()
@@ -196,7 +196,7 @@ class Poller(object):
             log_message = (
                 'Uncontactable or disabled host {}, or no valid SNMP '
                 'credentials found for it.'.format(self.hostname))
-            log.log2info(1044, log_message)
+            log.log2info(1081, log_message)
 
     def _do_poll(self):
         """Determine whether doing a poll is valid.
@@ -265,7 +265,7 @@ class Poller(object):
         log_message = (
             'Querying topology data from host %s.'
             '') % (self.hostname)
-        log.log2info(1045, log_message)
+        log.log2info(1078, log_message)
 
         # Create YAML file by polling device
         status = snmp_info.Query(self.snmp_object)
@@ -283,7 +283,7 @@ class Poller(object):
         log_message = (
             'Completed topology query from host %s.'
             '') % (self.hostname)
-        log.log2info(1042, log_message)
+        log.log2info(1077, log_message)
 
 
 def _poll_devices():
@@ -330,38 +330,90 @@ def _poll_single_device(hostname):
                 poller.query()
 
 
-def _create_search_files():
-    """Creates YAML files used for Switchmap-NG search.
+class _SearchFiles(object):
+    """Switchmap-NG class for managing search files."""
 
-    Args:
-        None
+    def __init__(self):
+        """Method initializing the class.
 
-    Returns:
-        None
+        Args:
+            hostname: Hostname to poll
 
-    """
-    # Initialize key variables
-    config = CONFIG
-    topology_directory = config.topology_directory()
-    arp_table = defaultdict(lambda: defaultdict(dict))
-    host_table = {}
-    ifalias_table = defaultdict(lambda: defaultdict(dict))
-    rarp_table = {}
-    ifindex_table = defaultdict(
-        lambda: defaultdict(lambda: defaultdict(dict)))
+        Returns:
+            None
 
-    # Send log message
-    log_message = ('Starting search file creation.')
-    log.log2info(1059, log_message)
+        """
+        # Initialize key variables
+        self.config = CONFIG
+        topology_directory = self.config.topology_directory()
+        self.filepaths = []
 
-    # Create ARP and RARP table files
-    # Cycle through list of files in directory
-    for filename in os.listdir(topology_directory):
-        # Examine all the '.yaml' files in directory
-        if filename.endswith('.yaml'):
+        # Cycle through list of files in directory
+        for filename in os.listdir(topology_directory):
+            # Examine all the '.yaml' files in directory
+            if filename.endswith('.yaml'):
+                # Read file
+                device_name = filename[0:-5]
+                filepath = self.config.topology_device_file(device_name)
+                self.filepaths.append(filepath)
+
+    def create(self):
+        """Creates YAML files used for Switchmap-NG search.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Send log message
+        log_message = ('Starting search file creation.')
+        log.log2info(1059, log_message)
+
+        # Create files
+        self._create_layer_2_tables()
+        self._create_layer_3_tables()
+
+        # Send log message
+        log_message = ('Completed search file creation.')
+        log.log2info(1055, log_message)
+
+    def _device_name(self, filepath):
+        """Get device name from filepath.
+
+        Args:
+            filepath: Path to file
+
+        Returns:
+            device_name: Name of device
+
+        """
+        # Return device name
+        filename = os.path.basename(filepath)
+        device_name = filename[0:-5]
+        return device_name
+
+    def _create_layer_2_tables(self):
+        """Create ARP and host table YAML files used for Switchmap-NG search.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        arp_table = defaultdict(lambda: defaultdict(dict))
+        host_table = {}
+        rarp_table = {}
+
+        # Create host, ARP table files
+        # Cycle through list of files in directory
+        for filepath in self.filepaths:
             # Read file
-            device_name = filename[0:-5]
-            filepath = config.topology_device_file(device_name)
+            device_name = self._device_name(filepath)
             device_dict = general.read_yaml_file(filepath)
 
             # Validate we have a dict
@@ -370,9 +422,9 @@ def _create_search_files():
 
             # Send log message
             log_message = (
-                'Creating ARP table entries for device {}.'
+                'Creating ARP, RARP and host table entries for device {}.'
                 ''.format(device_name))
-            log.log2debug(1067, log_message)
+            log.log2debug(1073, log_message)
 
             # Populate ARP and RARP table
             if 'layer3' in device_dict:
@@ -409,18 +461,46 @@ def _create_search_files():
 
             # Send log message
             log_message = (
-                'Completed ARP table entries for device {}.'
+                'Completed ARP, RARP and host table entries for device {}.'
                 ''.format(device_name))
-            log.log2debug(1067, log_message)
+            log.log2debug(1075, log_message)
 
-    # Create ifIndex file after creating complete ARP and RARP table files
-    # Cycle through list of files in directory
-    for filename in os.listdir(topology_directory):
-        # Examine all the '.yaml' files in directory
-        if filename.endswith('.yaml'):
+        # Create yaml files
+        general.create_yaml_file(arp_table, self.config.arp_file())
+        log_message = ('Created ARP table search file.')
+        log.log2debug(1082, log_message)
+
+        general.create_yaml_file(host_table, self.config.hosts_file())
+        log_message = ('Created hosts table search file.')
+        log.log2debug(1054, log_message)
+
+        general.create_yaml_file(rarp_table, self.config.rarp_file())
+        log_message = ('Created RARP table search file.')
+        log.log2debug(1085, log_message)
+
+    def _create_layer_3_tables(self):
+        """Creates YAML files used for Switchmap-NG search.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        ifalias_table = defaultdict(lambda: defaultdict(dict))
+        ifindex_table = defaultdict(
+            lambda: defaultdict(lambda: defaultdict(dict)))
+
+        # Read RARP file
+        rarp_table = general.read_yaml_file(self.config.rarp_file())
+
+        # Create host, ARP table files
+        # Cycle through list of files in directory
+        for filepath in self.filepaths:
             # Read file
-            device_name = filename[0:-5]
-            filepath = config.topology_device_file(device_name)
+            device_name = self._device_name(filepath)
             device_dict = general.read_yaml_file(filepath)
 
             # Validate we have a dict
@@ -432,9 +512,15 @@ def _create_search_files():
 
             # Send log message
             log_message = (
-                'Creating RARP, ifAlias, ifIndex table entries for device {}.'
+                'Creating ifAlias and ifIndex table entries for device {}.'
                 ''.format(device_name))
             log.log2debug(1072, log_message)
+
+            # Send log message
+            log_message = (
+                'Updating RARP table entries for device {}.'
+                ''.format(device_name))
+            log.log2debug(1076, log_message)
 
             # Populate ifIndex table
             if 'layer1' in device_dict:
@@ -450,13 +536,17 @@ def _create_search_files():
                     if _is_dict(port_dict, device_name) is False:
                         continue
 
+                    # Skip non ethernet ports
+                    if 'jm_ethernet' not in port_dict:
+                        continue
+
                     # Do a quick validation of required keys
-                    keys = ['jm_trunk', 'jm_ethernet', 'ifAlias']
+                    keys = ['jm_ethernet', 'jm_trunk', 'ifAlias']
                     for key in keys:
                         if key not in port_dict:
                             log_message = (
                                 'Device {} has a corrupted device YAML file '
-                                'for ifindex {}. No key {}.Skipping.'
+                                'for ifindex {}. No key {}. Skipping.'
                                 ''.format(device_name, ifindex, key))
                             log.log2debug(1064, log_message)
                             continue
@@ -505,34 +595,26 @@ def _create_search_files():
 
             # Send log message
             log_message = (
-                'Completed RARP, ifAlias, ifIndex table entries for device {}.'
+                'Completed ifAlias, ifIndex table entries for device {}.'
                 ''.format(device_name))
-            log.log2debug(1046, log_message)
+            log.log2debug(1079, log_message)
 
-    # Create yaml files
-    general.create_yaml_file(arp_table, config.arp_file())
-    log_message = ('Created ARP table search file.')
-    log.log2debug(1047, log_message)
+            log_message = (
+                'Completed RARP table update for device {}.'
+                ''.format(device_name))
+            log.log2debug(1080, log_message)
 
-    general.create_yaml_file(rarp_table, config.rarp_file())
-    log_message = ('Created RARP table search file.')
-    log.log2debug(1048, log_message)
+        general.create_yaml_file(rarp_table, self.config.rarp_file())
+        log_message = ('Created updated RARP table search file.')
+        log.log2debug(1048, log_message)
 
-    general.create_yaml_file(ifindex_table, config.ifindex_file())
-    log_message = ('Created ifIndex table search file.')
-    log.log2debug(1051, log_message)
+        general.create_yaml_file(ifindex_table, self.config.ifindex_file())
+        log_message = ('Created ifIndex table search file.')
+        log.log2debug(1051, log_message)
 
-    general.create_yaml_file(ifalias_table, config.ifalias_file())
-    log_message = ('Created ifAlias table search file.')
-    log.log2debug(1053, log_message)
-
-    general.create_yaml_file(host_table, config.hosts_file())
-    log_message = ('Created hosts table search file.')
-    log.log2debug(1054, log_message)
-
-    # Send log message
-    log_message = ('Completed search file creation.')
-    log.log2info(1055, log_message)
+        general.create_yaml_file(ifalias_table, self.config.ifalias_file())
+        log_message = ('Created ifAlias table search file.')
+        log.log2debug(1053, log_message)
 
 
 def _is_dict(variable, device_name):
