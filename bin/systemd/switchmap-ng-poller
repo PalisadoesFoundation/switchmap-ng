@@ -369,7 +369,7 @@ def _create_search_files():
                 ''.format(device_name))
             log.log2debug(1064, log_message)
 
-            # Populate ARP table
+            # Populate ARP and RARP table
             if 'layer3' in device_dict:
                 keys = ['cInetNetToMediaPhysAddress', 'ipNetToMediaTable']
                 for key in keys:
@@ -427,6 +427,12 @@ def _create_search_files():
                 layer1_dict = device_dict['layer1']
                 # Process each port on device
                 for ifindex, port_dict in layer1_dict.items():
+                    # Do a quick validation of required keys
+                    keys = ['jm_trunk', 'jm_ethernet', 'ifAlias']
+                    for key in keys:
+                        if key not in port_dict:
+                            continue
+
                     # Only interested in Ethernet ports
                     if bool(port_dict['jm_ethernet']) is False:
                         continue
