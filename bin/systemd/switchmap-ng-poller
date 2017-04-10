@@ -372,7 +372,7 @@ def _create_search_files():
             log_message = (
                 'Creating ARP table entries for device {}.'
                 ''.format(device_name))
-            log.log2debug(1064, log_message)
+            log.log2debug(1067, log_message)
 
             # Populate ARP and RARP table
             if 'layer3' in device_dict:
@@ -455,9 +455,9 @@ def _create_search_files():
                     for key in keys:
                         if key not in port_dict:
                             log_message = (
-                                'Device {} has a corrupted device YAML file. '
-                                'Skipping.'
-                                ''.format(device_name))
+                                'Device {} has a corrupted device YAML file '
+                                'for ifindex {}. Skipping.'
+                                ''.format(device_name, ifindex))
                             log.log2debug(1064, log_message)
                             continue
 
