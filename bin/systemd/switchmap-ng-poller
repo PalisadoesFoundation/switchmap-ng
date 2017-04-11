@@ -395,7 +395,7 @@ class _SearchFiles(object):
         return device_name
 
     def _create_layer_2_tables(self):
-        """Create ARP and host table YAML files used for Switchmap-NG search.
+        """Create RARP, ARP and host table YAML search files.
 
         Args:
             None
@@ -509,7 +509,7 @@ class _SearchFiles(object):
         log.log2debug(1085, log_message)
 
     def _create_layer_3_tables(self):
-        """Creates YAML files used for Switchmap-NG search.
+        """Creates Layer 3 YAML files used for Switchmap-NG search.
 
         Args:
             None
