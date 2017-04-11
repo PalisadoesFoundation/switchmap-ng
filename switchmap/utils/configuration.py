@@ -413,6 +413,7 @@ class Config(object):
 
         # Get result
         if isinstance(agent_config, list) is True:
+            agent_config = list(set(agent_config))
             result = sorted(agent_config)
 
         # Return

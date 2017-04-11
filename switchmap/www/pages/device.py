@@ -4,6 +4,7 @@
 import textwrap
 import os
 import time
+import csv
 
 # PIP3 imports
 from flask_table import Table, Col
@@ -43,6 +44,7 @@ class Device(object):
         self.port_data = translation.ethernet_data()
         self.system_data = translation.system_summary()
         self.ifindexes = ifindexes
+        self.display = _Display()
 
     def ports(self):
         """Create the ports table for the device.
@@ -56,7 +58,7 @@ class Device(object):
         """
         # Initialize key variables
         data = Port(
-            self.port_data, self.hostname, ifindexes=self.ifindexes).data()
+            self.port_data, self.hostname, self.display, ifindexes=self.ifindexes).data()
 
         # Populate the table
         table = PortTable(data)
@@ -104,10 +106,10 @@ class PortTable(Table):
     trunk = Col('Trunk')
     cdp = _RawCol('CDP')
     lldp = _RawCol('LLDP')
-    mac_address = Col('Mac Address')
-    manufacturer = Col('Manufacturer')
-    ip_address = Col('IP Address')
-    hostname = Col('DNS Name')
+    mac_address = _RawCol('Mac Address')
+    manufacturer = _RawCol('Manufacturer')
+    ip_address = _RawCol('IP Address')
+    hostname = _RawCol('DNS Name')
 
     # Define the CSS class to use for the header row
     classes = ['table']
@@ -179,12 +181,13 @@ class PortRow(object):
 class Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
-    def __init__(self, device_data, hostname, ifindexes=None):
+    def __init__(self, device_data, hostname, display, ifindexes=None):
         """Method instantiating the class.
 
         Args:
             device_data: Dictionary of device data
             hostname: Name of host to which this data belongs
+            display: _Display object
             ifindexes: List of ifindexes to retrieve. If None, then do all.
 
         Returns:
@@ -193,6 +196,7 @@ class Port(object):
         """
         # Initialize key variables
         self.device_data = device_data
+        self.display = display
         self.hostname = hostname
         if bool(ifindexes) is True and isinstance(ifindexes, list) is True:
             self.ifindexes = ifindexes
@@ -242,10 +246,14 @@ class Port(object):
             trunk = port.trunk()
             cdp = port.cdp()
             lldp = port.lldp()
-            mac_address = port.mac_address()
-            manufacturer = port.manufacturer()
-            ip_address = port.ip_address()
-            hostname = port.hostname()
+            mac_addresses = port.mac_addresses()
+
+            # Get HTML related to the MAC address
+            html = self.display.html(mac_addresses)
+            manufacturer = html['manufacturer']
+            ip_address = html['ip_address']
+            hostname = html['hostname']
+            mac_address = html['mac_address']
 
             # Append row of data
             rows.append(PortRow([
@@ -297,6 +305,7 @@ class _Port(object):
         """
         # Initialize key variables
         self.port_data = port_data
+        self.max_macs = 4
 
     def is_trunk(self):
         """Return trunk status of port.
@@ -340,27 +349,27 @@ class _Port(object):
         # Return
         return trunk
 
-    def mac_address(self):
+    def mac_addresses(self):
         """Return string for mac_address on port.
 
         Args:
             None
 
         Returns:
-            mac_address: mac_address state
+            mac_addresses: mac_address state
 
         """
         # Assign key variables
-        mac_address = ''
+        mac_addresses = []
         port_data = self.port_data
 
         # Don't show manufacturer on trunk ports
         if bool(self.is_trunk()) is False:
             if 'jm_macs' in port_data:
-                if len(port_data['jm_macs']) == 1:
-                    mac_address = port_data['jm_macs'][0]
+                mac_addresses = port_data['jm_macs'][:4]
+
         # Return
-        return mac_address
+        return mac_addresses
 
     def speed(self):
         """Return port speed.
@@ -452,71 +461,6 @@ class _Port(object):
 
         # Return
         return state
-
-    def manufacturer(self):
-        """Return port manufacturer string.
-
-        Args:
-            None
-
-        Returns:
-            manufacturer: manufacturer string
-
-        """
-        # Assign key variables
-        manufacturer = ''
-        port_data = self.port_data
-
-        # Don't show manufacturer on trunk ports
-        if bool(self.is_trunk()) is False:
-            # Assign manufacturer
-            if 'jm_manufacturer' in port_data:
-                manufacturer = port_data['jm_manufacturer']
-
-        # Return
-        return manufacturer
-
-    def hostname(self):
-        """Return port hostname string.
-
-        Args:
-            None
-
-        Returns:
-            hostname: hostname string
-
-        """
-        # Assign key variables
-        hostname = ''
-        port_data = self.port_data
-
-        # Assign hostname
-        if 'jm_hostname' in port_data:
-            hostname = port_data['jm_hostname']
-
-        # Return
-        return hostname
-
-    def ip_address(self):
-        """Return port ip_address string.
-
-        Args:
-            None
-
-        Returns:
-            ip_address: ip_address string
-
-        """
-        # Assign key variables
-        ip_address = ''
-        port_data = self.port_data
-
-        # Assign ip_address
-        if 'jm_ip' in port_data:
-            ip_address = port_data['jm_ip']
-
-        # Return
-        return ip_address
 
     def duplex(self):
         """Return port duplex string.
@@ -750,3 +694,140 @@ def _uptime(seconds):
     result = ('%.f Days, %d:%02d:%02d') % (
         days, remainder_hours, remainder_minutes, remainder_seconds)
     return result
+
+
+class _Display(object):
+    """Class that creates the device's various HTML tables."""
+
+    def __init__(self):
+        """Initialize the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Get configuration
+        config = CONFIG
+        mac_address_file = config.mac_address_file()
+        self.oui = {}
+
+        # Read file
+        with open(mac_address_file, 'r') as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=':')
+            for row in spamreader:
+                mac_address = row[0]
+                manufacturer = row[1]
+                self.oui[mac_address] = manufacturer
+
+        # Read ARP, RARP tables
+        self.rarp_table = general.read_yaml_file(config.rarp_file())
+        self.arp_table = general.read_yaml_file(config.arp_file())
+
+    def html(self, mac_addresses):
+        """Create list of dicts of MAC, host, manufacturer, IP address.
+
+        Args:
+            mac_addresses
+
+        Returns:
+            oui: OUI dictionary
+
+        """
+        # Initialize key variables
+        listing = self._listing(mac_addresses)
+        html_manufacturer = ''
+        html_mac_address = ''
+        html_ip_address = ''
+        html_hostname = ''
+        result = {}
+
+        for item in listing:
+            html_hostname = '{}<p>{}<p>'.format(
+                html_hostname, item['hostname'])
+            html_manufacturer = '{}<p>{}<p>'.format(
+                html_manufacturer, item['manufacturer'])
+            html_ip_address = '{}<p>{}<p>'.format(
+                html_ip_address, item['ip_address'])
+
+            if bool(item['mac_address']) is True:
+                html_mac_address = '{}<p>{}<p>'.format(
+                    html_mac_address, item['mac_address'])
+            else:
+                html_mac_address = ''
+
+        # Return
+        result['ip_address'] = html_ip_address
+        result['hostname'] = html_hostname
+        result['manufacturer'] = html_manufacturer
+        result['mac_address'] = html_mac_address
+        return result
+
+    def _listing(self, mac_addresses):
+        """Create list of dicts of MAC, host, manufacturer, IP address.
+
+        Args:
+            None
+
+        Returns:
+            oui: OUI dictionary
+
+        """
+        # Initialize key variables
+        preliminary_listing = []
+        listing = []
+
+        # Cycle through mac addresses, get the manufacturer
+        for mac_address in mac_addresses:
+            # Get manufacturer
+            manufacturer = self._manufacturer(mac_address)
+            data_dict = {}
+            data_dict['mac_address'] = mac_address
+            data_dict['manufacturer'] = manufacturer
+            preliminary_listing.append(data_dict)
+
+        # Get IP address and hostname for each mac address
+        for item in preliminary_listing:
+            mac_address = item['mac_address']
+            manufacturer = item['manufacturer']
+
+            if mac_address in self.rarp_table:
+                for ip_address in self.rarp_table[mac_address]:
+                    data_dict = {}
+                    data_dict['mac_address'] = mac_address
+                    data_dict['manufacturer'] = manufacturer
+                    data_dict['ip_address'] = ip_address
+                    data_dict['hostname'] = ''
+
+                    if ip_address in self.arp_table:
+                        if 'hostname' in self.arp_table[ip_address]:
+                            hostname = self.arp_table[ip_address]['hostname']
+                            data_dict['hostname'] = hostname
+
+                    listing.append(data_dict)
+
+        # Return
+        return listing
+
+    def _manufacturer(self, mac_address):
+        """Return manufacturer of MAC address' device.
+
+        Args:
+            mac_address: MAC address
+
+        Returns:
+            manufacturer: Name of manufacturer
+
+        """
+        # Initialize key variables
+        manufacturer = ''
+
+        # Process data
+        mac_oui = mac_address[0:6]
+        if mac_oui in self.oui:
+            manufacturer = self.oui[mac_oui]
+
+        # Return
+        return manufacturer
