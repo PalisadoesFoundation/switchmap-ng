@@ -42,37 +42,6 @@ from switchmap.main.agent import Agent
 from switchmap.constants import POLLER_EXECUTABLE
 
 
-def _oui():
-    """Get dictionary of OUI values.
-
-    Args:
-        None
-
-    Returns:
-        oui: OUI dictionary
-
-    """
-    # Get configuration
-    config = CONFIG
-    mac_address_file = config.mac_address_file()
-    oui = {}
-
-    # Read file
-    with open(mac_address_file, 'r') as csvfile:
-        spamreader = csv.reader(csvfile, delimiter=':')
-        for row in spamreader:
-            mac_address = row[0]
-            manufacturer = row[1]
-            oui[mac_address] = manufacturer
-
-    # Return
-    return oui
-
-
-# Get OUI value
-OUI = _oui()
-
-
 class PollingAgent(Agent):
     """Switchmap-NG agent that gathers data.
 
@@ -257,7 +226,6 @@ class Poller(object):
 
         """
         # Initialize key variables
-        global OUI
         temp_dir = self.server_config.temp_topology_directory()
         temp_file = ('%s/%s.yaml') % (temp_dir, self.hostname)
 
@@ -272,7 +240,7 @@ class Poller(object):
         data = status.everything()
 
         # Add additional switchmap-ng specific fields to the dict
-        augmented_data = postpoll.Process(data, OUI).augmented_data()
+        augmented_data = postpoll.Process(data).augmented_data()
         yaml_string = general.dict2yaml(augmented_data)
 
         # Dump data
@@ -648,7 +616,6 @@ def _is_dict(variable, device_name):
             ''.format(device_name))
         log.log2debug(1067, log_message)
         valid = False
-        log.log2debug(9999999999999999999999, variable)
     else:
         valid = True
 

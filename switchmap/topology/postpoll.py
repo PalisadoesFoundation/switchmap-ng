@@ -22,9 +22,6 @@ def all_devices():
         None
 
     """
-    # Add Layer3 information
-    _layer3()
-
     # Add port idle information
     _idle()
 
@@ -114,116 +111,6 @@ def _idle():
     log.log2info(1058, log_message)
 
 
-def _layer3():
-    """Add IP address and Hostname data to device files.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    ifindex_ip_found = False
-    ifindex_hostname_found = False
-    config = CONFIG
-
-    # Send log message
-    log_message = ('Starting Layer3 updates of device files.')
-    log.log2info(1045, log_message)
-
-    # Read ARP, RARP tables
-    rarp_table = general.read_yaml_file(config.rarp_file())
-    hosts_table = general.read_yaml_file(config.hosts_file())
-
-    # Cycle through list of files in directory
-    for filename in os.listdir(config.temp_topology_directory()):
-        # Examine all the '.yaml' files in directory
-        if filename.endswith('.yaml'):
-            devicename = filename[0:-5]
-
-            # Log message
-            log_message = (
-                'Starting Layer3 updates for device {}.'.format(devicename))
-            log.log2debug(1046, log_message)
-
-            # Read file and add to string
-            filepath = config.temp_topology_device_file(devicename)
-            device_dict = general.read_yaml_file(filepath)
-
-            # Update dict with values
-            loop_dict = deepcopy(device_dict)
-
-            # Populate ifIndex table
-            if 'layer1' in loop_dict:
-                layer1_dict = device_dict['layer1']
-                # Process each port on device
-                for ifindex, port_dict in layer1_dict.items():
-                    # Only interested in Ethernet ports
-                    if bool(port_dict['jm_ethernet']) is False:
-                        continue
-
-                    # We are not interested in populating trunk port MAC data
-                    if bool(port_dict['jm_trunk']) is True:
-                        continue
-
-                    # Try to update jm_ip and jm_hostname
-                    if 'jm_macs' in port_dict:
-                        for mac_address in port_dict['jm_macs']:
-                            if mac_address in rarp_table:
-                                # Get the list of RARP IP addresses
-                                ifindex_ips = rarp_table[mac_address]
-
-                                # Only process RARP entries with an IP
-                                if bool(ifindex_ips) is True:
-                                    device_dict['layer1'][ifindex][
-                                        'jm_ip'] = ifindex_ips[0]
-                                    ifindex_ip_found = True
-                                    break
-
-                        # Set a precautionary value for 'jm_ip'
-                        if ifindex_ip_found is False:
-                            device_dict['layer1'][ifindex]['jm_ip'] = ''
-                        # Attempt to find a hostname
-                        else:
-                            # A MAC can be assigned to many IP addresses
-                            # We check to see whether and of these IP addresses
-                            # has a DNS entry
-                            for hostname, key in hosts_table.items():
-                                # This indicates we have found a match in the
-                                # hosts file
-                                if key in ifindex_ips:
-                                    # Assign values to a meaningful
-                                    # IP / hostname pair
-                                    device_dict['layer1'][ifindex][
-                                        'jm_hostname'] = hostname
-                                    device_dict['layer1'][ifindex][
-                                        'jm_ip'] = key
-                                    ifindex_hostname_found = True
-                                    break
-
-                        # Set a precautionary value for 'jm_ip'
-                        if ifindex_hostname_found is False:
-                            device_dict['layer1'][ifindex]['jm_hostname'] = ''
-
-                    # Reset values
-                    ifindex_ip_found = False
-                    ifindex_hostname_found = False
-
-            # Write updated file back
-            general.create_yaml_file(device_dict, filepath)
-
-            # Log message
-            log_message = (
-                'Completed Layer3 updates for device {}.'.format(devicename))
-            log.log2debug(1044, log_message)
-
-    # Send log message
-    log_message = ('Completed Layer3 updates of device files.')
-    log.log2info(1047, log_message)
-
-
 class Process(object):
     """Process data polled from a device.
 
@@ -241,12 +128,11 @@ class Process(object):
 
     """
 
-    def __init__(self, input_data, oui):
+    def __init__(self, input_data):
         """Initialize class.
 
         Args:
             input_data: Recently polled device data to processs
-            oui: OUI data for lookups
 
         Returns:
             None
@@ -395,10 +281,6 @@ class Process(object):
                 updated_layer1_data['jm_duplex'] = _duplex(
                     deepcopy(layer1_data))
 
-                # Update manufacturer of MAC
-                updated_layer1_data['jm_manufacturer'] = _manufacturer(
-                    deepcopy(layer1_data), oui)
-
             else:
                 # Update Ethernet status
                 updated_layer1_data['jm_ethernet'] = False
@@ -536,13 +418,23 @@ def _vlan(layer1_data, ifindex):
     if ifindex not in layer1_data['layer1']:
         return vlans
 
-    # Determine vlan number for Cisco devices
-    if 'vmVlan' in layer1_data['layer1'][ifindex]:
-        vlans = [int(layer1_data['layer1'][ifindex]['vmVlan'])]
+    # Get port data
+    port_data = layer1_data['layer1'][ifindex]
+
+    # Determine vlan number for Cisco devices (Older models)
+    if 'vmVlan' in port_data:
+        vlans = [int(port_data['vmVlan'])]
+
+    # Determine vlan number for Cisco devices (Newer models)
+    if 'vlanTrunkPortVlansEnabled' in port_data:
+        if isinstance(port_data['vlanTrunkPortVlansEnabled'], list) is True:
+            vlans = port_data['vlanTrunkPortVlansEnabled']
+        else:
+            vlans = [int(port_data['vlanTrunkPortVlansEnabled'])]
 
     # Determine vlan number for Juniper devices
-    if 'jnxExVlanTag' in layer1_data['layer1'][ifindex]:
-        tags = layer1_data['layer1'][ifindex]['jnxExVlanTag']
+    if 'jnxExVlanTag' in port_data:
+        tags = port_data['jnxExVlanTag']
         if bool(tags) is True:
             vlans = tags
 
@@ -683,30 +575,3 @@ def _trunk(layer1_data, ifindex):
 
     # Return
     return trunk
-
-
-def _manufacturer(layer1_data, oui):
-    """Return manufacturer of MAC address' device.
-
-    Args:
-        layer1_data: Data dict related to the port
-        oui: OUI dict {oui, manufacturer}
-
-    Returns:
-        manufacturer: Name of manufacturer
-
-    """
-    # Initialize key variables
-    manufacturer = ''
-
-    # Process data
-    if 'jm_macs' in layer1_data:
-        if bool(layer1_data['jm_macs']) is True:
-            jm_macs = layer1_data['jm_macs']
-            if len(jm_macs) == 1:
-                mac_oui = jm_macs[0][0:6]
-                if mac_oui in oui:
-                    manufacturer = oui[mac_oui]
-
-    # Return
-    return manufacturer
