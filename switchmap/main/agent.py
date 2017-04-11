@@ -16,6 +16,7 @@ import time
 import argparse
 import multiprocessing
 import os
+from pprint import pprint
 
 # PIP3 libraries
 from gunicorn.app.base import BaseApplication
@@ -314,6 +315,7 @@ class AgentAPI(Agent):
             'pidfile': self.pidfile_child,
             'loglevel': config.log_level(),
             'workers': _number_of_workers(),
+            'umask': 0o0007,
         }
 
         # Log so that user running the script from the CLI knows that something
@@ -349,6 +351,8 @@ class StandaloneApplication(BaseApplication):
         self.options = options or {}
         self.application = app
         super(StandaloneApplication, self).__init__()
+
+        pprint(self.cfg.settings)
 
     def load_config(self):
         """Load the configuration."""

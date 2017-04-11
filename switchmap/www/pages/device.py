@@ -262,6 +262,12 @@ class Port(object):
             hostname = html['hostname']
             mac_address = html['mac_address']
 
+            # Adjust non-trunk output depending on packet activity
+            if port.is_trunk() is False:
+                if bool(html['mac_address']) is False:
+                    if state == 'Active':
+                        mac_address = 'Active port. No recent packets.'
+
             # Append row of data
             rows.append(PortRow([
                 name, vlan, state, inactive, speed, duplex,

@@ -103,11 +103,11 @@ class QbridgeQuery(Query):
         # Return
         return final
 
-    def dot1qpvid(self):
+    def dot1qpvid(self, oidonly=False):
         """Return dict of Q-BRIDGE-MIB dot1qPvid per port.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of dot1qPvid using ifIndex as key
@@ -118,6 +118,11 @@ class QbridgeQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.17.7.1.4.5.1.1'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             ifindex = self.baseportifindex[int(key)]
@@ -126,11 +131,11 @@ class QbridgeQuery(Query):
         # Return
         return data_dict
 
-    def dot1qvlanstaticname(self):
+    def dot1qvlanstaticname(self, oidonly=False):
         """Return dict of Q-BRIDGE-MIB dot1qVlanStaticName per port.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of dot1qVlanStaticName using ifIndex as key
@@ -141,6 +146,11 @@ class QbridgeQuery(Query):
 
         # Process OID
         oid = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
+
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             data_dict[key] = str(bytes(value), encoding='utf-8')
