@@ -80,11 +80,11 @@ class CiscoVlanMembershipQuery(Query):
         # Return
         return final
 
-    def vmvlan(self):
+    def vmvlan(self, oidonly=False):
         """Return dict of CISCO-VLAN-MEMBERSHIP-MIB vmVlan for each VLAN.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vmVlan using the oid's last node as key
@@ -93,8 +93,12 @@ class CiscoVlanMembershipQuery(Query):
         # Initialize key variables
         data_dict = defaultdict(dict)
 
-        # Descriptions
+        # Process OID
         oid = '.1.3.6.1.4.1.9.9.68.1.2.2.1.2'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
 
         # Process data
         results = self.snmp_object.swalk(oid, normalized=True)
@@ -104,11 +108,11 @@ class CiscoVlanMembershipQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def vmportstatus(self):
+    def vmportstatus(self, oidonly=False):
         """Return dict of CISCO-VLAN-MEMBERSHIP-MIB vmPortStatus for each VLAN.
 
         Args:
-            None
+            oidonly: Return OID's value, not results, if True
 
         Returns:
             data_dict: Dict of vmPortStatus using the oid's last node as key
@@ -117,8 +121,12 @@ class CiscoVlanMembershipQuery(Query):
         # Initialize key variables
         data_dict = defaultdict(dict)
 
-        # Descriptions
+        # Process OID
         oid = '.1.3.6.1.4.1.9.9.68.1.2.2.1.3'
+
+        # Return OID value. Used for unittests
+        if oidonly is True:
+            return oid
 
         # Process data
         results = self.snmp_object.swalk(oid, normalized=True)
