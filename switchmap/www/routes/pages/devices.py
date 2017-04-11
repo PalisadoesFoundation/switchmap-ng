@@ -8,6 +8,7 @@ from flask import Blueprint, render_template
 
 # Switchmap-NG imports
 from switchmap.www.pages.device import Device
+from switchmap.topology.ports import Lookup
 from switchmap.www import CONFIG
 
 # Define the DEVICES global variable
@@ -26,7 +27,8 @@ def index(hostname):
 
     """
     # Get device data
-    device_object = Device(CONFIG, hostname)
+    lookup = Lookup(CONFIG)
+    device_object = Device(hostname, CONFIG, lookup)
     port_table = device_object.ports()
     system_table = device_object.system()
     return render_template(

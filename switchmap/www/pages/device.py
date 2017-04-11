@@ -4,14 +4,12 @@
 import textwrap
 import os
 import time
-import csv
 
 # PIP3 imports
 from flask_table import Table, Col
 
 # Import switchmap.libraries
 from switchmap.topology.translator import Translator
-from switchmap.constants import CONFIG
 from switchmap.utils import general
 from switchmap.utils import log
 
@@ -26,11 +24,12 @@ class _RawCol(Col):
 class Device(object):
     """Class that creates the device's various HTML tables."""
 
-    def __init__(self, config, host, ifindexes=None):
+    def __init__(self, host, config, lookup, ifindexes=None):
         """Initialize the class.
 
         Args:
             config: Configuration object
+            lookup: Lookup object
             host: Hostname to process
             ifindexes: List of ifindexes to retrieve. If None, then do all.
 
@@ -40,11 +39,10 @@ class Device(object):
         """
         # Process YAML file for host
         self.hostname = host
-        translation = Translator(config, self.hostname)
-        self.port_data = translation.ethernet_data()
-        self.system_data = translation.system_summary()
+        self.translation = Translator(config, self.hostname)
         self.ifindexes = ifindexes
-        self.display = _Display()
+        self.lookup = lookup
+        self.config = config
 
     def ports(self):
         """Create the ports table for the device.
@@ -57,8 +55,14 @@ class Device(object):
 
         """
         # Initialize key variables
+        port_data = self.translation.ethernet_data()
+
         data = Port(
-            self.port_data, self.hostname, self.display, ifindexes=self.ifindexes).data()
+            port_data,
+            self.hostname,
+            self.config,
+            self.lookup,
+            ifindexes=self.ifindexes).data()
 
         # Populate the table
         table = PortTable(data)
@@ -80,7 +84,8 @@ class Device(object):
 
         """
         # Initialize key variables
-        data = System(self.system_data).data()
+        system_data = self.translation.system_summary()
+        data = System(system_data).data()
 
         # Populate the table
         table = SystemTable(data)
@@ -103,7 +108,7 @@ class PortTable(Table):
     speed = Col('Speed')
     duplex = Col('Duplex')
     label = Col('Port Label')
-    trunk = Col('Trunk')
+    trunk = _RawCol('Trunk')
     cdp = _RawCol('CDP')
     lldp = _RawCol('LLDP')
     mac_address = _RawCol('Mac Address')
@@ -181,13 +186,14 @@ class PortRow(object):
 class Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
-    def __init__(self, device_data, hostname, display, ifindexes=None):
+    def __init__(self, device_data, hostname, config, lookup, ifindexes=None):
         """Method instantiating the class.
 
         Args:
             device_data: Dictionary of device data
             hostname: Name of host to which this data belongs
-            display: _Display object
+            config: Config object
+            lookup: _Display object
             ifindexes: List of ifindexes to retrieve. If None, then do all.
 
         Returns:
@@ -196,7 +202,8 @@ class Port(object):
         """
         # Initialize key variables
         self.device_data = device_data
-        self.display = display
+        self.lookup = lookup
+        self.config = config
         self.hostname = hostname
         if bool(ifindexes) is True and isinstance(ifindexes, list) is True:
             self.ifindexes = ifindexes
@@ -216,7 +223,7 @@ class Port(object):
         # Initialize key variables
         rows = []
         idle_history = {}
-        config = CONFIG
+        config = self.config
 
         # Get idle data for device
         idle_filepath = (
@@ -249,7 +256,7 @@ class Port(object):
             mac_addresses = port.mac_addresses()
 
             # Get HTML related to the MAC address
-            html = self.display.html(mac_addresses)
+            html = self.lookup.html(mac_addresses)
             manufacturer = html['manufacturer']
             ip_address = html['ip_address']
             hostname = html['hostname']
@@ -341,10 +348,27 @@ class _Port(object):
         """
         # Assign key variables
         trunk = ''
+        vlans = None
+        max_vlans = 10
 
         # Get trunk string
         if bool(self.is_trunk()) is True:
             trunk = 'Trunk'
+
+            # Add the number of VLANs found on the trunk
+            if 'jm_vlan' in self.port_data:
+                vlans = self.port_data['jm_vlan']
+                if isinstance(vlans, list) is True:
+                    if len(vlans) <= max_vlans:
+                        trunk = (
+                            '<p>{}</p><p>VLANs {}</p>'
+                            ''.format(
+                                trunk,
+                                ', '.join(str(x) for x in vlans[:max_vlans])))
+                    else:
+                        trunk = (
+                            '<p>{}</p><p>VLANs &gt; {}</p>'
+                            ''.format(trunk, max_vlans))
 
         # Return
         return trunk
@@ -694,140 +718,3 @@ def _uptime(seconds):
     result = ('%.f Days, %d:%02d:%02d') % (
         days, remainder_hours, remainder_minutes, remainder_seconds)
     return result
-
-
-class _Display(object):
-    """Class that creates the device's various HTML tables."""
-
-    def __init__(self):
-        """Initialize the class.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Get configuration
-        config = CONFIG
-        mac_address_file = config.mac_address_file()
-        self.oui = {}
-
-        # Read file
-        with open(mac_address_file, 'r') as csvfile:
-            spamreader = csv.reader(csvfile, delimiter=':')
-            for row in spamreader:
-                mac_address = row[0]
-                manufacturer = row[1]
-                self.oui[mac_address] = manufacturer
-
-        # Read ARP, RARP tables
-        self.rarp_table = general.read_yaml_file(config.rarp_file())
-        self.arp_table = general.read_yaml_file(config.arp_file())
-
-    def html(self, mac_addresses):
-        """Create list of dicts of MAC, host, manufacturer, IP address.
-
-        Args:
-            mac_addresses
-
-        Returns:
-            oui: OUI dictionary
-
-        """
-        # Initialize key variables
-        listing = self._listing(mac_addresses)
-        html_manufacturer = ''
-        html_mac_address = ''
-        html_ip_address = ''
-        html_hostname = ''
-        result = {}
-
-        for item in listing:
-            html_hostname = '{}<p>{}<p>'.format(
-                html_hostname, item['hostname'])
-            html_manufacturer = '{}<p>{}<p>'.format(
-                html_manufacturer, item['manufacturer'])
-            html_ip_address = '{}<p>{}<p>'.format(
-                html_ip_address, item['ip_address'])
-
-            if bool(item['mac_address']) is True:
-                html_mac_address = '{}<p>{}<p>'.format(
-                    html_mac_address, item['mac_address'])
-            else:
-                html_mac_address = ''
-
-        # Return
-        result['ip_address'] = html_ip_address
-        result['hostname'] = html_hostname
-        result['manufacturer'] = html_manufacturer
-        result['mac_address'] = html_mac_address
-        return result
-
-    def _listing(self, mac_addresses):
-        """Create list of dicts of MAC, host, manufacturer, IP address.
-
-        Args:
-            None
-
-        Returns:
-            oui: OUI dictionary
-
-        """
-        # Initialize key variables
-        preliminary_listing = []
-        listing = []
-
-        # Cycle through mac addresses, get the manufacturer
-        for mac_address in mac_addresses:
-            # Get manufacturer
-            manufacturer = self._manufacturer(mac_address)
-            data_dict = {}
-            data_dict['mac_address'] = mac_address
-            data_dict['manufacturer'] = manufacturer
-            preliminary_listing.append(data_dict)
-
-        # Get IP address and hostname for each mac address
-        for item in preliminary_listing:
-            mac_address = item['mac_address']
-            manufacturer = item['manufacturer']
-
-            if mac_address in self.rarp_table:
-                for ip_address in self.rarp_table[mac_address]:
-                    data_dict = {}
-                    data_dict['mac_address'] = mac_address
-                    data_dict['manufacturer'] = manufacturer
-                    data_dict['ip_address'] = ip_address
-                    data_dict['hostname'] = ''
-
-                    if ip_address in self.arp_table:
-                        if 'hostname' in self.arp_table[ip_address]:
-                            hostname = self.arp_table[ip_address]['hostname']
-                            data_dict['hostname'] = hostname
-
-                    listing.append(data_dict)
-
-        # Return
-        return listing
-
-    def _manufacturer(self, mac_address):
-        """Return manufacturer of MAC address' device.
-
-        Args:
-            mac_address: MAC address
-
-        Returns:
-            manufacturer: Name of manufacturer
-
-        """
-        # Initialize key variables
-        manufacturer = ''
-
-        # Process data
-        mac_oui = mac_address[0:6]
-        if mac_oui in self.oui:
-            manufacturer = self.oui[mac_oui]
-
-        # Return
-        return manufacturer
