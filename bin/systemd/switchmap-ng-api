@@ -17,7 +17,7 @@ if _SYS_DIRECTORY.endswith('/switchmap-ng/bin/systemd') is True:
     sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
-        'This script is not installed in the "switchmap-ng/bin" directory. '
+        'This script is not installed in the "switchmap-ng/bin/systemd" directory. '
         'Please fix.')
     sys.exit(2)
 
