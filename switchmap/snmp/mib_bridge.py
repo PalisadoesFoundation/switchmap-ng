@@ -118,6 +118,7 @@ class BridgeQuery(Query):
         data_dict = defaultdict(lambda: defaultdict(dict))
         final = defaultdict(lambda: defaultdict(dict))
         context_names = ['']
+        context_style = 0
 
         # Check if Cisco VLANS are supported
         oid_vtpvlanstate = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
@@ -128,18 +129,21 @@ class BridgeQuery(Query):
             vtpvlantype = self.snmp_object.swalk(
                 oid_vtpvlantype, normalized=True)
 
-            # Append additonal vlan context names to query.
-            # Only if Ethernet VLANs (pysnmp dies silently otherwise)
+            # Get VLANs and their states
             vtpvlanstate = self.snmp_object.swalk(
                 oid_vtpvlanstate, normalized=True)
+
+            # Get the style of context name to be used for this type of device
             for vlan, state in vtpvlanstate.items():
                 if int(state) == 1 and int(vtpvlantype[vlan]) == 1:
-                    # Create context for older Cisco systems
-                    cisco_context = '{}'.format(vlan)
-                    context_names.append(cisco_context)
+                    context_style = self._cisco_context_style(vlan)
+                    break
 
-                    # Create context for newer Cisco systems
-                    cisco_context = 'vlan-{}'.format(vlan)
+            # Append additonal vlan context names to query.
+            # Only if Ethernet VLANs (pysnmp dies silently otherwise)
+            for vlan, state in vtpvlanstate.items():
+                if int(state) == 1 and int(vtpvlantype[vlan]) == 1:
+                    cisco_context = _cisco_vlan_context(vlan, context_style)
                     context_names.append(cisco_context)
 
         # Get key information
@@ -347,3 +351,51 @@ class BridgeQuery(Query):
 
         # Return data
         return data_dict
+
+    def _cisco_context_style(self, vlan):
+        """Return style value to use to query VLAN data on a cisco switch.
+
+        Args:
+            vlan: Number of vlan
+
+        Returns:
+            cisco_style: Style of context for formatting VLAN SNMP contexts
+
+        """
+        # Initialize key variables
+        cisco_style = 0
+        styles = [0, 1]
+
+        # Try all available styles
+        for style in styles:
+            context_names = [_cisco_vlan_context(vlan, style)]
+            result = self._dot1dtpfdbaddress(context_names=context_names)
+            if bool(result) is True:
+                cisco_style = style
+                break
+
+        # Return
+        return cisco_style
+
+
+def _cisco_vlan_context(vlan, context_style):
+    """Return dict of BRIDGE-MIB dot1dBasePortIfIndex data.
+
+    Args:
+        vlan: Number of vlan
+        context_style: Value of the context style to use
+
+    Returns:
+        cisco_context: SNMP context string
+
+    """
+    # Create context string
+    if context_style == 0:
+        # Create context for older Cisco systems
+        cisco_context = '{}'.format(vlan)
+    else:
+        # Create context for newer Cisco systems
+        cisco_context = 'vlan-{}'.format(vlan)
+
+    # Return
+    return cisco_context

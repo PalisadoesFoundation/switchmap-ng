@@ -460,6 +460,8 @@ class Interact(object):
         # Initialize variables
         return_results = {}
         session_error_string = None
+        non_repeaters = 0
+        max_repetitions = 25
         snmp_params = self.snmp_params
 
         # Check if OID is valid
@@ -491,9 +493,10 @@ class Interact(object):
             else:
                 (session_error_string, session_error_status,
                  session_error_index, var_binds) = \
-                    snmp_object.nextCmd(
-                        authentication_object, transport_object, oid_to_get,
-                        contextName=context_name)
+                    snmp_object.bulkCmd(
+                        authentication_object, transport_object,
+                        non_repeaters, max_repetitions,
+                        oid_to_get, contextName=context_name)
 
         # Do something here
         except Exception as exception_error:
@@ -640,8 +643,9 @@ def _format_results(normalized=False, get=False, var_binds=None):
             if isinstance(var_row, list) is True:
                 if len(var_row) == 1:
                     for oid_returned, value in var_row:
-                        oid_fixed = ('.%s') % (oid_returned)
-                        return_results[oid_fixed] = _convert(value)
+                        if isinstance(value, rfc1905.EndOfMibView) is False:
+                            oid_fixed = ('.%s') % (oid_returned)
+                            return_results[oid_fixed] = _convert(value)
     # ####################################################################
     # ### Stop ###########################################################
 
