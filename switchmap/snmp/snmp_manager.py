@@ -497,7 +497,6 @@ class Interact(object):
                         authentication_object, transport_object,
                         non_repeaters, max_repetitions,
                         oid_to_get, contextName=context_name)
-                print(oid_to_get)
 
         # Do something here
         except Exception as exception_error:
