@@ -381,14 +381,23 @@ class Config(object):
         # Get result
         key = 'main'
         sub_key = 'agent_threads'
-        intermediate = _key_sub_key(key, sub_key, self.config_dict, die=False)
+        configured_value = _key_sub_key(
+            key, sub_key, self.config_dict, die=False)
 
         # Default to 20
-        if intermediate is None:
-            intermediate = 20
+        if bool(configured_value) is False:
+            threads = 20
+        elif configured_value <= 0:
+            threads = 1
+        else:
+            threads = configured_value
+
+        # Get CPU cores
+        cores = multiprocessing.cpu_count()
+        desired_max_threads = max(1, cores - 1)
 
         # We don't want a value that's too big that the CPU cannot cope
-        result = min(intermediate, (multiprocessing.cpu_count() * 2) + 1)
+        result = min(threads, desired_max_threads)
 
         # Return
         return result
