@@ -43,7 +43,7 @@ class TestConfig(unittest.TestCase):
 main:
     log_directory: %s
     cache_directory: %s
-    agent_threads: 20
+    agent_threads: 25
     bind_port: 3000
     hostnames:
     - 192.168.1.1
@@ -208,8 +208,12 @@ main:
         # good key and key_value
         result = self.config.agent_threads()
 
+        # Get CPU cores
+        cores = multiprocessing.cpu_count()
+        desired_max_threads = max(1, cores - 1)
+
         # We don't want a value that's too big that the CPU cannot cope
-        expected = min(result, (multiprocessing.cpu_count() * 2) + 1)
+        expected = min(result, desired_max_threads)
 
         self.assertEqual(result, expected)
 
