@@ -3,9 +3,6 @@
 
 import os
 
-# PIP3 imports
-from pysnmp.proto import rfc1905
-
 import easysnmp
 from easysnmp import exceptions
 
@@ -460,12 +457,12 @@ class Interact(object):
         """
         # Initialize variables
         snmp_params = self._snmp_params
-        contactable = True
+        _contactable = True
         exists = True
         results = []
 
         # Check if OID is valid
-        if oid_valid_format(oid_to_get) is False:
+        if _oid_valid_format(oid_to_get) is False:
             log_message = ('OID {} has an invalid format'.format(oid_to_get))
             log.log2die(1020, log_message)
 
@@ -493,42 +490,42 @@ class Interact(object):
         # Crash on error, return blank results if doing certain types of
         # connectivity checks
         except exceptions.EasySNMPConnectionError as exception_error:
-            (contactable, exists) = _process_error(
+            (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence)
 
         except exceptions.EasySNMPTimeoutError as exception_error:
-            (contactable, exists) = _process_error(
+            (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence)
 
         except exceptions.EasySNMPUnknownObjectIDError as exception_error:
-            (contactable, exists) = _process_error(
+            (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence)
 
         except exceptions.EasySNMPNoSuchNameError as exception_error:
-            (contactable, exists) = _process_error(
+            (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence)
 
         except exceptions.EasySNMPNoSuchObjectError as exception_error:
-            (contactable, exists) = _process_error(
+            (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence)
 
         except exceptions.EasySNMPNoSuchInstanceError as exception_error:
-            (contactable, exists) = _process_error(
+            (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence)
 
         except exceptions.EasySNMPUndeterminedTypeError as exception_error:
-            (contactable, exists) = _process_error(
+            (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence)
 
         except SystemError as exception_error:
-            (contactable, exists) = _process_error(
+            (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence, system_error=True)
         except:
@@ -539,7 +536,7 @@ class Interact(object):
         values = _format_results(results, normalized=normalized)
 
         # Return
-        return (contactable, exists, values)
+        return (_contactable, exists, values)
 
 
 class _Session(object):
@@ -708,7 +705,7 @@ def _process_error(
 
     """
     # Initialize key varialbes
-    contactable = True
+    _contactable = True
     exists = True
     if system_error is False:
         error_name = exception_error.__name__
@@ -720,25 +717,25 @@ def _process_error(
         if system_error is False:
             if error_name == 'EasySNMPUnknownObjectIDError':
                 exists = False
-                return (contactable, exists)
+                return (_contactable, exists)
             elif error_name == 'EasySNMPNoSuchNameError':
                 exists = False
-                return (contactable, exists)
+                return (_contactable, exists)
             elif error_name == 'EasySNMPNoSuchObjectError':
                 exists = False
-                return (contactable, exists)
+                return (_contactable, exists)
             elif error_name == 'EasySNMPNoSuchInstanceError':
                 exists = False
-                return (contactable, exists)
+                return (_contactable, exists)
         else:
             exists = False
-            return (contactable, exists)
+            return (_contactable, exists)
 
     # Checking if the device is reachable
     if check_reachability is True:
-        contactable = False
+        _contactable = False
         exists = False
-        return (contactable, exists)
+        return (_contactable, exists)
 
     # Die an agonizing death!
     log_message = '{}: ({})'.format(log_message, error_name)
@@ -832,7 +829,7 @@ def _convert(result):
     return converted
 
 
-def oid_valid_format(oid):
+def _oid_valid_format(oid):
     """Determine whether the format of the oid is correct.
 
     Args:
