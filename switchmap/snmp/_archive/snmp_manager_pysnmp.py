@@ -3,11 +3,10 @@
 
 import os
 
-# PIP3 imports
+from pysnmp.entity.rfc3413.oneliner import cmdgen
 from pysnmp.proto import rfc1905
-
-import easysnmp
-from easysnmp import exceptions
+from pysnmp.proto import rfc1902
+from pysnmp.smi import rfc1902 as smi
 
 # Import project libraries
 from switchmap.utils import log
@@ -16,19 +15,24 @@ from switchmap.snmp import iana_enterprise
 
 
 class Validate(object):
-    """Class Verify SNMP data."""
+    """Class Verify SNMP data.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Functions:
+        __init__:
+        oid_exists:
+        walk:
+        get:
+        query:
+    """
 
     def __init__(self, hostname, snmp_config):
-        """Intialize the class.
-
-        Args:
-            hostname: Name of host
-            snmp_config: List of dicts of possible snmp configurations
-
-        Returns:
-            None
-
-        """
+        """Function for intializing the class."""
         # Initialize key variables
         self.snmp_config = snmp_config
         self.hostname = hostname
@@ -103,19 +107,16 @@ class Validate(object):
             # Update credentials
             params_dict['snmp_hostname'] = self.hostname
 
-            # Setup contact with the remote device
-            device = Interact(params_dict)
-
             # Try successive groups
             if group is None:
                 # Verify connectivity
-                if device.contactable() is True:
+                if _contactable(params_dict) is True:
                     credentials = params_dict
                     break
             else:
                 if params_dict['group_name'] == group:
                     # Verify connectivity
-                    if device.contactable() is True:
+                    if _contactable(params_dict) is True:
                         credentials = params_dict
 
         # Return
@@ -123,30 +124,39 @@ class Validate(object):
 
 
 class Interact(object):
-    """Class Gets SNMP data."""
+    """Class Gets SNMP data.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Functions:
+        __init__:
+        oid_exists:
+        walk:
+        get:
+        query:
+    """
 
     def __init__(self, snmp_parameters):
-        """Intialize the class.
-
-        Args:
-            snmp_parameters: Dict of SNMP parameters to use
-
-        Returns:
-            None
-
-        """
+        """Function for intializing the class."""
         # Initialize key variables
-        self._snmp_params = snmp_parameters
+        self.snmp_params = {}
+
+        # Assign variables
+        self.snmp_params = snmp_parameters
 
         # Fail if snmp_parameters dictionary is empty
         if snmp_parameters['snmp_version'] is None:
             log_message = (
-                'SNMP version is "None". Non existent host? - {}'
-                ''.format(snmp_parameters['snmp_hostname']))
+                'SNMP version is "None". Non existent host? - %s'
+                '') % (snmp_parameters['snmp_hostname'])
             log.log2die(1004, log_message)
 
         # Fail if snmp_parameters dictionary is empty
-        if bool(snmp_parameters) is False:
+        if not snmp_parameters:
             log_message = ('SNMP parameters provided are blank. '
                            'Non existent host?')
             log.log2die(1005, log_message)
@@ -182,7 +192,7 @@ class Interact(object):
 
         """
         # Initialize key variables
-        hostname = self._snmp_params['snmp_hostname']
+        hostname = self.snmp_params['snmp_hostname']
 
         # Return
         return hostname
@@ -205,7 +215,7 @@ class Interact(object):
         try:
             # If we can poll the SNMP sysObjectID,
             # then the device is contactable
-            result = self.sysobjectid(check_reachability=True)
+            result = self.sysobjectid(connectivity_check=True)
             if bool(result) is True:
                 contactable = True
 
@@ -215,19 +225,18 @@ class Interact(object):
 
         except:
             # Log a message
-            log_message = (
-                'Unexpected SNMP error for device {}'
-                ''.format(self._snmp_params['snmp_hostname']))
+            log_message = ('Unexpected SNMP error for device %s') % (
+                self.snmp_params['snmp_hostname'])
             log.log2die(1008, log_message)
 
         # Return
         return contactable
 
-    def sysobjectid(self, check_reachability=False):
+    def sysobjectid(self, connectivity_check=False):
         """Get the sysObjectID of the device.
 
         Args:
-            check_reachability:
+            connectivity_check:
                 Set if testing for connectivity. Some session
                 errors are ignored so that a null result is returned
         Returns:
@@ -239,9 +248,9 @@ class Interact(object):
         object_id = None
 
         # Get sysObjectID
-        results = self.get(oid, check_reachability=check_reachability)
+        results = self.get(oid, connectivity_check=connectivity_check)
         if bool(results) is True:
-            object_id = results[oid].decode('utf-8')
+            object_id = ('.%s') % (results[oid].decode('utf-8'))
 
         # Return
         return object_id
@@ -263,19 +272,19 @@ class Interact(object):
         validity = False
 
         # Validate OID
-        if self._oid_exists_get(
+        if self.oid_exists_get(
                 oid_to_get, context_name=context_name) is True:
             validity = True
 
         if validity is False:
-            if self._oid_exists_walk(
+            if self.oid_exists_walk(
                     oid_to_get, context_name=context_name) is True:
                 validity = True
 
         # Return
         return validity
 
-    def _oid_exists_get(self, oid_to_get, context_name=''):
+    def oid_exists_get(self, oid_to_get, context_name=''):
         """Determine existence of OID on device.
 
         Args:
@@ -292,20 +301,15 @@ class Interact(object):
         validity = False
 
         # Process
-        (_, validity, result) = self.query(
-            oid_to_get,
-            get=True,
-            check_reachability=True, context_name=context_name,
-            check_existence=True)
-
-        # If we get no result, then override validity
-        if result[oid_to_get] is None:
-            validity = False
+        results = self.get(
+            oid_to_get, connectivity_check=True, context_name=context_name)
+        if _instance_found(results) is True:
+            validity = True
 
         # Return
         return validity
 
-    def _oid_exists_walk(self, oid_to_get, context_name=''):
+    def oid_exists_walk(self, oid_to_get, context_name=''):
         """Determine existence of OID on device.
 
         Args:
@@ -322,15 +326,10 @@ class Interact(object):
         validity = False
 
         # Process
-        (_, validity, result) = self.query(
-            oid_to_get, get=False,
-            check_reachability=True,
-            context_name=context_name,
-            check_existence=True)
-
-        # If we get no result, then override validity
-        if bool(result) is False:
-            validity = False
+        results = self.walk(
+            oid_to_get, connectivity_check=True, context_name=context_name)
+        if _instance_found(results) is True:
+            validity = True
 
         # Return
         return validity
@@ -354,19 +353,30 @@ class Interact(object):
             results: Results
 
         """
+        # Initialize key variables
+        results = {}
+
         # Process data
-        results = self.walk(
+        data = self.walk(
             oid_to_get,
-            normalized=normalized, check_reachability=True,
-            check_existence=True,
+            normalized=normalized, connectivity_check=True,
             context_name=context_name)
+
+        # If oid not found then return blank dict
+        for value in data.values():
+            if isinstance(value, rfc1905.NoSuchInstance) is False:
+                results = data
+            # If nothing is retuned, then fail
+            elif bool(value) is True:
+                results = data
+            break
 
         # Return
         return results
 
     def walk(
             self, oid_to_get, normalized=False,
-            check_reachability=False, check_existence=False, context_name=''):
+            connectivity_check=False, context_name=''):
         """Do an SNMPwalk.
 
         Args:
@@ -377,38 +387,32 @@ class Interact(object):
                 when trying to create multidimensional dicts where the
                 primary key is a universal value such as IF-MIB::ifIndex
                 or BRIDGE-MIB::dot1dBasePort
-            check_reachability:
+            connectivity_check:
                 Set if testing for connectivity. Some session
                 errors are ignored so that a null result is returned
-            check_existence:
-                Set if checking for the existence of the OID
             context_name: Set the contextName used for SNMPv3 messages.
                 The default contextName is the empty string "".  Overrides the
                 defContext token in the snmp.conf file.
 
         Returns:
-            result: Dictionary of tuples (OID, value)
+            Dictionary of tuples (OID, value)
 
         """
-        (_, _, result) = self.query(
+        return self.query(
             oid_to_get, get=False,
-            check_reachability=check_reachability,
-            check_existence=check_existence,
+            connectivity_check=connectivity_check,
             normalized=normalized, context_name=context_name)
-        return result
 
     def get(
-            self, oid_to_get, check_reachability=False, check_existence=False,
+            self, oid_to_get, connectivity_check=False,
             normalized=False, context_name=''):
         """Do an SNMPget.
 
         Args:
             oid_to_get: OID to get
-            check_reachability:
+            connectivity_check:
                 Set if testing for connectivity. Some session
                 errors are ignored so that a null result is returned
-            check_existence:
-                Set if checking for the existence of the OID
             normalized: If True, then return results as a dict keyed by
                 only the last node of an OID, otherwise return results
                 keyed by the entire OID string. Normalization is useful
@@ -423,27 +427,22 @@ class Interact(object):
             Dictionary of tuples (OID, value)
 
         """
-        (_, _, result) = self.query(
+        return self.query(
             oid_to_get, get=True,
-            check_reachability=check_reachability,
-            check_existence=check_existence,
-            normalized=normalized,
+            connectivity_check=connectivity_check, normalized=normalized,
             context_name=context_name)
-        return result
 
     def query(
-            self, oid_to_get, get=False, check_reachability=False,
-            check_existence=False, normalized=False, context_name=''):
+            self, oid_to_get, get=False, connectivity_check=False,
+            normalized=False, context_name=''):
         """Do an SNMP query.
 
         Args:
             oid_to_get: OID to walk
             get: Flag determining whether to do a GET or WALK
-            check_reachability:
+            connectivity_check:
                 Set if testing for connectivity. Some session
                 errors are ignored so that a null result is returned
-            check_existence:
-                Set if checking for the existence of the OID
             normalized: If True, then return results as a dict keyed by
                 only the last node of an OID, otherwise return results
                 keyed by the entire OID string. Normalization is useful
@@ -459,303 +458,158 @@ class Interact(object):
 
         """
         # Initialize variables
-        snmp_params = self._snmp_params
-        contactable = True
-        exists = True
-        results = []
+        return_results = {}
+        session_error_string = None
+        non_repeaters = 0
+        max_repetitions = 25
+        snmp_params = self.snmp_params
 
         # Check if OID is valid
-        if oid_valid_format(oid_to_get) is False:
-            log_message = ('OID {} has an invalid format'.format(oid_to_get))
+        valid_format = oid_valid_format(oid_to_get)
+        if valid_format is False:
+            log_message = ('OID %s has an invalid format') % (oid_to_get)
             log.log2die(1020, log_message)
 
-        # Create SNMP session
-        session = _Session(snmp_params, context_name=context_name).session
+        # Create the object
+        snmp_object = cmdgen.CommandGenerator()
 
-        # Create failure log message
-        try_log_message = (
-            'Error occurred during SNMP query on host '
-            'OID {} from {} for context "{}"'
-            ''.format(
-                oid_to_get, snmp_params['snmp_hostname'],
-                context_name))
+        # Setup Transport object
+        transport_object = cmdgen.UdpTransportTarget(
+            (snmp_params['snmp_hostname'], snmp_params['snmp_port']))
+
+        # Create the auth object
+        authentication_object = _get_auth_object(snmp_params)
 
         # Fill the results object by getting OID data
         try:
             # Get the data
             if get is True:
-                results = [session.get(oid_to_get)]
+                (session_error_string, session_error_status,
+                 session_error_index, var_binds) = \
+                    snmp_object.getCmd(
+                        authentication_object, transport_object, oid_to_get,
+                        contextName=context_name)
 
             else:
-                results = session.bulkwalk(
-                    oid_to_get, non_repeaters=0, max_repetitions=25)
+                (session_error_string, session_error_status,
+                 session_error_index, var_binds) = \
+                    snmp_object.bulkCmd(
+                        authentication_object, transport_object,
+                        non_repeaters, max_repetitions,
+                        oid_to_get, contextName=context_name)
 
-        # Crash on error, return blank results if doing certain types of
-        # connectivity checks
-        except exceptions.EasySNMPConnectionError as exception_error:
-            (contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPTimeoutError as exception_error:
-            (contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPUnknownObjectIDError as exception_error:
-            (contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPNoSuchNameError as exception_error:
-            (contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPNoSuchObjectError as exception_error:
-            (contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPNoSuchInstanceError as exception_error:
-            (contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPUndeterminedTypeError as exception_error:
-            (contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except SystemError as exception_error:
-            (contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence, system_error=True)
+        # Do something here
+        except Exception as exception_error:
+            if connectivity_check is False:
+                # Check for errors and print out results
+                log_message = (
+                    'Error occurred during SNMPget on host '
+                    'OID {} from {} for context "{}": ({})'
+                    ''.format(
+                        oid_to_get, snmp_params['snmp_hostname'],
+                        context_name, exception_error))
+                log.log2die(1023, log_message)
+            else:
+                var_binds = {}
         except:
             log_message = ('Unexpected error')
             log.log2die(1002, log_message)
 
-        # Format results
-        values = _format_results(results, normalized=normalized)
-
-        # Return
-        return (contactable, exists, values)
-
-
-class _Session(object):
-    """Class to create an SNMP session with a device."""
-
-    def __init__(self, snmp_parameters, context_name=''):
-        """Initialize the class.
-
-        Args:
-            snmp_parameters: Dict of SNMP paramerters
-            context_name: Name of context
-
-        Returns:
-            session: SNMP session
-
-        """
-        # Initialize key variables
-        self._snmp_params = {}
-        self._context_name = context_name
-
-        # Assign variables
-        self._snmp_params = snmp_parameters
-
-        # Fail if snmp_parameters dictionary is empty
-        if snmp_parameters['snmp_version'] is None:
+        # Crash on error, return blank results if doing certain types of
+        # connectivity checks
+        if session_error_string:
             log_message = (
-                'SNMP version is "None". Non existent host? - {}'
-                ''.format(snmp_parameters['snmp_hostname']))
-            log.log2die(1004, log_message)
+                'Error occurred for OID %s on host %s: '
+                '(%s) ErrorNum: %s, ErrorInd: '
+                '%s') % (oid_to_get,
+                         snmp_params['snmp_hostname'],
+                         session_error_string,
+                         session_error_status, session_error_index)
 
-        # Fail if snmp_parameters dictionary is empty
-        if not snmp_parameters:
-            log_message = ('SNMP parameters provided are blank. '
-                           'Non existent host?')
-            log.log2die(1005, log_message)
+            return _process_error(
+                connectivity_check=connectivity_check,
+                session_error_status=session_error_status,
+                session_error_index=session_error_index,
+                get=get,
+                log_message=log_message)
 
-        # Create SNMP session
-        self.session = self._session()
-
-    def _session(self):
-        """Create an SNMP session for queries.
-
-        Args:
-            None
-
-        Returns:
-            session: SNMP session
-
-        """
-        # Create session
-        if self._snmp_params['snmp_version'] != 3:
-            session = easysnmp.Session(
-                community=self._snmp_params['snmp_community'],
-                hostname=self._snmp_params['snmp_hostname'],
-                version=self._snmp_params['snmp_version'],
-                local_port=self._snmp_params['snmp_port'],
-                use_numeric=True,
-                context=self._context_name
-            )
-        else:
-            session = easysnmp.Session(
-                hostname=self._snmp_params['snmp_hostname'],
-                version=self._snmp_params['snmp_version'],
-                local_port=self._snmp_params['snmp_port'],
-                use_numeric=True,
-                context=self._context_name,
-                security_level=self._security_level(),
-                security_username=self._snmp_params['snmp_secname'],
-                privacy_protocol=self._priv_protocol(),
-                privacy_password=self._snmp_params['snmp_privpassword'],
-                auth_protocol=self._auth_protocol(),
-                auth_password=self._snmp_params['snmp_authpassword']
-            )
+        # Format results
+        return_results = _format_results(
+            normalized=normalized, get=get, var_binds=var_binds)
 
         # Return
-        return session
-
-    def _security_level(self):
-        """Create string for security level.
-
-        Args:
-            snmp_params: Dict of SNMP paramerters
-
-        Returns:
-            result: security level
-
-        """
-        # Initialize key variables
-        snmp_params = self._snmp_params
-
-        # Determine the security level
-        if bool(snmp_params['snmp_authprotocol']) is True:
-            if bool(snmp_params['snmp_privprotocol']) is True:
-                result = 'authPriv'
-            else:
-                result = 'authNoPriv'
-        else:
-            result = 'noAuthNoPriv'
-
-        # Return
-        return result
-
-    def _auth_protocol(self):
-        """Get AuthProtocol to use.
-
-        Args:
-            snmp_params: Dict of SNMP paramerters
-
-        Returns:
-            result: Protocol to be used in session
-
-        """
-        # Initialize key variables
-        snmp_params = self._snmp_params
-        protocol = snmp_params['snmp_authprotocol']
-
-        # Setup AuthProtocol (Default SHA)
-        if bool(protocol) is False:
-            result = 'DEFAULT'
-        else:
-            if protocol.lower() == 'md5':
-                result = 'MD5'
-            else:
-                result = 'SHA'
-
-        # Return
-        return result
-
-    def _priv_protocol(self):
-        """Get privProtocol to use.
-
-        Args:
-            snmp_params: Dict of SNMP paramerters
-
-        Returns:
-            result: Protocol to be used in session
-
-        """
-        # Initialize key variables
-        snmp_params = self._snmp_params
-        protocol = snmp_params['snmp_privprotocol']
-
-        # Setup privProtocol (Default AES256)
-        if bool(protocol) is False:
-            result = 'DEFAULT'
-        else:
-            if protocol.lower() == 'des':
-                result = 'DES'
-            else:
-                result = 'AES'
-
-        # Return
-        return result
+        return return_results
 
 
 def _process_error(
-        log_message, exception_error, check_reachability,
-        check_existence, system_error=False):
-    """Process the SNMP error.
+        connectivity_check=False, session_error_status=None,
+        session_error_index=None, get=False,
+        log_message=None):
+    """Process errors received.
 
     Args:
-        params_dict: Dict of SNMP parameters to try
+        connectivity_check:
+                Set if testing for connectivity. Some session
+                errors are ignored so that a null result is returned
+        session_error_status: Error status
+        session_error_index: Error index
+        get: True if formatting the results of an SNMP get
 
     Returns:
-        alive: True if contactable
+        results:
 
     """
-    # Initialize key varialbes
-    contactable = True
-    exists = True
-    if system_error is False:
-        error_name = exception_error.__name__
+    # Initialize key variables
+    results = {}
+
+    # Timeout contacting device
+    # (Timeout as OID requested does not exist, not because the
+    # device is uncontactable)
+    # The device must be checked for connectivity before hand. If it
+    # can connect but some additional OID is unavailable, then this is
+    # invoked. This is used to determine whether a device has 64 bit
+    # IFMIB octet counters
+    if connectivity_check is False:
+        if (session_error_status == 0) and (
+                session_error_index == -24):
+
+            # Return blank results
+            return results
+
+    if connectivity_check is True:
+        # Bad SNMP authentication during authentication check
+        if (session_error_status == 0) and (
+                session_error_index == -4):
+            # Return blank results
+            return results
+
+        # Device completely off the air (SNMP timeout)
+        if (session_error_status == 0) and (
+                session_error_index == 0):
+            # Return blank results
+            return results
+
+    # Otherwise Fail
+    if get is True:
+        action_taken = 'SNMPget'
     else:
-        error_name = 'SystemError'
-
-    # Check existence of OID
-    if check_existence is True:
-        if system_error is False:
-            if error_name == 'EasySNMPUnknownObjectIDError':
-                exists = False
-                return (contactable, exists)
-            elif error_name == 'EasySNMPNoSuchNameError':
-                exists = False
-                return (contactable, exists)
-            elif error_name == 'EasySNMPNoSuchObjectError':
-                exists = False
-                return (contactable, exists)
-            elif error_name == 'EasySNMPNoSuchInstanceError':
-                exists = False
-                return (contactable, exists)
-        else:
-            exists = False
-            return (contactable, exists)
-
-    # Checking if the device is reachable
-    if check_reachability is True:
-        contactable = False
-        exists = False
-        return (contactable, exists)
-
-    # Die an agonizing death!
-    log_message = '{}: ({})'.format(log_message, error_name)
-    log.log2die(1023, log_message)
+        action_taken = 'SNMPwalk'
+    log_message = ('%s - %s') % (action_taken, log_message)
+    log.log2die(1003, log_message)
 
 
-def _format_results(results, normalized=False):
+def _format_results(normalized=False, get=False, var_binds=None):
     """Normalize the results of an walk.
 
     Args:
-        results: List of lists of results
         normalized: If True, then return results as a dict keyed by
             only the last node of an OID, otherwise return results
             keyed by the entire OID string. Normalization is useful
             when trying to create multidimensional dicts where the
             primary key is a universal value such as IF-MIB::ifIndex
             or BRIDGE-MIB::dot1dBasePort
+        get: True if formatting the results of an SNMP get
+        var_binds: Dict of results
 
     Returns:
         return_results: Dict of results
@@ -764,23 +618,50 @@ def _format_results(results, normalized=False):
     # Initialize key variables
     return_results = {}
 
-    for result in results:
-        if normalized is True:
-            return_results[result.oid_index] = _convert(result)
-        else:
-            return_results[
-                '{}.{}'.format(
-                    result.oid, result.oid_index)] = _convert(result)
+    # ### Start ##########################################################
+    # ####################################################################
+    # You can determine the class of value as value.__class__.__name__
+    # This is good for troubleshooting
+    # ####################################################################
+    # Construct the results to return
+    if get is True:
+        # Returns a single tuple
+        for oid_returned, value in var_binds:
+            oid_fixed = ('.%s') % (oid_returned)
+            return_results[oid_fixed] = _convert(value)
+    else:
+        # Returns a list of tuples
+        for var_row in var_binds:
+            # These if-statements protect against:
+            #
+            # 'Error in packet. Reason: authorizationError
+            # (access denied to that object)'
+            #
+            # errors that occur when trying to access a part of the MIB that
+            # hasn't been authorized due to MIB access lists on the
+            # remote agent
+            if isinstance(var_row, list) is True:
+                if len(var_row) == 1:
+                    for oid_returned, value in var_row:
+                        if isinstance(value, rfc1905.EndOfMibView) is False:
+                            oid_fixed = ('.%s') % (oid_returned)
+                            return_results[oid_fixed] = _convert(value)
+    # ####################################################################
+    # ### Stop ###########################################################
+
+    # Return normalized results if required
+    if normalized is True:
+        return_results = _normalized_walk(return_results)
 
     # Return
     return return_results
 
 
-def _convert(result):
+def _convert(value):
     """Convert value from pysnmp object to standard python types.
 
     Args:
-        result: Named tuple result
+        value: Value to convert
 
     Returns:
         converted: converted value. Only returns BYTES and INTEGERS
@@ -788,34 +669,24 @@ def _convert(result):
     """
     # Initialieze key values
     converted = None
-    value = result.value
-    snmp_type = result.snmp_type
 
     # Convert string type values to bytes
-    if snmp_type.upper() == 'OCTETSTR':
-        converted = bytes(value, 'utf-8')
-    elif snmp_type.upper() == 'OPAQUE':
-        converted = bytes(value, 'utf-8')
-    elif snmp_type.upper() == 'BITS':
-        converted = bytes(value, 'utf-8')
-    elif snmp_type.upper() == 'IPADDR':
-        converted = bytes(value, 'utf-8')
-    elif snmp_type.upper() == 'NETADDR':
-        converted = bytes(value, 'utf-8')
-    elif snmp_type.upper() == 'OBJECTID':
+    if isinstance(value, rfc1902.OctetString) is True:
+        converted = bytes(value)
+    elif isinstance(value, rfc1902.Opaque) is True:
+        converted = bytes(value)
+    elif isinstance(value, rfc1902.Bits) is True:
+        converted = bytes(value)
+    elif isinstance(value, rfc1902.IpAddress) is True:
+        converted = bytes(value)
+    elif isinstance(value, smi.ObjectIdentity) is True:
         # DO NOT CHANGE !!!
         converted = bytes(str(value), 'utf-8')
-    elif snmp_type.upper() == 'NOSUCHOBJECT':
+    elif isinstance(value, rfc1905.NoSuchObject) is True:
         # Nothing if OID not found
         converted = None
-    elif snmp_type.upper() == 'NOSUCHINSTANCE':
+    elif isinstance(value, rfc1905.NoSuchInstance) is True:
         # Nothing if OID not found
-        converted = None
-    elif snmp_type.upper() == 'ENDOFMIBVIEW':
-        # Nothing
-        converted = None
-    elif snmp_type.upper() == 'NULL':
-        # Nothing
         converted = None
     else:
         # Convert everything else into integer values
@@ -830,6 +701,116 @@ def _convert(result):
 
     # Return
     return converted
+
+
+def _get_auth_object(snmp_params):
+    """Get the authentication object to be used by cmdgen library.
+
+    Args:
+        snmp_params: Dict of SNMP parameters
+
+    Returns:
+        authentication_object: Auth object for query
+
+    """
+    # Initialize key variables
+    authentication_object = None
+
+    # Process SNMPv2
+    if snmp_params['snmp_version'] == 2:
+        # Setup SNMPv2 authentication object
+        authentication_object = cmdgen.CommunityData(
+            snmp_params['snmp_community'])
+
+    # Process SNMPv3
+    else:
+        # Setup AuthProtocol (Default SHA)
+        if snmp_params['snmp_authprotocol'] is None:
+            authproto_object = cmdgen.usmNoAuthProtocol
+        else:
+            if snmp_params['snmp_authprotocol'].lower() == 'md5':
+                authproto_object = cmdgen.usmHMACMD5AuthProtocol
+            else:
+                authproto_object = cmdgen.usmHMACSHAAuthProtocol
+
+        # Setup privProtocol (Default AES256)
+        if snmp_params['snmp_privprotocol'] is None:
+            privproto_object = cmdgen.usmNoPrivProtocol
+        else:
+            if snmp_params['snmp_privprotocol'].lower() == 'des':
+                privproto_object = cmdgen.usmDESPrivProtocol
+            elif snmp_params['snmp_privprotocol'].lower() == '3des':
+                privproto_object = cmdgen.usm3DESEDEPrivProtocol
+            elif snmp_params['snmp_privprotocol'].lower() == 'aes':
+                privproto_object = cmdgen.usmAesCfb128Protocol
+            elif snmp_params['snmp_privprotocol'].lower() == 'aes128':
+                privproto_object = cmdgen.usmAesCfb128Protocol
+            elif snmp_params['snmp_privprotocol'].lower() == 'aes192':
+                privproto_object = cmdgen.usmAesCfb192Protocol
+            else:
+                privproto_object = cmdgen.usmAesCfb256Protocol
+
+        # Setup SNMPv3 authentication object
+        authentication_object = cmdgen.UsmUserData(
+            snmp_params['snmp_secname'],
+            snmp_params['snmp_authpassword'],
+            snmp_params['snmp_privpassword'],
+            authProtocol=authproto_object,
+            privProtocol=privproto_object)
+
+    # Return
+    return authentication_object
+
+
+def _normalized_walk(walk_results):
+    """Normalize the results of an walk.
+
+    Args:
+        walk_results: Results of an walk
+
+    Returns:
+        result: Dict of the format {'ifindex', 'oid_value')
+
+    """
+    # Initialize key variables
+    result = {}
+
+    # Create the result
+    for key, value in walk_results.items():
+        octets = key.split('.')
+        result[octets[-1]] = value
+
+    # Return result
+    return result
+
+
+def _instance_found(results):
+    """Determine if an instance of the OID was found based on the results.
+
+    Args:
+        results: Results of an walk
+
+    Returns:
+        found: True if found
+
+    """
+    # Initialize key variables
+    found = False
+
+    # Process
+    for value in results.values():
+        # If oid not found message, then fail
+        if (isinstance(value, rfc1905.NoSuchInstance) is True) or (
+                (isinstance(value, rfc1905.NoSuchObject) is True)):
+            found = False
+        elif isinstance(value, int) is True:
+            found = True
+        elif bool(value) is True:
+            found = True
+        break
+
+    # Return
+    return found
 
 
 def oid_valid_format(oid):
@@ -888,3 +869,25 @@ def _update_cache(filename, snmp_group):
     # Do update
     with open(filename, 'w+') as env:
         env.write(snmp_group)
+
+
+def _contactable(params_dict):
+    """Determine whether host is contactable.
+
+    Args:
+        params_dict: Dict of SNMP parameters to try
+
+    Returns:
+        alive: True if contactable
+
+    """
+    # Initialize key variables
+    alive = False
+
+    # Verify connectivity
+    query = Interact(params_dict)
+    if query.contactable() is True:
+        alive = True
+
+    # Return
+    return alive
