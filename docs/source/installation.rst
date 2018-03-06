@@ -20,8 +20,7 @@ The commands for installing the dependencies are:
 
 ::
 
-    $ sudo apt-get -y install python3 python3-pip snmp
-
+    $ sudo apt-get -y install python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev
 
 
 Centos / Fedora
@@ -31,7 +30,7 @@ The commands for installing the dependencies are:
 
 ::
 
-    $ sudo dnf -y install python3 python3-pip net-snmp-utils
+    $ sudo dnf -y install python3 python3-pip net-snmp-utils net-snmp-devel gcc python-devel
 
 
 Install Switchmap-NG

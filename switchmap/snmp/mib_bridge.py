@@ -88,7 +88,7 @@ class BridgeQuery(Query):
 
         # Check if Cisco VLANS are supported
         oid_vtpvlanstate = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
-        oid_exists = self.snmp_object.oid_exists_walk(oid_vtpvlanstate)
+        oid_exists = self.snmp_object.oid_exists(oid_vtpvlanstate)
         if bool(oid_exists) is True:
             final = self._macaddresstable_cisco()
             done = True
@@ -96,7 +96,7 @@ class BridgeQuery(Query):
         # Check if Juniper VLANS are supported
         if done is False:
             oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
-            oid_exists = self.snmp_object.oid_exists_walk(
+            oid_exists = self.snmp_object.oid_exists(
                 oid_dot1qvlanstaticname)
             if bool(oid_exists) is True:
                 final = self._macaddresstable_juniper()
@@ -122,7 +122,7 @@ class BridgeQuery(Query):
 
         # Check if Cisco VLANS are supported
         oid_vtpvlanstate = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
-        oid_exists = self.snmp_object.oid_exists_walk(oid_vtpvlanstate)
+        oid_exists = self.snmp_object.oid_exists(oid_vtpvlanstate)
         if bool(oid_exists) is True:
             # Get the vlantype
             oid_vtpvlantype = '.1.3.6.1.4.1.9.9.46.1.3.1.1.3'
@@ -199,7 +199,7 @@ class BridgeQuery(Query):
 
         # Check if Jnuiper VLANS are supported
         oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
-        oid_exists = self.snmp_object.oid_exists_walk(oid_dot1qvlanstaticname)
+        oid_exists = self.snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
             # Create a dict of MAC addresses found
             mac_dict = self._dot1qtpfdbport()
@@ -276,7 +276,7 @@ class BridgeQuery(Query):
 
         # Process dot1qvlanstaticname OID
         oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
-        oid_exists = self.snmp_object.oid_exists_walk(oid_dot1qvlanstaticname)
+        oid_exists = self.snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
             results = self.snmp_object.walk(
                 oid_dot1qvlanstaticname, normalized=True)
