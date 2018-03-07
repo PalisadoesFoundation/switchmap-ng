@@ -592,7 +592,7 @@ class _Session(object):
                 community=self._snmp_params['snmp_community'],
                 hostname=self._snmp_params['snmp_hostname'],
                 version=self._snmp_params['snmp_version'],
-                local_port=self._snmp_params['snmp_port'],
+                remote_port=self._snmp_params['snmp_port'],
                 use_numeric=True,
                 context=self._context_name
             )
@@ -600,7 +600,7 @@ class _Session(object):
             session = easysnmp.Session(
                 hostname=self._snmp_params['snmp_hostname'],
                 version=self._snmp_params['snmp_version'],
-                local_port=self._snmp_params['snmp_port'],
+                remote_port=self._snmp_params['snmp_port'],
                 use_numeric=True,
                 context=self._context_name,
                 security_level=self._security_level(),
