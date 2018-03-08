@@ -2,6 +2,7 @@
 """SNMP manager class."""
 
 import os
+import sys
 
 import easysnmp
 from easysnmp import exceptions
@@ -296,8 +297,11 @@ class Interact(object):
             check_existence=True)
 
         # If we get no result, then override validity
-        if result[oid_to_get] is None:
+        if bool(result) is False:
             validity = False
+        elif isinstance(result, dict) is True:
+            if result[oid_to_get] is None:
+                validity = False
 
         # Return
         return validity
@@ -487,8 +491,13 @@ class Interact(object):
                 results = [session.get(oid_to_get)]
 
             else:
-                results = session.bulkwalk(
-                    oid_to_get, non_repeaters=0, max_repetitions=25)
+                if snmp_params['snmp_version'] != 1:
+                    # Bulkwalk for SNMPv2 and SNMPv3
+                    results = session.bulkwalk(
+                        oid_to_get, non_repeaters=0, max_repetitions=25)
+                else:
+                    # Bulkwalk not supported in SNMPv1
+                    results = session.walk(oid_to_get)
 
         # Crash on error, return blank results if doing certain types of
         # connectivity checks
@@ -508,8 +517,15 @@ class Interact(object):
             (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence, system_error=True)
+
         except:
-            log_message = ('Unexpected error')
+            log_message = (
+                'Unexpected error: {}, {}, {}, {}'
+                ''.format(
+                    sys.exc_info()[0],
+                    sys.exc_info()[1],
+                    sys.exc_info()[2],
+                    snmp_params['snmp_hostname']))
             log.log2die(1002, log_message)
 
         # Format results
