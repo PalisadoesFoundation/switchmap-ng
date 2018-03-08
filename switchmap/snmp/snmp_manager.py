@@ -319,15 +319,18 @@ class Interact(object):
         validity = False
 
         # Process
-        (_, validity, result) = self.query(
+        (_, validity, results) = self.query(
             oid_to_get, get=False,
             check_reachability=True,
             context_name=context_name,
             check_existence=True)
 
         # If we get no result, then override validity
-        if bool(result) is False:
-            validity = False
+        if isinstance(results, dict) is True:
+            for _, value in results.items():
+                if value is None:
+                    validity = False
+                    break
 
         # Return
         return validity
@@ -692,16 +695,24 @@ def _process_error(
     # Check existence of OID
     if check_existence is True:
         if system_error is False:
-            if type(exception_error) == easysnmp.exceptions.EasySNMPUnknownObjectIDError:
+            if isinstance(
+                    exception_error,
+                    easysnmp.exceptions.EasySNMPUnknownObjectIDError) is True:
                 exists = False
                 return (_contactable, exists)
-            elif type(exception_error) == easysnmp.exceptions.EasySNMPNoSuchNameError:
+            elif isinstance(
+                    exception_error,
+                    easysnmp.exceptions.EasySNMPNoSuchNameError) is True:
                 exists = False
                 return (_contactable, exists)
-            elif type(exception_error) == easysnmp.exceptions.EasySNMPNoSuchObjectError:
+            elif isinstance(
+                    exception_error,
+                    easysnmp.exceptions.EasySNMPNoSuchObjectError) is True:
                 exists = False
                 return (_contactable, exists)
-            elif type(exception_error) == easysnmp.exceptions.EasySNMPNoSuchInstanceError:
+            elif isinstance(
+                    exception_error,
+                    easysnmp.exceptions.EasySNMPNoSuchInstanceError) is True:
                 exists = False
                 return (_contactable, exists)
         else:
