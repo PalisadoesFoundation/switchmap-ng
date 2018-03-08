@@ -489,37 +489,14 @@ class Interact(object):
 
         # Crash on error, return blank results if doing certain types of
         # connectivity checks
-        except exceptions.EasySNMPConnectionError as exception_error:
-            (_contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPTimeoutError as exception_error:
-            (_contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPUnknownObjectIDError as exception_error:
-            (_contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPNoSuchNameError as exception_error:
-            (_contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPNoSuchObjectError as exception_error:
-            (_contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPNoSuchInstanceError as exception_error:
-            (_contactable, exists) = _process_error(
-                try_log_message, exception_error,
-                check_reachability, check_existence)
-
-        except exceptions.EasySNMPUndeterminedTypeError as exception_error:
+        except (
+                exceptions.EasySNMPConnectionError,
+                exceptions.EasySNMPTimeoutError,
+                exceptions.EasySNMPUnknownObjectIDError,
+                exceptions.EasySNMPNoSuchNameError,
+                exceptions.EasySNMPNoSuchObjectError,
+                exceptions.EasySNMPNoSuchInstanceError,
+                exceptions.EasySNMPUndeterminedTypeError) as exception_error:
             (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence)
@@ -708,23 +685,23 @@ def _process_error(
     _contactable = True
     exists = True
     if system_error is False:
-        error_name = exception_error.__name__
+        error_name = 'EasySNMPError'
     else:
         error_name = 'SystemError'
 
     # Check existence of OID
     if check_existence is True:
         if system_error is False:
-            if error_name == 'EasySNMPUnknownObjectIDError':
+            if type(exception_error) == easysnmp.exceptions.EasySNMPUnknownObjectIDError:
                 exists = False
                 return (_contactable, exists)
-            elif error_name == 'EasySNMPNoSuchNameError':
+            elif type(exception_error) == easysnmp.exceptions.EasySNMPNoSuchNameError:
                 exists = False
                 return (_contactable, exists)
-            elif error_name == 'EasySNMPNoSuchObjectError':
+            elif type(exception_error) == easysnmp.exceptions.EasySNMPNoSuchObjectError:
                 exists = False
                 return (_contactable, exists)
-            elif error_name == 'EasySNMPNoSuchInstanceError':
+            elif type(exception_error) == easysnmp.exceptions.EasySNMPNoSuchInstanceError:
                 exists = False
                 return (_contactable, exists)
         else:
