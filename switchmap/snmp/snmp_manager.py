@@ -509,11 +509,24 @@ class Interact(object):
                 exceptions.EasySNMPNoSuchObjectError,
                 exceptions.EasySNMPNoSuchInstanceError,
                 exceptions.EasySNMPUndeterminedTypeError) as exception_error:
+
+            # Update the error message
+            try_log_message = ("""\
+{}: [{}, {}, {}]""".format(try_log_message, sys.exc_info()[0],
+                           sys.exc_info()[1], sys.exc_info()[2]))
+
+            # Process easysnmp errors
             (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence)
 
         except SystemError as exception_error:
+            # Update the error message
+            try_log_message = ("""\
+{}: [{}, {}, {}]""".format(try_log_message, sys.exc_info()[0],
+                           sys.exc_info()[1], sys.exc_info()[2]))
+
+            # Process easysnmp errors
             (_contactable, exists) = _process_error(
                 try_log_message, exception_error,
                 check_reachability, check_existence, system_error=True)
@@ -742,7 +755,7 @@ def _process_error(
         return (_contactable, exists)
 
     # Die an agonizing death!
-    log_message = '{}: ({})'.format(log_message, error_name)
+    log_message = ('{}: {}'.format(error_name, log_message))
     log.log2die(1023, log_message)
 
 
