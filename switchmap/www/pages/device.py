@@ -4,6 +4,7 @@
 import textwrap
 import os
 import time
+from datetime import datetime
 
 # PIP3 imports
 from flask_table import Table, Col
@@ -654,6 +655,13 @@ class System(object):
         # System Uptime
         rows.append(
             SystemRow('System Uptime', _uptime(self.system_data['sysUpTime'])))
+
+        # Last time polled
+        timestamp = int(self.system_data['timestamp'])
+        date_string = datetime.fromtimestamp(
+            timestamp).strftime('%Y-%m-%d %H:%M:%S')
+        rows.append(
+            SystemRow('Time Last Polled', date_string))
 
         # Return
         return rows

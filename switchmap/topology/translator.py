@@ -21,7 +21,7 @@ class Translator(object):
     values with different manufacturers exposing this data to different MIBs.
     This class file attempts to determine the true duplex value of the
     device by testing the presence of one or more OID values in the data.
-    It adds a ‘duplex’ data key to self.ports to act as the canonical key for
+    It adds a ‘duplex’ data key to self._ports to act as the canonical key for
     duplex across all devices.
 
     """
@@ -102,15 +102,15 @@ class Translator(object):
 
         """
         # Initialize key variables
-        self.ports = {}
-        self.hostname = hostname
-        yaml_file = config.topology_device_file(self.hostname)
+        self._ports = {}
+        self._hostname = hostname
+        yaml_file = config.topology_device_file(self._hostname)
 
         # Fail if yaml file doesn't exist
         if os.path.isfile(yaml_file) is False:
             log_message = (
                 'YAML file %s for host %s doesn\'t exist! '
-                'Try polling devices first.') % (yaml_file, self.hostname)
+                'Try polling devices first.') % (yaml_file, self._hostname)
             log.log2die(1017, log_message)
 
         # Read file
@@ -127,10 +127,11 @@ class Translator(object):
             # Process metadata
             if bool(metadata['jm_ethernet']) is True:
                 # Update ports
-                self.ports[int(ifindex)] = metadata
+                self._ports[int(ifindex)] = metadata
 
         # Get system
-        self.system = yaml_data['system']
+        self._system = yaml_data['system']
+        self._misc = yaml_data['misc']
 
     def system_summary(self):
         """Return system summary data.
@@ -146,12 +147,13 @@ class Translator(object):
         data_dict = {}
 
         # Assign system variables
-        v2mib = self.system['SNMPv2-MIB']
+        v2mib = self._system['SNMPv2-MIB']
         for key in v2mib.keys():
             data_dict[key] = v2mib[key]['0']
 
         # Add the hostname to the dictionary
-        data_dict['hostname'] = self.hostname
+        data_dict['hostname'] = self._hostname
+        data_dict['timestamp'] = self._misc['timestamp']
 
         # Return
         return data_dict
@@ -163,7 +165,7 @@ class Translator(object):
             None
 
         Returns:
-            self.ports: L1 data for Ethernet ports
+            self._ports: L1 data for Ethernet ports
 
         """
-        return self.ports
+        return self._ports
