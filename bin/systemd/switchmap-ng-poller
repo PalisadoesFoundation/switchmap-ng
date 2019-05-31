@@ -34,6 +34,7 @@ except:
 from switchmap.constants import CONFIG, CONFIG_SNMP
 from switchmap.utils import general
 from switchmap.snmp import snmp_info
+from switchmap.snmp import poller
 from switchmap.snmp import snmp_manager
 from switchmap.topology import postpoll
 from switchmap.main import agent
@@ -126,136 +127,6 @@ class PollingAgent(Agent):
             agent.agent_sleep(self.name(), delay)
 
 
-class Poller(object):
-    """Switchmap-NG agent that gathers data.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        populate:
-        post:
-    """
-
-    def __init__(self, hostname):
-        """Method initializing the class.
-
-        Args:
-            hostname: Hostname to poll
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        self.server_config = CONFIG
-        snmp_config = CONFIG_SNMP
-        self.hostname = hostname
-
-        # Get snmp configuration information from Switchmap-NG
-        validate = snmp_manager.Validate(hostname, snmp_config.snmp_auth())
-        self.snmp_params = validate.credentials()
-
-        # Create an SNMP object for querying
-        if self._do_poll() is True:
-            self.snmp_object = snmp_manager.Interact(self.snmp_params)
-        else:
-            log_message = (
-                'Uncontactable or disabled host {}, or no valid SNMP '
-                'credentials found for it.'.format(self.hostname))
-            log.log2info(1081, log_message)
-
-    def _do_poll(self):
-        """Determine whether doing a poll is valid.
-
-        Args:
-            None
-
-        Returns:
-            poll: True if a poll should be done
-
-        """
-        # Initialize key variables
-        poll = False
-
-        if bool(self.snmp_params) is True:
-            if isinstance(self.snmp_params, dict) is True:
-                if 'enabled' in self.snmp_params:
-                    if bool(self.snmp_params['enabled']) is True:
-                        poll = True
-                else:
-                    # Default to poll unless otherwise stated
-                    poll = True
-
-        # Return
-        return poll
-
-    def query(self):
-        """Query all remote hosts for data.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Only query if wise
-        if self._do_poll() is False:
-            return
-
-        # Check SNMP supported
-        if bool(self.snmp_params) is True:
-            # Get datapoints
-            self._create_yaml()
-        else:
-            log_message = (
-                'Uncontactable host %s or no valid SNMP '
-                'credentials found for it.') % (self.hostname)
-            log.log2info(1057, log_message)
-
-    def _create_yaml(self):
-        """Create the master dictionary for the host.
-
-        Args:
-            None
-        Returns:
-            value: Index value
-
-        """
-        # Initialize key variables
-        temp_dir = self.server_config.temp_topology_directory()
-        temp_file = ('%s/%s.yaml') % (temp_dir, self.hostname)
-
-        # Get data
-        log_message = (
-            'Querying topology data from host %s.'
-            '') % (self.hostname)
-        log.log2info(1078, log_message)
-
-        # Create YAML file by polling device
-        status = snmp_info.Query(self.snmp_object)
-        data = status.everything()
-
-        # Add additional switchmap-ng specific fields to the dict
-        augmented_data = postpoll.Process(data).augmented_data()
-        yaml_string = general.dict2yaml(augmented_data)
-
-        # Dump data
-        with open(temp_file, 'w') as file_handle:
-            file_handle.write(yaml_string)
-
-        # Get data
-        log_message = (
-            'Completed topology query from host %s.'
-            '') % (self.hostname)
-        log.log2info(1077, log_message)
-
-
 def _poll_devices():
     """Poll all devices for data using subprocesses and create YAML files.
 
@@ -296,8 +167,8 @@ def _poll_single_device(hostname):
     if bool(hostname) is True:
         if isinstance(hostname, str) is True:
             if hostname.lower() != 'none':
-                poller = Poller(hostname)
-                poller.query()
+                _poller = poller.Poll(hostname)
+                _poller.save()
 
 
 class _SearchFiles(object):

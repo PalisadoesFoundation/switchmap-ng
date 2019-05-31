@@ -215,7 +215,7 @@ class Process(object):
         device_data = deepcopy(updated_device_data)
 
         # Create dict for layer1 Ethernet data
-        for ifindex, layer1_data in device_data['layer1'].items():
+        for ifindex, layer1_data in sorted(device_data['layer1'].items()):
             updated_layer1_data = deepcopy(layer1_data)
             # Process layer1_data
             if _is_ethernet(layer1_data) is True:
@@ -264,12 +264,16 @@ class Process(object):
                         if len(higherlayers) == 1:
                             updated_layer1_data['jm_vlan'] = _vlan(
                                 deepcopy(device_data), ifstackhigherlayer)
+
                         # This is an Ethernet port with multiple higher level
                         # interfaces
                         else:
-                            updated_layer1_data['jm_vlan'].extend(
-                                _vlan(
-                                    deepcopy(device_data), ifstackhigherlayer))
+                            vlan = _vlan(deepcopy(device_data),
+                                         ifstackhigherlayer)
+                            if 'jm_vlan' in updated_layer1_data:
+                                updated_layer1_data['jm_vlan'].extend(vlan)
+                            else:
+                                updated_layer1_data['jm_vlan'] = vlan
 
                 #############################################################
                 #
@@ -400,11 +404,11 @@ def _is_ethernet(layer1_data):
     return valid
 
 
-def _vlan(layer1_data, ifindex):
+def _vlan(device_data, ifindex):
     """Return vlan for specific ifIndex.
 
     Args:
-        layer1_data: Data dict related to the device
+        device_data: Data dict related to the device
         ifindex: ifindex in question
 
     Returns:
@@ -415,11 +419,11 @@ def _vlan(layer1_data, ifindex):
     vlans = None
 
     # Failsafe
-    if ifindex not in layer1_data['layer1']:
+    if ifindex not in device_data['layer1']:
         return vlans
 
     # Get port data
-    port_data = layer1_data['layer1'][ifindex]
+    port_data = device_data['layer1'][ifindex]
 
     # Determine vlan number for Cisco devices (Older models)
     if 'vmVlan' in port_data:
@@ -431,6 +435,10 @@ def _vlan(layer1_data, ifindex):
             vlans = port_data['vlanTrunkPortVlansEnabled']
         else:
             vlans = [int(port_data['vlanTrunkPortVlansEnabled'])]
+
+    # Determine vlan number for Cisco devices (Router trunk subinterfaces)
+    if 'cviRoutedVlanIfIndex' in port_data:
+        vlans = port_data['cviRoutedVlanIfIndex']
 
     # Determine vlan number for Juniper devices
     if 'jnxExVlanTag' in port_data:

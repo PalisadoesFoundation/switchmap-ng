@@ -21,6 +21,7 @@ from switchmap.snmp.cisco import CiscoCdpQuery
 from switchmap.snmp.cisco import CiscoIetfIpQuery
 from switchmap.snmp.cisco import CiscoStackQuery
 from switchmap.snmp.cisco import CiscoVlanMembershipQuery
+from switchmap.snmp.cisco import CiscoVlanIftableRelationshipQuery
 from switchmap.snmp.cisco import CiscoVtpQuery
 
 from switchmap.snmp.juniper import JuniperVlanQuery
@@ -30,6 +31,7 @@ __all__ = ('cisco', 'juniper')
 
 QUERIES = [CiscoC2900Query, CiscoVtpQuery, CiscoIetfIpQuery,
            CiscoCdpQuery, CiscoStackQuery, CiscoVlanMembershipQuery,
+           CiscoVlanIftableRelationshipQuery,
            Snmpv2Query, IfQuery, BridgeQuery, IpQuery,
            Ipv6Query, EtherlikeQuery, EntityQuery, LldpQuery,
            EssSwitchQuery, JuniperVlanQuery, QbridgeQuery]
