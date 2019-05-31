@@ -116,7 +116,7 @@ class Translator(object):
         # Read file
         with open(yaml_file, 'r') as file_handle:
             yaml_from_file = file_handle.read()
-        yaml_data = yaml.load(yaml_from_file)
+        yaml_data = yaml.safe_load(yaml_from_file)
 
         # Create dict for layer1 Ethernet data
         for ifindex, metadata in yaml_data['layer1'].items():

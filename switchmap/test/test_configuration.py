@@ -56,7 +56,7 @@ main:
 """) % (log_directory, cache_directory)
 
     # Convert good_config to dictionary
-    good_dict = yaml.load(bytes(good_config, 'utf-8'))
+    good_dict = yaml.safe_load(bytes(good_config, 'utf-8'))
 
     # Set the environmental variable for the configuration directory
     directory = tempfile.mkdtemp()
@@ -142,7 +142,7 @@ main:
 main:
     %s %s
 """) % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+        bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
         with open(config_file, 'w') as f_handle:
@@ -160,7 +160,7 @@ main:
 main:
     %s %s
 """) % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+        bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
         with open(config_file, 'w') as f_handle:
@@ -189,7 +189,7 @@ main:
 main:
     %s %s
 """) % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+        bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         with open(config_file, 'w') as f_handle:
             yaml.dump(bad_dict, f_handle, default_flow_style=True)
@@ -237,7 +237,7 @@ main:
 main:
     %s %s
 """) % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+        bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
         with open(config_file, 'w') as f_handle:
@@ -255,7 +255,7 @@ main:
 main:
     %s %s
 """) % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+        bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
         with open(config_file, 'w') as f_handle:
@@ -289,7 +289,7 @@ main:
 main:
     %s %s
 """) % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+        bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
         with open(config_file, 'w') as f_handle:
@@ -307,7 +307,7 @@ main:
 main:
     %s %s
 """) % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+        bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
         with open(config_file, 'w') as f_handle:
@@ -377,7 +377,7 @@ main:
 main:
     %s %s
 """) % (key, key_value)
-        bad_dict = yaml.load(bytes(bad_config, 'utf-8'))
+        bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         with open(config_file, 'w') as f_handle:
             yaml.dump(bad_dict, f_handle, default_flow_style=True)
@@ -437,7 +437,7 @@ class TestConfigSNMP(unittest.TestCase):
                   snmp_privprotocol: aes
                   snmp_privpassword: 123priv
             """) % (cls.group_name)
-        cls.configuration_dict = yaml.load(text_configuration)
+        cls.configuration_dict = yaml.safe_load(text_configuration)
 
         # Create the configuration file on disk
         test_config_file = ('%s/config.yaml') % (cls.test_config_dir)

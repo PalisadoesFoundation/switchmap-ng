@@ -429,7 +429,7 @@ snmp_groups:
       enabled: False
 """).format(daemon_username, None, None)
 
-        self.config_dict = yaml.load(config)
+        self.config_dict = yaml.safe_load(config)
         directory_dict = defaultdict(lambda: defaultdict(dict))
 
         # Read yaml files from configuration directory

@@ -215,7 +215,7 @@ def read_yaml_file(filepath, as_string=False):
 
         # Get result
         if as_string is False:
-            result = yaml.load(yaml_from_file)
+            result = yaml.safe_load(yaml_from_file)
         else:
             result = yaml_from_file
 
@@ -272,7 +272,7 @@ def read_yaml_files(directories):
             log.log2die_safe(1010, log_message)
 
     # Return
-    config_dict = yaml.load(all_yaml_read)
+    config_dict = yaml.safe_load(all_yaml_read)
     return config_dict
 
 
@@ -287,7 +287,7 @@ def dict2yaml(data_dict):
     """
     # Process data
     json_string = json.dumps(data_dict)
-    yaml_string = yaml.dump(yaml.load(json_string), default_flow_style=False)
+    yaml_string = yaml.dump(yaml.safe_load(json_string), default_flow_style=False)
 
     # Return
     return yaml_string
