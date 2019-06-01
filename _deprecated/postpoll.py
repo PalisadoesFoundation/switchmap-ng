@@ -12,103 +12,96 @@ from switchmap.utils import general
 from switchmap.utils import log
 
 
-def all_devices():
-    """Add IP address and Hostname data to device files.
+class IdleTimes(object):
+    """Process device port idle times."""
 
-    Args:
-        None
+    def __init__(self, devicename):
+        """Initialize class.
 
-    Returns:
-        None
+        Args:
+            devicename: Name of device to calculate idle times
 
-    """
-    # Add port idle information
-    _idle()
+        Returns:
+            None
 
+        """
+        # Initialize key variables
+        self._config = CONFIG
+        self._device_dict = {}
+        self._devicename = devicename
 
-def _idle():
-    """Add ifindex idle information.
+        # Log message
+        log_message = (
+            'Starting port idle times for device {}.'.format(devicename))
+        log.log2debug(1034, log_message)
 
-    Args:
-        None
+        # Read file and add to string
+        filepath = self._config.temp_topology_device_file(devicename)
+        if os.path.isfile(filepath) is True:
+            self._device_dict = general.read_yaml_file(filepath)
 
-    Returns:
-        None
+    def save(self):
+        """Save the idle times to file.
 
-    """
-    # Initialize key variables
-    config = CONFIG
-    idle_history = {}
+        Args:
+            None
 
-    # Send log message
-    log_message = ('Evaluating port idle times for devices.')
-    log.log2info(1069, log_message)
+        Returns:
+            None
 
-    # Cycle through list of files in directory
-    for filename in os.listdir(config.temp_topology_directory()):
-        # Initialize idle dictionary
+        """
+        # Initialize key variables
+        device_dict = self._device_dict
+        idle_history = {}
         idle_since = {}
 
-        # Examine all the '.yaml' files in directory
-        if filename.endswith('.yaml'):
-            devicename = filename[0:-5]
-
-            # Log message
+        # Do nothing if no file found
+        if bool(device_dict) is False:
+            # Send log message
             log_message = (
-                'Starting port idle times for device {}.'.format(devicename))
-            log.log2debug(1034, log_message)
+                'No topology file found for device {}'
+                ''.format(self._devicename))
+            log.log2info(1058, log_message)
+            return
 
-            # Read file and add to string
-            filepath = config.temp_topology_device_file(devicename)
-            device_dict = general.read_yaml_file(filepath)
+        # Get all the status of all the Ethernet ports
+        idle_since = _idle_since(device_dict)
 
-            # Get all the status of all the Ethernet ports
-            if 'layer1' in device_dict:
-                for ifindex, data_dict in device_dict['layer1'].items():
-                    if 'jm_ethernet' in data_dict:
-                        if data_dict['jm_ethernet'] is True:
-                            idle_since[ifindex] = int(time.time())
-                            if data_dict['ifOperStatus'] == 1:
-                                if data_dict['ifAdminStatus'] == 1:
-                                    idle_since[ifindex] = None
+        # Read data from idle file
+        idle_filepath = (
+            '{}/{}.yaml'.format(
+                self._config.idle_directory(), self._devicename)
+            )
+        if os.path.isfile(idle_filepath) is True:
+            idle_history = general.read_yaml_file(idle_filepath)
 
-            # Read data from idle file
-            idle_filepath = (
-                '{}/{}.yaml'.format(config.idle_directory(), devicename)
-                )
-            if os.path.isfile(idle_filepath) is True:
-                idle_history = general.read_yaml_file(idle_filepath)
+        # Update idle_since values depending on history
+        for ifindex, timestamp in idle_since.items():
+            if ifindex in idle_history:
+                # Initialize key variables
+                timestamp_historical = idle_history[ifindex]
 
-            # Update idle_since values depending on history
-            for ifindex, timestamp in idle_since.items():
-                if ifindex in idle_history:
-                    # Initialize key variables
-                    timestamp_historical = idle_history[ifindex]
-
-                    if bool(timestamp) is False:
-                        # Do nothing if the timestamp is None
-                        # Interface is operational
-                        pass
+                if bool(timestamp) is False:
+                    # Do nothing if the timestamp is None
+                    # Interface is operational
+                    pass
+                else:
+                    if bool(timestamp_historical) is True:
+                        # Update history value
+                        idle_since[ifindex] = min(
+                            timestamp, timestamp_historical)
                     else:
-                        if bool(timestamp_historical) is True:
-                            # Update history value
-                            idle_since[ifindex] = min(
-                                timestamp, timestamp_historical)
-                        else:
-                            # Do nothing. Use current idle_since value
-                            pass
+                        # Do nothing. Use current idle_since value
+                        pass
 
-            # Update idle_since file
-            general.create_yaml_file(idle_since, idle_filepath)
+        # Update idle_since file
+        general.create_yaml_file(idle_since, idle_filepath)
 
-            # Log message
-            log_message = (
-                'Completed port idle times for device {}.'.format(devicename))
-            log.log2debug(1042, log_message)
-
-    # Send log message
-    log_message = ('Completed port idle times for devices.')
-    log.log2info(1058, log_message)
+        # Log message
+        log_message = (
+            'Completed port idle times for device {}.'
+            ''.format(self._devicename))
+        log.log2debug(1042, log_message)
 
 
 class Process(object):
@@ -119,11 +112,11 @@ class Process(object):
     consistently. That way manufacturer specific code for processing YAML
     data is in one place.
 
-    For example, there isn’t a standard way of reporting ethernet duplex
+    For example, there isn't a standard way of reporting ethernet duplex
     values with different manufacturers exposing this data to different MIBs.
     This class file attempts to determine the true duplex value of the
     device by testing the presence of one or more OID values in the data.
-    It adds a ‘duplex’ data key to self.ports to act as the canonical key for
+    It adds a 'duplex' data key to self.ports to act as the canonical key for
     duplex across all devices.
 
     """
@@ -583,3 +576,30 @@ def _trunk(layer1_data, ifindex):
 
     # Return
     return trunk
+
+
+def _idle_since(device_dict):
+    """Get .
+
+    Args:
+        device_dict: Device information dictionary
+
+    Returns:
+        idle_since: Dict of idle since values per port
+
+    """
+    # Initialize key variables
+    idle_since = {}
+
+    # Get all the status of all the Ethernet ports
+    if 'layer1' in device_dict:
+        for ifindex, data_dict in device_dict['layer1'].items():
+            if 'jm_ethernet' in data_dict:
+                if data_dict['jm_ethernet'] is True:
+                    if (data_dict['ifOperStatus'] == 1) and (
+                            data_dict['ifAdminStatus'] == 1):
+                        idle_since[ifindex] = None
+                    else:
+                        idle_since[ifindex] = int(time.time())
+    # Return
+    return idle_since

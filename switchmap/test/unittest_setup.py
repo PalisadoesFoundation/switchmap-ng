@@ -125,7 +125,7 @@ class TestConfig(object):
 
         """
         # Initialize key variables
-        config_file = ('%s/test_config.yaml') % (self._config_directory)
+        config_file = '{}/test_config.yaml'.format(self._config_directory)
 
         # Write good_config to file
         with open(config_file, 'w') as f_handle:

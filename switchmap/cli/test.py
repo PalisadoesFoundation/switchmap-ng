@@ -83,6 +83,6 @@ def test_hostname(hostname, snmp_config):
     else:
         # Error, host problems
         log_message = (
-            'Uncontactable host %s or no valid SNMP '
-            'credentials found for it.') % (hostname)
+            'Uncontactable host {} or no valid SNMP '
+            'credentials found for it.'.format(hostname))
         log.log2see(1040, log_message)

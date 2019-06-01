@@ -149,8 +149,8 @@ class KnownValues(unittest.TestCase):
         # Create temp file with known data
         directory = tempfile.mkdtemp()
         filenames = {
-            ('%s/file_1.yaml') % (directory): dict_1,
-            ('%s/file_2.yaml') % (directory): dict_2
+            '{}/file_1.yaml'.format(directory): dict_1,
+            '{}/file_2.yaml'.format(directory): dict_2
         }
         for filename, data_dict in filenames.items():
             with open(filename, 'w') as filehandle:
@@ -166,7 +166,7 @@ class KnownValues(unittest.TestCase):
             next_file for next_file in os.listdir(
                 directory) if next_file.endswith('.yaml')]
         for delete_file in filelist:
-            delete_path = ('%s/%s') % (directory, delete_file)
+            delete_path = '{}/{}'.format(directory, delete_file)
             os.remove(delete_path)
         os.removedirs(directory)
 
@@ -268,7 +268,7 @@ class KnownValues(unittest.TestCase):
         # Test with invalid source directory
         #################################################
 
-        invalid_path = ('/tmp/%s.%s') % (
+        invalid_path = '/tmp/{}.{}'.format(
             self.random_string,
             self.random_string)
 
@@ -279,7 +279,7 @@ class KnownValues(unittest.TestCase):
         # Test with invalid destination directory
         #################################################
 
-        invalid_path = ('/tmp/%s.%s') % (
+        invalid_path = '/tmp/{}.{}'.format(
             self.random_string,
             self.random_string)
 
@@ -291,12 +291,12 @@ class KnownValues(unittest.TestCase):
         #################################################
 
         # Create a source directory
-        source_dir = ('/tmp/%s.1') % (self.random_string)
+        source_dir = '/tmp/{}.1'.format(self.random_string)
         if os.path.exists(source_dir) is False:
             os.makedirs(source_dir)
 
         # Create a target directory
-        target_dir = ('/tmp/%s.2') % (self.random_string)
+        target_dir = '/tmp/{}.2'.format(self.random_string)
         if os.path.exists(target_dir) is False:
             os.makedirs(target_dir)
 
@@ -304,8 +304,8 @@ class KnownValues(unittest.TestCase):
         for count in range(0, 4):
             filename = ''.join([random.choice(
                 string.ascii_letters + string.digits) for n in range(15)])
-            source_filenames[count] = ('%s/%s') % (source_dir, filename)
-            target_filenames[count] = ('%s/%s') % (target_dir, filename)
+            source_filenames[count] = '{}/{}'.format(source_dir, filename)
+            target_filenames[count] = '{}/{}'.format(target_dir, filename)
             open(source_filenames[count], 'a').close()
 
             # Check files in directory
@@ -444,9 +444,9 @@ two: test 2
     def test_cleanstring(self):
         """Testing method / function cleanstring."""
         # Initializing key variables
-        dirty_string = ('   %s\n   \r %s   \n %s  ') % (
+        dirty_string = '   {}\n   \r {}   \n {}  '.format(
             self.random_string, self.random_string, self.random_string)
-        clean_string = ('%s %s %s') % (
+        clean_string = '{} {} {}'.format(
             self.random_string, self.random_string, self.random_string)
 
         # Test result

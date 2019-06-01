@@ -109,8 +109,8 @@ class Translator(object):
         # Fail if yaml file doesn't exist
         if os.path.isfile(yaml_file) is False:
             log_message = (
-                'YAML file %s for host %s doesn\'t exist! '
-                'Try polling devices first.') % (yaml_file, self._hostname)
+                'YAML file {} for host {} doesn\'t exist! '
+                'Try polling devices first.'.format(yaml_file, self._hostname))
             log.log2die(1017, log_message)
 
         # Read file

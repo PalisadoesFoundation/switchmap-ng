@@ -82,7 +82,7 @@ class Snmpv2Query(Query):
         # Process
         oidroot = '.1.3.6.1.2.1.1'
         for node in range(1, 7):
-            oid = ('%s.%s.0') % (oidroot, node)
+            oid = '{}.{}.0'.format(oidroot, node)
             results = self.snmp_object.get(oid, normalized=True)
             for value in results.values():
                 getvalues.append(value)

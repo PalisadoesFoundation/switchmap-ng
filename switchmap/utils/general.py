@@ -208,9 +208,9 @@ def read_yaml_file(filepath, as_string=False):
                 yaml_from_file = file_handle.read()
         except:
             log_message = (
-                'Error reading file %s. Check permissions, '
+                'Error reading file {}. Check permissions, '
                 'existence and file syntax.'
-                '') % (filepath)
+                ''.format(filepath))
             log.log2die_safe(1024, log_message)
 
         # Get result
@@ -248,8 +248,8 @@ def read_yaml_files(directories):
         # Check if config_directory exists
         if os.path.isdir(config_directory) is False:
             log_message = (
-                'Configuration directory "%s" '
-                'doesn\'t exist!' % config_directory)
+                'Configuration directory "{}" '
+                'doesn\'t exist!'.format(config_directory))
             log.log2die_safe(1009, log_message)
 
         # Cycle through list of files in directory
@@ -257,18 +257,18 @@ def read_yaml_files(directories):
             # Examine all the '.yaml' files in directory
             if filename.endswith('.yaml'):
                 # Read YAML data
-                filepath = ('%s/%s') % (config_directory, filename)
+                filepath = '{}/{}'.format(config_directory, filename)
                 yaml_from_file = read_yaml_file(filepath, as_string=True)
                 yaml_found = True
 
                 # Append yaml from file to all yaml previously read
-                all_yaml_read = ('%s\n%s') % (all_yaml_read, yaml_from_file)
+                all_yaml_read = '{}\n{}'.format(all_yaml_read, yaml_from_file)
 
         # Verify YAML files found in directory
         if yaml_found is False:
             log_message = (
-                'No files found in directory "%s" with ".yaml" '
-                'extension.') % (config_directory)
+                'No files found in directory "{}" with ".yaml" '
+                'extension.'.format(config_directory))
             log.log2die_safe(1010, log_message)
 
     # Return
@@ -333,24 +333,24 @@ def run_script(cli_string, shell=False, die=True):
     if die is True:
         if returncode != 0:
             # Print the Return Code header, Return Code, STDOUT header
-            string2print = ('%s %s %s %s') % (
+            string2print = '{} {} {} {}'.format(
                 header_bad_cmd, cli_string,
                 header_returncode, returncode)
-            log_message = ('%s%s') % (log_message, string2print)
+            log_message = '{}{}'.format(log_message, string2print)
 
             # Print the STDERR
-            string2print = ('%s') % (header_stderr)
-            log_message = ('%s %s') % (log_message, string2print)
+            string2print = '{}'.format(header_stderr)
+            log_message = '{} {}'.format(log_message, string2print)
             for line in stderrdata.decode(encoding).split('\n'):
-                string2print = ('%s') % (line)
-                log_message = ('%s %s') % (log_message, string2print)
+                string2print = '{}'.format(line)
+                log_message = '{} {}'.format(log_message, string2print)
 
             # Print the STDOUT
-            string2print = ('%s') % (header_stdout)
-            log_message = ('%s %s') % (log_message, string2print)
+            string2print = '{}'.format(header_stdout)
+            log_message = '{} {}'.format(log_message, string2print)
             for line in stdoutdata.decode(encoding).split('\n'):
-                string2print = ('%s') % (line)
-                log_message = ('%s %s') % (log_message, string2print)
+                string2print = '{}'.format(line)
+                log_message = '{} {}'.format(log_message, string2print)
 
             # All done
             log.log2die(1074, log_message)
@@ -377,7 +377,7 @@ def delete_files(directory, extension='.yaml'):
     """
     # Determine whether directory is valid
     if os.path.isdir(directory) is False:
-        log_message = ('Directory %s does not exist') % (directory)
+        log_message = 'Directory {} does not exist'.format(directory)
         log.log2die_safe(1007, log_message)
 
     # Get list of files
@@ -387,12 +387,12 @@ def delete_files(directory, extension='.yaml'):
 
     # Delete files
     for delete_file in filelist:
-        file_path = ('%s/%s') % (directory, delete_file)
+        file_path = '{}/{}'.format(directory, delete_file)
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
         except Exception as exception_error:
-            log_message = ('Error: deleting files in %s. Error: %s') % (
+            log_message = 'Error: deleting files in {}. Error: {}'.format(
                 directory, exception_error)
             log.log2die_safe(1014, log_message)
         except:
@@ -433,7 +433,7 @@ def config_directories():
     if 'SWITCHMAP_CONFIGDIR' in os.environ:
         config_directory = os.environ['SWITCHMAP_CONFIGDIR']
     else:
-        config_directory = ('%s/etc') % (root_directory())
+        config_directory = '{}/etc'.format(root_directory())
     directories = [config_directory]
 
     # Return
@@ -496,19 +496,17 @@ def move_files(source_dir, target_dir):
     """
     # Make sure source directory exists
     if os.path.exists(source_dir) is False:
-        log_message = ('Directory %s does not exist.') % (
-            source_dir)
+        log_message = 'Directory {} does not exist.'.format(source_dir)
         log.log2die(1435, log_message)
 
     # Make sure target directory exists
     if os.path.exists(target_dir) is False:
-        log_message = ('Directory %s does not exist.') % (
-            target_dir)
+        log_message = 'Directory {} does not exist.'.format(target_dir)
         log.log2die(1436, log_message)
 
     source_files = os.listdir(source_dir)
     for filename in source_files:
-        full_path = ('%s/%s') % (source_dir, filename)
+        full_path = '{}/{}'.format(source_dir, filename)
         if os.path.isfile(full_path) is True:
             shutil.move(full_path, target_dir)
 

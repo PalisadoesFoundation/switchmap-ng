@@ -12,7 +12,6 @@ from pprint import pprint
 from switchmap.constants import CONFIG, CONFIG_SNMP
 from switchmap.snmp import snmp_info
 from switchmap.snmp import snmp_manager
-from switchmap.topology import postpoll
 from switchmap.utils import general
 from switchmap.utils import log
 
@@ -87,35 +86,6 @@ Querying topology data from host {}.'''.format(self._hostname))
         status = snmp_info.Query(self._snmp_object)
         _data = status.everything()
         return _data
-
-    def save(self):
-        """Create the master dictionary for the host.
-
-        Args:
-            None
-        Returns:
-            value: Index value
-
-        """
-        # Initialize key variables
-        temp_dir = self._server_config.temp_topology_directory()
-        temp_file = ('{}/{}.yaml'.format(temp_dir, self._hostname))
-
-        # Get data
-        data = self.query()
-
-        # Add additional switchmap-ng specific fields to the dict
-        augmented_data = postpoll.Process(data).augmented_data()
-        yaml_string = general.dict2yaml(augmented_data)
-
-        # Dump data
-        with open(temp_file, 'w') as file_handle:
-            file_handle.write(yaml_string)
-
-        # Get data
-        log_message = ('''\
-Completed topology query from host {}.'''.format(self._hostname))
-        log.log2info(1077, log_message)
 
 
 def _do_poll(snmp_params):

@@ -41,8 +41,8 @@ class TestConfig(unittest.TestCase):
     cache_directory = tempfile.mkdtemp()
     good_config = ("""\
 main:
-    log_directory: %s
-    cache_directory: %s
+    log_directory: {}
+    cache_directory: {}
     agent_threads: 25
     bind_port: 3000
     hostnames:
@@ -53,7 +53,7 @@ main:
     listen_address: 0.0.0.0
     log_level: debug
     polling_interval: 20
-""") % (log_directory, cache_directory)
+""".format(log_directory, cache_directory))
 
     # Convert good_config to dictionary
     good_dict = yaml.safe_load(bytes(good_config, 'utf-8'))
@@ -61,7 +61,7 @@ main:
     # Set the environmental variable for the configuration directory
     directory = tempfile.mkdtemp()
     os.environ['SWITCHMAP_CONFIGDIR'] = directory
-    config_file = ('%s/test_config.yaml') % (directory)
+    config_file = '{}/test_config.yaml'.format(directory)
 
     # Write good_config to file
     with open(config_file, 'w') as f_handle:
@@ -95,7 +95,7 @@ main:
             configuration.Config()
 
         # Write bad_config to file
-        empty_config_file = ('%s/test_config.yaml') % (empty_directory)
+        empty_config_file = '{}/test_config.yaml'.format(empty_directory)
         with open(empty_config_file, 'w') as f_handle:
             f_handle.write('')
 
@@ -113,14 +113,14 @@ main:
         # good key and key_value
         result = self.config.log_file()
         self.assertEqual(
-            result, ('%s/switchmap-ng.log') % (self.log_directory))
+            result, '{}/switchmap-ng.log'.format(self.log_directory))
 
     def test_web_log_file(self):
         """Testing method web_log_file ."""
         # Testing web_log_file with a good dictionary.
         result = self.config.web_log_file()
         self.assertEqual(
-            result, ('%s/switchmap-ng-api.log') % (self.log_directory))
+            result, '{}/switchmap-ng-api.log'.format(self.log_directory))
 
     def test_log_level(self):
         """Testing method log_level."""
@@ -133,15 +133,15 @@ main:
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
         os.environ['SWITCHMAP_CONFIGDIR'] = directory
-        config_file = ('%s/test_config.yaml') % (directory)
+        config_file = '{}/test_config.yaml'.format(directory)
 
         # Testing log_level with blank key and blank key_value
         key = ''
         key_value = ''
         bad_config = ("""\
 main:
-    %s %s
-""") % (key, key_value)
+    {} {}
+""".format(key, key_value))
         bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -158,8 +158,8 @@ main:
         key_value = ''
         bad_config = ("""\
 main:
-    %s %s
-""") % (key, key_value)
+    {} {}
+""".format(key, key_value))
         bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -180,15 +180,15 @@ main:
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
         os.environ['SWITCHMAP_CONFIGDIR'] = directory
-        config_file = ('%s/test_config.yaml') % (directory)
+        config_file = '{}/test_config.yaml'.format(directory)
 
         # Testing cache_directory with blank key_value(filepath)
         key = ''
         key_value = ''
         bad_config = ("""\
 main:
-    %s %s
-""") % (key, key_value)
+    {} {}
+""".format(key, key_value))
         bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         with open(config_file, 'w') as f_handle:
@@ -228,15 +228,15 @@ main:
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
         os.environ['SWITCHMAP_CONFIGDIR'] = directory
-        config_file = ('%s/test_config.yaml') % (directory)
+        config_file = '{}/test_config.yaml'.format(directory)
 
         # Testing polling_interval with blank key and blank key_value
         key = ''
         key_value = ''
         bad_config = ("""\
 main:
-    %s %s
-""") % (key, key_value)
+    {} {}
+""".format(key, key_value))
         bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -253,8 +253,8 @@ main:
         key_value = ''
         bad_config = ("""\
 main:
-    %s %s
-""") % (key, key_value)
+    {} {}
+""".format(key, key_value))
         bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -280,15 +280,15 @@ main:
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
         os.environ['SWITCHMAP_CONFIGDIR'] = directory
-        config_file = ('%s/test_config.yaml') % (directory)
+        config_file = '{}/test_config.yaml'.format(directory)
 
         # Testing bind_port with blank key and blank key_value
         key = ''
         key_value = ''
         bad_config = ("""\
 main:
-    %s %s
-""") % (key, key_value)
+    {} {}
+""".format(key, key_value))
         bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -305,8 +305,8 @@ main:
         key_value = ''
         bad_config = ("""\
 main:
-    %s %s
-""") % (key, key_value)
+    {} {}
+""".format(key, key_value))
         bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         # Write bad_config to file
@@ -330,7 +330,7 @@ main:
 
         # Doesn't fail because directory now exists
         result = self.config.idle_directory()
-        expected = ('%s/idle') % (
+        expected = '{}/idle'.format(
             self.good_dict['main']['cache_directory'])
         self.assertEqual(result, expected)
 
@@ -343,7 +343,7 @@ main:
 
         # Doesn't fail because directory now exists
         result = self.config.topology_directory()
-        expected = ('%s/topology') % (
+        expected = '{}/topology'.format(
             self.good_dict['main']['cache_directory'])
         self.assertEqual(result, expected)
 
@@ -351,7 +351,7 @@ main:
         """Testing function topology_device_file."""
         # Recreate the path to the device file
         result = self.config.topology_device_file(self.random_string)
-        expected = ('%s/%s.yaml') % (
+        expected = '{}/{}.yaml'.format(
             self.config.topology_directory(), self.random_string)
         self.assertEqual(result, expected)
 
@@ -368,15 +368,15 @@ main:
         # Set the environmental variable for the configuration directory
         directory = tempfile.mkdtemp()
         os.environ['SWITCHMAP_CONFIGDIR'] = directory
-        config_file = ('%s/test_config.yaml') % (directory)
+        config_file = '{}/test_config.yaml'.format(directory)
 
         # Testing log_directory with blank key_value(filepath)
         key = ''
         key_value = ''
         bad_config = ("""\
 main:
-    %s %s
-""") % (key, key_value)
+    {} {}
+""".format(key, key_value))
         bad_dict = yaml.safe_load(bytes(bad_config, 'utf-8'))
 
         with open(config_file, 'w') as f_handle:
@@ -417,7 +417,7 @@ class TestConfigSNMP(unittest.TestCase):
         # Initializing key variables
         text_configuration = ("""
             snmp_groups:
-                - group_name: %s
+                - group_name: {}
                   snmp_version: 3
                   snmp_secname: woohoo
                   snmp_community:
@@ -436,11 +436,11 @@ class TestConfigSNMP(unittest.TestCase):
                   snmp_authpassword: 123auth
                   snmp_privprotocol: aes
                   snmp_privpassword: 123priv
-            """) % (cls.group_name)
+            """.format(cls.group_name))
         cls.configuration_dict = yaml.safe_load(text_configuration)
 
         # Create the configuration file on disk
-        test_config_file = ('%s/config.yaml') % (cls.test_config_dir)
+        test_config_file = '{}/config.yaml'.format(cls.test_config_dir)
         with open(test_config_file, 'w') as f_handle:
             f_handle.write(text_configuration)
 

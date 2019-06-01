@@ -117,8 +117,8 @@ class Config(object):
         # Check if value exists
         if os.path.isdir(value) is False:
             log_message = (
-                'cache_directory: "%s" '
-                'in configuration doesn\'t exist!') % (value)
+                'cache_directory: "{}" '
+                'in configuration doesn\'t exist!'.format(value))
             log.log2die(1011, log_message)
 
         # Return
@@ -135,7 +135,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = ('%s/topology') % (self.cache_directory())
+        value = '{}/topology'.format(self.cache_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -153,7 +153,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = ('%s/idle') % (self.cache_directory())
+        value = '{}/idle'.format(self.cache_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -171,7 +171,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = ('%s/search') % (self.cache_directory())
+        value = '{}/search'.format(self.cache_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -189,7 +189,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = ('%s/temp') % (self.topology_directory())
+        value = '{}/temp'.format(self.topology_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -207,7 +207,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = ('%s/%s.yaml') % (self.topology_directory(), host)
+        value = '{}/{}.yaml'.format(self.topology_directory(), host)
 
         # Return
         return value
@@ -223,7 +223,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = ('%s/%s.yaml') % (self.temp_topology_directory(), host)
+        value = '{}/{}.yaml'.format(self.temp_topology_directory(), host)
 
         # Return
         return value
@@ -466,7 +466,7 @@ class Config(object):
 
         """
         # Get new result
-        result = ('%s/switchmap-ng-api.log') % (self.log_directory())
+        result = '{}/switchmap-ng-api.log'.format(self.log_directory())
 
         # Return
         return result
@@ -500,7 +500,7 @@ class Config(object):
 
         """
         # Get new result
-        result = ('%s/switchmap-ng.log') % (self.log_directory())
+        result = '{}/switchmap-ng.log'.format(self.log_directory())
 
         # Return
         return result
@@ -665,8 +665,8 @@ def _agent_config(agent_name, config_dict):
     # Error if not configured
     if result is None:
         log_message = (
-            'Agent %s not defined in configuration in '
-            'agents:%s section') % (key, key)
+            'Agent {} not defined in configuration in '
+            'agents:{} section'.format(key, key))
         log.log2die(1094, log_message)
 
     # Return
@@ -710,7 +710,7 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     # Error if not configured
     if result is None and die is True:
         log_message = (
-            '%s:%s not defined in configuration') % (key, sub_key)
+            '{}:{} not defined in configuration'.format(key, sub_key))
         log.log2die_safe(1016, log_message)
 
     # Return

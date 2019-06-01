@@ -518,7 +518,7 @@ snmp_groups:
             general.delete_yaml_files(next_directory)
 
         # Write config back to directory
-        filepath = ('%s/config.yaml') % (directory)
+        filepath = ('{}/config.yaml'.format(directory))
         with open(filepath, 'w') as outfile:
             yaml.dump(self.config_dict, outfile, default_flow_style=False)
 

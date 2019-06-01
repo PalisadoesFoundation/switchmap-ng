@@ -105,7 +105,7 @@ class CiscoIetfIpQuery(Query):
             for value in ipv6decimal:
                 # Convert deximal value to hex,
                 # then zero fill to ensure hex is two characters long
-                hexbyte = ('%s') % (hex(int(value)))[2:]
+                hexbyte = '{}'.format(hex(int(value)))[2:]
                 ipv6hex.append(hexbyte.zfill(2))
 
             # Create IPv6 string

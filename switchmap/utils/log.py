@@ -44,8 +44,8 @@ class GetLog(object):
             log_level = levels['debug']
 
         # create logger with app_name
-        self.logger_file = logging.getLogger(('%s_file') % (app_name))
-        self.logger_stdout = logging.getLogger(('%s_console') % (app_name))
+        self.logger_file = logging.getLogger('{}_file'.format(app_name))
+        self.logger_stdout = logging.getLogger('{}_console'.format(app_name))
 
         # Set logging levels to file and stdout
         self.logger_stdout.setLevel(log_level)
@@ -130,11 +130,11 @@ class LogThread(threading.Thread):
             self._real_run()
         except:
             # logging.exception('Exception during LogThread.run')
-            log2warning(1101, ('%s\n%s\n%s\n%s') % (
+            log2warning(1101, ('{}\n{}\n{}\n{}'.format(
                 sys.exc_info()[0],
                 sys.exc_info()[1],
                 sys.exc_info()[2],
-                traceback.print_exc()))
+                traceback.print_exc())))
 
 
 def log2die_safe(code, message):
@@ -277,8 +277,7 @@ def _logit(error_num, error_string, error=False, verbose=False, level='info'):
     # Log the message
     if error:
         log_message = (
-            '[%s] (%sE): %s') % (
-                username, error_num, error_string)
+            '[{}] ({}E): {}'.format(username, error_num, error_string))
         logger_stdout.critical('%s', log_message)
         logger_file.critical(log_message)
 
@@ -286,8 +285,7 @@ def _logit(error_num, error_string, error=False, verbose=False, level='info'):
         sys.exit(2)
     else:
         log_message = (
-            '[%s] (%sS): %s') % (
-                username, error_num, error_string)
+            '[{}] ({}S): {}'.format(username, error_num, error_string))
         _logger_file(logger_file, log_message, log_level)
         if verbose:
             _logger_stdout(logger_stdout, log_message, log_level)
@@ -365,8 +363,8 @@ def _message(code, message, error=True):
         prefix = 'ERROR'
     else:
         prefix = 'STATUS'
-    output = ('%s - %s - %s - [%s] %s') % (
-        timestring, username, prefix, code, message)
+    output = ('{} - {} - {} - [{}] {}'.format(
+        timestring, username, prefix, code, message))
 
     # Return
     return output
