@@ -429,7 +429,7 @@ snmp_groups:
       enabled: False
 """).format(daemon_username, None, None)
 
-        self.config_dict = yaml.load(config)
+        self.config_dict = yaml.safe_load(config)
         directory_dict = defaultdict(lambda: defaultdict(dict))
 
         # Read yaml files from configuration directory
@@ -518,7 +518,7 @@ snmp_groups:
             general.delete_yaml_files(next_directory)
 
         # Write config back to directory
-        filepath = ('%s/config.yaml') % (directory)
+        filepath = ('{}/config.yaml'.format(directory))
         with open(filepath, 'w') as outfile:
             yaml.dump(self.config_dict, outfile, default_flow_style=False)
 

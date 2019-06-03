@@ -171,13 +171,13 @@ class IpQuery(Query):
             for value in nodes_decimal:
                 # Convert deximal value to hex,
                 # then zero fill to ensure hex is two characters long
-                hexbyte = ('%s') % (hex(int(value)))[2:]
+                hexbyte = '{}'.format(hex(int(value)))[2:]
                 nodes_hex.append(hexbyte.zfill(2))
 
             # Convert to list of four byte hex numbers
             for pointer in range(0, len(nodes_hex) - 1, 2):
-                fixed_value = ('%s%s') % (nodes_hex[pointer],
-                                          nodes_hex[pointer + 1])
+                fixed_value = (
+                    '{}{}'.format(nodes_hex[pointer], nodes_hex[pointer + 1]))
                 nodes_final.append(fixed_value)
 
             # Create IPv6 string

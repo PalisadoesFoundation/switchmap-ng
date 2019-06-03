@@ -282,19 +282,19 @@ class AgentAPI(Agent):
         # Check for lock and pid files
         if os.path.exists(self.lockfile_parent) is True:
             log_message = (
-                'Lock file %s exists. Multiple API daemons running '
+                'Lock file {} exists. Multiple API daemons running '
                 'API may have died '
                 'catastrophically in the past, in which case the lockfile '
                 'should be deleted. '
-                '') % (self.lockfile_parent)
+                ''.format(self.lockfile_parent))
             log.log2see(1083, log_message)
 
         if os.path.exists(self.pidfile_parent) is True:
             log_message = (
-                'PID file: %s already exists. Daemon already running? '
+                'PID file: {} already exists. Daemon already running? '
                 'If not, it may have died catastrophically in the past '
                 'in which case you should use --stop --force to fix.'
-                '') % (self.pidfile_parent)
+                ''.format(self.pidfile_parent))
             log.log2see(1084, log_message)
 
         ######################################################################
@@ -308,7 +308,8 @@ class AgentAPI(Agent):
         #
         ######################################################################
         options = {
-            'bind': '%s:%s' % (config.listen_address(), config.bind_port()),
+            'bind': (
+                '{}:{}'.format(config.listen_address(), config.bind_port())),
             'accesslog': config.web_log_file(),
             'errorlog': config.web_log_file(),
             'capture_output': True,
@@ -321,11 +322,11 @@ class AgentAPI(Agent):
         # Log so that user running the script from the CLI knows that something
         # is happening
         log_message = (
-            'Switchmap API running on %s:%s and logging to file %s.'
-            '') % (
+            'Switchmap API running on {}:{} and logging to file {}.'
+            ''.format(
                 config.listen_address(),
                 config.bind_port(),
-                config.web_log_file())
+                config.web_log_file()))
         log.log2info(1022, log_message)
 
         # Run

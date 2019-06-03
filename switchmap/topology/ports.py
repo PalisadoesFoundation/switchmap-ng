@@ -98,7 +98,6 @@ class Lookup(object):
             data_dict['mac_address'] = mac_address
             data_dict['manufacturer'] = manufacturer
             preliminary_listing.append(data_dict)
-            print('boo', preliminary_listing)
 
         # Get IP address and hostname for each mac address
         for item in preliminary_listing:

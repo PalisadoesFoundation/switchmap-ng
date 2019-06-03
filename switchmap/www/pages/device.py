@@ -4,6 +4,7 @@
 import textwrap
 import os
 import time
+from datetime import datetime
 
 # PIP3 imports
 from flask_table import Table, Col
@@ -539,10 +540,10 @@ class _Port(object):
 
         # Determine whether CDP is enabled and update string
         if 'cdpCacheDeviceId' in port_data:
-            value = ('%s<br>%s<br>%s') % (
+            value = ('{}<br>{}<br>{}'.format(
                 port_data['cdpCacheDeviceId'],
                 port_data['cdpCachePlatform'],
-                port_data['cdpCacheDevicePort'])
+                port_data['cdpCacheDevicePort']))
 
         # Return
         return value
@@ -563,10 +564,10 @@ class _Port(object):
 
         # Determine whether LLDP is enabled and update string
         if 'lldpRemSysDesc' in port_data:
-            value = ('%s<br>%s<br>%s') % (
+            value = ('{}<br>{}<br>{}'.format(
                 port_data['lldpRemSysName'],
                 port_data['lldpRemPortDesc'],
-                port_data['lldpRemSysDesc'])
+                port_data['lldpRemSysDesc']))
 
         # Return
         return value
@@ -654,6 +655,13 @@ class System(object):
         # System Uptime
         rows.append(
             SystemRow('System Uptime', _uptime(self.system_data['sysUpTime'])))
+
+        # Last time polled
+        timestamp = int(self.system_data['timestamp'])
+        date_string = datetime.fromtimestamp(
+            timestamp).strftime('%Y-%m-%d %H:%M:%S')
+        rows.append(
+            SystemRow('Time Last Polled', date_string))
 
         # Return
         return rows

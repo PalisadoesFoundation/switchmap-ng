@@ -52,8 +52,8 @@ class Daemon(object):
                 # Exit first parent
                 sys.exit(0)
         except OSError as err:
-            log_message = ('Daemon fork #1 failed: %s') % (err)
-            log_message = ('%s - PID file: %s') % (log_message, self.pidfile)
+            log_message = 'Daemon fork #1 failed: {}'.format(err)
+            log_message = '{} - PID file: {}'.format(log_message, self.pidfile)
             log.log2die(1060, log_message)
 
         # Decouple from parent environment
@@ -69,8 +69,8 @@ class Daemon(object):
                 # exit from second parent
                 sys.exit(0)
         except OSError as err:
-            log_message = ('Daemon fork #2 failed: %s') % (err)
-            log_message = ('%s - PID file: %s') % (log_message, self.pidfile)
+            log_message = 'Daemon fork #2 failed: {}'.format(err)
+            log_message = '{} - PID file: {}'.format(log_message, self.pidfile)
             log.log2die(1061, log_message)
 
         # Redirect standard file descriptors
@@ -138,8 +138,8 @@ class Daemon(object):
 
         if pid:
             log_message = (
-                'PID file: %s already exists. Daemon already running?'
-                '') % (self.pidfile)
+                'PID file: {} already exists. Daemon already running?'
+                ''.format(self.pidfile))
             log.log2die(1062, log_message)
 
         # Start the daemon
@@ -185,8 +185,8 @@ class Daemon(object):
 
         if not pid:
             log_message = (
-                'PID file: %s does not exist. Daemon not running?'
-                '') % (self.pidfile)
+                'PID file: {} does not exist. Daemon not running?'
+                ''.format(self.pidfile))
             log.log2warning(1063, log_message)
             # Not an error in a restart
             return
@@ -211,12 +211,12 @@ class Daemon(object):
             else:
                 log_message = (str(err.args))
                 log_message = (
-                    '%s - PID file: %s') % (log_message, self.pidfile)
+                    '{} - PID file: {}'.format(log_message, self.pidfile))
                 log.log2die(1068, log_message)
         except:
             log_message = (
-                'Unknown daemon "stop" error for PID file: %s'
-                '') % (self.pidfile)
+                'Unknown daemon "stop" error for PID file: {}'
+                ''.format(self.pidfile))
             log.log2die(1066, log_message)
 
         # Log success
@@ -279,7 +279,7 @@ class _Directory:
 
         """
         # Initialize key variables
-        self.root = ('%s/.switchmap') % (general.root_directory())
+        self.root = '{}/.switchmap'.format(general.root_directory())
 
     def snmp(self):
         """Method for defining the hidden snmp directory.
@@ -292,7 +292,7 @@ class _Directory:
 
         """
         # Return
-        value = ('%s/snmp') % self.root
+        value = '{}/snmp'.format(self.root)
         return value
 
     def pid(self):
@@ -306,7 +306,7 @@ class _Directory:
 
         """
         # Return
-        value = ('%s/pid') % self.root
+        value = '{}/pid'.format(self.root)
         return value
 
     def lock(self):
@@ -320,7 +320,7 @@ class _Directory:
 
         """
         # Return
-        value = ('%s/lock') % self.root
+        value = '{}/lock'.format(self.root)
         return value
 
 
@@ -354,7 +354,7 @@ class _File:
         # Return
         if create is True:
             _mkdir(self.directory.pid())
-        value = ('%s/%s.pid') % (self.directory.pid(), prefix)
+        value = '{}/{}.pid'.format(self.directory.pid(), prefix)
         return value
 
     def snmp(self, prefix, create=True):
@@ -371,7 +371,7 @@ class _File:
         # Return
         if create is True:
             _mkdir(self.directory.snmp())
-        value = ('%s/%s.snmp') % (self.directory.snmp(), prefix)
+        value = '{}/{}.snmp'.format(self.directory.snmp(), prefix)
         return value
 
     def lock(self, prefix, create=True):
@@ -388,7 +388,7 @@ class _File:
         # Return
         if create is True:
             _mkdir(self.directory.lock())
-        value = ('%s/%s.lock') % (self.directory.lock(), prefix)
+        value = '{}/{}.lock'.format(self.directory.lock(), prefix)
         return value
 
 
@@ -469,7 +469,7 @@ def pid_file_exists(agent_name):
     """
     # Initialize key variables
     exists = False
-    
+
     # Return
     f_obj = _File()
     result = f_obj.pid(agent_name, create=False)
@@ -525,6 +525,6 @@ def _mkdir(directory):
     else:
         if os.path.isfile(directory) is True:
             log_message = (
-                '%s is not a directory.'
-                '') % (directory)
+                '{} is not a directory.'
+                ''.format(directory))
             log.log2die(1043, log_message)

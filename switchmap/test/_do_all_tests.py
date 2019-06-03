@@ -53,12 +53,12 @@ def main():
     """
     # Determine unittest directory
     root_dir = general.root_directory()
-    test_dir = ('%s/switchmap/test') % (root_dir)
+    test_dir = '{}/switchmap/test'.format(root_dir)
 
     # Get list of test files
     test_files = os.listdir(test_dir)
     for filename in sorted(test_files):
-        full_path = ('%s/%s') % (test_dir, filename)
+        full_path = '{}/{}'.format(test_dir, filename)
 
         # Run the test
         if filename.startswith('test_'):
@@ -89,7 +89,7 @@ def run_script(cli_string):
                          '-----------------------------------------')
 
     # Say what we are doing
-    string2print = ('\nRunning Command: %s') % (cli_string)
+    string2print = '\nRunning Command: {}'.format(cli_string)
     print(string2print)
 
     # Run update_devices script
@@ -106,29 +106,29 @@ def run_script(cli_string):
     # Crash if the return code is not 0
     if returncode != 0:
         # Print the Return Code header
-        string2print = ('\n%s') % (slurpy_returncode)
+        string2print = '\n{}'.format(slurpy_returncode)
         print(string2print)
 
         # Print the Return Code
-        string2print = ('\n%s') % (returncode)
+        string2print = '\n{}'.format(returncode)
         print(string2print)
 
         # Print the STDOUT header
-        string2print = ('\n%s\n') % (slurpy_stdoutdata)
+        string2print = '\n{}\n'.format(slurpy_stdoutdata)
         print(string2print)
 
         # Print the STDOUT
         for line in stdoutdata.decode(encoding).split('\n'):
-            string2print = ('%s') % (line)
+            string2print = '{}'.format(line)
             print(string2print)
 
         # Print the STDERR header
-        string2print = ('\n%s\n') % (slurpy_stderrdata)
+        string2print = '\n{}\n'.format(slurpy_stderrdata)
         print(string2print)
 
         # Print the STDERR
         for line in stderrdata.decode(encoding).split('\n'):
-            string2print = ('%s') % (line)
+            string2print = '{}'.format(line)
             print(string2print)
 
         # All done

@@ -118,7 +118,7 @@ class _Configuration(object):
                 general.delete_yaml_files(next_directory)
 
             # Write config back to directory
-            filepath = ('%s/config.yaml') % (directory)
+            filepath = ('{}/config.yaml'.format(directory))
             with open(filepath, 'w') as outfile:
                 yaml.dump(config, outfile, default_flow_style=False)
 
@@ -148,14 +148,15 @@ class _Configuration(object):
             if config['main'][key] is not None:
                 # Create
                 if os.path.isdir(config['main'][key]) is False:
-                    config['main'][key] = ('%s/%s') % (
-                        directory, dir_dict[key])
+                    config['main'][key] = ('{}/{}'.format(
+                        directory, dir_dict[key]))
                     updated = True
             else:
-                config['main'][key] = ('%s/%s') % (directory, dir_dict[key])
+                config['main'][key] = (
+                    '{}/{}'.format(directory, dir_dict[key]))
                 updated = True
         else:
-            config['main'][key] = ('%s/%s') % (directory, dir_dict[key])
+            config['main'][key] = ('{}/{}'.format(directory, dir_dict[key]))
             updated = True
 
         # Return
@@ -236,16 +237,16 @@ class _PythonSetup(object):
 
         # Install required PIP packages
         requirements_file = (
-            '%s/requirements.txt') % (general.root_directory())
+            '{}/requirements.txt'.format(general.root_directory()))
 
         if username == 'root':
             script_name = (
-                'pip3 install --upgrade --requirement %s'
-                '') % (requirements_file)
+                'pip3 install --upgrade --requirement {}'
+                ''.format(requirements_file))
         else:
             script_name = (
-                'pip3 install --user --upgrade --requirement %s'
-                '') % (requirements_file)
+                'pip3 install --user --upgrade --requirement {}'
+                ''.format(requirements_file))
         general.run_script(script_name)
 
 

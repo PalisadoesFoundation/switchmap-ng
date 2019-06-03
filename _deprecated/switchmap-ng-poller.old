@@ -1,0 +1,524 @@
+#!/usr/bin/env python3
+"""Switchmap-NG ingest cache daemon.
+
+Extracts agent data from cache directory files.
+
+"""
+
+# Standard libraries
+import time
+import sys
+import os
+from multiprocessing import Pool
+from collections import defaultdict
+import socket
+
+# Try to create a working PYTHONPATH
+_SYS_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+_BIN_DIRECTORY = os.path.abspath(os.path.join(_SYS_DIRECTORY, os.pardir))
+_ROOT_DIRECTORY = os.path.abspath(os.path.join(_BIN_DIRECTORY, os.pardir))
+if _SYS_DIRECTORY.endswith('/switchmap-ng/bin/systemd') is True:
+    sys.path.append(_ROOT_DIRECTORY)
+else:
+    print(
+        'This script is not installed in the "switchmap-ng/bin/systemd" directory. '
+        'Please fix.')
+    sys.exit(2)
+
+# switchmap.libraries
+try:
+    from switchmap.utils import log
+except:
+    print('You need to set your PYTHONPATH to include the switchmap library')
+    sys.exit(2)
+from switchmap.constants import CONFIG, CONFIG_SNMP
+from switchmap.utils import general
+from switchmap.snmp import snmp_info
+from switchmap.snmp import poller
+from switchmap.snmp import snmp_manager
+from switchmap.topology import postpoll
+from switchmap.main import agent
+from switchmap.main.agent import Agent
+from switchmap.constants import POLLER_EXECUTABLE
+
+
+class PollingAgent(Agent):
+    """Switchmap-NG agent that gathers data.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    Functions:
+        __init__:
+        populate:
+        post:
+    """
+
+    def __init__(self, parent):
+        """Method initializing the class.
+
+        Args:
+            config_dir: Configuration directory
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        Agent.__init__(self, parent)
+
+        # Get configuration
+        self.server_config = CONFIG
+        self.snmp_config = CONFIG_SNMP
+
+    def query(self):
+        """Query all remote hosts for data.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        delay = self.server_config.polling_interval()
+        ts_start = int(time.time())
+
+        # Post data to the remote server
+        while True:
+            log_message = ('Starting device polling sequence.')
+            log.log2info(1056, log_message)
+
+            # Delete temporary topology directory files
+            temp_topology_directory = (
+                self.server_config.temp_topology_directory())
+            if os.path.isdir(temp_topology_directory):
+                general.delete_files(temp_topology_directory)
+
+            # Poll after sleeping
+            _poll_devices()
+
+            # Create search files
+            _SearchFiles().create()
+
+            # Modify temp yaml files to include IP address and
+            # Delete permanent topology directory files
+            topology_directory = self.server_config.topology_directory()
+            if os.path.isdir(topology_directory):
+                general.delete_files(topology_directory)
+
+            # Move files to topology directory
+            general.move_files(
+                temp_topology_directory, topology_directory)
+
+            log_message = (
+                'Completed device polling sequence. {}s duration'
+                ''.format(int(time.time()) - ts_start))
+            log.log2info(1125, log_message)
+
+            # Sleep for "delay" seconds
+            agent.agent_sleep(self.name(), delay)
+
+
+def _poll_devices():
+    """Poll all devices for data using subprocesses and create YAML files.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Get configuration
+    config = CONFIG
+
+    # Get the number of threads to use in the pool
+    threads_in_pool = config.agent_threads()
+
+    # Create a list of polling objects
+    hostnames = sorted(config.hostnames())
+
+    # Create a pool of sub process resources
+    with Pool(processes=threads_in_pool) as pool:
+
+        # Create sub processes from the pool
+        pool.map(_poll_single_device, hostnames)
+
+
+def _poll_single_device(hostname):
+    """Poll single device for data and create YAML files.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Poll data for obviously valid hostnames (eg. "None" used in installation)
+    if bool(hostname) is True:
+        if isinstance(hostname, str) is True:
+            if hostname.lower() != 'none':
+                _poller = poller.Poll(hostname)
+                _poller.save()
+
+                # Save the idle times
+                idletimes = postpoll.IdleTimes(hostname)
+                idletimes.save()
+
+
+class _SearchFiles(object):
+    """Switchmap-NG class for managing search files."""
+
+    def __init__(self):
+        """Method initializing the class.
+
+        Args:
+            hostname: Hostname to poll
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        self.config = CONFIG
+        topology_directory = self.config.topology_directory()
+        self.filepaths = []
+
+        # Cycle through list of files in directory
+        for filename in os.listdir(topology_directory):
+            # Examine all the '.yaml' files in directory
+            if filename.endswith('.yaml'):
+                # Read file
+                device_name = filename[0:-5]
+                filepath = self.config.topology_device_file(device_name)
+                self.filepaths.append(filepath)
+
+    def create(self):
+        """Creates YAML files used for Switchmap-NG search.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Send log message
+        log_message = ('Starting search file creation.')
+        log.log2info(1059, log_message)
+
+        # Create files
+        self._create_layer_2_tables()
+        self._create_layer_3_tables()
+
+        # Send log message
+        log_message = ('Completed search file creation.')
+        log.log2info(1055, log_message)
+
+    def _device_name(self, filepath):
+        """Get device name from filepath.
+
+        Args:
+            filepath: Path to file
+
+        Returns:
+            device_name: Name of device
+
+        """
+        # Return device name
+        filename = os.path.basename(filepath)
+        device_name = filename[0:-5]
+        return device_name
+
+    def _create_layer_2_tables(self):
+        """Create RARP, ARP and host table YAML search files.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        arp_table = defaultdict(lambda: defaultdict(dict))
+        host_table = {}
+        rarp_table = {}
+
+        # Create host, ARP table files
+        # Cycle through list of files in directory
+        for filepath in self.filepaths:
+            # Read file
+            device_name = self._device_name(filepath)
+            device_dict = general.read_yaml_file(filepath)
+
+            # Validate we have a dict
+            if _is_dict(device_dict, device_name) is False:
+                continue
+
+            # Send log message
+            log_message = (
+                'Creating ARP, RARP and host table entries for device {}.'
+                ''.format(device_name))
+            log.log2debug(1073, log_message)
+
+            # Populate ARP and RARP table
+            if 'layer3' in device_dict:
+                keys = ['cInetNetToMediaPhysAddress', 'ipNetToMediaTable']
+                for key in keys:
+                    if key in device_dict['layer3']:
+                        arp_dict = device_dict['layer3'][key]
+
+                        # Validate we have a dict
+                        if _is_dict(arp_dict, device_name) is False:
+                            continue
+
+                        for ip_address, mac_address in arp_dict.items():
+                            # Populate ARP table
+                            arp_table[ip_address]['mac_address'] = mac_address
+                            try:
+                                ip_results = socket.gethostbyaddr(ip_address)
+                                if len(ip_results) > 1:
+                                    hostname = ip_results[0]
+                                    arp_table[
+                                        ip_address]['hostname'] = hostname
+                                    host_table[hostname] = ip_address
+
+                            except:
+                                arp_table[ip_address]['hostname'] = None
+
+                            # Populate RARP table (Using ARP entries)
+                            if mac_address in rarp_table:
+                                # Only append unique entries
+                                if ip_address not in rarp_table[mac_address]:
+                                    rarp_table[mac_address].append(ip_address)
+                            else:
+                                rarp_table[mac_address] = [ip_address]
+
+            # Populate entries in rarp_table that correspond to multicast
+            if 'layer1' in device_dict:
+                layer1_dict = device_dict['layer1']
+
+                # Validate we have a dict
+                if _is_dict(layer1_dict, device_name) is False:
+                    continue
+
+                # Process each port on device
+                for _, port_dict in layer1_dict.items():
+                    # Validate we have a dict
+                    if _is_dict(port_dict, device_name) is False:
+                        continue
+
+                    # Skip non ethernet ports
+                    if 'jm_ethernet' not in port_dict:
+                        continue
+
+                    # Process MAC addresses
+                    if ('jm_macs' in port_dict) and (
+                            bool(port_dict['jm_macs']) is True):
+
+                        # Create an ifIndex and device entry
+                        # for each RARP entry
+                        for mac_address in port_dict['jm_macs']:
+                            # Populate RARP table. Not all MACs have
+                            # an associated ARP IP address (eg. multicast)
+                            if mac_address not in rarp_table:
+                                rarp_table[mac_address] = []
+
+            # Send log message
+            log_message = (
+                'Completed ARP, RARP and host table entries for device {}.'
+                ''.format(device_name))
+            log.log2debug(1075, log_message)
+
+        # Create yaml files
+        general.create_yaml_file(arp_table, self.config.arp_file())
+        log_message = ('Created ARP table search file.')
+        log.log2debug(1082, log_message)
+
+        general.create_yaml_file(host_table, self.config.hosts_file())
+        log_message = ('Created hosts table search file.')
+        log.log2debug(1054, log_message)
+
+        general.create_yaml_file(rarp_table, self.config.rarp_file())
+        log_message = ('Created RARP table search file.')
+        log.log2debug(1085, log_message)
+
+    def _create_layer_3_tables(self):
+        """Creates Layer 3 YAML files used for Switchmap-NG search.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        ifalias_table = defaultdict(lambda: defaultdict(dict))
+        ifindex_table = defaultdict(
+            lambda: defaultdict(lambda: defaultdict(dict)))
+
+        # Read RARP file
+        rarp_table = general.read_yaml_file(self.config.rarp_file())
+
+        # Create host, ARP table files
+        # Cycle through list of files in directory
+        for filepath in self.filepaths:
+            # Read file
+            device_name = self._device_name(filepath)
+            device_dict = general.read_yaml_file(filepath)
+
+            # Validate we have a dict
+            if _is_dict(device_dict, device_name) is False:
+                continue
+
+            # Get the device name
+            device_name = device_dict['misc']['host']
+
+            # Send log message
+            log_message = (
+                'Creating ifAlias and ifIndex table entries for device {}.'
+                ''.format(device_name))
+            log.log2debug(1072, log_message)
+
+            # Populate ifIndex table
+            if 'layer1' in device_dict:
+                layer1_dict = device_dict['layer1']
+
+                # Validate we have a dict
+                if _is_dict(layer1_dict, device_name) is False:
+                    continue
+
+                # Process each port on device
+                for ifindex, port_dict in sorted(layer1_dict.items()):
+                    # Validate we have a dict
+                    if _is_dict(port_dict, device_name) is False:
+                        continue
+
+                    # Skip non ethernet ports
+                    if 'jm_ethernet' not in port_dict:
+                        continue
+
+                    # Do a quick validation of required keys
+                    keys = ['jm_ethernet', 'jm_trunk', 'ifAlias']
+                    for key in keys:
+                        if key not in port_dict:
+                            log_message = (
+                                'Device {} has a YAML file '
+                                'for ifindex {} with no key {}. '
+                                'Skipping this ifindex value.'
+                                ''.format(device_name, ifindex, key))
+                            log.log2debug(1064, log_message)
+                            continue
+
+                    # Only interested in Ethernet ports
+                    if bool(port_dict['jm_ethernet']) is False:
+                        continue
+
+                    # We are not interested in populating trunk port MAC data
+                    if bool(port_dict['jm_trunk']) is True:
+                        continue
+
+                    # Create ifalias entry
+                    ifalias = port_dict['ifAlias'].strip()
+                    if bool(ifalias) is True:
+                        if ifalias not in ifalias_table:
+                            ifalias_table[ifalias][device_name] = [ifindex]
+                        else:
+                            if device_name not in ifalias_table[ifalias]:
+                                ifalias_table[ifalias][device_name] = [ifindex]
+                            else:
+                                ifalias_table[
+                                    ifalias][device_name].append(ifindex)
+
+                    # Process MAC addresses
+                    if ('jm_macs' in port_dict) and (
+                            bool(port_dict['jm_macs']) is True):
+
+                        # Create an ifIndex and device entry
+                        # for each RARP entry
+                        for mac_address in port_dict['jm_macs']:
+                            # Create ifindex entry
+                            for ip_address in rarp_table[mac_address]:
+                                if bool(ifindex_table[mac_address][
+                                        device_name][ifindex]) is True:
+                                    ifindex_table[mac_address][device_name][
+                                        ifindex].append(ip_address)
+                                else:
+                                    ifindex_table[mac_address][device_name][
+                                        ifindex] = [ip_address]
+
+            # Send log message
+            log_message = (
+                'Completed ifAlias, ifIndex table entries for device {}.'
+                ''.format(device_name))
+            log.log2debug(1079, log_message)
+
+        general.create_yaml_file(ifindex_table, self.config.ifindex_file())
+        log_message = ('Created ifIndex table search file.')
+        log.log2debug(1051, log_message)
+
+        general.create_yaml_file(ifalias_table, self.config.ifalias_file())
+        log_message = ('Created ifAlias table search file.')
+        log.log2debug(1053, log_message)
+
+
+def _is_dict(variable, device_name):
+    """Deterimine whether the variable is a dictionary.
+
+    Args:
+        device_name: Name of device_name
+        varibable: Variable to test
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    valid = False
+
+    # Validate we have a dict
+    if isinstance(variable, dict) is False:
+        log_message = (
+            'Device {} has a corrupted device YAML file. Skipping.'
+            ''.format(device_name))
+        log.log2debug(1067, log_message)
+        valid = False
+    else:
+        valid = True
+
+    # Return
+    return valid
+
+
+def main():
+    """Start the switchmap.agent.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Check user
+    general.check_user()
+
+    # Get configuration
+    agent_poller = PollingAgent(POLLER_EXECUTABLE)
+
+    # Do control
+    cli = agent.AgentCLI()
+    cli.control(agent_poller)
+
+if __name__ == "__main__":
+    # Poller('192.168.1.1')._create_yaml()
+    # _poll_devices()
+    main()
