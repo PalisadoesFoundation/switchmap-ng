@@ -2,13 +2,9 @@
 """Class interacts with devices supporting BRIDGE-MIB."""
 
 from collections import defaultdict
-import binascii
 
 from switchmap.snmp.base_query import Query
-
-from switchmap.utils import log
-from pprint import pprint
-import sys
+from switchmap.utils import general
 
 
 def get_query():
@@ -197,7 +193,7 @@ class BridgeQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
         dot1dbaseport_macs = {}
 
-        # Check if Jnuiper VLANS are supported
+        # Check if Juniper VLANS are supported
         oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
         oid_exists = self.snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
@@ -318,10 +314,10 @@ class BridgeQuery(Query):
         for context_name in context_names:
             results = self.snmp_object.swalk(
                 oid, normalized=False, context_name=context_name)
-            for key, value in results.items():
+            for key, mac_value in results.items():
+                # Assign the mac address to the dictionary
                 new_key = key[len(oid):]
-                macaddress = binascii.hexlify(value).decode('utf-8')
-                data_dict[new_key] = macaddress.lower()
+                data_dict[new_key] = general.octetstr_2_string(mac_value)
 
         # Return data
         return data_dict
@@ -399,3 +395,19 @@ def _cisco_vlan_context(vlan, context_style):
 
     # Return
     return cisco_context
+
+
+def _snmp_octetstr_2_string(binary_value):
+    """Convert SNMP OCTETSTR to string.
+
+    Args:
+        binary_value: Binary value to convert
+
+    Returns:
+        result: String equivalent of binary_value
+
+    """
+    # Convert and return
+    result = ''.join(
+        ['%0.2x' % ord(_) for _ in binary_value.decode('utf-8')])
+    return result.lower()

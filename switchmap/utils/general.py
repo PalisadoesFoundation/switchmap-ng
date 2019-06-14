@@ -531,3 +531,22 @@ def create_yaml_file(data_dict, filepath, ignore_blanks=True):
     yaml_string = dict2yaml(data_dict)
     with open(filepath, 'w') as file_handle:
         file_handle.write(yaml_string)
+
+
+def octetstr_2_string(bytes_string):
+    """Convert SNMP OCTETSTR to string.
+
+    Args:
+        bytes_string: Binary value to convert
+
+    Returns:
+        result: String equivalent of bytes_string
+
+    """
+    # Initialize key variables
+    octet_string = bytes_string.decode('utf-8')
+
+    # Convert and return
+    result = ''.join(
+        ['%0.2x' % ord(_) for _ in octet_string])
+    return result.lower()

@@ -5,9 +5,6 @@ Extracts agent data from cache directory files.
 
 """
 
-# Standard libraries
-from pprint import pprint
-
 # Switchmap imports
 from switchmap.constants import CONFIG, CONFIG_SNMP
 from switchmap.snmp import snmp_info
