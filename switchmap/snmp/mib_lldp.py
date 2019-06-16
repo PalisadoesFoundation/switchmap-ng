@@ -52,8 +52,8 @@ class LldpQuery(Query):
 
         """
         # Define query object
-        self.snmp_object = snmp_object
-        self.use_ifindex = True
+        self._snmp_object = snmp_object
+        self._use_ifindex = False
 
         # Get one OID entry in MIB (lldpRemSysName)
         test_oid = '.1.0.8802.1.1.2.1.4.1.1.9'
@@ -61,22 +61,13 @@ class LldpQuery(Query):
         super().__init__(snmp_object, test_oid, tags=['layer1'])
 
         # Load the ifindex baseport map if this mib is supported
-        bridge_mib = BridgeQuery(self.snmp_object)
+        bridge_mib = BridgeQuery(self._snmp_object)
 
         if self.supported() and bridge_mib.supported():
-            self.baseportifindex = bridge_mib.dot1dbaseport_2_ifindex()
-
-            # Determine whether LLDP is keyed on ifIndex or BasePortIndex
-            # If the ifindex method is being used, all the lldpLocPortIds
-            # will match the ifindex values
-            ifindex = mib_if.IfQuery(snmp_object).ifindex()
-            lldplocportid = self._lldplocportid()
-            for key, _ in lldplocportid.items():
-                if key not in ifindex:
-                    self.use_ifindex = False
-                    break
+            self._baseportifindex = bridge_mib.dot1dbaseport_2_ifindex()
+            self._use_ifindex = self._use_ifindex_check()
         else:
-            self.baseportifindex = None
+            self._baseportifindex = None
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -137,12 +128,12 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = self._snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             ifindex = self._ifindex(key)
 
-            # We have seen issues where self.baseportifindex doesn't always
+            # We have seen issues where self._baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
             if bool(ifindex) is True:
                 data_dict[ifindex] = str(bytes(value), encoding='utf-8')
@@ -173,12 +164,12 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = self._snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             ifindex = self._ifindex(key)
 
-            # We have seen issues where self.baseportifindex doesn't always
+            # We have seen issues where self._baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
             if bool(ifindex) is False:
                 continue
@@ -215,12 +206,12 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = self._snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             ifindex = self._ifindex(key)
 
-            # We have seen issues where self.baseportifindex doesn't always
+            # We have seen issues where self._baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
             if bool(ifindex) is True:
                 data_dict[ifindex] = general.cleanstring(
@@ -250,12 +241,12 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = self._snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             ifindex = self._ifindex(key)
 
-            # We have seen issues where self.baseportifindex doesn't always
+            # We have seen issues where self._baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
             if bool(ifindex) is True:
                 data_dict[ifindex] = general.cleanstring(
@@ -264,34 +255,81 @@ class LldpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def _lldplocportid(self, oidonly=False):
-        """Return dict of LLDP-MIB lldpLocPortId for each port.
+    def lldplocportdesc(self, oidonly=False):
+        """Return dict of LLDP-MIB lldpLocPortDesc for each port.
 
         Args:
             oidonly: Return OID's value, not results, if True
 
         Returns:
-            data_dict: Dict of lldpLocPortId using ifIndex as key
+            data_dict: Dict of lldpLocPortDesc using ifIndex as key
 
         """
         # Initialize key variables
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.0.8802.1.1.2.1.3.7.1.3'
+        oid = '.1.0.8802.1.1.2.1.3.7.1.4'
 
         # Return OID value. Used for unittests
         if oidonly is True:
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = self._snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
-            data_dict[int(key)] = general.cleanstring(
-                str(bytes(value), encoding='utf-8'))
+            # Check if this OID is indexed using iFindex or dot1dBasePort
+            key_index = int(key.split('.')[-1])
+
+            # Check if this OID is indexed using iFindex or dot1dBasePort
+            if bool(self._baseportifindex) is True:
+                if self._use_ifindex is True:
+                    ifindex = key_index
+                else:
+                    ifindex = self._baseportifindex[key_index]
+            else:
+                ifindex = key_index
+
+            # We have seen issues where self._baseportifindex doesn't always
+            # return a complete dict of values that include all ifindexes
+            if bool(ifindex) is True:
+                data_dict[ifindex] = general.cleanstring(
+                    str(bytes(value), encoding='utf-8'))
 
         # Return the interface descriptions
         return data_dict
+
+    def _use_ifindex_check(self):
+        """Return if LLDP OIDs are keyed by ifIndex or dot1dBasePortIfIndex.
+
+        Args:
+            None
+
+        Returns:
+            use_ifindex: True if ifIndex is used
+
+        """
+        # Initialize key variables
+        use_ifindex = False
+        ifdescr = mib_if.IfQuery(self._snmp_object).ifdescr()
+
+        # Use the well known lldplocportdesc OID that must be supported
+        oid = '.1.0.8802.1.1.2.1.3.7.1.4'
+
+        # Process results
+        lldpdescr = self._snmp_object.swalk(oid, normalized=False)
+        for oid_key in sorted(lldpdescr.keys()):
+            # Check if this OID is indexed using iFindex or dot1dBasePort
+            lldp_key = int(oid_key.split('.')[-1])
+
+            if lldp_key in ifdescr:
+                interface = lldpdescr[oid_key].decode('utf-8')
+                if interface.lower() == ifdescr[lldp_key].lower():
+                    use_ifindex = True
+                    break
+
+        # Return
+        return use_ifindex
 
     def _ifindex(self, key):
         """Return ifindex of port.
@@ -307,12 +345,12 @@ class LldpQuery(Query):
         ifindex = None
 
         # Check if this OID is indexed using iFindex or dot1dBasePort
-        if self.baseportifindex is not None:
-            if self.use_ifindex is True:
+        if bool(self._baseportifindex) is True:
+            if self._use_ifindex is True:
                 ifindex = _penultimate_node(key)
             else:
                 bridgeport = _penultimate_node(key)
-                ifindex = self.baseportifindex[bridgeport]
+                ifindex = self._baseportifindex[bridgeport]
         else:
             ifindex = _penultimate_node(key)
 
