@@ -6,6 +6,7 @@ from collections import defaultdict
 import binascii
 
 from switchmap.snmp.base_query import Query
+from switchmap.utils import general
 
 
 def get_query():
@@ -124,10 +125,10 @@ class IpQuery(Query):
             ipaddress = '.'.join(octets)
 
             # Determine MAC address
-            macaddress = binascii.hexlify(value).decode('utf-8')
+            macaddress = general.octetstr_2_string(value)
 
             # Create ARP table entry
-            data_dict[ipaddress] = macaddress.lower()
+            data_dict[ipaddress] = macaddress
 
         # Return data
         return data_dict
@@ -152,10 +153,9 @@ class IpQuery(Query):
 
         # Process results
         results = self.snmp_object.swalk(oid, normalized=False)
-        for key, value in results.items():
+        for key, mac_value in results.items():
             # Get IP address, first 12 characters
-            macaddress = binascii.hexlify(
-                value).decode('utf-8')[0:12].lower()
+            macaddress = general.octetstr_2_string(mac_value)
 
             # Convert IP address from decimal to hex
             nodes = key.split('.')
@@ -184,7 +184,7 @@ class IpQuery(Query):
             ipv6 = ':'.join(nodes_final)
 
             # Create ARP entry
-            data_dict[ipv6] = macaddress.lower()
+            data_dict[ipv6] = macaddress
 
         # Return data
         return data_dict

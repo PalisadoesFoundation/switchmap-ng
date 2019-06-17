@@ -3,9 +3,9 @@
 
 
 from collections import defaultdict
-import binascii
 
 from switchmap.snmp.base_query import Query
+from switchmap.utils import general
 
 
 def get_query():
@@ -491,9 +491,8 @@ class IfQuery(Query):
         # Process results
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
-            # Process OID
-            macaddress = binascii.hexlify(value).decode('utf-8').lower()
-            data_dict[int(key)] = macaddress
+            # Process OID to get MAC address
+            data_dict[int(key)] = general.octetstr_2_string(value)
 
         # Return the interface descriptions
         return data_dict

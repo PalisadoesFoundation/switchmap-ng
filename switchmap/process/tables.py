@@ -4,6 +4,9 @@ from collections import defaultdict
 import socket
 from multiprocessing import Pool
 
+from pprint import pprint
+import sys
+
 # switchmap.libraries
 from switchmap.utils import log
 from switchmap.constants import CONFIG
@@ -36,6 +39,7 @@ class SearchFiles(object):
                 device_name = filename[0:-5]
                 filepath = self._config.topology_device_file(device_name)
                 self._filepaths.append(filepath)
+        self._filepaths.sort()
 
     def create(self):
         """Create YAML files used for Switchmap-NG search.
@@ -280,6 +284,10 @@ class SearchFiles(object):
                         # Create an ifIndex and device entry
                         # for each RARP entry
                         for mac_addr in port_dict['jm_macs']:
+                            # Skip unknown MAC addresses
+                            if mac_addr not in rarp_table:
+                                continue
+
                             # Create ifindex entry
                             for ip_address in rarp_table[mac_addr]:
                                 if mac_addr not in ifindex_table:

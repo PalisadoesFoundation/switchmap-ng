@@ -280,7 +280,7 @@ class Device(object):
                 port_data['jm_ethernet'] = False
 
             # Update the data
-            updated_device_data[ifindex] = port_data
+            updated_device_data['layer1'][ifindex] = port_data
 
         # Send log message
         log_message = (

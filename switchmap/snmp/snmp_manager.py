@@ -542,7 +542,7 @@ class Interact(object):
             log.log2die(1002, log_message)
 
         # Format results
-        values = _format_results(results, normalized=normalized)
+        values = _format_results(results, oid_to_get, normalized=normalized)
 
         # Return
         return (_contactable, exists, values)
@@ -759,11 +759,13 @@ def _process_error(
     log.log2die(1023, log_message)
 
 
-def _format_results(results, normalized=False):
+def _format_results(results, mock_filter, normalized=False):
     """Normalize the results of an walk.
 
     Args:
         results: List of lists of results
+        mock_filter: The original OID to get. Facilitates unittesting by
+            filtering Mock values.
         normalized: If True, then return results as a dict keyed by
             only the last node of an OID, otherwise return results
             keyed by the entire OID string. Normalization is useful
@@ -779,12 +781,18 @@ def _format_results(results, normalized=False):
     return_results = {}
 
     for result in results:
+        # Recreate the OID
+        oid = '{}.{}'.format(result.oid, result.oid_index)
+
+        # Ignore unwanted OIDs
+        if mock_filter not in oid:
+            continue
+
+        # Process the rest
         if normalized is True:
             return_results[result.oid_index] = _convert(result)
         else:
-            return_results[
-                '{}.{}'.format(
-                    result.oid, result.oid_index)] = _convert(result)
+            return_results[oid] = _convert(result)
 
     # Return
     return return_results
