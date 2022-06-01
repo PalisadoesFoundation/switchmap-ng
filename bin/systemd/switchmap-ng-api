@@ -24,7 +24,7 @@ else:
 # Switchmap libraries
 from switchmap.main import agent
 from switchmap.main.agent import Agent, AgentAPI
-from switchmap.constants import API_EXECUTABLE, API_GUNICORN_AGENT
+from switchmap import API_EXECUTABLE, API_GUNICORN_AGENT
 from switchmap.utils import general
 
 

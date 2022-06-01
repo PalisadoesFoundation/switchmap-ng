@@ -5,7 +5,19 @@ Manages parameters required by all classes in the module.
 
 """
 
-# Main python libraries
+# Do library imports
+from switchmap.core import log
+from .core.configuration import Config
+from .core.configuration import ConfigSNMP
+
+# Create global variables for the API
+SITE_PREFIX = '/switchmap-ng'
+API_PREFIX = '{}/api/v1'.format(SITE_PREFIX)
+API_STATIC_FOLDER = 'static/default'
+API_TEMPLATE_FOLDER = 'templates/default'
+API_EXECUTABLE = 'switchmap-ng-api'
+API_GUNICORN_AGENT = 'switchmap-ng-gunicorn'
+POLLER_EXECUTABLE = 'switchmap-ng-poller'
 
 
 def main():
@@ -19,7 +31,7 @@ def main():
 
     """
     # Check the environment
-    pass
+    log.check_environment()
 
 
 if __name__ == 'switchmap':

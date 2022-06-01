@@ -10,9 +10,9 @@ import sys
 
 # Switchmap-NG imports
 from switchmap.utils import general
-from switchmap.constants import CONFIG_SNMP, CONFIG
+from switchmap import CONFIG_SNMP, CONFIG
 from switchmap.utils import log
-from switchmap.snmp import snmp_manager
+from switchmap.poll.snmp import snmp_manager
 
 
 def run(args):

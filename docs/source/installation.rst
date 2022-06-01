@@ -89,7 +89,7 @@ To make ``switchmap-ng`` run with your username, then execute this command:
 
 ::
 
-    $ maintenance/install.py
+    $ setup/install.py
 
 **Installing as the "root" user**
 
@@ -102,7 +102,7 @@ To install ``switchmap-ng`` as the ``root`` user execute this command:
 
 ::
 
-    # maintenance/install.py
+    # setup/install.py
 
 
 Testing Installation

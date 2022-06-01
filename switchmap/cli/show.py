@@ -10,11 +10,11 @@ import sys
 from pprint import pprint
 
 # Switchmap-NG imports
-from switchmap.constants import CONFIG
+from switchmap import CONFIG
 from switchmap.utils import input_output
 from switchmap.utils import general
 from switchmap.main.agent import Agent, AgentAPI, AgentDaemon
-from switchmap.constants import (
+from switchmap import (
     API_EXECUTABLE, API_GUNICORN_AGENT, POLLER_EXECUTABLE)
 
 

@@ -13,7 +13,7 @@ Description:
 import re
 
 # Switchmap-NG imports
-from switchmap.constants import CONFIG
+from switchmap import CONFIG
 from switchmap.utils import general
 
 

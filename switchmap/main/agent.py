@@ -24,7 +24,7 @@ from gunicorn.app.base import BaseApplication
 # switchmap.libraries
 from switchmap.utils import daemon
 from switchmap.utils.daemon import Daemon
-from switchmap.constants import CONFIG
+from switchmap import CONFIG
 from switchmap.utils import log
 from switchmap.www import API
 

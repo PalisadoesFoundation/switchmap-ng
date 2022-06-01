@@ -5,7 +5,7 @@
 from flask_table import Table, Col
 
 # Import switchmap.libraries
-from switchmap.constants import SITE_PREFIX
+from switchmap import SITE_PREFIX
 
 
 class _RawCol(Col):

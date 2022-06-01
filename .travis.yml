@@ -22,7 +22,7 @@ before_install:
     - pip install -r requirements.txt
     - switchmap/test/_travis_ci_setup.py
 # Install switchmap-ng
-install: python3 maintenance/setup.py
+install: python3 setup/setup.py
 
 # Run the unittest scripts
 script: switchmap/test/_do_all_tests.py

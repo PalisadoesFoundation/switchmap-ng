@@ -7,8 +7,8 @@ from copy import deepcopy
 import time
 
 # Switchmap-NG imports
-from switchmap.constants import CONFIG
-from switchmap.snmp import poller
+from switchmap import CONFIG
+from switchmap.poll.snmp import poller
 from switchmap.utils import general
 from switchmap.utils import log
 

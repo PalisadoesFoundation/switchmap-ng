@@ -9,7 +9,7 @@ import sys
 
 # switchmap.libraries
 from switchmap.utils import log
-from switchmap.constants import CONFIG
+from switchmap import CONFIG
 from switchmap.utils import general
 
 
