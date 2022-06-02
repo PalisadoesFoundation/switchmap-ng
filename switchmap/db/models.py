@@ -13,7 +13,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import Null
 from sqlalchemy.orm import Session
 
-# Slurpy imports
+# Project imports
 from switchmap.db import SCOPED_SESSION, ENGINE
 
 ###############################################################################
@@ -38,7 +38,8 @@ class Location(BASE):
 
     __tablename__ = 'smap_location'
 
-    idx = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_location = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True)
     name = Column(VARBINARY(256))
     company_name = Column(
         VARBINARY(256), nullable=True, default=Null)
@@ -64,9 +65,10 @@ class Device(BASE):
 
     __tablename__ = 'smap_device'
 
-    idx = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_device = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_location = Column(
-        ForeignKey('smap_location.idx'),
+        ForeignKey('smap_location.idx_location'),
         nullable=False, index=True, default=1, server_default=text('1'))
     sys_name = Column(
         VARBINARY(256), nullable=True, default=Null)
@@ -86,7 +88,7 @@ class Device(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
-    device_to_datacenter = relationship(
+    device_to_location = relationship(
         Location,
         backref=backref(
             'device_to_location', uselist=True, cascade='delete,all'))
@@ -97,9 +99,10 @@ class L1Interface(BASE):
 
     __tablename__ = 'smap_l1interface'
 
-    idx = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_l1interface = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_device = Column(
-        ForeignKey('smap_device.idx'),
+        ForeignKey('smap_device.idx_device'),
         nullable=False, index=True, default=1, server_default=text('1'))
     ifindex = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     duplex = Column(BIGINT(unsigned=True), nullable=True, default=Null)
@@ -127,8 +130,8 @@ class L1Interface(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
-    device_to_datacenter = relationship(
-        Location,
+    l1interface_to_device = relationship(
+        Device,
         backref=backref(
             'l1interface_to_device', uselist=True, cascade='delete,all'))
 
@@ -138,9 +141,9 @@ class Vlan(BASE):
 
     __tablename__ = 'smap_vlan'
 
-    idx = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_vlan = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_device = Column(
-        ForeignKey('smap_device.idx'),
+        ForeignKey('smap_device.idx_device'),
         nullable=False, index=True, default=1, server_default=text('1'))
     vlan = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     name = Column(VARBINARY(256), nullable=True, default=Null)
@@ -153,7 +156,7 @@ class Vlan(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
-    device_to_datacenter = relationship(
+    vlan_to_device = relationship(
         Device,
         backref=backref(
             'vlan_to_device', uselist=True, cascade='delete,all'))
@@ -164,12 +167,13 @@ class Trunk(BASE):
 
     __tablename__ = 'smap_trunk'
 
-    idx = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_trunk = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_l1interface = Column(
-        ForeignKey('smap_l1interface.idx'),
+        ForeignKey('smap_l1interface.idx_l1interface'),
         nullable=False, index=True, default=1, server_default=text('1'))
     idx_vlan = Column(
-        ForeignKey('smap_vlan.idx'),
+        ForeignKey('smap_vlan.idx_vlan'),
         nullable=False, index=True, default=1, server_default=text('1'))
     enabled = Column(BIGINT(unsigned=True), default=1)
     ts_modified = Column(
@@ -190,9 +194,9 @@ class OUI(BASE):
 
     __tablename__ = 'smap_oui'
 
-    idx = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     oui = Column(VARBINARY(256), unique=True)
-    manufacturer = Column(VARBINARY(256), nullable=True, default=Null)
+    organization = Column(VARBINARY(256), nullable=True, default=Null)
     enabled = Column(BIGINT(unsigned=True), default=1)
     ts_modified = Column(
         DateTime, nullable=False,
@@ -206,12 +210,13 @@ class MacTable(BASE):
 
     __tablename__ = 'smap_mactable'
 
-    idx = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_mactable = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_device = Column(
-        ForeignKey('smap_device.idx'),
+        ForeignKey('smap_device.idx_device'),
         nullable=False, index=True, default=1, server_default=text('1'))
     idx_oui = Column(
-        ForeignKey('smap_oui.idx'),
+        ForeignKey('smap_oui.idx_oui'),
         nullable=False, index=True, default=1, server_default=text('1'))
     ip_ = Column(VARBINARY(256), nullable=True, default=Null)
     mac = Column(VARBINARY(256), nullable=True, default=Null)
@@ -239,7 +244,6 @@ class MacTable(BASE):
 def create_all_tables():
     """Ensure all tables are created."""
     # Process transaction
-    # with ENGINE.connect() as connection:
-    #     with Session(bind=connection) as session:
-    #         BASE.metadata.create_all(session.get_bind(), checkfirst=True)
-    BASE.metadata.create_all(ENGINE)
+    with ENGINE.connect() as connection:
+        with Session(bind=connection) as session:
+            BASE.metadata.create_all(session.get_bind(), checkfirst=True)

@@ -4,9 +4,9 @@ import sys
 from sqlalchemy.sql import Select, Update, Delete
 from sqlalchemy.orm import Session
 
-# Import slurpy libraries
-from slurpy.shared import log
-from slurpy.server.db import ENGINE
+# Import project libraries
+from switchmap.core import log
+from switchmap.db import ENGINE
 
 
 def db_select_row(error_code, statement):

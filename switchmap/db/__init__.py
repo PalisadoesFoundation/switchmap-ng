@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Slurpy ORM classes.
-
-Manages connection pooling among other things.
-
-"""
+"""Module to manage connection pooling among other things."""
 
 # Main python libraries
 import os
@@ -14,7 +10,7 @@ from sqlalchemy import event
 from sqlalchemy import exc
 from sqlalchemy.pool import QueuePool
 
-# Slurpy libraries
+# Project libraries
 from switchmap import Config
 from switchmap.core import log
 
@@ -60,33 +56,18 @@ def main():
         _add_engine_pidguard(QueuePool)
 
         # Add MySQL to the pool
-        if 'create_db_tables.py' in sys.argv[0]:
-            # Create engine without 'future' flag
-            # (Remove after SQLALchemy v2.0)
-            ENGINE = create_engine(
-                db_url,
-                echo=False,
-                echo_pool=False,
-                max_overflow=max_overflow,
-                poolclass=QueuePool,
-                pool_pre_ping=True,
-                pool_recycle=pool_recycle,
-                pool_size=pool_size,
-                pool_timeout=pool_timeout,
-                pool_use_lifo=True)
-        else:
-            ENGINE = create_engine(
-                db_url,
-                echo=False,
-                echo_pool=False,
-                max_overflow=max_overflow,
-                poolclass=QueuePool,
-                pool_pre_ping=True,
-                pool_recycle=pool_recycle,
-                pool_size=pool_size,
-                pool_timeout=pool_timeout,
-                pool_use_lifo=True,
-                future=True)
+        ENGINE = create_engine(
+            db_url,
+            echo=False,
+            echo_pool=False,
+            max_overflow=max_overflow,
+            poolclass=QueuePool,
+            pool_pre_ping=True,
+            pool_recycle=pool_recycle,
+            pool_size=pool_size,
+            pool_timeout=pool_timeout,
+            pool_use_lifo=True,
+            future=True)
 
         # Fix for multiprocessing on engines
         _add_engine_pidguard(ENGINE)

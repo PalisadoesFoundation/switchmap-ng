@@ -1,20 +1,19 @@
 #!/usr/bin/env python3
-"""Pattoo classes querying the Language table."""
+"""Classes querying the OUI table."""
 
-from collections import namedtuple
+from sqlalchemy import select, update, and_
 
 # Import project libraries
-from pattoo_shared.constants import MAX_KEYPAIR_LENGTH
-from pattoo_shared import log
-from pattoo.db import db
-from pattoo.db.models import Language
+from switchmap.db import db
+from switchmap.db.models import OUI
+from switchmap.db.table import ROUI
 
 
 def idx_exists(idx):
     """Determine whether primary key exists.
 
     Args:
-        idx: idx_language
+        idx: idx_oui
 
     Returns:
         result: True if exists
@@ -24,10 +23,9 @@ def idx_exists(idx):
     result = False
     rows = []
 
-    # Get the result
-    with db.db_query(20046) as session:
-        rows = session.query(Language.idx_language).filter(
-            Language.idx_language == idx)
+    # Get data
+    statement = select(OUI.idx_oui).where(OUI.idx_oui == idx)
+    rows = db.db_select(1225, statement)
 
     # Return
     for _ in rows:
@@ -36,106 +34,94 @@ def idx_exists(idx):
     return bool(result)
 
 
-def exists(code):
-    """Determine whether code exists in the Language table.
+def exists(oui):
+    """Determine whether oui exists in the OUI table.
 
     Args:
-        code: language code
+        oui: OUI
 
     Returns:
-        result: Language.idx_language value
+        result: ROUI tuple
 
     """
     # Initialize key variables
     result = False
     rows = []
 
-    # Lowercase the code
-    code = code.lower().strip()
+    # Lowercase the oui
+    # oui = oui.lower().strip()
 
-    # Get code from database
-    with db.db_query(20038) as session:
-        rows = session.query(Language.idx_language).filter(
-            Language.code == code.encode())
+    # Get oui from database
+    statement = select(OUI).where(OUI.oui == oui.encode())
+    rows = db.db_select_row(1226, statement)
 
     # Return
     for row in rows:
-        result = row.idx_language
+        result = ROUI(
+            idx_oui=row.idx_oui,
+            oui=row.oui.decode(),
+            organization=row.organization.decode(),
+            enabled=row.enabled,
+            ts_created=row.ts_created,
+            ts_modified=row.ts_modified
+        )
         break
     return result
 
 
-def insert_row(code, name=''):
-    """Create a Language table entry.
+def insert_row(rows):
+    """Create a OUI table entry.
 
     Args:
-        code: Language code
-        name: Language code name
+        rows: IOUI objects
 
     Returns:
         None
 
     """
-    # Verify values
-    if bool(name) is False or isinstance(name, str) is False:
-        name = 'Change me. Language name not provided.'
-    if bool(code) is False or isinstance(code, str) is False:
-        log_message = 'Language code "{}" is invalid'.format(code)
-        log.log2die(20069, log_message)
+    # Initialize key variables
+    inserts = []
 
-    # Lowercase the code
-    code = code.strip().lower()[:MAX_KEYPAIR_LENGTH]
-    name = name.strip()[:MAX_KEYPAIR_LENGTH]
+    # Create list
+    if isinstance(rows, list) is False:
+        rows = [rows]
+
+    # Create objects
+    for row in rows:
+        inserts.append(
+            OUI(
+                oui=row.oui.encode(),
+                organization=row.organization.encode(),
+                enabled=1
+            )
+        )
 
     # Insert
-    row = Language(code=code.encode(), name=name.encode())
-    with db.db_modify(20055, die=True) as session:
-        session.add(row)
+    if bool(inserts):
+        db.db_add_all(1043, inserts)
 
 
-def update_name(code, name):
-    """Upadate a Language table entry.
+def update_row(idx, row):
+    """Upadate a OUI table entry.
 
     Args:
-        code: Language code
-        name: Language code name
+        idx: idx_oui value
+        row: IOUI object
 
     Returns:
         None
 
     """
     # Update
-    code = code.strip().lower()
-    with db.db_modify(20048, die=False) as session:
-        session.query(Language).filter(
-            Language.code == code.encode()).update(
-                {'name': name.strip().encode()}
-            )
-
-
-def cli_show_dump():
-    """Get entire content of the table.
-
-    Args:
-        None
-
-    Returns:
-        result: List of NamedTuples
-
-    """
-    # Initialize key variables
-    result = []
-
-    # Get the result
-    with db.db_query(20049) as session:
-        rows = session.query(Language)
-
-    # Process
-    for row in rows:
-        Record = namedtuple('Record', 'idx_language code name')
-        result.append(
-            Record(
-                idx_language=row.idx_language,
-                name=row.name.decode(),
-                code=row.code.decode()))
-    return result
+    statement = update(OUI).where(
+        and_(
+            OUI.idx_oui == idx
+        ).values(
+            {
+                'organization': row.organization.encode(),
+                'oui': row.oui.encode(),
+                'enabled': row.enabled,
+            }
+        )
+    )
+    db.db_update(1126, statement)
