@@ -1,6 +1,6 @@
 """Module for querying the OUI table."""
 
-from sqlalchemy import select, update, and_
+from sqlalchemy import select, update
 
 # Import project libraries
 from switchmap.db import db
@@ -103,16 +103,13 @@ def update_row(idx, row):
     """
     # Update
     statement = update(OUI).where(
-        and_(
-            OUI.idx_oui == idx
-        ).values(
+        OUI.idx_oui == idx).values(
             {
                 'organization': row.organization.encode(),
                 'oui': row.oui.encode(),
                 'enabled': row.enabled,
             }
         )
-    )
     db.db_update(1126, statement)
 
 

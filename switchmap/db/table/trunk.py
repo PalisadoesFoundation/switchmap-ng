@@ -1,6 +1,6 @@
 """Module for querying the Trunk table."""
 
-from sqlalchemy import select, update, and_
+from sqlalchemy import select, update
 
 # Import project libraries
 from switchmap.db import db
@@ -79,16 +79,14 @@ def update_row(idx, row):
     """
     # Update
     statement = update(Trunk).where(
-        and_(
-            Trunk.idx_trunk == idx
-        ).values(
-            {
-                'idx_l1interface': row.idx_l1interface,
-                'idx_vlan': row.idx_vlan,
-                'enabled': row.enabled
-            }
-        )
-    )
+        Trunk.idx_trunk == idx
+            ).values(
+                {
+                    'idx_l1interface': row.idx_l1interface,
+                    'idx_vlan': row.idx_vlan,
+                    'enabled': row.enabled
+                }
+            )
     db.db_update(1126, statement)
 
 

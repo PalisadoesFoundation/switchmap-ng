@@ -1,6 +1,6 @@
 """Module for querying the Device table."""
 
-from sqlalchemy import select, update, and_
+from sqlalchemy import select, update
 
 # Import project libraries
 from switchmap.db import db
@@ -109,9 +109,7 @@ def update_row(idx, row):
     """
     # Update
     statement = update(Device).where(
-        and_(
-            Device.idx_device == idx
-        ).values(
+        Device.idx_device == idx).values(
             {
                 'idx_location': row.idx_location,
                 'sys_name': row.sys_name.encode(),
@@ -123,7 +121,6 @@ def update_row(idx, row):
                 'enabled': row.enabled
             }
         )
-    )
     db.db_update(1126, statement)
 
 

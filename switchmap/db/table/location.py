@@ -1,7 +1,7 @@
 """Module for querying the Location table."""
 
 
-from sqlalchemy import select, update, and_
+from sqlalchemy import select, update
 
 # Import project libraries
 from switchmap.db import db
@@ -89,9 +89,7 @@ def update_row(idx, row):
     """
     # Update
     statement = update(Location).where(
-        and_(
-            Location.idx_location == idx
-        ).values(
+        Location.idx_location == idx).values(
             {
                 'name': row.name.encode(),
                 'company_name': row.company_name.encode(),
@@ -107,7 +105,6 @@ def update_row(idx, row):
                 'enabled': row.enabled
             }
         )
-    )
     db.db_update(1126, statement)
 
 

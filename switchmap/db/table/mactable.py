@@ -83,9 +83,7 @@ def update_row(idx, row):
     """
     # Update
     statement = update(MacTable).where(
-        and_(
-            MacTable.idx_mactable == idx
-        ).values(
+        MacTable.idx_mactable == idx).values(
             {
                 'idx_device': row.idx_device,
                 'idx_oui': row.idx_oui,
@@ -95,7 +93,6 @@ def update_row(idx, row):
                 'enabled': row.enabled
             }
         )
-    )
     db.db_update(1126, statement)
 
 

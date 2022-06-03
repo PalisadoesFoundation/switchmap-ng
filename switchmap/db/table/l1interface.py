@@ -1,6 +1,6 @@
 """Module for querying the L1Interface table."""
 
-from sqlalchemy import select, update, and_
+from sqlalchemy import select, update
 
 # Import project libraries
 from switchmap.db import db
@@ -96,9 +96,7 @@ def update_row(idx, row):
     """
     # Update
     statement = update(L1Interface).where(
-        and_(
-            L1Interface.idx_l1interface == idx
-        ).values(
+        L1Interface.idx_l1interface == idx).values(
             {
                 'idx_device': row.idx_device,
                 'ifindex': row.idx_device,
@@ -122,7 +120,6 @@ def update_row(idx, row):
                 'enabled': row.enabled
             }
         )
-    )
     db.db_update(1126, statement)
 
 

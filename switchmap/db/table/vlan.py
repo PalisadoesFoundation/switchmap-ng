@@ -1,6 +1,6 @@
 """Module for querying the Vlan table."""
 
-from sqlalchemy import select, update, and_
+from sqlalchemy import select, update
 
 # Import project libraries
 from switchmap.db import db
@@ -105,9 +105,7 @@ def update_row(idx, row):
     """
     # Update
     statement = update(Vlan).where(
-        and_(
-            Vlan.idx_vlan == idx
-        ).values(
+        Vlan.idx_vlan == idx).values(
             {
                 'idx_device': row.idx_device,
                 'vlan': row.vlan.decode(),
@@ -116,7 +114,6 @@ def update_row(idx, row):
                 'enabled': row.enabled,
             }
         )
-    )
     db.db_update(1126, statement)
 
 
