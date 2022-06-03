@@ -1,18 +1,18 @@
-"""Module for querying the OUI table."""
+"""Module for querying the Trunk table."""
 
 from sqlalchemy import select, update, and_
 
 # Import project libraries
 from switchmap.db import db
-from switchmap.db.models import OUI
-from switchmap.db.table import ROUI
+from switchmap.db.models import Trunk
+from switchmap.db.table import RTrunk
 
 
 def idx_exists(idx):
     """Determine whether primary key exists.
 
     Args:
-        idx: idx_oui
+        idx: idx_trunk
 
     Returns:
         result: True if exists
@@ -23,7 +23,8 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(OUI.idx_oui).where(OUI.idx_oui == idx)
+    statement = select(
+        Trunk.idx_trunk).where(Trunk.idx_trunk == idx)
     rows = db.db_select(1225, statement)
 
     # Return
@@ -33,36 +34,11 @@ def idx_exists(idx):
     return bool(result)
 
 
-def exists(oui):
-    """Determine whether oui exists in the OUI table.
-
-    Args:
-        oui: OUI
-
-    Returns:
-        result: ROUI tuple
-
-    """
-    # Initialize key variables
-    result = False
-    rows = []
-
-    # Get oui from database
-    statement = select(OUI).where(OUI.oui == oui.encode())
-    rows = db.db_select_row(1226, statement)
-
-    # Return
-    for row in rows:
-        result = _row(row)
-        break
-    return result
-
-
 def insert_row(rows):
-    """Create a OUI table entry.
+    """Create a Trunk table entry.
 
     Args:
-        rows: IOUI objects
+        rows: ITrunk objects
 
     Returns:
         None
@@ -78,9 +54,9 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            OUI(
-                oui=row.oui.encode(),
-                organization=row.organization.encode(),
+            Trunk(
+                idx_l1interface=row.idx_l1interface,
+                idx_vlan=row.idx_vlan,
                 enabled=1
             )
         )
@@ -91,25 +67,25 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a OUI table entry.
+    """Upadate a Trunk table entry.
 
     Args:
-        idx: idx_oui value
-        row: IOUI object
+        idx: idx_trunk value
+        row: ITrunk object
 
     Returns:
         None
 
     """
     # Update
-    statement = update(OUI).where(
+    statement = update(Trunk).where(
         and_(
-            OUI.idx_oui == idx
+            Trunk.idx_trunk == idx
         ).values(
             {
-                'organization': row.organization.encode(),
-                'oui': row.oui.encode(),
-                'enabled': row.enabled,
+                'idx_l1interface': row.idx_l1interface,
+                'idx_vlan': row.idx_vlan,
+                'enabled': row.enabled
             }
         )
     )
@@ -120,17 +96,17 @@ def _row(row):
     """Convert table row to tuple.
 
     Args:
-        row: OUI row
+        row: Trunk row
 
     Returns:
-        result: ROUI tuple
+        result: RTrunk tuple
 
     """
     # Initialize key variables
-    result = ROUI(
-        idx_oui=row.idx_oui,
-        oui=row.oui.decode(),
-        organization=row.organization.decode(),
+    result = RTrunk(
+        idx_trunk=row.idx_trunk,
+        idx_l1interface=row.idx_l1interface,
+        idx_vlan=row.idx_vlan,
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified

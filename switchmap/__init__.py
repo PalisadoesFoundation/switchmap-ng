@@ -18,6 +18,8 @@ API_TEMPLATE_FOLDER = 'templates/default'
 API_EXECUTABLE = 'switchmap-ng-api'
 API_GUNICORN_AGENT = 'switchmap-ng-gunicorn'
 POLLER_EXECUTABLE = 'switchmap-ng-poller'
+AGENT_POLLER = 'Poller'
+AGENT_API = 'API'
 
 
 def main():

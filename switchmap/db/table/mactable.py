@@ -1,18 +1,18 @@
-"""Module for querying the OUI table."""
+"""Module for querying the MacTable table."""
 
 from sqlalchemy import select, update, and_
 
 # Import project libraries
 from switchmap.db import db
-from switchmap.db.models import OUI
-from switchmap.db.table import ROUI
+from switchmap.db.models import MacTable
+from switchmap.db.table import RMacTable
 
 
 def idx_exists(idx):
     """Determine whether primary key exists.
 
     Args:
-        idx: idx_oui
+        idx: idx_mactable
 
     Returns:
         result: True if exists
@@ -23,7 +23,8 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(OUI.idx_oui).where(OUI.idx_oui == idx)
+    statement = select(
+        MacTable.idx_mactable).where(MacTable.idx_mactable == idx)
     rows = db.db_select(1225, statement)
 
     # Return
@@ -33,36 +34,11 @@ def idx_exists(idx):
     return bool(result)
 
 
-def exists(oui):
-    """Determine whether oui exists in the OUI table.
-
-    Args:
-        oui: OUI
-
-    Returns:
-        result: ROUI tuple
-
-    """
-    # Initialize key variables
-    result = False
-    rows = []
-
-    # Get oui from database
-    statement = select(OUI).where(OUI.oui == oui.encode())
-    rows = db.db_select_row(1226, statement)
-
-    # Return
-    for row in rows:
-        result = _row(row)
-        break
-    return result
-
-
 def insert_row(rows):
-    """Create a OUI table entry.
+    """Create a MacTable table entry.
 
     Args:
-        rows: IOUI objects
+        rows: IMacTable objects
 
     Returns:
         None
@@ -78,9 +54,13 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            OUI(
-                oui=row.oui.encode(),
-                organization=row.organization.encode(),
+            MacTable(
+                idx_device=row.idx_device,
+                idx_oui=row.idx_oui,
+                ip_=row.ip_.encode(),
+                mac=row.mac.encode(),
+                hostname=row.hostname.encode(),
+                type=row.type,
                 enabled=1
             )
         )
@@ -91,25 +71,28 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a OUI table entry.
+    """Upadate a MacTable table entry.
 
     Args:
-        idx: idx_oui value
-        row: IOUI object
+        idx: idx_mactable value
+        row: IMacTable object
 
     Returns:
         None
 
     """
     # Update
-    statement = update(OUI).where(
+    statement = update(MacTable).where(
         and_(
-            OUI.idx_oui == idx
+            MacTable.idx_mactable == idx
         ).values(
             {
-                'organization': row.organization.encode(),
-                'oui': row.oui.encode(),
-                'enabled': row.enabled,
+                'idx_device': row.idx_device,
+                'idx_oui': row.idx_oui,
+                'ip_': row.ip_.encode(),
+                'mac': row.mac.encode(),
+                'hostname': row.hostname.encode(),
+                'enabled': row.enabled
             }
         )
     )
@@ -120,17 +103,21 @@ def _row(row):
     """Convert table row to tuple.
 
     Args:
-        row: OUI row
+        row: MacTable row
 
     Returns:
-        result: ROUI tuple
+        result: RMacTable tuple
 
     """
     # Initialize key variables
-    result = ROUI(
+    result = RMacTable(
+        idx_mactable=row.idx_mactable,
+        idx_device=row.idx_device,
         idx_oui=row.idx_oui,
-        oui=row.oui.decode(),
-        organization=row.organization.decode(),
+        ip_=row.ip_.decode(),
+        mac=row.mac.decode(),
+        hostname=row.hostname.decode(),
+        type=row.type,
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified

@@ -1,18 +1,18 @@
-"""Module for querying the OUI table."""
+"""Module for querying the Vlan table."""
 
 from sqlalchemy import select, update, and_
 
 # Import project libraries
 from switchmap.db import db
-from switchmap.db.models import OUI
-from switchmap.db.table import ROUI
+from switchmap.db.models import Vlan
+from switchmap.db.table import RVlan
 
 
 def idx_exists(idx):
     """Determine whether primary key exists.
 
     Args:
-        idx: idx_oui
+        idx: idx_vlan
 
     Returns:
         result: True if exists
@@ -23,7 +23,7 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(OUI.idx_oui).where(OUI.idx_oui == idx)
+    statement = select(Vlan.idx_vlan).where(Vlan.idx_vlan == idx)
     rows = db.db_select(1225, statement)
 
     # Return
@@ -33,22 +33,22 @@ def idx_exists(idx):
     return bool(result)
 
 
-def exists(oui):
-    """Determine whether oui exists in the OUI table.
+def exists(vlan):
+    """Determine whether vlan exists in the Vlan table.
 
     Args:
-        oui: OUI
+        vlan: Vlan
 
     Returns:
-        result: ROUI tuple
+        result: RVlan tuple
 
     """
     # Initialize key variables
     result = False
     rows = []
 
-    # Get oui from database
-    statement = select(OUI).where(OUI.oui == oui.encode())
+    # Get vlan from database
+    statement = select(Vlan).where(Vlan.vlan == vlan)
     rows = db.db_select_row(1226, statement)
 
     # Return
@@ -59,10 +59,10 @@ def exists(oui):
 
 
 def insert_row(rows):
-    """Create a OUI table entry.
+    """Create a Vlan table entry.
 
     Args:
-        rows: IOUI objects
+        rows: IVlan objects
 
     Returns:
         None
@@ -78,9 +78,11 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            OUI(
-                oui=row.oui.encode(),
-                organization=row.organization.encode(),
+            Vlan(
+                idx_device=row.idx_device,
+                vlan=row.vlan.encode(),
+                name=row.name.encode(),
+                state=row.state,
                 enabled=1
             )
         )
@@ -91,24 +93,26 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a OUI table entry.
+    """Upadate a Vlan table entry.
 
     Args:
-        idx: idx_oui value
-        row: IOUI object
+        idx: idx_vlan value
+        row: IVlan object
 
     Returns:
         None
 
     """
     # Update
-    statement = update(OUI).where(
+    statement = update(Vlan).where(
         and_(
-            OUI.idx_oui == idx
+            Vlan.idx_vlan == idx
         ).values(
             {
-                'organization': row.organization.encode(),
-                'oui': row.oui.encode(),
+                'idx_device': row.idx_device,
+                'vlan': row.vlan.decode(),
+                'name': row.name.decode(),
+                'state': row.state,
                 'enabled': row.enabled,
             }
         )
@@ -120,17 +124,19 @@ def _row(row):
     """Convert table row to tuple.
 
     Args:
-        row: OUI row
+        row: Vlan row
 
     Returns:
-        result: ROUI tuple
+        result: RVlan tuple
 
     """
     # Initialize key variables
-    result = ROUI(
-        idx_oui=row.idx_oui,
-        oui=row.oui.decode(),
-        organization=row.organization.decode(),
+    result = RVlan(
+        idx_vlan=row.idx_vlan,
+        idx_device=row.idx_device,
+        vlan=row.vlan.decode(),
+        name=row.name.decode(),
+        state=row.state,
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified

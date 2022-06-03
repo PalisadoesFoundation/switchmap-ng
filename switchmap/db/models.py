@@ -7,7 +7,7 @@ import datetime
 from sqlalchemy import (
     Column, DateTime, ForeignKey, text,
     PrimaryKeyConstraint, ForeignKeyConstraint)
-from sqlalchemy.dialects.mysql import BIGINT, VARBINARY
+from sqlalchemy.dialects.mysql import BIGINT, VARBINARY, BIT
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import Null
@@ -52,7 +52,7 @@ class Location(BASE):
     postal_code = Column(VARBINARY(64), nullable=True, default=Null)
     phone = Column(VARBINARY(128), nullable=True, default=Null)
     notes = Column(VARBINARY(2048), nullable=False)
-    enabled = Column(BIGINT(unsigned=True), default=1)
+    enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,
         default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
@@ -80,7 +80,7 @@ class Device(BASE):
         VARBINARY(256), nullable=True, default=Null)
     sys_uptime = Column(BIGINT(20, unsigned=True))
     last_polled = Column(BIGINT(20, unsigned=True))
-    enabled = Column(BIGINT(unsigned=True), default=1)
+    enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,
         default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
@@ -106,9 +106,9 @@ class L1Interface(BASE):
         nullable=False, index=True, default=1, server_default=text('1'))
     ifindex = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     duplex = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    ethernet = Column(BIGINT(unsigned=True), nullable=True, default=Null)
+    ethernet = Column(BIT(1), default=0)
     nativevlan = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    trunk = Column(BIGINT(unsigned=True), nullable=True, default=Null)
+    trunk = Column(BIT(1), default=0)
     ifspeed = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     ifalias = Column(VARBINARY(256), nullable=True, default=Null)
     ifdescr = Column(VARBINARY(256), nullable=True, default=Null)
@@ -122,7 +122,7 @@ class L1Interface(BASE):
     lldpremsyscapenabled = Column(VARBINARY(256), nullable=True, default=Null)
     lldpremsysdesc = Column(VARBINARY(2048), nullable=True, default=Null)
     lldpremsysname = Column(VARBINARY(256), nullable=True, default=Null)
-    enabled = Column(BIGINT(unsigned=True), default=1)
+    enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,
         default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
@@ -148,7 +148,7 @@ class Vlan(BASE):
     vlan = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     name = Column(VARBINARY(256), nullable=True, default=Null)
     state = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    enabled = Column(BIGINT(unsigned=True), default=1)
+    enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,
         default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
@@ -175,7 +175,7 @@ class Trunk(BASE):
     idx_vlan = Column(
         ForeignKey('smap_vlan.idx_vlan'),
         nullable=False, index=True, default=1, server_default=text('1'))
-    enabled = Column(BIGINT(unsigned=True), default=1)
+    enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,
         default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
@@ -197,7 +197,7 @@ class OUI(BASE):
     idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     oui = Column(VARBINARY(256), unique=True)
     organization = Column(VARBINARY(256), nullable=True, default=Null)
-    enabled = Column(BIGINT(unsigned=True), default=1)
+    enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,
         default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
@@ -222,7 +222,7 @@ class MacTable(BASE):
     mac = Column(VARBINARY(256), nullable=True, default=Null)
     hostname = Column(VARBINARY(256), nullable=True, default=Null)
     type = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    enabled = Column(BIGINT(unsigned=True), default=1)
+    enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,
         default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)

@@ -20,6 +20,8 @@ else:
 
 # Switchmap-NG standard imports
 from switchmap.db import models
+from switchmap.db.table import ILocation
+from switchmap.db.table import location
 
 
 def main():
@@ -34,6 +36,26 @@ def main():
     """
     # Create database
     models.create_all_tables()
+
+    # Create the default location
+    exists = location.idx_exists(1)
+    if bool(exists) is False:
+        location.insert_row(
+            ILocation(
+                name='Default',
+                company_name='',
+                address_0='',
+                address_1='',
+                address_2='',
+                city='',
+                state='',
+                country='',
+                postal_code='',
+                phone='',
+                notes='',
+                enabled=1,
+            )
+        )
 
 
 if __name__ == '__main__':

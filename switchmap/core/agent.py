@@ -1,4 +1,4 @@
-"""Pattoo .Agent class.
+"""Module to manage Agent classes.
 
 Description:
 
@@ -21,7 +21,7 @@ from datetime import datetime
 # PIP3 libraries
 from gunicorn.app.base import BaseApplication
 
-# Pattoo libraries
+# Application libraries
 from switchmap.core.daemon import Daemon, GracefulDaemon
 from switchmap.core import files
 from switchmap.core import log
@@ -355,7 +355,7 @@ fix.'''.format(self.pidfile_parent))
         # Log so that user running the script from the CLI knows that something
         # is happening
         log_message = (
-            'Pattoo API running on {}:{} and logging to file {}.'
+            'API running on {}:{} and logging to file {}.'
             ''.format(
                 self._agent_api_variable.ip_listen_address,
                 self._agent_api_variable.ip_bind_port,
@@ -367,7 +367,7 @@ fix.'''.format(self.pidfile_parent))
 
 
 class _StandaloneApplication(BaseApplication):
-    """Class to integrate the Gunicorn WSGI with the Pattoo Flask application.
+    """Class to integrate the Gunicorn WSGI with the Flask application.
 
     Modified from: http://docs.gunicorn.org/en/latest/custom.html
 
@@ -400,7 +400,7 @@ class _StandaloneApplication(BaseApplication):
             self.cfg.set(key.lower(), value)
 
         # Print configuration dictionary settings
-        print('''{} Agent {} - Pattoo Gunicorn configuration\
+        print('''{} Agent {} - Gunicorn configuration\
 '''.format(now.strftime('%Y-%m-%d %H:%M:%S.%f'), self.parent))
         for name, value in self.cfg.settings.items():
             print('  {} = {}'.format(name, value.get()))

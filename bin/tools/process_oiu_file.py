@@ -6,7 +6,6 @@ import sys
 import os
 import argparse
 
-from sqlalchemy import select
 import pandas
 
 # Try to create a working PYTHONPATH
