@@ -84,6 +84,29 @@ class Config():
         result = self._config.get('bind_port', 7000)
         return result
 
+    def daemon_directory(self):
+        """Determine the daemon_directory.
+
+        Args:
+            None
+
+        Returns:
+            result: configured daemon_directory
+
+        """
+        # Get result
+        result = self._config.get('daemon_directory')
+
+        # Check if value exists
+        if os.path.isdir(result) is False:
+            daemon_message = (
+                'daemon_directory: "{}" '
+                'in configuration doesn\'t exist!').format(result)
+            log.log2die_safe(1030, daemon_message)
+
+        # Return
+        return result
+
     def db_host(self):
         """Return db_host value.
 
@@ -199,7 +222,8 @@ class Config():
 
         """
         # Get result
-        result = self._config.get('hostnames', [])
+        result = []
+        agent_config = self._config.get('hostnames', [])
 
         # Get result
         if isinstance(agent_config, list) is True:
@@ -375,19 +399,16 @@ class ConfigSNMP():
         seed_dict['group_name'] = None
         seed_dict['enabled'] = True
 
-        # Get result
-        result = self._config.get('log_level', None)
-
         # Read configuration's SNMP information. Return 'None' if none found
-        if isinstance(result, list) is True:
-            if len(self._config['snmp_groups']) < 1:
+        if isinstance(self._config, list) is True:
+            if len(self._config) < 1:
                 return None
         else:
             return None
 
         # Start populating information
         snmp_data = []
-        for read_dict in self._config['snmp_groups']:
+        for read_dict in self._config:
             # Next entry if this is not a dict
             if isinstance(read_dict, dict) is False:
                 continue

@@ -34,6 +34,31 @@ def idx_exists(idx):
     return bool(result)
 
 
+def exists(hostname):
+    """Determine whether hostname exists in the Device table.
+
+    Args:
+        hostname: Device
+
+    Returns:
+        result: RDevice tuple
+
+    """
+    # Initialize key variables
+    result = False
+    rows = []
+
+    # Get hostname from database
+    statement = select(Device).where(Device.hostname == hostname.encode())
+    rows = db.db_select_row(1226, statement)
+
+    # Return
+    for row in rows:
+        result = _row(row)
+        break
+    return result
+
+
 def insert_row(rows):
     """Create a Device table entry.
 
@@ -57,7 +82,7 @@ def insert_row(rows):
             Device(
                 idx_location=row.idx_location,
                 sys_name=row.sys_name.encode(),
-                sys_hostname=row.sys_hostname.encode(),
+                hostname=row.hostname.encode(),
                 sys_description=row.sys_description.encode(),
                 sys_objectid=row.sys_objectid.encode(),
                 sys_uptime=row.sys_uptime,
@@ -90,7 +115,7 @@ def update_row(idx, row):
             {
                 'idx_location': row.idx_location,
                 'sys_name': row.sys_name.encode(),
-                'sys_hostname': row.sys_hostname.encode(),
+                'hostname': row.hostname.encode(),
                 'sys_description': row.sys_description.encode(),
                 'sys_objectid': row.sys_objectid.encode(),
                 'sys_uptime': row.sys_uptime,
@@ -117,7 +142,7 @@ def _row(row):
         idx_device=row.idx_device,
         idx_location=row.idx_location,
         sys_name=row.sys_name.decode(),
-        sys_hostname=row.sys_hostname.decode(),
+        hostname=row.hostname.decode(),
         sys_description=row.sys_description.decode(),
         sys_objectid=row.sys_objectid.decode(),
         sys_uptime=row.sys_uptime,

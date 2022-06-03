@@ -8,7 +8,7 @@ from switchmap.poll.snmp import iana_enterprise
 from switchmap.poll.snmp import get_queries
 
 
-class Query(object):
+class Query():
     """Class interacts with IfMIB devices.
 
     Args:
@@ -48,7 +48,7 @@ class Query(object):
         data = {}
 
         # Append data
-        data['misc'] = self.misc()    
+        data['misc'] = self.misc()
         data['layer1'] = self.layer1()
         data['layer2'] = self.layer2()
         data['layer3'] = self.layer3()

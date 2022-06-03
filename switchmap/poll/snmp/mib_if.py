@@ -5,7 +5,7 @@
 from collections import defaultdict
 
 from switchmap.poll.snmp.base_query import Query
-from switchmap.utils import general
+from switchmap.core import general
 
 
 def get_query():

@@ -18,11 +18,11 @@ postal_code phone notes enabled''')
 
 RDevice = namedtuple(
     'RDevice',
-    '''idx_device idx_location sys_name sys_hostname sys_description \
+    '''idx_device idx_location sys_name hostname sys_description \
 sys_objectid sys_uptime last_polled enabled ts_modified ts_created''')
 IDevice = namedtuple(
     'IDevice',
-    '''idx_location sys_name sys_hostname sys_description sys_objectid \
+    '''idx_location sys_name hostname sys_description sys_objectid \
 sys_uptime last_polled enabled''')
 
 RL1Interface = namedtuple(

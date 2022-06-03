@@ -72,7 +72,7 @@ class Device(BASE):
         nullable=False, index=True, default=1, server_default=text('1'))
     sys_name = Column(
         VARBINARY(256), nullable=True, default=Null)
-    sys_hostname = Column(
+    hostname = Column(
         VARBINARY(256), nullable=True, default=Null)
     sys_description = Column(
         VARBINARY(1024), nullable=True, default=Null)

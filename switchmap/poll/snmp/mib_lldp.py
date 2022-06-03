@@ -7,7 +7,7 @@ import binascii
 # Import project libraries
 from switchmap.poll.snmp.base_query import Query
 from switchmap.poll.snmp.mib_bridge import BridgeQuery
-from switchmap.utils import general
+from switchmap.core import general
 from switchmap.poll.snmp import mib_if
 
 

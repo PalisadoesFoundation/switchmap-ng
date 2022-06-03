@@ -1,107 +1,11 @@
-"""Class for aggregating all necessary device data."""
+"""Module for preparing polled device data for the database."""
 
 # Standard imports
-import os
 from copy import deepcopy
 import time
 
-# Switchmap-NG imports
-from switchmap import CONFIG
-from switchmap.poll.snmp import poller
-from switchmap.utils import general
-from switchmap.utils import log
-
-
-class IdleTimes():
-    """Process device port idle times."""
-
-    def __init__(self, devicename):
-        """Initialize class.
-
-        Args:
-            devicename: Name of device to calculate idle times
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        self._config = CONFIG
-        self._device_dict = {}
-        self._devicename = devicename
-
-        # Log message
-        log_message = (
-            'Starting port idle times for device {}.'.format(devicename))
-        log.log2debug(1034, log_message)
-
-        # Read file and add to string
-        filepath = self._config.temp_topology_device_file(devicename)
-        if os.path.isfile(filepath) is True:
-            self._device_dict = general.read_yaml_file(filepath)
-
-    def save(self):
-        """Save the idle times to file.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        device_dict = self._device_dict
-        idle_history = {}
-        idle_since = {}
-
-        # Do nothing if no file found
-        if bool(device_dict) is False:
-            # Send log message
-            log_message = (
-                'No topology file found for device {}'
-                ''.format(self._devicename))
-            log.log2info(1058, log_message)
-            return
-
-        # Get all the status of all the Ethernet ports
-        idle_since = _idle_since(device_dict)
-
-        # Read data from idle file
-        idle_filepath = (
-            '{}/{}.yaml'.format(
-                self._config.idle_directory(), self._devicename)
-            )
-        if os.path.isfile(idle_filepath) is True:
-            idle_history = general.read_yaml_file(idle_filepath)
-
-        # Update idle_since values depending on history
-        for ifindex, timestamp in idle_since.items():
-            if ifindex in idle_history:
-                # Initialize key variables
-                timestamp_historical = idle_history[ifindex]
-
-                if bool(timestamp) is False:
-                    # Do nothing if the timestamp is None
-                    # Interface is operational
-                    pass
-                else:
-                    if bool(timestamp_historical) is True:
-                        # Update history value
-                        idle_since[ifindex] = min(
-                            timestamp, timestamp_historical)
-                    else:
-                        # Do nothing. Use current idle_since value
-                        pass
-
-        # Update idle_since file
-        general.create_yaml_file(idle_since, idle_filepath)
-
-        # Log message
-        log_message = (
-            'Completed port idle times for device {}.'
-            ''.format(self._devicename))
-        log.log2debug(1042, log_message)
+# Application imports
+from switchmap.core import log
 
 
 class Device():
@@ -282,32 +186,6 @@ class Device():
 
         # Return
         return updated_device_data
-
-    def save(self):
-        """Create the master dictionary for the host.
-
-        Args:
-            None
-        Returns:
-            value: Index value
-
-        """
-        # Initialize key variables
-        temp_dir = CONFIG.temp_topology_directory()
-        temp_file = ('{}/{}.yaml'.format(temp_dir, self._devicename))
-
-        # Add additional switchmap-ng specific fields to the dict
-        data = self.process()
-        yaml_string = general.dict2yaml(data)
-
-        # Dump data
-        with open(temp_file, 'w') as file_handle:
-            file_handle.write(yaml_string)
-
-        # Get data
-        log_message = ('''\
-Completed topology query from host {}.'''.format(self._devicename))
-        log.log2info(1077, log_message)
 
 
 def _process_non_trunk(port_data):

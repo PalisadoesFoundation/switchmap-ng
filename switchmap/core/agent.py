@@ -82,6 +82,19 @@ class Agent():
 class _AgentRun():
     """Class that defines basic run function for AgentDaemons."""
 
+    def __init__(self, agent):
+        """Initialize the class.
+
+        Args:
+            agent: agent object
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        self._agent_ = agent
+
     def run(self):
         """Start Polling
 
@@ -94,7 +107,7 @@ class _AgentRun():
         """
         # Start polling. (Poller decides frequency)
         while True:
-            self.agent.query()
+            self._agent_.query()
 
 
 class AgentDaemon(_AgentRun, Daemon):
@@ -114,6 +127,7 @@ class AgentDaemon(_AgentRun, Daemon):
         self.agent = agent
 
         # Instantiate daemon superclass
+        _AgentRun.__init__(self, agent)
         Daemon.__init__(self, agent)
 
 
@@ -134,6 +148,7 @@ class GracefulAgentDaemon(_AgentRun, GracefulDaemon):
         self.agent = agent
 
         # Instantiate daemon superclass
+        _AgentRun.__init__(self, agent)
         GracefulDaemon.__init__(self, agent)
 
 

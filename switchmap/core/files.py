@@ -12,7 +12,6 @@ import yaml
 
 # Pattoo libraries
 from switchmap.core import log
-from switchmap.core import data
 
 
 class _Directory():
@@ -29,9 +28,7 @@ class _Directory():
 
         """
         # Initialize key variables
-        self._root = config.daemon_directory()
-        self._system_root = config.system_daemon_directory()
-        self._cache = config.cache_directory()
+        self._system_root = config.daemon_directory()
 
     def pid(self):
         """Define the hidden pid directory.
@@ -61,18 +58,18 @@ class _Directory():
         value = '{}{}lock'.format(self._system_root, os.sep)
         return value
 
-    def agent_id(self):
-        """Define the hidden agent_id directory.
+    def snmp(self):
+        """Method for defining the hidden snmp directory.
 
         Args:
             None
 
         Returns:
-            value: agent_id directory
+            value: snmp directory
 
         """
         # Return
-        value = '{}{}agent_id'.format(self._root, os.sep)
+        value = '{}{}snmp'.format(self._system_root, os.sep)
         return value
 
 
@@ -122,20 +119,21 @@ class _File():
         value = '{}{}{}.lock'.format(self._directory.lock(), os.sep, prefix)
         return value
 
-    def agent_id(self, agent_name):
-        """Define the hidden agent_id directory.
+    def snmp(self, prefix, create=True):
+        """Method for defining the hidden snmp directory.
 
         Args:
-            agent_name: Agent name
+            prefix: Prefix of file
+            create: Create file if True
 
         Returns:
-            value: agent_id directory
+            value: snmp directory
 
         """
         # Return
-        mkdir(self._directory.agent_id())
-        value = ('''{}{}{}.agent_id\
-'''.format(self._directory.agent_id(), os.sep, agent_name))
+        if create is True:
+            mkdir(self._directory.snmp())
+        value = '{}{}{}.snmp'.format(self._directory.snmp(), os.sep, prefix)
         return value
 
 
@@ -168,7 +166,7 @@ def read_yaml_file(filepath, as_string=False, die=True):
                 'existence and file syntax.'
                 ''.format(filepath))
             if bool(die) is True:
-                log.log2die_safe(1006, log_message)
+                log.log2die_safe(2006, log_message)
             else:
                 log.log2debug(1014, log_message)
                 return {}
@@ -268,50 +266,21 @@ def lock_file(agent_name, config):
     return result
 
 
-def agent_id_file(agent_name, config):
-    """Get the agent_idfile for an agent.
+def snmp_file(hostname, config):
+    """Get the snmpfile for an agent.
 
     Args:
-        agent_name: Agent name
+        hostname: hostname
         config: Config object
 
-
     Returns:
-        result: Name of agent_id file
+        result: Name of snmp file
 
     """
     # Return
     f_obj = _File(config)
-    result = f_obj.agent_id(agent_name)
+    result = f_obj.snmp(hostname)
     return result
-
-
-def get_agent_id(agent_name, config):
-    """Create a permanent UID for the agent_name.
-
-    Args:
-        agent_name: Agent name
-        config: Config object
-
-    Returns:
-        agent_id: UID for agent
-
-    """
-    # Initialize key variables
-    filename = agent_id_file(agent_name, config)
-
-    # Read environment file with UID if it exists
-    if os.path.isfile(filename):
-        with open(filename) as f_handle:
-            agent_id = f_handle.readline()
-    else:
-        # Create a UID and save
-        agent_id = _generate_agent_id()
-        with open(filename, 'w+') as env:
-            env.write(str(agent_id))
-
-    # Return
-    return agent_id
 
 
 def execute(command, die=True):
@@ -391,25 +360,6 @@ def config_filepath():
 
     """
     # Get the directory of the switchmap library
-    result = '{}{}config.yaml'.format(
-        os.environ['SWITCHMAP_CONFIGDIR'], os.sep)
+    directory = log.check_environment()
+    result = '{}{}config.yaml'.format(directory, os.sep)
     return result
-
-
-def _generate_agent_id():
-    """Generate a UID.
-
-    Args:
-        None
-
-    Returns:
-        agent_id: the UID
-
-    """
-    # Create a UID and save
-    prehash = '{}{}{}{}{}'.format(
-        random(), random(), random(), random(), time.time())
-    agent_id = data.hashstring(prehash)
-
-    # Return
-    return agent_id

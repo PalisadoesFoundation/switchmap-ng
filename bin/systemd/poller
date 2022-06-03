@@ -25,16 +25,14 @@ else:
 
 # switchmap.libraries
 try:
-    from switchmap.utils import log
+    from switchmap.core import log
 except:
     print('You need to set your PYTHONPATH to include the switchmap library')
     sys.exit(2)
-from switchmap import CONFIG
-from switchmap.utils import general
-from switchmap.poll import device
-from switchmap.poll import tables
+from switchmap import Config
+from switchmap.core import general
+from switchmap.poll.update import device, topology
 from switchmap.poll.snmp import poller
-from switchmap.main import agent
 from switchmap.core.agent import Agent, AgentCLI, AgentAPI
 from switchmap import AGENT_POLLER
 
@@ -59,7 +57,7 @@ class PollingAgent(Agent):
         self.name = parent
 
         # Get configuration
-        self._server_config = CONFIG
+        self._server_config = Config()
 
     def query(self):
         """Query all remote hosts for data.
@@ -108,7 +106,7 @@ class PollingAgent(Agent):
             log.log2info(1125, log_message)
 
             # Sleep for "delay" seconds
-            agent.agent_sleep(self.name(), delay)
+            time.sleep(delay)
 
 
 def _poll_devices():
@@ -122,7 +120,7 @@ def _poll_devices():
 
     """
     # Get configuration
-    config = CONFIG
+    config = Config()
 
     # Get the number of threads to use in the pool
     threads_in_pool = config.agent_threads()
@@ -130,11 +128,14 @@ def _poll_devices():
     # Create a list of polling objects
     hostnames = sorted(config.hostnames())
 
-    # Create a pool of sub process resources
-    with Pool(processes=threads_in_pool) as pool:
+    for hostname in hostnames:
+        _poll_single_device(hostname)
 
-        # Create sub processes from the pool
-        pool.map(_poll_single_device, hostnames)
+    # # Create a pool of sub process resources
+    # with Pool(processes=threads_in_pool) as pool:
+    #
+    #     # Create sub processes from the pool
+    #     pool.map(_poll_single_device, hostnames)
 
 
 def _poll_single_device(hostname):
@@ -152,10 +153,14 @@ def _poll_single_device(hostname):
         if isinstance(hostname, str) is True:
             if hostname.lower() != 'none':
                 poll = poller.Poll(hostname)
-                data = poll.query()
-                _device = device.Device(data)
-                _device.save()
+                snmp_data = poll.query()
 
+                # Process device data
+                _device = device.Device(snmp_data)
+                data = _device.process()
+                topology.device(data)
+
+                # _device.save()
                 # Save the idle times
                 # idletimes = device.IdleTimes(hostname)
                 # idletimes.save()

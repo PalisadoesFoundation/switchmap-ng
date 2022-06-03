@@ -8,12 +8,13 @@ import easysnmp
 from easysnmp import exceptions
 
 # Import project libraries
-from switchmap.utils import log
-from switchmap.utils import daemon
+from switchmap import Config
+from switchmap.core import log
+from switchmap.core import files
 from switchmap.poll.snmp import iana_enterprise
 
 
-class Validate(object):
+class Validate():
     """Class Verify SNMP data."""
 
     def __init__(self, hostname, snmp_config):
@@ -46,7 +47,7 @@ class Validate(object):
         group_key = 'group_name'
 
         # Create cache directory / file if not yet created
-        filename = daemon.snmp_file(self.hostname)
+        filename = files.snmp_file(self.hostname, Config())
         if os.path.exists(filename) is True:
             cache_exists = True
 
@@ -120,7 +121,7 @@ class Validate(object):
         return credentials
 
 
-class Interact(object):
+class Interact():
     """Class Gets SNMP data."""
 
     def __init__(self, snmp_parameters):
@@ -548,7 +549,7 @@ class Interact(object):
         return (_contactable, exists, values)
 
 
-class _Session(object):
+class _Session():
     """Class to create an SNMP session with a device."""
 
     def __init__(self, snmp_parameters, context_name=''):

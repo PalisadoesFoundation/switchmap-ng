@@ -6,14 +6,13 @@ Extracts agent data from cache directory files.
 """
 
 # Switchmap imports
-from switchmap import CONFIG, CONFIG_SNMP
+from switchmap import Config, ConfigSNMP
 from switchmap.poll.snmp import snmp_info
 from switchmap.poll.snmp import snmp_manager
-from switchmap.utils import general
-from switchmap.utils import log
+from switchmap.core import log
 
 
-class Poll(object):
+class Poll():
     """Switchmap-NG agent that gathers data.
 
     Args:
@@ -39,8 +38,8 @@ class Poll(object):
 
         """
         # Initialize key variables
-        self._server_config = CONFIG
-        snmp_config = CONFIG_SNMP
+        self._server_config = Config()
+        snmp_config = ConfigSNMP()
         self._hostname = hostname
         self._snmp_object = None
 

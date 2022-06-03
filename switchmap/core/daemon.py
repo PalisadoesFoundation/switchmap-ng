@@ -30,7 +30,7 @@ class Daemon():
             None
 
         """
-        self.name = agent.name()
+        self.name = agent.name
         self.pidfile = agent.pidfile_parent
         self.lockfile = agent.lockfile_parent
         self._config = agent.config
@@ -46,7 +46,7 @@ class Daemon():
 
         """
         # Initialize key variables
-        daemon_log_file = self._config.log_file_daemon()
+        daemon_log_file = self._config.log_file()
 
         # Make sure that the log file is accessible.
         try:
@@ -88,7 +88,7 @@ file and directory permissions.'''.format(daemon_log_file)
         # Redirect standard file descriptors, but first make sure that the
         sys.stdout.flush()
         sys.stderr.flush()
-        f_handle_si = open(os.devnull, 'r')
+        f_handle_si = open(daemon_log_file, 'r')
         f_handle_so = open(daemon_log_file, 'a+')
         f_handle_se = open(daemon_log_file, 'a+')
         os.dup2(f_handle_si.fileno(), sys.stdin.fileno())

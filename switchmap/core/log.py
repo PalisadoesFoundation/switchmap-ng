@@ -52,6 +52,9 @@ does not exist'''.format(path))
         # Must print statement as logging requires a config directory
         log2die_safe(1020, log_message)
 
+    # Set the path
+    os.environ['SWITCHMAP_CONFIGDIR'] = path
+    
     # Return
     return path
 

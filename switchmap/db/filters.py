@@ -44,7 +44,7 @@ class DeviceFilter(FilterSet):
             'idx': _NUMERIC,
             'idx_location': _NUMERIC,
             'sys_name': _STRING,
-            'sys_hostname': _STRING,
+            'hostname': _STRING,
             'sys_description': _STRING,
             'sys_objectid': _STRING,
             'sys_uptime': _NUMERIC,

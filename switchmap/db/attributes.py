@@ -27,7 +27,7 @@ class DeviceAttribute():
     idx = graphene.Int(description='Primary key index')
     idx_location = graphene.Int(description='System location')
     sys_name = graphene.Int(description='System name')
-    sys_hostname = graphene.Int(description='System hostname')
+    hostname = graphene.Int(description='System hostname')
     sys_description = graphene.Int(description='System description')
     sys_objectid = graphene.Int(description='System SNMP sysobjectid')
     sys_uptime = graphene.Int(description='System uptime')

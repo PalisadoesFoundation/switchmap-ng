@@ -2,7 +2,7 @@
 """Vendor queries."""
 
 
-class Query(object):
+class Query():
     """Class interacts with devices to get vendor information.
 
     Args:

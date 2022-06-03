@@ -1,7 +1,7 @@
 """Base Query Class for interacting with devices."""
 
 
-class Query(object):
+class Query():
     """Base snmp query object.
 
     Args:

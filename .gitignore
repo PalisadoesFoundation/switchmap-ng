@@ -30,7 +30,9 @@ __pycache__/
 *.switchmap
 
 # Ignore files in these directories and ALL subdirectories
-var/**
+var/daemon/**
+var/log/**
+var/cache/**
 etc/**
 
 # Ignore hidden files used in unittesting
