@@ -57,7 +57,7 @@ def insert_row(rows):
             Trunk(
                 idx_l1interface=row.idx_l1interface,
                 idx_vlan=row.idx_vlan,
-                enabled=1
+                enabled=row.enabled
             )
         )
 

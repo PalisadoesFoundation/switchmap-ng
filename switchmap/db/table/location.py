@@ -67,7 +67,7 @@ def insert_row(rows):
                 postal_code=row.postal_code.encode(),
                 phone=row.phone.encode(),
                 notes=row.notes.encode(),
-                enabled=1
+                enabled=row.enabled
             )
         )
 

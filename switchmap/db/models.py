@@ -105,7 +105,7 @@ class L1Interface(BASE):
 
     __tablename__ = 'smap_l1interface'
     __table_args__ = (
-        UniqueConstraint('idx_l1interface', 'idx_device'),
+        UniqueConstraint('ifindex', 'idx_device'),
         {'mysql_engine': 'InnoDB'}
     )
 
@@ -151,7 +151,7 @@ class Vlan(BASE):
 
     __tablename__ = 'smap_vlan'
     __table_args__ = (
-        UniqueConstraint('idx_vlan', 'idx_device'),
+        UniqueConstraint('vlan', 'idx_device'),
         {'mysql_engine': 'InnoDB'}
     )
 
@@ -181,7 +181,7 @@ class Trunk(BASE):
 
     __tablename__ = 'smap_trunk'
     __table_args__ = (
-        UniqueConstraint('idx_trunk', 'idx_l1interface'),
+        UniqueConstraint('idx_vlan', 'idx_l1interface'),
         {'mysql_engine': 'InnoDB'}
     )
 

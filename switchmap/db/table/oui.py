@@ -81,7 +81,7 @@ def insert_row(rows):
             OUI(
                 oui=row.oui.encode(),
                 organization=row.organization.encode(),
-                enabled=1
+                enabled=row.enabled
             )
         )
 

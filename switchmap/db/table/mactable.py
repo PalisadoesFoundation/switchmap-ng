@@ -61,7 +61,7 @@ def insert_row(rows):
                 mac=row.mac.encode(),
                 hostname=row.hostname.encode(),
                 type=row.type,
-                enabled=1
+                enabled=row.enabled
             )
         )
 

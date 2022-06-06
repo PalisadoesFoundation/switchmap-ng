@@ -87,7 +87,7 @@ def insert_row(rows):
                 sys_objectid=row.sys_objectid.encode(),
                 sys_uptime=row.sys_uptime,
                 last_polled=row.last_polled,
-                enabled=1
+                enabled=row.enabled
             )
         )
 

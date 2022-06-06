@@ -158,7 +158,10 @@ def _poll_single_device(hostname):
                 # Process device data
                 _device = device.Device(snmp_data)
                 data = _device.process()
+
+                # Update the database tables with polled data
                 topology.device(data)
+                topology.l1interface(data)
 
                 # _device.save()
                 # Save the idle times

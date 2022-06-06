@@ -83,7 +83,7 @@ def insert_row(rows):
                 vlan=row.vlan.encode(),
                 name=row.name.encode(),
                 state=row.state,
-                enabled=1
+                enabled=row.enabled
             )
         )
 

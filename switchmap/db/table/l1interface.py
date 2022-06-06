@@ -1,6 +1,6 @@
 """Module for querying the L1Interface table."""
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, and_
 
 # Import project libraries
 from switchmap.db import db
@@ -34,6 +34,37 @@ def idx_exists(idx):
     return bool(result)
 
 
+def exists(idx_device, ifindex):
+    """Determine whether hostname exists in the L1Interface table.
+
+    Args:
+        idx_device: Device.idx_device
+        ifindex: SNMP IfIndex number
+
+    Returns:
+        result: RL1Interface tuple
+
+    """
+    # Initialize key variables
+    result = False
+    rows = []
+
+    # Get row from dataase
+    statement = select(L1Interface).where(
+        and_(
+            L1Interface.ifindex == ifindex,
+            L1Interface.idx_device == idx_device
+        )
+    )
+    rows = db.db_select_row(1226, statement)
+
+    # Return
+    for row in rows:
+        result = _row(row)
+        break
+    return result
+
+
 def insert_row(rows):
     """Create a L1Interface table entry.
 
@@ -56,8 +87,8 @@ def insert_row(rows):
         inserts.append(
             L1Interface(
                 idx_device=row.idx_device,
-                ifindex=row.idx_device,
-                duplex=row.ifindex,
+                ifindex=row.ifindex,
+                duplex=row.duplex,
                 ethernet=row.ethernet,
                 nativevlan=row.nativevlan,
                 trunk=row.trunk,
@@ -74,7 +105,7 @@ def insert_row(rows):
                 lldpremsyscapenabled=row.lldpremsyscapenabled.encode(),
                 lldpremsysdesc=row.lldpremsysdesc.encode(),
                 lldpremsysname=row.lldpremsysname.encode(),
-                enabled=1
+                enabled=row.enabled
             )
         )
 
@@ -99,8 +130,8 @@ def update_row(idx, row):
         L1Interface.idx_l1interface == idx).values(
             {
                 'idx_device': row.idx_device,
-                'ifindex': row.idx_device,
-                'duplex': row.ifindex,
+                'ifindex': row.ifindex,
+                'duplex': row.duplex,
                 'ethernet': row.ethernet,
                 'nativevlan': row.nativevlan,
                 'trunk': row.trunk,
@@ -137,8 +168,8 @@ def _row(row):
     result = RL1Interface(
         idx_l1interface=row.idx_l1interface,
         idx_device=row.idx_device,
-        ifindex=row.idx_device,
-        duplex=row.ifindex,
+        ifindex=row.ifindex,
+        duplex=row.duplex,
         ethernet=row.ethernet,
         nativevlan=row.nativevlan,
         trunk=row.trunk,
