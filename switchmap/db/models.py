@@ -5,7 +5,7 @@ import datetime
 
 # SQLalchemy imports
 from sqlalchemy import (
-    Column, DateTime, ForeignKey, text,
+    Column, DateTime, ForeignKey, text, UniqueConstraint,
     PrimaryKeyConstraint, ForeignKeyConstraint)
 from sqlalchemy.dialects.mysql import BIGINT, VARBINARY, BIT
 from sqlalchemy.orm import backref, relationship
@@ -37,6 +37,9 @@ class Location(BASE):
     """Database table definition."""
 
     __tablename__ = 'smap_location'
+    __table_args__ = (
+        {'mysql_engine': 'InnoDB'}
+    )
 
     idx_location = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
@@ -64,6 +67,9 @@ class Device(BASE):
     """Database table definition."""
 
     __tablename__ = 'smap_device'
+    __table_args__ = (
+        {'mysql_engine': 'InnoDB'}
+    )
 
     idx_device = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
@@ -98,6 +104,10 @@ class L1Interface(BASE):
     """Database table definition."""
 
     __tablename__ = 'smap_l1interface'
+    __table_args__ = (
+        UniqueConstraint('idx_l1interface', 'idx_device'),
+        {'mysql_engine': 'InnoDB'}
+    )
 
     idx_l1interface = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
@@ -140,6 +150,10 @@ class Vlan(BASE):
     """Database table definition."""
 
     __tablename__ = 'smap_vlan'
+    __table_args__ = (
+        UniqueConstraint('idx_vlan', 'idx_device'),
+        {'mysql_engine': 'InnoDB'}
+    )
 
     idx_vlan = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_device = Column(
@@ -166,6 +180,10 @@ class Trunk(BASE):
     """Database table definition."""
 
     __tablename__ = 'smap_trunk'
+    __table_args__ = (
+        UniqueConstraint('idx_trunk', 'idx_l1interface'),
+        {'mysql_engine': 'InnoDB'}
+    )
 
     idx_trunk = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
@@ -193,6 +211,9 @@ class OUI(BASE):
     """Database table definition."""
 
     __tablename__ = 'smap_oui'
+    __table_args__ = (
+        {'mysql_engine': 'InnoDB'}
+    )
 
     idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     oui = Column(VARBINARY(256), unique=True)
@@ -209,6 +230,10 @@ class MacTable(BASE):
     """Database table definition."""
 
     __tablename__ = 'smap_mactable'
+    __table_args__ = (
+        UniqueConstraint('idx_device', 'ip_', 'mac'),
+        {'mysql_engine': 'InnoDB'}
+    )
 
     idx_mactable = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
