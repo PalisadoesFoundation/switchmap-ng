@@ -1,6 +1,6 @@
 """Module for querying the Vlan table."""
 
-from sqlalchemy import select, update, null
+from sqlalchemy import select, update, null, and_
 
 # Import project libraries
 from switchmap.db import db
@@ -33,7 +33,7 @@ def idx_exists(idx):
     return bool(result)
 
 
-def exists(vlan):
+def exists(idx_device, vlan):
     """Determine whether vlan exists in the Vlan table.
 
     Args:
@@ -48,7 +48,11 @@ def exists(vlan):
     rows = []
 
     # Get vlan from database
-    statement = select(Vlan).where(Vlan.vlan == vlan)
+    statement = select(Vlan).where(
+        and_(
+            Vlan.vlan == vlan,
+            Vlan.idx_device == idx_device)
+    )
     rows = db.db_select_row(1226, statement)
 
     # Return

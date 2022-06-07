@@ -162,6 +162,7 @@ def _poll_single_device(hostname):
                 # Update the database tables with polled data
                 topology.device(data)
                 topology.l1interface(data)
+                topology.vlan(data)
 
                 # _device.save()
                 # Save the idle times

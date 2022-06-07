@@ -4,7 +4,8 @@ import time
 from switchmap.core import log
 from switchmap.db.table import device as _device
 from switchmap.db.table import l1interface as _l1interface
-from switchmap.db.table import (IDevice, IL1Interface)
+from switchmap.db.table import vlan as _vlan
+from switchmap.db.table import (IDevice, IL1Interface, IVlan)
 
 
 def device(data):
@@ -163,3 +164,64 @@ def l1interface(data):
         log_message = (
             'No interfaces detected for for host {}'.format(hostname))
         log.log2debug(1029, log_message)
+
+
+def vlan(data):
+    """Update the vlan DB table.
+
+    Args:
+        data: Vlan data
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    exists = False
+    hostname = data['misc']['host']
+    interfaces = data['layer1']
+    rows = []
+    unique_vlans = []
+
+    # Log
+    log_message = (
+        'Updating Vlan table for host {}'.format(hostname))
+    log.log2debug(1028, log_message)
+
+    # Get device data
+    device_ = _device.exists(hostname)
+
+    if bool(device_) is True:
+
+        # Process each interface
+        for ifindex, interface in interfaces.items():
+            exists = _l1interface.exists(device_.idx_device, ifindex)
+
+            # Process each Vlan
+            if bool(exists) is True:
+                vlans = interface.get('jm_vlan')
+                if isinstance(vlans, list) is True:
+                    for next_vlan in vlans:
+                        rows.append(
+                            IVlan(
+                                idx_device=device_.idx_device,
+                                vlan=next_vlan,
+                                name=None,
+                                state=0,
+                                enabled=1
+                            )
+                        )
+
+    # Do Vlan insertions
+    unique_vlans = list(set(rows))
+    for item in unique_vlans:
+        vlan_exists = _vlan.exists(item.idx_device, item.vlan)
+        if vlan_exists is False:
+            _vlan.insert_row(item)
+        else:
+            _vlan.update_row(vlan_exists.idx_vlan, item)
+
+    # Log
+    log_message = (
+        'Updated Vlan table for host {}'.format(hostname))
+    log.log2debug(1029, log_message)
