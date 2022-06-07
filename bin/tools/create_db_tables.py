@@ -43,16 +43,16 @@ def main():
         location.insert_row(
             ILocation(
                 name='Default',
-                company_name='',
-                address_0='',
-                address_1='',
-                address_2='',
-                city='',
-                state='',
-                country='',
-                postal_code='',
-                phone='',
-                notes='',
+                company_name=None,
+                address_0=None,
+                address_1=None,
+                address_2=None,
+                city=None,
+                state=None,
+                country=None,
+                postal_code=None,
+                phone=None,
+                notes=None,
                 enabled=1,
             )
         )

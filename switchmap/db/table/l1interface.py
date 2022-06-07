@@ -1,6 +1,6 @@
 """Module for querying the L1Interface table."""
 
-from sqlalchemy import select, update, and_
+from sqlalchemy import select, update, and_, null
 
 # Import project libraries
 from switchmap.db import db
@@ -23,9 +23,8 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(
-        L1Interface.idx_l1interface).where(L1Interface.idx_l1interface == idx)
-    rows = db.db_select(1225, statement)
+    statement = select(L1Interface).where(L1Interface == idx)
+    rows = db.db_select_row(1225, statement)
 
     # Return
     for row in rows:
@@ -88,23 +87,43 @@ def insert_row(rows):
             L1Interface(
                 idx_device=row.idx_device,
                 ifindex=row.ifindex,
-                duplex=row.duplex,
-                ethernet=row.ethernet,
-                nativevlan=row.nativevlan,
-                trunk=row.trunk,
-                ifspeed=row.ifspeed,
-                ifalias=row.ifalias.encode(),
-                ifdescr=row.ifdescr.encode(),
-                ifadminstatus=row.ifadminstatus,
-                ifoperstatus=row.ifoperstatus,
-                ts_idle=row.ts_idle,
-                cdpcachedeviceid=row.cdpcachedeviceid.encode(),
-                cdpcachedeviceport=row.cdpcachedeviceport.encode(),
-                cdpcacheplatform=row.cdpcacheplatform.encode(),
-                lldpremportdesc=row.lldpremportdesc.encode(),
-                lldpremsyscapenabled=row.lldpremsyscapenabled.encode(),
-                lldpremsysdesc=row.lldpremsysdesc.encode(),
-                lldpremsysname=row.lldpremsysname.encode(),
+                duplex=null() if row.duplex is None else row.duplex,
+                ethernet=null() if row.ethernet is None else row.ethernet,
+                nativevlan=(
+                    null() if row.nativevlan is None else row.nativevlan),
+                trunk=null() if row.trunk is None else row.trunk,
+                ifspeed=null() if row.ifspeed is None else row.ifspeed,
+                ifalias=(
+                    null() if row.ifalias is None else row.ifalias.encode()),
+                ifdescr=(
+                    null() if row.ifdescr is None else row.ifdescr.encode()),
+                ifadminstatus=(
+                    null() if row.ifadminstatus is None
+                    else row.ifadminstatus),
+                ifoperstatus=(
+                    null() if row.ifoperstatus is None else row.ifoperstatus),
+                ts_idle=0 if not bool(row.ts_idle) else row.ts_idle,
+                cdpcachedeviceid=(
+                    null() if row.cdpcachedeviceid is None else
+                    row.cdpcachedeviceid.encode()),
+                cdpcachedeviceport=(
+                    null() if row.cdpcachedeviceport is None else
+                    row.cdpcachedeviceport.encode()),
+                cdpcacheplatform=(
+                    null() if row.cdpcacheplatform is None else
+                    row.cdpcacheplatform.encode()),
+                lldpremportdesc=(
+                    null() if row.lldpremportdesc is None else
+                    row.lldpremportdesc.encode()),
+                lldpremsyscapenabled=(
+                    null() if row.lldpremsyscapenabled is None else
+                    row.lldpremsyscapenabled.encode()),
+                lldpremsysdesc=(
+                    null() if row.lldpremsysdesc is None else
+                    row.lldpremsysdesc.encode()),
+                lldpremsysname=(
+                    null() if row.lldpremsysname is None else
+                    row.lldpremsysname.encode()),
                 enabled=row.enabled
             )
         )
@@ -131,23 +150,43 @@ def update_row(idx, row):
             {
                 'idx_device': row.idx_device,
                 'ifindex': row.ifindex,
-                'duplex': row.duplex,
-                'ethernet': row.ethernet,
-                'nativevlan': row.nativevlan,
-                'trunk': row.trunk,
-                'ifspeed': row.ifspeed,
-                'ifalias': row.ifalias.encode(),
-                'ifdescr': row.ifdescr.encode(),
-                'ifadminstatus': row.ifadminstatus,
-                'ifoperstatus': row.ifoperstatus,
-                'ts_idle': row.ts_idle,
-                'cdpcachedeviceid': row.cdpcachedeviceid.encode(),
-                'cdpcachedeviceport': row.cdpcachedeviceport.encode(),
-                'cdpcacheplatform': row.cdpcacheplatform.encode(),
-                'lldpremportdesc': row.lldpremportdesc.encode(),
-                'lldpremsyscapenabled': row.lldpremsyscapenabled.encode(),
-                'lldpremsysdesc': row.lldpremsysdesc.encode(),
-                'lldpremsysname': row.lldpremsysname.encode(),
+                'duplex': null() if row.duplex is None else row.duplex,
+                'ethernet': null() if row.ethernet is None else row.ethernet,
+                'nativevlan': (
+                    null() if row.nativevlan is None else row.nativevlan),
+                'trunk': null() if row.trunk is None else row.trunk,
+                'ifspeed': null() if row.ifspeed is None else row.ifspeed,
+                'ifalias': (
+                    null() if row.ifalias is None else row.ifalias.encode()),
+                'ifdescr': (
+                    null() if row.ifdescr is None else row.ifdescr.encode()),
+                'ifadminstatus': (
+                    null() if row.ifadminstatus is None else
+                    row.ifadminstatus),
+                'ifoperstatus': (
+                    null() if row.ifoperstatus is None else row.ifoperstatus),
+                'ts_idle': 0 if not bool(row.ts_idle) else row.ts_idle,
+                'cdpcachedeviceid': (
+                    null() if row.cdpcachedeviceid is None else
+                    row.cdpcachedeviceid.encode()),
+                'cdpcachedeviceport': (
+                    null() if row.cdpcachedeviceport is None else
+                    row.cdpcachedeviceport.encode()),
+                'cdpcacheplatform': (
+                    null() if row.cdpcacheplatform is None else
+                    row.cdpcacheplatform.encode()),
+                'lldpremportdesc': (
+                    null() if row.lldpremportdesc is None else
+                    row.lldpremportdesc.encode()),
+                'lldpremsyscapenabled': (
+                    null() if row.lldpremsyscapenabled is None else
+                    row.lldpremsyscapenabled.encode()),
+                'lldpremsysdesc': (
+                    null() if row.lldpremsysdesc is None else
+                    row.lldpremsysdesc.encode()),
+                'lldpremsysname': (
+                    null() if row.lldpremsysname is None else
+                    row.lldpremsysname.encode()),
                 'enabled': row.enabled
             }
         )
@@ -174,18 +213,32 @@ def _row(row):
         nativevlan=row.nativevlan,
         trunk=row.trunk,
         ifspeed=row.ifspeed,
-        ifalias=row.ifalias.decode(),
-        ifdescr=row.ifdescr.decode(),
+        ifalias=None if row.ifalias is None else row.ifalias.decode(),
+        ifdescr=None if row.ifdescr is None else row.ifdescr.decode(),
         ifadminstatus=row.ifadminstatus,
         ifoperstatus=row.ifoperstatus,
         ts_idle=row.ts_idle,
-        cdpcachedeviceid=row.cdpcachedeviceid.decode(),
-        cdpcachedeviceport=row.cdpcachedeviceport.decode(),
-        cdpcacheplatform=row.cdpcacheplatform.decode(),
-        lldpremportdesc=row.lldpremportdesc.decode(),
-        lldpremsyscapenabled=row.lldpremsyscapenabled.decode(),
-        lldpremsysdesc=row.lldpremsysdesc.decode(),
-        lldpremsysname=row.lldpremsysname.decode(),
+        cdpcachedeviceid=(
+            None if row.cdpcachedeviceid is None else
+            row.cdpcachedeviceid.decode()),
+        cdpcachedeviceport=(
+            None if row.cdpcachedeviceport is None else
+            row.cdpcachedeviceport.decode()),
+        cdpcacheplatform=(
+            None if row.cdpcacheplatform is None else
+            row.cdpcacheplatform.decode()),
+        lldpremportdesc=(
+            None if row.lldpremportdesc is None else
+            row.lldpremportdesc.decode()),
+        lldpremsyscapenabled=(
+            None if row.lldpremsyscapenabled is None else
+            row.lldpremsyscapenabled.decode()),
+        lldpremsysdesc=(
+            None if row.lldpremsysdesc is None else
+            row.lldpremsysdesc.decode()),
+        lldpremsysname=(
+            None if row.lldpremsysname is None else
+            row.lldpremsysname.decode()),
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified

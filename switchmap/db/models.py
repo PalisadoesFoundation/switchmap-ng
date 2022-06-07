@@ -54,7 +54,7 @@ class Location(BASE):
     country = Column(VARBINARY(128), nullable=True, default=Null)
     postal_code = Column(VARBINARY(64), nullable=True, default=Null)
     phone = Column(VARBINARY(128), nullable=True, default=Null)
-    notes = Column(VARBINARY(2048), nullable=False)
+    notes = Column(VARBINARY(2048), nullable=True, default=Null)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,

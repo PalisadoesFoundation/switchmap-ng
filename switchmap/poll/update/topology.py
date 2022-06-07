@@ -76,8 +76,6 @@ def l1interface(data):
 
         # Process each interface
         for ifindex, interface in interfaces.items():
-            log.log2info(8888, 'device: {}, ifIndex: {}'.format(hostname, ifindex))
-
             exists = _l1interface.exists(device_.idx_device, ifindex)
 
             # Update the database
@@ -113,19 +111,17 @@ def l1interface(data):
                     ifdescr=interface.get('ifDescr'),
                     ifadminstatus=interface.get('ifAdminStatus'),
                     ifoperstatus=interface.get('ifOperStatus'),
-                    cdpcachedeviceid=interface.get('cdpCacheDeviceId', ''),
-                    cdpcachedeviceport=interface.get('cdpCacheDevicePort', ''),
-                    cdpcacheplatform=interface.get('cdpCachePlatform', ''),
-                    lldpremportdesc=interface.get('lldpRemPortDesc', ''),
+                    cdpcachedeviceid=interface.get('cdpCacheDeviceId'),
+                    cdpcachedeviceport=interface.get('cdpCacheDevicePort'),
+                    cdpcacheplatform=interface.get('cdpCachePlatform'),
+                    lldpremportdesc=interface.get('lldpRemPortDesc'),
                     lldpremsyscapenabled=interface.get(
-                        'lldpRemSysCapEnabled', ''),
-                    lldpremsysdesc=interface.get('lldpRemSysDesc', ''),
-                    lldpremsysname=interface.get('lldpRemSysName', ''),
+                        'lldpRemSysCapEnabled'),
+                    lldpremsysdesc=interface.get('lldpRemSysDesc'),
+                    lldpremsysname=interface.get('lldpRemSysName'),
                     ts_idle=ts_idle,
                     enabled=int(bool(exists.enabled))
                 )
-
-                log.log2info(4567, row)
 
                 _l1interface.update_row(exists.idx_l1interface, row)
             else:
@@ -135,26 +131,24 @@ def l1interface(data):
                     ifindex=ifindex,
                     duplex=interface.get('jm_duplex'),
                     ethernet=int(bool(interface.get('jm_ethernet'))),
-                    nativevlan=1,  # interface.get('jm_nativevlan'),
+                    nativevlan=interface.get('jm_nativevlan'),
                     trunk=int(bool(interface.get('jm_trunk'))),
                     ifspeed=interface.get('ifSpeed'),
                     ifalias=interface.get('ifAlias'),
                     ifdescr=interface.get('ifDescr'),
                     ifadminstatus=interface.get('ifAdminStatus'),
                     ifoperstatus=interface.get('ifOperStatus'),
-                    cdpcachedeviceid=interface.get('cdpCacheDeviceId', ''),
-                    cdpcachedeviceport=interface.get('cdpCacheDevicePort', ''),
-                    cdpcacheplatform=interface.get('cdpCachePlatform', ''),
-                    lldpremportdesc=interface.get('lldpRemPortDesc', ''),
+                    cdpcachedeviceid=interface.get('cdpCacheDeviceId'),
+                    cdpcachedeviceport=interface.get('cdpCacheDevicePort'),
+                    cdpcacheplatform=interface.get('cdpCachePlatform'),
+                    lldpremportdesc=interface.get('lldpRemPortDesc'),
                     lldpremsyscapenabled=interface.get(
-                        'lldpRemSysCapEnabled', ''),
-                    lldpremsysdesc=interface.get('lldpRemSysDesc', ''),
-                    lldpremsysname=interface.get('lldpRemSysName', ''),
+                        'lldpRemSysCapEnabled'),
+                    lldpremsysdesc=interface.get('lldpRemSysDesc'),
+                    lldpremsysname=interface.get('lldpRemSysName'),
                     ts_idle=0,
                     enabled=1
                 )
-
-                log.log2info(9876, row)
 
                 _l1interface.insert_row(row)
 

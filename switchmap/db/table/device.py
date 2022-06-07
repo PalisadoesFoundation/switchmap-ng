@@ -1,6 +1,6 @@
 """Module for querying the Device table."""
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, null
 
 # Import project libraries
 from switchmap.db import db
@@ -23,9 +23,8 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(
-        Device.idx_device).where(Device.idx_device == idx)
-    rows = db.db_select(1225, statement)
+    statement = select().where(Device.idx_device == idx)
+    rows = db.db_select_row(1225, statement)
 
     # Return
     for row in rows:
@@ -81,12 +80,20 @@ def insert_row(rows):
         inserts.append(
             Device(
                 idx_location=row.idx_location,
-                sys_name=row.sys_name.encode(),
-                hostname=row.hostname.encode(),
-                sys_description=row.sys_description.encode(),
-                sys_objectid=row.sys_objectid.encode(),
-                sys_uptime=row.sys_uptime,
-                last_polled=row.last_polled,
+                sys_name=(
+                    null() if row.sys_name is None else row.sys_name.encode()),
+                hostname=(
+                    null() if row.hostname is None else row.hostname.encode()),
+                sys_description=(
+                    null() if row.sys_description is None else
+                    row.sys_description.encode()),
+                sys_objectid=(
+                    null() if row.sys_objectid is None else
+                    row.sys_objectid.encode()),
+                sys_uptime=(
+                    null() if row.sys_uptime is None else row.sys_uptime),
+                last_polled=(
+                    0 if row.last_polled is None else row.last_polled),
                 enabled=row.enabled
             )
         )
@@ -112,12 +119,24 @@ def update_row(idx, row):
         Device.idx_device == idx).values(
             {
                 'idx_location': row.idx_location,
-                'sys_name': row.sys_name.encode(),
-                'hostname': row.hostname.encode(),
-                'sys_description': row.sys_description.encode(),
-                'sys_objectid': row.sys_objectid.encode(),
-                'sys_uptime': row.sys_uptime,
-                'last_polled': row.last_polled,
+                'sys_name': (
+                    null() if bool(row.sys_name) is False else
+                    row.sys_name.encode()),
+                'hostname': (
+                    null() if bool(row.hostname) is False else
+                    row.hostname.encode()),
+                'sys_description': (
+                    null() if bool(row.sys_description) is False else
+                    row.sys_description.encode()),
+                'sys_objectid': (
+                    null() if bool(row.sys_objectid) is False else
+                    row.sys_objectid.encode()),
+                'sys_uptime': (
+                    null() if bool(row.sys_uptime) is False else
+                    row.sys_uptime),
+                'last_polled': (
+                    0 if bool(row.last_polled) is False else
+                    row.last_polled),
                 'enabled': row.enabled
             }
         )
@@ -138,10 +157,16 @@ def _row(row):
     result = RDevice(
         idx_device=row.idx_device,
         idx_location=row.idx_location,
-        sys_name=row.sys_name.decode(),
-        hostname=row.hostname.decode(),
-        sys_description=row.sys_description.decode(),
-        sys_objectid=row.sys_objectid.decode(),
+        sys_name=(
+            None if bool(row.sys_name) is False else row.sys_name.decode()),
+        hostname=(
+            None if bool(row.hostname) is False else row.hostname.decode()),
+        sys_description=(
+            None if bool(row.sys_description) is False else
+            row.sys_description.decode()),
+        sys_objectid=(
+            None if bool(row.sys_objectid) is False else
+            row.sys_objectid.decode()),
         sys_uptime=row.sys_uptime,
         last_polled=row.last_polled,
         enabled=row.enabled,

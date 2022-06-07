@@ -1,6 +1,6 @@
 """Module for querying the Vlan table."""
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, null
 
 # Import project libraries
 from switchmap.db import db
@@ -23,8 +23,8 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(Vlan.idx_vlan).where(Vlan.idx_vlan == idx)
-    rows = db.db_select(1225, statement)
+    statement = select(Vlan).where(Vlan.idx_vlan == idx)
+    rows = db.db_select_row(1225, statement)
 
     # Return
     for row in rows:
@@ -80,9 +80,9 @@ def insert_row(rows):
         inserts.append(
             Vlan(
                 idx_device=row.idx_device,
-                vlan=row.vlan.encode(),
-                name=row.name.encode(),
-                state=row.state,
+                vlan=null() if bool(row.vlan) is False else row.vlan,
+                name=null() if bool(row.name) is False else row.name.encode(),
+                state=null() if bool(row.state) is False else row.state,
                 enabled=row.enabled
             )
         )
@@ -108,10 +108,11 @@ def update_row(idx, row):
         Vlan.idx_vlan == idx).values(
             {
                 'idx_device': row.idx_device,
-                'vlan': row.vlan.decode(),
-                'name': row.name.decode(),
-                'state': row.state,
-                'enabled': row.enabled,
+                'vlan': null() if bool(row.vlan) is False else row.vlan,
+                'name': (
+                    null() if bool(row.name) is False else row.name.encode()),
+                'state': null() if bool(row.state) is False else row.state,
+                'enabled': row.enabled
             }
         )
     db.db_update(1126, statement)
@@ -131,8 +132,8 @@ def _row(row):
     result = RVlan(
         idx_vlan=row.idx_vlan,
         idx_device=row.idx_device,
-        vlan=row.vlan.decode(),
-        name=row.name.decode(),
+        vlan=row.vlan,
+        name=None if bool(row.name) is False else row.name.decode(),
         state=row.state,
         enabled=row.enabled,
         ts_created=row.ts_created,
