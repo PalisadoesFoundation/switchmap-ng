@@ -16,8 +16,8 @@ from switchmap.db.models import (
     Device as DeviceModel,
     L1Interface as L1InterfaceModel,
     Location as LocationModel,
-    MacTable as MacTableModel,
-    OUI as OUIModel,
+    Mac as MacModel,
+    Oui as OuiModel,
     Trunk as TrunkModel,
     Vlan as VlanModel,
 )
@@ -115,13 +115,13 @@ class L1InterfaceFilter(FilterSet):
         }
 
 
-class MacTableFilter(FilterSet):
-    """MacTable custom filter."""
+class MacFilter(FilterSet):
+    """Mac custom filter."""
 
     class Meta:
         """Define the metadata."""
 
-        model = MacTableModel
+        model = MacModel
         fields = {
             'idx': _NUMERIC,
             'idx_device': _NUMERIC,
@@ -136,13 +136,13 @@ class MacTableFilter(FilterSet):
         }
 
 
-class OUIFilter(FilterSet):
-    """OUI custom filter."""
+class OuiFilter(FilterSet):
+    """Oui custom filter."""
 
     class Meta:
         """Define the metadata."""
 
-        model = OUIModel
+        model = OuiModel
         fields = {
             'idx': _NUMERIC,
             'oui': _STRING,

@@ -207,7 +207,7 @@ class Trunk(BASE):
             'trunk_to_l1interface', uselist=True, cascade='delete,all'))
 
 
-class OUI(BASE):
+class Oui(BASE):
     """Database table definition."""
 
     __tablename__ = 'smap_oui'
@@ -226,16 +226,16 @@ class OUI(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow)
 
 
-class MacTable(BASE):
+class Mac(BASE):
     """Database table definition."""
 
-    __tablename__ = 'smap_mactable'
+    __tablename__ = 'smap_mac'
     __table_args__ = (
         UniqueConstraint('idx_device', 'ip_', 'mac'),
         {'mysql_engine': 'InnoDB'}
     )
 
-    idx_mactable = Column(
+    idx_mac = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_device = Column(
         ForeignKey('smap_device.idx_device'),
@@ -255,15 +255,15 @@ class MacTable(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
-    mactable_to_device = relationship(
+    mac_to_device = relationship(
         Device,
         backref=backref(
-            'mactable_to_device', uselist=True, cascade='delete,all'))
+            'mac_to_device', uselist=True, cascade='delete,all'))
 
-    mactable_to_oui = relationship(
-        OUI,
+    mac_to_oui = relationship(
+        Oui,
         backref=backref(
-            'mactable_to_oui', uselist=True, cascade='delete,all'))
+            'mac_to_oui', uselist=True, cascade='delete,all'))
 
 
 def create_all_tables():

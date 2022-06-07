@@ -21,8 +21,8 @@ from switchmap.db.models import (
     Device as DeviceModel,
     L1Interface as L1InterfaceModel,
     Location as LocationModel,
-    MacTable as MacTableModel,
-    OUI as OUIModel,
+    Mac as MacModel,
+    Oui as OuiModel,
     Trunk as TrunkModel,
     Vlan as VlanModel,
 )
@@ -32,8 +32,8 @@ from switchmap.db.filters import (
     DeviceFilter,
     LocationFilter,
     L1InterfaceFilter,
-    MacTableFilter,
-    OUIFilter,
+    MacFilter,
+    OuiFilter,
     TrunkFilter,
     VlanFilter,
 )
@@ -43,8 +43,8 @@ from switchmap.db.attributes import (
     DeviceAttribute,
     LocationAttribute,
     L1InterfaceAttribute,
-    MacTableAttribute,
-    OUIAttribute,
+    MacAttribute,
+    OuiAttribute,
     TrunkAttribute,
     VlanAttribute,
 )
@@ -84,23 +84,23 @@ class Location(SQLAlchemyObjectType, LocationAttribute):
         interfaces = (graphene.relay.Node,)
 
 
-class MacTable(SQLAlchemyObjectType, MacTableAttribute):
-    """MacTable node."""
+class Mac(SQLAlchemyObjectType, MacAttribute):
+    """Mac node."""
 
     class Meta:
         """Define the metadata."""
 
-        model = MacTableModel
+        model = MacModel
         interfaces = (graphene.relay.Node,)
 
 
-class OUI(SQLAlchemyObjectType, OUIAttribute):
-    """OUI node."""
+class Oui(SQLAlchemyObjectType, OuiAttribute):
+    """Oui node."""
 
     class Meta:
         """Define the metadata."""
 
-        model = OUIModel
+        model = OuiModel
         interfaces = (graphene.relay.Node,)
 
 
@@ -145,14 +145,14 @@ class Query(graphene.ObjectType):
         connection=Location, sort=None, filters=LocationFilter())
 
     # Results as a single entry filtered by 'id' and as a list
-    mactable = graphene.relay.Node.Field(MacTable)
-    all_mactable = FilterableConnectionField(
-        connection=MacTable, sort=None, filters=MacTableFilter())
+    mac = graphene.relay.Node.Field(Mac)
+    all_mac = FilterableConnectionField(
+        connection=Mac, sort=None, filters=MacFilter())
 
     # Results as a single entry filtered by 'id' and as a list
-    oui = graphene.relay.Node.Field(OUI)
+    oui = graphene.relay.Node.Field(Oui)
     all_oui = FilterableConnectionField(
-        connection=OUI, sort=None, filters=OUIFilter())
+        connection=Oui, sort=None, filters=OuiFilter())
 
     # Results as a single entry filtered by 'id' and as a list
     trunk = graphene.relay.Node.Field(Trunk)

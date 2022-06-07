@@ -1,11 +1,14 @@
 """Module for updating the database with topology data."""
 
 import time
+from collections import namedtuple
 from switchmap.core import log
 from switchmap.db.table import device as _device
 from switchmap.db.table import l1interface as _l1interface
 from switchmap.db.table import vlan as _vlan
-from switchmap.db.table import (IDevice, IL1Interface, IVlan)
+from switchmap.db.table import mac as _mac
+from switchmap.db.table import oui as _oui
+from switchmap.db.table import (IDevice, IL1Interface, IVlan, IMac, IOui)
 
 
 def device(data):
@@ -225,3 +228,104 @@ def vlan(data):
     log_message = (
         'Updated Vlan table for host {}'.format(hostname))
     log.log2debug(1029, log_message)
+
+
+def mac(data):
+    """Update the mac DB table.
+
+    Args:
+        data: Mac data
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    ipv6 = None
+    ipv4 = None
+    hostname = data['misc']['host']
+    adds = []
+    updates = []
+
+    # Log
+    log_message = (
+        'Updating Mac table for host {}'.format(hostname))
+    log.log2debug(1028, log_message)
+
+    # Get device data
+    device_ = _device.exists(hostname)
+
+    # Get Mac data
+    layer3 = data.get('layer3')
+    if bool(layer3) is True and bool(device_) is True:
+        ipv4 = layer3.get('ipNetToMediaTable')
+        ipv6 = layer3.get('ipNetToPhysicalPhysAddress')
+
+        # Process IPv4 data
+        if bool(ipv4) is True:
+            result = _process_mac(ipv4, device_, version=4)
+            adds.extend(result.adds)
+            updates.extend(result.updates)
+
+        # Process IPv6 data
+        if bool(ipv6) is True:
+            result = _process_mac(ipv6, device_, version=6)
+            adds.extend(result.adds)
+            updates.extend(result.updates)
+
+    # Do the Updates
+    for item in updates:
+        _mac.update_row(
+            item.idx_mac,
+            item.row
+        )
+    for item in adds:
+        _mac.insert_row(item)
+
+    # Log
+    log_message = (
+        'Updated Mac table for host {}'.format(hostname))
+    log.log2debug(1029, log_message)
+
+
+def _process_mac(table, device_, version=4):
+    """Update the mac DB table.
+
+    Args:
+        table: List of Mac address dicts
+        device_: RDevice object
+        version: IPvX version
+
+    Returns:
+        result
+
+    """
+    # Initialize key variables
+    adds = []
+    updates = []
+    Updates = namedtuple('Updates', 'idx_mac row')
+    Result = namedtuple('Result', 'updates adds')
+
+    # Process data
+    for next_ip_addr, next_mac_addr in table.items():
+        next_oui = next_mac_addr[:6]
+        oui_exists = _oui.exists(next_oui)
+        mac_exists = _mac.exists(
+            device_.idx_device, next_ip_addr, next_mac_addr)
+        row = IMac(
+            idx_device=device_.idx_device,
+            idx_oui=oui_exists.idx_oui if bool(oui_exists) else 1,
+            ip_=next_ip_addr,
+            mac=next_mac_addr,
+            hostname=None,
+            type=version,
+            enabled=1
+        )
+        if bool(mac_exists) is True:
+            updates.append(Updates(idx_mac=mac_exists.idx_mac, row=row))
+        else:
+            adds.append(row)
+
+    # Return
+    result = Result(adds=adds, updates=updates)
+    return result

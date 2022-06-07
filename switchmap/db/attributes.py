@@ -95,8 +95,8 @@ class L1InterfaceAttribute():
     ts_created = graphene.String(description='Row Creation Timestamp')
 
 
-class MacTableAttribute():
-    """Descriptive attributes of the MacTable table.
+class MacAttribute():
+    """Descriptive attributes of the Mac table.
 
     A generic class to mutualize description of attributes for both queries
     and mutations.
@@ -105,7 +105,7 @@ class MacTableAttribute():
 
     idx = graphene.Int(description='Primary key index')
     idx_device = graphene.Int(description='Device index foreign key')
-    idx_oui = graphene.Int(description='OUI index foreign key')
+    idx_oui = graphene.Int(description='Oui index foreign key')
     ip_ = graphene.String(description='IP address')
     mac = graphene.String(description='MAC address')
     hostname = graphene.String(description='Hostname')
@@ -115,8 +115,8 @@ class MacTableAttribute():
     ts_created = graphene.String(description='Row Creation Timestamp')
 
 
-class OUIAttribute():
-    """Descriptive attributes of the OUI table.
+class OuiAttribute():
+    """Descriptive attributes of the Oui table.
 
     A generic class to mutualize description of attributes for both queries
     and mutations.

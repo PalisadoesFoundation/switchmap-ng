@@ -2,10 +2,10 @@
 
 from collections import namedtuple
 
-ROUI = namedtuple(
-    'ROUI', 'idx_oui oui organization enabled ts_modified ts_created')
-IOUI = namedtuple(
-    'IOUI', 'oui organization enabled')
+ROui = namedtuple(
+    'ROui', 'idx_oui oui organization enabled ts_modified ts_created')
+IOui = namedtuple(
+    'IOui', 'oui organization enabled')
 
 RLocation = namedtuple(
     'RLocation',
@@ -50,9 +50,9 @@ RTrunk = namedtuple(
 ITrunk = namedtuple(
     'ITrunk', 'idx_l1interface idx_vlan enabled')
 
-RMacTable = namedtuple(
-    'RMacTable',
-    '''idx_mactable idx_device idx_oui ip_ mac hostname type enabled \
+RMac = namedtuple(
+    'RMac',
+    '''idx_mac idx_device idx_oui ip_ mac hostname type enabled \
 ts_modified ts_created''')
-IMacTable = namedtuple(
-    'IMacTable', 'idx_device idx_oui ip_ mac hostname type enabled')
+IMac = namedtuple(
+    'IMac', 'idx_device idx_oui ip_ mac hostname type enabled')

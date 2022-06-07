@@ -163,6 +163,7 @@ def _poll_single_device(hostname):
                 topology.device(data)
                 topology.l1interface(data)
                 topology.vlan(data)
+                topology.mac(data)
 
                 # _device.save()
                 # Save the idle times

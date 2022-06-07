@@ -1,18 +1,18 @@
-"""Module for querying the MacTable table."""
+"""Module for querying the Mac table."""
 
-from sqlalchemy import select, update, and_
+from sqlalchemy import select, update, and_, null
 
 # Import project libraries
 from switchmap.db import db
-from switchmap.db.models import MacTable
-from switchmap.db.table import RMacTable
+from switchmap.db.models import Mac
+from switchmap.db.table import RMac
 
 
 def idx_exists(idx):
     """Determine whether primary key exists.
 
     Args:
-        idx: idx_mactable
+        idx: idx_mac
 
     Returns:
         result: True if exists
@@ -24,7 +24,7 @@ def idx_exists(idx):
 
     # Get data
     statement = select(
-        MacTable.idx_mactable).where(MacTable.idx_mactable == idx)
+        Mac.idx_mac).where(Mac.idx_mac == idx)
     rows = db.db_select(1225, statement)
 
     # Return
@@ -34,11 +34,44 @@ def idx_exists(idx):
     return bool(result)
 
 
-def insert_row(rows):
-    """Create a MacTable table entry.
+def exists(idx_device, ip_, mac_):
+    """Determine whether hostname exists in the Mac table.
 
     Args:
-        rows: IMacTable objects
+        idx_device: Device.idx_device
+        ip_: IP address
+        mac: Mac address
+
+    Returns:
+        result: RMac tuple
+
+    """
+    # Initialize key variables
+    result = False
+    rows = []
+
+    # Get row from dataase
+    statement = select(Mac).where(
+        and_(
+            Mac.ip_ == ip_.encode(),
+            Mac.mac == mac_.encode(),
+            Mac.idx_device == idx_device
+        )
+    )
+    rows = db.db_select_row(1226, statement)
+
+    # Return
+    for row in rows:
+        result = _row(row)
+        break
+    return result
+
+
+def insert_row(rows):
+    """Create a Mac table entry.
+
+    Args:
+        rows: IMac objects
 
     Returns:
         None
@@ -54,12 +87,14 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            MacTable(
+            Mac(
                 idx_device=row.idx_device,
                 idx_oui=row.idx_oui,
                 ip_=row.ip_.encode(),
                 mac=row.mac.encode(),
-                hostname=row.hostname.encode(),
+                hostname=(
+                    null() if bool(row.hostname) is False else
+                    row.hostname.encode()),
                 type=row.type,
                 enabled=row.enabled
             )
@@ -71,25 +106,27 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a MacTable table entry.
+    """Upadate a Mac table entry.
 
     Args:
-        idx: idx_mactable value
-        row: IMacTable object
+        idx: idx_mac value
+        row: IMac object
 
     Returns:
         None
 
     """
     # Update
-    statement = update(MacTable).where(
-        MacTable.idx_mactable == idx).values(
+    statement = update(Mac).where(
+        Mac.idx_mac == idx).values(
             {
                 'idx_device': row.idx_device,
                 'idx_oui': row.idx_oui,
                 'ip_': row.ip_.encode(),
                 'mac': row.mac.encode(),
-                'hostname': row.hostname.encode(),
+                'hostname': (
+                    null() if bool(row.hostname) is False else
+                    row.hostname.encode()),
                 'enabled': row.enabled
             }
         )
@@ -100,15 +137,15 @@ def _row(row):
     """Convert table row to tuple.
 
     Args:
-        row: MacTable row
+        row: Mac row
 
     Returns:
-        result: RMacTable tuple
+        result: RMac tuple
 
     """
     # Initialize key variables
-    result = RMacTable(
-        idx_mactable=row.idx_mactable,
+    result = RMac(
+        idx_mac=row.idx_mac,
         idx_device=row.idx_device,
         idx_oui=row.idx_oui,
         ip_=row.ip_.decode(),

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Script to update the OUI table."""
+"""Script to update the Oui table."""
 
 # Standard imports
 import sys
@@ -23,9 +23,9 @@ else:
 
 # Import project libraries
 from switchmap.db import db
-from switchmap.db.models import OUI
+from switchmap.db.models import Oui
 from switchmap.db.table import oui
-from switchmap.db.table import IOUI
+from switchmap.db.table import IOui
 
 
 def main():
@@ -38,14 +38,14 @@ def main():
         None
 
     """
-    # Read OUI file
+    # Read Oui file
     args = _cli()
     df_ = _read_file(args.filename)
     _update_db(df_)
 
 
 def _update_db(df_):
-    """Update the database with OUI data.
+    """Update the database with Oui data.
 
     Args:
         df_: pd.Dataframe
@@ -60,7 +60,7 @@ def _update_db(df_):
     # Process DataFrame (Enables)
     for _, row in df_.iterrows():
         db_record = oui.exists(row['oui'])
-        file_record = IOUI(
+        file_record = IOui(
                 oui=row['oui'],
                 organization=row['organization'],
                 enabled=1
@@ -99,14 +99,14 @@ def _cli():
         default=default_filepath,
         type=str,
         help=(
-            'OUI filename to process. Default: {}'.format(default_filepath))
+            'Oui filename to process. Default: {}'.format(default_filepath))
     )
     args = parser.parse_args()
     return args
 
 
 def _read_file(filepath):
-    """Read OUI file.
+    """Read Oui file.
 
     Args:
         filepath: Name of file to process

@@ -21,7 +21,9 @@ else:
 # Switchmap-NG standard imports
 from switchmap.db import models
 from switchmap.db.table import ILocation
+from switchmap.db.table import IOui
 from switchmap.db.table import location
+from switchmap.db.table import oui
 
 
 def main():
@@ -53,6 +55,13 @@ def main():
                 postal_code=None,
                 phone=None,
                 notes=None,
+                enabled=1,
+            )
+        )
+        oui.insert_row(
+            IOui(
+                oui='Unknown',
+                organization='Unknown',
                 enabled=1,
             )
         )

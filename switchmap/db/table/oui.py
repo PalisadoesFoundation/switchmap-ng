@@ -1,11 +1,11 @@
-"""Module for querying the OUI table."""
+"""Module for querying the Oui table."""
 
 from sqlalchemy import select, update
 
 # Import project libraries
 from switchmap.db import db
-from switchmap.db.models import OUI
-from switchmap.db.table import ROUI
+from switchmap.db.models import Oui
+from switchmap.db.table import ROui
 
 
 def idx_exists(idx):
@@ -23,7 +23,7 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(OUI.idx_oui).where(OUI.idx_oui == idx)
+    statement = select(Oui.idx_oui).where(Oui.idx_oui == idx)
     rows = db.db_select(1225, statement)
 
     # Return
@@ -34,13 +34,13 @@ def idx_exists(idx):
 
 
 def exists(oui):
-    """Determine whether oui exists in the OUI table.
+    """Determine whether oui exists in the Oui table.
 
     Args:
-        oui: OUI
+        oui: Oui
 
     Returns:
-        result: ROUI tuple
+        result: ROui tuple
 
     """
     # Initialize key variables
@@ -48,7 +48,7 @@ def exists(oui):
     rows = []
 
     # Get oui from database
-    statement = select(OUI).where(OUI.oui == oui.encode())
+    statement = select(Oui).where(Oui.oui == oui.encode())
     rows = db.db_select_row(1226, statement)
 
     # Return
@@ -59,10 +59,10 @@ def exists(oui):
 
 
 def insert_row(rows):
-    """Create a OUI table entry.
+    """Create a Oui table entry.
 
     Args:
-        rows: IOUI objects
+        rows: IOui objects
 
     Returns:
         None
@@ -78,7 +78,7 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            OUI(
+            Oui(
                 oui=row.oui.encode(),
                 organization=row.organization.encode(),
                 enabled=row.enabled
@@ -91,19 +91,19 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a OUI table entry.
+    """Upadate a Oui table entry.
 
     Args:
         idx: idx_oui value
-        row: IOUI object
+        row: IOui object
 
     Returns:
         None
 
     """
     # Update
-    statement = update(OUI).where(
-        OUI.idx_oui == idx).values(
+    statement = update(Oui).where(
+        Oui.idx_oui == idx).values(
             {
                 'organization': row.organization.encode(),
                 'oui': row.oui.encode(),
@@ -117,14 +117,14 @@ def _row(row):
     """Convert table row to tuple.
 
     Args:
-        row: OUI row
+        row: Oui row
 
     Returns:
-        result: ROUI tuple
+        result: ROui tuple
 
     """
     # Initialize key variables
-    result = ROUI(
+    result = ROui(
         idx_oui=row.idx_oui,
         oui=row.oui.decode(),
         organization=row.organization.decode(),
