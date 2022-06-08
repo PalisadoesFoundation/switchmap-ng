@@ -14,11 +14,32 @@ from switchmap.db.table import (
     TopologyResult, TopologyUpdates)
 
 
+def process(data, idx_event):
+    """Process data received from a device.
+
+    Args:
+        data: Device data (dict)
+        idx_event: Event idx_event
+
+    Returns:
+        None
+
+    """
+    # Process the device
+    device(data, idx_event)
+    l1interface(data)
+    vlan(data)
+    mac(data, idx_event)
+    macip(data)
+    macport(data)
+
+
+
 def device(data, idx_event):
     """Update the Device DB table.
 
     Args:
-        data: Device data
+        data: Device data (dict)
         idx_event: Event idx_event
 
     Returns:
@@ -62,7 +83,7 @@ def l1interface(data):
     """Update the L1interface DB table.
 
     Args:
-        data: Device data
+        data: Device data (dict)
 
     Returns:
         None
@@ -178,7 +199,7 @@ def vlan(data):
     """Update the Vlan DB table.
 
     Args:
-        data: Device data
+        data: Device data (dict)
 
     Returns:
         None
@@ -239,7 +260,7 @@ def mac(data, idx_event):
     """Update the Mac DB table.
 
     Args:
-        data: Device data
+        data: Device data (dict)
         idx_event: Event idx_event
 
     Returns:
@@ -307,7 +328,7 @@ def macport(data):
     """Update the MacPort DB table.
 
     Args:
-        data: Device data
+        data: Device data (dict)
 
     Returns:
         None

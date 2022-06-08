@@ -174,12 +174,7 @@ def _poll_single_device(poll):
                 data = _device.process()
 
                 # Update the database tables with polled data
-                topology.device(data, idx_event)
-                topology.l1interface(data)
-                topology.vlan(data)
-                topology.mac(data, idx_event)
-                topology.macip(data)
-                topology.macport(data)
+                topology.process(data, idx_event)
 
 
 def _create_event():
