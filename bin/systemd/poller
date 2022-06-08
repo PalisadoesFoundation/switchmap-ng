@@ -10,6 +10,7 @@ import time
 import sys
 import os
 from multiprocessing import Pool
+from collections import namedtuple
 
 # Try to create a working PYTHONPATH
 _SYS_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -31,10 +32,16 @@ except:
     sys.exit(2)
 from switchmap import Config
 from switchmap.core import general
+from switchmap.db.table import event, IEvent
 from switchmap.poll.update import device, topology
 from switchmap.poll.snmp import poller
 from switchmap.core.agent import Agent, AgentCLI, AgentAPI
 from switchmap import AGENT_POLLER
+
+
+# We have to create this named tuple outside the multiprocessing Pool
+# for it to be pickled
+_Poll = namedtuple('_Poll', 'hostname idx_event')
 
 
 class PollingAgent(Agent):
@@ -121,6 +128,7 @@ def _poll_devices():
     """
     # Get configuration
     config = Config()
+    _event = _create_event()
 
     # Get the number of threads to use in the pool
     threads_in_pool = config.agent_threads()
@@ -129,7 +137,9 @@ def _poll_devices():
     hostnames = sorted(config.hostnames())
 
     for hostname in hostnames:
-        _poll_single_device(hostname)
+        _poll_single_device(
+            _Poll(hostname=hostname, idx_event=_event.idx_event)
+        )
 
     # # Create a pool of sub process resources
     # with Pool(processes=threads_in_pool) as pool:
@@ -138,16 +148,20 @@ def _poll_devices():
     #     pool.map(_poll_single_device, hostnames)
 
 
-def _poll_single_device(hostname):
+def _poll_single_device(poll):
     """Poll single device for data and create YAML files.
 
     Args:
-        None
+        poll: _Poll object
 
     Returns:
         None
 
     """
+    # Initialize key variables
+    hostname = poll.hostname
+    idx_event = poll.idx_event
+
     # Poll data for obviously valid hostnames (eg. "None" used in installation)
     if bool(hostname) is True:
         if isinstance(hostname, str) is True:
@@ -160,15 +174,42 @@ def _poll_single_device(hostname):
                 data = _device.process()
 
                 # Update the database tables with polled data
-                topology.device(data)
+                topology.device(data, idx_event)
                 topology.l1interface(data)
                 topology.vlan(data)
-                topology.mac(data)
+                topology.mac(data, idx_event)
 
                 # _device.save()
                 # Save the idle times
                 # idletimes = device.IdleTimes(hostname)
                 # idletimes.save()
+
+
+def _create_event():
+    """Get and event ID for the next polling cycle.
+
+    Args:
+        None
+
+    Returns:
+        result: Event ID that doesn't already exist
+
+    """
+    # Get configuration
+    while True:
+        _event = general.random_hash()
+        exists = event.exists(_event)
+        if bool(exists) is False:
+            break
+
+    # Return
+    row = IEvent(
+        event=_event,
+        enabled=1
+    )
+    event.insert_row(row)
+    result = event.exists(_event)
+    return result
 
 
 def main():

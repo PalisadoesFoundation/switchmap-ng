@@ -95,8 +95,8 @@ class L1InterfaceAttribute():
     ts_created = graphene.String(description='Row Creation Timestamp')
 
 
-class MacAttribute():
-    """Descriptive attributes of the Mac table.
+class MacIpAttribute():
+    """Descriptive attributes of the MacIp table.
 
     A generic class to mutualize description of attributes for both queries
     and mutations.

@@ -63,6 +63,44 @@ class Location(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow)
 
 
+class Oui(BASE):
+    """Database table definition."""
+
+    __tablename__ = 'smap_oui'
+    __table_args__ = (
+        {'mysql_engine': 'InnoDB'}
+    )
+
+    idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    oui = Column(VARBINARY(256), unique=True)
+    organization = Column(VARBINARY(256), nullable=True, default=Null)
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime, nullable=False,
+        default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow)
+
+
+class Event(BASE):
+    """Database table definition."""
+
+    __tablename__ = 'smap_event'
+    __table_args__ = (
+        {'mysql_engine': 'InnoDB'}
+    )
+
+    idx_event = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    event = Column(VARBINARY(256), unique=True)
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime, nullable=False,
+        default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow)
+
+
 class Device(BASE):
     """Database table definition."""
 
@@ -75,6 +113,9 @@ class Device(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_location = Column(
         ForeignKey('smap_location.idx_location'),
+        nullable=False, index=True, default=1, server_default=text('1'))
+    idx_event = Column(
+        ForeignKey('smap_event.idx_event'),
         nullable=False, index=True, default=1, server_default=text('1'))
     sys_name = Column(
         VARBINARY(256), nullable=True, default=Null)
@@ -98,6 +139,11 @@ class Device(BASE):
         Location,
         backref=backref(
             'device_to_location', uselist=True, cascade='delete,all'))
+
+    device_to_event = relationship(
+        Event,
+        backref=backref(
+            'device_to_event', uselist=True, cascade='delete,all'))
 
 
 class L1Interface(BASE):
@@ -176,72 +222,58 @@ class Vlan(BASE):
             'vlan_to_device', uselist=True, cascade='delete,all'))
 
 
-class Trunk(BASE):
-    """Database table definition."""
-
-    __tablename__ = 'smap_trunk'
-    __table_args__ = (
-        UniqueConstraint('idx_vlan', 'idx_l1interface'),
-        {'mysql_engine': 'InnoDB'}
-    )
-
-    idx_trunk = Column(
-        BIGINT(20, unsigned=True), primary_key=True, unique=True)
-    idx_l1interface = Column(
-        ForeignKey('smap_l1interface.idx_l1interface'),
-        nullable=False, index=True, default=1, server_default=text('1'))
-    idx_vlan = Column(
-        ForeignKey('smap_vlan.idx_vlan'),
-        nullable=False, index=True, default=1, server_default=text('1'))
-    enabled = Column(BIT(1), default=1)
-    ts_modified = Column(
-        DateTime, nullable=False,
-        default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
-    ts_created = Column(
-        DateTime, nullable=False, default=datetime.datetime.utcnow)
-
-    # Uses cascade='delete,all' to propagate the deletion of an entry
-    trunk_to_ifindex = relationship(
-        L1Interface,
-        backref=backref(
-            'trunk_to_l1interface', uselist=True, cascade='delete,all'))
-
-
-class Oui(BASE):
-    """Database table definition."""
-
-    __tablename__ = 'smap_oui'
-    __table_args__ = (
-        {'mysql_engine': 'InnoDB'}
-    )
-
-    idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
-    oui = Column(VARBINARY(256), unique=True)
-    organization = Column(VARBINARY(256), nullable=True, default=Null)
-    enabled = Column(BIT(1), default=1)
-    ts_modified = Column(
-        DateTime, nullable=False,
-        default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
-    ts_created = Column(
-        DateTime, nullable=False, default=datetime.datetime.utcnow)
-
-
 class Mac(BASE):
     """Database table definition."""
 
     __tablename__ = 'smap_mac'
     __table_args__ = (
-        UniqueConstraint('idx_device', 'ip_', 'mac'),
+        UniqueConstraint('mac'),
         {'mysql_engine': 'InnoDB'}
     )
 
     idx_mac = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_oui = Column(
+        ForeignKey('smap_oui.idx_oui'),
+        nullable=False, index=True, default=1, server_default=text('1'))
+    idx_event = Column(
+        ForeignKey('smap_event.idx_event'),
+        nullable=False, index=True, default=1, server_default=text('1'))
+    mac = Column(VARBINARY(256), nullable=True, default=Null)
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime, nullable=False,
+        default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow)
+
+    mac_to_oui = relationship(
+        Oui,
+        backref=backref(
+            'mac_to_oui', uselist=True, cascade='delete,all'))
+
+    mac_to_event = relationship(
+        Event,
+        backref=backref(
+            'mac_to_event', uselist=True, cascade='delete,all'))
+
+
+class MacIp(BASE):
+    """Database table definition."""
+
+    __tablename__ = 'smap_macip'
+    __table_args__ = (
+        UniqueConstraint('idx_device', 'ip_', 'mac'),
+        {'mysql_engine': 'InnoDB'}
+    )
+
+    idx_macip = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_device = Column(
         ForeignKey('smap_device.idx_device'),
         nullable=False, index=True, default=1, server_default=text('1'))
-    idx_oui = Column(
-        ForeignKey('smap_oui.idx_oui'),
+    idx_mac = Column(
+        ForeignKey('smap_mac.idx_mac'),
         nullable=False, index=True, default=1, server_default=text('1'))
     ip_ = Column(VARBINARY(256), nullable=True, default=Null)
     mac = Column(VARBINARY(256), nullable=True, default=Null)
@@ -255,15 +287,51 @@ class Mac(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
-    mac_to_device = relationship(
+    macip_to_device = relationship(
         Device,
         backref=backref(
-            'mac_to_device', uselist=True, cascade='delete,all'))
+            'macip_to_device', uselist=True, cascade='delete,all'))
 
-    mac_to_oui = relationship(
-        Oui,
+    macip_to_mac = relationship(
+        Mac,
         backref=backref(
-            'mac_to_oui', uselist=True, cascade='delete,all'))
+            'macip_to_mac', uselist=True, cascade='delete,all'))
+
+
+class MacPort(BASE):
+    """Database table definition."""
+
+    __tablename__ = 'smap_macport'
+    __table_args__ = (
+        UniqueConstraint('idx_l1interface', 'idx_mac'),
+        {'mysql_engine': 'InnoDB'}
+    )
+
+    idx_macport = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_l1interface = Column(
+        ForeignKey('smap_l1interface.idx_l1interface'),
+        nullable=False, index=True, default=1, server_default=text('1'))
+    idx_mac = Column(
+        ForeignKey('smap_mac.idx_mac'),
+        nullable=False, index=True, default=1, server_default=text('1'))
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime, nullable=False,
+        default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow)
+
+    # Uses cascade='delete,all' to propagate the deletion of an entry
+    macport_to_l1interface = relationship(
+        L1Interface,
+        backref=backref(
+            'macport_to_l1interface', uselist=True, cascade='delete,all'))
+
+    macport_to_mac = relationship(
+        Mac,
+        backref=backref(
+            'macport_to_mac', uselist=True, cascade='delete,all'))
 
 
 def create_all_tables():

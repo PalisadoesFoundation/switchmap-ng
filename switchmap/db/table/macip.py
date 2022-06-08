@@ -1,18 +1,18 @@
-"""Module for querying the Mac table."""
+"""Module for querying the MacIp table."""
 
 from sqlalchemy import select, update, and_, null
 
 # Import project libraries
 from switchmap.db import db
-from switchmap.db.models import Mac
-from switchmap.db.table import RMac
+from switchmap.db.models import MacIp
+from switchmap.db.table import RMacIp
 
 
 def idx_exists(idx):
     """Determine whether primary key exists.
 
     Args:
-        idx: idx_mac
+        idx: idx_macip
 
     Returns:
         result: True if exists
@@ -24,7 +24,7 @@ def idx_exists(idx):
 
     # Get data
     statement = select(
-        Mac.idx_mac).where(Mac.idx_mac == idx)
+        MacIp.idx_macip).where(MacIp.idx_macip == idx)
     rows = db.db_select(1225, statement)
 
     # Return
@@ -34,14 +34,16 @@ def idx_exists(idx):
     return bool(result)
 
 
-def exists(mac):
-    """Determine whether idx_event exists in the Mac table.
+def exists(idx_device, ip_, mac_):
+    """Determine whether hostname exists in the MacIp table.
 
     Args:
-        mac: Mac address
+        idx_device: Device.idx_device
+        ip_: IP address
+        mac: MacIp address
 
     Returns:
-        result: RMac tuple
+        result: RMacIp tuple
 
     """
     # Initialize key variables
@@ -49,7 +51,13 @@ def exists(mac):
     rows = []
 
     # Get row from dataase
-    statement = select(Mac).where(Mac.mac == mac.encode())
+    statement = select(MacIp).where(
+        and_(
+            MacIp.ip_ == ip_.encode(),
+            MacIp.mac == mac_.encode(),
+            MacIp.idx_device == idx_device
+        )
+    )
     rows = db.db_select_row(1226, statement)
 
     # Return
@@ -60,10 +68,10 @@ def exists(mac):
 
 
 def insert_row(rows):
-    """Create a Mac table entry.
+    """Create a MacIp table entry.
 
     Args:
-        rows: IMac objects
+        rows: IMacIp objects
 
     Returns:
         None
@@ -79,10 +87,15 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            Mac(
+            MacIp(
+                idx_device=row.idx_device,
                 idx_oui=row.idx_oui,
-                idx_event=row.idx_event,
+                ip_=row.ip_.encode(),
                 mac=row.mac.encode(),
+                hostname=(
+                    null() if bool(row.hostname) is False else
+                    row.hostname.encode()),
+                type=row.type,
                 enabled=row.enabled
             )
         )
@@ -93,23 +106,28 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a Mac table entry.
+    """Upadate a MacIp table entry.
 
     Args:
-        idx: idx_mac value
-        row: IMac object
+        idx: idx_macip value
+        row: IMacIp object
 
     Returns:
         None
 
     """
     # Update
-    statement = update(Mac).where(
-        Mac.idx_mac == idx).values(
+    statement = update(MacIp).where(
+        MacIp.idx_macip == idx).values(
             {
+                'idx_device': row.idx_device,
                 'idx_oui': row.idx_oui,
-                'idx_event': row.idx_event,
+                'ip_': row.ip_.encode(),
                 'mac': row.mac.encode(),
+                'type': row.type,
+                'hostname': (
+                    null() if bool(row.hostname) is False else
+                    row.hostname.encode()),
                 'enabled': row.enabled
             }
         )
@@ -120,18 +138,21 @@ def _row(row):
     """Convert table row to tuple.
 
     Args:
-        row: Mac row
+        row: MacIp row
 
     Returns:
-        result: RMac tuple
+        result: RMacIp tuple
 
     """
     # Initialize key variables
-    result = RMac(
-        idx_mac=row.idx_mac,
+    result = RMacIp(
+        idx_macip=row.idx_macip,
+        idx_device=row.idx_device,
         idx_oui=row.idx_oui,
-        idx_event=row.idx_event,
+        ip_=row.ip_.decode(),
         mac=row.mac.decode(),
+        hostname=row.hostname.decode(),
+        type=row.type,
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified

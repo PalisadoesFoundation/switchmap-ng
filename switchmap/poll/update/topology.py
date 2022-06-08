@@ -6,16 +6,18 @@ from switchmap.core import log
 from switchmap.db.table import device as _device
 from switchmap.db.table import l1interface as _l1interface
 from switchmap.db.table import vlan as _vlan
+from switchmap.db.table import macip as _macip
 from switchmap.db.table import mac as _mac
 from switchmap.db.table import oui as _oui
-from switchmap.db.table import (IDevice, IL1Interface, IVlan, IMac, IOui)
+from switchmap.db.table import (IDevice, IL1Interface, IVlan, IMacIp, IMac)
 
 
-def device(data):
+def device(data, idx_event):
     """Update the device DB table.
 
     Args:
         data: Device data
+        idx_event: Event idx_event
 
     Returns:
         None
@@ -26,6 +28,7 @@ def device(data):
     hostname = data['misc']['host']
     row = IDevice(
         idx_location=1,
+        idx_event=idx_event,
         hostname=hostname,
         sys_name=data['system']['SNMPv2-MIB']['sysName'][0],
         sys_description=data['system']['SNMPv2-MIB']['sysDescr'][0],
@@ -230,11 +233,79 @@ def vlan(data):
     log.log2debug(1029, log_message)
 
 
-def mac(data):
+def mac(data, idx_event):
     """Update the mac DB table.
 
     Args:
         data: Mac data
+        idx_event: Event idx_event
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    exists = False
+    hostname = data['misc']['host']
+    interfaces = data['layer1']
+    all_macs = []
+    unique_macs = []
+    unique_ouis = []
+    lookup = {}
+
+    # Log
+    log_message = (
+        'Updating Mac table for host {}'.format(hostname))
+    log.log2debug(1028, log_message)
+
+    # Get device data
+    device_ = _device.exists(hostname)
+
+    if bool(device_) is True:
+        # Process each interface
+        for ifindex, interface in interfaces.items():
+            exists = _l1interface.exists(device_.idx_device, ifindex)
+
+            # Process each Mac
+            if bool(exists) is True:
+                these_macs = interface.get('jm_macs')
+                if bool(these_macs) is True:
+                    all_macs.extend(these_macs)
+
+    # Get macs and ouis
+    unique_macs = list(set(_.lower() for _ in all_macs))
+    unique_ouis = list(set([_[:6].lower() for _ in unique_macs]))
+
+    # Process ouis
+    for item in unique_ouis:
+        exists = _oui.exists(item)
+        lookup[item] = exists.idx_oui if bool(exists) is True else 1
+
+    # Process macs
+    for item in unique_macs:
+        exists = _mac.exists(item)
+        row = IMac(
+            idx_oui=lookup.get(item[:6], 1),
+            idx_event=idx_event,
+            mac=item,
+            enabled=1
+        )
+        if bool(exists) is False:
+            _mac.insert_row(row)
+        else:
+            _mac.update_row(exists.idx_mac, row)
+
+    # Log
+    log_message = (
+        'Updated Mac table for host {}'.format(hostname))
+    log.log2debug(1029, log_message)
+
+
+def macip(data):
+    """Update the mac DB table.
+
+    Args:
+        data: MacIp data
 
     Returns:
         None
@@ -249,13 +320,13 @@ def mac(data):
 
     # Log
     log_message = (
-        'Updating Mac table for host {}'.format(hostname))
+        'Updating MacIp table for host {}'.format(hostname))
     log.log2debug(1028, log_message)
 
     # Get device data
     device_ = _device.exists(hostname)
 
-    # Get Mac data
+    # Get MacIp data
     layer3 = data.get('layer3')
     if bool(layer3) is True and bool(device_) is True:
         ipv4 = layer3.get('ipNetToMediaTable')
@@ -263,36 +334,36 @@ def mac(data):
 
         # Process IPv4 data
         if bool(ipv4) is True:
-            result = _process_mac(ipv4, device_, version=4)
+            result = _process_macip(ipv4, device_, version=4)
             adds.extend(result.adds)
             updates.extend(result.updates)
 
         # Process IPv6 data
         if bool(ipv6) is True:
-            result = _process_mac(ipv6, device_, version=6)
+            result = _process_macip(ipv6, device_, version=6)
             adds.extend(result.adds)
             updates.extend(result.updates)
 
     # Do the Updates
     for item in updates:
-        _mac.update_row(
-            item.idx_mac,
+        _macip.update_row(
+            item.idx_macip,
             item.row
         )
     for item in adds:
-        _mac.insert_row(item)
+        _macip.insert_row(item)
 
     # Log
     log_message = (
-        'Updated Mac table for host {}'.format(hostname))
+        'Updated MacIp table for host {}'.format(hostname))
     log.log2debug(1029, log_message)
 
 
-def _process_mac(table, device_, version=4):
+def _process_macip(table, device_, version=4):
     """Update the mac DB table.
 
     Args:
-        table: List of Mac address dicts
+        table: List of MacIp address dicts
         device_: RDevice object
         version: IPvX version
 
@@ -303,26 +374,26 @@ def _process_mac(table, device_, version=4):
     # Initialize key variables
     adds = []
     updates = []
-    Updates = namedtuple('Updates', 'idx_mac row')
+    Updates = namedtuple('Updates', 'idx_macip row')
     Result = namedtuple('Result', 'updates adds')
 
     # Process data
-    for next_ip_addr, next_mac_addr in table.items():
-        next_oui = next_mac_addr[:6]
+    for next_ip_addr, next_macip_addr in table.items():
+        next_oui = next_macip_addr[:6]
         oui_exists = _oui.exists(next_oui)
-        mac_exists = _mac.exists(
-            device_.idx_device, next_ip_addr, next_mac_addr)
-        row = IMac(
+        mac_exists = _macip.exists(
+            device_.idx_device, next_ip_addr, next_macip_addr)
+        row = IMacIp(
             idx_device=device_.idx_device,
             idx_oui=oui_exists.idx_oui if bool(oui_exists) else 1,
             ip_=next_ip_addr,
-            mac=next_mac_addr,
+            mac=next_macip_addr,
             hostname=None,
             type=version,
             enabled=1
         )
         if bool(mac_exists) is True:
-            updates.append(Updates(idx_mac=mac_exists.idx_mac, row=row))
+            updates.append(Updates(idx_macip=mac_exists.idx_macip, row=row))
         else:
             adds.append(row)
 

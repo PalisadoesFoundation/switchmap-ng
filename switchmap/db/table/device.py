@@ -80,6 +80,7 @@ def insert_row(rows):
         inserts.append(
             Device(
                 idx_location=row.idx_location,
+                idx_event=row.idx_event,
                 sys_name=(
                     null() if row.sys_name is None else row.sys_name.encode()),
                 hostname=(
@@ -119,6 +120,7 @@ def update_row(idx, row):
         Device.idx_device == idx).values(
             {
                 'idx_location': row.idx_location,
+                'idx_event': row.idx_event,
                 'sys_name': (
                     null() if bool(row.sys_name) is False else
                     row.sys_name.encode()),
@@ -157,6 +159,7 @@ def _row(row):
     result = RDevice(
         idx_device=row.idx_device,
         idx_location=row.idx_location,
+        idx_event=row.idx_event,
         sys_name=(
             None if bool(row.sys_name) is False else row.sys_name.decode()),
         hostname=(

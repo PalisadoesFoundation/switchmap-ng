@@ -18,11 +18,11 @@ postal_code phone notes enabled''')
 
 RDevice = namedtuple(
     'RDevice',
-    '''idx_device idx_location sys_name hostname sys_description \
+    '''idx_device idx_location idx_event sys_name hostname sys_description \
 sys_objectid sys_uptime last_polled enabled ts_modified ts_created''')
 IDevice = namedtuple(
     'IDevice',
-    '''idx_location sys_name hostname sys_description sys_objectid \
+    '''idx_location idx_event sys_name hostname sys_description sys_objectid \
 sys_uptime last_polled enabled''')
 
 RL1Interface = namedtuple(
@@ -50,9 +50,21 @@ RTrunk = namedtuple(
 ITrunk = namedtuple(
     'ITrunk', 'idx_l1interface idx_vlan enabled')
 
+RMacIp = namedtuple(
+    'RMacIp',
+    '''idx_macip idx_device idx_oui ip_ mac hostname type enabled \
+ts_modified ts_created''')
+IMacIp = namedtuple(
+    'IMacIp', 'idx_device idx_oui ip_ mac hostname type enabled')
+
 RMac = namedtuple(
     'RMac',
-    '''idx_mac idx_device idx_oui ip_ mac hostname type enabled \
+    '''idx_mac idx_oui mac idx_event enabled \
 ts_modified ts_created''')
 IMac = namedtuple(
-    'IMac', 'idx_device idx_oui ip_ mac hostname type enabled')
+    'IMac', 'idx_oui mac idx_event enabled')
+
+REvent = namedtuple(
+    'REvent', 'idx_event event enabled ts_modified ts_created')
+IEvent = namedtuple(
+    'IEvent', 'event enabled')

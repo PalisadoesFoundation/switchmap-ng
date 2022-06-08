@@ -3,6 +3,7 @@
 import sys
 import getpass
 import os
+import random
 
 # Application libraries
 from switchmap.core import log
@@ -94,3 +95,18 @@ def octetstr_2_string(bytes_string):
     result = ''.join(
         ['%0.2x' % ord(_) for _ in octet_string])
     return result.lower()
+
+
+def random_hash():
+    """Create a random Hex hash.
+
+    Args:
+        None
+
+    Returns:
+        result: Hex hash
+
+    """
+    # create result and return
+    result = '{:032X}'.format(random.getrandbits(128))
+    return result

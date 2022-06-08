@@ -1,18 +1,18 @@
-"""Module for querying the Mac table."""
+"""Module for querying the Event table."""
 
-from sqlalchemy import select, update, and_, null
+from sqlalchemy import select, update
 
 # Import project libraries
 from switchmap.db import db
-from switchmap.db.models import Mac
-from switchmap.db.table import RMac
+from switchmap.db.models import Event
+from switchmap.db.table import REvent
 
 
 def idx_exists(idx):
     """Determine whether primary key exists.
 
     Args:
-        idx: idx_mac
+        idx: idx_event
 
     Returns:
         result: True if exists
@@ -23,8 +23,7 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(
-        Mac.idx_mac).where(Mac.idx_mac == idx)
+    statement = select(Event.idx_event).where(Event.idx_event == idx)
     rows = db.db_select(1225, statement)
 
     # Return
@@ -34,22 +33,22 @@ def idx_exists(idx):
     return bool(result)
 
 
-def exists(mac):
-    """Determine whether idx_event exists in the Mac table.
+def exists(event):
+    """Determine whether event exists in the Event table.
 
     Args:
-        mac: Mac address
+        event: Event
 
     Returns:
-        result: RMac tuple
+        result: REvent tuple
 
     """
     # Initialize key variables
     result = False
     rows = []
 
-    # Get row from dataase
-    statement = select(Mac).where(Mac.mac == mac.encode())
+    # Get event from database
+    statement = select(Event).where(Event.event == event.encode())
     rows = db.db_select_row(1226, statement)
 
     # Return
@@ -60,10 +59,10 @@ def exists(mac):
 
 
 def insert_row(rows):
-    """Create a Mac table entry.
+    """Create a Event table entry.
 
     Args:
-        rows: IMac objects
+        rows: IEvent objects
 
     Returns:
         None
@@ -79,10 +78,8 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            Mac(
-                idx_oui=row.idx_oui,
-                idx_event=row.idx_event,
-                mac=row.mac.encode(),
+            Event(
+                event=row.event.encode(),
                 enabled=row.enabled
             )
         )
@@ -93,24 +90,22 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a Mac table entry.
+    """Upadate a Event table entry.
 
     Args:
-        idx: idx_mac value
-        row: IMac object
+        idx: idx_event value
+        row: IEvent object
 
     Returns:
         None
 
     """
     # Update
-    statement = update(Mac).where(
-        Mac.idx_mac == idx).values(
+    statement = update(Event).where(
+        Event.idx_event == idx).values(
             {
-                'idx_oui': row.idx_oui,
-                'idx_event': row.idx_event,
-                'mac': row.mac.encode(),
-                'enabled': row.enabled
+                'event': row.event.encode(),
+                'enabled': row.enabled,
             }
         )
     db.db_update(1126, statement)
@@ -120,18 +115,16 @@ def _row(row):
     """Convert table row to tuple.
 
     Args:
-        row: Mac row
+        row: Event row
 
     Returns:
-        result: RMac tuple
+        result: REvent tuple
 
     """
     # Initialize key variables
-    result = RMac(
-        idx_mac=row.idx_mac,
-        idx_oui=row.idx_oui,
+    result = REvent(
         idx_event=row.idx_event,
-        mac=row.mac.decode(),
+        event=row.event.decode(),
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified

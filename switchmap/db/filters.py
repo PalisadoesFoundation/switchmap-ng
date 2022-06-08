@@ -16,7 +16,7 @@ from switchmap.db.models import (
     Device as DeviceModel,
     L1Interface as L1InterfaceModel,
     Location as LocationModel,
-    Mac as MacModel,
+    MacIp as MacIpModel,
     Oui as OuiModel,
     Trunk as TrunkModel,
     Vlan as VlanModel,
@@ -115,13 +115,13 @@ class L1InterfaceFilter(FilterSet):
         }
 
 
-class MacFilter(FilterSet):
-    """Mac custom filter."""
+class MacIpFilter(FilterSet):
+    """MacIp custom filter."""
 
     class Meta:
         """Define the metadata."""
 
-        model = MacModel
+        model = MacIpModel
         fields = {
             'idx': _NUMERIC,
             'idx_device': _NUMERIC,

@@ -21,7 +21,7 @@ from switchmap.db.models import (
     Device as DeviceModel,
     L1Interface as L1InterfaceModel,
     Location as LocationModel,
-    Mac as MacModel,
+    MacIp as MacIpModel,
     Oui as OuiModel,
     Trunk as TrunkModel,
     Vlan as VlanModel,
@@ -32,7 +32,7 @@ from switchmap.db.filters import (
     DeviceFilter,
     LocationFilter,
     L1InterfaceFilter,
-    MacFilter,
+    MacIpFilter,
     OuiFilter,
     TrunkFilter,
     VlanFilter,
@@ -43,7 +43,7 @@ from switchmap.db.attributes import (
     DeviceAttribute,
     LocationAttribute,
     L1InterfaceAttribute,
-    MacAttribute,
+    MacIpAttribute,
     OuiAttribute,
     TrunkAttribute,
     VlanAttribute,
@@ -84,13 +84,13 @@ class Location(SQLAlchemyObjectType, LocationAttribute):
         interfaces = (graphene.relay.Node,)
 
 
-class Mac(SQLAlchemyObjectType, MacAttribute):
-    """Mac node."""
+class MacIp(SQLAlchemyObjectType, MacIpAttribute):
+    """MacIp node."""
 
     class Meta:
         """Define the metadata."""
 
-        model = MacModel
+        model = MacIpModel
         interfaces = (graphene.relay.Node,)
 
 
@@ -145,9 +145,9 @@ class Query(graphene.ObjectType):
         connection=Location, sort=None, filters=LocationFilter())
 
     # Results as a single entry filtered by 'id' and as a list
-    mac = graphene.relay.Node.Field(Mac)
+    mac = graphene.relay.Node.Field(MacIp)
     all_mac = FilterableConnectionField(
-        connection=Mac, sort=None, filters=MacFilter())
+        connection=MacIp, sort=None, filters=MacIpFilter())
 
     # Results as a single entry filtered by 'id' and as a list
     oui = graphene.relay.Node.Field(Oui)
