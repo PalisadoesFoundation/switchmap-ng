@@ -178,6 +178,7 @@ def _poll_single_device(poll):
                 topology.l1interface(data)
                 topology.vlan(data)
                 topology.mac(data, idx_event)
+                topology.macip(data)
 
                 # _device.save()
                 # Save the idle times

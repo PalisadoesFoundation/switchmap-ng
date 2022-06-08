@@ -52,10 +52,10 @@ ITrunk = namedtuple(
 
 RMacIp = namedtuple(
     'RMacIp',
-    '''idx_macip idx_device idx_oui ip_ mac hostname type enabled \
+    '''idx_macip idx_device idx_mac ip_ hostname type enabled \
 ts_modified ts_created''')
 IMacIp = namedtuple(
-    'IMacIp', 'idx_device idx_oui ip_ mac hostname type enabled')
+    'IMacIp', 'idx_device idx_mac ip_ hostname type enabled')
 
 RMac = namedtuple(
     'RMac',
@@ -68,3 +68,8 @@ REvent = namedtuple(
     'REvent', 'idx_event event enabled ts_modified ts_created')
 IEvent = namedtuple(
     'IEvent', 'event enabled')
+
+ProcessMacIP = namedtuple('ProcessMacIP', 'table device version')
+
+TopologyUpdates = namedtuple('Updates', 'idx_macip row')
+TopologyResult = namedtuple('Result', 'updates adds')

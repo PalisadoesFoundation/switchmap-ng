@@ -34,13 +34,13 @@ def idx_exists(idx):
     return bool(result)
 
 
-def exists(idx_device, ip_, mac_):
+def exists(idx_device, idx_mac, ip_):
     """Determine whether hostname exists in the MacIp table.
 
     Args:
         idx_device: Device.idx_device
+        idx_mac: Mac.idx_mac
         ip_: IP address
-        mac: MacIp address
 
     Returns:
         result: RMacIp tuple
@@ -54,7 +54,7 @@ def exists(idx_device, ip_, mac_):
     statement = select(MacIp).where(
         and_(
             MacIp.ip_ == ip_.encode(),
-            MacIp.mac == mac_.encode(),
+            MacIp.idx_mac == idx_mac,
             MacIp.idx_device == idx_device
         )
     )
@@ -89,9 +89,8 @@ def insert_row(rows):
         inserts.append(
             MacIp(
                 idx_device=row.idx_device,
-                idx_oui=row.idx_oui,
+                idx_mac=row.idx_mac,
                 ip_=row.ip_.encode(),
-                mac=row.mac.encode(),
                 hostname=(
                     null() if bool(row.hostname) is False else
                     row.hostname.encode()),
@@ -121,9 +120,8 @@ def update_row(idx, row):
         MacIp.idx_macip == idx).values(
             {
                 'idx_device': row.idx_device,
-                'idx_oui': row.idx_oui,
+                'idx_mac': row.idx_mac,
                 'ip_': row.ip_.encode(),
-                'mac': row.mac.encode(),
                 'type': row.type,
                 'hostname': (
                     null() if bool(row.hostname) is False else
@@ -148,9 +146,8 @@ def _row(row):
     result = RMacIp(
         idx_macip=row.idx_macip,
         idx_device=row.idx_device,
-        idx_oui=row.idx_oui,
+        idx_mac=row.idx_mac,
         ip_=row.ip_.decode(),
-        mac=row.mac.decode(),
         hostname=row.hostname.decode(),
         type=row.type,
         enabled=row.enabled,

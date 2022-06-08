@@ -9,7 +9,9 @@ from switchmap.db.table import vlan as _vlan
 from switchmap.db.table import macip as _macip
 from switchmap.db.table import mac as _mac
 from switchmap.db.table import oui as _oui
-from switchmap.db.table import (IDevice, IL1Interface, IVlan, IMacIp, IMac)
+from switchmap.db.table import (
+    IDevice, IL1Interface, IVlan, IMacIp, IMac, ProcessMacIP,
+    TopologyResult, TopologyUpdates)
 
 
 def device(data, idx_event):
@@ -334,13 +336,17 @@ def macip(data):
 
         # Process IPv4 data
         if bool(ipv4) is True:
-            result = _process_macip(ipv4, device_, version=4)
+            result = _process_macip(
+                ProcessMacIP(table=ipv4, device=device_, version=4)
+            )
             adds.extend(result.adds)
             updates.extend(result.updates)
 
         # Process IPv6 data
         if bool(ipv6) is True:
-            result = _process_macip(ipv6, device_, version=6)
+            result = _process_macip(
+                ProcessMacIP(table=ipv6, device=device_, version=6)
+            )
             adds.extend(result.adds)
             updates.extend(result.updates)
 
@@ -359,13 +365,11 @@ def macip(data):
     log.log2debug(1029, log_message)
 
 
-def _process_macip(table, device_, version=4):
+def _process_macip(info):
     """Update the mac DB table.
 
     Args:
-        table: List of MacIp address dicts
-        device_: RDevice object
-        version: IPvX version
+        info: ProcessMacIP object
 
     Returns:
         result
@@ -374,29 +378,33 @@ def _process_macip(table, device_, version=4):
     # Initialize key variables
     adds = []
     updates = []
-    Updates = namedtuple('Updates', 'idx_macip row')
-    Result = namedtuple('Result', 'updates adds')
 
     # Process data
-    for next_ip_addr, next_macip_addr in table.items():
-        next_oui = next_macip_addr[:6]
-        oui_exists = _oui.exists(next_oui)
-        mac_exists = _macip.exists(
-            device_.idx_device, next_ip_addr, next_macip_addr)
-        row = IMacIp(
-            idx_device=device_.idx_device,
-            idx_oui=oui_exists.idx_oui if bool(oui_exists) else 1,
-            ip_=next_ip_addr,
-            mac=next_macip_addr,
-            hostname=None,
-            type=version,
-            enabled=1
-        )
+    for next_ip_addr, next_mac_addr in info.table.items():
+        # Create lower case versions of these important variables
+        next_ip_addr = next_ip_addr.lower()
+        next_mac_addr = next_mac_addr.lower()
+
+        # Update the database
+        mac_exists = _mac.exists(next_mac_addr)
         if bool(mac_exists) is True:
-            updates.append(Updates(idx_macip=mac_exists.idx_macip, row=row))
-        else:
-            adds.append(row)
+            macip_exists = _macip.exists(
+                info.device.idx_device, mac_exists.idx_mac, next_ip_addr)
+            row = IMacIp(
+                idx_device=info.device.idx_device,
+                idx_mac=mac_exists.idx_mac,
+                ip_=next_ip_addr,
+                hostname=None,
+                type=info.version,
+                enabled=1
+            )
+            if bool(macip_exists) is True:
+                updates.append(
+                    TopologyUpdates(
+                        idx_macip=macip_exists.idx_macip, row=row))
+            else:
+                adds.append(row)
 
     # Return
-    result = Result(adds=adds, updates=updates)
+    result = TopologyResult(adds=adds, updates=updates)
     return result
