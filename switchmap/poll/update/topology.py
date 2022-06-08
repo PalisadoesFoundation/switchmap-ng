@@ -1,21 +1,21 @@
 """Module for updating the database with topology data."""
 
 import time
-from collections import namedtuple
 from switchmap.core import log
 from switchmap.db.table import device as _device
 from switchmap.db.table import l1interface as _l1interface
 from switchmap.db.table import vlan as _vlan
 from switchmap.db.table import macip as _macip
+from switchmap.db.table import macport as _macport
 from switchmap.db.table import mac as _mac
 from switchmap.db.table import oui as _oui
 from switchmap.db.table import (
-    IDevice, IL1Interface, IVlan, IMacIp, IMac, ProcessMacIP,
+    IDevice, IL1Interface, IVlan, IMacIp, IMac, IMacPort, ProcessMacIP,
     TopologyResult, TopologyUpdates)
 
 
 def device(data, idx_event):
-    """Update the device DB table.
+    """Update the Device DB table.
 
     Args:
         data: Device data
@@ -59,10 +59,10 @@ def device(data, idx_event):
 
 
 def l1interface(data):
-    """Update the l1interface DB table.
+    """Update the L1interface DB table.
 
     Args:
-        data: L1Interface data
+        data: Device data
 
     Returns:
         None
@@ -175,10 +175,10 @@ def l1interface(data):
 
 
 def vlan(data):
-    """Update the vlan DB table.
+    """Update the Vlan DB table.
 
     Args:
-        data: Vlan data
+        data: Device data
 
     Returns:
         None
@@ -236,10 +236,10 @@ def vlan(data):
 
 
 def mac(data, idx_event):
-    """Update the mac DB table.
+    """Update the Mac DB table.
 
     Args:
-        data: Mac data
+        data: Device data
         idx_event: Event idx_event
 
     Returns:
@@ -303,8 +303,63 @@ def mac(data, idx_event):
     log.log2debug(1029, log_message)
 
 
+def macport(data):
+    """Update the MacPort DB table.
+
+    Args:
+        data: Device data
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    hostname = data['misc']['host']
+    interfaces = data['layer1']
+
+    # Log
+    log_message = (
+        'Updating MacPort table for host {}'.format(hostname))
+    log.log2debug(1028, log_message)
+
+    # Get device data
+    device_ = _device.exists(hostname)
+
+    if bool(device_) is True:
+        # Process each interface
+        for ifindex, interface in interfaces.items():
+            l1_exists = _l1interface.exists(device_.idx_device, ifindex)
+
+            # Process each Mac
+            if bool(l1_exists) is True:
+                _macs = interface.get('jm_macs')
+                if bool(_macs) is True:
+                    for item in _macs:
+                        # Ensure the Mac exists in the database
+                        mac_exists = _mac.exists(item)
+                        if bool(mac_exists) is True:
+                            row = IMacPort(
+                                idx_l1interface=l1_exists.idx_l1interface,
+                                idx_mac=mac_exists.idx_mac,
+                                enabled=1,
+                            )
+                            # Update the MacPort database table
+                            macport_exists = _macport.exists(
+                                l1_exists.idx_l1interface, mac_exists.idx_mac)
+                            if bool(macport_exists) is True:
+                                _macport.update_row(
+                                    macport_exists.idx_macport, row)
+                            else:
+                                _macport.insert_row(row)
+
+    # Log
+    log_message = (
+        'Updated MacPort table for host {}'.format(hostname))
+    log.log2debug(1029, log_message)
+
+
 def macip(data):
-    """Update the mac DB table.
+    """Update the MacIp DB table.
 
     Args:
         data: MacIp data

@@ -69,6 +69,13 @@ REvent = namedtuple(
 IEvent = namedtuple(
     'IEvent', 'event enabled')
 
+RMacPort = namedtuple(
+    'RMacPort',
+    '''idx_macport idx_l1interface idx_mac enabled \
+ts_modified ts_created''')
+IMacPort = namedtuple(
+    'IMacPort', 'idx_l1interface idx_mac enabled')
+
 ProcessMacIP = namedtuple('ProcessMacIP', 'table device version')
 
 TopologyUpdates = namedtuple('Updates', 'idx_macip row')
