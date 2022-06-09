@@ -1,6 +1,8 @@
 """Module for updating the database with topology data."""
 
 import time
+import ipaddress
+
 from switchmap.core import log
 from switchmap.db.table import device as _device
 from switchmap.db.table import l1interface as _l1interface
@@ -457,7 +459,11 @@ def _process_macip(info):
 
     # Process data
     for next_ip_addr, next_mac_addr in info.table.items():
-        # Create lower case versions of these important variables
+        # Create lower case versions of these important variables.
+        # Expand IPv6 address.
+        next_ip_addr = (
+            next_ip_addr if info.version == 4 else
+            ipaddress.ip_address(next_ip_addr).exploded)
         next_ip_addr = next_ip_addr.lower()
         next_mac_addr = next_mac_addr.lower()
 
