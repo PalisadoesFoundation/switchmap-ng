@@ -54,7 +54,7 @@ class Daemon():
         except:
             log_message = '''Cannot access daemon log file {}. Please check \
 file and directory permissions.'''.format(daemon_log_file)
-            log.log2die(1054, log_message)
+            log.log2die(1162, log_message)
 
         # Create a parent process that will manage the child
         # when the code using this class is done.
@@ -83,7 +83,7 @@ file and directory permissions.'''.format(daemon_log_file)
         except OSError as err:
             log_message = 'Daemon fork #2 failed: {}'.format(err)
             log_message = '{} - PID file: {}'.format(log_message, self.pidfile)
-            log.log2die(1072, log_message)
+            log.log2die(1169, log_message)
 
         # Redirect standard file descriptors, but first make sure that the
         sys.stdout.flush()
@@ -118,7 +118,7 @@ file and directory permissions.'''.format(daemon_log_file)
             except:
                 log_message = (
                     'PID file {} already deleted'.format(self.pidfile))
-                log.log2warning(1041, log_message)
+                log.log2warning(1152, log_message)
 
     def dellock(self):
         """Delete the lock file.
@@ -153,7 +153,7 @@ file and directory permissions.'''.format(daemon_log_file)
             log_message = (
                 'PID file: {} already exists. Daemon already running?'
                 ''.format(self.pidfile))
-            log.log2die(1073, log_message)
+            log.log2die(1170, log_message)
 
         # Start the daemon
         self._daemonize()
@@ -162,7 +162,7 @@ file and directory permissions.'''.format(daemon_log_file)
         log_message = (
             'Daemon {} started - PID file: {}'
             ''.format(self.name, self.pidfile))
-        log.log2info(1070, log_message)
+        log.log2info(1167, log_message)
 
         # Run code for daemon
         self.run()
@@ -197,7 +197,7 @@ file and directory permissions.'''.format(daemon_log_file)
             log_message = (
                 'PID file: {} does not exist. Daemon not running?'
                 ''.format(self.pidfile))
-            log.log2warning(1063, log_message)
+            log.log2warning(1163, log_message)
             # Not an error in a restart
             return
 
@@ -213,12 +213,12 @@ file and directory permissions.'''.format(daemon_log_file)
                 log_message = (str(err.args))
                 log_message = (
                     '{} - PID file: {}'.format(log_message, self.pidfile))
-                log.log2die(1068, log_message)
+                log.log2die(1166, log_message)
         except:
             log_message = (
                 'Unknown daemon "stopped" error for PID file: {}'
                 ''.format(self.pidfile))
-            log.log2die(1066, log_message)
+            log.log2die(1165, log_message)
 
         # Log success
         self.delpid()
@@ -226,7 +226,7 @@ file and directory permissions.'''.format(daemon_log_file)
         log_message = (
             'Daemon {} stopped - PID file: {}'
             ''.format(self.name, self.pidfile))
-        log.log2info(1071, log_message)
+        log.log2info(1168, log_message)
 
     def restart(self):
         """Restart the daemon.

@@ -763,7 +763,7 @@ def _pip3_install(module):
         # Fail if module cannot be installed
         if bool(response_install['returncode']) is True:
             log_message = ('python pip3 cannot install "{}".'.format(module))
-            log.log2die_safe(1100, log_message)
+            log.log2die_safe(1119, log_message)
         else:
             log_message = (
                 'Python module "{}" is installed.'.format(module))

@@ -130,7 +130,7 @@ class LogThread(threading.Thread):
             self._real_run()
         except:
             # logging.exception('Exception during LogThread.run')
-            log2warning(1101, ('{}\n{}\n{}\n{}'.format(
+            log2warning(1116, ('{}\n{}\n{}\n{}'.format(
                 sys.exc_info()[0],
                 sys.exc_info()[1],
                 sys.exc_info()[2],

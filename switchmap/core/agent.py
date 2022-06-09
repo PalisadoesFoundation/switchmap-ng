@@ -337,14 +337,14 @@ class AgentAPI(Agent):
 Lock file {} exists. Multiple API daemons running API may have died \
 catastrophically in the past, in which case the lockfile should be deleted.\
 '''.format(self.lockfile_parent))
-            log.log2see(1083, log_message)
+            log.log2see(1142, log_message)
 
         if os.path.exists(self.pidfile_parent) is True:
             log_message = ('''\
 PID file: {} already exists. Daemon already running? If not, it may have died \
 catastrophically in the past in which case you should use --stop --force to \
 fix.'''.format(self.pidfile_parent))
-            log.log2see(1084, log_message)
+            log.log2see(1123, log_message)
 
         ######################################################################
         #
@@ -375,7 +375,7 @@ fix.'''.format(self.pidfile_parent))
                 self._agent_api_variable.ip_listen_address,
                 self._agent_api_variable.ip_bind_port,
                 self.config.log_file_api()))
-        log.log2info(1022, log_message)
+        log.log2info(1088, log_message)
 
         # Run
         _StandaloneApplication(self._app, self.parent, options=options).run()

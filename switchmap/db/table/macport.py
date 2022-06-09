@@ -25,7 +25,7 @@ def idx_exists(idx):
     # Get data
     statement = select(
         MacPort.idx_macport).where(MacPort.idx_macport == idx)
-    rows = db.db_select(1225, statement)
+    rows = db.db_select(1099, statement)
 
     # Return
     for row in rows:
@@ -56,7 +56,7 @@ def exists(idx_l1interface, idx_mac):
             MacPort.idx_l1interface == idx_l1interface
         )
     )
-    rows = db.db_select_row(1226, statement)
+    rows = db.db_select_row(1109, statement)
 
     # Return
     for row in rows:
@@ -94,7 +94,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1043, inserts)
+        db.db_add_all(1092, inserts)
 
 
 def update_row(idx, row):
@@ -118,7 +118,7 @@ def update_row(idx, row):
                 'enabled': row.enabled
             }
         )
-    db.db_update(1126, statement)
+    db.db_update(1117, statement)
 
 
 def _row(row):

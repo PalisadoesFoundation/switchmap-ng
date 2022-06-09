@@ -149,7 +149,7 @@ def _add_engine_pidguard(engine):
 Parent process {} forked ({}) with an open database connection, \
 which is being discarded and recreated.\
 '''.format(connection_record.info['pid'], pid))
-            log.log2debug(1079, log_message)
+            log.log2debug(1143, log_message)
 
             connection_record.connection = connection_proxy.connection = None
             raise exc.DisconnectionError('''\

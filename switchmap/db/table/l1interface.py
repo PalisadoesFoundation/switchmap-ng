@@ -24,7 +24,7 @@ def idx_exists(idx):
 
     # Get data
     statement = select(L1Interface).where(L1Interface == idx)
-    rows = db.db_select_row(1225, statement)
+    rows = db.db_select_row(1206, statement)
 
     # Return
     for row in rows:
@@ -55,7 +55,7 @@ def exists(idx_device, ifindex):
             L1Interface.idx_device == idx_device
         )
     )
-    rows = db.db_select_row(1226, statement)
+    rows = db.db_select_row(1205, statement)
 
     # Return
     for row in rows:
@@ -130,7 +130,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1043, inserts)
+        db.db_add_all(1154, inserts)
 
 
 def update_row(idx, row):
@@ -190,7 +190,7 @@ def update_row(idx, row):
                 'enabled': row.enabled
             }
         )
-    db.db_update(1126, statement)
+    db.db_update(1112, statement)
 
 
 def _row(row):

@@ -56,7 +56,7 @@ def check_sudo():
     if 'SUDO_UID' in os.environ:
         log_message = (
             'Cannot run script using "sudo".')
-        log.log2die(1132, log_message)
+        log.log2die(1108, log_message)
 
 
 def cleanstring(data):

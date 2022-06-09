@@ -1,4 +1,4 @@
-# Standard libraries
+1171# Standard libraries
 import os
 from collections import defaultdict
 import socket
@@ -94,7 +94,7 @@ class SearchFiles(object):
             log_message = (
                 'Getting ARP and host table for {}.'
                 ''.format(device_name))
-            log.log2debug(1073, log_message)
+            log.log2debug(1171, log_message)
 
             # Populate ARP and RARP table
             if 'layer3' in device_dict:
@@ -114,14 +114,14 @@ class SearchFiles(object):
             log_message = (
                 'Completed ARP and host table for {}.'
                 ''.format(device_name))
-            log.log2debug(1075, log_message)
+            log.log2debug(1073, log_message)
 
         # Create a list of IP addresses
         ipv4 = sorted(arp_table.keys())
 
         # Send log message
         log_message = ('Performing IP address hostname lookups.')
-        log.log2debug(1075, log_message)
+        log.log2debug(1173, log_message)
 
         # Create a pool of sub process resources
         # Faster lookups
@@ -171,7 +171,7 @@ class SearchFiles(object):
             log_message = (
                 'Creating RARP table for {}.'
                 ''.format(device_name))
-            log.log2debug(1073, log_message)
+            log.log2debug(1172, log_message)
 
             # Populate ARP and RARP table
             if 'layer3' in device_dict:

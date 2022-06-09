@@ -41,7 +41,7 @@ configuration directory location.''')
 Environment variable $SWITCHMAP_CONFIGDIR set to invalid directory "{}"\
 '''.format(path))
         # Must print statement as logging requires a config directory
-        log2die_safe(1021, log_message)
+        log2die_safe(1086, log_message)
 
     # Verify configuration directory existence
     if (os.path.exists(path) is False) or (
@@ -54,7 +54,7 @@ does not exist'''.format(path))
 
     # Set the path
     os.environ['SWITCHMAP_CONFIGDIR'] = path
-    
+
     # Return
     return path
 
@@ -442,11 +442,11 @@ def env():
     if 'SWITCHMAP_CONFIGDIR' not in os.environ:
         log_message = (
             'The SWITCHMAP_CONFIGDIR environment variable not set.')
-        log2die_safe(1039, log_message)
+        log2die_safe(1150, log_message)
 
     # Make sure the SWITCHMAP_CONFIGDIR environment variable is set to unittest
     if 'unittest' in os.environ['SWITCHMAP_CONFIGDIR'].lower():
         log_message = ('''\
 The SWITCHMAP_CONFIGDIR is set to a unittest directory. Daemon cannot be run\
 ''')
-        log2die_safe(1040, log_message)
+        log2die_safe(1151, log_message)

@@ -168,7 +168,7 @@ def read_yaml_file(filepath, as_string=False, die=True):
             if bool(die) is True:
                 log.log2die_safe(2006, log_message)
             else:
-                log.log2debug(1014, log_message)
+                log.log2debug(1056, log_message)
                 return {}
 
         # Get result
@@ -192,9 +192,9 @@ def read_yaml_file(filepath, as_string=False, die=True):
         # Die if not a YAML file
         log_message = '{} is not a YAML file.'.format(filepath)
         if bool(die) is True:
-            log.log2die_safe(1065, log_message)
+            log.log2die_safe(1164, log_message)
         else:
-            log.log2debug(1005, log_message)
+            log.log2debug(1047, log_message)
             if bool(as_string) is False:
                 return {}
             else:
@@ -222,14 +222,14 @@ def mkdir(directory):
             log_message = (
                 'Cannot create directory {}.'
                 ''.format(directory))
-            log.log2die(1090, log_message)
+            log.log2die(1121, log_message)
 
     # Fail if not a directory
     if os.path.isdir(directory) is False:
         log_message = (
             '{} is not a directory.'
             ''.format(directory))
-        log.log2die(1043, log_message)
+        log.log2die(1158, log_message)
 
 
 def pid_file(agent_name, config):
@@ -316,7 +316,7 @@ def execute(command, die=True):
         log_message = ('''\
 Command failure: [Exception:{}, Exception Instance: {}, Stack Trace: {}]\
 '''.format(etype, evalue, etraceback))
-        log.log2warning(1052, log_message)
+        log.log2warning(1161, log_message)
 
     # Crash if the return code is not 0
     if returncode != 0:
@@ -339,7 +339,7 @@ Command failure: [Exception:{}, Exception Instance: {}, Stack Trace: {}]\
 
         # Log message
         for log_message in messages:
-            log.log2warning(1042, log_message)
+            log.log2warning(1153, log_message)
 
         # Die if required after error found
         if bool(die) is True:

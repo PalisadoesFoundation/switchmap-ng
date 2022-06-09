@@ -142,13 +142,13 @@ class Interact():
             log_message = (
                 'SNMP version is "None". Non existent host? - {}'
                 ''.format(snmp_parameters['snmp_hostname']))
-            log.log2die(1004, log_message)
+            log.log2die(1025, log_message)
 
         # Fail if snmp_parameters dictionary is empty
         if bool(snmp_parameters) is False:
             log_message = ('SNMP parameters provided are blank. '
                            'Non existent host?')
-            log.log2die(1005, log_message)
+            log.log2die(1045, log_message)
 
     def enterprise_number(self):
         """Return SNMP enterprise number for the device.
@@ -472,7 +472,7 @@ class Interact():
         # Check if OID is valid
         if _oid_valid_format(oid_to_get) is False:
             log_message = ('OID {} has an invalid format'.format(oid_to_get))
-            log.log2die(1020, log_message)
+            log.log2die(1057, log_message)
 
         # Create SNMP session
         session = _Session(snmp_params, context_name=context_name).session
@@ -540,7 +540,7 @@ class Interact():
                     sys.exc_info()[1],
                     sys.exc_info()[2],
                     snmp_params['snmp_hostname']))
-            log.log2die(1002, log_message)
+            log.log2die(1003, log_message)
 
         # Format results
         values = _format_results(results, oid_to_get, normalized=normalized)
@@ -581,7 +581,7 @@ class _Session():
         if not snmp_parameters:
             log_message = ('SNMP parameters provided are blank. '
                            'Non existent host?')
-            log.log2die(1005, log_message)
+            log.log2die(1046, log_message)
 
         # Create SNMP session
         self.session = self._session()

@@ -24,7 +24,7 @@ def idx_exists(idx):
 
     # Get data
     statement = select(Vlan).where(Vlan.idx_vlan == idx)
-    rows = db.db_select_row(1225, statement)
+    rows = db.db_select_row(1210, statement)
 
     # Return
     for row in rows:
@@ -93,7 +93,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1043, inserts)
+        db.db_add_all(1093, inserts)
 
 
 def update_row(idx, row):
@@ -119,7 +119,7 @@ def update_row(idx, row):
                 'enabled': row.enabled
             }
         )
-    db.db_update(1126, statement)
+    db.db_update(1120, statement)
 
 
 def _row(row):

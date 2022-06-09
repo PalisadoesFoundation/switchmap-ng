@@ -24,7 +24,7 @@ def post_poll_cleanup(idx_event):
     # Disable all devices and related entities that do not match
     # the idx_event value
     statement = select(Device).where(Device.idx_device != idx_event)
-    rows = db.db_select(1226, statement)
+    rows = db.db_select(1005, statement)
 
     # Disable Device and its interfaces
     for row in rows:
@@ -35,7 +35,7 @@ def post_poll_cleanup(idx_event):
                         'enabled': 0
                     }
                 )
-        db.db_update(1126, statement)
+        db.db_update(1124, statement)
 
         # Disable L1Interface
         statement = update(L1Interface).where(
@@ -44,7 +44,7 @@ def post_poll_cleanup(idx_event):
                         'enabled': 0
                     }
                 )
-        db.db_update(1126, statement)
+        db.db_update(1125, statement)
 
         # Disable Vlan
         statement = update(Vlan).where(
@@ -53,7 +53,7 @@ def post_poll_cleanup(idx_event):
                         'enabled': 0
                     }
                 )
-        db.db_update(1126, statement)
+        db.db_update(1127, statement)
 
         # Disable MacIp
         statement = update(MacIp).where(
@@ -62,11 +62,11 @@ def post_poll_cleanup(idx_event):
                         'enabled': 0
                     }
                 )
-        db.db_update(1126, statement)
+        db.db_update(1145, statement)
 
     # Disable Mac that don't match the idx_event value
     statement = select(Mac).where(Mac.idx_event != idx_event)
-    rows = db.db_select(1226, statement)
+    rows = db.db_select(1064, statement)
 
     # Disable Device and its interfaces
     for row in rows:
@@ -77,7 +77,7 @@ def post_poll_cleanup(idx_event):
                         'enabled': 0
                     }
                 )
-        db.db_update(1126, statement)
+        db.db_update(1069, statement)
 
         # Disable Mac
         statement = update(Mac).where(
@@ -86,4 +86,4 @@ def post_poll_cleanup(idx_event):
                         'enabled': 0
                     }
                 )
-        db.db_update(1126, statement)
+        db.db_update(1144, statement)

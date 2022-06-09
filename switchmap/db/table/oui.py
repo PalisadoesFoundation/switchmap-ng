@@ -24,7 +24,7 @@ def idx_exists(idx):
 
     # Get data
     statement = select(Oui.idx_oui).where(Oui.idx_oui == idx)
-    rows = db.db_select(1225, statement)
+    rows = db.db_select(1102, statement)
 
     # Return
     for row in rows:
@@ -49,7 +49,7 @@ def exists(oui):
 
     # Get oui from database
     statement = select(Oui).where(Oui.oui == oui.encode())
-    rows = db.db_select_row(1226, statement)
+    rows = db.db_select_row(1106, statement)
 
     # Return
     for row in rows:
@@ -87,7 +87,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1043, inserts)
+        db.db_add_all(1096, inserts)
 
 
 def update_row(idx, row):
@@ -110,7 +110,7 @@ def update_row(idx, row):
                 'enabled': row.enabled,
             }
         )
-    db.db_update(1126, statement)
+    db.db_update(1118, statement)
 
 
 def _row(row):

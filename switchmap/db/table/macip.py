@@ -25,7 +25,7 @@ def idx_exists(idx):
     # Get data
     statement = select(
         MacIp.idx_macip).where(MacIp.idx_macip == idx)
-    rows = db.db_select(1225, statement)
+    rows = db.db_select(1098, statement)
 
     # Return
     for row in rows:
@@ -58,7 +58,7 @@ def exists(idx_device, idx_mac, ip_):
             MacIp.idx_device == idx_device
         )
     )
-    rows = db.db_select_row(1226, statement)
+    rows = db.db_select_row(1201, statement)
 
     # Return
     for row in rows:
@@ -101,7 +101,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1043, inserts)
+        db.db_add_all(1091, inserts)
 
 
 def update_row(idx, row):
@@ -129,7 +129,7 @@ def update_row(idx, row):
                 'enabled': row.enabled
             }
         )
-    db.db_update(1126, statement)
+    db.db_update(1115, statement)
 
 
 def _row(row):

@@ -16,12 +16,13 @@ from collections import namedtuple
 _SYS_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 _BIN_DIRECTORY = os.path.abspath(os.path.join(_SYS_DIRECTORY, os.pardir))
 _ROOT_DIRECTORY = os.path.abspath(os.path.join(_BIN_DIRECTORY, os.pardir))
-if _SYS_DIRECTORY.endswith('/switchmap-ng/bin/systemd') is True:
+if _SYS_DIRECTORY.endswith(
+        '{0}switchmap-ng{0}bin{0}systemd'.format(os.sep)) is True:
     sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
-        'This script is not installed in the "switchmap-ng/bin/systemd" '
-        'directory. Please fix.')
+        'This script is not installed in the "switchmap-ng{0}bin{0}systemd" '
+        'directory. Please fix.'.format(os.sep))
     sys.exit(2)
 
 # switchmap.libraries

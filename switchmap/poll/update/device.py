@@ -120,7 +120,7 @@ class Device():
         # Send log message
         log_message = (
             'Processing data from host {}'.format(self._devicename))
-        log.log2debug(1028, log_message)
+        log.log2debug(1048, log_message)
 
         # Create dict for layer1 Ethernet data
         for ifindex, _port_data in sorted(layer1_data.items()):
@@ -182,7 +182,7 @@ class Device():
         # Send log message
         log_message = (
             'Completed processing data from host {}'.format(self._devicename))
-        log.log2debug(1029, log_message)
+        log.log2debug(1160, log_message)
 
         # Return
         return updated_device_data
@@ -261,7 +261,7 @@ def _juniper_fix(device_data):
     devicename = source['misc']['host']
     log_message = (
         'Starting data fixup of host {}'.format(devicename))
-    log.log2debug(1031, log_message)
+    log.log2debug(1076, log_message)
 
     # Get ifStackStatus data
     if 'system' in source:
@@ -275,7 +275,7 @@ def _juniper_fix(device_data):
         devicename = source['misc']['host']
         log_message = (
             'Completed data fixup of host {}'.format(devicename))
-        log.log2debug(1032, log_message)
+        log.log2debug(1146, log_message)
         return result
 
     # Get a list of ifIndex values to Process
@@ -297,7 +297,7 @@ def _juniper_fix(device_data):
     devicename = source['misc']['host']
     log_message = (
         'Completed data fixup of host {}'.format(devicename))
-    log.log2debug(1033, log_message)
+    log.log2debug(1147, log_message)
 
     # Return
     return result

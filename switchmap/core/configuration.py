@@ -102,7 +102,7 @@ class Config():
             daemon_message = (
                 'daemon_directory: "{}" '
                 'in configuration doesn\'t exist!').format(result)
-            log.log2die_safe(1030, daemon_message)
+            log.log2die_safe(1089, daemon_message)
 
         # Return
         return result
@@ -265,7 +265,7 @@ class Config():
             log_message = (
                 'log_directory: "{}" '
                 'in configuration doesn\'t exist!').format(result)
-            log.log2die_safe(1030, log_message)
+            log.log2die_safe(1090, log_message)
 
         # Return
         return result

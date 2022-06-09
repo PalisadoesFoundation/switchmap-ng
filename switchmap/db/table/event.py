@@ -24,7 +24,7 @@ def idx_exists(idx):
 
     # Get data
     statement = select(Event.idx_event).where(Event.idx_event == idx)
-    rows = db.db_select(1225, statement)
+    rows = db.db_select(1122, statement)
 
     # Return
     for row in rows:
@@ -49,7 +49,7 @@ def exists(event):
 
     # Get event from database
     statement = select(Event).where(Event.event == event.encode())
-    rows = db.db_select_row(1226, statement)
+    rows = db.db_select_row(1207, statement)
 
     # Return
     for row in rows:
@@ -86,7 +86,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1043, inserts)
+        db.db_add_all(1157, inserts)
 
 
 def update_row(idx, row):
@@ -108,7 +108,7 @@ def update_row(idx, row):
                 'enabled': row.enabled,
             }
         )
-    db.db_update(1126, statement)
+    db.db_update(1111, statement)
 
 
 def _row(row):

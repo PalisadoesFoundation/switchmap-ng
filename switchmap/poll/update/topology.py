@@ -1,4 +1,4 @@
-"""Module for updating the database with topology data."""
+1136"""Module for updating the database with topology data."""
 
 import time
 import ipaddress
@@ -66,7 +66,7 @@ def device(data, idx_event):
     # Log
     log_message = (
         'Updating Device table for host {}'.format(hostname))
-    log.log2debug(1028, log_message)
+    log.log2debug(1080, log_message)
 
     # Update the database
     exists = _device.exists(row.hostname)
@@ -78,7 +78,7 @@ def device(data, idx_event):
     # Log
     log_message = (
         'Updated Device table for host {}'.format(hostname))
-    log.log2debug(1029, log_message)
+    log.log2debug(1137, log_message)
 
 
 def l1interface(data):
@@ -99,7 +99,7 @@ def l1interface(data):
     # Log
     log_message = (
         'Updating L1Interface table for host {}'.format(hostname))
-    log.log2debug(1028, log_message)
+    log.log2debug(1128, log_message)
 
     # Get device data
     device_ = _device.exists(hostname)
@@ -187,14 +187,14 @@ def l1interface(data):
         # Log
         log_message = (
             'Updated L1Interface table for host {}'.format(hostname))
-        log.log2debug(1029, log_message)
+        log.log2debug(1138, log_message)
 
     else:
 
         # Log
         log_message = (
             'No interfaces detected for for host {}'.format(hostname))
-        log.log2debug(1029, log_message)
+        log.log2debug(1139, log_message)
 
 
 def vlan(data):
@@ -217,7 +217,7 @@ def vlan(data):
     # Log
     log_message = (
         'Updating Vlan table for host {}'.format(hostname))
-    log.log2debug(1028, log_message)
+    log.log2debug(1131, log_message)
 
     # Get device data
     device_ = _device.exists(hostname)
@@ -255,7 +255,7 @@ def vlan(data):
     # Log
     log_message = (
         'Updated Vlan table for host {}'.format(hostname))
-    log.log2debug(1029, log_message)
+    log.log2debug(1140, log_message)
 
 
 def mac(data, idx_event):
@@ -281,7 +281,7 @@ def mac(data, idx_event):
     # Log
     log_message = (
         'Updating Mac table for host {}'.format(hostname))
-    log.log2debug(1028, log_message)
+    log.log2debug(1134, log_message)
 
     # Get device data
     device_ = _device.exists(hostname)
@@ -323,7 +323,7 @@ def mac(data, idx_event):
     # Log
     log_message = (
         'Updated Mac table for host {}'.format(hostname))
-    log.log2debug(1029, log_message)
+    log.log2debug(1136, log_message)
 
 
 def macport(data):
@@ -343,7 +343,7 @@ def macport(data):
     # Log
     log_message = (
         'Updating MacPort table for host {}'.format(hostname))
-    log.log2debug(1028, log_message)
+    log.log2debug(1135, log_message)
 
     # Get device data
     device_ = _device.exists(hostname)
@@ -378,7 +378,7 @@ def macport(data):
     # Log
     log_message = (
         'Updated MacPort table for host {}'.format(hostname))
-    log.log2debug(1029, log_message)
+    log.log2debug(1141, log_message)
 
 
 def macip(data):
@@ -401,7 +401,7 @@ def macip(data):
     # Log
     log_message = (
         'Updating MacIp table for host {}'.format(hostname))
-    log.log2debug(1028, log_message)
+    log.log2debug(1148, log_message)
 
     # Get device data
     device_ = _device.exists(hostname)
@@ -440,7 +440,7 @@ def macip(data):
     # Log
     log_message = (
         'Updated MacIp table for host {}'.format(hostname))
-    log.log2debug(1029, log_message)
+    log.log2debug(1149, log_message)
 
 
 def _process_macip(info):
