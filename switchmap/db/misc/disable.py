@@ -94,7 +94,7 @@ def post_poll_cleanup(idx_event):
 
         # Disable MacPort
         statement = update(MacPort).where(
-                MacPort.idx_macs == idx_mac).values(
+                MacPort.idx_mac == idx_mac).values(
                     {
                         'enabled': 0
                     }
