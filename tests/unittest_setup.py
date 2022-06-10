@@ -30,7 +30,7 @@ else:
 
 # Initialize GLOBAL variables
 CONFIG_SUFFIX = '.switchmap_unittests/config'
-CONFIG_DIRECTORY = '{}/{}'.format(os.environ['HOME'], CONFIG_SUFFIX)
+CONFIG_DIRECTORY = '{}{}{}'.format(os.environ['HOME'], os.sep, CONFIG_SUFFIX)
 
 
 class TestConfig(object):

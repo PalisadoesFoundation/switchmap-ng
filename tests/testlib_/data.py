@@ -48,14 +48,14 @@ main:
   db_user: 7MKG2dstsh4gPe2X
   db_pass: nhZThsh4gPMwxu75
 snmp_groups:
-- group_name: h55wJy4JkfSJnhZT
-  snmp_authpassword: v29AbLMwxu7gnGyz
+- group_name: zg8rcJPmAygbwSeA
+  snmp_authpassword: Gnn5999YqCMbre9W
   snmp_authprotocol: sha
   snmp_community: null
   snmp_port: 161
-  snmp_privpassword: sh4gPe7MKG2dst2X
+  snmp_privpassword: Jgt8MFTEhyh9s2ju
   snmp_privprotocol: aes
-  snmp_secname: 76v4PjWHpDmzy6cx
+  snmp_secname: NT9degJu9NBWbxRK
   snmp_version: 3
 '''
 
