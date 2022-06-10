@@ -114,7 +114,6 @@ def update_row(idx, row):
             {
                 'idx_l1interface': row.idx_l1interface,
                 'idx_mac': row.idx_mac,
-                'idx_macport': row.idx_macport,
                 'enabled': row.enabled
             }
         )

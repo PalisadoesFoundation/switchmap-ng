@@ -21,16 +21,22 @@ def post_poll_cleanup(idx_event):
         None
 
     """
+    # Initialize key variables
+    idx_devices = []
+    not_idx_events = []
+
     # Disable all devices and related entities that do not match
     # the idx_event value
-    statement = select(Device).where(Device.idx_device != idx_event)
+    statement = select(Device).where(Device.idx_event != idx_event)
     rows = db.db_select(1005, statement)
 
     # Disable Device and its interfaces
     for row in rows:
+        idx_devices.append(row.idx_device)
+    for idx_device in idx_devices:
         # Disable Device
         statement = update(Device).where(
-                Device.idx_device == row.idx_device).values(
+                Device.idx_device == idx_device).values(
                     {
                         'enabled': 0
                     }
@@ -39,7 +45,7 @@ def post_poll_cleanup(idx_event):
 
         # Disable L1Interface
         statement = update(L1Interface).where(
-                L1Interface.idx_device == row.idx_device).values(
+                L1Interface.idx_device == idx_device).values(
                     {
                         'enabled': 0
                     }
@@ -48,7 +54,7 @@ def post_poll_cleanup(idx_event):
 
         # Disable Vlan
         statement = update(Vlan).where(
-                Vlan.idx_device == row.idx_device).values(
+                Vlan.idx_device == idx_device).values(
                     {
                         'enabled': 0
                     }
@@ -57,7 +63,7 @@ def post_poll_cleanup(idx_event):
 
         # Disable MacIp
         statement = update(MacIp).where(
-                MacIp.idx_device == row.idx_device).values(
+                MacIp.idx_device == idx_device).values(
                     {
                         'enabled': 0
                     }
@@ -70,9 +76,12 @@ def post_poll_cleanup(idx_event):
 
     # Disable Device and its interfaces
     for row in rows:
+        not_idx_events.append(row.idx_event)
+    for not_idx_event in not_idx_events:
+
         # Disable Mac
         statement = update(MacPort).where(
-                Mac.idx_event == row.idx_event).values(
+                Mac.idx_event == not_idx_event).values(
                     {
                         'enabled': 0
                     }
@@ -81,7 +90,7 @@ def post_poll_cleanup(idx_event):
 
         # Disable Mac
         statement = update(Mac).where(
-                Mac.idx_event == row.idx_event).values(
+                Mac.idx_event == not_idx_event).values(
                     {
                         'enabled': 0
                     }
