@@ -23,7 +23,7 @@ else:
     sys.exit(2)
 
 from switchmap.core import configuration as test_module
-from tests.testlib_ import data
+from tests.testlib_ import data, setup
 
 
 class Test_Config(unittest.TestCase):
@@ -33,10 +33,18 @@ class Test_Config(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    config = test_module._Config(data.configtester())
+    _config = setup.Config(data.configtester(), randomizer=True)
+    _config.save()
+    config = test_module.Config()
 
     # Required
     maxDiff = None
+
+    @classmethod
+    def tearDownClass(cls):
+        """Remove any extraneous directories."""
+        # Cleanup
+        cls._config.cleanup()
 
     def test___init__(self):
         """Testing function __init__."""
@@ -45,9 +53,7 @@ class Test_Config(unittest.TestCase):
     def test_agent_threads(self):
         """Testing function agent_threads."""
         # Run test
-        expected = 35
-        result = self.config.agent_threads()
-        self.assertEqual(result, expected)
+        pass
 
     def test_bind_port(self):
         """Testing function bind_port."""
@@ -59,7 +65,7 @@ class Test_Config(unittest.TestCase):
     def test_daemon_directory(self):
         """Testing function daemon_directory."""
         # Run test
-        expected = 'XXX'
+        expected = self._config.metadata.daemon_directory
         result = self.config.daemon_directory()
         self.assertEqual(result, expected)
 
@@ -74,7 +80,7 @@ class Test_Config(unittest.TestCase):
         """Testing function db_name."""
         # Run test
         expected = 'JkfSJnhZTh55wJy4'
-        result = self.config.agent_threads()
+        result = self.config.db_name()
         self.assertEqual(result, expected)
 
     def test_db_max_overflow(self):
@@ -122,14 +128,16 @@ class Test_Config(unittest.TestCase):
     def test_log_directory(self):
         """Testing function log_directory."""
         # Run test
-        expected = 'YYY'
+        expected = self._config.metadata.log_directory
         result = self.config.log_directory()
         self.assertEqual(result, expected)
 
     def test_log_file(self):
         """Testing function log_file."""
         # Run test
-        expected = None
+        expected = (
+            '{}{}switchmap-ng.log'.format(
+                self._config.metadata.log_directory, os.sep))
         result = self.config.log_file()
         self.assertEqual(result, expected)
 
@@ -157,7 +165,9 @@ class Test_Config(unittest.TestCase):
     def test_web_log_file(self):
         """Testing function web_log_file."""
         # Run test
-        expected = None
+        expected = (
+            '{}{}switchmap-ng-api.log'.format(
+                self._config.metadata.log_directory, os.sep))
         result = self.config.web_log_file()
         self.assertEqual(result, expected)
 
@@ -169,7 +179,18 @@ class Test_ConfigSNMP(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    config = test_module._ConfigSNMP(data.configtester())
+    _config = setup.Config(data.configtester(), randomizer=True)
+    _config.save()
+    config = test_module.ConfigSNMP()
+
+    # Required
+    maxDiff = None
+
+    @classmethod
+    def tearDownClass(cls):
+        """Remove any extraneous directories."""
+        # Cleanup
+        cls._config.cleanup()
 
     def test___init__(self):
         """Testing function __init__."""
@@ -180,14 +201,15 @@ class Test_ConfigSNMP(unittest.TestCase):
         # Run test
         expected = [
             {
-                'group_name': 'h55wJy4JkfSJnhZT',
-                'snmp_authpassword': 'v29AbLMwxu7gnGyz',
+                'enabled': True,
+                'group_name': 'zg8rcJPmAygbwSeA',
+                'snmp_authpassword': 'Gnn5999YqCMbre9W',
                 'snmp_authprotocol': 'sha',
                 'snmp_community': None,
                 'snmp_port': 161,
-                'snmp_privpassword': 'sh4gPe7MKG2dst2X',
+                'snmp_privpassword': 'Jgt8MFTEhyh9s2ju',
                 'snmp_privprotocol': 'aes',
-                'snmp_secname': '76v4PjWHpDmzy6cx',
+                'snmp_secname': 'NT9degJu9NBWbxRK',
                 'snmp_version': 3
             }
         ]
