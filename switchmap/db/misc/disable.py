@@ -28,7 +28,7 @@ def post_poll_cleanup(idx_event):
     # Disable all devices and related entities that do not match
     # the idx_event value
     statement = select(Device).where(Device.idx_event != idx_event)
-    rows = db.db_select(1005, statement)
+    rows = db.db_select_row(1005, statement)
 
     # Disable Device and its interfaces
     for row in rows:
@@ -72,7 +72,7 @@ def post_poll_cleanup(idx_event):
 
     # Disable Mac that don't match the idx_event value
     statement = select(Mac).where(Mac.idx_event != idx_event)
-    rows = db.db_select(1064, statement)
+    rows = db.db_select_row(1064, statement)
 
     # Disable Device and its interfaces
     for row in rows:
