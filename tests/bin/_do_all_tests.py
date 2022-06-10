@@ -49,7 +49,7 @@ def main():
 
     """
     # Determine unittest directory
-    test_dir = '{0}{1}switchmap{1}tests'.format(ROOT_DIR, os.sep)
+    test_dir = '{0}{1}switchmap{1}tests{1}switchmap_'.format(ROOT_DIR, os.sep)
 
     # Set up parser
     parser = argparse.ArgumentParser()

@@ -11,7 +11,7 @@ main:
   hostnames:
   - unittest.example.org
   listen_address: localhost
-  log_directory: XXX
+  log_directory: YYY
   log_level: debug
   polling_interval: 21600
   username: switchmap
@@ -31,8 +31,50 @@ snmp_groups:
   snmp_version: 3
 '''
 
+_CONFIG_TESTER_YAML = '''
+main:
+  agent_threads: 35
+  bind_port: 7027
+  daemon_directory: XXX
+  hostnames:
+  - unittest.example.org
+  listen_address: MKG2dst7sh4gPe2X
+  log_directory: YYY
+  log_level: debug
+  polling_interval: 21600
+  username: 7gnv2Mwxu9AbLGyz
+  db_host: Mwxu7gnv29AbLGyz
+  db_name: JkfSJnhZTh55wJy4
+  db_user: 7MKG2dstsh4gPe2X
+  db_pass: nhZThsh4gPMwxu75
+snmp_groups:
+- group_name: h55wJy4JkfSJnhZT
+  snmp_authpassword: v29AbLMwxu7gnGyz
+  snmp_authprotocol: sha
+  snmp_community: null
+  snmp_port: 161
+  snmp_privpassword: sh4gPe7MKG2dst2X
+  snmp_privprotocol: aes
+  snmp_secname: 76v4PjWHpDmzy6cx
+  snmp_version: 3
+'''
+
 _POLLED_DATA_YAML = '''
 '''
+
+
+def configtester():
+    """Convert the config YAML to a dict.
+
+    Args:
+        None
+
+    Returns:
+        result
+
+    """
+    # Return
+    return _dict(_CONFIG_TESTER_YAML)
 
 
 def config():

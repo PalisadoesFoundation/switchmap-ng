@@ -1,4 +1,4 @@
-1136"""Module for updating the database with topology data."""
+"""Module for updating the database with topology data."""
 
 import time
 import ipaddress

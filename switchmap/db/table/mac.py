@@ -82,7 +82,9 @@ def insert_row(rows):
             Mac(
                 idx_oui=row.idx_oui,
                 idx_event=row.idx_event,
-                mac=row.mac.encode(),
+                mac=(
+                    null() if bool(row.mac) is False else
+                    row.mac.encode()),
                 enabled=row.enabled
             )
         )
@@ -109,7 +111,9 @@ def update_row(idx, row):
             {
                 'idx_oui': row.idx_oui,
                 'idx_event': row.idx_event,
-                'mac': row.mac.encode(),
+                'mac': (
+                    null() if bool(row.mac) is False else
+                    row.mac.encode()),
                 'enabled': row.enabled
             }
         )
@@ -131,7 +135,8 @@ def _row(row):
         idx_mac=row.idx_mac,
         idx_oui=row.idx_oui,
         idx_event=row.idx_event,
-        mac=row.mac.decode(),
+        mac=(
+            None if bool(row.mac) is False else row.mac.decode()),
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified

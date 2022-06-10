@@ -147,8 +147,9 @@ def _row(row):
         idx_macip=row.idx_macip,
         idx_device=row.idx_device,
         idx_mac=row.idx_mac,
-        ip_=row.ip_.decode(),
-        hostname=row.hostname.decode(),
+        ip_=None if bool(row.ip_) is False else row.ip_.decode(),
+        hostname=(
+            None if bool(row.hostname) is False else row.hostname.decode()),
         type=row.type,
         enabled=row.enabled,
         ts_created=row.ts_created,

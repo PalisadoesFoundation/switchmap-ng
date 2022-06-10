@@ -1,14 +1,14 @@
 """Module for disabling table entries."""
 
-from sqlalchemy import select, update, and_, null
+from sqlalchemy import select, update
 
 from switchmap.db import db
 from switchmap.db.models import Device
-from switchmap.db.table import L1Interface
-from switchmap.db.table import Vlan
-from switchmap.db.table import MacIp
-from switchmap.db.table import Mac
-from switchmap.db.table import MacPort
+from switchmap.db.models import L1Interface
+from switchmap.db.models import Vlan
+from switchmap.db.models import MacIp
+from switchmap.db.models import Mac
+from switchmap.db.models import MacPort
 
 
 def post_poll_cleanup(idx_event):

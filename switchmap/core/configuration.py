@@ -10,34 +10,21 @@ from switchmap.core import files
 from switchmap.core import log
 
 
-class Config():
-    """Class gathers all configuration information.
+class _Config():
+    """Class gathers all configuration information."""
 
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        hosts:
-        snmp_auth:
-    """
-
-    def __init__(self):
+    def __init__(self, config_):
         """Intialize the class.
 
         Args:
-            None
+            config_: Dict of configuration
 
         Returns:
             None
 
         """
         # Initialize key variables
-        filepath = files.config_filepath()
-        self._config = files.read_yaml_file(filepath).get('main')
+        self._config = config_.get('main')
 
     def agent_threads(self):
         """Get agent_threads.
@@ -347,34 +334,21 @@ class Config():
         return result
 
 
-class ConfigSNMP():
-    """Class gathers all configuration information.
+class _ConfigSNMP():
+    """Class gathers all configuration information."""
 
-    Args:
-        None
-
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        hosts:
-        snmp_auth:
-    """
-
-    def __init__(self):
+    def __init__(self, config_):
         """Intialize the class.
 
         Args:
-            None
+            config_: Dict of the configuration file
 
         Returns:
             None
 
         """
         # Initialize key variables
-        filepath = files.config_filepath()
-        self._config = files.read_yaml_file(filepath).get('snmp_groups')
+        self._config = config_.get('snmp_groups')
 
     def snmp_auth(self):
         """Get list of dicts of SNMP information in configuration file.
@@ -430,3 +404,45 @@ class ConfigSNMP():
 
         # Return
         return snmp_data
+
+
+class Config(_Config):
+    """Class gathers all configuration information."""
+
+    def __init__(self):
+        """Intialize the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        filepath = files.config_filepath()
+        _config = files.read_yaml_file(filepath)
+
+        # Instantiate sub class
+        _Config.__init__(self, _config)
+
+
+class ConfigSNMP(_ConfigSNMP):
+    """Class gathers all configuration information."""
+
+    def __init__(self):
+        """Intialize the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        filepath = files.config_filepath()
+        _config = files.read_yaml_file(filepath)
+
+        # Instantiate sub class
+        _ConfigSNMP.__init__(self, _config)
