@@ -23,6 +23,7 @@ def post_poll_cleanup(idx_event):
     """
     # Initialize key variables
     idx_devices = []
+    idx_macs = []
     not_idx_events = []
 
     # Disable all devices and related entities that do not match
@@ -30,7 +31,7 @@ def post_poll_cleanup(idx_event):
     statement = select(Device).where(Device.idx_event != idx_event)
     rows = db.db_select_row(1005, statement)
 
-    # Disable Device and its interfaces
+    # Process data
     for row in rows:
         idx_devices.append(row.idx_device)
     for idx_device in idx_devices:
@@ -74,20 +75,12 @@ def post_poll_cleanup(idx_event):
     statement = select(Mac).where(Mac.idx_event != idx_event)
     rows = db.db_select_row(1064, statement)
 
-    # Disable Device and its interfaces
+    # Process data
     for row in rows:
         not_idx_events.append(row.idx_event)
+        idx_macs.append(row.idx_mac)
+
     for not_idx_event in not_idx_events:
-
-        # Disable Mac
-        statement = update(MacPort).where(
-                Mac.idx_event == not_idx_event).values(
-                    {
-                        'enabled': 0
-                    }
-                )
-        db.db_update(1069, statement)
-
         # Disable Mac
         statement = update(Mac).where(
                 Mac.idx_event == not_idx_event).values(
@@ -96,3 +89,14 @@ def post_poll_cleanup(idx_event):
                     }
                 )
         db.db_update(1144, statement)
+
+    for idx_mac in idx_macs:
+
+        # Disable MacPort
+        statement = update(MacPort).where(
+                MacPort.idx_macs == idx_mac).values(
+                    {
+                        'enabled': 0
+                    }
+                )
+        db.db_update(1069, statement)

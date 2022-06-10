@@ -150,7 +150,7 @@ def _poll_devices():
     #     pool.map(_poll_single_device, hostnames)
 
     # Disable any unused devices and/or MAC addresses
-    # disable.post_poll_cleanup(_event.idx_event)
+    disable.post_poll_cleanup(_event.idx_event)
 
 
 def _poll_single_device(poll):
