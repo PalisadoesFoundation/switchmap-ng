@@ -5,8 +5,7 @@ import datetime
 
 # SQLalchemy imports
 from sqlalchemy import (
-    Column, DateTime, ForeignKey, text, UniqueConstraint,
-    PrimaryKeyConstraint, ForeignKeyConstraint)
+    Column, DateTime, ForeignKey, text, UniqueConstraint)
 from sqlalchemy.dialects.mysql import BIGINT, VARBINARY, BIT
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -20,6 +19,8 @@ from switchmap.db import SCOPED_SESSION, ENGINE
 # Create BASE SQLAlchemy class. This must be in the same file as the database
 # definitions or else the database won't be created on install. Learned via
 # trial and error.
+
+# Default
 BASE = declarative_base()
 
 # GraphQL: Bind engine to metadata of the base class

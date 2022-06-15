@@ -35,6 +35,7 @@ from switchmap.db.table import RLocation
 from switchmap.db import models
 
 from tests.testlib_ import db
+from tests.testlib_ import data
 
 
 class TestSuite(unittest.TestCase):
@@ -62,7 +63,30 @@ class TestSuite(unittest.TestCase):
 
     def test_idx_exists(self):
         """Testing function idx_exists."""
-        pass
+        # Test existence of first record
+        tester = testimport.idx_exists(1)
+        self.assertEqual(False, tester)
+
+        # Create record
+        row = Location(
+            name=data.random_string(),
+            company_name=data.random_string(),
+            address_0=data.random_string(),
+            address_1=data.random_string(),
+            address_2=data.random_string(),
+            city=data.random_string(),
+            state=data.random_string(),
+            country=data.random_string(),
+            postal_code=data.random_string(),
+            phone=data.random_string(),
+            notes=data.random_string(),
+            enabled=1
+        )
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        tester = testimport.idx_exists(1)
+        self.assertEqual(True, tester)
 
     def test_insert_row(self):
         """Testing function insert_row."""

@@ -3,7 +3,7 @@
 from __future__ import print_function
 
 # PIP3 imports
-from sqlalchemy.schema import MetaData
+from sqlalchemy.orm import Session
 
 # Application imports
 from switchmap.db import models
@@ -45,9 +45,10 @@ The database under test must be named {}'''.format(expected)
 
         """
         # Drop all the tables
-        meta = MetaData()
-        for tbl in reversed(meta.sorted_tables):
-            ENGINE.execute(tbl.delete())
+        with ENGINE.connect() as connection:
+            print('Peter 01')
+            with Session(bind=connection) as session:
+                models.BASE.metadata.drop_all(session.get_bind())
 
     def create(self):
         """Create database.

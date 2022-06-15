@@ -1,6 +1,8 @@
 """Module for handling data required for testing."""
 
 # Import libraries
+from random import choice
+from string import ascii_uppercase
 from io import StringIO
 import yaml
 
@@ -20806,6 +20808,21 @@ def config():
     """
     # Return
     return _dict(_CONFIG_YAML)
+
+
+def random_string(length=10):
+    """Create a random string.
+
+    Args:
+        length: Desired string length
+
+    Returns:
+        result: Random string of "length"
+
+    """
+    # Return
+    result = ''.join(choice(ascii_uppercase) for i in range(length))
+    return result
 
 
 def _dict(item):
