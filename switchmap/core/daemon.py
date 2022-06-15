@@ -7,7 +7,7 @@ import sys
 import os
 import time
 
-# Pattoo imports
+# Application imports
 from switchmap.core import log
 
 

@@ -6,19 +6,20 @@ import yaml
 
 _CONFIG_YAML = '''
 main:
-  bind_port: 7000
+  bind_port: 8027
   daemon_directory: XXX
   hostnames:
-  - unittest.example.org
+  - unittest-01.example.org
+  - unittest-02.example.org
   listen_address: localhost
   log_directory: YYY
   log_level: debug
   polling_interval: 21600
   username: switchmap
   db_host: localhost
-  db_name: switchmap_unittests
+  db_name: switchmap_unittest
   db_user: travis
-  db_pass: ABC123
+  db_pass: 7F4Gj7HJIDT5xJPs
 snmp_groups:
 - group_name: h55wJy4JkfSJnhZT
   snmp_authpassword: v29AbLMwxu7gnGyz

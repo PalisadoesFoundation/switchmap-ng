@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"""Test all the pattoo modules."""
+"""Module for application test error management."""
 
 from __future__ import print_function
 import os
@@ -10,7 +9,7 @@ import collections
 
 
 def check_source_code(root, minimum=0, maximum=0):
-    """Get all the error codes used in pattoo related projects.
+    """Get all the error codes.
 
     Args:
         root: Root directory from which to search for error codes
@@ -29,7 +28,7 @@ Minimum value {} is greater than {}. Please fix.\
         print(log_message)
         sys.exit(2)
 
-    # Define where pattoo lives
+    # Define where the application lives
     ignore_paths = [
         '{0}.git{0}'.format(os.sep),
         '{0}__pycache__{0}'.format(os.sep),
@@ -125,8 +124,8 @@ Extremely small error code {} found. Must be greater than {}. Please fix.
 
     # Print report
     print('''
-Pattoo Logging Error Code Summary Report
-----------------------------------------
+Application Logging Error Code Summary Report
+---------------------------------------------
 Starting Code              : {}
 Ending Code                : {}
 Duplicate Codes to Resolve : {}
@@ -237,7 +236,7 @@ def _files(root, ignore_paths):
         python_files: List of paths to python files
 
     """
-    # Define where pattoo lives
+    # Define where application lives
     python_files = []
 
     # Get a recursive listing of files

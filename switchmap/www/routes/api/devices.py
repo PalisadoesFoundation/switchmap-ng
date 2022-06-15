@@ -7,7 +7,7 @@ Contains all routes that switchmap.s Flask webserver uses
 # Flask imports
 from flask import Blueprint
 
-# Infoset-ng imports
+# Application imports
 from switchmap.www import CONFIG
 from switchmap.www.pages import device
 

@@ -243,7 +243,7 @@ class AgentCLI():
         self.parser = parser
 
     def control(self, agent, graceful=False):
-        """Control the pattoo agent from the CLI.
+        """Control the agent from the CLI.
 
         Args:
             agent: Agent object
@@ -285,7 +285,7 @@ class AgentCLI():
 
 
 class AgentAPI(Agent):
-    """pattoo API agent that serves web pages.
+    """Applcication API agent that serves web pages.
 
     Args:
         None

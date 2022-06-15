@@ -15,7 +15,7 @@ ROOT_DIR = os.path.abspath(os.path.join(
             os.path.abspath(os.path.join(
                 EXEC_DIR,
                 os.pardir)), os.pardir)), os.pardir)), os.pardir))
-_EXPECTED = '{0}switchmap-ng{0}tests{0}switchmap{0}poll{0}snmp'.format(os.sep)
+_EXPECTED = '{0}switchmap-ng{0}tests{0}switchmap_{0}poll{0}snmp'.format(os.sep)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results

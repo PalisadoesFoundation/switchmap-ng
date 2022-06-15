@@ -1,0 +1,83 @@
+#!/usr/bin/env python3
+"""Test the mib_essswitch module."""
+
+import os
+import sys
+import unittest
+
+# Try to create a working PYTHONPATH
+EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
+ROOT_DIR = os.path.abspath(os.path.join(
+    os.path.abspath(os.path.join(
+        os.path.abspath(os.path.join(
+            os.path.abspath(os.path.join(
+                EXEC_DIR,
+                os.pardir)), os.pardir)), os.pardir)), os.pardir))
+_EXPECTED = '{0}switchmap-ng{0}tests{0}switchmap_{0}db{0}table'.format(os.sep)
+if EXEC_DIR.endswith(_EXPECTED) is True:
+    # We need to prepend the path in case the repo has been installed
+    # elsewhere on the system using PIP. This could corrupt expected results
+    sys.path.insert(0, ROOT_DIR)
+else:
+    print('''This script is not installed in the "{0}" directory. Please fix.\
+'''.format(_EXPECTED))
+    sys.exit(2)
+
+
+# Create the necessary configuration
+from tests.testlib_ import setup
+CONFIG = setup.config()
+CONFIG.save()
+
+from switchmap.db.table import location as testimport
+from switchmap.db.models import Location
+from switchmap.db.table import RLocation
+from switchmap.db import models
+
+from tests.testlib_ import db
+
+
+class TestSuite(unittest.TestCase):
+    """Checks all functions and methods."""
+
+    #########################################################################
+    # General object setup
+    #########################################################################
+
+    @classmethod
+    def setUpClass(cls):
+        """Steps to execute when before tests start."""
+        # Create database tables
+        models.create_all_tables()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Steps to execute when all tests are completed."""
+        # Drop tables
+        database = db.Database()
+        database.drop()
+
+        # Cleanup the
+        CONFIG.cleanup()
+
+    def test_idx_exists(self):
+        """Testing function idx_exists."""
+        pass
+
+    def test_insert_row(self):
+        """Testing function insert_row."""
+        pass
+
+    def test_update_row(self):
+        """Testing function update_row."""
+        pass
+
+    def test__row(self):
+        """Testing function _row."""
+        pass
+
+
+if __name__ == '__main__':
+
+    # Do the unit test
+    unittest.main()

@@ -2,15 +2,13 @@
 """Switchmap files library."""
 
 import os
-import time
 import sys
-from random import random
 import subprocess
 
 # PIP imports
 import yaml
 
-# Pattoo libraries
+# Application libraries
 from switchmap.core import log
 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""switchmap  classes.
+"""Application  classes.
 
 Manages the verification of required packages.
 
@@ -822,12 +822,12 @@ def _get_daemon_username():
     # Initialize key variables
     running_username = getpass.getuser()
 
-    # If running as the root user, then the infoset user needs to exist
+    # If running as the root user, then the switchmap user needs to exist
     if running_username == 'root':
         try:
             daemon_username = input(
                 'Please enter the username under which '
-                'infoset-ng will run: ')
+                'switchmap-ng will run: ')
 
             # Get GID and UID for user
             _ = getpwnam(daemon_username).pw_gid

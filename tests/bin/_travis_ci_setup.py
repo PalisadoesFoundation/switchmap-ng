@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Script to flag duplicate error codes."""
+"""Class used to set test configuration used by unittests."""
 
-from __future__ import print_function
-import os
+# Standard imports
 import sys
-
+import os
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -22,24 +21,16 @@ else:
 
 
 # Import application libraries
-from tests.testlib_ import errors
+from tests.testlib_ import setup
 
 
 def main():
-    """Process the error codes.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-    # Get code report
-    minimum = 1000
-    maximum = 9999
-    errors.check_source_code(ROOT_DIR, minimum=minimum, maximum=maximum)
+    """Create test configurations."""
+    # Check environment
+    config = setup.travis_config()
+    config.save()
 
 
 if __name__ == '__main__':
+    # Do the unit test
     main()

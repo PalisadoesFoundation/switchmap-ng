@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Logging module."""
 
 from __future__ import print_function
@@ -64,7 +63,7 @@ class _GetLog():
 
     def __init__(self):
         """Initialize the class."""
-        # Pattoo libraries
+        # Application libraries
         from switchmap.core.configuration import Config
 
         # Define key variables

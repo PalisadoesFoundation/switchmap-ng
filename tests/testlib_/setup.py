@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Class used to create the configuration file used for unittesting.
 
 NOTE!! This script CANNOT import any switchmap libraries. Doing so risks
@@ -14,6 +13,7 @@ import copy
 import random
 import string
 from collections import namedtuple
+from copy import deepcopy
 
 import yaml
 
@@ -22,6 +22,9 @@ import yaml
 _UNITTEST_DIRECTORY = (
     '{}{}.switchmap_unittests'.format(os.environ['HOME'], os.sep)
 )
+
+# Application imports
+from . import data
 
 
 class Config():
@@ -44,7 +47,7 @@ class Config():
             'Metadata',
             '''\
 config log_directory daemon_directory config_directory base_directory''')
-        config = copy.deepcopy(_config)
+        config_ = copy.deepcopy(_config)
         if bool(randomizer) is False:
             base_directory = _UNITTEST_DIRECTORY
         else:
@@ -69,12 +72,12 @@ config log_directory daemon_directory config_directory base_directory''')
             os.makedirs(daemon_directory, mode=0o750, exist_ok=True)
 
         # Update configuration
-        config['main']['log_directory'] = log_directory
-        config['main']['daemon_directory'] = daemon_directory
+        config_['main']['log_directory'] = log_directory
+        config_['main']['daemon_directory'] = daemon_directory
 
         # Create the metadata object
         self.metadata = Metadata(
-            config=config,
+            config=config_,
             log_directory=log_directory,
             daemon_directory=daemon_directory,
             config_directory=config_directory,
@@ -123,6 +126,40 @@ config log_directory daemon_directory config_directory base_directory''')
             _delete_files(directory)
         if self._randomizer is True:
             _delete_files(self.metadata.base_directory)
+
+
+def travis_config():
+    """Create the CI/CD configuration.
+
+    Args:
+        None
+
+    Returns:
+        result: Config object
+
+    """
+    # Return result
+    _config = deepcopy(data.config())
+    _config['db_pass'] = ''
+    _config['db_user'] = 'travis'
+    result = Config(_config)
+    return result
+
+
+def config():
+    """Create testing configuration.
+
+    Args:
+        None
+
+    Returns:
+        config: Config object
+
+    """
+    # Return result
+    _config = deepcopy(data.config())
+    result = Config(_config)
+    return result
 
 
 def _delete_files(directory):

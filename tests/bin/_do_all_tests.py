@@ -35,8 +35,6 @@ else:
 '''.format(_EXPECTED))
     sys.exit(2)
 
-# switchmap-ng libraries
-
 
 def main():
     """Test all the switchmap-ng modules with unittests.
