@@ -34,6 +34,31 @@ def idx_exists(idx):
     return bool(result)
 
 
+def exists(name):
+    """Determine whether name exists in the Location table.
+
+    Args:
+        name: Location
+
+    Returns:
+        result: RLocation tuple
+
+    """
+    # Initialize key variables
+    result = False
+    rows = []
+
+    # Get name from database
+    statement = select(Location).where(Location.name == name.encode())
+    rows = db.db_select_row(1107, statement)
+
+    # Return
+    for row in rows:
+        result = _row(row)
+        break
+    return result
+
+
 def insert_row(rows):
     """Create a Location table entry.
 

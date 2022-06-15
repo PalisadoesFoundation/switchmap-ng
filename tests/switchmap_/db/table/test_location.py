@@ -32,6 +32,7 @@ CONFIG.save()
 from switchmap.db.table import location as testimport
 from switchmap.db.models import Location
 from switchmap.db.table import RLocation
+from switchmap.db.table import ILocation
 from switchmap.db import models
 
 from tests.testlib_ import db
@@ -63,12 +64,8 @@ class TestSuite(unittest.TestCase):
 
     def test_idx_exists(self):
         """Testing function idx_exists."""
-        # Test existence of first record
-        tester = testimport.idx_exists(1)
-        self.assertEqual(False, tester)
-
         # Create record
-        row = Location(
+        row = ILocation(
             name=data.random_string(),
             company_name=data.random_string(),
             address_0=data.random_string(),
@@ -83,22 +80,159 @@ class TestSuite(unittest.TestCase):
             enabled=1
         )
 
+        # Test before insertion of an initial row
+        nonexistent = testimport.exists(row.name)
+        self.assertFalse(nonexistent)
+
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        tester = testimport.idx_exists(1)
-        self.assertEqual(True, tester)
+        preliminary_result = testimport.exists(row.name)
+        self.assertTrue(preliminary_result)
+        self.assertEqual(_convert(preliminary_result), _convert(row))
+
+        # Test idx_index function
+        result = testimport.idx_exists(preliminary_result.idx_location)
+        self.assertTrue(result)
+
+    def test_exists(self):
+        """Testing function exists."""
+        # Create record
+        row = ILocation(
+            name=data.random_string(),
+            company_name=data.random_string(),
+            address_0=data.random_string(),
+            address_1=data.random_string(),
+            address_2=data.random_string(),
+            city=data.random_string(),
+            state=data.random_string(),
+            country=data.random_string(),
+            postal_code=data.random_string(),
+            phone=data.random_string(),
+            notes=data.random_string(),
+            enabled=1
+        )
+
+        # Test before insertion of an initial row
+        result = testimport.exists(row.name)
+        self.assertFalse(result)
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        result = testimport.exists(row.name)
+        self.assertTrue(result)
+        self.assertEqual(_convert(result), _convert(row))
 
     def test_insert_row(self):
         """Testing function insert_row."""
-        pass
+        # Create record
+        row = ILocation(
+            name=data.random_string(),
+            company_name=data.random_string(),
+            address_0=data.random_string(),
+            address_1=data.random_string(),
+            address_2=data.random_string(),
+            city=data.random_string(),
+            state=data.random_string(),
+            country=data.random_string(),
+            postal_code=data.random_string(),
+            phone=data.random_string(),
+            notes=data.random_string(),
+            enabled=1
+        )
+
+        # Test before insertion of an initial row
+        result = testimport.exists(row.name)
+        self.assertFalse(result)
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        result = testimport.exists(row.name)
+        self.assertTrue(result)
+        self.assertEqual(_convert(result), _convert(row))
 
     def test_update_row(self):
         """Testing function update_row."""
-        pass
+        # Create record
+        row = ILocation(
+            name=data.random_string(),
+            company_name=data.random_string(),
+            address_0=data.random_string(),
+            address_1=data.random_string(),
+            address_2=data.random_string(),
+            city=data.random_string(),
+            state=data.random_string(),
+            country=data.random_string(),
+            postal_code=data.random_string(),
+            phone=data.random_string(),
+            notes=data.random_string(),
+            enabled=1
+        )
+
+        # Test before insertion of an initial row
+        result = testimport.exists(row.name)
+        self.assertFalse(result)
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        result = testimport.exists(row.name)
+        self.assertTrue(result)
+        self.assertEqual(_convert(result), _convert(row))
+
+        # Do an update
+        idx = result.idx_location
+        updated_row = ILocation(
+            name=data.random_string(),
+            company_name=row.company_name,
+            address_0=row.address_0,
+            address_1=row.address_1,
+            address_2=row.address_2,
+            city=row.city,
+            state=row.city,
+            country=row.country,
+            postal_code=row.postal_code,
+            phone=row.phone,
+            notes=data.random_string(),
+            enabled=row.enabled
+        )
+        testimport.update_row(idx, updated_row)
+
+        # Test the update
+        result = testimport.exists(updated_row.name)
+        self.assertTrue(result)
+        self.assertEqual(_convert(result), _convert(updated_row))
 
     def test__row(self):
         """Testing function _row."""
+        # This function is tested by all the other tests
         pass
+
+
+def _convert(row):
+    """Convert RLocation to ILocation record.
+
+    Args:
+        row: RLocation/ILocation record
+
+    Returns:
+        result: ILocation result
+
+    """
+    # Do conversion
+    result = ILocation(
+        name=row.name,
+        company_name=row.company_name,
+        address_0=row.address_0,
+        address_1=row.address_1,
+        address_2=row.address_2,
+        city=row.city,
+        state=row.city,
+        country=row.country,
+        postal_code=row.postal_code,
+        phone=row.phone,
+        notes=row.notes,
+        enabled=row.enabled
+    )
+    return result
 
 
 if __name__ == '__main__':
