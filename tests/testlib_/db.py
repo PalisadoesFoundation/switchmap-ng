@@ -46,7 +46,6 @@ The database under test must be named {}'''.format(expected)
         """
         # Drop all the tables
         with ENGINE.connect() as connection:
-            print('Peter 01')
             with Session(bind=connection) as session:
                 models.BASE.metadata.drop_all(session.get_bind())
 
