@@ -242,6 +242,9 @@ class Mac(BASE):
     idx_event = Column(
         ForeignKey('smap_event.idx_event'),
         nullable=False, index=True, default=1, server_default=text('1'))
+    idx_location = Column(
+        ForeignKey('smap_location.idx_location'),
+        nullable=False, index=True, default=1, server_default=text('1'))
     mac = Column(VARBINARY(256), nullable=True, default=Null)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
@@ -259,6 +262,11 @@ class Mac(BASE):
         Event,
         backref=backref(
             'mac_to_event', uselist=True, cascade='delete,all'))
+
+    mac_to_location = relationship(
+        Location,
+        backref=backref(
+            'mac_to_location', uselist=True, cascade='delete,all'))
 
 
 class MacIp(BASE):

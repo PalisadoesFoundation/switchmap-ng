@@ -1,6 +1,6 @@
 """Module for querying the MacPort table."""
 
-from sqlalchemy import select, update, and_, null
+from sqlalchemy import select, update, and_
 
 # Import project libraries
 from switchmap.db import db

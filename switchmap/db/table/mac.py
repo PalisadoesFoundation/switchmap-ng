@@ -1,6 +1,6 @@
 """Module for querying the Mac table."""
 
-from sqlalchemy import select, update, and_, null
+from sqlalchemy import select, update, null
 
 # Import project libraries
 from switchmap.db import db
@@ -15,7 +15,7 @@ def idx_exists(idx):
         idx: idx_mac
 
     Returns:
-        result: True if exists
+        result: RMac object
 
     """
     # Initialize key variables
@@ -23,15 +23,14 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(
-        Mac.idx_mac).where(Mac.idx_mac == idx)
-    rows = db.db_select(1097, statement)
+    statement = select(Mac).where(Mac.idx_mac == idx)
+    rows = db.db_select_row(1097, statement)
 
     # Return
     for row in rows:
         result = _row(row)
         break
-    return bool(result)
+    return result
 
 
 def exists(mac):
@@ -82,6 +81,7 @@ def insert_row(rows):
             Mac(
                 idx_oui=row.idx_oui,
                 idx_event=row.idx_event,
+                idx_location=row.idx_location,
                 mac=(
                     null() if bool(row.mac) is False else
                     row.mac.encode()),
@@ -111,6 +111,7 @@ def update_row(idx, row):
             {
                 'idx_oui': row.idx_oui,
                 'idx_event': row.idx_event,
+                'idx_location': row.idx_location,
                 'mac': (
                     null() if bool(row.mac) is False else
                     row.mac.encode()),
@@ -135,6 +136,7 @@ def _row(row):
         idx_mac=row.idx_mac,
         idx_oui=row.idx_oui,
         idx_event=row.idx_event,
+        idx_location=row.idx_location,
         mac=(
             None if bool(row.mac) is False else row.mac.decode()),
         enabled=row.enabled,

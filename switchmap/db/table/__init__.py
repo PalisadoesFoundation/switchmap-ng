@@ -60,10 +60,10 @@ IMacIp = namedtuple(
 
 RMac = namedtuple(
     'RMac',
-    '''idx_mac idx_oui mac idx_event enabled \
+    '''idx_mac idx_oui idx_event idx_location mac enabled \
 ts_modified ts_created''')
 IMac = namedtuple(
-    'IMac', 'idx_oui mac idx_event enabled')
+    'IMac', 'idx_oui idx_event idx_location mac enabled')
 
 REvent = namedtuple(
     'REvent', 'idx_event name enabled ts_modified ts_created')
