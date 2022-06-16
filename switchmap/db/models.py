@@ -122,6 +122,8 @@ class Device(BASE):
         VARBINARY(256), nullable=True, default=Null)
     hostname = Column(
         VARBINARY(256), nullable=True, default=Null)
+    name = Column(
+        VARBINARY(256), nullable=True, default=Null)
     sys_description = Column(
         VARBINARY(1024), nullable=True, default=Null)
     sys_objectid = Column(

@@ -15,7 +15,7 @@ def idx_exists(idx):
         idx: idx_device
 
     Returns:
-        result: True if exists
+        result: RDevice object
 
     """
     # Initialize key variables
@@ -23,14 +23,14 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select().where(Device.idx_device == idx)
+    statement = select(Device).where(Device.idx_device == idx)
     rows = db.db_select_row(1208, statement)
 
     # Return
     for row in rows:
         result = _row(row)
         break
-    return bool(result)
+    return result
 
 
 def exists(hostname):
@@ -85,6 +85,8 @@ def insert_row(rows):
                     null() if row.sys_name is None else row.sys_name.encode()),
                 hostname=(
                     null() if row.hostname is None else row.hostname.encode()),
+                name=(
+                    null() if row.name is None else row.name.encode()),
                 sys_description=(
                     null() if row.sys_description is None else
                     row.sys_description.encode()),
@@ -127,6 +129,9 @@ def update_row(idx, row):
                 'hostname': (
                     null() if bool(row.hostname) is False else
                     row.hostname.encode()),
+                'name': (
+                    null() if bool(row.name) is False else
+                    row.name.encode()),
                 'sys_description': (
                     null() if bool(row.sys_description) is False else
                     row.sys_description.encode()),
@@ -164,6 +169,8 @@ def _row(row):
             None if bool(row.sys_name) is False else row.sys_name.decode()),
         hostname=(
             None if bool(row.hostname) is False else row.hostname.decode()),
+        name=(
+            None if bool(row.name) is False else row.name.decode()),
         sys_description=(
             None if bool(row.sys_description) is False else
             row.sys_description.decode()),
