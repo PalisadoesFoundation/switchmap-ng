@@ -15,7 +15,7 @@ def idx_exists(idx):
         idx: idx_vlan
 
     Returns:
-        result: True if exists
+        result: RVlan object
 
     """
     # Initialize key variables
@@ -30,7 +30,7 @@ def idx_exists(idx):
     for row in rows:
         result = _row(row)
         break
-    return bool(result)
+    return result
 
 
 def exists(idx_device, vlan):

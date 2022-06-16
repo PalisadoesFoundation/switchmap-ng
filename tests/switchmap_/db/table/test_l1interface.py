@@ -66,11 +66,11 @@ class TestSuite(unittest.TestCase):
     def tearDownClass(cls):
         """Steps to execute when all tests are completed."""
         # Drop tables
-        # database = db.Database()
-        # database.drop()
+        database = db.Database()
+        database.drop()
 
         # Cleanup the
-        # CONFIG.cleanup()
+        CONFIG.cleanup()
 
     def test_idx_exists(self):
         """Testing function idx_exists."""
