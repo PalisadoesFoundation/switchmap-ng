@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the mib_essswitch module."""
+"""Test the location module."""
 
 import os
 import sys
@@ -80,6 +80,7 @@ class TestSuite(unittest.TestCase):
         # Test idx_index function
         result = testimport.idx_exists(preliminary_result.idx_location)
         self.assertTrue(result)
+        self.assertEqual(_convert(result), _convert(preliminary_result))
 
     def test_exists(self):
         """Testing function exists."""

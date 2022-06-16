@@ -15,7 +15,7 @@ def idx_exists(idx):
         idx: idx_oui
 
     Returns:
-        result: True if exists
+        result: ROui record
 
     """
     # Initialize key variables
@@ -23,14 +23,14 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(Oui.idx_oui).where(Oui.idx_oui == idx)
-    rows = db.db_select(1102, statement)
+    statement = select(Oui).where(Oui.idx_oui == idx)
+    rows = db.db_select_row(1102, statement)
 
     # Return
     for row in rows:
         result = _row(row)
         break
-    return bool(result)
+    return result
 
 
 def exists(oui):

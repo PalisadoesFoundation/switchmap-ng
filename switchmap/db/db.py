@@ -68,8 +68,8 @@ def db_select(error_code, statement):
     # Check to ensure the function executes the correct type of statement
     if isinstance(statement, Select) is False:
         log_message = ('''\
-Only the "Select" ORM expression is supported. Not "{}"'''.format(
-                type(statement)))
+Only the "Select" ORM expression is supported. Not "{}"\
+'''.format(type(statement)))
         log.log2die(error_code, log_message)
 
     # Process transaction

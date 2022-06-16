@@ -93,7 +93,7 @@ class Event(BASE):
 
     idx_event = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
-    event = Column(VARBINARY(256), unique=True)
+    name = Column(VARBINARY(256), unique=True)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,

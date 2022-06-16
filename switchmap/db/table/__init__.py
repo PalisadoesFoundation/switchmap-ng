@@ -65,9 +65,9 @@ IMac = namedtuple(
     'IMac', 'idx_oui mac idx_event enabled')
 
 REvent = namedtuple(
-    'REvent', 'idx_event event enabled ts_modified ts_created')
+    'REvent', 'idx_event name enabled ts_modified ts_created')
 IEvent = namedtuple(
-    'IEvent', 'event enabled')
+    'IEvent', 'name enabled')
 
 RMacPort = namedtuple(
     'RMacPort',

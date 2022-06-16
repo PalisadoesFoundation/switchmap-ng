@@ -15,7 +15,7 @@ def idx_exists(idx):
         idx: idx_event
 
     Returns:
-        result: True if exists
+        result: RLocation object
 
     """
     # Initialize key variables
@@ -23,14 +23,14 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(Event.idx_event).where(Event.idx_event == idx)
-    rows = db.db_select(1122, statement)
+    statement = select(Event).where(Event.idx_event == idx)
+    rows = db.db_select_row(1122, statement)
 
     # Return
     for row in rows:
         result = _row(row)
         break
-    return bool(result)
+    return result
 
 
 def exists(event):
@@ -48,7 +48,7 @@ def exists(event):
     rows = []
 
     # Get event from database
-    statement = select(Event).where(Event.event == event.encode())
+    statement = select(Event).where(Event.name == event.encode())
     rows = db.db_select_row(1207, statement)
 
     # Return
@@ -79,7 +79,7 @@ def insert_row(rows):
     for row in rows:
         inserts.append(
             Event(
-                event=row.event.encode(),
+                name=row.name.encode(),
                 enabled=row.enabled
             )
         )
@@ -104,7 +104,7 @@ def update_row(idx, row):
     statement = update(Event).where(
         Event.idx_event == idx).values(
             {
-                'event': row.event.encode(),
+                'name': row.name.encode(),
                 'enabled': row.enabled,
             }
         )
@@ -124,7 +124,7 @@ def _row(row):
     # Initialize key variables
     result = REvent(
         idx_event=row.idx_event,
-        event=row.event.decode(),
+        name=row.name.decode(),
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified
