@@ -23,15 +23,14 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(
-        MacPort.idx_macport).where(MacPort.idx_macport == idx)
-    rows = db.db_select(1099, statement)
+    statement = select(MacPort).where(MacPort.idx_macport == idx)
+    rows = db.db_select_row(1099, statement)
 
     # Return
     for row in rows:
         result = _row(row)
         break
-    return bool(result)
+    return result
 
 
 def exists(idx_l1interface, idx_mac):
