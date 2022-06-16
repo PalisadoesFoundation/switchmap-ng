@@ -15,7 +15,7 @@ def idx_exists(idx):
         idx: idx_macip
 
     Returns:
-        result: True if exists
+        result: RMacIp object
 
     """
     # Initialize key variables
@@ -23,15 +23,14 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(
-        MacIp.idx_macip).where(MacIp.idx_macip == idx)
-    rows = db.db_select(1098, statement)
+    statement = select(MacIp).where(MacIp.idx_macip == idx)
+    rows = db.db_select_row(1098, statement)
 
     # Return
     for row in rows:
         result = _row(row)
         break
-    return bool(result)
+    return result
 
 
 def exists(idx_device, idx_mac, ip_):
