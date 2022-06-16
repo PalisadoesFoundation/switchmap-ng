@@ -65,20 +65,7 @@ class TestSuite(unittest.TestCase):
     def test_idx_exists(self):
         """Testing function idx_exists."""
         # Create record
-        row = ILocation(
-            name=data.random_string(),
-            company_name=data.random_string(),
-            address_0=data.random_string(),
-            address_1=data.random_string(),
-            address_2=data.random_string(),
-            city=data.random_string(),
-            state=data.random_string(),
-            country=data.random_string(),
-            postal_code=data.random_string(),
-            phone=data.random_string(),
-            notes=data.random_string(),
-            enabled=1
-        )
+        row = _row()
 
         # Test before insertion of an initial row
         nonexistent = testimport.exists(row.name)
@@ -97,20 +84,7 @@ class TestSuite(unittest.TestCase):
     def test_exists(self):
         """Testing function exists."""
         # Create record
-        row = ILocation(
-            name=data.random_string(),
-            company_name=data.random_string(),
-            address_0=data.random_string(),
-            address_1=data.random_string(),
-            address_2=data.random_string(),
-            city=data.random_string(),
-            state=data.random_string(),
-            country=data.random_string(),
-            postal_code=data.random_string(),
-            phone=data.random_string(),
-            notes=data.random_string(),
-            enabled=1
-        )
+        row = _row()
 
         # Test before insertion of an initial row
         result = testimport.exists(row.name)
@@ -125,20 +99,7 @@ class TestSuite(unittest.TestCase):
     def test_insert_row(self):
         """Testing function insert_row."""
         # Create record
-        row = ILocation(
-            name=data.random_string(),
-            company_name=data.random_string(),
-            address_0=data.random_string(),
-            address_1=data.random_string(),
-            address_2=data.random_string(),
-            city=data.random_string(),
-            state=data.random_string(),
-            country=data.random_string(),
-            postal_code=data.random_string(),
-            phone=data.random_string(),
-            notes=data.random_string(),
-            enabled=1
-        )
+        row = _row()
 
         # Test before insertion of an initial row
         result = testimport.exists(row.name)
@@ -153,20 +114,7 @@ class TestSuite(unittest.TestCase):
     def test_update_row(self):
         """Testing function update_row."""
         # Create record
-        row = ILocation(
-            name=data.random_string(),
-            company_name=data.random_string(),
-            address_0=data.random_string(),
-            address_1=data.random_string(),
-            address_2=data.random_string(),
-            city=data.random_string(),
-            state=data.random_string(),
-            country=data.random_string(),
-            postal_code=data.random_string(),
-            phone=data.random_string(),
-            notes=data.random_string(),
-            enabled=1
-        )
+        row = _row()
 
         # Test before insertion of an initial row
         result = testimport.exists(row.name)
@@ -231,6 +179,34 @@ def _convert(row):
         phone=row.phone,
         notes=row.notes,
         enabled=row.enabled
+    )
+    return result
+
+
+def _row():
+    """Create an ILocation record.
+
+    Args:
+        None
+
+    Returns:
+        result: ILocation object
+
+    """
+    # Create result
+    result = ILocation(
+        name=data.random_string(),
+        company_name=data.random_string(),
+        address_0=data.random_string(),
+        address_1=data.random_string(),
+        address_2=data.random_string(),
+        city=data.random_string(),
+        state=data.random_string(),
+        country=data.random_string(),
+        postal_code=data.random_string(),
+        phone=data.random_string(),
+        notes=data.random_string(),
+        enabled=1
     )
     return result
 
