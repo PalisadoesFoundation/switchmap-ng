@@ -15,7 +15,7 @@ def idx_exists(idx):
         idx: idx_l1interface
 
     Returns:
-        result: True if exists
+        result: RL1Interface object
 
     """
     # Initialize key variables
@@ -23,14 +23,14 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(L1Interface).where(L1Interface == idx)
+    statement = select(L1Interface).where(L1Interface.idx_l1interface == idx)
     rows = db.db_select_row(1206, statement)
 
     # Return
     for row in rows:
         result = _row(row)
         break
-    return bool(result)
+    return result
 
 
 def exists(idx_device, ifindex):
