@@ -159,10 +159,11 @@ class Device():
                              layer1_data[ifstacklowerlayer])
 
                     else:
-                        (port_data['l1_vlan'],
-                         port_data['l1_nativevlan'],
-                         port_data['l1_trunk']) = _process_trunk(
-                             layer1_data[ifstackhigherlayer], higherlayers)
+                        meta = _process_trunk(
+                            layer1_data[ifstackhigherlayer], higherlayers)
+                        port_data['l1_vlan'] = meta.vlan
+                        port_data['l1_nativevlan'] = meta.nativevlan
+                        port_data['l1_trunk'] = meta.trunk
 
                 #############################################################
                 #
@@ -508,6 +509,7 @@ def _idle_since(device_dict):
     """
     # Initialize key variables
     idle_since = {}
+    now = int(time.time())
 
     # Get all the status of all the Ethernet ports
     if 'layer1' in device_dict:
@@ -518,6 +520,6 @@ def _idle_since(device_dict):
                             data_dict['ifAdminStatus'] == 1):
                         idle_since[ifindex] = None
                     else:
-                        idle_since[ifindex] = int(time.time())
+                        idle_since[ifindex] = now
     # Return
     return idle_since

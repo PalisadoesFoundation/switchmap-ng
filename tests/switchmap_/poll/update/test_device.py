@@ -4,6 +4,7 @@
 import os
 import sys
 import unittest
+import time
 from copy import deepcopy
 
 
@@ -33,12 +34,8 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.poll.update import device as testimport
-from switchmap.db.models import Oui
-from switchmap.db.table import ROui
-from switchmap.db.table import IOui
-from switchmap.db import models
+from switchmap import TrunkInterface
 
-from tests.testlib_ import db
 from tests.testlib_ import data
 
 
@@ -74,7 +71,7 @@ class TestSuiteDevice(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute when before tests start."""
+        """Steps to execute before tests start."""
         # Do nothing
         pass
 
@@ -93,7 +90,6 @@ class TestSuiteDevice(unittest.TestCase):
         # Get data
         result = self.test_object.process()
         expected = data.polled_data()
-        print('boo')
         self.assertEqual(result, expected)
 
 
@@ -105,10 +101,12 @@ class TestSuite(unittest.TestCase):
     #########################################################################
 
     polled_data = _prerequisites()
+    l1_data = polled_data.get('layer1')
+    ifindexes = ['1', '10', '11', '51']
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute when before tests start."""
+        """Steps to execute before tests start."""
         # Do nothing
         pass
 
@@ -119,7 +117,22 @@ class TestSuite(unittest.TestCase):
 
     def test__process_non_trunk(self):
         """Testing function _process_non_trunk."""
-        pass
+        # Initialize key variables
+        results = []
+        expecteds = [
+            TrunkInterface(vlan=None, nativevlan=None, trunk=False),
+            TrunkInterface(vlan=[99], nativevlan=1, trunk=False),
+            TrunkInterface(vlan=list(range(2039)), nativevlan=98, trunk=True)
+        ]
+
+        # Process data
+        for ifindex in self.ifindexes:
+            value = self.l1_data.get(ifindex)
+            results.append(testimport._process_non_trunk(value))
+
+        # Test
+        return
+        self.assertEqual(results, expecteds)
 
     def test__process_trunk(self):
         """Testing function _process_trunk."""
@@ -131,19 +144,61 @@ class TestSuite(unittest.TestCase):
 
     def test__is_ethernet(self):
         """Testing function _is_ethernet."""
-        pass
+        # Initialize key variables
+        results = []
+        expecteds = [True, True, True, False]
+
+        # Process data
+        for ifindex in self.ifindexes:
+            value = self.l1_data.get(ifindex)
+            results.append(testimport._is_ethernet(value))
+
+        # Test
+        self.assertEqual(results, expecteds)
 
     def test__vlan(self):
         """Testing function _vlan."""
-        pass
+        # Initialize key variables
+        results = []
+        expecteds = [True, True, True, False]
+
+        # Process data
+        for ifindex in self.ifindexes:
+            value = self.l1_data.get(ifindex)
+            results.append(testimport._vlan(value))
+
+        # Test
+        # print(results)
+        return
+        self.assertEqual(results, expecteds)
 
     def test__nativevlan(self):
         """Testing function _nativevlan."""
-        pass
+        # Initialize key variables
+        results = []
+        expecteds = [None, 1, 98, None]
+
+        # Process data
+        for ifindex in self.ifindexes:
+            value = self.l1_data.get(ifindex)
+            results.append(testimport._nativevlan(value))
+
+        # Test
+        self.assertEqual(results, expecteds)
 
     def test__duplex(self):
         """Testing function _duplex."""
-        pass
+        # Initialize key variables
+        results = []
+        expecteds = [0, 0, 2, 0]
+
+        # Process data
+        for ifindex in self.ifindexes:
+            value = self.l1_data.get(ifindex)
+            results.append(testimport._duplex(value))
+
+        # Test
+        self.assertEqual(results, expecteds)
 
     def test_get_duplex_value(self):
         """Testing function get_duplex_value."""
@@ -151,11 +206,51 @@ class TestSuite(unittest.TestCase):
 
     def test__trunk(self):
         """Testing function _trunk."""
-        pass
+        # Initialize key variables
+        results = []
+        expecteds = [False, False, True, False]
+
+        # Process data
+        for ifindex in self.ifindexes:
+            value = self.l1_data.get(ifindex)
+            results.append(testimport._trunk(value))
+
+        # Test
+        self.assertEqual(results, expecteds)
 
     def test__idle_since(self):
         """Testing function _idle_since."""
-        pass
+        # Initialize key variables
+        expecteds = [False, False, True, False]
+        start = int(time.time())
+
+        # Wait for the very beginning of the next second
+        while int(time.time()) == start:
+            pass
+        now = int(time.time())
+        expecteds = {
+            '1': now, '10': now, '11': None, '12': None,
+            '13': now, '14': now, '15': now,
+            '16': now, '17': now, '18': now,
+            '19': now, '2': now, '20': now,
+            '21': now, '22': now, '23': now,
+            '24': now, '25': now, '26': now,
+            '27': now, '28': now, '29': now,
+            '3': now, '30': now, '31': now,
+            '32': None, '33': None, '34': now, '35': now,
+            '36': now, '37': now, '38': now,
+            '39': now, '4': now, '40': now,
+            '41': now, '42': None, '43': None, '44': None,
+            '45': None, '46': now, '47': now, '48': now,
+            '49': None, '5': now, '6': now, '7': now,
+            '8': None, '9': now
+        }
+
+        # Process data
+        results = testimport._idle_since(self.polled_data)
+
+        # Test
+        self.assertEqual(results, expecteds)
 
 
 if __name__ == '__main__':

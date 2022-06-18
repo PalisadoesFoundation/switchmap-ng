@@ -55,7 +55,7 @@ class TestSuite(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute when before tests start."""
+        """Steps to execute before tests start."""
         # Create database tables
         models.create_all_tables()
 

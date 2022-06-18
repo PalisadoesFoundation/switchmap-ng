@@ -1,3 +1,3 @@
 from collections import namedtuple
 
-TrunkInterface = namedtuple('TrunkInterface', 'vlan nativevlan ethernet ')
+TrunkInterface = namedtuple('TrunkInterface', 'vlan nativevlan trunk ')
