@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the location module."""
+"""Test the zone module."""
 
 import os
 import sys
@@ -29,10 +29,10 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.db.table import location as testimport
-from switchmap.db.models import Location
-from switchmap.db.table import RLocation
-from switchmap.db.table import ILocation
+from switchmap.db.table import zone as testimport
+from switchmap.db.models import Zone
+from switchmap.db.table import RZone
+from switchmap.db.table import IZone
 from switchmap.db import models
 
 from tests.testlib_ import db
@@ -78,7 +78,7 @@ class TestSuite(unittest.TestCase):
         self.assertEqual(_convert(preliminary_result), _convert(row))
 
         # Test idx_index function
-        result = testimport.idx_exists(preliminary_result.idx_location)
+        result = testimport.idx_exists(preliminary_result.idx_zone)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(preliminary_result))
 
@@ -128,8 +128,8 @@ class TestSuite(unittest.TestCase):
         self.assertEqual(_convert(result), _convert(row))
 
         # Do an update
-        idx = result.idx_location
-        updated_row = ILocation(
+        idx = result.idx_zone
+        updated_row = IZone(
             name=data.random_string(),
             company_name=row.company_name,
             address_0=row.address_0,
@@ -157,17 +157,17 @@ class TestSuite(unittest.TestCase):
 
 
 def _convert(row):
-    """Convert RLocation to ILocation record.
+    """Convert RZone to IZone record.
 
     Args:
-        row: RLocation/ILocation record
+        row: RZone/IZone record
 
     Returns:
-        result: ILocation result
+        result: IZone result
 
     """
     # Do conversion
-    result = ILocation(
+    result = IZone(
         name=row.name,
         company_name=row.company_name,
         address_0=row.address_0,
@@ -185,17 +185,17 @@ def _convert(row):
 
 
 def _row():
-    """Create an ILocation record.
+    """Create an IZone record.
 
     Args:
         None
 
     Returns:
-        result: ILocation object
+        result: IZone object
 
     """
     # Create result
-    result = ILocation(
+    result = IZone(
         name=data.random_string(),
         company_name=data.random_string(),
         address_0=data.random_string(),

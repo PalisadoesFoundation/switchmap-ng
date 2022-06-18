@@ -36,7 +36,6 @@ def process(data, idx_event):
     macport(data)
 
 
-
 def device(data, idx_event):
     """Update the Device DB table.
 
@@ -52,7 +51,7 @@ def device(data, idx_event):
     exists = False
     hostname = data['misc']['host']
     row = IDevice(
-        idx_location=1,
+        idx_zone=1,
         idx_event=idx_event,
         hostname=hostname,
         sys_name=data['system']['SNMPv2-MIB']['sysName'][0],

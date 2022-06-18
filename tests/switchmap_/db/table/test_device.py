@@ -32,12 +32,12 @@ CONFIG.save()
 
 from switchmap.db.table import device as testimport
 from switchmap.db.table import event
-from switchmap.db.table import location
+from switchmap.db.table import zone
 from switchmap.db.models import Device
 from switchmap.db.table import RDevice
 from switchmap.db.table import IDevice
 from switchmap.db.table import IEvent
-from switchmap.db.table import ILocation
+from switchmap.db.table import IZone
 from switchmap.db import models
 
 from tests.testlib_ import db
@@ -138,7 +138,7 @@ class TestSuite(unittest.TestCase):
         # Do an update
         idx = result.idx_device
         updated_row = IDevice(
-            idx_location=row.idx_location,
+            idx_zone=row.idx_zone,
             idx_event=row.idx_event,
             sys_name=row.sys_name,
             hostname=data.random_string(),
@@ -174,7 +174,7 @@ def _convert(row):
     """
     # Do conversion
     result = IDevice(
-        idx_location=row.idx_location,
+        idx_zone=row.idx_zone,
         idx_event=row.idx_event,
         sys_name=row.sys_name,
         hostname=row.hostname,
@@ -200,7 +200,7 @@ def _row():
     """
     # Create result
     result = IDevice(
-        idx_location=1,
+        idx_zone=1,
         idx_event=1,
         sys_name=data.random_string(),
         hostname=data.random_string(),
@@ -231,8 +231,8 @@ def _prerequisites():
             enabled=1
             )
     )
-    location.insert_row(
-        ILocation(
+    zone.insert_row(
+        IZone(
             name=data.random_string(),
             company_name=data.random_string(),
             address_0=data.random_string(),

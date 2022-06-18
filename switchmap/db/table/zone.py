@@ -1,22 +1,22 @@
-"""Module for querying the Location table."""
+"""Module for querying the Zone table."""
 
 
 from sqlalchemy import select, update, null
 
 # Import project libraries
 from switchmap.db import db
-from switchmap.db.models import Location
-from switchmap.db.table import RLocation
+from switchmap.db.models import Zone
+from switchmap.db.table import RZone
 
 
 def idx_exists(idx):
     """Determine whether primary key exists.
 
     Args:
-        idx: idx_location
+        idx: idx_zone
 
     Returns:
-        result: RLocation record
+        result: RZone record
 
     """
     # Initialize key variables
@@ -24,7 +24,7 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(Location).where(Location.idx_location == idx)
+    statement = select(Zone).where(Zone.idx_zone == idx)
     rows = db.db_select_row(1204, statement)
 
     # Return
@@ -35,13 +35,13 @@ def idx_exists(idx):
 
 
 def exists(name):
-    """Determine whether name exists in the Location table.
+    """Determine whether name exists in the Zone table.
 
     Args:
-        name: Location
+        name: Zone
 
     Returns:
-        result: RLocation tuple
+        result: RZone tuple
 
     """
     # Initialize key variables
@@ -49,7 +49,7 @@ def exists(name):
     rows = []
 
     # Get name from database
-    statement = select(Location).where(Location.name == name.encode())
+    statement = select(Zone).where(Zone.name == name.encode())
     rows = db.db_select_row(1107, statement)
 
     # Return
@@ -60,10 +60,10 @@ def exists(name):
 
 
 def insert_row(rows):
-    """Create a Location table entry.
+    """Create a Zone table entry.
 
     Args:
-        rows: ILocation objects
+        rows: IZone objects
 
     Returns:
         None
@@ -79,7 +79,7 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            Location(
+            Zone(
                 name=(
                     null() if bool(row.name) is False else
                     row.name.encode()),
@@ -123,19 +123,19 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a Location table entry.
+    """Upadate a Zone table entry.
 
     Args:
-        idx: idx_location value
-        row: ILocation object
+        idx: idx_zone value
+        row: IZone object
 
     Returns:
         None
 
     """
     # Update
-    statement = update(Location).where(
-        Location.idx_location == idx).values(
+    statement = update(Zone).where(
+        Zone.idx_zone == idx).values(
             {
                 'name': (
                     null() if bool(row.name) is False else
@@ -180,15 +180,15 @@ def _row(row):
     """Convert table row to tuple.
 
     Args:
-        row: Location row
+        row: Zone row
 
     Returns:
-        result: RLocation tuple
+        result: RZone tuple
 
     """
     # Initialize key variables
-    result = RLocation(
-        idx_location=row.idx_location,
+    result = RZone(
+        idx_zone=row.idx_zone,
         name=(
             None if row.name is None else row.name.decode()),
         company_name=(

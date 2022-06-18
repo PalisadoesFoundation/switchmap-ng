@@ -15,7 +15,7 @@ def idx_exists(idx):
         idx: idx_event
 
     Returns:
-        result: RLocation object
+        result: RZone object
 
     """
     # Initialize key variables

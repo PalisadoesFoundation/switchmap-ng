@@ -32,13 +32,13 @@ CONFIG.save()
 
 from switchmap.db.table import l1interface as testimport
 from switchmap.db.table import event
-from switchmap.db.table import location
+from switchmap.db.table import zone
 from switchmap.db.table import device
 from switchmap.db.models import L1Interface
 from switchmap.db.table import RL1Interface
 from switchmap.db.table import IL1Interface
 from switchmap.db.table import IEvent
-from switchmap.db.table import ILocation
+from switchmap.db.table import IZone
 from switchmap.db.table import IDevice
 from switchmap.db import models
 
@@ -263,8 +263,8 @@ def _prerequisites():
             enabled=1
             )
     )
-    location.insert_row(
-        ILocation(
+    zone.insert_row(
+        IZone(
             name=data.random_string(),
             company_name=data.random_string(),
             address_0=data.random_string(),
@@ -281,7 +281,7 @@ def _prerequisites():
     )
     device.insert_row(
         IDevice(
-            idx_location=1,
+            idx_zone=1,
             idx_event=1,
             sys_name=data.random_string(),
             hostname=data.random_string(),
