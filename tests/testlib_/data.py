@@ -77,11 +77,11 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 100000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: null
-    jm_trunk: false
-    jm_vlan: null
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: null
+    l1_trunk: false
+    l1_vlan: null
   '10':
     dot3StatsDuplexStatus: 1
     ifAdminStatus: 2
@@ -100,11 +100,11 @@ layer1:
     ifPhysAddress: 001f9edf1a48
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -133,11 +133,11 @@ layer1:
     ifPhysAddress: 001f9edf1a49
     ifSpeed: 100000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 98
-    jm_trunk: true
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 98
+    l1_trunk: true
+    l1_vlan:
     - 0
     - 1
     - 2
@@ -2979,11 +2979,11 @@ layer1:
     ifPhysAddress: 001f9edf1a4a
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 98
-    jm_trunk: true
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 98
+    l1_trunk: true
+    l1_vlan:
     - 0
     - 1
     - 2
@@ -5822,11 +5822,11 @@ layer1:
     ifPhysAddress: 001f9edf1a4b
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -5852,11 +5852,11 @@ layer1:
     ifPhysAddress: 001f9edf1a4c
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -5882,11 +5882,11 @@ layer1:
     ifPhysAddress: 001f9edf1a4d
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -5912,11 +5912,11 @@ layer1:
     ifPhysAddress: 001f9edf1a4e
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -5942,11 +5942,11 @@ layer1:
     ifPhysAddress: 001f9edf1a4f
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -5972,11 +5972,11 @@ layer1:
     ifPhysAddress: 001f9edf1a50
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6002,11 +6002,11 @@ layer1:
     ifPhysAddress: 001f9edf1a51
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6032,11 +6032,11 @@ layer1:
     ifPhysAddress: 001f9edf1a40
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6062,11 +6062,11 @@ layer1:
     ifPhysAddress: 001f9edf1a52
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6092,11 +6092,11 @@ layer1:
     ifPhysAddress: 001f9edf1a53
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6122,11 +6122,11 @@ layer1:
     ifPhysAddress: 001f9edf1a54
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6152,11 +6152,11 @@ layer1:
     ifPhysAddress: 001f9edf1a55
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6182,11 +6182,11 @@ layer1:
     ifPhysAddress: 001f9edf1a56
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6212,11 +6212,11 @@ layer1:
     ifPhysAddress: 001f9edf1a57
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6242,11 +6242,11 @@ layer1:
     ifPhysAddress: 001f9edf1a58
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6272,11 +6272,11 @@ layer1:
     ifPhysAddress: 001f9edf1a59
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6302,11 +6302,11 @@ layer1:
     ifPhysAddress: 001f9edf1a5a
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6332,11 +6332,11 @@ layer1:
     ifPhysAddress: 001f9edf1a5b
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6362,11 +6362,11 @@ layer1:
     ifPhysAddress: 001f9edf1a41
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6392,11 +6392,11 @@ layer1:
     ifPhysAddress: 001f9edf1a5c
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6422,11 +6422,11 @@ layer1:
     ifPhysAddress: 001f9edf1a5d
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -6455,11 +6455,11 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: null
-    jm_trunk: false
-    jm_vlan: null
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: null
+    l1_trunk: false
+    l1_vlan: null
     lldpRemPortDesc: GigabitEthernet1/31
     lldpRemSysCapEnabled: '0010100000000000'
     lldpRemSysDesc: 'Cisco IOS Software, Catalyst 4500 L3 Switch Software (cat4500-ENTSERVICESK9-M),
@@ -6488,11 +6488,11 @@ layer1:
     ifPhysAddress: 001f9edf1a5f
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 98
-    jm_trunk: true
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 98
+    l1_trunk: true
+    l1_vlan:
     - 0
     - 1
     - 2
@@ -9331,11 +9331,11 @@ layer1:
     ifPhysAddress: 001f9edf1a60
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -9361,11 +9361,11 @@ layer1:
     ifPhysAddress: 001f9edf1a61
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -9391,11 +9391,11 @@ layer1:
     ifPhysAddress: 001f9edf1a62
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -9421,11 +9421,11 @@ layer1:
     ifPhysAddress: 001f9edf1a63
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -9451,11 +9451,11 @@ layer1:
     ifPhysAddress: 001f9edf1a64
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -9481,11 +9481,11 @@ layer1:
     ifPhysAddress: 001f9edf1a65
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -9511,11 +9511,11 @@ layer1:
     ifPhysAddress: 001f9edf1a42
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -9541,11 +9541,11 @@ layer1:
     ifPhysAddress: 001f9edf1a66
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -9571,11 +9571,11 @@ layer1:
     ifPhysAddress: 001f9edf1a67
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -9604,11 +9604,11 @@ layer1:
     ifPhysAddress: 001f9edf1a68
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 98
-    jm_trunk: true
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 98
+    l1_trunk: true
+    l1_vlan:
     - 0
     - 1
     - 2
@@ -12450,11 +12450,11 @@ layer1:
     ifPhysAddress: 001f9edf1a69
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 98
-    jm_trunk: true
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 98
+    l1_trunk: true
+    l1_vlan:
     - 0
     - 1
     - 2
@@ -15296,11 +15296,11 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: null
-    jm_trunk: false
-    jm_vlan: null
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: null
+    l1_trunk: false
+    l1_vlan: null
     lldpRemPortDesc: GigabitEthernet1/43
     lldpRemSysCapEnabled: '0010100000000000'
     lldpRemSysDesc: 'Cisco IOS Software, Catalyst 4500 L3 Switch Software (cat4500-ENTSERVICESK9-M),
@@ -15329,11 +15329,11 @@ layer1:
     ifPhysAddress: 001f9edf1a6b
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 98
-    jm_trunk: true
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 98
+    l1_trunk: true
+    l1_vlan:
     - 0
     - 1
     - 2
@@ -18172,11 +18172,11 @@ layer1:
     ifPhysAddress: 001f9edf1a6c
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -18202,11 +18202,11 @@ layer1:
     ifPhysAddress: 001f9edf1a6d
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -18232,11 +18232,11 @@ layer1:
     ifPhysAddress: 001f9edf1a6e
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -18262,11 +18262,11 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: null
-    jm_trunk: false
-    jm_vlan: null
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: null
+    l1_trunk: false
+    l1_vlan: null
     lldpRemPortDesc: zone1-01.example.org interface Gig 1/48
     lldpRemSysCapEnabled: '0010000000000000'
     lldpRemSysDesc: 'Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version
@@ -18292,11 +18292,11 @@ layer1:
     ifPhysAddress: 001f9edf1a43
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -18317,7 +18317,7 @@ layer1:
     ifPhysAddress: ''
     ifSpeed: 4294967295
     ifType: 1
-    jm_ethernet: false
+    l1_ethernet: false
   '51':
     cviRoutedVlanIfIndex:
     - 1
@@ -18337,7 +18337,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '52':
     ifAdminStatus: 1
     ifAlias: ''
@@ -18349,7 +18349,7 @@ layer1:
     ifPhysAddress: 001f9edf1a40
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '53':
     ifAdminStatus: 1
     ifAlias: ''
@@ -18361,7 +18361,7 @@ layer1:
     ifPhysAddress: 001f9edf1a69
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '54':
     ifAdminStatus: 1
     ifAlias: ''
@@ -18373,7 +18373,7 @@ layer1:
     ifPhysAddress: 001f9edf1a6b
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '55':
     ifAdminStatus: 1
     ifAlias: ''
@@ -18385,7 +18385,7 @@ layer1:
     ifPhysAddress: 001f9edf1a6c
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '56':
     ifAdminStatus: 1
     ifAlias: ''
@@ -18397,7 +18397,7 @@ layer1:
     ifPhysAddress: 001f9edf1a6a
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '59':
     ifAdminStatus: 1
     ifAlias: ''
@@ -18411,7 +18411,7 @@ layer1:
     ifPhysAddress: ''
     ifSpeed: 4294967295
     ifType: 24
-    jm_ethernet: false
+    l1_ethernet: false
   '6':
     dot3StatsDuplexStatus: 1
     ifAdminStatus: 2
@@ -18430,11 +18430,11 @@ layer1:
     ifPhysAddress: 001f9edf1a44
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -18461,7 +18461,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '61':
     cviRoutedVlanIfIndex:
     - 12
@@ -18481,7 +18481,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '64':
     cviRoutedVlanIfIndex:
     - 13
@@ -18501,7 +18501,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '65':
     cviRoutedVlanIfIndex:
     - 16
@@ -18521,7 +18521,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '66':
     ifAdminStatus: 1
     ifAlias: Trunk to zone1-02.example.org Gi1/32 Gi1/44
@@ -18539,7 +18539,7 @@ layer1:
     ifPhysAddress: 001f9edf1a6b
     ifSpeed: 2000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
     vlanTrunkPortDynamicState: 1
     vlanTrunkPortDynamicStatus: 1
     vlanTrunkPortEncapsulationType: 4
@@ -19960,7 +19960,7 @@ layer1:
     ifPhysAddress: 001f9edf1a5d
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '68':
     ifAdminStatus: 1
     ifAlias: ''
@@ -19972,7 +19972,7 @@ layer1:
     ifPhysAddress: 001f9edf1a4b
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '7':
     dot3StatsDuplexStatus: 1
     ifAdminStatus: 2
@@ -19991,11 +19991,11 @@ layer1:
     ifPhysAddress: 001f9edf1a45
     ifSpeed: 10000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -20014,7 +20014,7 @@ layer1:
     ifPhysAddress: 001f9edf1a4e
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '71':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20026,7 +20026,7 @@ layer1:
     ifPhysAddress: 001f9edf1a4c
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '72':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20038,7 +20038,7 @@ layer1:
     ifPhysAddress: 001f9edf1a4f
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '77':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20050,7 +20050,7 @@ layer1:
     ifPhysAddress: 001f9edf1a4a
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '78':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20062,7 +20062,7 @@ layer1:
     ifPhysAddress: 001f9edf1a62
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '79':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20074,7 +20074,7 @@ layer1:
     ifPhysAddress: 001f9edf1a4d
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '8':
     dot3StatsDuplexStatus: 3
     ifAdminStatus: 1
@@ -20093,11 +20093,11 @@ layer1:
     ifPhysAddress: 001f9edf1a46
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 2
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 2
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 21
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -20116,7 +20116,7 @@ layer1:
     ifPhysAddress: 001f9edf1a50
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '82':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20128,7 +20128,7 @@ layer1:
     ifPhysAddress: 001f9edf1a51
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '83':
     cviRoutedVlanIfIndex:
     - 18
@@ -20148,7 +20148,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '84':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20160,7 +20160,7 @@ layer1:
     ifPhysAddress: 001f9edf1a71
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '85':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20172,7 +20172,7 @@ layer1:
     ifPhysAddress: 001f9edf1a52
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '86':
     cviRoutedVlanIfIndex:
     - 19
@@ -20192,7 +20192,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '87':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20204,7 +20204,7 @@ layer1:
     ifPhysAddress: 001f9edf1a61
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '88':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20216,7 +20216,7 @@ layer1:
     ifPhysAddress: 001f9edf1a63
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '89':
     cviRoutedVlanIfIndex:
     - 100
@@ -20236,7 +20236,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '9':
     dot3StatsDuplexStatus: 1
     ifAdminStatus: 2
@@ -20255,11 +20255,11 @@ layer1:
     ifPhysAddress: 001f9edf1a47
     ifSpeed: 1000000000
     ifType: 6
-    jm_duplex: 0
-    jm_ethernet: true
-    jm_nativevlan: 1
-    jm_trunk: false
-    jm_vlan:
+    l1_duplex: 0
+    l1_ethernet: true
+    l1_nativevlan: 1
+    l1_trunk: false
+    l1_vlan:
     - 99
     vlanTrunkPortDynamicState: 2
     vlanTrunkPortDynamicStatus: 2
@@ -20278,7 +20278,7 @@ layer1:
     ifPhysAddress: 001f9edf1a53
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '91':
     cviRoutedVlanIfIndex:
     - 20
@@ -20298,7 +20298,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '92':
     ifAdminStatus: 1
     ifAlias: ''
@@ -20310,7 +20310,7 @@ layer1:
     ifPhysAddress: 001f9edf1a54
     ifSpeed: 0
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
   '93':
     cviRoutedVlanIfIndex:
     - 21
@@ -20330,7 +20330,7 @@ layer1:
     ifPhysAddress: 001f9edf1a7f
     ifSpeed: 1000000000
     ifType: 53
-    jm_ethernet: false
+    l1_ethernet: false
 layer2:
   '1':
     vtpVlanName: default
@@ -20808,6 +20808,20 @@ def config():
     """
     # Return
     return _dict(_CONFIG_YAML)
+
+
+def polled_data():
+    """Convert the __POLLED_DATA_YAML to a dict.
+
+    Args:
+        None
+
+    Returns:
+        result
+
+    """
+    # Return
+    return _dict(_POLLED_DATA_YAML)
 
 
 def random_string(length=10):

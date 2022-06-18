@@ -4,6 +4,8 @@
 import os
 import sys
 import unittest
+from copy import deepcopy
+
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -40,12 +42,35 @@ from tests.testlib_ import db
 from tests.testlib_ import data
 
 
+def _prerequisites():
+    """Create prerequisite data.
+
+    Strip out all l1_ keys from the data
+
+    Args:
+        None
+
+    Returns:
+        result: Stripped data
+
+    """
+    # Get data
+    result = deepcopy(data.polled_data())
+    for key, _ in result['layer1'].items():
+        if key.startswith('l1_'):
+            result['layer1'].pop(key)
+    return result
+
+
 class TestSuiteDevice(unittest.TestCase):
     """Checks all functions and methods."""
 
     #########################################################################
     # General object setup
     #########################################################################
+
+    polled_data = _prerequisites()
+    test_object = testimport.Device(polled_data)
 
     @classmethod
     def setUpClass(cls):
@@ -56,8 +81,8 @@ class TestSuiteDevice(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Steps to execute when all tests are completed."""
-        # Cleanup the config
-        CONFIG.cleanup()
+        # Do nothing
+        pass
 
     def test___init__(self):
         """Testing function __init__."""
@@ -65,7 +90,11 @@ class TestSuiteDevice(unittest.TestCase):
 
     def test_process(self):
         """Testing function process."""
-        pass
+        # Get data
+        result = self.test_object.process()
+        expected = data.polled_data()
+        print('boo')
+        self.assertEqual(result, expected)
 
 
 class TestSuite(unittest.TestCase):
@@ -75,6 +104,8 @@ class TestSuite(unittest.TestCase):
     # General object setup
     #########################################################################
 
+    polled_data = _prerequisites()
+
     @classmethod
     def setUpClass(cls):
         """Steps to execute when before tests start."""
@@ -84,8 +115,7 @@ class TestSuite(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Steps to execute when all tests are completed."""
-        # Cleanup the config
-        CONFIG.cleanup()
+        # Do nothing
 
     def test__process_non_trunk(self):
         """Testing function _process_non_trunk."""
@@ -132,3 +162,6 @@ if __name__ == '__main__':
 
     # Do the unit test
     unittest.main()
+
+    # Cleanup the config
+    CONFIG.cleanup()

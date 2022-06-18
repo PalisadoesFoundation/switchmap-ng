@@ -95,10 +95,10 @@ class Translator(object):
             The following Layer1 keys are presented by the ethernet_data
             method due to this instantiation:
 
-            jm_nativevlan: A vendor agnostic Native VLAN
-            jm_vlan: A list of vendor agnostic VLANs
-            jm_trunk: A vendor agnostic flag of "True" if the port is a Trunk
-            jm_duplex: A vendor agnostic status code for the duplex setting
+            l1_nativevlan: A vendor agnostic Native VLAN
+            l1_vlan: A list of vendor agnostic VLANs
+            l1_trunk: A vendor agnostic flag of "True" if the port is a Trunk
+            l1_duplex: A vendor agnostic status code for the duplex setting
 
         """
         # Initialize key variables
@@ -121,11 +121,11 @@ class Translator(object):
         # Create dict for layer1 Ethernet data
         for ifindex, metadata in yaml_data['layer1'].items():
             # Skip non Ethernet ports
-            if 'jm_ethernet' not in metadata:
+            if 'l1_ethernet' not in metadata:
                 continue
 
             # Process metadata
-            if bool(metadata['jm_ethernet']) is True:
+            if bool(metadata['l1_ethernet']) is True:
                 # Update ports
                 self._ports[int(ifindex)] = metadata
 

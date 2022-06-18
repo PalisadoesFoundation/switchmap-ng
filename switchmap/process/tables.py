@@ -196,16 +196,16 @@ class SearchFiles(object):
                 # Process each port on device
                 for _, port_dict in layer1_dict.items():
                     # Skip non ethernet ports
-                    if 'jm_ethernet' not in port_dict:
+                    if 'l1_ethernet' not in port_dict:
                         continue
 
                     # Process MAC addresses
-                    if ('jm_macs' in port_dict) and (
-                            bool(port_dict['jm_macs']) is True):
+                    if ('l1_macs' in port_dict) and (
+                            bool(port_dict['l1_macs']) is True):
 
                         # Create an ifIndex and device entry
                         # for each RARP entry
-                        for mac_addr in port_dict['jm_macs']:
+                        for mac_addr in port_dict['l1_macs']:
                             # Populate RARP table. Not all MACs have
                             # an associated ARP IP address (eg. multicast)
                             if mac_addr not in rarp_table:
@@ -278,12 +278,12 @@ class SearchFiles(object):
                                     ifalias][device_name].append(ifindex)
 
                     # Process MAC addresses
-                    if ('jm_macs' in port_dict) and (
-                            bool(port_dict['jm_macs']) is True):
+                    if ('l1_macs' in port_dict) and (
+                            bool(port_dict['l1_macs']) is True):
 
                         # Create an ifIndex and device entry
                         # for each RARP entry
-                        for mac_addr in port_dict['jm_macs']:
+                        for mac_addr in port_dict['l1_macs']:
                             # Skip unknown MAC addresses
                             if mac_addr not in rarp_table:
                                 continue
@@ -331,18 +331,18 @@ def _layer3_ok(port_dict):
     valid = True
 
     # Do a quick validation of required keys
-    keys = ['jm_ethernet', 'jm_trunk', 'ifAlias']
+    keys = ['l1_ethernet', 'l1_trunk', 'ifAlias']
     for key in keys:
         if key not in port_dict:
             valid = False
             return valid
 
     # Only interested in Ethernet ports
-    if bool(port_dict['jm_ethernet']) is False:
+    if bool(port_dict['l1_ethernet']) is False:
         valid = False
 
     # We are not interested in populating trunk port MAC data
-    if bool(port_dict['jm_trunk']) is True:
+    if bool(port_dict['l1_trunk']) is True:
         valid = False
 
     # Return

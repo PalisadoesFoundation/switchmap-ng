@@ -133,10 +133,10 @@ def l1interface(data):
                 row = IL1Interface(
                     idx_device=device_.idx_device,
                     ifindex=ifindex,
-                    duplex=interface.get('jm_duplex'),
-                    ethernet=int(bool(interface.get('jm_ethernet'))),
-                    nativevlan=interface.get('jm_nativevlan'),
-                    trunk=int(bool(interface.get('jm_trunk'))),
+                    duplex=interface.get('l1_duplex'),
+                    ethernet=int(bool(interface.get('l1_ethernet'))),
+                    nativevlan=interface.get('l1_nativevlan'),
+                    trunk=int(bool(interface.get('l1_trunk'))),
                     ifspeed=interface.get('ifSpeed'),
                     ifalias=interface.get('ifAlias'),
                     ifdescr=interface.get('ifDescr'),
@@ -160,10 +160,10 @@ def l1interface(data):
                 row = IL1Interface(
                     idx_device=device_.idx_device,
                     ifindex=ifindex,
-                    duplex=interface.get('jm_duplex'),
-                    ethernet=int(bool(interface.get('jm_ethernet'))),
-                    nativevlan=interface.get('jm_nativevlan'),
-                    trunk=int(bool(interface.get('jm_trunk'))),
+                    duplex=interface.get('l1_duplex'),
+                    ethernet=int(bool(interface.get('l1_ethernet'))),
+                    nativevlan=interface.get('l1_nativevlan'),
+                    trunk=int(bool(interface.get('l1_trunk'))),
                     ifspeed=interface.get('ifSpeed'),
                     ifalias=interface.get('ifAlias'),
                     ifdescr=interface.get('ifDescr'),
@@ -229,7 +229,7 @@ def vlan(data):
 
             # Process each Vlan
             if bool(exists) is True:
-                vlans = interface.get('jm_vlan')
+                vlans = interface.get('l1_vlan')
                 if isinstance(vlans, list) is True:
                     for next_vlan in vlans:
                         rows.append(
@@ -292,7 +292,7 @@ def mac(data, idx_event):
 
             # Process each Mac
             if bool(exists) is True:
-                these_macs = interface.get('jm_macs')
+                these_macs = interface.get('l1_macs')
                 if bool(these_macs) is True:
                     all_macs.extend(these_macs)
 
@@ -354,7 +354,7 @@ def macport(data):
 
             # Process each Mac
             if bool(l1_exists) is True:
-                _macs = interface.get('jm_macs')
+                _macs = interface.get('l1_macs')
                 if bool(_macs) is True:
                     for item in _macs:
                         # Ensure the Mac exists in the database
