@@ -210,10 +210,10 @@ class Device(object):
             The following Layer1 keys are presented by the ethernet_data
             method due to this instantiation:
 
-            jm_nativevlan: A vendor agnostic Native VLAN
-            jm_vlan: A list of vendor agnostic VLANs
-            jm_trunk: A vendor agnostic flag of "True" if the port is a Trunk
-            jm_duplex: A vendor agnostic status code for the duplex setting
+            l1_nativevlan: A vendor agnostic Native VLAN
+            l1_vlan: A list of vendor agnostic VLANs
+            l1_trunk: A vendor agnostic flag of "True" if the port is a Trunk
+            l1_duplex: A vendor agnostic status code for the duplex setting
 
         """
         # Initialize key variables
@@ -233,7 +233,7 @@ class Device(object):
             # Process port_data
             if _is_ethernet(port_data) is True:
                 # Update Ethernet status
-                port_data['jm_ethernet'] = True
+                port_data['l1_ethernet'] = True
 
                 # Get the ifIndex of the lower layer interface
                 ifstacklowerlayer = ifindex
@@ -255,15 +255,15 @@ class Device(object):
                     # This is an Ethernet port with no higher level
                     # interfaces. Use lower level ifIndex
                     if bool(ifstackhigherlayer) is False:
-                        (port_data['jm_vlan'],
-                         port_data['jm_nativevlan'],
-                         port_data['jm_trunk']) = _process_non_trunk(
+                        (port_data['l1_vlan'],
+                         port_data['l1_nativevlan'],
+                         port_data['l1_trunk']) = _process_non_trunk(
                              layer1_data[ifstacklowerlayer])
 
                     else:
-                        (port_data['jm_vlan'],
-                         port_data['jm_nativevlan'],
-                         port_data['jm_trunk']) = _process_trunk(
+                        (port_data['l1_vlan'],
+                         port_data['l1_nativevlan'],
+                         port_data['l1_trunk']) = _process_trunk(
                              layer1_data[ifstackhigherlayer], higherlayers)
 
                 #############################################################
@@ -273,11 +273,11 @@ class Device(object):
                 #############################################################
 
                 # Update duplex to universal switchmap.port_data value
-                port_data['jm_duplex'] = _duplex(deepcopy(port_data))
+                port_data['l1_duplex'] = _duplex(deepcopy(port_data))
 
             else:
                 # Update Ethernet status
-                port_data['jm_ethernet'] = False
+                port_data['l1_ethernet'] = False
 
             # Update the data
             updated_device_data['layer1'][ifindex] = port_data
@@ -361,7 +361,7 @@ def _process_trunk(port_data, higherlayers):
     # interfaces
     else:
         vlan = _vlan(port_data)
-        if 'jm_vlan' in port_data:
+        if 'l1_vlan' in port_data:
             vlan.extend(vlan)
         else:
             vlan = vlan
@@ -640,8 +640,8 @@ def _idle_since(device_dict):
     # Get all the status of all the Ethernet ports
     if 'layer1' in device_dict:
         for ifindex, data_dict in device_dict['layer1'].items():
-            if 'jm_ethernet' in data_dict:
-                if data_dict['jm_ethernet'] is True:
+            if 'l1_ethernet' in data_dict:
+                if data_dict['l1_ethernet'] is True:
                     if (data_dict['ifOperStatus'] == 1) and (
                             data_dict['ifAdminStatus'] == 1):
                         idle_since[ifindex] = None

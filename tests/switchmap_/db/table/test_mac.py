@@ -4,7 +4,6 @@
 import os
 import sys
 import unittest
-import random
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -32,13 +31,13 @@ CONFIG.save()
 
 from switchmap.db.table import mac as testimport
 from switchmap.db.table import event
-from switchmap.db.table import location
+from switchmap.db.table import zone
 from switchmap.db.table import oui
 from switchmap.db.models import Mac
 from switchmap.db.table import RMac
 from switchmap.db.table import IMac
 from switchmap.db.table import IEvent
-from switchmap.db.table import ILocation
+from switchmap.db.table import IZone
 from switchmap.db.table import IOui
 from switchmap.db import models
 
@@ -55,7 +54,7 @@ class TestSuite(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute when before tests start."""
+        """Steps to execute before tests start."""
         # Create database tables
         models.create_all_tables()
 
@@ -142,7 +141,7 @@ class TestSuite(unittest.TestCase):
         updated_row = Mac(
             idx_oui=row.idx_oui,
             idx_event=row.idx_event,
-            idx_location=row.idx_location,
+            idx_zone=row.idx_zone,
             mac=data.random_string(),
             enabled=row.enabled
         )
@@ -173,7 +172,7 @@ def _convert(row):
     result = IMac(
         idx_oui=row.idx_oui,
         idx_event=row.idx_event,
-        idx_location=row.idx_location,
+        idx_zone=row.idx_zone,
         mac=row.mac,
         enabled=row.enabled
     )
@@ -194,7 +193,7 @@ def _row():
     result = IMac(
         idx_oui=1,
         idx_event=1,
-        idx_location=1,
+        idx_zone=1,
         mac=data.random_string(),
         enabled=1
     )
@@ -218,8 +217,8 @@ def _prerequisites():
             enabled=1
             )
     )
-    location.insert_row(
-        ILocation(
+    zone.insert_row(
+        IZone(
             name=data.random_string(),
             company_name=data.random_string(),
             address_0=data.random_string(),

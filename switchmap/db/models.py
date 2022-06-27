@@ -34,15 +34,15 @@ _METADATA = BASE.metadata
 ###############################################################################
 
 
-class Location(BASE):
+class Zone(BASE):
     """Database table definition."""
 
-    __tablename__ = 'smap_location'
+    __tablename__ = 'smap_zone'
     __table_args__ = (
         {'mysql_engine': 'InnoDB'}
     )
 
-    idx_location = Column(
+    idx_zone = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
     name = Column(VARBINARY(256))
     company_name = Column(
@@ -112,8 +112,8 @@ class Device(BASE):
 
     idx_device = Column(
         BIGINT(20, unsigned=True), primary_key=True, unique=True)
-    idx_location = Column(
-        ForeignKey('smap_location.idx_location'),
+    idx_zone = Column(
+        ForeignKey('smap_zone.idx_zone'),
         nullable=False, index=True, default=1, server_default=text('1'))
     idx_event = Column(
         ForeignKey('smap_event.idx_event'),
@@ -138,10 +138,10 @@ class Device(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow)
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
-    device_to_location = relationship(
-        Location,
+    device_to_zone = relationship(
+        Zone,
         backref=backref(
-            'device_to_location', uselist=True, cascade='delete,all'))
+            'device_to_zone', uselist=True, cascade='delete,all'))
 
     device_to_event = relationship(
         Event,
@@ -242,8 +242,8 @@ class Mac(BASE):
     idx_event = Column(
         ForeignKey('smap_event.idx_event'),
         nullable=False, index=True, default=1, server_default=text('1'))
-    idx_location = Column(
-        ForeignKey('smap_location.idx_location'),
+    idx_zone = Column(
+        ForeignKey('smap_zone.idx_zone'),
         nullable=False, index=True, default=1, server_default=text('1'))
     mac = Column(VARBINARY(256), nullable=True, default=Null)
     enabled = Column(BIT(1), default=1)
@@ -263,10 +263,10 @@ class Mac(BASE):
         backref=backref(
             'mac_to_event', uselist=True, cascade='delete,all'))
 
-    mac_to_location = relationship(
-        Location,
+    mac_to_zone = relationship(
+        Zone,
         backref=backref(
-            'mac_to_location', uselist=True, cascade='delete,all'))
+            'mac_to_zone', uselist=True, cascade='delete,all'))
 
 
 class MacIp(BASE):

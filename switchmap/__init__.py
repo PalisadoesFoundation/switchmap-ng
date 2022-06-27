@@ -6,9 +6,10 @@ Manages parameters required by all classes in the module.
 """
 
 # Do library imports
-from switchmap.core import log
+from .core import log
+from .poll.update import TrunkInterface
 from .core.configuration import Config
-from .core.configuration import ConfigSNMP
+
 
 # Create global variables for the API
 SITE_PREFIX = '/switchmap-ng'

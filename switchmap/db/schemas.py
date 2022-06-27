@@ -20,7 +20,7 @@ from graphene_sqlalchemy_filter import FilterableConnectionField
 from switchmap.db.models import (
     Device as DeviceModel,
     L1Interface as L1InterfaceModel,
-    Location as LocationModel,
+    Zone as ZoneModel,
     MacIp as MacIpModel,
     Oui as OuiModel,
     Trunk as TrunkModel,
@@ -30,7 +30,7 @@ from switchmap.db.models import (
 # Import filters
 from switchmap.db.filters import (
     DeviceFilter,
-    LocationFilter,
+    ZoneFilter,
     L1InterfaceFilter,
     MacIpFilter,
     OuiFilter,
@@ -41,7 +41,7 @@ from switchmap.db.filters import (
 # Import attributes
 from switchmap.db.attributes import (
     DeviceAttribute,
-    LocationAttribute,
+    ZoneAttribute,
     L1InterfaceAttribute,
     MacIpAttribute,
     OuiAttribute,
@@ -74,13 +74,13 @@ class L1Interface(SQLAlchemyObjectType, L1InterfaceAttribute):
         interfaces = (graphene.relay.Node,)
 
 
-class Location(SQLAlchemyObjectType, LocationAttribute):
-    """Location node."""
+class Zone(SQLAlchemyObjectType, ZoneAttribute):
+    """Zone node."""
 
     class Meta:
         """Define the metadata."""
 
-        model = LocationModel
+        model = ZoneModel
         interfaces = (graphene.relay.Node,)
 
 
@@ -140,9 +140,9 @@ class Query(graphene.ObjectType):
         connection=L1Interface, filters=L1InterfaceFilter())
 
     # Results as a single entry filtered by 'id' and as a list
-    location = graphene.relay.Node.Field(Location)
-    all_location = FilterableConnectionField(
-        connection=Location, sort=None, filters=LocationFilter())
+    zone = graphene.relay.Node.Field(Zone)
+    all_zone = FilterableConnectionField(
+        connection=Zone, sort=None, filters=ZoneFilter())
 
     # Results as a single entry filtered by 'id' and as a list
     mac = graphene.relay.Node.Field(MacIp)

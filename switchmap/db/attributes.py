@@ -25,7 +25,7 @@ class DeviceAttribute():
     """
 
     idx = graphene.Int(description='Primary key index')
-    idx_location = graphene.Int(description='System location')
+    idx_zone = graphene.Int(description='System zone')
     sys_name = graphene.Int(description='System name')
     hostname = graphene.Int(description='System hostname')
     sys_description = graphene.Int(description='System description')
@@ -37,8 +37,8 @@ class DeviceAttribute():
     ts_created = graphene.String(description='Row Creation Timestamp')
 
 
-class LocationAttribute():
-    """Descriptive attributes of the Location table.
+class ZoneAttribute():
+    """Descriptive attributes of the Zone table.
 
     A generic class to mutualize description of attributes for both queries
     and mutations.
@@ -46,7 +46,7 @@ class LocationAttribute():
     """
 
     idx = graphene.Int(description='Primary key index')
-    name = graphene.String(description='Location name')
+    name = graphene.String(description='Zone name')
     company_name = graphene.String(description='Company name')
     address_0 = graphene.String(description='Address Line 0')
     address_1 = graphene.String(description='Address Line 1')

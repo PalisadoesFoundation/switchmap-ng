@@ -177,9 +177,9 @@ class BridgeQuery(Query):
 
         # Assign MACs to secondary key for final result
         for ifindex, hex_macaddresses in data_dict.items():
-            final[ifindex]['jm_macs'] = []
+            final[ifindex]['l1_macs'] = []
             for next_mac in hex_macaddresses:
-                final[ifindex]['jm_macs'].append(next_mac)
+                final[ifindex]['l1_macs'].append(next_mac)
 
         # Return
         return final
@@ -226,7 +226,7 @@ class BridgeQuery(Query):
             for dot1dbaseport, ifindex in baseportifindex.items():
                 if dot1dbaseport in dot1dbaseport_macs:
                     final[ifindex][
-                        'jm_macs'] = dot1dbaseport_macs[dot1dbaseport]
+                        'l1_macs'] = dot1dbaseport_macs[dot1dbaseport]
 
         # Return
         return final

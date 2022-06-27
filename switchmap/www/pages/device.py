@@ -336,8 +336,8 @@ class _Port(object):
         port_data = self.port_data
 
         # Get trunk string
-        if 'jm_trunk' in port_data:
-            if bool(port_data['jm_trunk']) is True:
+        if 'l1_trunk' in port_data:
+            if bool(port_data['l1_trunk']) is True:
                 result = True
 
         # Return
@@ -363,8 +363,8 @@ class _Port(object):
             trunk = 'Trunk'
 
             # Add the number of VLANs found on the trunk
-            if 'jm_vlan' in self.port_data:
-                vlans = self.port_data['jm_vlan']
+            if 'l1_vlan' in self.port_data:
+                vlans = self.port_data['l1_vlan']
                 if isinstance(vlans, list) is True:
                     if len(vlans) <= max_vlans:
                         trunk = (
@@ -396,8 +396,8 @@ class _Port(object):
 
         # Don't show manufacturer on trunk ports
         if bool(self.is_trunk()) is False:
-            if 'jm_macs' in port_data:
-                mac_addresses = port_data['jm_macs'][:4]
+            if 'l1_macs' in port_data:
+                mac_addresses = port_data['l1_macs'][:4]
 
         # Return
         return mac_addresses
@@ -454,16 +454,16 @@ class _Port(object):
         vlans = 'N/A'
 
         # Assign VLAN
-        if 'jm_trunk' in port_data:
-            if port_data['jm_trunk'] is False:
-                if 'jm_vlan' in port_data:
-                    if port_data['jm_vlan'] is not None:
+        if 'l1_trunk' in port_data:
+            if port_data['l1_trunk'] is False:
+                if 'l1_vlan' in port_data:
+                    if port_data['l1_vlan'] is not None:
                         values = [
-                            str(value) for value in port_data['jm_vlan']]
+                            str(value) for value in port_data['l1_vlan']]
                         vlans = ' '.join(values)
             else:
-                if 'jm_nativevlan' in port_data:
-                    vlans = str(port_data['jm_nativevlan'])
+                if 'l1_nativevlan' in port_data:
+                    vlans = str(port_data['l1_nativevlan'])
 
         # Return
         return vlans
@@ -518,8 +518,8 @@ class _Port(object):
         if _port_up(port_data) is False:
             duplex = 'N/A'
         else:
-            if 'jm_duplex' in port_data:
-                duplex = options[port_data['jm_duplex']]
+            if 'l1_duplex' in port_data:
+                duplex = options[port_data['l1_duplex']]
 
         # Return
         return duplex

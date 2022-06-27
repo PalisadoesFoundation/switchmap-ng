@@ -20,9 +20,9 @@ else:
 
 # Switchmap-NG standard imports
 from switchmap.db import models
-from switchmap.db.table import ILocation
+from switchmap.db.table import IZone
 from switchmap.db.table import IOui
-from switchmap.db.table import location
+from switchmap.db.table import zone
 from switchmap.db.table import oui
 
 
@@ -39,11 +39,11 @@ def main():
     # Create database
     models.create_all_tables()
 
-    # Create the default location
-    exists = location.idx_exists(1)
+    # Create the default zone
+    exists = zone.idx_exists(1)
     if bool(exists) is False:
-        location.insert_row(
-            ILocation(
+        zone.insert_row(
+            IZone(
                 name='Default',
                 company_name=None,
                 address_0=None,

@@ -15,7 +15,7 @@ from graphene_sqlalchemy_filter import FilterSet
 from switchmap.db.models import (
     Device as DeviceModel,
     L1Interface as L1InterfaceModel,
-    Location as LocationModel,
+    Zone as ZoneModel,
     MacIp as MacIpModel,
     Oui as OuiModel,
     Trunk as TrunkModel,
@@ -42,7 +42,7 @@ class DeviceFilter(FilterSet):
         model = DeviceModel
         fields = {
             'idx': _NUMERIC,
-            'idx_location': _NUMERIC,
+            'idx_zone': _NUMERIC,
             'sys_name': _STRING,
             'hostname': _STRING,
             'sys_description': _STRING,
@@ -55,13 +55,13 @@ class DeviceFilter(FilterSet):
         }
 
 
-class LocationFilter(FilterSet):
-    """Location custom filter."""
+class ZoneFilter(FilterSet):
+    """Zone custom filter."""
 
     class Meta:
         """Define the metadata."""
 
-        model = LocationModel
+        model = ZoneModel
         fields = {
             'idx': _NUMERIC,
             'name': _STRING,

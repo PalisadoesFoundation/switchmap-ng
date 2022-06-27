@@ -7,23 +7,23 @@ ROui = namedtuple(
 IOui = namedtuple(
     'IOui', 'oui organization enabled')
 
-RLocation = namedtuple(
-    'RLocation',
-    '''idx_location name company_name address_0 address_1 address_2 city \
+RZone = namedtuple(
+    'RZone',
+    '''idx_zone name company_name address_0 address_1 address_2 city \
 state country postal_code phone notes enabled ts_modified ts_created''')
-ILocation = namedtuple(
-    'ILocation',
+IZone = namedtuple(
+    'IZone',
     '''name company_name address_0 address_1 address_2 city state country \
 postal_code phone notes enabled''')
 
 RDevice = namedtuple(
     'RDevice',
-    '''idx_device idx_location idx_event sys_name hostname name \
+    '''idx_device idx_zone idx_event sys_name hostname name \
 sys_description sys_objectid sys_uptime last_polled \
 enabled ts_modified ts_created''')
 IDevice = namedtuple(
     'IDevice',
-    '''idx_location idx_event sys_name hostname name \
+    '''idx_zone idx_event sys_name hostname name \
 sys_description sys_objectid sys_uptime last_polled enabled''')
 
 RL1Interface = namedtuple(
@@ -60,10 +60,10 @@ IMacIp = namedtuple(
 
 RMac = namedtuple(
     'RMac',
-    '''idx_mac idx_oui idx_event idx_location mac enabled \
+    '''idx_mac idx_oui idx_event idx_zone mac enabled \
 ts_modified ts_created''')
 IMac = namedtuple(
-    'IMac', 'idx_oui idx_event idx_location mac enabled')
+    'IMac', 'idx_oui idx_event idx_zone mac enabled')
 
 REvent = namedtuple(
     'REvent', 'idx_event name enabled ts_modified ts_created')
