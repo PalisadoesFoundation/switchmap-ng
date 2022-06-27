@@ -36,6 +36,10 @@ else:
     sys.exit(2)
 
 
+# Import application libraries
+from tests.testlib_ import setup
+
+
 def main():
     """Test all the switchmap-ng modules with unittests.
 
@@ -91,12 +95,12 @@ def run_script(cli_string):
     """
     # Initialize key variables
     encoding = locale.getdefaultlocale()[1]
-    slurpy_returncode = ('----- switchmap-ng Return Code '
-                         '----------------------------------------')
-    slurpy_stdoutdata = ('----- switchmap-ng Test Output '
-                         '----------------------------------------')
-    slurpy_stderrdata = ('----- switchmap-ng Test Error '
-                         '-----------------------------------------')
+    test_returncode = (
+        '----- Test Error Return Code -----------------------------')
+    test_stdoutdata = (
+        '----- Test Output ----------------------------------------')
+    test_stderrdata = (
+        '----- Test Error -----------------------------------------')
 
     # Say what we are doing
     string2print = '\nRunning Command: {}'.format(cli_string)
@@ -106,17 +110,17 @@ def run_script(cli_string):
     do_command_list = list(cli_string.split(' '))
 
     # Create the subprocess object
-    process = subprocess.Popen(
-        do_command_list,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE)
-    stdoutdata, stderrdata = process.communicate()
-    returncode = process.returncode
+    with subprocess.Popen(
+            do_command_list,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE) as process:
+        stdoutdata, stderrdata = process.communicate()
+        returncode = process.returncode
 
     # Crash if the return code is not 0
     if returncode != 0:
         # Print the Return Code header
-        string2print = '\n{}'.format(slurpy_returncode)
+        string2print = '\n{}'.format(test_returncode)
         print(string2print)
 
         # Print the Return Code
@@ -124,7 +128,7 @@ def run_script(cli_string):
         print(string2print)
 
         # Print the STDOUT header
-        string2print = '\n{}\n'.format(slurpy_stdoutdata)
+        string2print = '\n{}\n'.format(test_stdoutdata)
         print(string2print)
 
         # Print the STDOUT
@@ -133,7 +137,7 @@ def run_script(cli_string):
             print(string2print)
 
         # Print the STDERR header
-        string2print = '\n{}\n'.format(slurpy_stderrdata)
+        string2print = '\n{}\n'.format(test_stderrdata)
         print(string2print)
 
         # Print the STDERR
@@ -146,8 +150,12 @@ def run_script(cli_string):
 
 
 if __name__ == '__main__':
-    # Test the configuration variables
-    unittest_setup.ready()
+    # Create configuration
+    config = setup.config()
+    config.save()
 
     # Do the unit test
     main()
+
+    # Cleanup
+    config.cleanup()
