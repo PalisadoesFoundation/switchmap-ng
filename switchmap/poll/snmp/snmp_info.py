@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-"""Switchmap-NG queries."""
+"""Module to aggregate query results."""
 
 import time
 from collections import defaultdict

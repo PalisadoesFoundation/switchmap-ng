@@ -50,7 +50,7 @@ def exists(name):
 
     # Get name from database
     statement = select(Zone).where(Zone.name == name.encode())
-    rows = db.db_select_row(1107, statement)
+    rows = db.db_select_row(1175, statement)
 
     # Return
     for row in rows:

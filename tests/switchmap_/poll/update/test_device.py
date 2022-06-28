@@ -59,7 +59,7 @@ def _prerequisites():
     return result
 
 
-class TestSuiteDevice(unittest.TestCase):
+class TestPollUpdateDevice(unittest.TestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -72,14 +72,19 @@ class TestSuiteDevice(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Steps to execute before tests start."""
-        # Do nothing
-        pass
+        # Load the configuration in case it's been deleted after loading the
+        # configuration above. Sometimes this happens when running
+        # `python3 -m unittest discover` where another the tearDownClass of
+        # another test module prematurely deletes the configuration required
+        # for this module
+        config = setup.config()
+        config.save()
 
     @classmethod
     def tearDownClass(cls):
         """Steps to execute when all tests are completed."""
-        # Do nothing
-        pass
+        # Cleanup the
+        CONFIG.cleanup()
 
     def test___init__(self):
         """Testing function __init__."""

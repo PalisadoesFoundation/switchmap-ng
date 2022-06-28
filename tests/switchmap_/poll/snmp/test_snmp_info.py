@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the iana_enterprise module."""
+"""Test the snmp_info module."""
 
 import unittest
 import os
@@ -29,11 +29,10 @@ CONFIG = setup.config()
 CONFIG.save()
 
 # Import other required libraries
-from switchmap.poll.snmp import iana_enterprise as test_class
 
 
-class TestMibIanaEnterprise(unittest.TestCase):
-    """Checks all class_config methods."""
+class TestSnmpInfo(unittest.TestCase):
+    """Checks all methods."""
 
     #########################################################################
     # General object setup
@@ -59,38 +58,53 @@ class TestMibIanaEnterprise(unittest.TestCase):
         # Cleanup the
         CONFIG.cleanup()
 
-    def test_enterprise(self):
-        """Testing method / function enterprise."""
-        # Initializing key variables
-        testobj = test_class.Query(sysobjectid='.1.2.3.4.5.6.100.101.102')
-        result = testobj.enterprise()
-        self.assertEqual(result, 100)
+    def test___init__(self):
+        """Testing function __init__."""
+        pass
 
-    def test_is_cisco(self):
-        """Testing method / function is_cisco."""
-        # Test for Cisco sysObjectID
-        testobj = test_class.Query(sysobjectid='.1.2.3.4.5.6.9.101.102')
-        result = testobj.is_cisco()
-        self.assertEqual(result, True)
+    def test_everything(self):
+        """Testing function everything."""
+        pass
 
-        # Test for fake vendor
-        testobj = test_class.Query(
-            sysobjectid='.1.2.3.4.5.6.100000000000000.101.102')
-        result = testobj.is_cisco()
-        self.assertEqual(result, False)
+    def test_misc(self):
+        """Testing function misc."""
+        pass
 
-    def test_is_juniper(self):
-        """Testing method / function is_juniper."""
-        # Test for Juniper sysObjectID
-        testobj = test_class.Query(sysobjectid='.1.2.3.4.5.6.2636.101.102')
-        result = testobj.is_juniper()
-        self.assertEqual(result, True)
+    def test_system(self):
+        """Testing function system."""
+        pass
 
-        # Test for fake vendor
-        testobj = test_class.Query(
-            sysobjectid='.1.2.3.4.5.6.100000000000000.101.102')
-        result = testobj.is_juniper()
-        self.assertEqual(result, False)
+    def test_layer1(self):
+        """Testing function layer1."""
+        pass
+
+    def test_layer2(self):
+        """Testing function layer2."""
+        pass
+
+    def test_layer3(self):
+        """Testing function layer3."""
+        pass
+
+    def test__add_data(self):
+        """Testing function _add_data."""
+        pass
+
+    def test__add_layer1(self):
+        """Testing function _add_layer1."""
+        pass
+
+    def test__add_layer2(self):
+        """Testing function _add_layer2."""
+        pass
+
+    def test__add_layer3(self):
+        """Testing function _add_layer3."""
+        pass
+
+    def test__add_system(self):
+        """Testing function _add_system."""
+        pass
 
 
 if __name__ == '__main__':

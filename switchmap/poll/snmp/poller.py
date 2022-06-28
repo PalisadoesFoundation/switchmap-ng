@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
-"""Switchmap-NG ingest cache daemon.
-
-Extracts agent data from cache directory files.
-
-"""
+"""SNMP Poller module."""
 
 # Switchmap imports
 from switchmap import Config, ConfigSNMP

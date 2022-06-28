@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the iana_enterprise module."""
+"""Test the poller module."""
 
 import unittest
 import os
@@ -29,11 +29,10 @@ CONFIG = setup.config()
 CONFIG.save()
 
 # Import other required libraries
-from switchmap.poll.snmp import iana_enterprise as test_class
 
 
-class TestMibIanaEnterprise(unittest.TestCase):
-    """Checks all class_config methods."""
+class TestSnmpPollerFunctions(unittest.TestCase):
+    """Checks all methods."""
 
     #########################################################################
     # General object setup
@@ -59,38 +58,45 @@ class TestMibIanaEnterprise(unittest.TestCase):
         # Cleanup the
         CONFIG.cleanup()
 
-    def test_enterprise(self):
-        """Testing method / function enterprise."""
-        # Initializing key variables
-        testobj = test_class.Query(sysobjectid='.1.2.3.4.5.6.100.101.102')
-        result = testobj.enterprise()
-        self.assertEqual(result, 100)
+    def test__do_poll(self):
+        """Testing function _do_poll."""
+        pass
 
-    def test_is_cisco(self):
-        """Testing method / function is_cisco."""
-        # Test for Cisco sysObjectID
-        testobj = test_class.Query(sysobjectid='.1.2.3.4.5.6.9.101.102')
-        result = testobj.is_cisco()
-        self.assertEqual(result, True)
 
-        # Test for fake vendor
-        testobj = test_class.Query(
-            sysobjectid='.1.2.3.4.5.6.100000000000000.101.102')
-        result = testobj.is_cisco()
-        self.assertEqual(result, False)
+class TestSnmpPoller(unittest.TestCase):
+    """Checks all methods."""
 
-    def test_is_juniper(self):
-        """Testing method / function is_juniper."""
-        # Test for Juniper sysObjectID
-        testobj = test_class.Query(sysobjectid='.1.2.3.4.5.6.2636.101.102')
-        result = testobj.is_juniper()
-        self.assertEqual(result, True)
+    #########################################################################
+    # General object setup
+    #########################################################################
 
-        # Test for fake vendor
-        testobj = test_class.Query(
-            sysobjectid='.1.2.3.4.5.6.100000000000000.101.102')
-        result = testobj.is_juniper()
-        self.assertEqual(result, False)
+    # Required
+    maxDiff = None
+
+    @classmethod
+    def setUpClass(cls):
+        """Steps to execute before tests start."""
+        # Load the configuration in case it's been deleted after loading the
+        # configuration above. Sometimes this happens when running
+        # `python3 -m unittest discover` where another the tearDownClass of
+        # another test module prematurely deletes the configuration required
+        # for this module
+        config = setup.config()
+        config.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Steps to execute when all tests are completed."""
+        # Cleanup the
+        CONFIG.cleanup()
+
+    def test___init__(self):
+        """Testing function __init__."""
+        pass
+
+    def test_query(self):
+        """Testing function query."""
+        pass
 
 
 if __name__ == '__main__':

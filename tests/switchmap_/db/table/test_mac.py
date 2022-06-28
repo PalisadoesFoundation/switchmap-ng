@@ -24,7 +24,7 @@ else:
     sys.exit(2)
 
 
-# Create the necessary configuration
+# Create the necessary configuration to load the module
 from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
@@ -45,7 +45,7 @@ from tests.testlib_ import db
 from tests.testlib_ import data
 
 
-class TestSuite(unittest.TestCase):
+class TestDbTableMac(unittest.TestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -55,6 +55,14 @@ class TestSuite(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Steps to execute before tests start."""
+        # Load the configuration in case it's been deleted after loading the
+        # configuration above. Sometimes this happens when running
+        # `python3 -m unittest discover` where another the tearDownClass of
+        # another test module prematurely deletes the configuration required
+        # for this module
+        config = setup.config()
+        config.save()
+
         # Create database tables
         models.create_all_tables()
 

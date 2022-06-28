@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SNMP manager class."""
 
 import os

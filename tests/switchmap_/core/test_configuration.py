@@ -22,8 +22,10 @@ else:
 '''.format(_EXPECTED))
     sys.exit(2)
 
-from switchmap.core import configuration as test_module
 from tests.testlib_ import data, setup
+setup.setenv()
+
+from switchmap.core import configuration as test_module
 
 
 class Test_Config(unittest.TestCase):

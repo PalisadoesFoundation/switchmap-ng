@@ -51,7 +51,7 @@ def main():
 
     """
     # Determine unittest directory
-    test_dir = '{0}{1}switchmap{1}tests{1}switchmap_'.format(ROOT_DIR, os.sep)
+    test_dir = '{0}{1}tests{1}switchmap_'.format(ROOT_DIR, os.sep)
 
     # Set up parser
     parser = argparse.ArgumentParser()
@@ -64,7 +64,8 @@ def main():
     run_script(command)
 
     # Run the test
-    command = 'python3 -m unittest discover --start {}'.format(test_dir)
+    command = '''\
+python3 -m unittest discover --verbose --start {}'''.format(test_dir)
     if args.verbose is True:
         command = '{} --verbose'.format(command)
     run_script(command)
