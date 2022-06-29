@@ -177,6 +177,10 @@ def config():
 
 def _delete_files(directory):
     """Delete all files in directory."""
+    # Do nothing if the directory does not exist
+    if os.path.isdir(directory) is False:
+        return
+
     # Cleanup files in temp directories
     filenames = [filename for filename in os.listdir(
         directory) if os.path.isfile(
