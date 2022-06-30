@@ -66,7 +66,7 @@ def _prerequisites():
     return result
 
 
-def _insert_row():
+def _insert_data():
     """Insert new Event record.
 
     Args:
@@ -135,6 +135,11 @@ def _reset_db():
     # Create database tables
     models.create_all_tables()
 
+    # Create event record
+    _event = _insert_data()
+    idx_event = _event.idx_event
+    return idx_event
+
 
 class TestPollUpdateTopology(unittest.TestCase):
     """Checks all functions and methods."""
@@ -142,17 +147,6 @@ class TestPollUpdateTopology(unittest.TestCase):
     #########################################################################
     # General object setup
     #########################################################################
-
-    # Reset the database
-    _reset_db()
-
-    # Create event record
-    _event = _insert_row()
-    idx_event = _event.idx_event
-
-    # Process the device
-    _device = device.Device(_prerequisites())
-    data = _device.process()
 
     @classmethod
     def setUpClass(cls):
@@ -196,18 +190,22 @@ class TestPollUpdateTopology(unittest.TestCase):
         result = []
 
         # Reset the database
-        _reset_db()
+        idx_event = _reset_db()
+
+        # Process the device
+        _device = device.Device(_prerequisites())
+        data = _device.process()
 
         # pprint(self.data)
-        print('\n\n\n\n{}\n\n\n\n'.format(self.idx_event))
+        print('\n\n\n\n{}\n\n\n\n'.format(idx_event))
 
         # Process all the pre-requisite events
-        testimport.device(self.data, self.idx_event)
-        testimport.l1interface(self.data)
-        testimport.vlan(self.data)
-        testimport.mac(self.data, self.idx_event)
-        testimport.macip(self.data)
-        testimport.macport(self.data)
+        testimport.device(data, idx_event)
+        testimport.l1interface(data)
+        testimport.vlan(data)
+        testimport.mac(data, idx_event)
+        testimport.macip(data)
+        testimport.macport(data)
 
         # Verify macport data
         statement = select(MacPort)
