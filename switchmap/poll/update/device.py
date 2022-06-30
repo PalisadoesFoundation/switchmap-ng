@@ -495,31 +495,3 @@ def _trunk(port_data):
 
     # Return
     return trunk
-
-
-def _idle_since(device_dict):
-    """Get .
-
-    Args:
-        device_dict: Device information dictionary
-
-    Returns:
-        idle_since: Dict of idle since values per port
-
-    """
-    # Initialize key variables
-    idle_since = {}
-    now = int(time.time())
-
-    # Get all the status of all the Ethernet ports
-    if 'layer1' in device_dict:
-        for ifindex, data_dict in device_dict['layer1'].items():
-            if 'l1_ethernet' in data_dict:
-                if data_dict['l1_ethernet'] is True:
-                    if (data_dict['ifOperStatus'] == 1) and (
-                            data_dict['ifAdminStatus'] == 1):
-                        idle_since[ifindex] = None
-                    else:
-                        idle_since[ifindex] = now
-    # Return
-    return idle_since

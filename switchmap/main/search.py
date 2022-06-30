@@ -33,7 +33,7 @@ class Search(object):
     """
 
     def __init__(self, searchstring):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             searchstring: search string to look for

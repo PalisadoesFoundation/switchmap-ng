@@ -71,7 +71,7 @@ class DeviceRow(object):
     """Declaration of the rows in the Devices table."""
 
     def __init__(self, row_data):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             row_data: Row data

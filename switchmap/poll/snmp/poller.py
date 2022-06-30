@@ -24,7 +24,7 @@ class Poll():
     """
 
     def __init__(self, hostname):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             hostname: Hostname to poll

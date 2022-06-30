@@ -19,7 +19,7 @@ class CLI(object):
     """Class that manages the CLI."""
 
     def __init__(self, additional_help=''):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             additional_help: String for additional help information

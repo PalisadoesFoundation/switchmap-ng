@@ -21,7 +21,7 @@ class GetLog(object):
     """Class to manage the logging without duplicates."""
 
     def __init__(self):
-        """Method initializing the class."""
+        """Initialize the class."""
         # Define key variables
         app_name = 'switchmap'
         levels = {
@@ -111,7 +111,7 @@ class LogThread(threading.Thread):
     """
 
     def __init__(self, **kwargs):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             None

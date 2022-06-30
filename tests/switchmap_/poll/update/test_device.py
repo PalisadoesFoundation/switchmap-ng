@@ -4,9 +4,7 @@
 import os
 import sys
 import unittest
-import time
 from copy import deepcopy
-
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -53,9 +51,6 @@ def _prerequisites():
     """
     # Get data
     result = deepcopy(data.polled_data())
-    for key, _ in result['layer1'].items():
-        if key.startswith('l1_'):
-            result['layer1'].pop(key)
     return result
 
 
@@ -71,7 +66,7 @@ class TestPollUpdateDevice(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute before tests start."""
+        """Execute these steps before starting tests."""
         # Load the configuration in case it's been deleted after loading the
         # configuration above. Sometimes this happens when running
         # `python3 -m unittest discover` where another the tearDownClass of
@@ -82,7 +77,7 @@ class TestPollUpdateDevice(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Steps to execute when all tests are completed."""
+        """Execute these steps when all tests are completed."""
         # Cleanup the
         CONFIG.cleanup()
 
@@ -94,7 +89,7 @@ class TestPollUpdateDevice(unittest.TestCase):
         """Testing function process."""
         # Get data
         result = self.test_object.process()
-        expected = data.polled_data()
+        expected = data.polled_data(strip=False)
         self.assertEqual(result, expected)
 
 
@@ -107,17 +102,17 @@ class TestSuite(unittest.TestCase):
 
     polled_data = _prerequisites()
     l1_data = polled_data.get('layer1')
-    ifindexes = ['1', '10', '11', '51']
+    ifindexes = [1, 10, 11, 51]
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute before tests start."""
+        """Execute these steps before starting tests."""
         # Do nothing
         pass
 
     @classmethod
     def tearDownClass(cls):
-        """Steps to execute when all tests are completed."""
+        """Execute these steps when all tests are completed."""
         # Do nothing
 
     def test__process_non_trunk(self):
@@ -173,7 +168,6 @@ class TestSuite(unittest.TestCase):
             results.append(testimport._vlan(value))
 
         # Test
-        # print(results)
         return
         self.assertEqual(results, expecteds)
 
@@ -219,40 +213,6 @@ class TestSuite(unittest.TestCase):
         for ifindex in self.ifindexes:
             value = self.l1_data.get(ifindex)
             results.append(testimport._trunk(value))
-
-        # Test
-        self.assertEqual(results, expecteds)
-
-    def test__idle_since(self):
-        """Testing function _idle_since."""
-        # Initialize key variables
-        expecteds = [False, False, True, False]
-        start = int(time.time())
-
-        # Wait for the very beginning of the next second
-        while int(time.time()) == start:
-            pass
-        now = int(time.time())
-        expecteds = {
-            '1': now, '10': now, '11': None, '12': None,
-            '13': now, '14': now, '15': now,
-            '16': now, '17': now, '18': now,
-            '19': now, '2': now, '20': now,
-            '21': now, '22': now, '23': now,
-            '24': now, '25': now, '26': now,
-            '27': now, '28': now, '29': now,
-            '3': now, '30': now, '31': now,
-            '32': None, '33': None, '34': now, '35': now,
-            '36': now, '37': now, '38': now,
-            '39': now, '4': now, '40': now,
-            '41': now, '42': None, '43': None, '44': None,
-            '45': None, '46': now, '47': now, '48': now,
-            '49': None, '5': now, '6': now, '7': now,
-            '8': None, '9': now
-        }
-
-        # Process data
-        results = testimport._idle_since(self.polled_data)
 
         # Test
         self.assertEqual(results, expecteds)

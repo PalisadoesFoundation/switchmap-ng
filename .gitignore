@@ -1,6 +1,7 @@
 # Ignore all vim / vi temporary files
 # Created by https://www.gitignore.io/api/vim
 .idea*
+
 ### Vim ###
 # swap
 [._]*.s[a-w][a-z]
@@ -28,6 +29,7 @@ __pycache__/
 
 # Ignore hidden environment files / directory
 *.switchmap
+deprecated/
 
 # Ignore files in these directories and ALL subdirectories
 var/daemon/**

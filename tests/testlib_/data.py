@@ -4,6 +4,8 @@
 from random import choice
 from string import ascii_uppercase
 from io import StringIO
+from copy import deepcopy
+from pprint import pprint
 import yaml
 
 _CONFIG_YAML = '''
@@ -20810,18 +20812,37 @@ def config():
     return _dict(_CONFIG_YAML)
 
 
-def polled_data():
+def polled_data(strip=True):
     """Convert the __POLLED_DATA_YAML to a dict.
 
+    The YAML file was created from a dump of the SNMP dict created
+    from polling a device. It therefore has keys that this application adds for
+    ease of processing. Most notably Layer 1 keys that start with 'l1_'
+
     Args:
-        None
+        strip: Strip l1 keys if True
 
     Returns:
         result
 
     """
+    # Convert YAML to dict
+    item = _dict(_POLLED_DATA_YAML)
+
+    # Convert all the integer string keys to integer
+    result = _walk_dict(item)
+
+    # Remove all the extraneous L1 keys that start with 'l1_'
+    for ifindex, ifdata in result['layer1'].items():
+        if isinstance(ifdata, dict) is True and bool(strip) is True:
+            newifdata = {}
+            for key, value in ifdata.items():
+                if key.startswith('l1_') is False:
+                    newifdata[key] = value
+            result['layer1'][ifindex] = newifdata
+
     # Return
-    return _dict(_POLLED_DATA_YAML)
+    return result
 
 
 def random_string(length=10):
@@ -20852,4 +20873,56 @@ def _dict(item):
     # Return
     with StringIO(item) as _stream:
         result = yaml.safe_load(_stream)
+    return result
+
+
+def _walk_dict(_data):
+    """Convert dict keys to ints if possible.
+
+    Args:
+        _data: Multidimensional dict
+
+    Returns:
+        result: dict
+
+    """
+    # Initialize key variables
+    result = {}
+    _data = deepcopy(_data)
+
+    # Recursively get data
+    for key, value in _data.items():
+        if isinstance(value, dict):
+            walk_result = _walk_dict(value)
+            result[key] = _key_to_int(walk_result)
+        else:
+            result[key] = value
+
+    # Return
+    return result
+
+
+def _key_to_int(_data):
+    """Convert dict keys to ints if possible.
+
+    Args:
+        _data: dict
+
+    Returns:
+        result: dict
+
+    """
+    # Initialize key variables
+    result = {}
+    _data = deepcopy(_data)
+
+    if isinstance(_data, dict):
+        for key, value in _data.items():
+            try:
+                fixed_key = int(key)
+            except:
+                fixed_key = key
+            result[fixed_key] = value
+    else:
+        result = _data
     return result

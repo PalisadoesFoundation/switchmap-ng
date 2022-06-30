@@ -8,7 +8,7 @@ Manages parameters required by all classes in the module.
 # Do library imports
 from .core import log
 from .poll.update import TrunkInterface
-from .core.configuration import Config
+from .core.configuration import Config, ConfigSNMP
 
 
 # Create global variables for the API

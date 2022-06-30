@@ -43,7 +43,7 @@ class TestSnmpManagerValidate(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute before tests start."""
+        """Execute these steps before starting tests."""
         # Load the configuration in case it's been deleted after loading the
         # configuration above. Sometimes this happens when running
         # `python3 -m unittest discover` where another the tearDownClass of
@@ -54,7 +54,7 @@ class TestSnmpManagerValidate(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Steps to execute when all tests are completed."""
+        """Execute these steps when all tests are completed."""
         # Cleanup the
         CONFIG.cleanup()
 
@@ -83,7 +83,7 @@ class TestSnmpManagerInteract(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute before tests start."""
+        """Execute these steps before starting tests."""
         # Load the configuration in case it's been deleted after loading the
         # configuration above. Sometimes this happens when running
         # `python3 -m unittest discover` where another the tearDownClass of
@@ -94,7 +94,7 @@ class TestSnmpManagerInteract(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Steps to execute when all tests are completed."""
+        """Execute these steps when all tests are completed."""
         # Cleanup the
         CONFIG.cleanup()
 
@@ -159,7 +159,7 @@ class TestSnmpManagerSession(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute before tests start."""
+        """Execute these steps before starting tests."""
         # Load the configuration in case it's been deleted after loading the
         # configuration above. Sometimes this happens when running
         # `python3 -m unittest discover` where another the tearDownClass of
@@ -170,7 +170,7 @@ class TestSnmpManagerSession(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Steps to execute when all tests are completed."""
+        """Execute these steps when all tests are completed."""
         # Cleanup the
         CONFIG.cleanup()
 
@@ -207,7 +207,7 @@ class TestSnmpManagerFunctions(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        """Steps to execute before tests start."""
+        """Execute these steps before starting tests."""
         # Load the configuration in case it's been deleted after loading the
         # configuration above. Sometimes this happens when running
         # `python3 -m unittest discover` where another the tearDownClass of
@@ -218,7 +218,7 @@ class TestSnmpManagerFunctions(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        """Steps to execute when all tests are completed."""
+        """Execute these steps when all tests are completed."""
         # Cleanup the
         CONFIG.cleanup()
 

@@ -54,6 +54,7 @@ def device(data, idx_event):
         idx_zone=1,
         idx_event=idx_event,
         hostname=hostname,
+        name=hostname,
         sys_name=data['system']['SNMPv2-MIB']['sysName'][0],
         sys_description=data['system']['SNMPv2-MIB']['sysDescr'][0],
         sys_objectid=data['system']['SNMPv2-MIB']['sysObjectID'][0],
@@ -310,6 +311,7 @@ def mac(data, idx_event):
         exists = _mac.exists(item)
         row = IMac(
             idx_oui=lookup.get(item[:6], 1),
+            idx_zone=1,
             idx_event=idx_event,
             mac=item,
             enabled=1

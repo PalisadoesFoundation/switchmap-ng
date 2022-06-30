@@ -33,7 +33,7 @@ class Agent(object):
     """Agent class for daemons."""
 
     def __init__(self, parent, child=None):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             parent: Name of parent daemon
@@ -78,7 +78,7 @@ class AgentDaemon(Daemon):
     """Class that manages agent deamonization."""
 
     def __init__(self, agent):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             agent: agent object
@@ -120,7 +120,7 @@ class AgentCLI(object):
     """
 
     def __init__(self):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             None
@@ -251,7 +251,7 @@ class AgentAPI(Agent):
     """
 
     def __init__(self, parent, child):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             parent: Name of parent daemon
@@ -340,7 +340,7 @@ class StandaloneApplication(BaseApplication):
     """
 
     def __init__(self, app, options=None):
-        """Method initializing the class.
+        """Initialize the class.
 
         args:
             app: Flask application object of type Flask(__name__)

@@ -147,7 +147,7 @@ class PortRow(object):
     """Declaration of the rows in the Ports table."""
 
     def __init__(self, row):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             row: List of row values
@@ -589,7 +589,7 @@ class SystemRow(object):
     """Declaration of the rows in the Systems table."""
 
     def __init__(self, parameter, value):
-        """Method initializing the class.
+        """Initialize the class.
 
         Args:
             parameter: System parameter string
