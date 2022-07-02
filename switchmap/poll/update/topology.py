@@ -107,7 +107,7 @@ def l1interface(data):
     if bool(device_) is True:
 
         # Process each interface
-        for ifindex, interface in interfaces.items():
+        for ifindex, interface in sorted(interfaces.items()):
             exists = _l1interface.exists(device_.idx_device, ifindex)
 
             # Update the database
@@ -225,7 +225,7 @@ def vlan(data):
     if bool(device_) is True:
 
         # Process each interface
-        for ifindex, interface in interfaces.items():
+        for ifindex, interface in sorted(interfaces.items()):
             exists = _l1interface.exists(device_.idx_device, ifindex)
 
             # Process each Vlan
@@ -302,12 +302,12 @@ def mac(data, idx_event):
     unique_ouis = list(set([_[:6].lower() for _ in unique_macs]))
 
     # Process ouis
-    for item in unique_ouis:
+    for item in sorted(unique_ouis):
         exists = _oui.exists(item)
         lookup[item] = exists.idx_oui if bool(exists) is True else 1
 
     # Process macs
-    for item in unique_macs:
+    for item in sorted(unique_macs):
         exists = _mac.exists(item)
         row = IMac(
             idx_oui=lookup.get(item[:6], 1),
@@ -351,14 +351,14 @@ def macport(data):
 
     if bool(device_) is True:
         # Process each interface
-        for ifindex, interface in interfaces.items():
+        for ifindex, interface in sorted(interfaces.items()):
             l1_exists = _l1interface.exists(device_.idx_device, ifindex)
 
             # Process each Mac
             if bool(l1_exists) is True:
                 _macs = interface.get('l1_macs')
                 if bool(_macs) is True:
-                    for item in _macs:
+                    for item in sorted(_macs):
                         # Ensure the Mac exists in the database
                         mac_exists = _mac.exists(item)
                         if bool(mac_exists) is True:
@@ -430,12 +430,12 @@ def macip(data):
             updates.extend(result.updates)
 
     # Do the Updates
-    for item in updates:
+    for item in sorted(updates):
         _macip.update_row(
             item.idx_macip,
             item.row
         )
-    for item in adds:
+    for item in sorted(adds):
         _macip.insert_row(item)
 
     # Log

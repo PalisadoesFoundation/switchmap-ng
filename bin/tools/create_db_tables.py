@@ -60,8 +60,8 @@ def main():
         )
         oui.insert_row(
             IOui(
-                oui='Unknown',
-                organization='Unknown',
+                oui=None,
+                organization=None,
                 enabled=1,
             )
         )

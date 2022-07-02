@@ -5,7 +5,9 @@ from sqlalchemy import select, update, null
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import Mac
+from switchmap.db.models import Oui
 from switchmap.db.table import RMac
+from switchmap.db.table import oui
 
 
 def idx_exists(idx):
@@ -49,7 +51,7 @@ def exists(mac):
 
     # Get row from dataase
     statement = select(Mac).where(Mac.mac == mac.encode())
-    rows = db.db_select_row(1202, statement)
+    rows = db.db_select_row(1178, statement)
 
     # Return
     for row in rows:
@@ -62,7 +64,7 @@ def insert_row(rows):
     """Create a Mac table entry.
 
     Args:
-        rows: IMac objects
+        rows: TopologyMac objects
 
     Returns:
         None
@@ -77,9 +79,13 @@ def insert_row(rows):
 
     # Create objects
     for row in rows:
+        # Find the true idx_oui
+        idx_oui = oui.idx_oui(row.mac)
+
+        # Do the insertion
         inserts.append(
             Mac(
-                idx_oui=row.idx_oui,
+                idx_oui=idx_oui,
                 idx_event=row.idx_event,
                 idx_zone=row.idx_zone,
                 mac=(
@@ -105,11 +111,14 @@ def update_row(idx, row):
         None
 
     """
+    # Find the true idx_oui
+    idx_oui = oui.idx_oui(row.mac)
+
     # Update
     statement = update(Mac).where(
         Mac.idx_mac == idx).values(
             {
-                'idx_oui': row.idx_oui,
+                'idx_oui': idx_oui,
                 'idx_event': row.idx_event,
                 'idx_zone': row.idx_zone,
                 'mac': (
@@ -143,4 +152,28 @@ def _row(row):
         ts_created=row.ts_created,
         ts_modified=row.ts_modified
     )
+    return result
+
+
+def _idx_oui(row):
+    """Get the idx_oui value.
+
+    Args:
+        row: TopologyMac object
+
+    Returns:
+        result: idx_oui value
+
+    """
+    # Initialize key variables
+    result = 1
+
+    # Find the true idx_oui
+    if bool(row.mac) is True:
+        statement = select(Oui.idx_oui).where(
+            Oui.oui == row.mac[:6].encode())
+        items = db.db_select(1180, statement)
+        for item in items:
+            result = item.idx_oui
+            break
     return result

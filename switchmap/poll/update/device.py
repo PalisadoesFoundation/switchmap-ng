@@ -2,7 +2,6 @@
 
 # Standard imports
 from copy import deepcopy
-import time
 
 # Application imports
 from switchmap.core import log

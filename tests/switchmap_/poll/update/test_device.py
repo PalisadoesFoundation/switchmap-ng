@@ -102,7 +102,15 @@ class TestSuite(unittest.TestCase):
 
     polled_data = _prerequisites()
     l1_data = polled_data.get('layer1')
-    ifindexes = [1, 10, 11, 51]
+
+    # IfIndexes
+    # 18 = Layer3 VLAN interface (Enabled)
+    # 10103 = Layer1 interface. (Disabled)
+    # 10101 = Layer1 interface with a server on it. (Enabled)
+    # 1 = Layer2 VLAN (Disabled)
+    # 18 = Layer2 VLAN (Enabled)
+    # 10102 = Layer2 Trunk interface (Enabled)
+    ifindexes = [18, 10103, 10101, 1, 18, 10102]
 
     @classmethod
     def setUpClass(cls):
@@ -146,7 +154,7 @@ class TestSuite(unittest.TestCase):
         """Testing function _is_ethernet."""
         # Initialize key variables
         results = []
-        expecteds = [True, True, True, False]
+        expecteds = [False, True, True, False, False, True]
 
         # Process data
         for ifindex in self.ifindexes:
@@ -175,7 +183,7 @@ class TestSuite(unittest.TestCase):
         """Testing function _nativevlan."""
         # Initialize key variables
         results = []
-        expecteds = [None, 1, 98, None]
+        expecteds = [None, 1, 1, None, None, 98]
 
         # Process data
         for ifindex in self.ifindexes:
@@ -189,7 +197,7 @@ class TestSuite(unittest.TestCase):
         """Testing function _duplex."""
         # Initialize key variables
         results = []
-        expecteds = [0, 0, 2, 0]
+        expecteds = [0, 0, 2, 0, 0, 2]
 
         # Process data
         for ifindex in self.ifindexes:
@@ -207,7 +215,7 @@ class TestSuite(unittest.TestCase):
         """Testing function _trunk."""
         # Initialize key variables
         results = []
-        expecteds = [False, False, True, False]
+        expecteds = [False, False, False, False, False, True]
 
         # Process data
         for ifindex in self.ifindexes:

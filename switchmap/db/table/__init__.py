@@ -64,6 +64,8 @@ RMac = namedtuple(
 ts_modified ts_created''')
 IMac = namedtuple(
     'IMac', 'idx_oui idx_event idx_zone mac enabled')
+TopologyMac = namedtuple(
+    'TopologyMac', 'idx_event idx_zone mac enabled')
 
 REvent = namedtuple(
     'REvent', 'idx_event name enabled ts_modified ts_created')

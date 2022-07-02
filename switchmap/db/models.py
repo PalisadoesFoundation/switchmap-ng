@@ -73,7 +73,7 @@ class Oui(BASE):
     )
 
     idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
-    oui = Column(VARBINARY(256), unique=True)
+    oui = Column(VARBINARY(256), unique=True, nullable=True)
     organization = Column(VARBINARY(256), nullable=True, default=Null)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(

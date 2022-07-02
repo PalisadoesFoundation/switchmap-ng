@@ -70,6 +70,26 @@ class TestDbTableOui(unittest.TestCase):
         # Cleanup the
         CONFIG.cleanup()
 
+    def test_idx_oui(self):
+        """Testing function idx_oui."""
+        # Create record
+        row = _row()
+
+        # Test before insertion of an initial row
+        nonexistent = testimport.exists(row.oui)
+        self.assertFalse(nonexistent)
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        preliminary_result = testimport.exists(row.oui)
+        self.assertTrue(preliminary_result)
+        self.assertEqual(_convert(preliminary_result), _convert(row))
+
+        # Test idx_oui function
+        mac = '{}{}'.format(preliminary_result.oui, data.mac()[:6])
+        result = testimport.idx_oui(mac)
+        self.assertEqual(result, preliminary_result.idx_oui)
+
     def test_idx_exists(self):
         """Testing function idx_exists."""
         # Create record
@@ -186,7 +206,7 @@ def _row():
     """
     # Create result
     result = IOui(
-        oui=data.random_string(),
+        oui=data.mac()[:6],
         organization=data.random_string(),
         enabled=1
     )

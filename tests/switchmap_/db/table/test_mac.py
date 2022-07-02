@@ -113,6 +113,7 @@ class TestDbTableMac(unittest.TestCase):
         result = testimport.exists(row.mac)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
+        self.assertTrue(row.idx_oui != 1)
 
     def test_insert_row(self):
         """Testing function insert_row."""
@@ -128,6 +129,7 @@ class TestDbTableMac(unittest.TestCase):
         result = testimport.exists(row.mac)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
+        self.assertTrue(row.idx_oui != 1)
 
     def test_update_row(self):
         """Testing function update_row."""
@@ -143,6 +145,7 @@ class TestDbTableMac(unittest.TestCase):
         result = testimport.exists(row.mac)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
+        self.assertTrue(row.idx_oui != 1)
 
         # Do an update
         idx = result.idx_mac
@@ -150,7 +153,7 @@ class TestDbTableMac(unittest.TestCase):
             idx_oui=row.idx_oui,
             idx_event=row.idx_event,
             idx_zone=row.idx_zone,
-            mac=data.random_string(),
+            mac=data.mac(),
             enabled=row.enabled
         )
         testimport.update_row(idx, updated_row)
@@ -158,7 +161,14 @@ class TestDbTableMac(unittest.TestCase):
         # Test the update
         result = testimport.exists(updated_row.mac)
         self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(updated_row))
+
+        # Everything except the idx_oui should be the same.
+        # The newly generated MAC address will not have an OUI entry.
+        self.assertEqual(result.idx_event, updated_row.idx_event)
+        self.assertEqual(result.enabled, updated_row.enabled)
+        self.assertEqual(result.mac, updated_row.mac)
+        self.assertEqual(result.idx_zone, updated_row.idx_zone)
+        self.assertEqual(result.idx_event, updated_row.idx_event)
 
     def test__row(self):
         """Testing function _row."""
@@ -197,14 +207,30 @@ def _row():
         result: IMac object
 
     """
+    # Initialize key variables
+    mac = data.mac()
+
+    # Create an OUI entry
+    oui.insert_row(
+        IOui(
+            oui=mac[:6],
+            organization=data.random_string(),
+            enabled=1
+        )
+    )
+
+    # Get IDX OUI value
+    idx_oui = oui.idx_oui(mac)
+
     # Create result
     result = IMac(
-        idx_oui=1,
+        idx_oui=idx_oui,
         idx_event=1,
         idx_zone=1,
-        mac=data.random_string(),
+        mac=mac,
         enabled=1
     )
+
     return result
 
 
@@ -215,9 +241,12 @@ def _prerequisites():
         None
 
     Returns:
-        None
+        mac: MAC address for testing
 
     """
+    # Initialize key variables
+    mac = data.mac()
+
     # Create result
     event.insert_row(
         IEvent(
@@ -243,8 +272,8 @@ def _prerequisites():
     )
     oui.insert_row(
         IOui(
-            oui=data.random_string(),
-            organization=data.random_string(),
+            oui=None,
+            organization=None,
             enabled=1
         )
     )
