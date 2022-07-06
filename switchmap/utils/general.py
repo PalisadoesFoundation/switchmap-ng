@@ -15,7 +15,6 @@ import yaml
 # Switchmap-NG libraries
 from switchmap.utils import log
 from switchmap.utils import configuration
-from switchmap import switchmap
 
 
 def systemd_daemon(agent_name, action=None):
@@ -141,24 +140,21 @@ def cli_help():
 
 
 def root_directory():
-    """Determine the root directory in which switchmap.is installed.
+    """Determine the root directory in which switchmap is installed.
 
     Args:
         None
 
     Returns:
-        root_dir: Root directory
+        result: Root directory
 
     """
     # Get the directory of the switchmap library
-    switchmap_dir = switchmap.__path__[0]
-    components = switchmap_dir.split(os.sep)
-
-    # Determint the directory two levels above
-    root_dir = os.sep.join(components[0:-2])
+    libdir = os.path.dirname(os.path.realpath(__file__))
+    result = os.path.dirname(os.path.dirname(libdir))
 
     # Return
-    return root_dir
+    return result
 
 
 def get_hosts():

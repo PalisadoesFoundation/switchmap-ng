@@ -8,7 +8,7 @@ Contains all routes that switchmap.s Flask webserver uses
 from flask import Blueprint
 
 # Application imports
-from switchmap.www import CONFIG
+from switchmap import Config
 from switchmap.www.pages import device
 
 # Define the API_DEVICES global variable
@@ -27,7 +27,7 @@ def fetch_table(ip_address):
 
     """
     # Get HTML
-    html = device.create(CONFIG, ip_address)
+    html = device.create(Config, ip_address)
 
     # Return
     return html

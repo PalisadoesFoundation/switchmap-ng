@@ -4,6 +4,7 @@ import sys
 import getpass
 import os
 import random
+import re
 
 # Application libraries
 from switchmap.core import log
@@ -109,4 +110,38 @@ def random_hash():
     """
     # create result and return
     result = '{:032X}'.format(random.getrandbits(128))
+    return result
+
+
+def mac(_mac):
+    """Convert MAC address to a standardized format.
+
+    Args:
+        _mac: MAC address
+
+    Returns:
+        result: Fixed mac address
+
+    """
+    # Initialize key variables
+    regex = re.compile('[^a-fA-F0-9]')
+    result = regex.sub('', _mac)[:12].lower()
+    return result
+
+
+def root_directory():
+    """Determine the root directory in which switchmap is installed.
+
+    Args:
+        None
+
+    Returns:
+        result: Root directory
+
+    """
+    # Get the directory of the switchmap library
+    libdir = os.path.dirname(os.path.realpath(__file__))
+    result = os.path.dirname(os.path.dirname(libdir))
+
+    # Return
     return result

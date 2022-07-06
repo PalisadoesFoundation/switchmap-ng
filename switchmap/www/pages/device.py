@@ -12,7 +12,6 @@ from flask_table import Table, Col
 # Import switchmap.libraries
 from switchmap.topology.translator import Translator
 from switchmap.utils import general
-from switchmap.utils import log
 
 
 class _RawCol(Col):

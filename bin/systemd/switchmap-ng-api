@@ -22,25 +22,38 @@ else:
     sys.exit(2)
 
 # Switchmap libraries
-from switchmap.main import agent
-from switchmap.main.agent import Agent, AgentAPI
-from switchmap import API_EXECUTABLE, API_GUNICORN_AGENT
-from switchmap.utils import general
+from switchmap.core.agent import Agent, AgentCLI, AgentAPI
+from switchmap import AGENT_API, AGENT_API_CHILD
+from switchmap.www import API
+
+from switchmap import Config
 
 
 def main():
-    """Main function to start the Gunicorn WSGI."""
-    # Check user
-    general.check_user()
+    """Start the Gunicorn WSGI.
 
-    # Get PID filenename for Gunicorn
-    agent_gunicorn = Agent(API_GUNICORN_AGENT)
+    Args:
+        None
 
-    # Get configuration
-    agent_api = AgentAPI(API_EXECUTABLE, API_GUNICORN_AGENT)
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    config = Config()
+
+    # Create agent object for web_proxy
+    agent_gunicorn = Agent(AGENT_API_CHILD, config=config)
+
+    # Create agent for daemon
+    agent_api = AgentAPI(
+        AGENT_API,
+        AGENT_API_CHILD,
+        API,
+        config=config)
 
     # Do control (API first, Gunicorn second)
-    cli = agent.AgentCLI()
+    cli = AgentCLI()
     cli.control(agent_api)
     cli.control(agent_gunicorn)
 

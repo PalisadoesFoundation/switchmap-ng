@@ -5,9 +5,9 @@ from sqlalchemy import select, update, null
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import Mac
-from switchmap.db.models import Oui
 from switchmap.db.table import RMac
 from switchmap.db.table import oui
+from switchmap.core import general
 
 
 def idx_exists(idx):
@@ -35,11 +35,11 @@ def idx_exists(idx):
     return result
 
 
-def exists(mac):
+def exists(_mac):
     """Determine whether idx_event exists in the Mac table.
 
     Args:
-        mac: Mac address
+        _mac: Mac address
 
     Returns:
         result: RMac tuple
@@ -48,6 +48,9 @@ def exists(mac):
     # Initialize key variables
     result = False
     rows = []
+
+    # Fix the MAC address
+    mac = general.mac(_mac)
 
     # Get row from dataase
     statement = select(Mac).where(Mac.mac == mac.encode())
@@ -79,8 +82,11 @@ def insert_row(rows):
 
     # Create objects
     for row in rows:
+        # Fix the MAC address
+        mac = general.mac(row.mac)
+
         # Find the true idx_oui
-        idx_oui = oui.idx_oui(row.mac)
+        idx_oui = oui.idx_oui(mac)
 
         # Do the insertion
         inserts.append(
@@ -89,8 +95,7 @@ def insert_row(rows):
                 idx_event=row.idx_event,
                 idx_zone=row.idx_zone,
                 mac=(
-                    null() if bool(row.mac) is False else
-                    row.mac.encode()),
+                    null() if bool(mac) is False else mac.encode()),
                 enabled=row.enabled
             )
         )
@@ -111,8 +116,11 @@ def update_row(idx, row):
         None
 
     """
+    # Fix the MAC address
+    mac = general.mac(row.mac)
+
     # Find the true idx_oui
-    idx_oui = oui.idx_oui(row.mac)
+    idx_oui = oui.idx_oui(mac)
 
     # Update
     statement = update(Mac).where(
@@ -122,8 +130,7 @@ def update_row(idx, row):
                 'idx_event': row.idx_event,
                 'idx_zone': row.idx_zone,
                 'mac': (
-                    null() if bool(row.mac) is False else
-                    row.mac.encode()),
+                    null() if bool(mac) is False else mac.encode()),
                 'enabled': row.enabled
             }
         )
@@ -152,28 +159,4 @@ def _row(row):
         ts_created=row.ts_created,
         ts_modified=row.ts_modified
     )
-    return result
-
-
-def _idx_oui(row):
-    """Get the idx_oui value.
-
-    Args:
-        row: TopologyMac object
-
-    Returns:
-        result: idx_oui value
-
-    """
-    # Initialize key variables
-    result = 1
-
-    # Find the true idx_oui
-    if bool(row.mac) is True:
-        statement = select(Oui.idx_oui).where(
-            Oui.oui == row.mac[:6].encode())
-        items = db.db_select(1180, statement)
-        for item in items:
-            result = item.idx_oui
-            break
     return result

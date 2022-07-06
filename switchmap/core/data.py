@@ -43,33 +43,3 @@ def hashstring(string, sha=256, utf8=False):
 
     # Return
     return result
-
-
-def is_numeric(val):
-    """Check if argument is a number.
-
-    Args:
-        val: String to check
-
-    Returns:
-        True if a number
-
-    """
-    # Try edge case
-    if val is True:
-        return False
-    if val is False:
-        return False
-    if val is None:
-        return False
-
-    # Try conversions
-    try:
-        float(val)
-        return True
-    except ValueError:
-        return False
-    except TypeError:
-        return False
-    except:
-        return False

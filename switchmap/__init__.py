@@ -10,15 +10,12 @@ from .core import log
 from .poll.update import TrunkInterface
 from .core.configuration import Config, ConfigSNMP
 
-
 # Create global variables for the API
 SITE_PREFIX = '/switchmap-ng'
 API_PREFIX = '{}/api/v1'.format(SITE_PREFIX)
 API_STATIC_FOLDER = 'static/default'
 API_TEMPLATE_FOLDER = 'templates/default'
-API_EXECUTABLE = 'switchmap-ng-api'
-API_GUNICORN_AGENT = 'switchmap-ng-gunicorn'
-POLLER_EXECUTABLE = 'switchmap-ng-poller'
+AGENT_API_CHILD = 'switchmap-ng-gunicorn'
 AGENT_POLLER = 'Poller'
 AGENT_API = 'API'
 

@@ -7,7 +7,6 @@ Contains all routes that switchmap.s Flask webserver uses
 from flask import Flask, url_for
 
 # Switchmap-NG imports
-from switchmap import CONFIG
 from switchmap.utils import general
 
 # Do remaining switchmap-ng importations
@@ -39,6 +38,7 @@ API.jinja_env.globals['static'] = (
     lambda filename: url_for(
         'static', filename=filename)
 )
+
 
 @API.context_processor
 def inject():
