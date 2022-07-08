@@ -64,7 +64,7 @@ def exists(idx_l1interface, idx_mac):
     return result
 
 
-def find(idx_mac):
+def find_idx_mac(idx_mac):
     """Find all ports on which MAC address has been found.
 
     Args:

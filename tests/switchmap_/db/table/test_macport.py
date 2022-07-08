@@ -125,8 +125,8 @@ class TestDbTableMacPort(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
-    def test_find(self):
-        """Testing function find."""
+    def test_find_idx_mac(self):
+        """Testing function find_idx_mac."""
         # Initialize key variables
         finds = []
 
@@ -136,7 +136,7 @@ class TestDbTableMacPort(unittest.TestCase):
             exists = testimport.exists(row.idx_l1interface, row.idx_mac)
             if bool(exists) is False:
                 # Entry must not be found
-                result = testimport.find(row.idx_mac)
+                result = testimport.find_idx_mac(row.idx_mac)
                 if row.idx_mac not in finds:
                     self.assertFalse(bool(
                         testimport.exists(row.idx_l1interface, row.idx_mac)))
@@ -151,12 +151,12 @@ class TestDbTableMacPort(unittest.TestCase):
                     row.idx_l1interface, row.idx_mac)
                 self.assertTrue(bool(now_exists))
 
-                post_result = testimport.find(now_exists.idx_mac)
+                post_result = testimport.find_idx_mac(now_exists.idx_mac)
                 self.assertEqual(now_exists.idx_mac, row.idx_mac)
                 self.assertTrue(bool(post_result))
                 finds.append(now_exists.idx_mac)
             else:
-                result = testimport.find(row.idx_mac)
+                result = testimport.find_idx_mac(row.idx_mac)
                 self.assertTrue(bool(result))
                 if exists.idx_mac not in finds:
                     finds.append(exists.idx_mac)

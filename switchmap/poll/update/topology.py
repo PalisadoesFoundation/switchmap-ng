@@ -1,10 +1,10 @@
 """Module for updating the database with topology data."""
 
 import time
-import ipaddress
 import socket
 
 from switchmap.core import log
+from switchmap.core import general
 from switchmap.db.table import device as _device
 from switchmap.db.table import l1interface as _l1interface
 from switchmap.db.table import vlan as _vlan
@@ -465,25 +465,26 @@ def _process_macip(info, dns=True):
 
     # Process data
     for next_ip_addr, next_mac_addr in info.table.items():
-        # Create lower case versions of these important variables.
-        # Expand IPv6 address.
-        next_ip_addr = (
-            next_ip_addr if info.version == 4 else
-            ipaddress.ip_address(next_ip_addr).exploded)
-        next_ip_addr = next_ip_addr.lower()
-        next_mac_addr = next_mac_addr.lower()
+        # Create expanded lower case versions of the IP address
+        ipmeta = general.ipaddress(next_ip_addr)
+        if bool(ipmeta) is False:
+            continue
+        ip_address = ipmeta.address
+
+        # Create lowercase version of mac address
+        next_mac_addr = general.mac(next_mac_addr)
 
         # Update the database
         mac_exists = _mac.exists(next_mac_addr)
         if bool(mac_exists) is True:
             # Does the record exist?
             macip_exists = _macip.exists(
-                info.device.idx_device, mac_exists.idx_mac, next_ip_addr)
+                info.device.idx_device, mac_exists.idx_mac, ip_address)
 
             # Get hostname for DB
             if bool(dns) is True:
                 try:
-                    hostname = socket.gethostbyaddr(next_ip_addr)[0]
+                    hostname = socket.gethostbyaddr(ip_address)[0]
                 except:
                     hostname = None
             else:
@@ -493,7 +494,7 @@ def _process_macip(info, dns=True):
             row = IMacIp(
                 idx_device=info.device.idx_device,
                 idx_mac=mac_exists.idx_mac,
-                ip_=next_ip_addr,
+                ip_=ip_address,
                 hostname=hostname,
                 type=info.version,
                 enabled=1

@@ -5,6 +5,9 @@ Manages parameters required by all classes in the module.
 
 """
 
+# Standard imports
+from collections import namedtuple
+
 # Do library imports
 from .core import log
 from .poll.update import TrunkInterface
@@ -18,6 +21,10 @@ API_TEMPLATE_FOLDER = 'templates/default'
 AGENT_API_CHILD = 'switchmap-ng-gunicorn'
 AGENT_POLLER = 'Poller'
 AGENT_API = 'API'
+
+# Important tuples
+Found = namedtuple('Found', 'idx_l1interface')
+IP = namedtuple('IP', 'address version')
 
 
 def main():

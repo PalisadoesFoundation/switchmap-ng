@@ -5,10 +5,12 @@ import getpass
 import os
 import random
 import re
+import ipaddress as ipaddress_
 
 # Application libraries
 from switchmap.core import log
 from switchmap import Config
+from switchmap import IP
 
 
 def check_user():
@@ -144,4 +146,37 @@ def root_directory():
     result = os.path.dirname(os.path.dirname(libdir))
 
     # Return
+    return result
+
+
+def ipaddress(_ip):
+    """Validate an IP address.
+
+    Args:
+        _ip: IP address
+
+    Returns:
+        result: IP Object
+
+    """
+    # Initialize key variables
+    valid = False
+    address = None
+
+    # Check validity
+    try:
+        meta = ipaddress_.ip_address(_ip)
+        valid = True
+    except ValueError:
+        valid = False
+    except:
+        valid = False
+
+    # Return
+    if bool(valid) is False:
+        result = None
+    else:
+        # Create IP record
+        address = meta.exploded.lower()
+        result = IP(address=address, version=meta.version)
     return result

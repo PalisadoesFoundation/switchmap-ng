@@ -66,6 +66,30 @@ def exists(idx_device, idx_mac, ip_):
     return result
 
 
+def findip(ipaddress):
+    """Find IP address.
+
+    Args:
+        ipaddress: IP address
+
+    Returns:
+        result: RMacPort tuple
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get row from dataase
+    statement = select(MacIp).where(MacIp.ip_ == ipaddress.encode())
+    rows = db.db_select_row(1186, statement)
+
+    # Return
+    for row in rows:
+        result.append(_row(row))
+    return result
+
+
 def insert_row(rows):
     """Create a MacIp table entry.
 

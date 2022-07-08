@@ -9,13 +9,15 @@ Description:
         3) Hostnames
 
 """
-# Standard imports
-import re
 
 # Switchmap-NG imports
+from switchmap import Found
 from switchmap.utils import general
 from switchmap.core import general as _general
 from switchmap.db.table import mac
+from switchmap.db.table import macport
+from switchmap.db.table import macip
+from switchmap.db.table import l1interface
 
 
 class Search():
@@ -80,18 +82,31 @@ class Search():
             None
 
         Returns:
-            result: list of dicts that contain matching addresses
+            result: List of Found objects of interfaces that have data matching
+                the search string
 
         """
         # Initialize key variables
         result = []
-        # Return
+
+        # Find the MAC
         _mac = _general.mac(self._search)
         exists = mac.exists(_mac)
-        if bool(exists) is True:
-            pass
 
-        result = _macaddress(self._search, self.ifindex_data)
+        # Find the interface information
+        if bool(exists) is True:
+            _macport = macport.find_idx_mac(exists.idx_mac)
+            if bool(_macport) is True:
+                for item in _macport:
+                    _l1interface = l1interface.idx_exists(item.idx_l1interface)
+                    if bool(_l1interface) is True:
+                        result.append(
+                            Found(
+                                idx_l1interface=item.idx_l1interface
+                            )
+                        )
+
+        # Return
         return result
 
     def ipaddress(self):
@@ -107,18 +122,19 @@ class Search():
         # Initialize key variables
         result = []
 
-        # Process the ifindex file
-        for _, devices in self.ifindex_data.items():
-            # Get all the hostnames and ifindexes that have the MAC
-            for device, ifindexes in devices.items():
-                for ifindex, ipaddresses in ifindexes.items():
-                    for ipaddress in ipaddresses:
-                        # Find search string in MAC address keys
-                        for possible in self._search:
-                            if possible in '{}'.format(ipaddress).lower():
-                                data_dict = {}
-                                data_dict[device] = int(ifindex)
-                                result.append(data_dict)
+        # Find MAC for IP address in ARP table
+        ip_address = _general.ipaddress(self._search)
+        founds = macip.findip(ip_address)
+
+        # Search for MAC on interfaces
+        for found in founds:
+            macports_ = macport.find_idx_mac(found.idx_mac)
+            for macport_ in macports_:
+                result.append(
+                    Found(
+                        idx_l1interface=macport_.idx_l1interface
+                    )
+                )
 
         # Return
         return result
@@ -190,7 +206,7 @@ class Search():
         return result
 
 
-class Mac(object):
+class Mac():
     """Class that creates the device's various HTML tables."""
 
     def __init__(self, config):

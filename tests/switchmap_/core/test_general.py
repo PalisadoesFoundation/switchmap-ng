@@ -32,6 +32,7 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
+from switchmap import IP
 from switchmap.core import general
 
 
@@ -145,6 +146,20 @@ class TestFunctions(unittest.TestCase):
         for index, mac in enumerate(macs):
             result = general.mac(mac)
             self.assertEqual(result, expected[index])
+
+    def test_ipaddress(self):
+        """Testing function ipaddress."""
+        # Initializing key variables
+        expected = [
+            IP(address='192.168.1.1', version=4),
+            None,
+            IP(address='0000:0000:0000:0000:0000:0abc:0007:0def', version=6)]
+        inputs = ['192.168.1.1', 'abcdefghijklmnopqrstuvwxyz', '::abc:7:def']
+
+        # Test
+        for index, item in enumerate(inputs):
+            result = general.ipaddress(item)
+            self.assertEqual(expected[index], result)
 
 
 if __name__ == '__main__':
