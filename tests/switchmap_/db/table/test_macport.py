@@ -5,6 +5,7 @@ import os
 import sys
 import unittest
 import random
+import time
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -51,6 +52,8 @@ from switchmap.db import models
 from tests.testlib_ import db
 from tests.testlib_ import data
 
+MAXMAC = 100
+
 
 class TestDbTableMacPort(unittest.TestCase):
     """Checks all functions and methods."""
@@ -60,8 +63,8 @@ class TestDbTableMacPort(unittest.TestCase):
     #########################################################################
 
     @classmethod
-    def setUpClass(cls):
-        """Execute these steps before starting tests."""
+    def setUp(cls):
+        """Execute these steps before starting each test."""
         # Load the configuration in case it's been deleted after loading the
         # configuration above. Sometimes this happens when running
         # `python3 -m unittest discover` where another the tearDownClass of
@@ -77,8 +80,8 @@ class TestDbTableMacPort(unittest.TestCase):
         _prerequisites()
 
     @classmethod
-    def tearDownClass(cls):
-        """Execute these steps when all tests are completed."""
+    def tearDown(cls):
+        """Execute these steps after each tests is completed."""
         # Drop tables
         database = db.Database()
         database.drop()
@@ -122,6 +125,42 @@ class TestDbTableMacPort(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
+    def test_find(self):
+        """Testing function find."""
+        # Initialize key variables
+        finds = []
+
+        # Test with known and unknown MACs
+        for _ in range(1, MAXMAC):
+            row = _row()
+            exists = testimport.exists(row.idx_l1interface, row.idx_mac)
+            if bool(exists) is False:
+                # Entry must not be found
+                result = testimport.find(row.idx_mac)
+                if row.idx_mac not in finds:
+                    self.assertFalse(bool(
+                        testimport.exists(row.idx_l1interface, row.idx_mac)))
+                    self.assertFalse(bool(result))
+                else:
+                    self.assertTrue(bool(result))
+                    continue
+
+                # Insert entry and then it should be found
+                testimport.insert_row(row)
+                now_exists = testimport.exists(
+                    row.idx_l1interface, row.idx_mac)
+                self.assertTrue(bool(now_exists))
+
+                post_result = testimport.find(now_exists.idx_mac)
+                self.assertEqual(now_exists.idx_mac, row.idx_mac)
+                self.assertTrue(bool(post_result))
+                finds.append(now_exists.idx_mac)
+            else:
+                result = testimport.find(row.idx_mac)
+                self.assertTrue(bool(result))
+                if exists.idx_mac not in finds:
+                    finds.append(exists.idx_mac)
+
     def test_insert_row(self):
         """Testing function insert_row."""
         # Create record
@@ -155,8 +194,8 @@ class TestDbTableMacPort(unittest.TestCase):
         # Do an update
         idx = result.idx_macport
         updated_row = MacPort(
-            idx_l1interface=random.randint(0, 100),
-            idx_mac=random.randint(0, 100),
+            idx_l1interface=random.randint(1, MAXMAC),
+            idx_mac=random.randint(1, MAXMAC),
             enabled=row.enabled
         )
         testimport.update_row(idx, updated_row)
@@ -204,8 +243,8 @@ def _row():
     """
     # Create result
     result = IMacPort(
-        idx_l1interface=random.randint(0, 100),
-        idx_mac=random.randint(0, 100),
+        idx_l1interface=random.randint(1, MAXMAC),
+        idx_mac=random.randint(1, MAXMAC),
         enabled=1
     )
     return result
@@ -256,9 +295,9 @@ def _prerequisites():
             idx_oui=1,
             idx_event=1,
             idx_zone=1,
-            mac=data.random_string(),
+            mac=data.mac(),
             enabled=1
-        ) for _ in range(100)]
+        ) for _ in range(MAXMAC)]
     )
     device.insert_row(
         IDevice(
@@ -296,7 +335,7 @@ def _prerequisites():
             lldpremsysdesc=data.random_string(),
             lldpremsysname=data.random_string(),
             enabled=1
-        ) for _ in range(100)]
+        ) for _ in range(MAXMAC)]
     )
 
 

@@ -2,6 +2,7 @@
 
 import time
 import ipaddress
+import socket
 
 from switchmap.core import log
 from switchmap.db.table import device as _device
@@ -16,12 +17,13 @@ from switchmap.db.table import (
     TopologyResult, TopologyUpdates)
 
 
-def process(data, idx_event):
+def process(data, idx_event, dns=True):
     """Process data received from a device.
 
     Args:
         data: Device data (dict)
         idx_event: Event idx_event
+        dns: Do DNS lookups if True
 
     Returns:
         None
@@ -32,7 +34,7 @@ def process(data, idx_event):
     l1interface(data)
     vlan(data)
     mac(data, idx_event)
-    macip(data)
+    macip(data, dns=dns)
     macport(data)
 
 
@@ -382,7 +384,7 @@ def macport(data):
     log.log2debug(1141, log_message)
 
 
-def macip(data):
+def macip(data, dns=True):
     """Update the MacIp DB table.
 
     Args:
@@ -416,7 +418,8 @@ def macip(data):
         # Process IPv4 data
         if bool(ipv4) is True:
             result = _process_macip(
-                ProcessMacIP(table=ipv4, device=device_, version=4)
+                ProcessMacIP(table=ipv4, device=device_, version=4),
+                dns=dns
             )
             adds.extend(result.adds)
             updates.extend(result.updates)
@@ -424,7 +427,8 @@ def macip(data):
         # Process IPv6 data
         if bool(ipv6) is True:
             result = _process_macip(
-                ProcessMacIP(table=ipv6, device=device_, version=6)
+                ProcessMacIP(table=ipv6, device=device_, version=6),
+                dns=dns
             )
             adds.extend(result.adds)
             updates.extend(result.updates)
@@ -444,11 +448,12 @@ def macip(data):
     log.log2debug(1149, log_message)
 
 
-def _process_macip(info):
+def _process_macip(info, dns=True):
     """Update the mac DB table.
 
     Args:
         info: ProcessMacIP object
+        dns: Do DNS lookup if True
 
     Returns:
         result
@@ -471,13 +476,25 @@ def _process_macip(info):
         # Update the database
         mac_exists = _mac.exists(next_mac_addr)
         if bool(mac_exists) is True:
+            # Does the record exist?
             macip_exists = _macip.exists(
                 info.device.idx_device, mac_exists.idx_mac, next_ip_addr)
+
+            # Get hostname for DB
+            if bool(dns) is True:
+                try:
+                    hostname = socket.gethostbyaddr(next_ip_addr)[0]
+                except:
+                    hostname = None
+            else:
+                hostname = None
+
+            # Create a DB record
             row = IMacIp(
                 idx_device=info.device.idx_device,
                 idx_mac=mac_exists.idx_mac,
                 ip_=next_ip_addr,
-                hostname=None,
+                hostname=hostname,
                 type=info.version,
                 enabled=1
             )

@@ -263,7 +263,7 @@ def _prerequisites():
             idx_oui=1,
             idx_event=1,
             idx_zone=1,
-            mac=data.random_string(),
+            mac=data.mac(),
             enabled=1
         )
     )

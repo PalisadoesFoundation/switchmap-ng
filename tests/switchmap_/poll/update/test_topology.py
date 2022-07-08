@@ -197,7 +197,7 @@ class TestPollUpdateTopology(unittest.TestCase):
             RDevice(
                 idx_device=1,
                 idx_zone=1,
-                idx_event=1, 
+                idx_event=1,
                 sys_name='device-08.example.org',
                 hostname='device-08.example.org',
                 name='device-08.example.org',
@@ -454,16 +454,16 @@ class TestPollUpdateTopology(unittest.TestCase):
         # Initialize key variables
         result = []
         expected = [
-            RMacIp(idx_macip=1, idx_device=1, idx_mac=1, ip_='10.32.0.94', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=2, idx_device=1, idx_mac=2, ip_='2605:2880:0000:0904:0000:0000:0000:0005', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=3, idx_device=1, idx_mac=3, ip_='10.32.11.204', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=4, idx_device=1, idx_mac=4, ip_='10.32.4.17', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=5, idx_device=1, idx_mac=4, ip_='2605:2880:0000:0a03:0216:3eff:fe00:0001', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=1, idx_device=1, idx_mac=1, ip_='192.168.0.94', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=2, idx_device=1, idx_mac=2, ip_='abcd:1234:0000:0904:0000:0000:0000:0005', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=3, idx_device=1, idx_mac=3, ip_='192.168.11.204', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=4, idx_device=1, idx_mac=4, ip_='192.168.4.17', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=5, idx_device=1, idx_mac=4, ip_='abcd:1234:0000:0a03:0216:3eff:fe00:0001', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
             RMacIp(idx_macip=6, idx_device=1, idx_mac=4, ip_='fe80:0000:0000:0000:0216:3eff:fe00:0001', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=7, idx_device=1, idx_mac=5, ip_='10.32.24.12', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=8, idx_device=1, idx_mac=5, ip_='10.32.24.9', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=9, idx_device=1, idx_mac=5, ip_='2605:2880:0000:0a06:0000:c001:d00d:0004', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=10, idx_device=1, idx_mac=5, ip_='2605:2880:0000:0a06:0216:3eff:fe00:0002', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None)]
+            RMacIp(idx_macip=7, idx_device=1, idx_mac=5, ip_='192.168.24.12', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=8, idx_device=1, idx_mac=5, ip_='192.168.24.9', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=9, idx_device=1, idx_mac=5, ip_='abcd:1234:0000:0a06:0000:c001:d00d:0004', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=10, idx_device=1, idx_mac=5, ip_='abcd:1234:0000:0a06:0216:3eff:fe00:0002', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None)]
 
         # Reset the database
         idx_event = self.idx_event
@@ -477,7 +477,7 @@ class TestPollUpdateTopology(unittest.TestCase):
         testimport.l1interface(data)
         testimport.vlan(data)
         testimport.mac(data, idx_event)
-        testimport.macip(data)
+        testimport.macip(data, dns=False)
 
         # Verify macport data
         statement = select(MacIp)
@@ -529,7 +529,7 @@ class TestPollUpdateTopology(unittest.TestCase):
         testimport.l1interface(data)
         testimport.vlan(data)
         testimport.mac(data, idx_event)
-        testimport.macip(data)
+        testimport.macip(data, dns=False)
         testimport.macport(data)
 
         # Verify macport data

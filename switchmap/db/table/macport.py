@@ -64,6 +64,30 @@ def exists(idx_l1interface, idx_mac):
     return result
 
 
+def find(idx_mac):
+    """Find all ports on which MAC address has been found.
+
+    Args:
+        idx_mac: Mac.idx_mac
+
+    Returns:
+        result: RMacPort tuple
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get row from dataase
+    statement = select(MacPort).where(MacPort.idx_mac == idx_mac)
+    rows = db.db_select_row(1180, statement)
+
+    # Return
+    for row in rows:
+        result.append(_row(row))
+    return result
+
+
 def insert_row(rows):
     """Create a MacPort table entry.
 
