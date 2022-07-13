@@ -115,6 +115,24 @@ class TestDbTableMac(unittest.TestCase):
         self.assertEqual(_convert(result), _convert(row))
         self.assertTrue(row.idx_oui != 1)
 
+    def test_findmac(self):
+        """Testing function findmac."""
+        # Create record
+        row = _row()
+
+        # Test before insertion of an initial row
+        result = testimport.findmac(row.mac)
+        self.assertFalse(bool(result))
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        result = testimport.findmac(row.mac)
+        self.assertTrue(bool(result))
+        self.assertTrue(isinstance(result, list))
+        self.assertEqual(len(result), 1)
+        self.assertEqual(_convert(result[0]), _convert(row))
+        self.assertTrue(row.idx_oui != 1)
+
     def test_insert_row(self):
         """Testing function insert_row."""
         # Create record

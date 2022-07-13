@@ -1,12 +1,15 @@
 """Module for handling data required for testing."""
 
 # Import libraries
-from random import choice
+import random
+from collections import namedtuple
 from string import ascii_uppercase
 from io import StringIO
 from copy import deepcopy
 import os
 import binascii
+import socket
+import struct
 
 import yaml
 
@@ -149,7 +152,7 @@ def random_string(length=10):
 
     """
     # Return
-    result = ''.join(choice(ascii_uppercase) for i in range(length))
+    result = ''.join(random.choice(ascii_uppercase) for i in range(length))
     return result
 
 
@@ -233,4 +236,62 @@ def mac():
     """
     # Return
     result = binascii.b2a_hex(os.urandom(30)).decode()[:12]
+    return result
+
+
+def ipv4():
+    """Generate a random IPv4 address.
+
+    Args:
+        None
+
+    Returns:
+        result: IPv4 address
+
+    """
+    # Return
+    result = socket.inet_ntoa(struct.pack('>I', random.randint(1, 0xffffffff)))
+    return result
+
+
+def ipv6():
+    """Generate a random IPv6 address.
+
+    Args:
+        None
+
+    Returns:
+        result: IPv6 address
+
+    """
+    # Return
+    bits = 16**4
+    result = ':'.join(
+        ('{:02x}'.format(random.randint(0, bits)).zfill(4) for i in range(8)))
+    return result
+
+
+def ip_():
+    """Generate a random IPv6 / IPv4 address.
+
+    Args:
+        None
+
+    Returns:
+        result: IP object
+
+    """
+    # Initialize key variables
+    IP = namedtuple('IP', 'address version')
+    version = [4, 6][int(random.randint(0, 1))]
+    if version == 4:
+        result = IP(
+            address=ipv4(),
+            version=version
+        )
+    else:
+        result = IP(
+            address=ipv6(),
+            version=version
+        )
     return result

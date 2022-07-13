@@ -129,7 +129,7 @@ class MacIpFilter(FilterSet):
             'ip_': _STRING,
             'mac': _STRING,
             'hostname': _STRING,
-            'type': _NUMERIC,
+            'version': _NUMERIC,
             'enabled': _NUMERIC,
             'ts_modified': _NUMERIC,
             'ts_created': _NUMERIC,

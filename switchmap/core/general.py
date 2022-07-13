@@ -126,8 +126,11 @@ def mac(_mac):
 
     """
     # Initialize key variables
-    regex = re.compile('[^a-fA-F0-9]')
-    result = regex.sub('', _mac)[:12].lower()
+    result = ''
+
+    if isinstance(_mac, str):
+        regex = re.compile('[^a-fA-F0-9]')
+        result = regex.sub('', _mac)[:12].lower()
     return result
 
 

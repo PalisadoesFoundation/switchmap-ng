@@ -1,6 +1,6 @@
 """Module for querying the L1Interface table."""
 
-from sqlalchemy import select, update, and_, null
+from sqlalchemy import select, update, and_, null, func
 
 # Import project libraries
 from switchmap.db import db
@@ -61,6 +61,39 @@ def exists(idx_device, ifindex):
     for row in rows:
         result = _row(row)
         break
+    return result
+
+
+def findifalias(ifalias):
+    """Find ifalias.
+
+    Args:
+        ifalias: Hostname
+
+    Returns:
+        result: L1Interface tuple
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get row from database (Contains)
+    statement = select(L1Interface).where(
+        L1Interface.ifalias.like(
+            func.concat(func.concat('%', ifalias.encode(), '%')))
+    )
+    rows_contains = db.db_select_row(1188, statement)
+
+    # Merge results and remove duplicates
+    rows.extend(rows_contains)
+
+    # Return
+    for row in rows:
+        result.append(_row(row))
+
+    # Remove duplicates and return
+    result = list(set(result))
     return result
 
 

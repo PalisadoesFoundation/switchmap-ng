@@ -115,6 +115,28 @@ class TestDbTableL1interface(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
+    def test_findifalias(self):
+        """Testing function findifalias."""
+        # Create record
+        row = _row()
+
+        # Test before insertion of an initial row
+        result = testimport.exists(row.idx_device, row.ifindex)
+        self.assertFalse(result)
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        result = testimport.findifalias(row.ifalias)
+        self.assertTrue(result)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(_convert(result[0]), _convert(row))
+
+        # Test after insertion of an initial row
+        result = testimport.findifalias(row.ifalias[2:-2])
+        self.assertTrue(result)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(_convert(result[0]), _convert(row))
+
     def test_insert_row(self):
         """Testing function insert_row."""
         # Create record

@@ -1,6 +1,6 @@
 """Module for querying the MacIp table."""
 
-from sqlalchemy import select, update, and_, null
+from sqlalchemy import select, update, and_, null, func
 
 # Import project libraries
 from switchmap.db import db
@@ -73,7 +73,7 @@ def findip(ipaddress):
         ipaddress: IP address
 
     Returns:
-        result: RMacPort tuple
+        result: RMacIp tuple
 
     """
     # Initialize key variables
@@ -87,6 +87,39 @@ def findip(ipaddress):
     # Return
     for row in rows:
         result.append(_row(row))
+    return result
+
+
+def findhostname(hostname):
+    """Find hostname.
+
+    Args:
+        hostname: Hostname
+
+    Returns:
+        result: MacIp tuple
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get row from database (Contains)
+    statement = select(MacIp).where(
+        MacIp.hostname.like(
+            func.concat(func.concat('%', hostname.encode(), '%')))
+    )
+    rows_contains = db.db_select_row(1191, statement)
+
+    # Merge results and remove duplicates
+    rows.extend(rows_contains)
+
+    # Return
+    for row in rows:
+        result.append(_row(row))
+
+    # Remove duplicates and return
+    result = list(set(result))
     return result
 
 
@@ -117,7 +150,7 @@ def insert_row(rows):
                 hostname=(
                     null() if bool(row.hostname) is False else
                     row.hostname.encode()),
-                type=row.type,
+                version=row.version,
                 enabled=row.enabled
             )
         )
@@ -145,7 +178,7 @@ def update_row(idx, row):
                 'idx_device': row.idx_device,
                 'idx_mac': row.idx_mac,
                 'ip_': row.ip_.encode(),
-                'type': row.type,
+                'version': row.version,
                 'hostname': (
                     null() if bool(row.hostname) is False else
                     row.hostname.encode()),
@@ -173,7 +206,7 @@ def _row(row):
         ip_=None if bool(row.ip_) is False else row.ip_.decode(),
         hostname=(
             None if bool(row.hostname) is False else row.hostname.decode()),
-        type=row.type,
+        version=row.version,
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified

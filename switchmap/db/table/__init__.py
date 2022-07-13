@@ -53,10 +53,10 @@ ITrunk = namedtuple(
 
 RMacIp = namedtuple(
     'RMacIp',
-    '''idx_macip idx_device idx_mac ip_ hostname type enabled \
+    '''idx_macip idx_device idx_mac ip_ hostname version enabled \
 ts_modified ts_created''')
 IMacIp = namedtuple(
-    'IMacIp', 'idx_device idx_mac ip_ hostname type enabled')
+    'IMacIp', 'idx_device idx_mac ip_ hostname version enabled')
 
 RMac = namedtuple(
     'RMac',

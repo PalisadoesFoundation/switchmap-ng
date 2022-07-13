@@ -144,6 +144,37 @@ class TestDbTableMacIp(unittest.TestCase):
         for result in results:
             self.assertTrue(bool(result))
 
+    def test_findhostname(self):
+        """Testing function findhostname."""
+        # Create record
+        row = _row()
+
+        # Test before insertion of an initial row
+        result = testimport.exists(row.idx_device, row.idx_mac, row.hostname)
+        self.assertFalse(result)
+
+        # Test NotFound
+        results = testimport.findhostname(row.hostname)
+        self.assertFalse(bool(result))
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
+        self.assertTrue(result)
+
+        # Test Found
+        results = testimport.findhostname(row.hostname)
+        self.assertEqual(len(results), 1)
+        for result in results:
+            self.assertTrue(bool(result))
+
+        # Test partial string
+        partial = row.hostname[2:-2]
+        results = testimport.findhostname(partial)
+        self.assertEqual(len(results), 1)
+        for result in results:
+            self.assertTrue(bool(result))
+
     def test_insert_row(self):
         """Testing function insert_row."""
         # Create record
@@ -174,14 +205,17 @@ class TestDbTableMacIp(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
+        # Get random IP address
+        ip_ = data.ip_()
+
         # Do an update
         idx = result.idx_macip
         updated_row = MacIp(
             idx_device=row.idx_device,
             idx_mac=row.idx_mac,
-            ip_=data.random_string(),
+            ip_=ip_.address,
             hostname=data.random_string(),
-            type=row.type,
+            version=ip_.version,
             enabled=row.enabled
         )
         testimport.update_row(idx, updated_row)
@@ -214,7 +248,7 @@ def _convert(row):
         idx_mac=row.idx_mac,
         ip_=row.ip_,
         hostname=row.hostname,
-        type=row.type,
+        version=row.version,
         enabled=row.enabled
     )
     return result
@@ -230,13 +264,16 @@ def _row():
         result: IMacIp object
 
     """
+    # Initialize key variables
+    ip_ = data.ip_()
+
     # Create result
     result = IMacIp(
         idx_device=1,
         idx_mac=1,
-        ip_=data.random_string(),
+        ip_=ip_.address,
         hostname=data.random_string(),
-        type=6,
+        version=ip_version,
         enabled=1
     )
     return result

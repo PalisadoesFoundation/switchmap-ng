@@ -230,7 +230,7 @@ class Mac(BASE):
 
     __tablename__ = 'smap_mac'
     __table_args__ = (
-        UniqueConstraint('mac'),
+        UniqueConstraint('mac', 'idx_zone'),
         {'mysql_engine': 'InnoDB'}
     )
 
@@ -287,8 +287,8 @@ class MacIp(BASE):
         ForeignKey('smap_mac.idx_mac'),
         nullable=False, index=True, default=1, server_default=text('1'))
     ip_ = Column(VARBINARY(256), nullable=True, default=Null)
+    version = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     hostname = Column(VARBINARY(256), nullable=True, default=Null)
-    type = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime, nullable=False,

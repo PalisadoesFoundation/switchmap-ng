@@ -36,7 +36,7 @@ def idx_exists(idx):
 
 
 def exists(_mac):
-    """Determine whether idx_event exists in the Mac table.
+    """Determine whether MAC exists in the Mac table.
 
     Args:
         _mac: Mac address
@@ -60,6 +60,39 @@ def exists(_mac):
     for row in rows:
         result = _row(row)
         break
+    return result
+
+
+def findmac(macs):
+    """Determine whether MAC exists in the Mac table.
+
+    Args:
+        _mac: Mac address
+
+    Returns:
+        result: list of RMac tuples
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+    all_macs = []
+
+    if isinstance(macs, str):
+        macs = [macs]
+
+    if isinstance(macs, list):
+        # Fix the MAC address
+        for item in macs:
+            all_macs.append(general.mac(item).encode())
+
+        # Get row from dataase
+        statement = select(Mac).where(Mac.mac.in_(all_macs))
+        rows = db.db_select_row(1193, statement)
+
+    # Return
+    for row in rows:
+        result.append(_row(row))
     return result
 
 
