@@ -262,10 +262,7 @@ def _prerequisites():
         mac: MAC address for testing
 
     """
-    # Initialize key variables
-    mac = data.mac()
-
-    # Create result
+    # Create database entries
     event.insert_row(
         IEvent(
             name=data.random_string(),

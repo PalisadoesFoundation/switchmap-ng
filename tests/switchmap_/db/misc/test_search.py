@@ -50,6 +50,7 @@ from switchmap.db.table import IL1Interface
 from switchmap.db.table import IMacIp
 from switchmap.db import models
 from switchmap.core import general
+from switchmap import Found, MacDetail
 
 from tests.testlib_ import db
 from tests.testlib_ import data
@@ -57,12 +58,16 @@ from tests.testlib_ import data
 from switchmap.db.misc import search as testimport
 
 MAXMAC = 100
-MACS = list(set([data.mac() for _ in range(MAXMAC * 2)]))[:MAXMAC]
+OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
+print(OUIS)
+MACS = ['{0}{1}'.format(_, data.mac()[:6]) for _ in OUIS]
 HOSTNAMES = list(
     set([data.random_string() for _ in range(MAXMAC * 2)]))[:MAXMAC]
 IFALIASES = ['ALIAS_{0}'.format(data.random_string()) for _ in range(MAXMAC)]
+ORGANIZATIONS = ['ORG_{0}'.format(data.random_string()) for _ in range(MAXMAC)]
 IPADDRESSES = list(set([data.ip_() for _ in range(MAXMAC * 2)]))[:MAXMAC]
 IDX_MACS = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
+RANDOM_INDEX = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
 
 
 class TestSearch(unittest.TestCase):
@@ -225,7 +230,19 @@ class TestFunctions(unittest.TestCase):
 
     def test_macdetail(self):
         """Testing function macdetail."""
-        pass
+        # Test
+        for key, value in enumerate(MACS):
+            result = testimport.macdetail(value)
+            expected = MacDetail(
+                hostname=HOSTNAMES[key],
+                mac=value,
+                ip_=IPADDRESSES[key].address,
+                organization=ORGANIZATIONS[key],
+                idx_l1interface=RANDOM_INDEX[key]
+            )
+            print('\n', result)
+            print('\n', expected)
+            self.assertEqual(result, expected)
 
 
 def _prerequisites():
@@ -262,20 +279,20 @@ def _prerequisites():
         )
     )
     oui.insert_row(
-        IOui(
-            oui=data.random_string(),
-            organization=data.random_string(),
+        [IOui(
+            oui=OUIS[key],
+            organization=value,
             enabled=1
-        )
+        ) for key, value in enumerate(ORGANIZATIONS)]
     )
     mac.insert_row(
         [IMac(
-            idx_oui=1,
+            idx_oui=key + 1,
             idx_event=1,
             idx_zone=1,
-            mac=item,
+            mac=value,
             enabled=1
-        ) for item in MACS]
+        ) for key, value in enumerate(MACS)]
     )
     device.insert_row(
         IDevice(
@@ -317,10 +334,10 @@ def _prerequisites():
     )
     macport.insert_row(
         [IMacPort(
-            idx_l1interface=random.randint(1, MAXMAC),
-            idx_mac=item,
+            idx_l1interface=RANDOM_INDEX[key],
+            idx_mac=key,
             enabled=1
-        ) for item in range(1, MAXMAC + 1)]
+        ) for key in range(1, MAXMAC + 1)]
     )
     macip.insert_row(
         [IMacIp(

@@ -23,15 +23,8 @@ from switchmap.db.table import l1interface
 class Search():
     """Class that manages searches.
 
-    Methods return lists of dicts keyed 'layer 1' with ifindex values
-    where search strings were found. This data is then used to create result
-    tables.
-
-    Args:
-        None
-
-    Returns:
-        None
+    Methods return lists of Found objects for the idx_l1interface table entries
+    where there are matches.
 
     """
 
@@ -55,7 +48,8 @@ class Search():
             None
 
         Returns:
-            result: list of dicts that contain matching items
+            result: List of Found objects of interfaces that have data matching
+                the search string
 
         """
         # Initialize key variables
@@ -113,7 +107,8 @@ class Search():
             None
 
         Returns:
-            result: list of dicts that contain matching addresses
+            result: List of Found objects of interfaces that have data matching
+                the search string
 
         """
         # Initialize key variables
@@ -143,7 +138,8 @@ class Search():
             None
 
         Returns:
-            result: list of dicts that contain matching addresses
+            result: List of Found objects of interfaces that have data matching
+                the search string
 
         """
         # Initialize key variables
@@ -171,7 +167,8 @@ class Search():
             None
 
         Returns:
-            result: list of dicts that contain matching addresses
+            result: List of Found objects of interfaces that have data matching
+                the search string
 
         """
         # Initialize key variables
@@ -210,28 +207,29 @@ def macdetail(_mac):
     result = []
 
     # Get MAC information
-    macs = mac.exists(_mac)
-    if isinstance(macs, str):
-        macs = [macs]
+    macs = mac.findmac(_mac)
 
     # Do lookups
-    for item in macs:
+    for macmeta in macs:
         # Get the organization
-        ouimeta = oui.idx_exists(item.idx_oui)
+        ouimeta = oui.idx_exists(macmeta.idx_oui)
         if bool(ouimeta) is True:
             organization = ouimeta.organization
 
         # Get the IP and Hostname
-        macipmeta = macip.idx_exists(item.idx_mac)
-        if bool(macipmeta) is True:
-            result.append(
-                MacDetail(
-                    hostname=macipmeta.hostname,
-                    mac=item,
-                    ip_=macipmeta.ip_,
-                    organization=organization
+        _macip = macip.idx_exists(macmeta.idx_mac)
+        _macport = macport.find_idx_mac(macmeta.idx_mac)
+        for item in _macport:
+            if bool(_macip) is True:
+                result.append(
+                    MacDetail(
+                        hostname=_macip.hostname,
+                        mac=macmeta.mac,
+                        ip_=_macip.ip_,
+                        organization=organization,
+                        idx_l1interface=item.idx_l1interface
+                    )
                 )
-            )
 
     # Return
     return result

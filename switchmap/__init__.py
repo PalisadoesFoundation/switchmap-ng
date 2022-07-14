@@ -25,7 +25,8 @@ AGENT_API = 'API'
 # Important tuples
 Found = namedtuple('Found', 'idx_l1interface')
 IP = namedtuple('IP', 'address version')
-MacDetail = namedtuple('MacDetail', 'hostname mac ip_ organization')
+MacDetail = namedtuple(
+    'MacDetail', 'hostname mac ip_ organization idx_l1interface')
 
 
 def main():
