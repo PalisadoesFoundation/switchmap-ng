@@ -496,7 +496,7 @@ def _process_macip(info, dns=True):
                 idx_mac=mac_exists.idx_mac,
                 ip_=ip_address,
                 hostname=hostname,
-                type=info.version,
+                version=info.version,
                 enabled=1
             )
             if bool(macip_exists) is True:

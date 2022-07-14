@@ -188,7 +188,7 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(Device).where(_Device.idx_device == idx)
+    statement = select(_Device).where(_Device.idx_device == idx)
     rows = db.db_select_row(1208, statement)
 
     # Return
@@ -213,7 +213,7 @@ def exists(hostname):
     rows = []
 
     # Get hostname from database
-    statement = select(Device).where(_Device.hostname == hostname.encode())
+    statement = select(_Device).where(_Device.hostname == hostname.encode())
     rows = db.db_select_row(1107, statement)
 
     # Return
@@ -283,7 +283,7 @@ def update_row(idx, row):
 
     """
     # Update
-    statement = update(Device).where(
+    statement = update(_Device).where(
         _Device.idx_device == idx).values(
             {
                 'idx_zone': row.idx_zone,

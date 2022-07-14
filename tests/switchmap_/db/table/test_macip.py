@@ -273,7 +273,7 @@ def _row():
         idx_mac=1,
         ip_=ip_.address,
         hostname=data.random_string(),
-        version=ip_version,
+        version=ip_.version,
         enabled=1
     )
     return result

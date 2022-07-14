@@ -20864,7 +20864,7 @@ layer1:
       by prod_rel_team'
     lldpRemSysName: device-01.example.org
     portDuplex: 2
-  '192.168':
+  '10132':
     cdpCacheDeviceId: device-01.example.org
     cdpCacheDevicePort: GigabitEthernet1/0/32
     cdpCachePlatform: cisco WS-C3750X-48
@@ -41257,7 +41257,7 @@ system:
       - 0
       '10131':
       - 0
-      '192.168':
+      '10132':
       - 0
       '10133':
       - 0

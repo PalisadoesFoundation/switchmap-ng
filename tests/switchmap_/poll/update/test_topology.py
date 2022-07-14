@@ -5,7 +5,6 @@ import os
 import sys
 import unittest
 from copy import deepcopy
-from pprint import pprint
 
 from sqlalchemy import select
 
@@ -249,8 +248,7 @@ class TestPollUpdateTopology(unittest.TestCase):
                     ts_modified=None
                 )
             )
-        pprint(result)
-        # self.assertEqual(result[:10], expected)
+        self.assertEqual(result[:10], expected)
 
     def test_l1interface(self):
         """Testing function l1interface."""
@@ -454,16 +452,16 @@ class TestPollUpdateTopology(unittest.TestCase):
         # Initialize key variables
         result = []
         expected = [
-            RMacIp(idx_macip=1, idx_device=1, idx_mac=1, ip_='192.168.0.94', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=2, idx_device=1, idx_mac=2, ip_='abcd:1234:0000:0904:0000:0000:0000:0005', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=3, idx_device=1, idx_mac=3, ip_='192.168.11.204', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=4, idx_device=1, idx_mac=4, ip_='192.168.4.17', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=5, idx_device=1, idx_mac=4, ip_='abcd:1234:0000:0a03:0216:3eff:fe00:0001', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=6, idx_device=1, idx_mac=4, ip_='fe80:0000:0000:0000:0216:3eff:fe00:0001', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=7, idx_device=1, idx_mac=5, ip_='192.168.24.12', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=8, idx_device=1, idx_mac=5, ip_='192.168.24.9', hostname=None, type=4, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=9, idx_device=1, idx_mac=5, ip_='abcd:1234:0000:0a06:0000:c001:d00d:0004', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None),
-            RMacIp(idx_macip=10, idx_device=1, idx_mac=5, ip_='abcd:1234:0000:0a06:0216:3eff:fe00:0002', hostname=None, type=6, enabled=1, ts_modified=None, ts_created=None)]
+            RMacIp(idx_macip=1, idx_device=1, idx_mac=1, ip_='192.168.0.94', hostname=None, version=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=2, idx_device=1, idx_mac=2, ip_='abcd:1234:0000:0904:0000:0000:0000:0005', hostname=None, version=6, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=3, idx_device=1, idx_mac=3, ip_='192.168.11.204', hostname=None, version=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=4, idx_device=1, idx_mac=4, ip_='192.168.4.17', hostname=None, version=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=5, idx_device=1, idx_mac=4, ip_='abcd:1234:0000:0a03:0216:3eff:fe00:0001', hostname=None, version=6, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=6, idx_device=1, idx_mac=4, ip_='fe80:0000:0000:0000:0216:3eff:fe00:0001', hostname=None, version=6, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=7, idx_device=1, idx_mac=5, ip_='192.168.24.12', hostname=None, version=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=8, idx_device=1, idx_mac=5, ip_='192.168.24.9', hostname=None, version=4, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=9, idx_device=1, idx_mac=5, ip_='abcd:1234:0000:0a06:0000:c001:d00d:0004', hostname=None, version=6, enabled=1, ts_modified=None, ts_created=None),
+            RMacIp(idx_macip=10, idx_device=1, idx_mac=5, ip_='abcd:1234:0000:0a06:0216:3eff:fe00:0002', hostname=None, version=6, enabled=1, ts_modified=None, ts_created=None)]
 
         # Reset the database
         idx_event = self.idx_event
@@ -492,7 +490,7 @@ class TestPollUpdateTopology(unittest.TestCase):
                     idx_mac=row.idx_mac,
                     ip_=row.ip_.decode(),
                     hostname=None,
-                    type=row.type,
+                    version=row.version,
                     enabled=row.enabled,
                     ts_created=None,
                     ts_modified=None

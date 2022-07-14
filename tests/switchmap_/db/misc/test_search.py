@@ -59,7 +59,6 @@ from switchmap.db.misc import search as testimport
 
 MAXMAC = 100
 OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
-print(OUIS)
 MACS = ['{0}{1}'.format(_, data.mac()[:6]) for _ in OUIS]
 HOSTNAMES = list(
     set([data.random_string() for _ in range(MAXMAC * 2)]))[:MAXMAC]
@@ -167,11 +166,9 @@ class TestSearch(unittest.TestCase):
             self.assertTrue(result)
             self.assertEqual(len(result), 1)
 
-            # Get the interface of the ifalias
-            found = l1interface.findifalias(value)
-            self.assertTrue(found)
-            self.assertEqual(len(found), 1)
-            self.assertEqual(found[0].idx_l1interface, key + 1)
+            # Test
+            self.assertEqual(
+                result[0].idx_l1interface, key + 1)
 
     def test_hostname(self):
         """Testing function hostname."""
@@ -193,55 +190,20 @@ class TestSearch(unittest.TestCase):
             self.assertTrue(
                 result[0].idx_l1interface, expected[0].idx_l1interface)
 
-
-class TestFunctions(unittest.TestCase):
-    """Checks all functions and methods."""
-
-    #########################################################################
-    # General object setup
-    #########################################################################
-
-    @classmethod
-    def setUp(cls):
-        """Execute these steps before starting each test."""
-        # Load the configuration in case it's been deleted after loading the
-        # configuration above. Sometimes this happens when running
-        # `python3 -m unittest discover` where another the tearDownClass of
-        # another test module prematurely deletes the configuration required
-        # for this module
-        config = setup.config()
-        config.save()
-
-        # Create database tables
-        models.create_all_tables()
-
-        # Pollinate db with prerequisites
-        _prerequisites()
-
-    @classmethod
-    def tearDown(cls):
-        """Execute these steps after each tests is completed."""
-        # Drop tables
-        database = db.Database()
-        database.drop()
-
-        # Cleanup the
-        CONFIG.cleanup()
-
     def test_macdetail(self):
         """Testing function macdetail."""
         # Test
         for key, value in enumerate(MACS):
             result = testimport.macdetail(value)
-            expected = MacDetail(
-                hostname=HOSTNAMES[key],
-                mac=value,
-                ip_=IPADDRESSES[key].address,
-                organization=ORGANIZATIONS[key],
-                idx_l1interface=RANDOM_INDEX[key]
-            )
-            print('\n', result)
-            print('\n', expected)
+            expected = [
+                MacDetail(
+                    hostname=HOSTNAMES[key],
+                    mac=value,
+                    ip_=IPADDRESSES[key].address,
+                    organization=ORGANIZATIONS[key],
+                    idx_l1interface=RANDOM_INDEX[key]
+                )
+            ]
             self.assertEqual(result, expected)
 
 
@@ -334,10 +296,10 @@ def _prerequisites():
     )
     macport.insert_row(
         [IMacPort(
-            idx_l1interface=RANDOM_INDEX[key],
-            idx_mac=key,
+            idx_l1interface=value,
+            idx_mac=key + 1,
             enabled=1
-        ) for key in range(1, MAXMAC + 1)]
+        ) for key, value in enumerate(RANDOM_INDEX)]
     )
     macip.insert_row(
         [IMacIp(
