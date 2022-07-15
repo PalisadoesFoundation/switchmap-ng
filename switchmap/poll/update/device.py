@@ -108,7 +108,7 @@ class Device():
             method due to this instantiation:
 
             l1_nativevlan: A vendor agnostic Native VLAN
-            l1_vlan: A list of vendor agnostic VLANs
+            l1_vlans: A list of vendor agnostic VLANs
             l1_trunk: A vendor agnostic flag of "True" if the port is a Trunk
             l1_duplex: A vendor agnostic status code for the duplex setting
 
@@ -152,7 +152,7 @@ class Device():
                     # This is an Ethernet port with no higher level
                     # interfaces. Use lower level ifIndex
                     if bool(ifstackhigherlayer) is False:
-                        (port_data['l1_vlan'],
+                        (port_data['l1_vlans'],
                          port_data['l1_nativevlan'],
                          port_data['l1_trunk']) = _process_non_trunk(
                              layer1_data[ifstacklowerlayer])
@@ -160,7 +160,7 @@ class Device():
                     else:
                         meta = _process_trunk(
                             layer1_data[ifstackhigherlayer], higherlayers)
-                        port_data['l1_vlan'] = meta.vlan
+                        port_data['l1_vlans'] = meta.vlan
                         port_data['l1_nativevlan'] = meta.nativevlan
                         port_data['l1_trunk'] = meta.trunk
 
@@ -233,7 +233,7 @@ def _process_trunk(port_data, higherlayers):
     # interfaces
     else:
         vlan = _vlan(port_data)
-        if 'l1_vlan' in port_data:
+        if 'l1_vlans' in port_data:
             vlan.extend(vlan)
         else:
             vlan = vlan

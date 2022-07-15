@@ -362,8 +362,8 @@ class _Port(object):
             trunk = 'Trunk'
 
             # Add the number of VLANs found on the trunk
-            if 'l1_vlan' in self.port_data:
-                vlans = self.port_data['l1_vlan']
+            if 'l1_vlans' in self.port_data:
+                vlans = self.port_data['l1_vlans']
                 if isinstance(vlans, list) is True:
                     if len(vlans) <= max_vlans:
                         trunk = (
@@ -455,10 +455,10 @@ class _Port(object):
         # Assign VLAN
         if 'l1_trunk' in port_data:
             if port_data['l1_trunk'] is False:
-                if 'l1_vlan' in port_data:
-                    if port_data['l1_vlan'] is not None:
+                if 'l1_vlans' in port_data:
+                    if port_data['l1_vlans'] is not None:
                         values = [
-                            str(value) for value in port_data['l1_vlan']]
+                            str(value) for value in port_data['l1_vlans']]
                         vlans = ' '.join(values)
             else:
                 if 'l1_nativevlan' in port_data:

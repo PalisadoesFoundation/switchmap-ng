@@ -10,11 +10,12 @@ from switchmap.db.table import l1interface as _l1interface
 from switchmap.db.table import vlan as _vlan
 from switchmap.db.table import macip as _macip
 from switchmap.db.table import macport as _macport
+from switchmap.db.table import vlanport as _vlanport
 from switchmap.db.table import mac as _mac
 from switchmap.db.table import oui as _oui
 from switchmap.db.table import (
-    IDevice, IL1Interface, IVlan, IMacIp, IMac, IMacPort, ProcessMacIP,
-    TopologyResult, TopologyUpdates)
+    IDevice, IL1Interface, IVlan, IMacIp, IMac, IMacPort,  IVlanPort,
+    ProcessMacIP, TopologyResult, TopologyUpdates)
 
 
 def process(data, idx_event, dns=True):
@@ -232,7 +233,7 @@ def vlan(data):
 
             # Process each Vlan
             if bool(exists) is True:
-                vlans = interface.get('l1_vlan')
+                vlans = interface.get('l1_vlans')
                 if isinstance(vlans, list) is True:
                     for next_vlan in vlans:
                         rows.append(
@@ -258,6 +259,62 @@ def vlan(data):
     log_message = (
         'Updated Vlan table for host {}'.format(hostname))
     log.log2debug(1140, log_message)
+
+
+def vlanport(data):
+    """Update the VlanPort DB table.
+
+    Args:
+        data: Device data (dict)
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    hostname = data['misc']['host']
+    interfaces = data['layer1']
+
+    # Log
+    log_message = (
+        'Updating VlanPort table for host {}'.format(hostname))
+    log.log2debug(1194, log_message)
+
+    # Get device data
+    device_ = _device.exists(hostname)
+
+    if bool(device_) is True:
+        # Process each interface
+        for ifindex, interface in sorted(interfaces.items()):
+            l1_exists = _l1interface.exists(device_.idx_device, ifindex)
+
+            # Process each Vlan
+            if bool(l1_exists) is True:
+                _vlans = interface.get('l1_vlans')
+                if bool(_vlans) is True:
+                    for item in sorted(_vlans):
+                        # Ensure the Vlan exists in the database
+                        vlan_exists = _vlan.exists(device_.idx_device, item)
+                        if bool(vlan_exists) is True:
+                            row = IVlanPort(
+                                idx_l1interface=l1_exists.idx_l1interface,
+                                idx_vlan=vlan_exists.idx_vlan,
+                                enabled=1,
+                            )
+                            # Update the VlanPort database table
+                            vlanport_exists = _vlanport.exists(
+                                l1_exists.idx_l1interface,
+                                vlan_exists.idx_vlan)
+                            if bool(vlanport_exists) is True:
+                                _vlanport.update_row(
+                                    vlanport_exists.idx_vlanport, row)
+                            else:
+                                _vlanport.insert_row(row)
+
+    # Log
+    log_message = (
+        'Updated VlanPort table for host {}'.format(hostname))
+    log.log2debug(1195, log_message)
 
 
 def mac(data, idx_event):

@@ -96,7 +96,7 @@ class Translator(object):
             method due to this instantiation:
 
             l1_nativevlan: A vendor agnostic Native VLAN
-            l1_vlan: A list of vendor agnostic VLANs
+            l1_vlans: A list of vendor agnostic VLANs
             l1_trunk: A vendor agnostic flag of "True" if the port is a Trunk
             l1_duplex: A vendor agnostic status code for the duplex setting
 

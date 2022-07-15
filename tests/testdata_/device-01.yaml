@@ -73,7 +73,7 @@ layer1:
     - 90e2ba132391
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 4
     portDuplex: 2
     vlanTrunkPortDynamicState: 2
@@ -109,7 +109,7 @@ layer1:
     - 003a7d025e82
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -2953,7 +2953,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -2984,7 +2984,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3015,7 +3015,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3046,7 +3046,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3077,7 +3077,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3108,7 +3108,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 19
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3139,7 +3139,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3170,7 +3170,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3201,7 +3201,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3232,7 +3232,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3263,7 +3263,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3294,7 +3294,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3325,7 +3325,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3356,7 +3356,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3387,7 +3387,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3418,7 +3418,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3449,7 +3449,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3480,7 +3480,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3511,7 +3511,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3542,7 +3542,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -3596,7 +3596,7 @@ layer1:
     - 90b11c2082f8
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -6471,7 +6471,7 @@ layer1:
     - c81f66f21f4c
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -9318,7 +9318,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -12162,7 +12162,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -12198,7 +12198,7 @@ layer1:
     - 54a274008faf
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -15092,7 +15092,7 @@ layer1:
     - b82a72d03e0b
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -17977,7 +17977,7 @@ layer1:
     - 00163e000043
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -20821,7 +20821,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -20855,7 +20855,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: null
     l1_trunk: false
-    l1_vlan: null
+    l1_vlans: null
     lldpRemPortDesc: Link to device-17.example.org PTP Gi1/0/31
     lldpRemSysCapEnabled: '0010100000000000'
     lldpRemSysDesc: 'Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version
@@ -20889,7 +20889,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: null
     l1_trunk: false
-    l1_vlan: null
+    l1_vlans: null
     lldpRemPortDesc: Link to device-17.example.org PTP Gi1/0/32
     lldpRemSysCapEnabled: '0010100000000000'
     lldpRemSysDesc: 'Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version
@@ -20920,7 +20920,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -20951,7 +20951,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -20982,7 +20982,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21013,7 +21013,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21044,7 +21044,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21075,7 +21075,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21106,7 +21106,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21137,7 +21137,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21168,7 +21168,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21199,7 +21199,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21230,7 +21230,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21261,7 +21261,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -21298,7 +21298,7 @@ layer1:
     - 000de065f744
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -24142,7 +24142,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 4
     vlanTrunkPortDynamicState: 2
@@ -24176,7 +24176,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -25618,7 +25618,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -27060,7 +27060,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -29900,7 +29900,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -32740,7 +32740,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -35580,7 +35580,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 98
     l1_trunk: true
-    l1_vlan:
+    l1_vlans:
     - 0
     - 1
     - 2
@@ -38413,7 +38413,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 2
     vlanTrunkPortDynamicState: 2
@@ -38440,7 +38440,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: 1
     l1_trunk: false
-    l1_vlan:
+    l1_vlans:
     - 99
     portDuplex: 2
     vlanTrunkPortDynamicState: 2
@@ -38549,7 +38549,7 @@ layer1:
     l1_ethernet: true
     l1_nativevlan: null
     l1_trunk: false
-    l1_vlan: null
+    l1_vlans: null
   '15':
     cviRoutedVlanIfIndex:
     - 15

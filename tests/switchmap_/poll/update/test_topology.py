@@ -37,6 +37,7 @@ from switchmap.poll.update import topology as testimport
 from switchmap.poll.update import device
 from switchmap.db import db
 from switchmap.db import models
+from switchmap.db.models import VlanPort
 from switchmap.db.models import MacPort
 from switchmap.db.models import MacIp
 from switchmap.db.models import Mac
@@ -50,6 +51,7 @@ from switchmap.db.table import IEvent
 from switchmap.db.table import IOui
 from switchmap.db.table import IZone
 from switchmap.db.table import RMacPort
+from switchmap.db.table import RVlanPort
 from switchmap.db.table import RMacIp
 from switchmap.db.table import RMac
 from switchmap.db.table import RVlan
@@ -354,16 +356,16 @@ class TestPollUpdateTopology(unittest.TestCase):
         # Initialize key variables
         result = []
         expected = [
-            RVlan(idx_vlan=1, idx_device=1, vlan=982, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
-            RVlan(idx_vlan=2, idx_device=1, vlan=440, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
-            RVlan(idx_vlan=3, idx_device=1, vlan=115, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
-            RVlan(idx_vlan=4, idx_device=1, vlan=756, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
-            RVlan(idx_vlan=5, idx_device=1, vlan=513, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
-            RVlan(idx_vlan=6, idx_device=1, vlan=151, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
-            RVlan(idx_vlan=7, idx_device=1, vlan=1905, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
-            RVlan(idx_vlan=8, idx_device=1, vlan=1469, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
-            RVlan(idx_vlan=9, idx_device=1, vlan=1890, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
-            RVlan(idx_vlan=10, idx_device=1, vlan=162, name=None, state=None, enabled=1, ts_modified=None, ts_created=None)
+            RVlan(idx_vlan=1, idx_device=1, vlan=1910, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
+            RVlan(idx_vlan=2, idx_device=1, vlan=981, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
+            RVlan(idx_vlan=3, idx_device=1, vlan=545, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
+            RVlan(idx_vlan=4, idx_device=1, vlan=753, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
+            RVlan(idx_vlan=5, idx_device=1, vlan=1581, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
+            RVlan(idx_vlan=6, idx_device=1, vlan=376, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
+            RVlan(idx_vlan=7, idx_device=1, vlan=501, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
+            RVlan(idx_vlan=8, idx_device=1, vlan=65, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
+            RVlan(idx_vlan=9, idx_device=1, vlan=1457, name=None, state=None, enabled=1, ts_modified=None, ts_created=None),
+            RVlan(idx_vlan=10, idx_device=1, vlan=478, name=None, state=None, enabled=1, ts_modified=None, ts_created=None)
         ]
 
         # Reset the database
@@ -396,6 +398,12 @@ class TestPollUpdateTopology(unittest.TestCase):
                     ts_modified=None
                 )
             )
+
+        from pprint import pprint
+        print('\n')
+        pprint(result[:10])
+        print('\n')
+
         self.assertEqual(result[:10], expected)
 
     def test_mac(self):
@@ -541,6 +549,54 @@ class TestPollUpdateTopology(unittest.TestCase):
                     idx_macport=row.idx_macport,
                     idx_l1interface=row.idx_l1interface,
                     idx_mac=row.idx_mac,
+                    enabled=row.enabled,
+                    ts_created=None,
+                    ts_modified=None
+                )
+            )
+        self.assertEqual(result[:10], expected)
+
+    def test_vlanport(self):
+        """Testing function vlanport."""
+        # Initialize key variables
+        result = []
+        expected = [
+            RVlanPort(idx_vlanport=1, idx_l1interface=21, idx_vlan=719, enabled=1, ts_modified=None, ts_created=None),
+            RVlanPort(idx_vlanport=2, idx_l1interface=22, idx_vlan=1080, enabled=1, ts_modified=None, ts_created=None),
+            RVlanPort(idx_vlanport=3, idx_l1interface=22, idx_vlan=615, enabled=1, ts_modified=None, ts_created=None),
+            RVlanPort(idx_vlanport=4, idx_l1interface=22, idx_vlan=478, enabled=1, ts_modified=None, ts_created=None),
+            RVlanPort(idx_vlanport=5, idx_l1interface=22, idx_vlan=719, enabled=1, ts_modified=None, ts_created=None),
+            RVlanPort(idx_vlanport=6, idx_l1interface=22, idx_vlan=384, enabled=1, ts_modified=None, ts_created=None),
+            RVlanPort(idx_vlanport=7, idx_l1interface=22, idx_vlan=642, enabled=1, ts_modified=None, ts_created=None),
+            RVlanPort(idx_vlanport=8, idx_l1interface=22, idx_vlan=1196, enabled=1, ts_modified=None, ts_created=None),
+            RVlanPort(idx_vlanport=9, idx_l1interface=22, idx_vlan=43, enabled=1, ts_modified=None, ts_created=None),
+            RVlanPort(idx_vlanport=10, idx_l1interface=22, idx_vlan=219, enabled=1, ts_modified=None, ts_created=None)
+        ]
+
+        # Reset the database
+        idx_event = self.idx_event
+
+        # Process the device
+        _device = device.Device(_prerequisites())
+        data = _device.process()
+
+        # Process all the pre-requisite events
+        testimport.device(data, idx_event)
+        testimport.l1interface(data)
+        testimport.vlan(data)
+        testimport.vlanport(data)
+
+        # Verify vlanport data
+        statement = select(VlanPort)
+        rows = db.db_select_row(1196, statement)
+
+        # Return
+        for row in rows:
+            result.append(
+                RVlanPort(
+                    idx_vlanport=row.idx_vlanport,
+                    idx_l1interface=row.idx_l1interface,
+                    idx_vlan=row.idx_vlan,
                     enabled=row.enabled,
                     ts_created=None,
                     ts_modified=None

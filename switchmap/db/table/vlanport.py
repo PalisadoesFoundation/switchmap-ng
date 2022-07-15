@@ -24,7 +24,7 @@ def idx_exists(idx):
 
     # Get data
     statement = select(VlanPort).where(VlanPort.idx_vlanport == idx)
-    rows = db.db_select_row(1099, statement)
+    rows = db.db_select_row(1192, statement)
 
     # Return
     for row in rows:
@@ -55,7 +55,7 @@ def exists(idx_l1interface, idx_vlan):
             VlanPort.idx_l1interface == idx_l1interface
         )
     )
-    rows = db.db_select_row(1109, statement)
+    rows = db.db_select_row(1190, statement)
 
     # Return
     for row in rows:
@@ -80,7 +80,7 @@ def find_idx_vlan(idx_vlan):
 
     # Get row from dataase
     statement = select(VlanPort).where(VlanPort.idx_vlan == idx_vlan)
-    rows = db.db_select_row(1180, statement)
+    rows = db.db_select_row(1189, statement)
 
     # Return
     for row in rows:
@@ -117,7 +117,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1092, inserts)
+        db.db_add_all(1185, inserts)
 
 
 def update_row(idx, row):
@@ -140,7 +140,7 @@ def update_row(idx, row):
                 'enabled': row.enabled
             }
         )
-    db.db_update(1117, statement)
+    db.db_update(1187, statement)
 
 
 def _row(row):
