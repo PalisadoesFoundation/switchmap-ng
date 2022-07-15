@@ -225,6 +225,42 @@ class Vlan(BASE):
             'vlan_to_device', uselist=True, cascade='delete,all'))
 
 
+class VlanPort(BASE):
+    """Database table definition."""
+
+    __tablename__ = 'smap_vlanport'
+    __table_args__ = (
+        UniqueConstraint('idx_l1interface', 'idx_vlan'),
+        {'mysql_engine': 'InnoDB'}
+    )
+
+    idx_vlanport = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_l1interface = Column(
+        ForeignKey('smap_l1interface.idx_l1interface'),
+        nullable=False, index=True, default=1, server_default=text('1'))
+    idx_vlan = Column(
+        ForeignKey('smap_vlan.idx_vlan'),
+        nullable=False, index=True, default=1, server_default=text('1'))
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime, nullable=False,
+        default=datetime.datetime.utcnow, onupdate=datetime.datetime.now)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow)
+
+    # Uses cascade='delete,all' to propagate the deletion of an entry
+    vlanport_to_l1interface = relationship(
+        L1Interface,
+        backref=backref(
+            'vlanport_to_l1interface', uselist=True, cascade='delete,all'))
+
+    vlanport_to_vlan = relationship(
+        Vlan,
+        backref=backref(
+            'vlanport_to_vlan', uselist=True, cascade='delete,all'))
+
+
 class Mac(BASE):
     """Database table definition."""
 

@@ -79,6 +79,13 @@ ts_modified ts_created''')
 IMacPort = namedtuple(
     'IMacPort', 'idx_l1interface idx_mac enabled')
 
+RVlanPort = namedtuple(
+    'RVlanPort',
+    '''idx_vlanport idx_l1interface idx_vlan enabled \
+ts_modified ts_created''')
+IVlanPort = namedtuple(
+    'IVlanPort', 'idx_l1interface idx_vlan enabled')
+
 ProcessMacIP = namedtuple('ProcessMacIP', 'table device version')
 
 TopologyUpdates = namedtuple('Updates', 'idx_macip row')
