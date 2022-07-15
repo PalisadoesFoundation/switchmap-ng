@@ -5,7 +5,7 @@ from sqlalchemy import select, update, and_
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import MacPort
-from switchmap.db.table import RMacPort
+from switchmap.db.misc import rows as _rows
 
 
 def idx_exists(idx):
@@ -28,7 +28,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.macport(row)
         break
     return result
 
@@ -59,7 +59,7 @@ def exists(idx_l1interface, idx_mac):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.macport(row)
         break
     return result
 
@@ -84,7 +84,7 @@ def find_idx_mac(idx_mac):
 
     # Return
     for row in rows:
-        result.append(_row(row))
+        result.append(_rows.macport(row))
     return result
 
 
@@ -141,25 +141,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1117, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: MacPort row
-
-    Returns:
-        result: RMacPort tuple
-
-    """
-    # Initialize key variables
-    result = RMacPort(
-        idx_macport=row.idx_macport,
-        idx_l1interface=row.idx_l1interface,
-        idx_mac=row.idx_mac,
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result

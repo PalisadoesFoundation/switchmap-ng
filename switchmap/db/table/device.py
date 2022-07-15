@@ -1,57 +1,11 @@
 """Module for querying the Device table."""
-import os
 
-import yaml
 from sqlalchemy import select, update, null
 
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import Device as _Device
 from switchmap.db.table import RDevice
-from switchmap.core import log
-
-
-class Device():
-    """Get all Device data."""
-
-    def __init__(self, hostname):
-        """Initialize class.
-
-        Args:
-            hostname: Hostname to process
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        self._hostname = hostname
-
-    def device(self):
-        """Return system summary data.
-
-        Args:
-            None
-
-        Returns:
-            Result: RDevice object
-
-        """
-        # Get data
-        result = exists(self._hostname)
-        return result
-
-    def interfaces(self):
-        """Return L1 data for Ethernet ports only.
-
-        Args:
-            None
-
-        Returns:
-            self._ports: L1 data for Ethernet ports
-
-        """
-        return self._ports
 
 
 def idx_exists(idx):

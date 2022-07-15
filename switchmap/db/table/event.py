@@ -5,7 +5,7 @@ from sqlalchemy import select, update
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import Event
-from switchmap.db.table import REvent
+from switchmap.db.misc import rows as _rows
 
 
 def idx_exists(idx):
@@ -28,7 +28,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.event(row)
         break
     return result
 
@@ -53,7 +53,7 @@ def exists(event):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.event(row)
         break
     return result
 
@@ -109,24 +109,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1111, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: Event row
-
-    Returns:
-        result: REvent tuple
-
-    """
-    # Initialize key variables
-    result = REvent(
-        idx_event=row.idx_event,
-        name=row.name.decode(),
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result

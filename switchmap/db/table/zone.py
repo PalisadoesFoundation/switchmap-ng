@@ -6,7 +6,7 @@ from sqlalchemy import select, update, null
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import Zone
-from switchmap.db.table import RZone
+from switchmap.db.misc import rows as _rows
 
 
 def idx_exists(idx):
@@ -29,7 +29,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.zone(row)
         break
     return result
 
@@ -54,7 +54,7 @@ def exists(name):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.zone(row)
         break
     return result
 
@@ -174,45 +174,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1113, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: Zone row
-
-    Returns:
-        result: RZone tuple
-
-    """
-    # Initialize key variables
-    result = RZone(
-        idx_zone=row.idx_zone,
-        name=(
-            None if row.name is None else row.name.decode()),
-        company_name=(
-            None if row.company_name is None else row.company_name.decode()),
-        address_0=(
-            None if row.address_0 is None else row.address_0.decode()),
-        address_1=(
-            None if row.address_1 is None else row.address_1.decode()),
-        address_2=(
-            None if row.address_2 is None else row.address_2.decode()),
-        city=(
-            None if row.city is None else row.city.decode()),
-        state=(
-            None if row.state is None else row.state.decode()),
-        country=(
-            None if row.country is None else row.country.decode()),
-        postal_code=(
-            None if row.postal_code is None else row.postal_code.decode()),
-        phone=(
-            None if row.phone is None else row.phone.decode()),
-        notes=(
-            None if row.notes is None else row.notes.decode()),
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result

@@ -5,7 +5,7 @@ from sqlalchemy import select, update, and_
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import VlanPort
-from switchmap.db.table import RVlanPort
+from switchmap.db.misc import rows as _rows
 
 
 def idx_exists(idx):
@@ -28,7 +28,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.vlanport(row)
         break
     return result
 
@@ -59,7 +59,7 @@ def exists(idx_l1interface, idx_vlan):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.vlanport(row)
         break
     return result
 
@@ -84,7 +84,7 @@ def find_idx_vlan(idx_vlan):
 
     # Return
     for row in rows:
-        result.append(_row(row))
+        result.append(_rows.vlanport(row))
     return result
 
 
@@ -141,25 +141,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1187, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: VlanPort row
-
-    Returns:
-        result: RVlanPort tuple
-
-    """
-    # Initialize key variables
-    result = RVlanPort(
-        idx_vlanport=row.idx_vlanport,
-        idx_l1interface=row.idx_l1interface,
-        idx_vlan=row.idx_vlan,
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result

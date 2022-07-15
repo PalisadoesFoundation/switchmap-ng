@@ -30,7 +30,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.mac(row)
         break
     return result
 
@@ -58,7 +58,7 @@ def exists(_mac):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.mac(row)
         break
     return result
 
@@ -92,7 +92,7 @@ def findmac(macs):
 
     # Return
     for row in rows:
-        result.append(_row(row))
+        result.append(_rows.mac(row))
     return result
 
 
@@ -168,28 +168,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1114, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: Mac row
-
-    Returns:
-        result: RMac tuple
-
-    """
-    # Initialize key variables
-    result = RMac(
-        idx_mac=row.idx_mac,
-        idx_oui=row.idx_oui,
-        idx_event=row.idx_event,
-        idx_zone=row.idx_zone,
-        mac=(
-            None if bool(row.mac) is False else row.mac.decode()),
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result

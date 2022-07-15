@@ -5,7 +5,7 @@ from sqlalchemy import select, update, null
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import Oui
-from switchmap.db.table import ROui
+from switchmap.db.misc import rows as _rows
 
 
 def idx_oui(mac):
@@ -52,7 +52,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.oui(row)
         break
     return result
 
@@ -77,7 +77,7 @@ def exists(oui):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.oui(row)
         break
     return result
 
@@ -143,28 +143,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1118, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: Oui row
-
-    Returns:
-        result: ROui tuple
-
-    """
-    # Initialize key variables
-    result = ROui(
-        idx_oui=row.idx_oui,
-        oui=(
-            None if bool(row.oui) is False else row.oui.decode()),
-        organization=(
-            None if bool(row.organization) is False else
-            row.organization.decode()),
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result

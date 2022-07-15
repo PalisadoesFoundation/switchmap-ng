@@ -5,7 +5,7 @@ from sqlalchemy import select, update, null, and_
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import Vlan
-from switchmap.db.table import RVlan
+from switchmap.db.misc import rows as _rows
 
 
 def idx_exists(idx):
@@ -28,7 +28,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.vlan(row)
         break
     return result
 
@@ -57,7 +57,7 @@ def exists(idx_device, vlan):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.vlan(row)
         break
     return result
 
@@ -120,27 +120,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1120, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: Vlan row
-
-    Returns:
-        result: RVlan tuple
-
-    """
-    # Initialize key variables
-    result = RVlan(
-        idx_vlan=row.idx_vlan,
-        idx_device=row.idx_device,
-        vlan=row.vlan,
-        name=None if bool(row.name) is False else row.name.decode(),
-        state=row.state,
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result

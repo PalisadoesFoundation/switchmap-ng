@@ -28,7 +28,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.macip(row)
         break
     return result
 
@@ -61,7 +61,7 @@ def exists(idx_device, idx_mac, ip_):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.macip(row)
         break
     return result
 
@@ -86,7 +86,7 @@ def findip(ipaddress):
 
     # Return
     for row in rows:
-        result.append(_row(row))
+        result.append(_rows.macip(row))
     return result
 
 
@@ -116,7 +116,7 @@ def findhostname(hostname):
 
     # Return
     for row in rows:
-        result.append(_row(row))
+        result.append(_rows.macip(row))
 
     # Remove duplicates and return
     result = list(set(result))
@@ -186,29 +186,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1115, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: MacIp row
-
-    Returns:
-        result: RMacIp tuple
-
-    """
-    # Initialize key variables
-    result = RMacIp(
-        idx_macip=row.idx_macip,
-        idx_device=row.idx_device,
-        idx_mac=row.idx_mac,
-        ip_=None if bool(row.ip_) is False else row.ip_.decode(),
-        hostname=(
-            None if bool(row.hostname) is False else row.hostname.decode()),
-        version=row.version,
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result

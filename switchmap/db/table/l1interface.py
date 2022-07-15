@@ -5,7 +5,7 @@ from sqlalchemy import select, update, and_, null, func
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import L1Interface
-from switchmap.db.table import RL1Interface
+from switchmap.db.misc import rows as _rows
 
 
 def idx_exists(idx):
@@ -28,7 +28,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.l1interface(row)
         break
     return result
 
@@ -59,7 +59,7 @@ def exists(idx_device, ifindex):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.l1interface(row)
         break
     return result
 
@@ -90,7 +90,7 @@ def findifalias(ifalias):
 
     # Return
     for row in rows:
-        result.append(_row(row))
+        result.append(_rows.l1interface(row))
 
     # Remove duplicates and return
     result = list(set(result))
@@ -224,56 +224,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1112, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: L1Interface row
-
-    Returns:
-        result: RL1Interface tuple
-
-    """
-    # Initialize key variables
-    result = RL1Interface(
-        idx_l1interface=row.idx_l1interface,
-        idx_device=row.idx_device,
-        ifindex=row.ifindex,
-        duplex=row.duplex,
-        ethernet=row.ethernet,
-        nativevlan=row.nativevlan,
-        trunk=row.trunk,
-        ifspeed=row.ifspeed,
-        ifalias=None if row.ifalias is None else row.ifalias.decode(),
-        ifdescr=None if row.ifdescr is None else row.ifdescr.decode(),
-        ifadminstatus=row.ifadminstatus,
-        ifoperstatus=row.ifoperstatus,
-        ts_idle=row.ts_idle,
-        cdpcachedeviceid=(
-            None if row.cdpcachedeviceid is None else
-            row.cdpcachedeviceid.decode()),
-        cdpcachedeviceport=(
-            None if row.cdpcachedeviceport is None else
-            row.cdpcachedeviceport.decode()),
-        cdpcacheplatform=(
-            None if row.cdpcacheplatform is None else
-            row.cdpcacheplatform.decode()),
-        lldpremportdesc=(
-            None if row.lldpremportdesc is None else
-            row.lldpremportdesc.decode()),
-        lldpremsyscapenabled=(
-            None if row.lldpremsyscapenabled is None else
-            row.lldpremsyscapenabled.decode()),
-        lldpremsysdesc=(
-            None if row.lldpremsysdesc is None else
-            row.lldpremsysdesc.decode()),
-        lldpremsysname=(
-            None if row.lldpremsysname is None else
-            row.lldpremsysname.decode()),
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result
