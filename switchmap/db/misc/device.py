@@ -1,12 +1,10 @@
 """Module for querying the Device table."""
 
-from sqlalchemy import select, update, null
+from sqlalchemy import select
 
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import L1Interface as _L1Interface
-from switchmap.db.table import RL1Interface
-from switchmap.db.table import RDevice
 from switchmap.db.table import device
 from switchmap.db.misc import rows as _rows
 
