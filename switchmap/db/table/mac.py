@@ -5,7 +5,7 @@ from sqlalchemy import select, update, null
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import Mac
-from switchmap.db.table import RMac
+from switchmap.db.misc import rows as _rows
 from switchmap.db.table import oui
 from switchmap.core import general
 

@@ -5,7 +5,7 @@ from sqlalchemy import select, update, and_, null, func
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import MacIp
-from switchmap.db.table import RMacIp
+from switchmap.db.misc import rows as _rows
 
 
 def idx_exists(idx):

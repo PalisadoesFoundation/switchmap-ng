@@ -5,7 +5,7 @@ from sqlalchemy import select, update, null
 # Import project libraries
 from switchmap.db import db
 from switchmap.db.models import Device as _Device
-from switchmap.db.table import RDevice
+from switchmap.db.misc import rows as _rows
 
 
 def idx_exists(idx):
@@ -28,7 +28,7 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.device(row)
         break
     return result
 
@@ -53,7 +53,7 @@ def exists(hostname):
 
     # Return
     for row in rows:
-        result = _row(row)
+        result = _rows.device(row)
         break
     return result
 
@@ -148,39 +148,3 @@ def update_row(idx, row):
             }
         )
     db.db_update(1110, statement)
-
-
-def _row(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: Device row
-
-    Returns:
-        result: RDevice tuple
-
-    """
-    # Initialize key variables
-    result = RDevice(
-        idx_device=row.idx_device,
-        idx_zone=row.idx_zone,
-        idx_event=row.idx_event,
-        sys_name=(
-            None if bool(row.sys_name) is False else row.sys_name.decode()),
-        hostname=(
-            None if bool(row.hostname) is False else row.hostname.decode()),
-        name=(
-            None if bool(row.name) is False else row.name.decode()),
-        sys_description=(
-            None if bool(row.sys_description) is False else
-            row.sys_description.decode()),
-        sys_objectid=(
-            None if bool(row.sys_objectid) is False else
-            row.sys_objectid.decode()),
-        sys_uptime=row.sys_uptime,
-        last_polled=row.last_polled,
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified
-    )
-    return result

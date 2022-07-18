@@ -2,6 +2,7 @@
 
 from switchmap.db.table import RMacPort
 from switchmap.db.table import RL1Interface
+from switchmap.db.table import RDevice
 from switchmap.db.table import REvent
 from switchmap.db.table import RMac
 from switchmap.db.table import RMacIp
@@ -9,6 +10,42 @@ from switchmap.db.table import ROui
 from switchmap.db.table import RVlan
 from switchmap.db.table import RVlanPort
 from switchmap.db.table import RZone
+
+
+def device(row):
+    """Convert table row to tuple.
+
+    Args:
+        row: Device row
+
+    Returns:
+        result: RDevice tuple
+
+    """
+    # Initialize key variables
+    result = RDevice(
+        idx_device=row.idx_device,
+        idx_zone=row.idx_zone,
+        idx_event=row.idx_event,
+        sys_name=(
+            None if bool(row.sys_name) is False else row.sys_name.decode()),
+        hostname=(
+            None if bool(row.hostname) is False else row.hostname.decode()),
+        name=(
+            None if bool(row.name) is False else row.name.decode()),
+        sys_description=(
+            None if bool(row.sys_description) is False else
+            row.sys_description.decode()),
+        sys_objectid=(
+            None if bool(row.sys_objectid) is False else
+            row.sys_objectid.decode()),
+        sys_uptime=row.sys_uptime,
+        last_polled=row.last_polled,
+        enabled=row.enabled,
+        ts_created=row.ts_created,
+        ts_modified=row.ts_modified
+    )
+    return result
 
 
 def event(row):
