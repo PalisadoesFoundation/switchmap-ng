@@ -78,7 +78,7 @@ def by_idx_mac(idx_mac):
                     _Oui.idx_oui == _Mac.idx_oui,
                 )
             )
-        mac_rows = db.db_select(1197, statement)
+        mac_rows = db.db_select(1198, statement)
         for row in mac_rows:
             macdetails.append(
                 MacDetail(
@@ -93,7 +93,7 @@ def by_idx_mac(idx_mac):
         for item in macdetails:
             statement = select(_MacIp).where(
                 _MacIp.idx_mac == item.idx_mac)
-            detail_rows = db.db_select_row(1197, statement)
+            detail_rows = db.db_select_row(1202, statement)
             if bool(detail_rows):
                 for row in detail_rows:
                     result.append(

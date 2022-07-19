@@ -65,7 +65,7 @@ class Device():
             statement = select(_L1Interface).where(
                     _L1Interface.idx_device == self._device.idx_device
             )
-            l1_rows = db.db_select_row(1197, statement)
+            l1_rows = db.db_select_row(1199, statement)
             for row in l1_rows:
                 l1interfaces.append(_rows.l1interface(row))
 
@@ -79,7 +79,7 @@ class Device():
                 statement = select(_MacPort).where(
                         l1int.idx_l1interface == _MacPort.idx_l1interface
                 )
-                mac_rows = db.db_select_row(1197, statement)
+                mac_rows = db.db_select_row(1200, statement)
                 for row in mac_rows:
                     idx_macs.append(row.idx_mac)
 
