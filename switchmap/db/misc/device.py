@@ -1,13 +1,12 @@
 """Module for querying the Device table."""
 
-from sqlalchemy import select, and_
+from sqlalchemy import select
 
 # Import project libraries
 from switchmap.db import db
-from switchmap import MacDetail, InterfaceDetail
+from switchmap import InterfaceDetail
 from switchmap.db.models import L1Interface as _L1Interface
 from switchmap.db.models import MacPort as _MacPort
-from switchmap.db.models import MacIp as _MacIp
 from switchmap.db.table import device
 from switchmap.db.misc import rows as _rows
 from switchmap.db.misc import macdetail
@@ -74,6 +73,7 @@ class Device():
             for l1int in l1interfaces:
                 # Initialize loop variables
                 macresult = []
+                idx_macs = []
 
                 # Get the MAC idx_mac values associated with the interface.
                 statement = select(_MacPort).where(

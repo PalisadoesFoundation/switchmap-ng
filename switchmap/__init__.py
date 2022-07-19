@@ -28,7 +28,7 @@ IP = namedtuple('IP', 'address version')
 MacDetail = namedtuple(
     'MacDetail', 'hostname mac ip_ organization idx_l1interface idx_mac')
 InterfaceDetail = namedtuple(
-    'InterfaceDetail', 'RL1Interface MacDetail')
+    'InterfaceDetail', 'RL1Interface MacDetails')
 
 
 def main():
