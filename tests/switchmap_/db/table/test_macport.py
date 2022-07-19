@@ -5,7 +5,6 @@ import os
 import sys
 import unittest
 import random
-import time
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))

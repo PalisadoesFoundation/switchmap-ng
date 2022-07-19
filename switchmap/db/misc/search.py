@@ -9,6 +9,8 @@ Description:
         3) Hostnames
 
 """
+# PIP3 imports
+from sqlalchemy import select, and_
 
 # Switchmap-NG imports
 from switchmap import Found, MacDetail
@@ -18,6 +20,12 @@ from switchmap.db.table import oui
 from switchmap.db.table import macport
 from switchmap.db.table import macip
 from switchmap.db.table import l1interface
+
+from switchmap.db import db
+from switchmap.db.models import Mac as _Mac
+from switchmap.db.models import Oui as _Oui
+from switchmap.db.models import MacPort as _MacPort
+from switchmap.db.models import MacIp as _MacIp
 
 
 class Search():
@@ -190,46 +198,3 @@ class Search():
 
         # Return
         return result
-
-
-def macdetail(_mac):
-    """Search for MAC addresses.
-
-    Args:
-        _mac: MAC address
-
-    Returns:
-        result: List of Macadamia objects
-
-    """
-    # Initialize key variables
-    organization = ''
-    result = []
-
-    # Get MAC information
-    macs = mac.findmac(_mac)
-
-    # Do lookups
-    for macmeta in macs:
-        # Get the organization
-        ouimeta = oui.idx_exists(macmeta.idx_oui)
-        if bool(ouimeta) is True:
-            organization = ouimeta.organization
-
-        # Get the IP and Hostname
-        _macip = macip.idx_exists(macmeta.idx_mac)
-        _macport = macport.find_idx_mac(macmeta.idx_mac)
-        for item in _macport:
-            if bool(_macip) is True:
-                result.append(
-                    MacDetail(
-                        hostname=_macip.hostname,
-                        mac=macmeta.mac,
-                        ip_=_macip.ip_,
-                        organization=organization,
-                        idx_l1interface=item.idx_l1interface
-                    )
-                )
-
-    # Return
-    return result

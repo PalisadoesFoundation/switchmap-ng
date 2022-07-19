@@ -1,12 +1,16 @@
 """Module for querying the Device table."""
 
-from sqlalchemy import select
+from sqlalchemy import select, and_
 
 # Import project libraries
 from switchmap.db import db
+from switchmap import MacDetail, InterfaceDetail
 from switchmap.db.models import L1Interface as _L1Interface
+from switchmap.db.models import MacPort as _MacPort
+from switchmap.db.models import MacIp as _MacIp
 from switchmap.db.table import device
 from switchmap.db.misc import rows as _rows
+from switchmap.db.misc import macdetail
 
 
 class Device():
@@ -51,15 +55,45 @@ class Device():
 
         """
         # Initialize key variables
+        l1_rows = []
+        mac_rows = []
         result = []
-        _interfaces = []
+        l1interfaces = []
+        idx_macs = []
 
-        # Setup
         if bool(self._device) is True:
+            # Get interface data
             statement = select(_L1Interface).where(
                     _L1Interface.idx_device == self._device.idx_device
             )
-        rows = db.db_select_row(1197, statement)
-        for row in rows:
-            _interfaces.append(_rows.l1interface(row))
+            l1_rows = db.db_select_row(1197, statement)
+            for row in l1_rows:
+                l1interfaces.append(_rows.l1interface(row))
+
+            # Get MacIp and MacPort information
+            for l1int in l1interfaces:
+                # Initialize loop variables
+                macresult = []
+
+                # Get the MAC idx_mac values associated with the interface.
+                statement = select(_MacPort).where(
+                        l1int.idx_l1interface == _MacPort.idx_l1interface
+                )
+                mac_rows = db.db_select_row(1197, statement)
+                for row in mac_rows:
+                    idx_macs.append(row.idx_mac)
+
+                # Get the MacDetail values
+                for item in idx_macs:
+                    macresult.extend(macdetail.by_idx_mac(item))
+
+                # Update the result
+                result.append(
+                    InterfaceDetail(
+                        RL1Interface=l1int,
+                        MacDetails=macresult
+                    )
+                )
+
+        # Get interface data
         return result
