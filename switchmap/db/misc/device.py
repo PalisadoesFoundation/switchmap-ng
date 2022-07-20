@@ -9,7 +9,8 @@ from switchmap.db.models import L1Interface as _L1Interface
 from switchmap.db.models import MacPort as _MacPort
 from switchmap.db.table import device
 from switchmap.db.misc import rows as _rows
-from switchmap.db.misc import macdetail
+from switchmap.db.misc.interface import mac as macdetail
+from switchmap.db.misc.interface import vlan
 
 
 class Device():
@@ -74,6 +75,7 @@ class Device():
                 # Initialize loop variables
                 macresult = []
                 idx_macs = []
+                vlans = []
 
                 # Get the MAC idx_mac values associated with the interface.
                 statement = select(_MacPort).where(
@@ -87,11 +89,15 @@ class Device():
                 for item in idx_macs:
                     macresult.extend(macdetail.by_idx_mac(item))
 
+                # Get Vlan data
+                vlans = vlan.by_idx_l1interface(l1int.idx_l1interface)
+
                 # Update the result
                 result.append(
                     InterfaceDetail(
                         RL1Interface=l1int,
-                        MacDetails=macresult
+                        MacDetails=macresult,
+                        RVlans=vlans
                     )
                 )
 

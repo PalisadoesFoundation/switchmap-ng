@@ -1,35 +1,13 @@
-#!/usr/bin/env python3
-"""Test the macport module."""
+"""Create prerequisites for DB interface testing."""
 
 import os
 import sys
-import unittest
 import random
-
-# Try to create a working PYTHONPATH
-EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(
-    os.path.abspath(os.path.join(
-        os.path.abspath(os.path.join(
-            os.path.abspath(os.path.join(
-                EXEC_DIR,
-                os.pardir)), os.pardir)), os.pardir)), os.pardir))
-_EXPECTED = '{0}switchmap-ng{0}tests{0}switchmap_{0}db{0}misc'.format(os.sep)
-if EXEC_DIR.endswith(_EXPECTED) is True:
-    # We need to prepend the path in case the repo has been installed
-    # elsewhere on the system using PIP. This could corrupt expected results
-    sys.path.insert(0, ROOT_DIR)
-else:
-    print('''This script is not installed in the "{0}" directory. Please fix.\
-'''.format(_EXPECTED))
-    sys.exit(2)
+from collections import namedtuple
 
 
-# Create the necessary configuration to load the module
-from tests.testlib_ import setup
-CONFIG = setup.config()
-CONFIG.save()
-
+from switchmap.db.table import vlanport
+from switchmap.db.table import vlan
 from switchmap.db.table import macport
 from switchmap.db.table import event
 from switchmap.db.table import zone
@@ -41,6 +19,8 @@ from switchmap.db.table import l1interface
 from switchmap.db.models import MacPort
 from switchmap.db.table import RMacPort
 from switchmap.db.table import IMacPort
+from switchmap.db.table import IVlanPort
+from switchmap.db.table import IVlan
 from switchmap.db.table import IMac
 from switchmap.db.table import IEvent
 from switchmap.db.table import IZone
@@ -55,7 +35,6 @@ from switchmap import Found, MacDetail
 from tests.testlib_ import db
 from tests.testlib_ import data
 
-from switchmap.db.misc import macdetail as testimport
 
 MAXMAC = 100
 OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
@@ -69,73 +48,7 @@ IDX_MACS = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
 RANDOM_INDEX = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
 
 
-class TestFunctions(unittest.TestCase):
-    """Checks all functions and methods."""
-
-    #########################################################################
-    # General object setup
-    #########################################################################
-    macips = None
-
-    @classmethod
-    def setUpClass(cls):
-        """Execute these steps before starting each test."""
-        # Load the configuration in case it's been deleted after loading the
-        # configuration above. Sometimes this happens when running
-        # `python3 -m unittest discover` where another the tearDownClass of
-        # another test module prematurely deletes the configuration required
-        # for this module
-        config = setup.config()
-        config.save()
-
-        # Create database tables
-        models.create_all_tables()
-
-        # Pollinate db with prerequisites
-        cls.macips = _prerequisites()
-
-    @classmethod
-    def tearDownClass(cls):
-        """Execute these steps after each tests is completed."""
-        # Drop tables
-        database = db.Database()
-        database.drop()
-
-        # Cleanup the
-        CONFIG.cleanup()
-
-    def test___init__(self):
-        """Testing function __init__."""
-        pass
-
-    def test_by_mac(self):
-        """Testing function by_mac."""
-        # Initialize key variables
-        lookup = {}
-
-        # Prepare data for testing
-        for _, details in self.macips.items():
-            for detail in details:
-                found = lookup.get(detail.mac)
-                if bool(found) is True:
-                    lookup[detail.mac].append(detail)
-                else:
-                    lookup[detail.mac] = [detail]
-
-        # Test
-        for mac_, expected in lookup.items():
-            result = testimport.by_mac(mac_)
-            self.assertEqual(result, expected)
-
-    def test_by_idx_mac(self):
-        """Testing function by_idx_mac."""
-        # Test
-        for idx_mac, expected in self.macips.items():
-            result = testimport.by_idx_mac(idx_mac)
-            self.assertEqual(result, expected)
-
-
-def _prerequisites():
+def prerequisites():
     """Create prerequisite rows.
 
     Args:
@@ -146,7 +59,9 @@ def _prerequisites():
 
     """
     # Initialize key variables
-    result = {}
+    macresult = {}
+    vlanresult = {}
+    Result = namedtuple('Result', 'idx_mac idx_l1interface')
 
     # Insert the necessary rows
     event.insert_row(
@@ -201,6 +116,18 @@ def _prerequisites():
             enabled=1
         )
     )
+    # Insert VLANs
+    vlans = [
+        IVlan(
+            idx_device=1,
+            vlan=idx + 1,
+            name=data.random_string(),
+            state=1,
+            enabled=1
+        ) for idx in range(MAXMAC)]
+    vlan.insert_row(vlans)
+
+    # Insert interfaces
     l1interface.insert_row(
         [IL1Interface(
             idx_device=1,
@@ -226,6 +153,25 @@ def _prerequisites():
         ) for _, value in enumerate(IFALIASES)]
     )
 
+    # Insert VlanPort entries
+    vlanports = [
+        IVlanPort(
+            idx_l1interface=value,
+            idx_vlan=key + 1,
+            enabled=1
+        ) for key, value in enumerate(RANDOM_INDEX)]
+    vlanport.insert_row(vlanports)
+
+    # Track Vlan assignments
+    for _, value in enumerate(vlanports):
+        idx_l1interface = value.idx_l1interface
+        idx_vlan = value.idx_vlan
+        found = vlanresult.get(idx_l1interface)
+        if bool(found) is True:
+            vlanresult[idx_l1interface].append(idx_vlan)
+        else:
+            vlanresult[idx_l1interface] = [idx_vlan]
+
     # Insert MacPort entries
     macports_ = [
         IMacPort(
@@ -250,7 +196,6 @@ def _prerequisites():
 
     # Track MacIP assignments
     for key, item in enumerate(macips_):
-        # print('>', item.idx_mac)
         detail = MacDetail(
             hostname=item.hostname,
             ip_=item.ip_,
@@ -260,16 +205,15 @@ def _prerequisites():
             mac=MACS[item.idx_mac - 1]
         )
 
-        found = result.get(detail.idx_mac)
+        found = macresult.get(detail.idx_mac)
         if bool(found) is True:
-            result[item.idx_mac].append(detail)
+            macresult[item.idx_mac].append(detail)
         else:
-            result[item.idx_mac] = [detail]
+            macresult[item.idx_mac] = [detail]
 
+    # Return
+    result = Result(
+        idx_mac=macresult,
+        idx_l1interface=vlanresult
+    )
     return result
-
-
-if __name__ == '__main__':
-
-    # Do the unit test
-    unittest.main()

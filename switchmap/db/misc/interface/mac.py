@@ -1,14 +1,4 @@
-#!/usr/bin/env python3
-"""switchmap.Search class.
-
-Description:
-
-    This files has classes that process searches for:
-        1) IP and MAC address
-        2) Port names
-        3) Hostnames
-
-"""
+"""Module for getting interface specific mac data."""
 # PIP3 imports
 from sqlalchemy import select, and_
 
