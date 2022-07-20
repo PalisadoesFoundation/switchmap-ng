@@ -32,7 +32,7 @@ def by_idx_l1interface(idx_l1interface):
                 _VlanPort.idx_vlan == _Vlan.idx_vlan
             )
         )
-    rows = db.db_select_row(1198, statement)
+    rows = db.db_select_row(1203, statement)
     for row in rows:
         result.append(_rows.vlan(row))
 
