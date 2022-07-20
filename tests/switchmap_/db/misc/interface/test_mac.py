@@ -254,7 +254,6 @@ def _prerequisites():
 
     # Track MacIP assignments
     for key, item in enumerate(macips_):
-        # print('>', item.idx_mac)
         detail = MacDetail(
             hostname=item.hostname,
             ip_=item.ip_,

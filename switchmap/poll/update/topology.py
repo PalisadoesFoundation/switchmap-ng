@@ -34,6 +34,7 @@ def process(data, idx_event, dns=True):
     device(data, idx_event)
     l1interface(data)
     vlan(data)
+    vlanport(data)
     mac(data, idx_event)
     macip(data, dns=dns)
     macport(data)

@@ -398,12 +398,6 @@ class TestPollUpdateTopology(unittest.TestCase):
                     ts_modified=None
                 )
             )
-
-        from pprint import pprint
-        print('\n')
-        pprint(result[:10])
-        print('\n')
-
         self.assertEqual(result[:10], expected)
 
     def test_mac(self):
