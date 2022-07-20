@@ -59,7 +59,7 @@ from tests.testlib_ import db
 from tests.testlib_ import data
 
 from switchmap.db.misc import device as testimport
-from switchmap.db.misc import macdetail
+from switchmap.db.misc.interface import mac as macdetail
 
 MAXMAC = 100
 OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
