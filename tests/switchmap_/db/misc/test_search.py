@@ -190,22 +190,6 @@ class TestSearch(unittest.TestCase):
             self.assertTrue(
                 result[0].idx_l1interface, expected[0].idx_l1interface)
 
-    def test_macdetail(self):
-        """Testing function macdetail."""
-        # Test
-        for key, value in enumerate(MACS):
-            result = testimport.macdetail(value)
-            expected = [
-                MacDetail(
-                    hostname=HOSTNAMES[key],
-                    mac=value,
-                    ip_=IPADDRESSES[key].address,
-                    organization=ORGANIZATIONS[key],
-                    idx_l1interface=RANDOM_INDEX[key]
-                )
-            ]
-            self.assertEqual(result, expected)
-
 
 def _prerequisites():
     """Create prerequisite rows.
