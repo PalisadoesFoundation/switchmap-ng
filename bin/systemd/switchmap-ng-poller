@@ -124,7 +124,6 @@ def _poll_devices():
             hostname=hostname,
             idx_event=_event.idx_event) for hostname in hostnames]
 
-    log.log2info(1234, 'Threads {}'.format(threads_in_pool))
     # for poll in polls:
     #     _poll_single_device(poll)
 
