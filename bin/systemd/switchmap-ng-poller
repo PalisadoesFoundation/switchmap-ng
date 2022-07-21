@@ -76,10 +76,12 @@ class PollingAgent(Agent):
         """
         # Initialize key variables
         delay = self._server_config.polling_interval()
-        ts_start = int(time.time())
 
         # Post data to the remote server
         while True:
+            # Log the start time
+            ts_start = int(time.time())
+
             # Log
             log_message = ('Starting device polling sequence.')
             log.log2info(1056, log_message)
@@ -117,16 +119,20 @@ def _poll_devices():
     # Create a list of polling objects
     hostnames = sorted(config.hostnames())
 
-    for hostname in hostnames:
-        _poll_single_device(
-            _Poll(hostname=hostname, idx_event=_event.idx_event)
-        )
+    polls = [
+        _Poll(
+            hostname=hostname,
+            idx_event=_event.idx_event) for hostname in hostnames]
 
-    # # Create a pool of sub process resources
-    # with Pool(processes=threads_in_pool) as pool:
-    #
-    #     # Create sub processes from the pool
-    #     pool.map(_poll_single_device, hostnames)
+    log.log2info(1234, 'Threads {}'.format(threads_in_pool))
+    # for poll in polls:
+    #     _poll_single_device(poll)
+
+    # Create a pool of sub process resources
+    with Pool(processes=threads_in_pool) as pool:
+
+        # Create sub processes from the pool
+        pool.map(_poll_single_device, polls)
 
     # Disable any unused devices and/or MAC addresses
     disable.post_poll_cleanup(_event.idx_event)
