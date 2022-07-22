@@ -115,7 +115,7 @@ class Search(object):
                     for ipaddress in ipaddresses:
                         # Find search string in MAC address keys
                         for possible in self._search:
-                            if possible in '{}'.format(ipaddress).lower():
+                            if possible in "{}".format(ipaddress).lower():
                                 data_dict = {}
                                 data_dict[device] = int(ifindex)
                                 result.append(data_dict)
@@ -139,7 +139,7 @@ class Search(object):
         for ifalias, ifalias_dict in self.ifalias_data.items():
             # Find search string in ifalias keys
             for possible in self._search:
-                if possible in '{}'.format(ifalias).lower():
+                if possible in "{}".format(ifalias).lower():
                     # We have found something
                     for device, ifindexes in ifalias_dict.items():
                         for ifindex in ifindexes:
@@ -166,14 +166,14 @@ class Search(object):
 
         for _, data_dict in self.arp_data.items():
             # Make sure we can get the hostname and MAC
-            if 'hostname' not in data_dict:
+            if "hostname" not in data_dict:
                 continue
-            if 'mac_address' not in data_dict:
+            if "mac_address" not in data_dict:
                 continue
 
             # Find search string in MAC address keys
-            hostname = data_dict['hostname']
-            macaddress = data_dict['mac_address']
+            hostname = data_dict["hostname"]
+            macaddress = data_dict["mac_address"]
 
             # If there is no hostname return (multicast)
             if bool(hostname) is False:
@@ -209,7 +209,7 @@ def _macaddress(_search, ifindex_data):
         # Find search string in MAC address keys
         for possible in _search:
 
-            if possible in '{}'.format(macaddress).lower():
+            if possible in "{}".format(macaddress).lower():
                 # Get all the devices and ifindexes that have the MAC
                 for device, ifindexes in devices.items():
                     for ifindex, _ in ifindexes.items():
@@ -235,8 +235,8 @@ def _search_list(searchstring):
     result = [searchstring.lower()]
 
     # Lowercase alphanumeric search string for MAC addresses
-    pattern = re.compile(r'[\W_]+')
-    next_string = pattern.sub('', searchstring).lower()
+    pattern = re.compile(r"[\W_]+")
+    next_string = pattern.sub("", searchstring).lower()
     if next_string not in result:
         result.append(next_string)
 

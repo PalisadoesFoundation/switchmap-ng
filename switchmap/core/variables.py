@@ -1,10 +1,10 @@
 """Module for classes that format variables."""
 
 
-class AgentAPIVariable():
+class AgentAPIVariable:
     """Variable representation for data required by the AgentAPI."""
 
-    def __init__(self, ip_bind_port=20201, ip_listen_address='0.0.0.0'):
+    def __init__(self, ip_bind_port=20201, ip_listen_address="0.0.0.0"):
         """Initialize the class.
 
         Args:
@@ -29,11 +29,11 @@ class AgentAPIVariable():
             result: String representation.
 
         """
-        result = ('''\
+        result = """\
 <{0} ip_bind_port={1}, ip_listen_address={2}>\
-'''.format(self.__class__.__name__,
-           repr(self.ip_bind_port),
-           repr(self.ip_listen_address)
-           )
+""".format(
+            self.__class__.__name__,
+            repr(self.ip_bind_port),
+            repr(self.ip_listen_address),
         )
         return result

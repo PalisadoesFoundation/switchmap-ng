@@ -52,14 +52,14 @@ class BridgeQuery(Query):
         self._snmp_object = snmp_object
 
         # Get one OID entry in MIB (dot1dBasePortIfIndex)
-        test_oid = '.1.3.6.1.2.1.17.4.3.1.2'
+        test_oid = ".1.3.6.1.2.1.17.4.3.1.2"
 
         # Determine whether LLDP is keyed on ifIndex or BasePortIndex
         # If the ifindex method is being used, all the lldpLocPortIds
         # will match the ifindex values
         self._ifindex = mib_if.IfQuery(snmp_object).ifindex()
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -89,7 +89,7 @@ class BridgeQuery(Query):
         done = False
 
         # Check if Cisco VLANS are supported
-        oid_vtpvlanstate = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
+        oid_vtpvlanstate = ".1.3.6.1.4.1.9.9.46.1.3.1.1.2"
         oid_exists = self._snmp_object.oid_exists(oid_vtpvlanstate)
         if bool(oid_exists) is True:
             final = self._macaddresstable_cisco()
@@ -97,9 +97,8 @@ class BridgeQuery(Query):
 
         # Check if Juniper VLANS are supported
         if done is False:
-            oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
-            oid_exists = self._snmp_object.oid_exists(
-                oid_dot1qvlanstaticname)
+            oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
+            oid_exists = self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
             if bool(oid_exists) is True:
                 final = self._macaddresstable_juniper()
 
@@ -119,21 +118,19 @@ class BridgeQuery(Query):
         # Initialize key variables
         data_dict = defaultdict(lambda: defaultdict(dict))
         final = defaultdict(lambda: defaultdict(dict))
-        context_names = ['']
+        context_names = [""]
         context_style = 0
 
         # Check if Cisco VLANS are supported
-        oid_vtpvlanstate = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
+        oid_vtpvlanstate = ".1.3.6.1.4.1.9.9.46.1.3.1.1.2"
         oid_exists = self._snmp_object.oid_exists(oid_vtpvlanstate)
         if bool(oid_exists) is True:
             # Get the vlantype
-            oid_vtpvlantype = '.1.3.6.1.4.1.9.9.46.1.3.1.1.3'
-            vtpvlantype = self._snmp_object.swalk(
-                oid_vtpvlantype, normalized=True)
+            oid_vtpvlantype = ".1.3.6.1.4.1.9.9.46.1.3.1.1.3"
+            vtpvlantype = self._snmp_object.swalk(oid_vtpvlantype, normalized=True)
 
             # Get VLANs and their states
-            vtpvlanstate = self._snmp_object.swalk(
-                oid_vtpvlanstate, normalized=True)
+            vtpvlanstate = self._snmp_object.swalk(oid_vtpvlanstate, normalized=True)
 
             # Get the style of context name to be used for this type of device
             for vlan, state in vtpvlanstate.items():
@@ -177,9 +174,9 @@ class BridgeQuery(Query):
 
         # Assign MACs to secondary key for final result
         for ifindex, hex_macaddresses in data_dict.items():
-            final[ifindex]['l1_macs'] = []
+            final[ifindex]["l1_macs"] = []
             for next_mac in hex_macaddresses:
-                final[ifindex]['l1_macs'].append(next_mac)
+                final[ifindex]["l1_macs"].append(next_mac)
 
         # Return
         return final
@@ -199,7 +196,7 @@ class BridgeQuery(Query):
         dot1dbaseport_macs = {}
 
         # Check if Juniper VLANS are supported
-        oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+        oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
         oid_exists = self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
             # Create a dict of MAC addresses found
@@ -208,12 +205,12 @@ class BridgeQuery(Query):
                 # Convert decimal mac to hex
                 # (Only use the last 6 digits in the decimal_macaddress, first
                 # digit is the vlan number)
-                hex_macaddress = ''
-                mac_bytes = decimal_macaddress.split('.')[-6:]
+                hex_macaddress = ""
+                mac_bytes = decimal_macaddress.split(".")[-6:]
                 for mac_byte in mac_bytes:
-                    hex_macaddress = (
-                        '{}{}'.format(
-                            hex_macaddress, hex(int(mac_byte))[2:].zfill(2)))
+                    hex_macaddress = "{}{}".format(
+                        hex_macaddress, hex(int(mac_byte))[2:].zfill(2)
+                    )
 
                 # Assign MAC to baseport index
                 if dot1dbaseport in dot1dbaseport_macs:
@@ -225,8 +222,7 @@ class BridgeQuery(Query):
             baseportifindex = self.dot1dbaseport_2_ifindex()
             for dot1dbaseport, ifindex in baseportifindex.items():
                 if dot1dbaseport in dot1dbaseport_macs:
-                    final[ifindex][
-                        'l1_macs'] = dot1dbaseport_macs[dot1dbaseport]
+                    final[ifindex]["l1_macs"] = dot1dbaseport_macs[dot1dbaseport]
 
         # Return
         return final
@@ -244,16 +240,17 @@ class BridgeQuery(Query):
         """
         # Initialize key variables
         if context_names is None:
-            context_names = ['']
+            context_names = [""]
         data_dict = defaultdict(dict)
 
         # Process values
-        oid = '.1.3.6.1.2.1.17.4.3.1.2'
+        oid = ".1.3.6.1.2.1.17.4.3.1.2"
         for context_name in context_names:
             results = self._snmp_object.swalk(
-                oid, normalized=False, context_name=context_name)
+                oid, normalized=False, context_name=context_name
+            )
             for key, value in results.items():
-                new_key = key[len(oid):]
+                new_key = key[len(oid) :]
                 data_dict[new_key] = value
 
         # Return data
@@ -276,23 +273,22 @@ class BridgeQuery(Query):
         vlans = []
 
         # Process dot1qvlanstaticname OID
-        oid_dot1qvlanstaticname = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+        oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
         oid_exists = self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
-            results = self._snmp_object.walk(
-                oid_dot1qvlanstaticname, normalized=True)
+            results = self._snmp_object.walk(oid_dot1qvlanstaticname, normalized=True)
             for key, value in results.items():
                 vlan_dict[key] = value
             for key, _ in vlan_dict.items():
                 vlans.append(key)
 
             # Process values
-            oid = '.1.3.6.1.2.1.17.7.1.2.2.1.2'
+            oid = ".1.3.6.1.2.1.17.7.1.2.2.1.2"
             for vlan in vlans:
-                new_oid = '{}.{}'.format(oid, vlan)
+                new_oid = "{}.{}".format(oid, vlan)
                 results = self._snmp_object.swalk(new_oid, normalized=False)
                 for key, value in results.items():
-                    new_key = key[len(oid):]
+                    new_key = key[len(oid) :]
                     data_dict[new_key] = value
 
         # Return data
@@ -311,17 +307,18 @@ class BridgeQuery(Query):
         """
         # Initialize key variables
         if context_names is None:
-            context_names = ['']
+            context_names = [""]
         data_dict = defaultdict(dict)
 
         # Process values
-        oid = '.1.3.6.1.2.1.17.4.3.1.1'
+        oid = ".1.3.6.1.2.1.17.4.3.1.1"
         for context_name in context_names:
             results = self._snmp_object.swalk(
-                oid, normalized=False, context_name=context_name)
+                oid, normalized=False, context_name=context_name
+            )
             for key, mac_value in results.items():
                 # Assign the mac address to the dictionary
-                new_key = key[len(oid):]
+                new_key = key[len(oid) :]
                 data_dict[new_key] = general.octetstr_2_string(mac_value)
 
         # Return data
@@ -340,11 +337,11 @@ class BridgeQuery(Query):
         # Initialize key variables
         offset = 0
         if context_names is None:
-            context_names = ['']
+            context_names = [""]
         data_dict = defaultdict(dict)
 
         # Get the difference between ifIndex and dot1dBasePortIfIndex
-        oid = '.1.3.6.1.2.1.17.1.4.1.2'
+        oid = ".1.3.6.1.2.1.17.1.4.1.2"
         results = self._snmp_object.swalk(oid, normalized=True)
         for _bridge_index, ifindex in results.items():
             bridge_index = int(_bridge_index)
@@ -399,10 +396,10 @@ def _cisco_vlan_context(vlan, context_style):
     # Create context string
     if context_style == 0:
         # Create context for older Cisco systems
-        cisco_context = '{}'.format(vlan)
+        cisco_context = "{}".format(vlan)
     else:
         # Create context for newer Cisco systems
-        cisco_context = 'vlan-{}'.format(vlan)
+        cisco_context = "vlan-{}".format(vlan)
 
     # Return
     return cisco_context
@@ -419,6 +416,5 @@ def _snmp_octetstr_2_string(binary_value):
 
     """
     # Convert and return
-    result = ''.join(
-        ['%0.2x' % ord(_) for _ in binary_value.decode('utf-8')])
+    result = "".join(["%0.2x" % ord(_) for _ in binary_value.decode("utf-8")])
     return result.lower()

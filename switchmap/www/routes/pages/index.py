@@ -11,10 +11,10 @@ from switchmap.utils import general
 from switchmap.www.pages.index import HomePage
 
 # Define the INDEX global variable
-INDEX = Blueprint('INDEX', __name__)
+INDEX = Blueprint("INDEX", __name__)
 
 
-@INDEX.route('/')
+@INDEX.route("/")
 def index():
     """Function for creating host tables.
 
@@ -29,6 +29,4 @@ def index():
     hosts = general.get_hosts()
     homepage = HomePage(hosts)
     device_table = homepage.data()
-    return render_template(
-        'index.html',
-        device_table=device_table)
+    return render_template("index.html", device_table=device_table)

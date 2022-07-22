@@ -8,29 +8,55 @@ from mock import Mock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(
-    os.path.abspath(os.path.join(
-        os.path.abspath(os.path.join(
-            os.path.abspath(os.path.join(
-                os.path.abspath(os.path.join(
-                    os.path.abspath(os.path.join(
-                        EXEC_DIR,
-                        os.pardir)), os.pardir)), os.pardir)), os.pardir)),
-        os.pardir)), os.pardir))
-_EXPECTED = '''\
+ROOT_DIR = os.path.abspath(
+    os.path.join(
+        os.path.abspath(
+            os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.abspath(
+                            os.path.join(
+                                os.path.abspath(
+                                    os.path.join(
+                                        os.path.abspath(
+                                            os.path.join(EXEC_DIR, os.pardir)
+                                        ),
+                                        os.pardir,
+                                    )
+                                ),
+                                os.pardir,
+                            )
+                        ),
+                        os.pardir,
+                    )
+                ),
+                os.pardir,
+            )
+        ),
+        os.pardir,
+    )
+)
+_EXPECTED = """\
 {0}switchmap-ng{0}tests{0}switchmap_{0}poll{0}snmp{0}mib{0}cisco\
-'''.format(os.sep)
+""".format(
+    os.sep
+)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
-    print('''This script is not installed in the "{0}" directory. Please fix.\
-'''.format(_EXPECTED))
+    print(
+        """This script is not installed in the "{0}" directory. Please fix.\
+""".format(
+            _EXPECTED
+        )
+    )
     sys.exit(2)
 
 # Create the necessary configuration to load the module
 from tests.testlib_ import setup
+
 CONFIG = setup.config()
 CONFIG.save()
 
@@ -38,7 +64,7 @@ CONFIG.save()
 from switchmap.poll.snmp.mib.cisco import mib_ciscoc2900 as testimport
 
 
-class Query():
+class Query:
     """Class for snmp_manager.Query mock.
 
     A detailed tutorial about Python mocks can be found here:
@@ -109,29 +135,26 @@ class TestMibCiscoc2900(unittest.TestCase):
     # SNMPwalk results used by Mocks.
 
     # Normalized walk returning integers
-    nwalk_results_integer = {
-        100: 1234,
-        200: 5678
-    }
+    nwalk_results_integer = {100: 1234, 200: 5678}
 
     # Set the stage for SNMPwalk for integer results
     snmpobj_integer = Mock(spec=Query)
     mock_spec_integer = {
-        'swalk.return_value': nwalk_results_integer,
-        'walk.return_value': nwalk_results_integer,
-        }
+        "swalk.return_value": nwalk_results_integer,
+        "walk.return_value": nwalk_results_integer,
+    }
     snmpobj_integer.configure_mock(**mock_spec_integer)
 
     # Initializing key variables
     expected_dict = {
         100: {
-            'c2900PortLinkbeatStatus': 1234,
-            'c2900PortDuplexStatus': 1234,
+            "c2900PortLinkbeatStatus": 1234,
+            "c2900PortDuplexStatus": 1234,
         },
         200: {
-            'c2900PortLinkbeatStatus': 5678,
-            'c2900PortDuplexStatus': 5678,
-        }
+            "c2900PortLinkbeatStatus": 5678,
+            "c2900PortDuplexStatus": 5678,
+        },
     }
 
     @classmethod
@@ -168,18 +191,18 @@ class TestMibCiscoc2900(unittest.TestCase):
         # Initializing key variables
         expected_dict = {
             100: {
-                'c2900PortLinkbeatStatus': 1234,
-                'c2900PortDuplexStatus': 1234,
+                "c2900PortLinkbeatStatus": 1234,
+                "c2900PortDuplexStatus": 1234,
             },
             200: {
-                'c2900PortLinkbeatStatus': 5678,
-                'c2900PortDuplexStatus': 5678,
-            }
+                "c2900PortLinkbeatStatus": 5678,
+                "c2900PortDuplexStatus": 5678,
+            },
         }
 
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {'walk.return_value': self.nwalk_results_integer}
+        mock_spec = {"walk.return_value": self.nwalk_results_integer}
         snmpobj.configure_mock(**mock_spec)
 
         # Get results
@@ -190,14 +213,14 @@ class TestMibCiscoc2900(unittest.TestCase):
         for primary in results.keys():
             for secondary in results[primary].keys():
                 self.assertEqual(
-                    results[primary][secondary],
-                    expected_dict[primary][secondary])
+                    results[primary][secondary], expected_dict[primary][secondary]
+                )
 
     def test_c2900portlinkbeatstatus(self):
         """Testing function c2900portlinkbeatstatus."""
         # Initialize key variables
-        oid_key = 'c2900PortLinkbeatStatus'
-        oid = '.1.3.6.1.4.1.9.9.87.1.4.1.1.18'
+        oid_key = "c2900PortLinkbeatStatus"
+        oid = ".1.3.6.1.4.1.9.9.87.1.4.1.1.18"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -215,8 +238,8 @@ class TestMibCiscoc2900(unittest.TestCase):
     def test_c2900portduplexstatus(self):
         """Testing function c2900portduplexstatus."""
         # Initialize key variables
-        oid_key = 'c2900PortLinkbeatStatus'
-        oid = '.1.3.6.1.4.1.9.9.87.1.4.1.1.32'
+        oid_key = "c2900PortLinkbeatStatus"
+        oid = ".1.3.6.1.4.1.9.9.87.1.4.1.1.32"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -232,7 +255,7 @@ class TestMibCiscoc2900(unittest.TestCase):
         self.assertEqual(results, oid)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Do the unit test
     unittest.main()

@@ -77,12 +77,7 @@ def insert_row(rows):
 
     # Create objects
     for row in rows:
-        inserts.append(
-            Event(
-                name=row.name.encode(),
-                enabled=row.enabled
-            )
-        )
+        inserts.append(Event(name=row.name.encode(), enabled=row.enabled))
 
     # Insert
     if bool(inserts):
@@ -101,11 +96,14 @@ def update_row(idx, row):
 
     """
     # Update
-    statement = update(Event).where(
-        Event.idx_event == idx).values(
+    statement = (
+        update(Event)
+        .where(Event.idx_event == idx)
+        .values(
             {
-                'name': row.name.encode(),
-                'enabled': row.enabled,
+                "name": row.name.encode(),
+                "enabled": row.enabled,
             }
         )
+    )
     db.db_update(1111, statement)

@@ -54,7 +54,7 @@ def exists(idx_device, idx_mac, ip_):
         and_(
             MacIp.ip_ == ip_.encode(),
             MacIp.idx_mac == idx_mac,
-            MacIp.idx_device == idx_device
+            MacIp.idx_device == idx_device,
         )
     )
     rows = db.db_select_row(1201, statement)
@@ -106,8 +106,7 @@ def findhostname(hostname):
 
     # Get row from database (Contains)
     statement = select(MacIp).where(
-        MacIp.hostname.like(
-            func.concat(func.concat('%', hostname.encode(), '%')))
+        MacIp.hostname.like(func.concat(func.concat("%", hostname.encode(), "%")))
     )
     rows_contains = db.db_select_row(1191, statement)
 
@@ -148,10 +147,10 @@ def insert_row(rows):
                 idx_mac=row.idx_mac,
                 ip_=row.ip_.encode(),
                 hostname=(
-                    null() if bool(row.hostname) is False else
-                    row.hostname.encode()),
+                    null() if bool(row.hostname) is False else row.hostname.encode()
+                ),
                 version=row.version,
-                enabled=row.enabled
+                enabled=row.enabled,
             )
         )
 
@@ -172,17 +171,20 @@ def update_row(idx, row):
 
     """
     # Update
-    statement = update(MacIp).where(
-        MacIp.idx_macip == idx).values(
+    statement = (
+        update(MacIp)
+        .where(MacIp.idx_macip == idx)
+        .values(
             {
-                'idx_device': row.idx_device,
-                'idx_mac': row.idx_mac,
-                'ip_': row.ip_.encode(),
-                'version': row.version,
-                'hostname': (
-                    null() if bool(row.hostname) is False else
-                    row.hostname.encode()),
-                'enabled': row.enabled
+                "idx_device": row.idx_device,
+                "idx_mac": row.idx_mac,
+                "ip_": row.ip_.encode(),
+                "version": row.version,
+                "hostname": (
+                    null() if bool(row.hostname) is False else row.hostname.encode()
+                ),
+                "enabled": row.enabled,
             }
         )
+    )
     db.db_update(1115, statement)

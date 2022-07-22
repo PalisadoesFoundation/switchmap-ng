@@ -23,14 +23,28 @@ from switchmap.poll.snmp.mib.cisco import CiscoVtpQuery
 from switchmap.poll.snmp.mib.juniper import JuniperVlanQuery
 
 
-__all__ = ('cisco', 'juniper')
+__all__ = ("cisco", "juniper")
 
-QUERIES = [CiscoC2900Query, CiscoVtpQuery, CiscoIetfIpQuery,
-           CiscoCdpQuery, CiscoStackQuery, CiscoVlanMembershipQuery,
-           CiscoVlanIftableRelationshipQuery,
-           Snmpv2Query, IfQuery, BridgeQuery, IpQuery,
-           Ipv6Query, EtherlikeQuery, EntityQuery, LldpQuery,
-           EssSwitchQuery, JuniperVlanQuery, QbridgeQuery]
+QUERIES = [
+    CiscoC2900Query,
+    CiscoVtpQuery,
+    CiscoIetfIpQuery,
+    CiscoCdpQuery,
+    CiscoStackQuery,
+    CiscoVlanMembershipQuery,
+    CiscoVlanIftableRelationshipQuery,
+    Snmpv2Query,
+    IfQuery,
+    BridgeQuery,
+    IpQuery,
+    Ipv6Query,
+    EtherlikeQuery,
+    EntityQuery,
+    LldpQuery,
+    EssSwitchQuery,
+    JuniperVlanQuery,
+    QbridgeQuery,
+]
 
 
 def get_queries(layer):
@@ -43,6 +57,4 @@ def get_queries(layer):
         queries: List of queries tagged the given layer
 
     """
-    return [
-        class_object for class_object in QUERIES if layer in dir(
-            class_object)]
+    return [class_object for class_object in QUERIES if layer in dir(class_object)]

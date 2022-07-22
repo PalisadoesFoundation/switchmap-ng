@@ -28,9 +28,10 @@ def db_select_row(error_code, statement):
 
     # Check to ensure the function executes the correct type of statement
     if isinstance(statement, Select) is False:
-        log_message = ('''\
+        log_message = '''\
 Only the "Select" ORM expression is supported. Not "{}"'''.format(
-                type(statement)))
+            type(statement)
+        )
         log.log2die(error_code, log_message)
 
     # Process transaction
@@ -67,9 +68,11 @@ def db_select(error_code, statement):
 
     # Check to ensure the function executes the correct type of statement
     if isinstance(statement, Select) is False:
-        log_message = ('''\
+        log_message = """\
 Only the "Select" ORM expression is supported. Not "{}"\
-'''.format(type(statement)))
+""".format(
+            type(statement)
+        )
         log.log2die(error_code, log_message)
 
     # Process transaction
@@ -110,9 +113,10 @@ def db_update(error_code, statement, values=None):
 
     # Check to ensure the function executes the correct type of statement
     if isinstance(statement, Update) is False:
-        log_message = ('''\
+        log_message = '''\
 Only the "Update" ORM expression is supported. Not "{}"'''.format(
-                type(statement)))
+            type(statement)
+        )
         log.log2die(error_code, log_message)
 
     # Process transaction
@@ -162,9 +166,10 @@ def db_delete(error_code, statement):
 
     # Check to ensure the function executes the correct type of statement
     if isinstance(statement, Delete) is False:
-        log_message = ('''\
+        log_message = '''\
 Only the "Delete" ORM expression is supported. Not "{}"'''.format(
-                type(statement)))
+            type(statement)
+        )
         log.log2die(error_code, log_message)
 
     # Process transaction
@@ -219,7 +224,7 @@ def db_add_all(error_code, instances, die=True):
                 log.log2exception(error_code, sys.exc_info())
                 if bool(die):
                     raise
-                log.log2debug(error_code, 'Continuing processing.')
+                log.log2debug(error_code, "Continuing processing.")
 
             # Sometimes the commit fails
             try:
@@ -231,7 +236,7 @@ def db_add_all(error_code, instances, die=True):
                 log.log2exception(error_code, sys.exc_info())
                 if bool(die):
                     raise
-                log.log2debug(error_code, 'Continuing processing.')
+                log.log2debug(error_code, "Continuing processing.")
             else:
                 result = True
 

@@ -50,10 +50,7 @@ def exists(idx_l1interface, idx_mac):
 
     # Get row from dataase
     statement = select(MacPort).where(
-        and_(
-            MacPort.idx_mac == idx_mac,
-            MacPort.idx_l1interface == idx_l1interface
-        )
+        and_(MacPort.idx_mac == idx_mac, MacPort.idx_l1interface == idx_l1interface)
     )
     rows = db.db_select_row(1109, statement)
 
@@ -111,7 +108,7 @@ def insert_row(rows):
             MacPort(
                 idx_l1interface=row.idx_l1interface,
                 idx_mac=row.idx_mac,
-                enabled=row.enabled
+                enabled=row.enabled,
             )
         )
 
@@ -132,12 +129,15 @@ def update_row(idx, row):
 
     """
     # Update
-    statement = update(MacPort).where(
-        MacPort.idx_macport == idx).values(
+    statement = (
+        update(MacPort)
+        .where(MacPort.idx_macport == idx)
+        .values(
             {
-                'idx_l1interface': row.idx_l1interface,
-                'idx_mac': row.idx_mac,
-                'enabled': row.enabled
+                "idx_l1interface": row.idx_l1interface,
+                "idx_mac": row.idx_mac,
+                "enabled": row.enabled,
             }
         )
+    )
     db.db_update(1117, statement)

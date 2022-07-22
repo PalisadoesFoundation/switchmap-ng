@@ -81,23 +81,20 @@ def insert_row(rows):
             _Device(
                 idx_zone=row.idx_zone,
                 idx_event=row.idx_event,
-                sys_name=(
-                    null() if row.sys_name is None else row.sys_name.encode()),
-                hostname=(
-                    null() if row.hostname is None else row.hostname.encode()),
-                name=(
-                    null() if row.name is None else row.name.encode()),
+                sys_name=(null() if row.sys_name is None else row.sys_name.encode()),
+                hostname=(null() if row.hostname is None else row.hostname.encode()),
+                name=(null() if row.name is None else row.name.encode()),
                 sys_description=(
-                    null() if row.sys_description is None else
-                    row.sys_description.encode()),
+                    null()
+                    if row.sys_description is None
+                    else row.sys_description.encode()
+                ),
                 sys_objectid=(
-                    null() if row.sys_objectid is None else
-                    row.sys_objectid.encode()),
-                sys_uptime=(
-                    null() if row.sys_uptime is None else row.sys_uptime),
-                last_polled=(
-                    0 if row.last_polled is None else row.last_polled),
-                enabled=row.enabled
+                    null() if row.sys_objectid is None else row.sys_objectid.encode()
+                ),
+                sys_uptime=(null() if row.sys_uptime is None else row.sys_uptime),
+                last_polled=(0 if row.last_polled is None else row.last_polled),
+                enabled=row.enabled,
             )
         )
 
@@ -118,33 +115,38 @@ def update_row(idx, row):
 
     """
     # Update
-    statement = update(_Device).where(
-        _Device.idx_device == idx).values(
+    statement = (
+        update(_Device)
+        .where(_Device.idx_device == idx)
+        .values(
             {
-                'idx_zone': row.idx_zone,
-                'idx_event': row.idx_event,
-                'sys_name': (
-                    null() if bool(row.sys_name) is False else
-                    row.sys_name.encode()),
-                'hostname': (
-                    null() if bool(row.hostname) is False else
-                    row.hostname.encode()),
-                'name': (
-                    null() if bool(row.name) is False else
-                    row.name.encode()),
-                'sys_description': (
-                    null() if bool(row.sys_description) is False else
-                    row.sys_description.encode()),
-                'sys_objectid': (
-                    null() if bool(row.sys_objectid) is False else
-                    row.sys_objectid.encode()),
-                'sys_uptime': (
-                    null() if bool(row.sys_uptime) is False else
-                    row.sys_uptime),
-                'last_polled': (
-                    0 if bool(row.last_polled) is False else
-                    row.last_polled),
-                'enabled': row.enabled
+                "idx_zone": row.idx_zone,
+                "idx_event": row.idx_event,
+                "sys_name": (
+                    null() if bool(row.sys_name) is False else row.sys_name.encode()
+                ),
+                "hostname": (
+                    null() if bool(row.hostname) is False else row.hostname.encode()
+                ),
+                "name": (null() if bool(row.name) is False else row.name.encode()),
+                "sys_description": (
+                    null()
+                    if bool(row.sys_description) is False
+                    else row.sys_description.encode()
+                ),
+                "sys_objectid": (
+                    null()
+                    if bool(row.sys_objectid) is False
+                    else row.sys_objectid.encode()
+                ),
+                "sys_uptime": (
+                    null() if bool(row.sys_uptime) is False else row.sys_uptime
+                ),
+                "last_polled": (
+                    0 if bool(row.last_polled) is False else row.last_polled
+                ),
+                "enabled": row.enabled,
             }
         )
+    )
     db.db_update(1110, statement)

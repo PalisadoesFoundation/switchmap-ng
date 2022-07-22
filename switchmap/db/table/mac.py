@@ -127,9 +127,8 @@ def insert_row(rows):
                 idx_oui=idx_oui,
                 idx_event=row.idx_event,
                 idx_zone=row.idx_zone,
-                mac=(
-                    null() if bool(mac) is False else mac.encode()),
-                enabled=row.enabled
+                mac=(null() if bool(mac) is False else mac.encode()),
+                enabled=row.enabled,
             )
         )
 
@@ -156,15 +155,17 @@ def update_row(idx, row):
     idx_oui = oui.idx_oui(mac)
 
     # Update
-    statement = update(Mac).where(
-        Mac.idx_mac == idx).values(
+    statement = (
+        update(Mac)
+        .where(Mac.idx_mac == idx)
+        .values(
             {
-                'idx_oui': idx_oui,
-                'idx_event': row.idx_event,
-                'idx_zone': row.idx_zone,
-                'mac': (
-                    null() if bool(mac) is False else mac.encode()),
-                'enabled': row.enabled
+                "idx_oui": idx_oui,
+                "idx_event": row.idx_event,
+                "idx_zone": row.idx_zone,
+                "mac": (null() if bool(mac) is False else mac.encode()),
+                "enabled": row.enabled,
             }
         )
+    )
     db.db_update(1114, statement)

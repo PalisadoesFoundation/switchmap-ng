@@ -8,7 +8,7 @@ from switchmap.poll.snmp import snmp_manager
 from switchmap.core import log
 
 
-class Poll():
+class Poll:
     """Switchmap-NG agent that gathers data.
 
     Args:
@@ -48,8 +48,9 @@ class Poll():
             self._snmp_object = snmp_manager.Interact(snmp_params)
         else:
             log_message = (
-                'Uncontactable or disabled host {}, or no valid SNMP '
-                'credentials found for it.'.format(self._hostname))
+                "Uncontactable or disabled host {}, or no valid SNMP "
+                "credentials found for it.".format(self._hostname)
+            )
             log.log2info(1081, log_message)
 
     def query(self):
@@ -70,8 +71,10 @@ class Poll():
             return _data
 
         # Get data
-        log_message = ('''\
-Querying topology data from host {}.'''.format(self._hostname))
+        log_message = """\
+Querying topology data from host {}.""".format(
+            self._hostname
+        )
         log.log2info(1078, log_message)
 
         # Return the data polled from the device
@@ -95,8 +98,8 @@ def _do_poll(snmp_params):
 
     if bool(snmp_params) is True:
         if isinstance(snmp_params, dict) is True:
-            if 'enabled' in snmp_params:
-                if bool(snmp_params['enabled']) is True:
+            if "enabled" in snmp_params:
+                if bool(snmp_params["enabled"]) is True:
                     poll = True
             else:
                 # Default to poll unless otherwise stated

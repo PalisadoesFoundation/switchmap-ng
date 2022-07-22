@@ -57,9 +57,9 @@ class EntityQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (entPhysicalName).
-        test_oid = '.1.3.6.1.2.1.47.1.1.1.1.7'
+        test_oid = ".1.3.6.1.2.1.47.1.1.1.1.7"
 
-        super().__init__(snmp_object, test_oid, tags=['system'])
+        super().__init__(snmp_object, test_oid, tags=["system"])
 
     def system(self):
         """Get system data from device.
@@ -89,18 +89,18 @@ class EntityQuery(Query):
         count = 0
         for key, value in sorted(serial.items()):
             if bool(value) is True:
-                data_dict['entPhysicalSerialNum'][count] = serial[key]
-                data_dict['entPhysicalName'][count] = name[key]
-                data_dict['entPhysicalModelName'][count] = model[key]
-                data_dict['entPhysicalHardwareRev'][count] = hw_rev[key]
-                data_dict['entPhysicalSoftwareRev'][count] = sw_rev[key]
-                data_dict['entPhysicalFirmwareRev'][count] = fw_rev[key]
-                data_dict['entPhysicalClass'][count] = classtype[key]
-                data_dict['entPhysicalDescr'][count] = description[key]
+                data_dict["entPhysicalSerialNum"][count] = serial[key]
+                data_dict["entPhysicalName"][count] = name[key]
+                data_dict["entPhysicalModelName"][count] = model[key]
+                data_dict["entPhysicalHardwareRev"][count] = hw_rev[key]
+                data_dict["entPhysicalSoftwareRev"][count] = sw_rev[key]
+                data_dict["entPhysicalFirmwareRev"][count] = fw_rev[key]
+                data_dict["entPhysicalClass"][count] = classtype[key]
+                data_dict["entPhysicalDescr"][count] = description[key]
                 count = count + 1
 
         # Return
-        final['ENTITY-MIB'] = data_dict
+        final["ENTITY-MIB"] = data_dict
         return final
 
     def entphysicaldescr(self):
@@ -118,11 +118,11 @@ class EntityQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.2.1.47.1.1.1.1.2'
+        oid = ".1.3.6.1.2.1.47.1.1.1.1.2"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8').strip()
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
 
         # Return the interface descriptions
         return data_dict
@@ -142,7 +142,7 @@ class EntityQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.2.1.47.1.1.1.1.5'
+        oid = ".1.3.6.1.2.1.47.1.1.1.1.5"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
@@ -166,11 +166,11 @@ class EntityQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.2.1.47.1.1.1.1.10'
+        oid = ".1.3.6.1.2.1.47.1.1.1.1.10"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8').strip()
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
 
         # Return the interface descriptions
         return data_dict
@@ -190,11 +190,11 @@ class EntityQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.2.1.47.1.1.1.1.11'
+        oid = ".1.3.6.1.2.1.47.1.1.1.1.11"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8').strip()
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
 
         # Return the interface descriptions
         return data_dict
@@ -214,11 +214,11 @@ class EntityQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.2.1.47.1.1.1.1.13'
+        oid = ".1.3.6.1.2.1.47.1.1.1.1.13"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8').strip()
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
 
         # Return the interface descriptions
         return data_dict
@@ -238,11 +238,11 @@ class EntityQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.2.1.47.1.1.1.1.7'
+        oid = ".1.3.6.1.2.1.47.1.1.1.1.7"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8').strip()
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
 
         # Return the interface descriptions
         return data_dict
@@ -262,11 +262,11 @@ class EntityQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.2.1.47.1.1.1.1.8'
+        oid = ".1.3.6.1.2.1.47.1.1.1.1.8"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8').strip()
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
 
         # Return the interface descriptions
         return data_dict
@@ -286,11 +286,11 @@ class EntityQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.2.1.47.1.1.1.1.9'
+        oid = ".1.3.6.1.2.1.47.1.1.1.1.9"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8').strip()
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
 
         # Return the interface descriptions
         return data_dict

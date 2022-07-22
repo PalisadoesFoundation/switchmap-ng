@@ -132,37 +132,42 @@ class Query(graphene.ObjectType):
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
     all_device = FilterableConnectionField(
-        connection=Device, sort=None, filters=DeviceFilter())
+        connection=Device, sort=None, filters=DeviceFilter()
+    )
 
     # Results as a single entry filtered by 'id' and as a list
     l1interface = graphene.relay.Node.Field(L1Interface)
     all_l1interface = FilterableConnectionField(
-        connection=L1Interface, filters=L1InterfaceFilter())
+        connection=L1Interface, filters=L1InterfaceFilter()
+    )
 
     # Results as a single entry filtered by 'id' and as a list
     zone = graphene.relay.Node.Field(Zone)
     all_zone = FilterableConnectionField(
-        connection=Zone, sort=None, filters=ZoneFilter())
+        connection=Zone, sort=None, filters=ZoneFilter()
+    )
 
     # Results as a single entry filtered by 'id' and as a list
     mac = graphene.relay.Node.Field(MacIp)
     all_mac = FilterableConnectionField(
-        connection=MacIp, sort=None, filters=MacIpFilter())
+        connection=MacIp, sort=None, filters=MacIpFilter()
+    )
 
     # Results as a single entry filtered by 'id' and as a list
     oui = graphene.relay.Node.Field(Oui)
-    all_oui = FilterableConnectionField(
-        connection=Oui, sort=None, filters=OuiFilter())
+    all_oui = FilterableConnectionField(connection=Oui, sort=None, filters=OuiFilter())
 
     # Results as a single entry filtered by 'id' and as a list
     trunk = graphene.relay.Node.Field(Trunk)
     all_trunk = FilterableConnectionField(
-        connection=Trunk, sort=None, filters=TrunkFilter())
+        connection=Trunk, sort=None, filters=TrunkFilter()
+    )
 
     # Results as a single entry filtered by 'id' and as a list
     vlan = graphene.relay.Node.Field(Vlan)
     all_vlan = FilterableConnectionField(
-        connection=Vlan, sort=None, filters=VlanFilter())
+        connection=Vlan, sort=None, filters=VlanFilter()
+    )
 
 
 # Make the schema global

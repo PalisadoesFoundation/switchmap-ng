@@ -13,7 +13,7 @@ from switchmap.core.configuration import Config
 from switchmap.core import log
 
 
-class Database():
+class Database:
     """Database class."""
 
     def __init__(self):
@@ -27,11 +27,13 @@ class Database():
 
         """
         # Make sure we are doing operations only on a test database
-        expected = 'switchmap_unittest'
+        expected = "switchmap_unittest"
         config = Config()
         if config.db_name() != expected:
-            log_message = '''\
-The database under test must be named {}'''.format(expected)
+            log_message = """\
+The database under test must be named {}""".format(
+                expected
+            )
             log.log2die(1174, log_message)
 
     def drop(self):

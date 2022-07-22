@@ -50,9 +50,9 @@ class CiscoCdpQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (cdpCacheDeviceId)
-        test_oid = '.1.3.6.1.4.1.9.9.23.1.2.1.1.6'
+        test_oid = ".1.3.6.1.4.1.9.9.23.1.2.1.1.6"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -70,18 +70,18 @@ class CiscoCdpQuery(Query):
         # Get interface cdpCacheDeviceId data
         values = self.cdpcachedeviceid()
         for key, value in values.items():
-            final[key]['cdpCacheDeviceId'] = value
+            final[key]["cdpCacheDeviceId"] = value
 
         # Get interface cdpCachePlatform data
         values = self.cdpcacheplatform()
         for key, value in values.items():
-            final[key]['cdpCachePlatform'] = value
+            final[key]["cdpCachePlatform"] = value
 
         # Get interface cdpCacheDevicePort data
         values = self.cdpcachedeviceport()
         if values is not None:
             for key, value in values.items():
-                final[key]['cdpCacheDevicePort'] = value
+                final[key]["cdpCacheDevicePort"] = value
 
         # Return
         return final
@@ -100,7 +100,7 @@ class CiscoCdpQuery(Query):
         data_dict = defaultdict(dict)
 
         # OID to process
-        oid = '.1.3.6.1.4.1.9.9.23.1.2.1.1.6'
+        oid = ".1.3.6.1.4.1.9.9.23.1.2.1.1.6"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -110,7 +110,7 @@ class CiscoCdpQuery(Query):
         results = self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             ifindex = _ifindex(key)
-            data_dict[ifindex] = str(bytes(value), encoding='utf-8')
+            data_dict[ifindex] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
@@ -129,7 +129,7 @@ class CiscoCdpQuery(Query):
         data_dict = defaultdict(dict)
 
         # OID to process
-        oid = '.1.3.6.1.4.1.9.9.23.1.2.1.1.8'
+        oid = ".1.3.6.1.4.1.9.9.23.1.2.1.1.8"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -139,7 +139,7 @@ class CiscoCdpQuery(Query):
         results = self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             ifindex = _ifindex(key)
-            data_dict[ifindex] = str(bytes(value), encoding='utf-8')
+            data_dict[ifindex] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
@@ -158,7 +158,7 @@ class CiscoCdpQuery(Query):
         data_dict = defaultdict(dict)
 
         # OID to process
-        oid = '.1.3.6.1.4.1.9.9.23.1.2.1.1.7'
+        oid = ".1.3.6.1.4.1.9.9.23.1.2.1.1.7"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -168,7 +168,7 @@ class CiscoCdpQuery(Query):
         results = self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             ifindex = _ifindex(key)
-            data_dict[ifindex] = str(bytes(value), encoding='utf-8')
+            data_dict[ifindex] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
@@ -185,7 +185,7 @@ def _ifindex(oid):
 
     """
     # Initialize key variables
-    nodes = oid.split('.')
+    nodes = oid.split(".")
     ifindex = int(nodes[-2])
 
     # Return

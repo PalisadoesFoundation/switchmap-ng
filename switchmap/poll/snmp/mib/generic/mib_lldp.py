@@ -56,9 +56,9 @@ class LldpQuery(Query):
         self._use_ifindex = False
 
         # Get one OID entry in MIB (lldpRemSysName)
-        test_oid = '.1.0.8802.1.1.2.1.4.1.1.9'
+        test_oid = ".1.0.8802.1.1.2.1.4.1.1.9"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
         # Load the ifindex baseport map if this mib is supported
         bridge_mib = BridgeQuery(self._snmp_object)
@@ -85,24 +85,24 @@ class LldpQuery(Query):
         # Get interface lldpRemSysName data
         values = self.lldpremsysname()
         for key, value in values.items():
-            final[key]['lldpRemSysName'] = value
+            final[key]["lldpRemSysName"] = value
 
         # Get interface lldpRemSysDesc data
         values = self.lldpremsysdesc()
         for key, value in values.items():
-            final[key]['lldpRemSysDesc'] = value
+            final[key]["lldpRemSysDesc"] = value
 
         # Get interface lldpRemPortDesc data
         values = self.lldpremportdesc()
         if values is not None:
             for key, value in values.items():
-                final[key]['lldpRemPortDesc'] = value
+                final[key]["lldpRemPortDesc"] = value
 
         # Get interface lldpRemSysCapEnabled data
         values = self.lldpremsyscapenabled()
         if values is not None:
             for key, value in values.items():
-                final[key]['lldpRemSysCapEnabled'] = value
+                final[key]["lldpRemSysCapEnabled"] = value
 
         # Return
         return final
@@ -121,7 +121,7 @@ class LldpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.0.8802.1.1.2.1.4.1.1.9'
+        oid = ".1.0.8802.1.1.2.1.4.1.1.9"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -136,7 +136,7 @@ class LldpQuery(Query):
             # We have seen issues where self._baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
             if bool(ifindex) is True:
-                data_dict[ifindex] = str(bytes(value), encoding='utf-8')
+                data_dict[ifindex] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
@@ -157,7 +157,7 @@ class LldpQuery(Query):
         base = 16
 
         # Descriptions
-        oid = '.1.0.8802.1.1.2.1.4.1.1.12'
+        oid = ".1.0.8802.1.1.2.1.4.1.1.12"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -175,11 +175,10 @@ class LldpQuery(Query):
                 continue
 
             # Convert binary data to hex value
-            hex_value = binascii.hexlify(value).decode('utf-8')
+            hex_value = binascii.hexlify(value).decode("utf-8")
 
             # Convert hex value to right justified 16 character binary string
-            binary_string = bin(int(
-                hex_value, base))[2:].zfill(length_in_bits)
+            binary_string = bin(int(hex_value, base))[2:].zfill(length_in_bits)
             data_dict[ifindex] = binary_string
 
         # Return the interface descriptions
@@ -199,7 +198,7 @@ class LldpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.0.8802.1.1.2.1.4.1.1.10'
+        oid = ".1.0.8802.1.1.2.1.4.1.1.10"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -215,7 +214,8 @@ class LldpQuery(Query):
             # return a complete dict of values that include all ifindexes
             if bool(ifindex) is True:
                 data_dict[ifindex] = general.cleanstring(
-                    str(bytes(value), encoding='utf-8'))
+                    str(bytes(value), encoding="utf-8")
+                )
 
         # Return the interface descriptions
         return data_dict
@@ -234,7 +234,7 @@ class LldpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.0.8802.1.1.2.1.4.1.1.8'
+        oid = ".1.0.8802.1.1.2.1.4.1.1.8"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -250,7 +250,8 @@ class LldpQuery(Query):
             # return a complete dict of values that include all ifindexes
             if bool(ifindex) is True:
                 data_dict[ifindex] = general.cleanstring(
-                    str(bytes(value), encoding='utf-8'))
+                    str(bytes(value), encoding="utf-8")
+                )
 
         # Return the interface descriptions
         return data_dict
@@ -269,7 +270,7 @@ class LldpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.0.8802.1.1.2.1.3.7.1.4'
+        oid = ".1.0.8802.1.1.2.1.3.7.1.4"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -279,7 +280,7 @@ class LldpQuery(Query):
         results = self._snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
-            key_index = int(key.split('.')[-1])
+            key_index = int(key.split(".")[-1])
 
             # Check if this OID is indexed using iFindex or dot1dBasePort
             if bool(self._baseportifindex) is True:
@@ -294,7 +295,8 @@ class LldpQuery(Query):
             # return a complete dict of values that include all ifindexes
             if bool(ifindex) is True:
                 data_dict[ifindex] = general.cleanstring(
-                    str(bytes(value), encoding='utf-8'))
+                    str(bytes(value), encoding="utf-8")
+                )
 
         # Return the interface descriptions
         return data_dict
@@ -314,16 +316,16 @@ class LldpQuery(Query):
         ifdescr = mib_if.IfQuery(self._snmp_object).ifdescr()
 
         # Use the well known lldplocportdesc OID that must be supported
-        oid = '.1.0.8802.1.1.2.1.3.7.1.4'
+        oid = ".1.0.8802.1.1.2.1.3.7.1.4"
 
         # Process results
         lldpdescr = self._snmp_object.swalk(oid, normalized=False)
         for oid_key in sorted(lldpdescr.keys()):
             # Check if this OID is indexed using iFindex or dot1dBasePort
-            lldp_key = int(oid_key.split('.')[-1])
+            lldp_key = int(oid_key.split(".")[-1])
 
             if lldp_key in ifdescr:
-                interface = lldpdescr[oid_key].decode('utf-8')
+                interface = lldpdescr[oid_key].decode("utf-8")
                 if interface.lower() == ifdescr[lldp_key].lower():
                     use_ifindex = True
                     break
@@ -369,7 +371,7 @@ def _penultimate_node(oid):
 
     """
     # Initialize key variables
-    nodes = oid.split('.')
+    nodes = oid.split(".")
     value = int(nodes[-2])
 
     # Return

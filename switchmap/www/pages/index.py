@@ -58,13 +58,13 @@ class DeviceTable(Table):
     """Declaration of the columns in the Devices table."""
 
     # Initialize class variables
-    col0 = _RawCol('')
-    col1 = _RawCol('')
-    col2 = _RawCol('')
-    col3 = _RawCol('')
+    col0 = _RawCol("")
+    col1 = _RawCol("")
+    col2 = _RawCol("")
+    col3 = _RawCol("")
 
     # Define the CSS class to use for the header row
-    classes = ['table']
+    classes = ["table"]
 
 
 class DeviceRow(object):
@@ -122,12 +122,12 @@ class Device(object):
         # Create list of links for table
         for hostname in self.hostnames:
             # Get URL link for device page
-            url = '{}/devices/{}'.format(SITE_PREFIX, hostname)
+            url = "{}/devices/{}".format(SITE_PREFIX, hostname)
             link = '<a href="{}">{}</a>'.format(url, hostname)
             links.append(link)
 
         # Add links to table rows
-        row_data = [''] * (max_columns + 1)
+        row_data = [""] * (max_columns + 1)
         for index, link in enumerate(links):
             row_data[column] = links[index]
 
@@ -135,7 +135,7 @@ class Device(object):
             column += 1
             if column > max_columns:
                 rows.append(DeviceRow(row_data))
-                row_data = [''] * (max_columns + 1)
+                row_data = [""] * (max_columns + 1)
                 column = 0
 
         # Append a row if max number of columns wasn't reached before

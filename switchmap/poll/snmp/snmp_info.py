@@ -7,7 +7,7 @@ from switchmap.poll.snmp import iana_enterprise
 from switchmap.poll.snmp import get_queries
 
 
-class Query():
+class Query:
     """Class interacts with IfMIB devices.
 
     Args:
@@ -47,11 +47,11 @@ class Query():
         data = {}
 
         # Append data
-        data['misc'] = self.misc()
-        data['layer1'] = self.layer1()
-        data['layer2'] = self.layer2()
-        data['layer3'] = self.layer3()
-        data['system'] = self.system()
+        data["misc"] = self.misc()
+        data["layer1"] = self.layer1()
+        data["layer2"] = self.layer2()
+        data["layer3"] = self.layer3()
+        data["system"] = self.system()
 
         # Return
         return data
@@ -68,13 +68,13 @@ class Query():
         """
         # Initialize data
         data = defaultdict(lambda: defaultdict(dict))
-        data['timestamp'] = int(time.time())
-        data['host'] = self.snmp_object.hostname()
+        data["timestamp"] = int(time.time())
+        data["host"] = self.snmp_object.hostname()
 
         # Get vendor information
         sysobjectid = self.snmp_object.sysobjectid()
         vendor = iana_enterprise.Query(sysobjectid=sysobjectid)
-        data['IANAEnterpriseNumber'] = vendor.enterprise()
+        data["IANAEnterpriseNumber"] = vendor.enterprise()
 
         # Return
         return data
@@ -95,9 +95,7 @@ class Query():
 
         # Get system information from SNMPv2-MIB, ENTITY-MIB, IF-MIB
         # Instantiate a query object for each system query
-        for item in [
-                Query(self.snmp_object)
-                for Query in get_queries('system')]:
+        for item in [Query(self.snmp_object) for Query in get_queries("system")]:
 
             if item.supported():
                 processed = True
@@ -125,9 +123,7 @@ class Query():
 
         # Get information layer1 queries
 
-        for item in [
-                Query(self.snmp_object)
-                for Query in get_queries('layer1')]:
+        for item in [Query(self.snmp_object) for Query in get_queries("layer1")]:
             if item.supported():
                 processed = True
                 data = _add_layer1(item, data)
@@ -152,9 +148,7 @@ class Query():
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
 
-        for item in [
-                Query(self.snmp_object)
-                for Query in get_queries('layer2')]:
+        for item in [Query(self.snmp_object) for Query in get_queries("layer2")]:
             if item.supported():
                 processed = True
                 data = _add_layer2(item, data)
@@ -179,9 +173,7 @@ class Query():
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
 
-        for item in [
-                Query(self.snmp_object)
-                for Query in get_queries('layer3')]:
+        for item in [Query(self.snmp_object) for Query in get_queries("layer3")]:
             if item.supported():
                 processed = True
                 data = _add_layer3(item, data)
@@ -226,8 +218,7 @@ def _add_layer1(query, original_data):
     """
     # Process query
     result = query.layer1()
-    new_data = _add_data(
-        result, original_data)
+    new_data = _add_data(result, original_data)
 
     # Return
     return new_data
@@ -246,8 +237,7 @@ def _add_layer2(query, original_data):
     """
     # Process query
     result = query.layer2()
-    new_data = _add_data(
-        result, original_data)
+    new_data = _add_data(result, original_data)
 
     # Return
     return new_data
@@ -266,8 +256,7 @@ def _add_layer3(query, original_data):
     """
     # Process query
     result = query.layer3()
-    new_data = _add_data(
-        result, original_data)
+    new_data = _add_data(result, original_data)
 
     # Return
     return new_data

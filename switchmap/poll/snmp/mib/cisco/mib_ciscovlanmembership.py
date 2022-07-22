@@ -50,9 +50,9 @@ class CiscoVlanMembershipQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (vmVlan)
-        test_oid = '.1.3.6.1.4.1.9.9.68.1.2.2.1.2'
+        test_oid = ".1.3.6.1.4.1.9.9.68.1.2.2.1.2"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -70,12 +70,12 @@ class CiscoVlanMembershipQuery(Query):
         # Get interface vmVlan data
         values = self.vmvlan()
         for key, value in values.items():
-            final[key]['vmVlan'] = value
+            final[key]["vmVlan"] = value
 
         # Get interface vmPortStatus data
         values = self.vmportstatus()
         for key, value in values.items():
-            final[key]['vmPortStatus'] = value
+            final[key]["vmPortStatus"] = value
 
         # Return
         return final
@@ -94,7 +94,7 @@ class CiscoVlanMembershipQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.4.1.9.9.68.1.2.2.1.2'
+        oid = ".1.3.6.1.4.1.9.9.68.1.2.2.1.2"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -122,7 +122,7 @@ class CiscoVlanMembershipQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.4.1.9.9.68.1.2.2.1.3'
+        oid = ".1.3.6.1.4.1.9.9.68.1.2.2.1.3"
 
         # Return OID value. Used for unittests
         if oidonly is True:

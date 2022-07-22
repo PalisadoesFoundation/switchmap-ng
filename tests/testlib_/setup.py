@@ -19,21 +19,20 @@ import yaml
 
 
 # Initialize GLOBAL variables
-_UNITTEST_DIRECTORY = (
-    '{}{}.switchmap_unittests'.format(os.environ['HOME'], os.sep)
-)
+_UNITTEST_DIRECTORY = "{}{}.switchmap_unittests".format(os.environ["HOME"], os.sep)
 
 # Application imports
 from . import data
 
 # Create namedtuple for metadata
 Metadata = namedtuple(
-            'Metadata',
-            '''\
-config log_directory daemon_directory config_directory base_directory''')
+    "Metadata",
+    """\
+config log_directory daemon_directory config_directory base_directory""",
+)
 
 
-class Config():
+class Config:
     """Creates configuration for testing."""
 
     def __init__(self, _config, randomizer=False):
@@ -59,14 +58,14 @@ class Config():
             _metadata.config_directory,
             _metadata.log_directory,
             _metadata.daemon_directory,
-            ]
+        ]
         for directory in directories:
             if os.path.isdir(directory) is False:
                 os.makedirs(directory, mode=0o750, exist_ok=True)
 
         # Update configuration
-        config_['main']['log_directory'] = _metadata.log_directory
-        config_['main']['daemon_directory'] = _metadata.daemon_directory
+        config_["main"]["log_directory"] = _metadata.log_directory
+        config_["main"]["daemon_directory"] = _metadata.daemon_directory
 
         # Create the metadata object
         self.metadata = Metadata(
@@ -74,7 +73,7 @@ class Config():
             log_directory=_metadata.log_directory,
             daemon_directory=_metadata.daemon_directory,
             config_directory=_metadata.config_directory,
-            base_directory=_metadata.base_directory
+            base_directory=_metadata.base_directory,
         )
         # Set the environment for the configuration
         setenv(directory=self.metadata.config_directory)
@@ -90,10 +89,10 @@ class Config():
 
         """
         # Initialize key variables
-        config_file = '{}/config.yaml'.format(self.metadata.config_directory)
+        config_file = "{}/config.yaml".format(self.metadata.config_directory)
 
         # Write good_config to file
-        with open(config_file, 'w') as f_handle:
+        with open(config_file, "w") as f_handle:
             yaml.dump(self.metadata.config, f_handle, default_flow_style=False)
 
         # Return
@@ -115,7 +114,7 @@ class Config():
             self.metadata.log_directory,
             self.metadata.daemon_directory,
             self.metadata.config_directory,
-            ]
+        ]
         for directory in directories:
             _delete_files(directory)
         if self._randomizer is True:
@@ -134,11 +133,11 @@ def setenv(directory=None):
     """
     # Initialize key variables
     if bool(directory) is True:
-        os.environ['SWITCHMAP_CONFIGDIR'] = directory
+        os.environ["SWITCHMAP_CONFIGDIR"] = directory
     else:
         metadata = _directories(randomizer=False)
         os.makedirs(metadata.config_directory, mode=0o750, exist_ok=True)
-        os.environ['SWITCHMAP_CONFIGDIR'] = metadata.config_directory
+        os.environ["SWITCHMAP_CONFIGDIR"] = metadata.config_directory
 
 
 def travis_config():
@@ -153,8 +152,8 @@ def travis_config():
     """
     # Return result
     _config = deepcopy(data.config())
-    _config['db_pass'] = ''
-    _config['db_user'] = 'travis'
+    _config["db_pass"] = ""
+    _config["db_user"] = "travis"
     result = Config(_config)
     return result
 
@@ -182,9 +181,11 @@ def _delete_files(directory):
         return
 
     # Cleanup files in temp directories
-    filenames = [filename for filename in os.listdir(
-        directory) if os.path.isfile(
-            os.path.join(directory, filename))]
+    filenames = [
+        filename
+        for filename in os.listdir(directory)
+        if os.path.isfile(os.path.join(directory, filename))
+    ]
 
     # Get the full filepath for the cache file and remove filepath
     for filename in filenames:
@@ -212,19 +213,16 @@ def _directories(randomizer=False):
     if bool(randomizer) is False:
         base_directory = _UNITTEST_DIRECTORY
     else:
-        base_directory = (
-            '{1}{0}tmp{0}{2}'.format(
-                os.sep, _UNITTEST_DIRECTORY,
-                ''.join(random.choices(
-                    string.ascii_uppercase + string.digits, k=10))))
+        base_directory = "{1}{0}tmp{0}{2}".format(
+            os.sep,
+            _UNITTEST_DIRECTORY,
+            "".join(random.choices(string.ascii_uppercase + string.digits, k=10)),
+        )
 
     # Set global variables
-    log_directory = (
-        '{}{}log'.format(base_directory, os.sep))
-    config_directory = (
-        '{}{}etc'.format(base_directory, os.sep))
-    daemon_directory = (
-        '{}{}daemon'.format(base_directory, os.sep))
+    log_directory = "{}{}log".format(base_directory, os.sep)
+    config_directory = "{}{}etc".format(base_directory, os.sep)
+    daemon_directory = "{}{}daemon".format(base_directory, os.sep)
 
     # Return
     result = Metadata(
@@ -232,6 +230,6 @@ def _directories(randomizer=False):
         log_directory=log_directory,
         daemon_directory=daemon_directory,
         config_directory=config_directory,
-        base_directory=base_directory
+        base_directory=base_directory,
     )
     return result

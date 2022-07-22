@@ -12,7 +12,7 @@ import yaml
 from switchmap.core import log
 
 
-class _Directory():
+class _Directory:
     """A class for creating the names of hidden directories."""
 
     def __init__(self, config):
@@ -39,7 +39,7 @@ class _Directory():
 
         """
         # Return
-        value = '{}{}pid'.format(self._system_root, os.sep)
+        value = "{}{}pid".format(self._system_root, os.sep)
         return value
 
     def lock(self):
@@ -53,7 +53,7 @@ class _Directory():
 
         """
         # Return
-        value = '{}{}lock'.format(self._system_root, os.sep)
+        value = "{}{}lock".format(self._system_root, os.sep)
         return value
 
     def snmp(self):
@@ -67,11 +67,11 @@ class _Directory():
 
         """
         # Return
-        value = '{}{}snmp'.format(self._system_root, os.sep)
+        value = "{}{}snmp".format(self._system_root, os.sep)
         return value
 
 
-class _File():
+class _File:
     """A class for creating the names of hidden files."""
 
     def __init__(self, config):
@@ -99,7 +99,7 @@ class _File():
         """
         # Return
         mkdir(self._directory.pid())
-        value = '{}{}{}.pid'.format(self._directory.pid(), os.sep, prefix)
+        value = "{}{}{}.pid".format(self._directory.pid(), os.sep, prefix)
         return value
 
     def lock(self, prefix):
@@ -114,7 +114,7 @@ class _File():
         """
         # Return
         mkdir(self._directory.lock())
-        value = '{}{}{}.lock'.format(self._directory.lock(), os.sep, prefix)
+        value = "{}{}{}.lock".format(self._directory.lock(), os.sep, prefix)
         return value
 
     def snmp(self, prefix, create=True):
@@ -131,7 +131,7 @@ class _File():
         # Return
         if create is True:
             mkdir(self._directory.snmp())
-        value = '{}{}{}.snmp'.format(self._directory.snmp(), os.sep, prefix)
+        value = "{}{}{}.snmp".format(self._directory.snmp(), os.sep, prefix)
         return value
 
 
@@ -151,18 +151,19 @@ def read_yaml_file(filepath, as_string=False, die=True):
     if as_string is False:
         result = {}
     else:
-        result = ''
+        result = ""
 
     # Read file
-    if filepath.endswith('.yaml'):
+    if filepath.endswith(".yaml"):
         try:
-            with open(filepath, 'r') as file_handle:
+            with open(filepath, "r") as file_handle:
                 yaml_from_file = file_handle.read()
         except:
             log_message = (
-                'Error reading file {}. Check permissions, '
-                'existence and file syntax.'
-                ''.format(filepath))
+                "Error reading file {}. Check permissions, "
+                "existence and file syntax."
+                "".format(filepath)
+            )
             if bool(die) is True:
                 log.log2die_safe(2006, log_message)
             else:
@@ -175,9 +176,10 @@ def read_yaml_file(filepath, as_string=False, die=True):
                 result = yaml.safe_load(yaml_from_file)
             except:
                 log_message = (
-                    'Error reading file {}. Check permissions, '
-                    'existence and file syntax.'
-                    ''.format(filepath))
+                    "Error reading file {}. Check permissions, "
+                    "existence and file syntax."
+                    "".format(filepath)
+                )
                 if bool(die) is True:
                     log.log2die_safe(1001, log_message)
                 else:
@@ -188,7 +190,7 @@ def read_yaml_file(filepath, as_string=False, die=True):
 
     else:
         # Die if not a YAML file
-        log_message = '{} is not a YAML file.'.format(filepath)
+        log_message = "{} is not a YAML file.".format(filepath)
         if bool(die) is True:
             log.log2die_safe(1164, log_message)
         else:
@@ -196,7 +198,7 @@ def read_yaml_file(filepath, as_string=False, die=True):
             if bool(as_string) is False:
                 return {}
             else:
-                return ''
+                return ""
 
     # Return
     return result
@@ -217,16 +219,12 @@ def mkdir(directory):
         try:
             os.makedirs(directory, mode=0o775)
         except:
-            log_message = (
-                'Cannot create directory {}.'
-                ''.format(directory))
+            log_message = "Cannot create directory {}." "".format(directory)
             log.log2die(1121, log_message)
 
     # Fail if not a directory
     if os.path.isdir(directory) is False:
-        log_message = (
-            '{} is not a directory.'
-            ''.format(directory))
+        log_message = "{} is not a directory." "".format(directory)
         log.log2die(1158, log_message)
 
 
@@ -294,46 +292,41 @@ def execute(command, die=True):
     """
     # Initialize key variables
     messages = []
-    stdoutdata = ''.encode()
-    stderrdata = ''.encode()
+    stdoutdata = "".encode()
+    stderrdata = "".encode()
     returncode = 1
 
     # Run update_targets script
-    do_command_list = list(command.split(' '))
+    do_command_list = list(command.split(" "))
 
     # Create the subprocess object
     try:
         process = subprocess.Popen(
-            do_command_list,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+            do_command_list, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
         stdoutdata, stderrdata = process.communicate()
         returncode = process.returncode
     except:
         (etype, evalue, etraceback) = sys.exc_info()
-        log_message = ('''\
+        log_message = """\
 Command failure: [Exception:{}, Exception Instance: {}, Stack Trace: {}]\
-'''.format(etype, evalue, etraceback))
+""".format(
+            etype, evalue, etraceback
+        )
         log.log2warning(1161, log_message)
 
     # Crash if the return code is not 0
     if returncode != 0:
         # Print the Return Code header
-        messages.append(
-            'Return code:{}'.format(returncode)
-        )
+        messages.append("Return code:{}".format(returncode))
 
         # Print the STDOUT
-        for line in stdoutdata.decode().split('\n'):
-            messages.append(
-                'STDOUT: {}'.format(line)
-            )
+        for line in stdoutdata.decode().split("\n"):
+            messages.append("STDOUT: {}".format(line))
 
         # Print the STDERR
-        for line in stderrdata.decode().split('\n'):
-            messages.append(
-                'STDERR: {}'.format(line)
-            )
+        for line in stderrdata.decode().split("\n"):
+            messages.append("STDERR: {}".format(line))
 
         # Log message
         for log_message in messages:
@@ -341,7 +334,7 @@ Command failure: [Exception:{}, Exception Instance: {}, Stack Trace: {}]\
 
         # Die if required after error found
         if bool(die) is True:
-            log.log2die(1044, 'Command Failed: {}'.format(command))
+            log.log2die(1044, "Command Failed: {}".format(command))
 
     # Return
     return returncode
@@ -359,5 +352,5 @@ def config_filepath():
     """
     # Get the directory of the switchmap library
     directory = log.check_environment()
-    result = '{}{}config.yaml'.format(directory, os.sep)
+    result = "{}{}config.yaml".format(directory, os.sep)
     return result

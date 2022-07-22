@@ -24,41 +24,44 @@ def check_environment():
 
     """
     # Get environment
-    _config_directory = os.environ.get('SWITCHMAP_CONFIGDIR')
+    _config_directory = os.environ.get("SWITCHMAP_CONFIGDIR")
 
     # Verify configuration directory
     if bool(_config_directory) is False:
-        log_message = ('''\
+        log_message = """\
 Environment variable $SWITCHMAP_CONFIGDIR needs to be set to the \
-configuration directory location.''')
+configuration directory location."""
         log2die_safe(1159, log_message)
 
     try:
         path = os.path.abspath(os.path.expanduser(_config_directory))
     except:
-        log_message = ('''\
+        log_message = """\
 Environment variable $SWITCHMAP_CONFIGDIR set to invalid directory "{}"\
-'''.format(path))
+""".format(
+            path
+        )
         # Must print statement as logging requires a config directory
         log2die_safe(1086, log_message)
 
     # Verify configuration directory existence
-    if (os.path.exists(path) is False) or (
-            os.path.isdir(path) is False):
-        log_message = ('''\
+    if (os.path.exists(path) is False) or (os.path.isdir(path) is False):
+        log_message = """\
 Environment variable $SWITCHMAP_CONFIGDIR set to directory {} that \
-does not exist'''.format(path))
+does not exist""".format(
+            path
+        )
         # Must print statement as logging requires a config directory
         log2die_safe(1020, log_message)
 
     # Set the path
-    os.environ['SWITCHMAP_CONFIGDIR'] = path
+    os.environ["SWITCHMAP_CONFIGDIR"] = path
 
     # Return
     return path
 
 
-class _GetLog():
+class _GetLog:
     """Class to manage the logging without duplicates."""
 
     def __init__(self):
@@ -67,13 +70,13 @@ class _GetLog():
         from switchmap.core.configuration import Config
 
         # Define key variables
-        app_name = 'switchmap'
+        app_name = "switchmap"
         levels = {
-            'debug': logging.DEBUG,
-            'info': logging.INFO,
-            'warning': logging.WARNING,
-            'error': logging.ERROR,
-            'critical': logging.CRITICAL
+            "debug": logging.DEBUG,
+            "info": logging.INFO,
+            "warning": logging.WARNING,
+            "error": logging.ERROR,
+            "critical": logging.CRITICAL,
         }
 
         # Get the logging directory
@@ -85,11 +88,11 @@ class _GetLog():
         if config_log_level in levels:
             log_level = levels[config_log_level]
         else:
-            log_level = levels['debug']
+            log_level = levels["debug"]
 
         # create logger with app_name
-        self.logger_file = logging.getLogger('{}_file'.format(app_name))
-        self.logger_stdout = logging.getLogger('{}_console'.format(app_name))
+        self.logger_file = logging.getLogger("{}_file".format(app_name))
+        self.logger_stdout = logging.getLogger("{}_console".format(app_name))
 
         # Set logging levels to file and stdout
         self.logger_stdout.setLevel(log_level)
@@ -105,7 +108,8 @@ class _GetLog():
 
         # create formatter and add it to the handlers
         formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        )
         file_handler.setFormatter(formatter)
         stdout_handler.setFormatter(formatter)
 
@@ -187,7 +191,7 @@ def log2warning(code, message):
 
     """
     # Initialize key variables
-    _logit(code, message, error=False, verbose=False, level='warning')
+    _logit(code, message, error=False, verbose=False, level="warning")
 
 
 def log2debug(code, message):
@@ -202,7 +206,7 @@ def log2debug(code, message):
 
     """
     # Initialize key variables
-    _logit(code, message, error=False, verbose=False, level='debug')
+    _logit(code, message, error=False, verbose=False, level="debug")
 
 
 def log2info(code, message):
@@ -217,7 +221,7 @@ def log2info(code, message):
 
     """
     # Log to screen and file
-    _logit(code, message, error=False, verbose=False, level='info')
+    _logit(code, message, error=False, verbose=False, level="info")
 
 
 def log2see(code, message):
@@ -279,18 +283,21 @@ def log2exception(code, sys_exc_info, message=None, die=False):
     """
     # Initialize key variables
     (exc_type, exc_value, exc_traceback) = sys_exc_info
-    log_message = ('''\
+    log_message = """\
 Bug: Exception Type:{}, Exception Instance: {}, Stack Trace Object: {}]\
-'''.format(exc_type, exc_value, exc_traceback))
+""".format(
+        exc_type, exc_value, exc_traceback
+    )
     log2warning(code, log_message)
     if bool(message) is True:
         log2warning(code, message)
 
     # Write trace to log file
     from switchmap.core.configuration import Config
+
     config = Config()
     log_file = config.log_file()
-    with open(log_file, 'a+') as _fh:
+    with open(log_file, "a+") as _fh:
         traceback.print_tb(exc_traceback, file=_fh)
 
     # Die
@@ -298,7 +305,7 @@ Bug: Exception Type:{}, Exception Instance: {}, Stack Trace Object: {}]\
         log2die(code, log_message)
 
 
-def _logit(error_num, error_string, error=False, verbose=False, level='info'):
+def _logit(error_num, error_string, error=False, verbose=False, level="info"):
     """Log errors to file and STDOUT.
 
     Args:
@@ -315,13 +322,13 @@ def _logit(error_num, error_string, error=False, verbose=False, level='info'):
     # Define key variables
     global LOGGER
     username = getpass.getuser()
-    levels = ['debug', 'info', 'warning', 'error', 'critical']
+    levels = ["debug", "info", "warning", "error", "critical"]
 
     # Set logging level
     if level in levels:
         log_level = level
     else:
-        log_level = 'debug'
+        log_level = "debug"
 
     # Create logger if it doesn't already exist
     if bool(LOGGER) is False:
@@ -331,18 +338,14 @@ def _logit(error_num, error_string, error=False, verbose=False, level='info'):
 
     # Log the message
     if error:
-        log_message = (
-            '[{}] ({}E): {}'.format(
-                username, error_num, error_string))
-        logger_stdout.critical('%s', log_message)
+        log_message = "[{}] ({}E): {}".format(username, error_num, error_string)
+        logger_stdout.critical("%s", log_message)
         logger_file.critical(log_message)
 
         # All done
         sys.exit(2)
     else:
-        log_message = (
-            '[{}] ({}S): {}'.format(
-                username, error_num, error_string))
+        log_message = "[{}] ({}S): {}".format(username, error_num, error_string)
         _logger_file(logger_file, log_message, log_level)
         if verbose:
             _logger_stdout(logger_stdout, log_message, log_level)
@@ -361,13 +364,13 @@ def _logger_file(logger_file, log_message, log_level):
 
     """
     # Log accordingly
-    if log_level == 'debug':
+    if log_level == "debug":
         logger_file.debug(log_message)
-    elif log_level == 'info':
+    elif log_level == "info":
         logger_file.info(log_message)
-    elif log_level == 'warning':
+    elif log_level == "warning":
         logger_file.warning(log_message)
-    elif log_level == 'error':
+    elif log_level == "error":
         logger_file.error(log_message)
     else:
         logger_file.critical(log_message)
@@ -386,13 +389,13 @@ def _logger_stdout(logger_stdout, log_message, log_level):
 
     """
     # Log accordingly
-    if log_level == 'debug':
+    if log_level == "debug":
         logger_stdout.debug(log_message)
-    elif log_level == 'info':
+    elif log_level == "info":
         logger_stdout.info(log_message)
-    elif log_level == 'warning':
+    elif log_level == "warning":
         logger_stdout.warning(log_message)
-    elif log_level == 'error':
+    elif log_level == "error":
         logger_stdout.error(log_message)
     else:
         logger_stdout.critical(log_message)
@@ -412,16 +415,17 @@ def _message(code, message, error=True):
     """
     # Initialize key variables
     time_object = datetime.datetime.fromtimestamp(time.time())
-    timestring = time_object.strftime('%Y-%m-%d %H:%M:%S,%f')
+    timestring = time_object.strftime("%Y-%m-%d %H:%M:%S,%f")
     username = getpass.getuser()
 
     # Format string for error message, print and die
     if error is True:
-        prefix = 'ERROR'
+        prefix = "ERROR"
     else:
-        prefix = 'STATUS'
-    output = ('{} - {} - {} - [{}] {}'.format(
-        timestring, username, prefix, code, message))
+        prefix = "STATUS"
+    output = "{} - {} - {} - [{}] {}".format(
+        timestring, username, prefix, code, message
+    )
 
     # Return
     return output
@@ -438,14 +442,13 @@ def env():
 
     """
     # Make sure the SWITCHMAP_CONFIGDIR environment variable is set
-    if 'SWITCHMAP_CONFIGDIR' not in os.environ:
-        log_message = (
-            'The SWITCHMAP_CONFIGDIR environment variable not set.')
+    if "SWITCHMAP_CONFIGDIR" not in os.environ:
+        log_message = "The SWITCHMAP_CONFIGDIR environment variable not set."
         log2die_safe(1150, log_message)
 
     # Make sure the SWITCHMAP_CONFIGDIR environment variable is set to unittest
-    if 'unittest' in os.environ['SWITCHMAP_CONFIGDIR'].lower():
-        log_message = ('''\
+    if "unittest" in os.environ["SWITCHMAP_CONFIGDIR"].lower():
+        log_message = """\
 The SWITCHMAP_CONFIGDIR is set to a unittest directory. Daemon cannot be run\
-''')
+"""
         log2die_safe(1151, log_message)

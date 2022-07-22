@@ -36,39 +36,29 @@ def post_poll_cleanup(idx_event):
         idx_devices.append(row.idx_device)
     for idx_device in idx_devices:
         # Disable Device
-        statement = update(Device).where(
-                Device.idx_device == idx_device).values(
-                    {
-                        'enabled': 0
-                    }
-                )
+        statement = (
+            update(Device).where(Device.idx_device == idx_device).values({"enabled": 0})
+        )
         db.db_update(1124, statement)
 
         # Disable L1Interface
-        statement = update(L1Interface).where(
-                L1Interface.idx_device == idx_device).values(
-                    {
-                        'enabled': 0
-                    }
-                )
+        statement = (
+            update(L1Interface)
+            .where(L1Interface.idx_device == idx_device)
+            .values({"enabled": 0})
+        )
         db.db_update(1125, statement)
 
         # Disable Vlan
-        statement = update(Vlan).where(
-                Vlan.idx_device == idx_device).values(
-                    {
-                        'enabled': 0
-                    }
-                )
+        statement = (
+            update(Vlan).where(Vlan.idx_device == idx_device).values({"enabled": 0})
+        )
         db.db_update(1127, statement)
 
         # Disable MacIp
-        statement = update(MacIp).where(
-                MacIp.idx_device == idx_device).values(
-                    {
-                        'enabled': 0
-                    }
-                )
+        statement = (
+            update(MacIp).where(MacIp.idx_device == idx_device).values({"enabled": 0})
+        )
         db.db_update(1145, statement)
 
     # Disable Mac that don't match the idx_event value
@@ -82,21 +72,15 @@ def post_poll_cleanup(idx_event):
 
     for not_idx_event in not_idx_events:
         # Disable Mac
-        statement = update(Mac).where(
-                Mac.idx_event == not_idx_event).values(
-                    {
-                        'enabled': 0
-                    }
-                )
+        statement = (
+            update(Mac).where(Mac.idx_event == not_idx_event).values({"enabled": 0})
+        )
         db.db_update(1144, statement)
 
     for idx_mac in idx_macs:
 
         # Disable MacPort
-        statement = update(MacPort).where(
-                MacPort.idx_mac == idx_mac).values(
-                    {
-                        'enabled': 0
-                    }
-                )
+        statement = (
+            update(MacPort).where(MacPort.idx_mac == idx_mac).values({"enabled": 0})
+        )
         db.db_update(1069, statement)

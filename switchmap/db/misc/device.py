@@ -13,7 +13,7 @@ from switchmap.db.misc.interface import mac as macdetail
 from switchmap.db.misc.interface import vlan
 
 
-class Device():
+class Device:
     """Get all Device data."""
 
     def __init__(self, hostname):
@@ -64,7 +64,7 @@ class Device():
         if bool(self._device) is True:
             # Get interface data
             statement = select(_L1Interface).where(
-                    _L1Interface.idx_device == self._device.idx_device
+                _L1Interface.idx_device == self._device.idx_device
             )
             l1_rows = db.db_select_row(1199, statement)
             for row in l1_rows:
@@ -79,7 +79,7 @@ class Device():
 
                 # Get the MAC idx_mac values associated with the interface.
                 statement = select(_MacPort).where(
-                        l1int.idx_l1interface == _MacPort.idx_l1interface
+                    l1int.idx_l1interface == _MacPort.idx_l1interface
                 )
                 mac_rows = db.db_select_row(1200, statement)
                 for row in mac_rows:
@@ -95,9 +95,7 @@ class Device():
                 # Update the result
                 result.append(
                     InterfaceDetail(
-                        RL1Interface=l1int,
-                        MacDetails=macresult,
-                        RVlans=vlans
+                        RL1Interface=l1int, MacDetails=macresult, RVlans=vlans
                     )
                 )
 

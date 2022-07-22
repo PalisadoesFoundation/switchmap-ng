@@ -53,9 +53,9 @@ class QbridgeQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (dot1qPvid)
-        test_oid = '.1.3.6.1.2.1.17.7.1.4.5.1.1'
+        test_oid = ".1.3.6.1.2.1.17.7.1.4.5.1.1"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
         # Get a mapping of dot1dbaseport values to the corresponding ifindex
         bridge_mib = BridgeQuery(self.snmp_object)
@@ -77,7 +77,7 @@ class QbridgeQuery(Query):
         # Get interface dot1qPvid data
         values = self.dot1qpvid()
         for key, value in values.items():
-            final[key]['dot1qPvid'] = value
+            final[key]["dot1qPvid"] = value
 
         # Return
         return final
@@ -98,7 +98,7 @@ class QbridgeQuery(Query):
         # Get interface dot1qVlanStaticName data
         values = self.dot1qvlanstaticname()
         for key, value in values.items():
-            final[key]['dot1qVlanStaticName'] = value
+            final[key]["dot1qVlanStaticName"] = value
 
         # Return
         return final
@@ -117,7 +117,7 @@ class QbridgeQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.17.7.1.4.5.1.1'
+        oid = ".1.3.6.1.2.1.17.7.1.4.5.1.1"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -145,7 +145,7 @@ class QbridgeQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.17.7.1.4.3.1.1'
+        oid = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -153,7 +153,7 @@ class QbridgeQuery(Query):
 
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
-            data_dict[key] = str(bytes(value), encoding='utf-8')
+            data_dict[key] = str(bytes(value), encoding="utf-8")
 
         # Return
         return data_dict

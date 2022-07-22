@@ -14,10 +14,10 @@ from switchmap.topology.ports import Lookup
 
 
 # Define the SEARCH global variable
-SEARCH = Blueprint('SEARCH', __name__)
+SEARCH = Blueprint("SEARCH", __name__)
 
 
-@SEARCH.route('/search', methods=['POST'])
+@SEARCH.route("/search", methods=["POST"])
 def index():
     """Function for creating search results.
 
@@ -29,7 +29,7 @@ def index():
 
     """
     # Initialize key variables
-    devices_tables = {'Not Found': '<h3>&nbsp;Please try again ...</h3>'}
+    devices_tables = {"Not Found": "<h3>&nbsp;Please try again ...</h3>"}
     devices = {}
     lookup = None
     devices_tables = {}
@@ -39,7 +39,7 @@ def index():
 
     for key, value in items.items():
         # (key, value) = item
-        if key == 'search_term':
+        if key == "search_term":
             search_term = value.strip()
 
             # Create the search list
@@ -63,13 +63,12 @@ def index():
                 for hostname, ifindexes in sorted(devices.items()):
                     # Create data table dict
                     device_object = Device(
-                        hostname, CONFIG, lookup, ifindexes=ifindexes)
+                        hostname, CONFIG, lookup, ifindexes=ifindexes
+                    )
                     port_table = device_object.ports()
                     devices_tables[hostname] = port_table
             else:
-                devices_tables[''] = '<h3>&nbsp;Not Found</h3>'
+                devices_tables[""] = "<h3>&nbsp;Not Found</h3>"
 
     # Present results
-    return render_template(
-        'search.html',
-        results_dict=devices_tables)
+    return render_template("search.html", results_dict=devices_tables)

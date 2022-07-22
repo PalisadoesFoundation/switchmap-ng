@@ -50,10 +50,7 @@ def exists(idx_device, ifindex):
 
     # Get row from dataase
     statement = select(L1Interface).where(
-        and_(
-            L1Interface.ifindex == ifindex,
-            L1Interface.idx_device == idx_device
-        )
+        and_(L1Interface.ifindex == ifindex, L1Interface.idx_device == idx_device)
     )
     rows = db.db_select_row(1205, statement)
 
@@ -80,8 +77,7 @@ def findifalias(ifalias):
 
     # Get row from database (Contains)
     statement = select(L1Interface).where(
-        L1Interface.ifalias.like(
-            func.concat(func.concat('%', ifalias.encode(), '%')))
+        L1Interface.ifalias.like(func.concat(func.concat("%", ifalias.encode(), "%")))
     )
     rows_contains = db.db_select_row(1188, statement)
 
@@ -122,42 +118,52 @@ def insert_row(rows):
                 ifindex=row.ifindex,
                 duplex=null() if row.duplex is None else row.duplex,
                 ethernet=null() if row.ethernet is None else row.ethernet,
-                nativevlan=(
-                    null() if row.nativevlan is None else row.nativevlan),
+                nativevlan=(null() if row.nativevlan is None else row.nativevlan),
                 trunk=null() if row.trunk is None else row.trunk,
                 ifspeed=null() if row.ifspeed is None else row.ifspeed,
-                ifalias=(
-                    null() if row.ifalias is None else row.ifalias.encode()),
-                ifdescr=(
-                    null() if row.ifdescr is None else row.ifdescr.encode()),
+                ifalias=(null() if row.ifalias is None else row.ifalias.encode()),
+                ifdescr=(null() if row.ifdescr is None else row.ifdescr.encode()),
                 ifadminstatus=(
-                    null() if row.ifadminstatus is None
-                    else row.ifadminstatus),
-                ifoperstatus=(
-                    null() if row.ifoperstatus is None else row.ifoperstatus),
+                    null() if row.ifadminstatus is None else row.ifadminstatus
+                ),
+                ifoperstatus=(null() if row.ifoperstatus is None else row.ifoperstatus),
                 ts_idle=0 if not bool(row.ts_idle) else row.ts_idle,
                 cdpcachedeviceid=(
-                    null() if row.cdpcachedeviceid is None else
-                    row.cdpcachedeviceid.encode()),
+                    null()
+                    if row.cdpcachedeviceid is None
+                    else row.cdpcachedeviceid.encode()
+                ),
                 cdpcachedeviceport=(
-                    null() if row.cdpcachedeviceport is None else
-                    row.cdpcachedeviceport.encode()),
+                    null()
+                    if row.cdpcachedeviceport is None
+                    else row.cdpcachedeviceport.encode()
+                ),
                 cdpcacheplatform=(
-                    null() if row.cdpcacheplatform is None else
-                    row.cdpcacheplatform.encode()),
+                    null()
+                    if row.cdpcacheplatform is None
+                    else row.cdpcacheplatform.encode()
+                ),
                 lldpremportdesc=(
-                    null() if row.lldpremportdesc is None else
-                    row.lldpremportdesc.encode()),
+                    null()
+                    if row.lldpremportdesc is None
+                    else row.lldpremportdesc.encode()
+                ),
                 lldpremsyscapenabled=(
-                    null() if row.lldpremsyscapenabled is None else
-                    row.lldpremsyscapenabled.encode()),
+                    null()
+                    if row.lldpremsyscapenabled is None
+                    else row.lldpremsyscapenabled.encode()
+                ),
                 lldpremsysdesc=(
-                    null() if row.lldpremsysdesc is None else
-                    row.lldpremsysdesc.encode()),
+                    null()
+                    if row.lldpremsysdesc is None
+                    else row.lldpremsysdesc.encode()
+                ),
                 lldpremsysname=(
-                    null() if row.lldpremsysname is None else
-                    row.lldpremsysname.encode()),
-                enabled=row.enabled
+                    null()
+                    if row.lldpremsysname is None
+                    else row.lldpremsysname.encode()
+                ),
+                enabled=row.enabled,
             )
         )
 
@@ -178,49 +184,64 @@ def update_row(idx, row):
 
     """
     # Update
-    statement = update(L1Interface).where(
-        L1Interface.idx_l1interface == idx).values(
+    statement = (
+        update(L1Interface)
+        .where(L1Interface.idx_l1interface == idx)
+        .values(
             {
-                'idx_device': row.idx_device,
-                'ifindex': row.ifindex,
-                'duplex': null() if row.duplex is None else row.duplex,
-                'ethernet': null() if row.ethernet is None else row.ethernet,
-                'nativevlan': (
-                    null() if row.nativevlan is None else row.nativevlan),
-                'trunk': null() if row.trunk is None else row.trunk,
-                'ifspeed': null() if row.ifspeed is None else row.ifspeed,
-                'ifalias': (
-                    null() if row.ifalias is None else row.ifalias.encode()),
-                'ifdescr': (
-                    null() if row.ifdescr is None else row.ifdescr.encode()),
-                'ifadminstatus': (
-                    null() if row.ifadminstatus is None else
-                    row.ifadminstatus),
-                'ifoperstatus': (
-                    null() if row.ifoperstatus is None else row.ifoperstatus),
-                'ts_idle': 0 if not bool(row.ts_idle) else row.ts_idle,
-                'cdpcachedeviceid': (
-                    null() if row.cdpcachedeviceid is None else
-                    row.cdpcachedeviceid.encode()),
-                'cdpcachedeviceport': (
-                    null() if row.cdpcachedeviceport is None else
-                    row.cdpcachedeviceport.encode()),
-                'cdpcacheplatform': (
-                    null() if row.cdpcacheplatform is None else
-                    row.cdpcacheplatform.encode()),
-                'lldpremportdesc': (
-                    null() if row.lldpremportdesc is None else
-                    row.lldpremportdesc.encode()),
-                'lldpremsyscapenabled': (
-                    null() if row.lldpremsyscapenabled is None else
-                    row.lldpremsyscapenabled.encode()),
-                'lldpremsysdesc': (
-                    null() if row.lldpremsysdesc is None else
-                    row.lldpremsysdesc.encode()),
-                'lldpremsysname': (
-                    null() if row.lldpremsysname is None else
-                    row.lldpremsysname.encode()),
-                'enabled': row.enabled
+                "idx_device": row.idx_device,
+                "ifindex": row.ifindex,
+                "duplex": null() if row.duplex is None else row.duplex,
+                "ethernet": null() if row.ethernet is None else row.ethernet,
+                "nativevlan": (null() if row.nativevlan is None else row.nativevlan),
+                "trunk": null() if row.trunk is None else row.trunk,
+                "ifspeed": null() if row.ifspeed is None else row.ifspeed,
+                "ifalias": (null() if row.ifalias is None else row.ifalias.encode()),
+                "ifdescr": (null() if row.ifdescr is None else row.ifdescr.encode()),
+                "ifadminstatus": (
+                    null() if row.ifadminstatus is None else row.ifadminstatus
+                ),
+                "ifoperstatus": (
+                    null() if row.ifoperstatus is None else row.ifoperstatus
+                ),
+                "ts_idle": 0 if not bool(row.ts_idle) else row.ts_idle,
+                "cdpcachedeviceid": (
+                    null()
+                    if row.cdpcachedeviceid is None
+                    else row.cdpcachedeviceid.encode()
+                ),
+                "cdpcachedeviceport": (
+                    null()
+                    if row.cdpcachedeviceport is None
+                    else row.cdpcachedeviceport.encode()
+                ),
+                "cdpcacheplatform": (
+                    null()
+                    if row.cdpcacheplatform is None
+                    else row.cdpcacheplatform.encode()
+                ),
+                "lldpremportdesc": (
+                    null()
+                    if row.lldpremportdesc is None
+                    else row.lldpremportdesc.encode()
+                ),
+                "lldpremsyscapenabled": (
+                    null()
+                    if row.lldpremsyscapenabled is None
+                    else row.lldpremsyscapenabled.encode()
+                ),
+                "lldpremsysdesc": (
+                    null()
+                    if row.lldpremsysdesc is None
+                    else row.lldpremsysdesc.encode()
+                ),
+                "lldpremsysname": (
+                    null()
+                    if row.lldpremsysname is None
+                    else row.lldpremsysname.encode()
+                ),
+                "enabled": row.enabled,
             }
         )
+    )
     db.db_update(1112, statement)

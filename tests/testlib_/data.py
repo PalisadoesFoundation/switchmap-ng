@@ -13,7 +13,7 @@ import struct
 
 import yaml
 
-_CONFIG_YAML = '''
+_CONFIG_YAML = """
 main:
   bind_port: 8027
   daemon_directory: XXX
@@ -39,9 +39,9 @@ snmp_groups:
   snmp_privprotocol: aes
   snmp_secname: 76v4PjWHpDmzy6cx
   snmp_version: 3
-'''
+"""
 
-_CONFIG_TESTER_YAML = '''
+_CONFIG_TESTER_YAML = """
 main:
   agent_threads: 35
   bind_port: 7027
@@ -67,7 +67,7 @@ snmp_groups:
   snmp_privprotocol: aes
   snmp_secname: NT9degJu9NBWbxRK
   snmp_version: 3
-'''
+"""
 
 
 def configtester():
@@ -113,9 +113,10 @@ def polled_data(strip=True):
 
     """
     # Read test data file
-    filepath = '{0}{1}testdata_{1}device-01.yaml'.format(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), os.sep)
-    with open(filepath, 'r') as stream:
+    filepath = "{0}{1}testdata_{1}device-01.yaml".format(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), os.sep
+    )
+    with open(filepath, "r") as stream:
         item = yaml.safe_load(stream)
 
     # Convert all the integer string keys to integer
@@ -123,19 +124,19 @@ def polled_data(strip=True):
 
     # Remove all the extraneous L1 keys that start with 'l1_'
     if bool(strip) is True:
-        for ifindex, ifdata in result['layer1'].items():
+        for ifindex, ifdata in result["layer1"].items():
             if isinstance(ifdata, dict) is True:
                 newifdata = {}
                 for key, value in ifdata.items():
                     # L1_macs is not a calculated field from other L1 data.
                     # So it must remain.
-                    if key == 'l1_macs':
+                    if key == "l1_macs":
                         newifdata[key] = value
 
                     # Remove all other 'l1_' keys
-                    if key.startswith('l1_') is False:
+                    if key.startswith("l1_") is False:
                         newifdata[key] = value
-                result['layer1'][ifindex] = newifdata
+                result["layer1"][ifindex] = newifdata
 
     # Return
     return result
@@ -152,7 +153,7 @@ def random_string(length=10):
 
     """
     # Return
-    result = ''.join(random.choice(ascii_uppercase) for i in range(length))
+    result = "".join(random.choice(ascii_uppercase) for i in range(length))
     return result
 
 
@@ -250,7 +251,7 @@ def ipv4():
 
     """
     # Return
-    result = socket.inet_ntoa(struct.pack('>I', random.randint(1, 0xffffffff)))
+    result = socket.inet_ntoa(struct.pack(">I", random.randint(1, 0xFFFFFFFF)))
     return result
 
 
@@ -266,8 +267,9 @@ def ipv6():
     """
     # Return
     bits = 16**4
-    result = ':'.join(
-        ('{:02x}'.format(random.randint(0, bits)).zfill(4) for i in range(8)))
+    result = ":".join(
+        ("{:02x}".format(random.randint(0, bits)).zfill(4) for i in range(8))
+    )
     return result
 
 
@@ -282,16 +284,10 @@ def ip_():
 
     """
     # Initialize key variables
-    IP = namedtuple('IP', 'address version')
+    IP = namedtuple("IP", "address version")
     version = [4, 6][int(random.randint(0, 1))]
     if version == 4:
-        result = IP(
-            address=ipv4(),
-            version=version
-        )
+        result = IP(address=ipv4(), version=version)
     else:
-        result = IP(
-            address=ipv6(),
-            version=version
-        )
+        result = IP(address=ipv6(), version=version)
     return result

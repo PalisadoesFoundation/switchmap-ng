@@ -8,26 +8,42 @@ from copy import deepcopy
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(
-    os.path.abspath(os.path.join(
-        os.path.abspath(os.path.join(
-            os.path.abspath(os.path.join(
-                EXEC_DIR,
-                os.pardir)), os.pardir)), os.pardir)), os.pardir))
-_EXPECTED = '''{0}switchmap-ng{0}tests{0}switchmap_{0}poll{0}update\
-'''.format(os.sep)
+ROOT_DIR = os.path.abspath(
+    os.path.join(
+        os.path.abspath(
+            os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)), os.pardir
+                    )
+                ),
+                os.pardir,
+            )
+        ),
+        os.pardir,
+    )
+)
+_EXPECTED = """{0}switchmap-ng{0}tests{0}switchmap_{0}poll{0}update\
+""".format(
+    os.sep
+)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
-    print('''This script is not installed in the "{0}" directory. Please fix.\
-'''.format(_EXPECTED))
+    print(
+        """This script is not installed in the "{0}" directory. Please fix.\
+""".format(
+            _EXPECTED
+        )
+    )
     sys.exit(2)
 
 
 # Create the necessary configuration
 from tests.testlib_ import setup
+
 CONFIG = setup.config()
 CONFIG.save()
 
@@ -101,7 +117,7 @@ class TestSuite(unittest.TestCase):
     #########################################################################
 
     polled_data = _prerequisites()
-    l1_data = polled_data.get('layer1')
+    l1_data = polled_data.get("layer1")
 
     # IfIndexes
     # 18 = Layer3 VLAN interface (Enabled)
@@ -130,7 +146,7 @@ class TestSuite(unittest.TestCase):
         expecteds = [
             TrunkInterface(vlan=None, nativevlan=None, trunk=False),
             TrunkInterface(vlan=[99], nativevlan=1, trunk=False),
-            TrunkInterface(vlan=list(range(2039)), nativevlan=98, trunk=True)
+            TrunkInterface(vlan=list(range(2039)), nativevlan=98, trunk=True),
         ]
 
         # Process data
@@ -226,7 +242,7 @@ class TestSuite(unittest.TestCase):
         self.assertEqual(results, expecteds)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Do the unit test
     unittest.main()

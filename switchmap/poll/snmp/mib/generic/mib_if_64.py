@@ -54,9 +54,9 @@ class If64Query(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (ifHCInOctets)
-        test_oid = '.1.3.6.1.2.1.31.1.1.1.6'
+        test_oid = ".1.3.6.1.2.1.31.1.1.1.6"
 
-        super().__init__(snmp_object, test_oid, tags=['system', 'layer1'])
+        super().__init__(snmp_object, test_oid, tags=["system", "layer1"])
 
     def system(self):
         """Get system data from device.
@@ -88,31 +88,31 @@ class If64Query(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface ifHCOutBroadcastPkts data
-        _get_data('ifHCOutBroadcastPkts', self.ifhcoutbroadcastpkts, final)
+        _get_data("ifHCOutBroadcastPkts", self.ifhcoutbroadcastpkts, final)
 
         # Get interface ifHCOutMulticastPkts data
-        _get_data('ifHCOutMulticastPkts', self.ifhcoutmulticastpkts, final)
+        _get_data("ifHCOutMulticastPkts", self.ifhcoutmulticastpkts, final)
 
         # Get interface ifHCOutUcastPkts data
-        _get_data('ifHCOutUcastPkts', self.ifhcoutucastpkts, final)
+        _get_data("ifHCOutUcastPkts", self.ifhcoutucastpkts, final)
 
         # Get interface ifHCOutOctets data
-        _get_data('ifHCOutOctets', self.ifhcoutoctets, final)
+        _get_data("ifHCOutOctets", self.ifhcoutoctets, final)
 
         # Get interface ifHCInBroadcastPkts data
-        _get_data('ifHCInBroadcastPkts', self.ifhcinbroadcastpkts, final)
+        _get_data("ifHCInBroadcastPkts", self.ifhcinbroadcastpkts, final)
 
         # Get interface ifHCInMulticastPkts data
-        _get_data('ifHCInMulticastPkts', self.ifhcinmulticastpkts, final)
+        _get_data("ifHCInMulticastPkts", self.ifhcinmulticastpkts, final)
 
         # Get interface ifHCInUcastPkts data
-        _get_data('ifHCInUcastPkts', self.ifhcinucastpkts, final)
+        _get_data("ifHCInUcastPkts", self.ifhcinucastpkts, final)
 
         # Get interface ifHCInOctets data
-        _get_data('ifHCInOctets', self.ifhcinoctets, final)
+        _get_data("ifHCInOctets", self.ifhcinoctets, final)
 
         # Get interface ifHighSpeed data
-        _get_data('ifHighSpeed', self.ifhighspeed, final)
+        _get_data("ifHighSpeed", self.ifhighspeed, final)
 
         # Return
         return final
@@ -131,7 +131,7 @@ class If64Query(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.15'
+        oid = ".1.3.6.1.2.1.31.1.1.1.15"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -160,7 +160,7 @@ class If64Query(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.7'
+        oid = ".1.3.6.1.2.1.31.1.1.1.7"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -189,7 +189,7 @@ class If64Query(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.11'
+        oid = ".1.3.6.1.2.1.31.1.1.1.11"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -218,7 +218,7 @@ class If64Query(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.8'
+        oid = ".1.3.6.1.2.1.31.1.1.1.8"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -247,7 +247,7 @@ class If64Query(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.12'
+        oid = ".1.3.6.1.2.1.31.1.1.1.12"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -276,7 +276,7 @@ class If64Query(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.9'
+        oid = ".1.3.6.1.2.1.31.1.1.1.9"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -305,7 +305,7 @@ class If64Query(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.13'
+        oid = ".1.3.6.1.2.1.31.1.1.1.13"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -335,7 +335,7 @@ class If64Query(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.6'
+        oid = ".1.3.6.1.2.1.31.1.1.1.6"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -368,7 +368,7 @@ class If64Query(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.10'
+        oid = ".1.3.6.1.2.1.31.1.1.1.10"
 
         # Return OID value. Used for unittests
         if oidonly is True:

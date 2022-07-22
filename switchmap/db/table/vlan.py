@@ -49,9 +49,7 @@ def exists(idx_device, vlan):
 
     # Get vlan from database
     statement = select(Vlan).where(
-        and_(
-            Vlan.vlan == vlan,
-            Vlan.idx_device == idx_device)
+        and_(Vlan.vlan == vlan, Vlan.idx_device == idx_device)
     )
     rows = db.db_select_row(1226, statement)
 
@@ -87,7 +85,7 @@ def insert_row(rows):
                 vlan=null() if bool(row.vlan) is False else row.vlan,
                 name=null() if bool(row.name) is False else row.name.encode(),
                 state=null() if bool(row.state) is False else row.state,
-                enabled=row.enabled
+                enabled=row.enabled,
             )
         )
 
@@ -108,15 +106,17 @@ def update_row(idx, row):
 
     """
     # Update
-    statement = update(Vlan).where(
-        Vlan.idx_vlan == idx).values(
+    statement = (
+        update(Vlan)
+        .where(Vlan.idx_vlan == idx)
+        .values(
             {
-                'idx_device': row.idx_device,
-                'vlan': null() if bool(row.vlan) is False else row.vlan,
-                'name': (
-                    null() if bool(row.name) is False else row.name.encode()),
-                'state': null() if bool(row.state) is False else row.state,
-                'enabled': row.enabled
+                "idx_device": row.idx_device,
+                "vlan": null() if bool(row.vlan) is False else row.vlan,
+                "name": (null() if bool(row.name) is False else row.name.encode()),
+                "state": null() if bool(row.state) is False else row.state,
+                "enabled": row.enabled,
             }
         )
+    )
     db.db_update(1120, statement)

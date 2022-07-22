@@ -10,7 +10,7 @@ from switchmap.core import files
 from switchmap.core import log
 
 
-class _Config():
+class _Config:
     """Class gathers all configuration information."""
 
     def __init__(self, config_):
@@ -24,7 +24,7 @@ class _Config():
 
         """
         # Initialize key variables
-        self._config = config_.get('main')
+        self._config = config_.get("main")
 
     def agent_threads(self):
         """Get agent_threads.
@@ -37,7 +37,7 @@ class _Config():
 
         """
         # Get result
-        configured_value = self._config.get('agent_threads')
+        configured_value = self._config.get("agent_threads")
 
         # Default to 20
         if bool(configured_value) is False:
@@ -68,7 +68,7 @@ class _Config():
 
         """
         # Get result
-        result = self._config.get('bind_port', 7000)
+        result = self._config.get("bind_port", 7000)
         return result
 
     def daemon_directory(self):
@@ -82,13 +82,13 @@ class _Config():
 
         """
         # Get result
-        result = self._config.get('daemon_directory')
+        result = self._config.get("daemon_directory")
 
         # Check if value exists
         if os.path.isdir(result) is False:
             daemon_message = (
-                'daemon_directory: "{}" '
-                'in configuration doesn\'t exist!').format(result)
+                'daemon_directory: "{}" ' "in configuration doesn't exist!"
+            ).format(result)
             log.log2die_safe(1089, daemon_message)
 
         # Return
@@ -105,7 +105,7 @@ class _Config():
 
         """
         # Get parameter
-        result = self._config.get('db_host')
+        result = self._config.get("db_host")
 
         # Return
         return result
@@ -121,7 +121,7 @@ class _Config():
 
         """
         # Get parameter
-        result = self._config.get('db_name')
+        result = self._config.get("db_name")
 
         # Return
         return result
@@ -137,7 +137,7 @@ class _Config():
 
         """
         # Get parameter
-        _result = self._config.get('db_max_overflow', 30)
+        _result = self._config.get("db_max_overflow", 30)
         value = int(_result)
 
         # Set min / max values
@@ -157,7 +157,7 @@ class _Config():
 
         """
         # Get parameter
-        result = self._config.get('db_pass')
+        result = self._config.get("db_pass")
 
         # Return
         return result
@@ -173,7 +173,7 @@ class _Config():
 
         """
         # Get parameter
-        _result = self._config.get('db_pool_size', 30)
+        _result = self._config.get("db_pool_size", 30)
         value = int(_result)
 
         # Set min / max values
@@ -193,7 +193,7 @@ class _Config():
 
         """
         # Get parameter
-        result = self._config.get('db_user')
+        result = self._config.get("db_user")
 
         # Return
         return result
@@ -210,7 +210,7 @@ class _Config():
         """
         # Get result
         result = []
-        agent_config = self._config.get('hostnames', [])
+        agent_config = self._config.get("hostnames", [])
 
         # Get result
         if isinstance(agent_config, list) is True:
@@ -231,7 +231,7 @@ class _Config():
 
         """
         # Get result
-        result = self._config.get('listen_address', '0.0.0.0')
+        result = self._config.get("listen_address", "0.0.0.0")
         return result
 
     def log_directory(self):
@@ -245,13 +245,13 @@ class _Config():
 
         """
         # Get result
-        result = self._config.get('log_directory')
+        result = self._config.get("log_directory")
 
         # Check if value exists
         if os.path.isdir(result) is False:
             log_message = (
-                'log_directory: "{}" '
-                'in configuration doesn\'t exist!').format(result)
+                'log_directory: "{}" ' "in configuration doesn't exist!"
+            ).format(result)
             log.log2die_safe(1090, log_message)
 
         # Return
@@ -268,7 +268,7 @@ class _Config():
 
         """
         # Get new result
-        result = '{}/switchmap-ng.log'.format(self.log_directory())
+        result = "{}/switchmap-ng.log".format(self.log_directory())
 
         # Return
         return result
@@ -284,7 +284,7 @@ class _Config():
 
         """
         # Get result
-        result = self._config.get('log_level', 'debug')
+        result = self._config.get("log_level", "debug")
 
         # Return
         return result
@@ -300,7 +300,7 @@ class _Config():
 
         """
         # Get result
-        result = self._config.get('polling_interval', 86400)
+        result = self._config.get("polling_interval", 86400)
         return result
 
     def username(self):
@@ -314,7 +314,7 @@ class _Config():
 
         """
         # Get result
-        result = self._config.get('username', None)
+        result = self._config.get("username", None)
         return result
 
     def web_log_file(self):
@@ -328,13 +328,13 @@ class _Config():
 
         """
         # Get new result
-        result = '{}/switchmap-ng-api.log'.format(self.log_directory())
+        result = "{}/switchmap-ng-api.log".format(self.log_directory())
 
         # Return
         return result
 
 
-class _ConfigSNMP():
+class _ConfigSNMP:
     """Class gathers all configuration information."""
 
     def __init__(self, config_):
@@ -348,7 +348,7 @@ class _ConfigSNMP():
 
         """
         # Initialize key variables
-        self._config = config_.get('snmp_groups')
+        self._config = config_.get("snmp_groups")
 
     def snmp_auth(self):
         """Get list of dicts of SNMP information in configuration file.
@@ -362,16 +362,16 @@ class _ConfigSNMP():
         """
         # Initialize key variables
         seed_dict = {}
-        seed_dict['snmp_version'] = 2
-        seed_dict['snmp_secname'] = None
-        seed_dict['snmp_community'] = None
-        seed_dict['snmp_authprotocol'] = None
-        seed_dict['snmp_authpassword'] = None
-        seed_dict['snmp_privprotocol'] = None
-        seed_dict['snmp_privpassword'] = None
-        seed_dict['snmp_port'] = 161
-        seed_dict['group_name'] = None
-        seed_dict['enabled'] = True
+        seed_dict["snmp_version"] = 2
+        seed_dict["snmp_secname"] = None
+        seed_dict["snmp_community"] = None
+        seed_dict["snmp_authprotocol"] = None
+        seed_dict["snmp_authpassword"] = None
+        seed_dict["snmp_privprotocol"] = None
+        seed_dict["snmp_privpassword"] = None
+        seed_dict["snmp_port"] = 161
+        seed_dict["group_name"] = None
+        seed_dict["enabled"] = True
 
         # Read configuration's SNMP information. Return 'None' if none found
         if isinstance(self._config, list) is True:
@@ -396,8 +396,8 @@ class _ConfigSNMP():
                     new_dict[key] = seed_dict[key]
 
             # Convert relevant strings to integers
-            new_dict['snmp_version'] = int(new_dict['snmp_version'])
-            new_dict['snmp_port'] = int(new_dict['snmp_port'])
+            new_dict["snmp_version"] = int(new_dict["snmp_version"])
+            new_dict["snmp_port"] = int(new_dict["snmp_port"])
 
             # Append data to list
             snmp_data.append(new_dict)

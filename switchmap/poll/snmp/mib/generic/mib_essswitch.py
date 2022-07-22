@@ -51,9 +51,9 @@ class EssSwitchQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (swPortDuplexStatus)
-        test_oid = '.1.3.6.1.4.1.437.1.1.3.3.1.1.30'
+        test_oid = ".1.3.6.1.4.1.437.1.1.3.3.1.1.30"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -71,7 +71,7 @@ class EssSwitchQuery(Query):
         # Get interface swPortDuplexStatus data
         values = self.swportduplexstatus()
         for key, value in values.items():
-            final[key]['swPortDuplexStatus'] = value
+            final[key]["swPortDuplexStatus"] = value
 
         # Return
         return final
@@ -90,7 +90,7 @@ class EssSwitchQuery(Query):
         data_dict = defaultdict(dict)
 
         # OID to process
-        oid = '.1.3.6.1.4.1.437.1.1.3.3.1.1.30'
+        oid = ".1.3.6.1.4.1.437.1.1.3.3.1.1.30"
 
         # Return OID value. Used for unittests
         if oidonly is True:

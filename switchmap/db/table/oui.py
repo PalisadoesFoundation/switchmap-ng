@@ -23,8 +23,7 @@ def idx_oui(mac):
 
     # Find the true idx_oui
     if bool(mac) is True:
-        statement = select(Oui.idx_oui).where(
-            Oui.oui == mac[:6].encode())
+        statement = select(Oui.idx_oui).where(Oui.oui == mac[:6].encode())
         items = db.db_select(1177, statement)
         for item in items:
             result = item.idx_oui
@@ -103,13 +102,13 @@ def insert_row(rows):
     for row in rows:
         inserts.append(
             Oui(
-                oui=(
-                    null() if bool(row.oui) is False else
-                    row.oui.encode()),
+                oui=(null() if bool(row.oui) is False else row.oui.encode()),
                 organization=(
-                    null() if bool(row.organization) is False else
-                    row.organization.encode()),
-                enabled=row.enabled
+                    null()
+                    if bool(row.organization) is False
+                    else row.organization.encode()
+                ),
+                enabled=row.enabled,
             )
         )
 
@@ -130,16 +129,19 @@ def update_row(idx, row):
 
     """
     # Update
-    statement = update(Oui).where(
-        Oui.idx_oui == idx).values(
+    statement = (
+        update(Oui)
+        .where(Oui.idx_oui == idx)
+        .values(
             {
-                'organization': (
-                    null() if bool(row.organization) is False else
-                    row.organization.encode()),
-                'oui': (
-                    null() if bool(row.oui) is False else
-                    row.oui.encode()),
-                'enabled': row.enabled,
+                "organization": (
+                    null()
+                    if bool(row.organization) is False
+                    else row.organization.encode()
+                ),
+                "oui": (null() if bool(row.oui) is False else row.oui.encode()),
+                "enabled": row.enabled,
             }
         )
+    )
     db.db_update(1118, statement)

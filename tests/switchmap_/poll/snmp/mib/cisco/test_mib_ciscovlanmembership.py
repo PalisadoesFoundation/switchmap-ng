@@ -8,29 +8,55 @@ from mock import Mock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(
-    os.path.abspath(os.path.join(
-        os.path.abspath(os.path.join(
-            os.path.abspath(os.path.join(
-                os.path.abspath(os.path.join(
-                    os.path.abspath(os.path.join(
-                        EXEC_DIR,
-                        os.pardir)), os.pardir)), os.pardir)), os.pardir)),
-        os.pardir)), os.pardir))
-_EXPECTED = '''\
+ROOT_DIR = os.path.abspath(
+    os.path.join(
+        os.path.abspath(
+            os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.abspath(
+                            os.path.join(
+                                os.path.abspath(
+                                    os.path.join(
+                                        os.path.abspath(
+                                            os.path.join(EXEC_DIR, os.pardir)
+                                        ),
+                                        os.pardir,
+                                    )
+                                ),
+                                os.pardir,
+                            )
+                        ),
+                        os.pardir,
+                    )
+                ),
+                os.pardir,
+            )
+        ),
+        os.pardir,
+    )
+)
+_EXPECTED = """\
 {0}switchmap-ng{0}tests{0}switchmap_{0}poll{0}snmp{0}mib{0}cisco\
-'''.format(os.sep)
+""".format(
+    os.sep
+)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
-    print('''This script is not installed in the "{0}" directory. Please fix.\
-'''.format(_EXPECTED))
+    print(
+        """This script is not installed in the "{0}" directory. Please fix.\
+""".format(
+            _EXPECTED
+        )
+    )
     sys.exit(2)
 
 # Create the necessary configuration to load the module
 from tests.testlib_ import setup
+
 CONFIG = setup.config()
 CONFIG.save()
 
@@ -38,7 +64,7 @@ CONFIG.save()
 from switchmap.poll.snmp.mib.cisco import mib_ciscovlanmembership as testimport
 
 
-class Query():
+class Query:
     """Class for snmp_manager.Query mock.
 
     A detailed tutorial about Python mocks can be found here:
@@ -109,29 +135,20 @@ class TestMibCiscoVlanMember(unittest.TestCase):
     # SNMPwalk results used by Mocks.
 
     # Normalized walk returning integers
-    nwalk_results_integer = {
-        100: 1234,
-        200: 4567
-    }
+    nwalk_results_integer = {100: 1234, 200: 4567}
 
     # Set the stage for SNMPwalk for integer results
     snmpobj_integer = Mock(spec=Query)
     mock_spec_integer = {
-        'swalk.return_value': nwalk_results_integer,
-        'walk.return_value': nwalk_results_integer,
-        }
+        "swalk.return_value": nwalk_results_integer,
+        "walk.return_value": nwalk_results_integer,
+    }
     snmpobj_integer.configure_mock(**mock_spec_integer)
 
     # Initializing key variables
     expected_dict = {
-        100: {
-            'vmPortStatus': 1234,
-            'vmVlan': 1234
-        },
-        200: {
-            'vmPortStatus': 4567,
-            'vmVlan': 4567
-        }
+        100: {"vmPortStatus": 1234, "vmVlan": 1234},
+        200: {"vmPortStatus": 4567, "vmVlan": 4567},
     }
 
     @classmethod
@@ -167,7 +184,7 @@ class TestMibCiscoVlanMember(unittest.TestCase):
         """Testing method / function supported."""
         # Set the stage for oid_exists returning True
         snmpobj = Mock(spec=Query)
-        mock_spec = {'oid_exists.return_value': True}
+        mock_spec = {"oid_exists.return_value": True}
         snmpobj.configure_mock(**mock_spec)
 
         # Test supported
@@ -175,7 +192,7 @@ class TestMibCiscoVlanMember(unittest.TestCase):
         self.assertEqual(testobj.supported(), True)
 
         # Set the stage for oid_exists returning False
-        mock_spec = {'oid_exists.return_value': False}
+        mock_spec = {"oid_exists.return_value": False}
         snmpobj.configure_mock(**mock_spec)
 
         # Test unsupported
@@ -186,15 +203,13 @@ class TestMibCiscoVlanMember(unittest.TestCase):
         """Testing function layer1."""
         # Initializing key variables
         expected_dict = {
-            100: {'vmPortStatus': 1234,
-                  'vmVlan': 1234},
-            200: {'vmPortStatus': 4567,
-                  'vmVlan': 4567}
+            100: {"vmPortStatus": 1234, "vmVlan": 1234},
+            200: {"vmPortStatus": 4567, "vmVlan": 4567},
         }
 
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {'swalk.return_value': self.nwalk_results_integer}
+        mock_spec = {"swalk.return_value": self.nwalk_results_integer}
         snmpobj.configure_mock(**mock_spec)
 
         # Get results
@@ -205,13 +220,13 @@ class TestMibCiscoVlanMember(unittest.TestCase):
         for primary in results.keys():
             for secondary in results[primary].keys():
                 self.assertEqual(
-                    results[primary][secondary],
-                    expected_dict[primary][secondary])
+                    results[primary][secondary], expected_dict[primary][secondary]
+                )
 
     def test_vmvlan(self):
         """Testing function vmvlan."""
-        oid_key = 'vmVlan'
-        oid = '.1.3.6.1.4.1.9.9.68.1.2.2.1.2'
+        oid_key = "vmVlan"
+        oid = ".1.3.6.1.4.1.9.9.68.1.2.2.1.2"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -229,8 +244,8 @@ class TestMibCiscoVlanMember(unittest.TestCase):
     def test_vmportstatus(self):
         """Testing function vmportstatus."""
         # Initialize key variables
-        oid_key = 'vmPortStatus'
-        oid = '.1.3.6.1.4.1.9.9.68.1.2.2.1.3'
+        oid_key = "vmPortStatus"
+        oid = ".1.3.6.1.4.1.9.9.68.1.2.2.1.3"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -246,7 +261,7 @@ class TestMibCiscoVlanMember(unittest.TestCase):
         self.assertEqual(results, oid)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Do the unit test
     unittest.main()

@@ -50,9 +50,9 @@ class CiscoStackQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (portDuplex)
-        test_oid = '.1.3.6.1.4.1.9.5.1.4.1.1.10'
+        test_oid = ".1.3.6.1.4.1.9.5.1.4.1.1.10"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -70,7 +70,7 @@ class CiscoStackQuery(Query):
         # Get interface portDuplex data
         values = self.portduplex()
         for key, value in values.items():
-            final[key]['portDuplex'] = value
+            final[key]["portDuplex"] = value
 
         # Return
         return final
@@ -90,7 +90,7 @@ class CiscoStackQuery(Query):
         dot1dbaseport = self._portifindex()
 
         # Process OID
-        oid = '.1.3.6.1.4.1.9.5.1.4.1.1.10'
+        oid = ".1.3.6.1.4.1.9.5.1.4.1.1.10"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -119,7 +119,7 @@ class CiscoStackQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.4.1.9.5.1.4.1.1.11'
+        oid = ".1.3.6.1.4.1.9.5.1.4.1.1.11"
 
         # Return OID value. Used for unittests
         if oidonly is True:

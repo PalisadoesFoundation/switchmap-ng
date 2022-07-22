@@ -8,29 +8,55 @@ from mock import Mock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(
-    os.path.abspath(os.path.join(
-        os.path.abspath(os.path.join(
-            os.path.abspath(os.path.join(
-                os.path.abspath(os.path.join(
-                    os.path.abspath(os.path.join(
-                        EXEC_DIR,
-                        os.pardir)), os.pardir)), os.pardir)), os.pardir)),
-        os.pardir)), os.pardir))
-_EXPECTED = '''\
+ROOT_DIR = os.path.abspath(
+    os.path.join(
+        os.path.abspath(
+            os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.abspath(
+                            os.path.join(
+                                os.path.abspath(
+                                    os.path.join(
+                                        os.path.abspath(
+                                            os.path.join(EXEC_DIR, os.pardir)
+                                        ),
+                                        os.pardir,
+                                    )
+                                ),
+                                os.pardir,
+                            )
+                        ),
+                        os.pardir,
+                    )
+                ),
+                os.pardir,
+            )
+        ),
+        os.pardir,
+    )
+)
+_EXPECTED = """\
 {0}switchmap-ng{0}tests{0}switchmap_{0}poll{0}snmp{0}mib{0}generic\
-'''.format(os.sep)
+""".format(
+    os.sep
+)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
-    print('''This script is not installed in the "{0}" directory. Please fix.\
-'''.format(_EXPECTED))
+    print(
+        """This script is not installed in the "{0}" directory. Please fix.\
+""".format(
+            _EXPECTED
+        )
+    )
     sys.exit(2)
 
 # Create the necessary configuration to load the module
 from tests.testlib_ import setup
+
 CONFIG = setup.config()
 CONFIG.save()
 
@@ -38,7 +64,7 @@ CONFIG.save()
 from switchmap.poll.snmp.mib.generic import mib_if_64 as testimport
 
 
-class Query():
+class Query:
     """Class for snmp_manager.Query mock.
 
     A detailed tutorial about Python mocks can be found here:
@@ -109,43 +135,40 @@ class TestMibIf64(unittest.TestCase):
     # SNMPwalk results used by Mocks.
 
     # Normalized walk returning integers
-    nwalk_results_integer = {
-        100: 1234,
-        200: 5678
-    }
+    nwalk_results_integer = {100: 1234, 200: 5678}
 
     # Set the stage for SNMPwalk for integer results
     snmpobj_integer = Mock(spec=Query)
     mock_spec_integer = {
-        'swalk.return_value': nwalk_results_integer,
-        'walk.return_value': nwalk_results_integer,
-        }
+        "swalk.return_value": nwalk_results_integer,
+        "walk.return_value": nwalk_results_integer,
+    }
     snmpobj_integer.configure_mock(**mock_spec_integer)
 
     # Initializing key variables
     expected_dict = {
         100: {
-            'ifHCOutBroadcastPkts': 1234,
-            'ifHCOutMulticastPkts': 1234,
-            'ifHCOutUcastPkts': 1234,
-            'ifHCOutOctets': 1234,
-            'ifHCInBroadcastPkts': 1234,
-            'ifHCInMulticastPkts': 1234,
-            'ifHCInUcastPkts': 1234,
-            'ifHCInOctets': 1234,
-            'ifHighSpeed': 1234
+            "ifHCOutBroadcastPkts": 1234,
+            "ifHCOutMulticastPkts": 1234,
+            "ifHCOutUcastPkts": 1234,
+            "ifHCOutOctets": 1234,
+            "ifHCInBroadcastPkts": 1234,
+            "ifHCInMulticastPkts": 1234,
+            "ifHCInUcastPkts": 1234,
+            "ifHCInOctets": 1234,
+            "ifHighSpeed": 1234,
         },
         200: {
-            'ifHCOutBroadcastPkts': 5678,
-            'ifHCOutMulticastPkts': 5678,
-            'ifHCOutUcastPkts': 5678,
-            'ifHCOutOctets': 5678,
-            'ifHCInBroadcastPkts': 5678,
-            'ifHCInMulticastPkts': 5678,
-            'ifHCInUcastPkts': 5678,
-            'ifHCInOctets': 5678,
-            'ifHighSpeed': 5678
-        }
+            "ifHCOutBroadcastPkts": 5678,
+            "ifHCOutMulticastPkts": 5678,
+            "ifHCOutUcastPkts": 5678,
+            "ifHCOutOctets": 5678,
+            "ifHCInBroadcastPkts": 5678,
+            "ifHCInMulticastPkts": 5678,
+            "ifHCInUcastPkts": 5678,
+            "ifHCInOctets": 5678,
+            "ifHighSpeed": 5678,
+        },
     }
 
     @classmethod
@@ -190,14 +213,14 @@ class TestMibIf64(unittest.TestCase):
         for primary in results.keys():
             for secondary in results[primary].keys():
                 self.assertEqual(
-                    results[primary][secondary],
-                    self.expected_dict[primary][secondary])
+                    results[primary][secondary], self.expected_dict[primary][secondary]
+                )
 
     def test_ifhighspeed(self):
         """Testing method / function ifhighspeed."""
         # Initialize key variables
-        oid_key = 'ifHighSpeed'
-        oid = '.1.3.6.1.2.1.31.1.1.1.15'
+        oid_key = "ifHighSpeed"
+        oid = ".1.3.6.1.2.1.31.1.1.1.15"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -215,8 +238,8 @@ class TestMibIf64(unittest.TestCase):
     def test_ifhcinucastpkts(self):
         """Testing method / function ifhcinucastpkts."""
         # Initialize key variables
-        oid_key = 'ifHCInUcastPkts'
-        oid = '.1.3.6.1.2.1.31.1.1.1.7'
+        oid_key = "ifHCInUcastPkts"
+        oid = ".1.3.6.1.2.1.31.1.1.1.7"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -234,8 +257,8 @@ class TestMibIf64(unittest.TestCase):
     def test_ifhcoutucastpkts(self):
         """Testing method / function ifhcoutucastpkts."""
         # Initialize key variables
-        oid_key = 'ifHCOutUcastPkts'
-        oid = '.1.3.6.1.2.1.31.1.1.1.11'
+        oid_key = "ifHCOutUcastPkts"
+        oid = ".1.3.6.1.2.1.31.1.1.1.11"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -253,8 +276,8 @@ class TestMibIf64(unittest.TestCase):
     def test_ifhcinmulticastpkts(self):
         """Testing method / function ifhcinmulticastpkts."""
         # Initialize key variables
-        oid_key = 'ifHCInMulticastPkts'
-        oid = '.1.3.6.1.2.1.31.1.1.1.8'
+        oid_key = "ifHCInMulticastPkts"
+        oid = ".1.3.6.1.2.1.31.1.1.1.8"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -272,8 +295,8 @@ class TestMibIf64(unittest.TestCase):
     def test_ifhcoutmulticastpkts(self):
         """Testing method / function ifhcoutmulticastpkts."""
         # Initialize key variables
-        oid_key = 'ifHCOutMulticastPkts'
-        oid = '.1.3.6.1.2.1.31.1.1.1.12'
+        oid_key = "ifHCOutMulticastPkts"
+        oid = ".1.3.6.1.2.1.31.1.1.1.12"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -291,8 +314,8 @@ class TestMibIf64(unittest.TestCase):
     def test_ifhcinbroadcastpkts(self):
         """Testing method / function ifhcinbroadcastpkts."""
         # Initialize key variables
-        oid_key = 'ifHCInBroadcastPkts'
-        oid = '.1.3.6.1.2.1.31.1.1.1.9'
+        oid_key = "ifHCInBroadcastPkts"
+        oid = ".1.3.6.1.2.1.31.1.1.1.9"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -310,8 +333,8 @@ class TestMibIf64(unittest.TestCase):
     def test_ifhcoutbroadcastpkts(self):
         """Testing method / function ifhcoutbroadcastpkts."""
         # Initialize key variables
-        oid_key = 'ifHCOutBroadcastPkts'
-        oid = '.1.3.6.1.2.1.31.1.1.1.13'
+        oid_key = "ifHCOutBroadcastPkts"
+        oid = ".1.3.6.1.2.1.31.1.1.1.13"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -329,8 +352,8 @@ class TestMibIf64(unittest.TestCase):
     def test_ifhcinoctets(self):
         """Testing method / function ifhcinoctets."""
         # Initialize key variables
-        oid_key = 'ifHCInOctets'
-        oid = '.1.3.6.1.2.1.31.1.1.1.6'
+        oid_key = "ifHCInOctets"
+        oid = ".1.3.6.1.2.1.31.1.1.1.6"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -348,8 +371,8 @@ class TestMibIf64(unittest.TestCase):
     def test_ifhcoutoctets(self):
         """Testing method / function ifhcoutoctets."""
         # Initialize key variables
-        oid_key = 'ifHCOutOctets'
-        oid = '.1.3.6.1.2.1.31.1.1.1.10'
+        oid_key = "ifHCOutOctets"
+        oid = ".1.3.6.1.2.1.31.1.1.1.10"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -370,7 +393,7 @@ class TestMibIf64(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Do the unit test
     unittest.main()

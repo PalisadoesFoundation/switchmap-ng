@@ -38,11 +38,10 @@ from tests.testlib_ import data
 
 MAXMAC = 100
 OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
-MACS = ['{0}{1}'.format(_, data.mac()[:6]) for _ in OUIS]
-HOSTNAMES = list(
-    set([data.random_string() for _ in range(MAXMAC * 2)]))[:MAXMAC]
-IFALIASES = ['ALIAS_{0}'.format(data.random_string()) for _ in range(MAXMAC)]
-ORGANIZATIONS = ['ORG_{0}'.format(data.random_string()) for _ in range(MAXMAC)]
+MACS = ["{0}{1}".format(_, data.mac()[:6]) for _ in OUIS]
+HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[:MAXMAC]
+IFALIASES = ["ALIAS_{0}".format(data.random_string()) for _ in range(MAXMAC)]
+ORGANIZATIONS = ["ORG_{0}".format(data.random_string()) for _ in range(MAXMAC)]
 IPADDRESSES = list(set([data.ip_() for _ in range(MAXMAC * 2)]))[:MAXMAC]
 IDX_MACS = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
 RANDOM_INDEX = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
@@ -61,15 +60,10 @@ def prerequisites():
     # Initialize key variables
     macresult = {}
     vlanresult = {}
-    Result = namedtuple('Result', 'idx_mac idx_l1interface')
+    Result = namedtuple("Result", "idx_mac idx_l1interface")
 
     # Insert the necessary rows
-    event.insert_row(
-        IEvent(
-            name=data.random_string(),
-            enabled=1
-            )
-    )
+    event.insert_row(IEvent(name=data.random_string(), enabled=1))
     zone.insert_row(
         IZone(
             name=data.random_string(),
@@ -83,24 +77,20 @@ def prerequisites():
             postal_code=data.random_string(),
             phone=data.random_string(),
             notes=data.random_string(),
-            enabled=1
+            enabled=1,
         )
     )
     oui.insert_row(
-        [IOui(
-            oui=OUIS[key],
-            organization=value,
-            enabled=1
-        ) for key, value in enumerate(ORGANIZATIONS)]
+        [
+            IOui(oui=OUIS[key], organization=value, enabled=1)
+            for key, value in enumerate(ORGANIZATIONS)
+        ]
     )
     mac.insert_row(
-        [IMac(
-            idx_oui=key + 1,
-            idx_event=1,
-            idx_zone=1,
-            mac=value,
-            enabled=1
-        ) for key, value in enumerate(MACS)]
+        [
+            IMac(idx_oui=key + 1, idx_event=1, idx_zone=1, mac=value, enabled=1)
+            for key, value in enumerate(MACS)
+        ]
     )
     device.insert_row(
         IDevice(
@@ -113,53 +103,50 @@ def prerequisites():
             sys_objectid=data.random_string(),
             sys_uptime=random.randint(0, 1000000),
             last_polled=random.randint(0, 1000000),
-            enabled=1
+            enabled=1,
         )
     )
     # Insert VLANs
     vlans = [
-        IVlan(
-            idx_device=1,
-            vlan=idx + 1,
-            name=data.random_string(),
-            state=1,
-            enabled=1
-        ) for idx in range(MAXMAC)]
+        IVlan(idx_device=1, vlan=idx + 1, name=data.random_string(), state=1, enabled=1)
+        for idx in range(MAXMAC)
+    ]
     vlan.insert_row(vlans)
 
     # Insert interfaces
     l1interface.insert_row(
-        [IL1Interface(
-            idx_device=1,
-            ifindex=random.randint(0, 1000000),
-            duplex=random.randint(0, 1000000),
-            ethernet=1,
-            nativevlan=random.randint(0, 1000000),
-            trunk=1,
-            ifspeed=random.randint(0, 1000000),
-            ifalias=value,
-            ifdescr=data.random_string(),
-            ifadminstatus=random.randint(0, 1000000),
-            ifoperstatus=random.randint(0, 1000000),
-            ts_idle=random.randint(0, 1000000),
-            cdpcachedeviceid=data.random_string(),
-            cdpcachedeviceport=data.random_string(),
-            cdpcacheplatform=data.random_string(),
-            lldpremportdesc=data.random_string(),
-            lldpremsyscapenabled=data.random_string(),
-            lldpremsysdesc=data.random_string(),
-            lldpremsysname=data.random_string(),
-            enabled=1
-        ) for _, value in enumerate(IFALIASES)]
+        [
+            IL1Interface(
+                idx_device=1,
+                ifindex=random.randint(0, 1000000),
+                duplex=random.randint(0, 1000000),
+                ethernet=1,
+                nativevlan=random.randint(0, 1000000),
+                trunk=1,
+                ifspeed=random.randint(0, 1000000),
+                ifalias=value,
+                ifdescr=data.random_string(),
+                ifadminstatus=random.randint(0, 1000000),
+                ifoperstatus=random.randint(0, 1000000),
+                ts_idle=random.randint(0, 1000000),
+                cdpcachedeviceid=data.random_string(),
+                cdpcachedeviceport=data.random_string(),
+                cdpcacheplatform=data.random_string(),
+                lldpremportdesc=data.random_string(),
+                lldpremsyscapenabled=data.random_string(),
+                lldpremsysdesc=data.random_string(),
+                lldpremsysname=data.random_string(),
+                enabled=1,
+            )
+            for _, value in enumerate(IFALIASES)
+        ]
     )
 
     # Insert VlanPort entries
     vlanports = [
-        IVlanPort(
-            idx_l1interface=value,
-            idx_vlan=key + 1,
-            enabled=1
-        ) for key, value in enumerate(RANDOM_INDEX)]
+        IVlanPort(idx_l1interface=value, idx_vlan=key + 1, enabled=1)
+        for key, value in enumerate(RANDOM_INDEX)
+    ]
     vlanport.insert_row(vlanports)
 
     # Track Vlan assignments
@@ -174,11 +161,8 @@ def prerequisites():
 
     # Insert MacPort entries
     macports_ = [
-        IMacPort(
-            idx_l1interface=value,
-            idx_mac=key + 1,
-            enabled=1
-        ) for key, value in enumerate(RANDOM_INDEX)
+        IMacPort(idx_l1interface=value, idx_mac=key + 1, enabled=1)
+        for key, value in enumerate(RANDOM_INDEX)
     ]
     macport.insert_row(macports_)
 
@@ -190,8 +174,10 @@ def prerequisites():
             ip_=IPADDRESSES[key].address,
             version=IPADDRESSES[key].version,
             hostname=HOSTNAMES[key],
-            enabled=1
-        ) for key, value in enumerate(IDX_MACS)]
+            enabled=1,
+        )
+        for key, value in enumerate(IDX_MACS)
+    ]
     macip.insert_row(macips_)
 
     # Track MacIP assignments
@@ -202,7 +188,7 @@ def prerequisites():
             idx_mac=item.idx_mac,
             organization=ORGANIZATIONS[item.idx_mac - 1],
             idx_l1interface=RANDOM_INDEX[item.idx_mac - 1],
-            mac=MACS[item.idx_mac - 1]
+            mac=MACS[item.idx_mac - 1],
         )
 
         found = macresult.get(detail.idx_mac)
@@ -212,8 +198,5 @@ def prerequisites():
             macresult[item.idx_mac] = [detail]
 
     # Return
-    result = Result(
-        idx_mac=macresult,
-        idx_l1interface=vlanresult
-    )
+    result = Result(idx_mac=macresult, idx_l1interface=vlanresult)
     return result

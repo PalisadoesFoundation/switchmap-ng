@@ -11,7 +11,7 @@ import time
 from switchmap.core import log
 
 
-class Daemon():
+class Daemon:
     """A generic daemon class.
 
     Usage: subclass the daemon class and override the run() method.
@@ -50,10 +50,12 @@ class Daemon():
 
         # Make sure that the log file is accessible.
         try:
-            open(daemon_log_file, 'a').close()
+            open(daemon_log_file, "a").close()
         except:
-            log_message = '''Cannot access daemon log file {}. Please check \
-file and directory permissions.'''.format(daemon_log_file)
+            log_message = """Cannot access daemon log file {}. Please check \
+file and directory permissions.""".format(
+                daemon_log_file
+            )
             log.log2die(1162, log_message)
 
         # Create a parent process that will manage the child
@@ -64,12 +66,12 @@ file and directory permissions.'''.format(daemon_log_file)
                 # Exit first parent
                 sys.exit(0)
         except OSError as err:
-            log_message = 'Daemon fork #1 failed: {}'.format(err)
-            log_message = '{} - PID file: {}'.format(log_message, self.pidfile)
+            log_message = "Daemon fork #1 failed: {}".format(err)
+            log_message = "{} - PID file: {}".format(log_message, self.pidfile)
             log.log2die(1067, log_message)
 
         # Decouple from parent environment
-        os.chdir('{}'.format(os.sep))
+        os.chdir("{}".format(os.sep))
         os.setsid()
         os.umask(0)
 
@@ -81,16 +83,16 @@ file and directory permissions.'''.format(daemon_log_file)
                 # exit from second parent
                 sys.exit(0)
         except OSError as err:
-            log_message = 'Daemon fork #2 failed: {}'.format(err)
-            log_message = '{} - PID file: {}'.format(log_message, self.pidfile)
+            log_message = "Daemon fork #2 failed: {}".format(err)
+            log_message = "{} - PID file: {}".format(log_message, self.pidfile)
             log.log2die(1169, log_message)
 
         # Redirect standard file descriptors, but first make sure that the
         sys.stdout.flush()
         sys.stderr.flush()
-        f_handle_si = open(daemon_log_file, 'r')
-        f_handle_so = open(daemon_log_file, 'a+')
-        f_handle_se = open(daemon_log_file, 'a+')
+        f_handle_si = open(daemon_log_file, "r")
+        f_handle_so = open(daemon_log_file, "a+")
+        f_handle_se = open(daemon_log_file, "a+")
         os.dup2(f_handle_si.fileno(), sys.stdin.fileno())
         os.dup2(f_handle_so.fileno(), sys.stdout.fileno())
         os.dup2(f_handle_se.fileno(), sys.stderr.fileno())
@@ -98,8 +100,8 @@ file and directory permissions.'''.format(daemon_log_file)
         # write pidfile
         atexit.register(self.delpid)
         pid = str(os.getpid())
-        with open(self.pidfile, 'w+') as f_handle:
-            f_handle.write('{}\n'.format(pid))
+        with open(self.pidfile, "w+") as f_handle:
+            f_handle.write("{}\n".format(pid))
 
     def delpid(self):
         """Delete the PID file.
@@ -116,8 +118,7 @@ file and directory permissions.'''.format(daemon_log_file)
             try:
                 os.remove(self.pidfile)
             except:
-                log_message = (
-                    'PID file {} already deleted'.format(self.pidfile))
+                log_message = "PID file {} already deleted".format(self.pidfile)
                 log.log2warning(1152, log_message)
 
     def dellock(self):
@@ -151,17 +152,18 @@ file and directory permissions.'''.format(daemon_log_file)
         # Die if already running
         if bool(pid) is True:
             log_message = (
-                'PID file: {} already exists. Daemon already running?'
-                ''.format(self.pidfile))
+                "PID file: {} already exists. Daemon already running?"
+                "".format(self.pidfile)
+            )
             log.log2die(1170, log_message)
 
         # Start the daemon
         self._daemonize()
 
         # Log success
-        log_message = (
-            'Daemon {} started - PID file: {}'
-            ''.format(self.name, self.pidfile))
+        log_message = "Daemon {} started - PID file: {}" "".format(
+            self.name, self.pidfile
+        )
         log.log2info(1167, log_message)
 
         # Run code for daemon
@@ -194,9 +196,9 @@ file and directory permissions.'''.format(daemon_log_file)
         # Check for a pidfile to see if the daemon already runs
         pid = _pid(self.pidfile)
         if bool(pid) is False:
-            log_message = (
-                'PID file: {} does not exist. Daemon not running?'
-                ''.format(self.pidfile))
+            log_message = "PID file: {} does not exist. Daemon not running?" "".format(
+                self.pidfile
+            )
             log.log2warning(1163, log_message)
             # Not an error in a restart
             return
@@ -206,26 +208,25 @@ file and directory permissions.'''.format(daemon_log_file)
             os.kill(pid, signal.SIGTERM)
         except OSError as err:
             error = str(err.args)
-            if error.find('No such process') > 0:
+            if error.find("No such process") > 0:
                 self.delpid()
                 self.dellock()
             else:
-                log_message = (str(err.args))
-                log_message = (
-                    '{} - PID file: {}'.format(log_message, self.pidfile))
+                log_message = str(err.args)
+                log_message = "{} - PID file: {}".format(log_message, self.pidfile)
                 log.log2die(1166, log_message)
         except:
-            log_message = (
-                'Unknown daemon "stopped" error for PID file: {}'
-                ''.format(self.pidfile))
+            log_message = 'Unknown daemon "stopped" error for PID file: {}' "".format(
+                self.pidfile
+            )
             log.log2die(1165, log_message)
 
         # Log success
         self.delpid()
         self.dellock()
-        log_message = (
-            'Daemon {} stopped - PID file: {}'
-            ''.format(self.name, self.pidfile))
+        log_message = "Daemon {} stopped - PID file: {}" "".format(
+            self.name, self.pidfile
+        )
         log.log2info(1168, log_message)
 
     def restart(self):
@@ -256,9 +257,9 @@ file and directory permissions.'''.format(daemon_log_file)
         # Determine whether pid file exists
         pid = _pid(self.pidfile)
         if bool(pid) is True:
-            print('Daemon is running - {}'.format(self.name))
+            print("Daemon is running - {}".format(self.name))
         else:
-            print('Daemon is stopped - {}'.format(self.name))
+            print("Daemon is stopped - {}".format(self.name))
         return bool(pid)
 
     def run(self):
@@ -296,8 +297,10 @@ class GracefulDaemon(Daemon):
         except AttributeError as err:
             # Sets default GracefulDaemon shutdown timeout if not defined by the
             # agent configuration
-            log_message = '''Graceful Timeout configuration not set, {}\n
-            Default setting to 10s'''.format(err)
+            log_message = """Graceful Timeout configuration not set, {}\n
+            Default setting to 10s""".format(
+                err
+            )
             log.log2info(1100, log_message)
 
             self.graceful_timeout = 10
@@ -334,11 +337,14 @@ class GracefulDaemon(Daemon):
             wrapper
 
         """
+
         def wrapper():
             """Wrapper function"""
             if self.__daemon_running():
-                log_message = '''{} Lock file exists, Process still
-                running'''.format(self.name)
+                log_message = """{} Lock file exists, Process still
+                running""".format(
+                    self.name
+                )
                 log.log2info(1101, log_message)
 
             # Continually checks if daemon is still running exits loop once
@@ -350,21 +356,28 @@ class GracefulDaemon(Daemon):
                 time.sleep(1)
 
                 if not self.__daemon_running() is True:
-                    log_message = '''Process {} no longer
-                    processing'''.format(self.name)
+                    log_message = """Process {} no longer
+                    processing""".format(
+                        self.name
+                    )
                     log.log2info(1103, log_message)
                     break
 
                 if current_duration >= self.graceful_timeout:
-                    log_message = '''Process {} failed to shutdown, DUE TO
-                    TIMEOUT'''.format(self.name)
+                    log_message = """Process {} failed to shutdown, DUE TO
+                    TIMEOUT""".format(
+                        self.name
+                    )
                     log.log2info(1104, log_message)
 
-                    log_message = '''{}, hard shutdown in
-                    progress'''.format(self.name)
+                    log_message = """{}, hard shutdown in
+                    progress""".format(
+                        self.name
+                    )
                     log.log2info(1105, log_message)
                     break
             callback()
+
         return wrapper
 
     def stop(self):
@@ -415,7 +428,7 @@ def _pid(pidfile):
 
     # Check for a pidfile
     try:
-        with open(pidfile, 'r') as pf_handle:
+        with open(pidfile, "r") as pf_handle:
             result = int(pf_handle.read().strip())
 
     except IOError:

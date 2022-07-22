@@ -22,11 +22,22 @@ from switchmap.db.models import (
     Vlan as VlanModel,
 )
 
-_NUMERIC = [
-    'eq', 'ne', 'is_null', 'in', 'not_in', 'lt', 'lte', 'gt', 'gte', 'range']
+_NUMERIC = ["eq", "ne", "is_null", "in", "not_in", "lt", "lte", "gt", "gte", "range"]
 _STRING = [
-    'eq', 'ne', 'is_null', 'in', 'not_in', 'lt', 'lte', 'gt', 'gte', 'range',
-    'like', 'ilike', 'contains']
+    "eq",
+    "ne",
+    "is_null",
+    "in",
+    "not_in",
+    "lt",
+    "lte",
+    "gt",
+    "gte",
+    "range",
+    "like",
+    "ilike",
+    "contains",
+]
 
 ###############################################################################
 # Define Filters
@@ -41,17 +52,17 @@ class DeviceFilter(FilterSet):
 
         model = DeviceModel
         fields = {
-            'idx': _NUMERIC,
-            'idx_zone': _NUMERIC,
-            'sys_name': _STRING,
-            'hostname': _STRING,
-            'sys_description': _STRING,
-            'sys_objectid': _STRING,
-            'sys_uptime': _NUMERIC,
-            'last_polled': _NUMERIC,
-            'enabled': _NUMERIC,
-            'ts_modified': _NUMERIC,
-            'ts_created': _NUMERIC,
+            "idx": _NUMERIC,
+            "idx_zone": _NUMERIC,
+            "sys_name": _STRING,
+            "hostname": _STRING,
+            "sys_description": _STRING,
+            "sys_objectid": _STRING,
+            "sys_uptime": _NUMERIC,
+            "last_polled": _NUMERIC,
+            "enabled": _NUMERIC,
+            "ts_modified": _NUMERIC,
+            "ts_created": _NUMERIC,
         }
 
 
@@ -63,21 +74,21 @@ class ZoneFilter(FilterSet):
 
         model = ZoneModel
         fields = {
-            'idx': _NUMERIC,
-            'name': _STRING,
-            'company_name': _STRING,
-            'address_0': _STRING,
-            'address_1': _STRING,
-            'address_2': _STRING,
-            'city': _STRING,
-            'state': _STRING,
-            'country': _STRING,
-            'postal_code': _STRING,
-            'phone': _STRING,
-            'notes': _STRING,
-            'enabled': _NUMERIC,
-            'ts_modified': _NUMERIC,
-            'ts_created': _NUMERIC,
+            "idx": _NUMERIC,
+            "name": _STRING,
+            "company_name": _STRING,
+            "address_0": _STRING,
+            "address_1": _STRING,
+            "address_2": _STRING,
+            "city": _STRING,
+            "state": _STRING,
+            "country": _STRING,
+            "postal_code": _STRING,
+            "phone": _STRING,
+            "notes": _STRING,
+            "enabled": _NUMERIC,
+            "ts_modified": _NUMERIC,
+            "ts_created": _NUMERIC,
         }
 
 
@@ -89,29 +100,29 @@ class L1InterfaceFilter(FilterSet):
 
         model = L1InterfaceModel
         fields = {
-            'idx': _NUMERIC,
-            'idx_device': _NUMERIC,
-            'ifindex': _NUMERIC,
-            'duplex': _NUMERIC,
-            'ethernet': _NUMERIC,
-            'nativevlan': _NUMERIC,
-            'trunk': _NUMERIC,
-            'ifspeed': _NUMERIC,
-            'ifalias': _STRING,
-            'ifdescr': _STRING,
-            'ifadminstatus': _NUMERIC,
-            'ifoperstatus': _NUMERIC,
-            'ts_idle': _NUMERIC,
-            'cdpcachedeviceid': _STRING,
-            'cdpcachedeviceport': _STRING,
-            'cdpcacheplatform': _STRING,
-            'lldpremportdesc': _STRING,
-            'lldpremsyscapenabled': _STRING,
-            'lldpremsysdesc': _STRING,
-            'lldpremsysname': _STRING,
-            'enabled': _NUMERIC,
-            'ts_modified': _NUMERIC,
-            'ts_created': _NUMERIC,
+            "idx": _NUMERIC,
+            "idx_device": _NUMERIC,
+            "ifindex": _NUMERIC,
+            "duplex": _NUMERIC,
+            "ethernet": _NUMERIC,
+            "nativevlan": _NUMERIC,
+            "trunk": _NUMERIC,
+            "ifspeed": _NUMERIC,
+            "ifalias": _STRING,
+            "ifdescr": _STRING,
+            "ifadminstatus": _NUMERIC,
+            "ifoperstatus": _NUMERIC,
+            "ts_idle": _NUMERIC,
+            "cdpcachedeviceid": _STRING,
+            "cdpcachedeviceport": _STRING,
+            "cdpcacheplatform": _STRING,
+            "lldpremportdesc": _STRING,
+            "lldpremsyscapenabled": _STRING,
+            "lldpremsysdesc": _STRING,
+            "lldpremsysname": _STRING,
+            "enabled": _NUMERIC,
+            "ts_modified": _NUMERIC,
+            "ts_created": _NUMERIC,
         }
 
 
@@ -123,16 +134,16 @@ class MacIpFilter(FilterSet):
 
         model = MacIpModel
         fields = {
-            'idx': _NUMERIC,
-            'idx_device': _NUMERIC,
-            'idx_oui': _NUMERIC,
-            'ip_': _STRING,
-            'mac': _STRING,
-            'hostname': _STRING,
-            'version': _NUMERIC,
-            'enabled': _NUMERIC,
-            'ts_modified': _NUMERIC,
-            'ts_created': _NUMERIC,
+            "idx": _NUMERIC,
+            "idx_device": _NUMERIC,
+            "idx_oui": _NUMERIC,
+            "ip_": _STRING,
+            "mac": _STRING,
+            "hostname": _STRING,
+            "version": _NUMERIC,
+            "enabled": _NUMERIC,
+            "ts_modified": _NUMERIC,
+            "ts_created": _NUMERIC,
         }
 
 
@@ -144,12 +155,12 @@ class OuiFilter(FilterSet):
 
         model = OuiModel
         fields = {
-            'idx': _NUMERIC,
-            'oui': _STRING,
-            'manufacturer': _STRING,
-            'enabled': _NUMERIC,
-            'ts_modified': _NUMERIC,
-            'ts_created': _NUMERIC,
+            "idx": _NUMERIC,
+            "oui": _STRING,
+            "manufacturer": _STRING,
+            "enabled": _NUMERIC,
+            "ts_modified": _NUMERIC,
+            "ts_created": _NUMERIC,
         }
 
 
@@ -161,14 +172,14 @@ class TrunkFilter(FilterSet):
 
         model = TrunkModel
         fields = {
-            'idx': _NUMERIC,
-            'idx_device': _NUMERIC,
-            'ifindex': _NUMERIC,
-            'idx_l1interface': _NUMERIC,
-            'idx_vlan': _NUMERIC,
-            'enabled': _NUMERIC,
-            'ts_modified': _NUMERIC,
-            'ts_created': _NUMERIC,
+            "idx": _NUMERIC,
+            "idx_device": _NUMERIC,
+            "ifindex": _NUMERIC,
+            "idx_l1interface": _NUMERIC,
+            "idx_vlan": _NUMERIC,
+            "enabled": _NUMERIC,
+            "ts_modified": _NUMERIC,
+            "ts_created": _NUMERIC,
         }
 
 
@@ -180,12 +191,12 @@ class VlanFilter(FilterSet):
 
         model = VlanModel
         fields = {
-            'idx': _NUMERIC,
-            'idx_device': _NUMERIC,
-            'vlan': _NUMERIC,
-            'name': _STRING,
-            'state': _NUMERIC,
-            'enabled': _NUMERIC,
-            'ts_modified': _NUMERIC,
-            'ts_created': _NUMERIC,
+            "idx": _NUMERIC,
+            "idx_device": _NUMERIC,
+            "vlan": _NUMERIC,
+            "name": _STRING,
+            "state": _NUMERIC,
+            "enabled": _NUMERIC,
+            "ts_modified": _NUMERIC,
+            "ts_created": _NUMERIC,
         }

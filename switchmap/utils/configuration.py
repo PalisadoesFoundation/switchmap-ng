@@ -40,10 +40,10 @@ class Config(object):
 
         # Update the configuration directory
         # 'SWITCHMAP_CONFIGDIR' is used for unittesting
-        if 'SWITCHMAP_CONFIGDIR' in os.environ:
-            self.config_directory = os.environ['SWITCHMAP_CONFIGDIR']
+        if "SWITCHMAP_CONFIGDIR" in os.environ:
+            self.config_directory = os.environ["SWITCHMAP_CONFIGDIR"]
         else:
-            self.config_directory = '{}/etc'.format(self.root_directory)
+            self.config_directory = "{}/etc".format(self.root_directory)
         directories = [self.config_directory]
 
         # Return
@@ -88,8 +88,8 @@ class Config(object):
 
         """
         # Get result
-        key = 'main'
-        sub_key = 'username'
+        key = "main"
+        sub_key = "username"
         result = _key_sub_key(key, sub_key, self.config_dict, die=False)
 
         # Default to None
@@ -108,8 +108,8 @@ class Config(object):
 
         """
         # Initialize key variables
-        key = 'main'
-        sub_key = 'cache_directory'
+        key = "main"
+        sub_key = "cache_directory"
 
         # Process configuration
         value = _key_sub_key(key, sub_key, self.config_dict)
@@ -117,8 +117,8 @@ class Config(object):
         # Check if value exists
         if os.path.isdir(value) is False:
             log_message = (
-                'cache_directory: "{}" '
-                'in configuration doesn\'t exist!'.format(value))
+                'cache_directory: "{}" ' "in configuration doesn't exist!".format(value)
+            )
             log.log2die(1011, log_message)
 
         # Return
@@ -135,7 +135,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/topology'.format(self.cache_directory())
+        value = "{}/topology".format(self.cache_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -153,7 +153,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/idle'.format(self.cache_directory())
+        value = "{}/idle".format(self.cache_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -171,7 +171,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/search'.format(self.cache_directory())
+        value = "{}/search".format(self.cache_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -189,7 +189,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/temp'.format(self.topology_directory())
+        value = "{}/temp".format(self.topology_directory())
         if not os.path.exists(value):
             os.makedirs(value, mode=0o750)
 
@@ -207,7 +207,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/{}.yaml'.format(self.topology_directory(), host)
+        value = "{}/{}.yaml".format(self.topology_directory(), host)
 
         # Return
         return value
@@ -223,7 +223,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/{}.yaml'.format(self.temp_topology_directory(), host)
+        value = "{}/{}.yaml".format(self.temp_topology_directory(), host)
 
         # Return
         return value
@@ -239,7 +239,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/arp.yaml'.format(self.search_directory())
+        value = "{}/arp.yaml".format(self.search_directory())
 
         # Return
         return value
@@ -255,7 +255,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/rarp.yaml'.format(self.search_directory())
+        value = "{}/rarp.yaml".format(self.search_directory())
 
         # Return
         return value
@@ -271,7 +271,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/ifindex.yaml'.format(self.search_directory())
+        value = "{}/ifindex.yaml".format(self.search_directory())
 
         # Return
         return value
@@ -287,7 +287,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/ifalias.yaml'.format(self.search_directory())
+        value = "{}/ifalias.yaml".format(self.search_directory())
 
         # Return
         return value
@@ -303,7 +303,7 @@ class Config(object):
 
         """
         # Get parameter
-        value = '{}/hosts.yaml'.format(self.search_directory())
+        value = "{}/hosts.yaml".format(self.search_directory())
 
         # Return
         return value
@@ -319,13 +319,13 @@ class Config(object):
 
         """
         # Get result
-        key = 'main'
-        sub_key = 'listen_address'
+        key = "main"
+        sub_key = "listen_address"
         result = _key_sub_key(key, sub_key, self.config_dict, die=False)
 
         # Default to 0.0.0.0
         if result is None:
-            result = '0.0.0.0'
+            result = "0.0.0.0"
         return result
 
     def bind_port(self):
@@ -339,8 +339,8 @@ class Config(object):
 
         """
         # Get result
-        key = 'main'
-        sub_key = 'bind_port'
+        key = "main"
+        sub_key = "bind_port"
         result = _key_sub_key(key, sub_key, self.config_dict, die=False)
 
         # Default to 7000
@@ -359,8 +359,8 @@ class Config(object):
 
         """
         # Get result
-        key = 'main'
-        sub_key = 'polling_interval'
+        key = "main"
+        sub_key = "polling_interval"
         result = _key_sub_key(key, sub_key, self.config_dict, die=False)
 
         # Default to 86400
@@ -379,10 +379,9 @@ class Config(object):
 
         """
         # Get result
-        key = 'main'
-        sub_key = 'agent_threads'
-        configured_value = _key_sub_key(
-            key, sub_key, self.config_dict, die=False)
+        key = "main"
+        sub_key = "agent_threads"
+        configured_value = _key_sub_key(key, sub_key, self.config_dict, die=False)
 
         # Default to 20
         if bool(configured_value) is False:
@@ -416,8 +415,8 @@ class Config(object):
         result = []
 
         # Get config
-        key = 'main'
-        sub_key = 'hostnames'
+        key = "main"
+        sub_key = "hostnames"
         agent_config = _key_sub_key(key, sub_key, self.config_dict, die=False)
 
         # Get result
@@ -439,8 +438,8 @@ class Config(object):
 
         """
         # Initialize key variables
-        key = 'main'
-        sub_key = 'log_directory'
+        key = "main"
+        sub_key = "log_directory"
 
         # Process configuration
         value = _key_sub_key(key, sub_key, self.config_dict)
@@ -448,8 +447,8 @@ class Config(object):
         # Check if value exists
         if os.path.isdir(value) is False:
             log_message = (
-                'log_directory: "{}" '
-                'in configuration doesn\'t exist!').format(value)
+                'log_directory: "{}" ' "in configuration doesn't exist!"
+            ).format(value)
             log.log2die_safe(1030, log_message)
 
         # Return
@@ -466,7 +465,7 @@ class Config(object):
 
         """
         # Get new result
-        result = '{}/switchmap-ng-api.log'.format(self.log_directory())
+        result = "{}/switchmap-ng-api.log".format(self.log_directory())
 
         # Return
         return result
@@ -482,9 +481,9 @@ class Config(object):
 
         """
         # Get new result
-        result = (
-            '{}/switchmap/metadata/mac_address_file.txt'
-            ''.format(self.root_directory))
+        result = "{}/switchmap/metadata/mac_address_file.txt" "".format(
+            self.root_directory
+        )
 
         # Return
         return result
@@ -500,7 +499,7 @@ class Config(object):
 
         """
         # Get new result
-        result = '{}/switchmap-ng.log'.format(self.log_directory())
+        result = "{}/switchmap-ng.log".format(self.log_directory())
 
         # Return
         return result
@@ -516,9 +515,9 @@ class Config(object):
 
         """
         # Get result
-        sub_key = 'log_level'
+        sub_key = "log_level"
         result = None
-        key = 'main'
+        key = "main"
 
         # Get new result
         result = _key_sub_key(key, sub_key, self.config_dict)
@@ -557,10 +556,10 @@ class ConfigSNMP(object):
         self.root_directory = general.root_directory()
         # Update the configuration directory
         # 'SWITCHMAP_CONFIGDIR' is used for unittesting
-        if 'SWITCHMAP_CONFIGDIR' in os.environ:
-            config_directory = os.environ['SWITCHMAP_CONFIGDIR']
+        if "SWITCHMAP_CONFIGDIR" in os.environ:
+            config_directory = os.environ["SWITCHMAP_CONFIGDIR"]
         else:
-            config_directory = '{}/etc'.format(self.root_directory)
+            config_directory = "{}/etc".format(self.root_directory)
         directories = [config_directory]
 
         # Return
@@ -578,28 +577,28 @@ class ConfigSNMP(object):
         """
         # Initialize key variables
         seed_dict = {}
-        seed_dict['snmp_version'] = 2
-        seed_dict['snmp_secname'] = None
-        seed_dict['snmp_community'] = None
-        seed_dict['snmp_authprotocol'] = None
-        seed_dict['snmp_authpassword'] = None
-        seed_dict['snmp_privprotocol'] = None
-        seed_dict['snmp_privpassword'] = None
-        seed_dict['snmp_port'] = 161
-        seed_dict['group_name'] = None
-        seed_dict['enabled'] = True
+        seed_dict["snmp_version"] = 2
+        seed_dict["snmp_secname"] = None
+        seed_dict["snmp_community"] = None
+        seed_dict["snmp_authprotocol"] = None
+        seed_dict["snmp_authpassword"] = None
+        seed_dict["snmp_privprotocol"] = None
+        seed_dict["snmp_privpassword"] = None
+        seed_dict["snmp_port"] = 161
+        seed_dict["group_name"] = None
+        seed_dict["enabled"] = True
 
         # Read configuration's SNMP information. Return 'None' if none found
-        if 'snmp_groups' in self.config_dict:
-            if isinstance(self.config_dict['snmp_groups'], list) is True:
-                if len(self.config_dict['snmp_groups']) < 1:
+        if "snmp_groups" in self.config_dict:
+            if isinstance(self.config_dict["snmp_groups"], list) is True:
+                if len(self.config_dict["snmp_groups"]) < 1:
                     return None
             else:
                 return None
 
         # Start populating information
         snmp_data = []
-        for read_dict in self.config_dict['snmp_groups']:
+        for read_dict in self.config_dict["snmp_groups"]:
             # Next entry if this is not a dict
             if isinstance(read_dict, dict) is False:
                 continue
@@ -613,8 +612,8 @@ class ConfigSNMP(object):
                     new_dict[key] = seed_dict[key]
 
             # Convert relevant strings to integers
-            new_dict['snmp_version'] = int(new_dict['snmp_version'])
-            new_dict['snmp_port'] = int(new_dict['snmp_port'])
+            new_dict["snmp_version"] = int(new_dict["snmp_version"])
+            new_dict["snmp_port"] = int(new_dict["snmp_port"])
 
             # Append data to list
             snmp_data.append(new_dict)
@@ -650,23 +649,24 @@ def _agent_config(agent_name, config_dict):
 
     """
     # Get result
-    key = 'agents'
+    key = "agents"
     result = None
 
     # Get new result
     if key in config_dict:
         configurations = config_dict[key]
         for configuration in configurations:
-            if 'agent_name' in configuration:
-                if configuration['agent_name'] == agent_name:
+            if "agent_name" in configuration:
+                if configuration["agent_name"] == agent_name:
                     result = configuration
                     break
 
     # Error if not configured
     if result is None:
         log_message = (
-            'Agent {} not defined in configuration in '
-            'agents:{} section'.format(key, key))
+            "Agent {} not defined in configuration in "
+            "agents:{} section".format(key, key)
+        )
         log.log2die(1094, log_message)
 
     # Return
@@ -692,15 +692,13 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     # Verify config_dict is indeed a dict.
     # Die safely as log_directory is not defined
     if isinstance(config_dict, dict) is False:
-        log.log2die_safe(1021, 'Invalid configuration file. YAML not found')
+        log.log2die_safe(1021, "Invalid configuration file. YAML not found")
 
     # Get new result
     if key in config_dict:
         # Make sure we don't have a None value
         if config_dict[key] is None:
-            log_message = (
-                'Configuration value {}: is blank. Please fix.'
-                ''.format(key))
+            log_message = "Configuration value {}: is blank. Please fix." "".format(key)
             log.log2die_safe(1037, log_message)
 
         # Get value we need
@@ -709,8 +707,7 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
 
     # Error if not configured
     if result is None and die is True:
-        log_message = (
-            '{}:{} not defined in configuration'.format(key, sub_key))
+        log_message = "{}:{} not defined in configuration".format(key, sub_key)
         log.log2die_safe(1016, log_message)
 
     # Return

@@ -52,9 +52,9 @@ class IfQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (ifDescr)
-        test_oid = '.1.3.6.1.2.1.2.2.1.1'
+        test_oid = ".1.3.6.1.2.1.2.2.1.1"
 
-        super().__init__(snmp_object, test_oid, tags=['system', 'layer1'])
+        super().__init__(snmp_object, test_oid, tags=["system", "layer1"])
 
     def system(self):
         """Get system data from device.
@@ -70,7 +70,7 @@ class IfQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Return
-        final['IF-MIB']['ifStackStatus'] = self.ifstackstatus()
+        final["IF-MIB"]["ifStackStatus"] = self.ifstackstatus()
         return final
 
     def layer1(self):
@@ -87,52 +87,52 @@ class IfQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface ifDescr data
-        _get_data('ifDescr', self.ifdescr, final)
+        _get_data("ifDescr", self.ifdescr, final)
 
         # Get interface ifAlias data
-        _get_data('ifAlias', self.ifalias, final)
+        _get_data("ifAlias", self.ifalias, final)
 
         # Get interface ifSpeed data
-        _get_data('ifSpeed', self.ifspeed, final)
+        _get_data("ifSpeed", self.ifspeed, final)
 
         # Get interface ifOperStatus data
-        _get_data('ifOperStatus', self.ifoperstatus, final)
+        _get_data("ifOperStatus", self.ifoperstatus, final)
 
         # Get interface ifAdminStatus data
-        _get_data('ifAdminStatus', self.ifadminstatus, final)
+        _get_data("ifAdminStatus", self.ifadminstatus, final)
 
         # Get interface ifType data
-        _get_data('ifType', self.iftype, final)
+        _get_data("ifType", self.iftype, final)
 
         # Get interface ifName data
-        _get_data('ifName', self.ifname, final)
+        _get_data("ifName", self.ifname, final)
 
         # Get interface ifIndex data
-        _get_data('ifIndex', self.ifindex, final)
+        _get_data("ifIndex", self.ifindex, final)
 
         # Get interface ifPhysAddress data
-        _get_data('ifPhysAddress', self.ifphysaddress, final)
+        _get_data("ifPhysAddress", self.ifphysaddress, final)
 
         # Get interface ifInOctets data
-        _get_data('ifInOctets', self.ifinoctets, final)
+        _get_data("ifInOctets", self.ifinoctets, final)
 
         # Get interface ifOutOctets data
-        _get_data('ifOutOctets', self.ifoutoctets, final)
+        _get_data("ifOutOctets", self.ifoutoctets, final)
 
         # Get interface ifInBroadcastPkts data
-        _get_data('ifInBroadcastPkts', self.ifinbroadcastpkts, final)
+        _get_data("ifInBroadcastPkts", self.ifinbroadcastpkts, final)
 
         # Get interface ifOutBroadcastPkts data
-        _get_data('ifOutBroadcastPkts', self.ifoutbroadcastpkts, final)
+        _get_data("ifOutBroadcastPkts", self.ifoutbroadcastpkts, final)
 
         # Get interface ifInMulticastPkts data
-        _get_data('ifInMulticastPkts', self.ifinmulticastpkts, final)
+        _get_data("ifInMulticastPkts", self.ifinmulticastpkts, final)
 
         # Get interface ifOutMulticastPkts data
-        _get_data('ifOutMulticastPkts', self.ifoutmulticastpkts, final)
+        _get_data("ifOutMulticastPkts", self.ifoutmulticastpkts, final)
 
         # Get interface ifLastChange data
-        _get_data('ifLastChange', self.iflastchange, final)
+        _get_data("ifLastChange", self.iflastchange, final)
 
         # Return
         return final
@@ -151,7 +151,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.9'
+        oid = ".1.3.6.1.2.1.2.2.1.9"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -181,7 +181,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.10'
+        oid = ".1.3.6.1.2.1.2.2.1.10"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -214,7 +214,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.16'
+        oid = ".1.3.6.1.2.1.2.2.1.16"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -247,7 +247,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.2'
+        oid = ".1.3.6.1.2.1.2.2.1.2"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -260,7 +260,7 @@ class IfQuery(Query):
             results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8')
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
@@ -279,7 +279,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.3'
+        oid = ".1.3.6.1.2.1.2.2.1.3"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -308,7 +308,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.5'
+        oid = ".1.3.6.1.2.1.2.2.1.5"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -337,7 +337,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.7'
+        oid = ".1.3.6.1.2.1.2.2.1.7"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -366,7 +366,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.8'
+        oid = ".1.3.6.1.2.1.2.2.1.8"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -395,7 +395,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.18'
+        oid = ".1.3.6.1.2.1.31.1.1.1.18"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -405,7 +405,7 @@ class IfQuery(Query):
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8')
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
@@ -424,7 +424,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.1'
+        oid = ".1.3.6.1.2.1.31.1.1.1.1"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -434,7 +434,7 @@ class IfQuery(Query):
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8')
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
@@ -453,7 +453,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.1'
+        oid = ".1.3.6.1.2.1.2.2.1.1"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -482,7 +482,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.2.2.1.6'
+        oid = ".1.3.6.1.2.1.2.2.1.6"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -511,7 +511,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.2'
+        oid = ".1.3.6.1.2.1.31.1.1.1.2"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -540,7 +540,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.4'
+        oid = ".1.3.6.1.2.1.31.1.1.1.4"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -569,7 +569,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.3'
+        oid = ".1.3.6.1.2.1.31.1.1.1.3"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -598,7 +598,7 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.1.1.5'
+        oid = ".1.3.6.1.2.1.31.1.1.1.5"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -674,7 +674,7 @@ class IfQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Process OID
-        oid = '.1.3.6.1.2.1.31.1.2.1.3'
+        oid = ".1.3.6.1.2.1.31.1.2.1.3"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -684,7 +684,7 @@ class IfQuery(Query):
         results = self.snmp_object.walk(oid, normalized=False)
         for key in results.keys():
             # Get higher and lower layer index values
-            nodes = key.split('.')
+            nodes = key.split(".")
             ifstackhigherlayer = int(nodes[-2])
             ifstacklowerlayer = int(nodes[-1])
 

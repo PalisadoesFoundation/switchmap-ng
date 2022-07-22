@@ -50,9 +50,9 @@ class CiscoVlanIftableRelationshipQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (cviRoutedVlanIfIndex)
-        test_oid = '.1.3.6.1.4.1.9.9.128.1.1.1.1.3'
+        test_oid = ".1.3.6.1.4.1.9.9.128.1.1.1.1.3"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -70,7 +70,7 @@ class CiscoVlanIftableRelationshipQuery(Query):
         # Get interface cviRoutedVlanIfIndex data
         values = self.cviroutedvlanifindex()
         for key, value in values.items():
-            final[key]['cviRoutedVlanIfIndex'] = value
+            final[key]["cviRoutedVlanIfIndex"] = value
 
         # Return
         return final
@@ -91,7 +91,7 @@ class CiscoVlanIftableRelationshipQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.4.1.9.9.128.1.1.1.1.3'
+        oid = ".1.3.6.1.4.1.9.9.128.1.1.1.1.3"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -100,7 +100,7 @@ class CiscoVlanIftableRelationshipQuery(Query):
         # Process data
         results = self.snmp_object.swalk(oid, normalized=False)
         for oid, ifindex in results.items():
-            nodes = oid.split('.')
+            nodes = oid.split(".")
             vlan = int(nodes[-2])
             data_dict[ifindex] = [vlan]
 

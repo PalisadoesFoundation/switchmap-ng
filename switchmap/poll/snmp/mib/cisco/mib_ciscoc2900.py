@@ -50,9 +50,9 @@ class CiscoC2900Query(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (c2900PortLinkbeatStatus)
-        test_oid = '.1.3.6.1.4.1.9.9.87.1.4.1.1.18'
+        test_oid = ".1.3.6.1.4.1.9.9.87.1.4.1.1.18"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -70,12 +70,12 @@ class CiscoC2900Query(Query):
         # Get interface c2900PortDuplexStatus data
         values = self.c2900portduplexstatus()
         for key, value in values.items():
-            final[key]['c2900PortDuplexStatus'] = value
+            final[key]["c2900PortDuplexStatus"] = value
 
         # Get interface c2900PortLinkbeatStatus data
         values = self.c2900portlinkbeatstatus()
         for key, value in values.items():
-            final[key]['c2900PortLinkbeatStatus'] = value
+            final[key]["c2900PortLinkbeatStatus"] = value
 
         # Return
         return final
@@ -94,7 +94,7 @@ class CiscoC2900Query(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.9.9.87.1.4.1.1.18'
+        oid = ".1.3.6.1.4.1.9.9.87.1.4.1.1.18"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -121,7 +121,7 @@ class CiscoC2900Query(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.9.9.87.1.4.1.1.32'
+        oid = ".1.3.6.1.4.1.9.9.87.1.4.1.1.32"
 
         # Return OID value. Used for unittests
         if oidonly is True:

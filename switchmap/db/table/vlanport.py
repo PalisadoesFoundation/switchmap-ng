@@ -50,10 +50,7 @@ def exists(idx_l1interface, idx_vlan):
 
     # Get row from dataase
     statement = select(VlanPort).where(
-        and_(
-            VlanPort.idx_vlan == idx_vlan,
-            VlanPort.idx_l1interface == idx_l1interface
-        )
+        and_(VlanPort.idx_vlan == idx_vlan, VlanPort.idx_l1interface == idx_l1interface)
     )
     rows = db.db_select_row(1190, statement)
 
@@ -111,7 +108,7 @@ def insert_row(rows):
             VlanPort(
                 idx_l1interface=row.idx_l1interface,
                 idx_vlan=row.idx_vlan,
-                enabled=row.enabled
+                enabled=row.enabled,
             )
         )
 
@@ -132,12 +129,15 @@ def update_row(idx, row):
 
     """
     # Update
-    statement = update(VlanPort).where(
-        VlanPort.idx_vlanport == idx).values(
+    statement = (
+        update(VlanPort)
+        .where(VlanPort.idx_vlanport == idx)
+        .values(
             {
-                'idx_l1interface': row.idx_l1interface,
-                'idx_vlan': row.idx_vlan,
-                'enabled': row.enabled
+                "idx_l1interface": row.idx_l1interface,
+                "idx_vlan": row.idx_vlan,
+                "enabled": row.enabled,
             }
         )
+    )
     db.db_update(1187, statement)

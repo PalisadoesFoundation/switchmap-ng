@@ -51,7 +51,7 @@ class IpQuery(Query):
         # Define query object
         self.snmp_object = snmp_object
 
-        super().__init__(snmp_object, '', tags=['layer3'])
+        super().__init__(snmp_object, "", tags=["layer3"])
 
     def supported(self):
         """Return device's support for the MIB.
@@ -85,12 +85,12 @@ class IpQuery(Query):
         # Get interface ipNetToMediaTable data
         values = self.ipnettomediatable()
         for key, value in values.items():
-            final['ipNetToMediaTable'][key] = value
+            final["ipNetToMediaTable"][key] = value
 
         # Get interface ipNetToPhysicalPhysAddress data
         values = self.ipnettophysicalphysaddress()
         for key, value in values.items():
-            final['ipNetToPhysicalPhysAddress'][key] = value
+            final["ipNetToPhysicalPhysAddress"][key] = value
 
         # Return
         return final
@@ -109,7 +109,7 @@ class IpQuery(Query):
         data_dict = {}
 
         # Process
-        oid = '.1.3.6.1.2.1.4.22.1.2'
+        oid = ".1.3.6.1.2.1.4.22.1.2"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -119,9 +119,9 @@ class IpQuery(Query):
         results = self.snmp_object.walk(oid, normalized=False)
         for key, value in results.items():
             # Determine IP address
-            nodes = key.split('.')
+            nodes = key.split(".")
             octets = nodes[-4:]
-            ipaddress = '.'.join(octets)
+            ipaddress = ".".join(octets)
 
             # Determine MAC address
             macaddress = general.octetstr_2_string(value)
@@ -144,7 +144,7 @@ class IpQuery(Query):
         """
         # Initialize key variables
         data_dict = {}
-        oid = '.1.3.6.1.2.1.4.35.1.4'
+        oid = ".1.3.6.1.2.1.4.35.1.4"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -157,10 +157,10 @@ class IpQuery(Query):
             macaddress = general.octetstr_2_string(mac_value)
 
             # Convert IP address from decimal to hex
-            nodes = key.split('.')
+            nodes = key.split(".")
 
             # We want to remove IPv4 addresses from results
-            if len(nodes) < 16 + len(oid.split('.')):
+            if len(nodes) < 16 + len(oid.split(".")):
                 continue
 
             # Process IPv6
@@ -170,17 +170,16 @@ class IpQuery(Query):
             for value in nodes_decimal:
                 # Convert deximal value to hex,
                 # then zero fill to ensure hex is two characters long
-                hexbyte = '{}'.format(hex(int(value)))[2:]
+                hexbyte = "{}".format(hex(int(value)))[2:]
                 nodes_hex.append(hexbyte.zfill(2))
 
             # Convert to list of four byte hex numbers
             for pointer in range(0, len(nodes_hex) - 1, 2):
-                fixed_value = (
-                    '{}{}'.format(nodes_hex[pointer], nodes_hex[pointer + 1]))
+                fixed_value = "{}{}".format(nodes_hex[pointer], nodes_hex[pointer + 1])
                 nodes_final.append(fixed_value)
 
             # Create IPv6 string
-            ipv6 = ':'.join(nodes_final)
+            ipv6 = ":".join(nodes_final)
 
             # Create ARP entry
             data_dict[ipv6] = macaddress

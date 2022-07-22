@@ -58,11 +58,8 @@ class Device(object):
         port_data = self.translation.ethernet_data()
 
         data = Port(
-            port_data,
-            self.hostname,
-            self.config,
-            self.lookup,
-            ifindexes=self.ifindexes).data()
+            port_data, self.hostname, self.config, self.lookup, ifindexes=self.ifindexes
+        ).data()
 
         # Populate the table
         table = PortTable(data)
@@ -101,23 +98,23 @@ class PortTable(Table):
     """Declaration of the columns in the Ports table."""
 
     # Initialize class variables
-    port = Col('Port')
-    vlan = Col('VLAN')
-    state = Col('State')
-    days_inactive = Col('Days Inactive')
-    speed = Col('Speed')
-    duplex = Col('Duplex')
-    label = Col('Port Label')
-    trunk = _RawCol('Trunk')
-    cdp = _RawCol('CDP')
-    lldp = _RawCol('LLDP')
-    mac_address = _RawCol('Mac Address')
-    manufacturer = _RawCol('Manufacturer')
-    ip_address = _RawCol('IP Address')
-    hostname = _RawCol('DNS Name')
+    port = Col("Port")
+    vlan = Col("VLAN")
+    state = Col("State")
+    days_inactive = Col("Days Inactive")
+    speed = Col("Speed")
+    duplex = Col("Duplex")
+    label = Col("Port Label")
+    trunk = _RawCol("Trunk")
+    cdp = _RawCol("CDP")
+    lldp = _RawCol("LLDP")
+    mac_address = _RawCol("Mac Address")
+    manufacturer = _RawCol("Manufacturer")
+    ip_address = _RawCol("IP Address")
+    hostname = _RawCol("DNS Name")
 
     # Define the CSS class to use for the header row
-    classes = ['table']
+    classes = ["table"]
 
     def get_tr_attrs(self, item):
         """Apply CSS class attributes to regular table row.
@@ -133,13 +130,13 @@ class PortTable(Table):
         if item.enabled() is True:
             if item.active() is True:
                 # Port with link
-                return {'class': 'success'}
+                return {"class": "success"}
             else:
                 # Port without link
-                return {'class': 'info'}
+                return {"class": "info"}
         else:
             # Disabled port
-            return {'class': 'warning'}
+            return {"class": "warning"}
 
 
 class PortRow(object):
@@ -169,18 +166,29 @@ class PortRow(object):
         """
         # Initialize key variables
         [
-            self.port, self.vlan, self.state, self.days_inactive, self.speed,
-            self.duplex, self.label, self.trunk, self.cdp, self.lldp,
-            self.mac_address, self.manufacturer, self.ip_address,
-            self.hostname] = row
+            self.port,
+            self.vlan,
+            self.state,
+            self.days_inactive,
+            self.speed,
+            self.duplex,
+            self.label,
+            self.trunk,
+            self.cdp,
+            self.lldp,
+            self.mac_address,
+            self.manufacturer,
+            self.ip_address,
+            self.hostname,
+        ] = row
 
     def active(self):
         """Active ports."""
-        return bool(self.state == 'Active')
+        return bool(self.state == "Active")
 
     def enabled(self):
         """Enabled ports."""
-        return bool(self.state != 'Disabled')
+        return bool(self.state != "Disabled")
 
 
 class Port(object):
@@ -226,9 +234,7 @@ class Port(object):
         config = self.config
 
         # Get idle data for device
-        idle_filepath = (
-            '{}/{}.yaml'.format(config.idle_directory(), self.hostname)
-            )
+        idle_filepath = "{}/{}.yaml".format(config.idle_directory(), self.hostname)
         if os.path.isfile(idle_filepath) is True:
             idle_history = general.read_yaml_file(idle_filepath)
 
@@ -236,12 +242,12 @@ class Port(object):
         for ifindex, port_data in sorted(self.device_data.items()):
             # Filter results if required
             if bool(self.ifindexes) is True:
-                if int(port_data['ifIndex']) not in self.ifindexes:
+                if int(port_data["ifIndex"]) not in self.ifindexes:
                     continue
 
             # Assign values for Ethernet ports only
-            name = port_data['ifName']
-            label = port_data['ifAlias']
+            name = port_data["ifName"]
+            label = port_data["ifAlias"]
 
             # Get port data
             port = _Port(port_data)
@@ -257,22 +263,38 @@ class Port(object):
 
             # Get HTML related to the MAC address
             html = self.lookup.html(mac_addresses)
-            manufacturer = html['manufacturer']
-            ip_address = html['ip_address']
-            hostname = html['hostname']
-            mac_address = html['mac_address']
+            manufacturer = html["manufacturer"]
+            ip_address = html["ip_address"]
+            hostname = html["hostname"]
+            mac_address = html["mac_address"]
 
             # Adjust non-trunk output depending on packet activity
             if port.is_trunk() is False:
-                if bool(html['mac_address']) is False:
-                    if state == 'Active':
-                        mac_address = 'Active port. No recent packets.'
+                if bool(html["mac_address"]) is False:
+                    if state == "Active":
+                        mac_address = "Active port. No recent packets."
 
             # Append row of data
-            rows.append(PortRow([
-                name, vlan, state, inactive, speed, duplex,
-                label, trunk, cdp, lldp, mac_address, manufacturer,
-                ip_address, hostname]))
+            rows.append(
+                PortRow(
+                    [
+                        name,
+                        vlan,
+                        state,
+                        inactive,
+                        speed,
+                        duplex,
+                        label,
+                        trunk,
+                        cdp,
+                        lldp,
+                        mac_address,
+                        manufacturer,
+                        ip_address,
+                        hostname,
+                    ]
+                )
+            )
 
         # Return
         return rows
@@ -289,13 +311,13 @@ class Port(object):
 
         """
         # Initialize key variables
-        inactive = 'TBD'
+        inactive = "TBD"
         s_ifindex = str(ifindex)
 
         # Return
         if s_ifindex in idle_history:
             if bool(idle_history[s_ifindex]) is False:
-                inactive = ''
+                inactive = ""
             else:
                 seconds = int(time.time()) - idle_history[s_ifindex]
                 inactive = int(round(seconds / 86400, 0))
@@ -335,8 +357,8 @@ class _Port(object):
         port_data = self.port_data
 
         # Get trunk string
-        if 'l1_trunk' in port_data:
-            if bool(port_data['l1_trunk']) is True:
+        if "l1_trunk" in port_data:
+            if bool(port_data["l1_trunk"]) is True:
                 result = True
 
         # Return
@@ -353,28 +375,26 @@ class _Port(object):
 
         """
         # Assign key variables
-        trunk = ''
+        trunk = ""
         vlans = None
         max_vlans = 10
 
         # Get trunk string
         if bool(self.is_trunk()) is True:
-            trunk = 'Trunk'
+            trunk = "Trunk"
 
             # Add the number of VLANs found on the trunk
-            if 'l1_vlans' in self.port_data:
-                vlans = self.port_data['l1_vlans']
+            if "l1_vlans" in self.port_data:
+                vlans = self.port_data["l1_vlans"]
                 if isinstance(vlans, list) is True:
                     if len(vlans) <= max_vlans:
-                        trunk = (
-                            '<p>{}</p><p>VLANs {}</p>'
-                            ''.format(
-                                trunk,
-                                ', '.join(str(x) for x in vlans[:max_vlans])))
+                        trunk = "<p>{}</p><p>VLANs {}</p>" "".format(
+                            trunk, ", ".join(str(x) for x in vlans[:max_vlans])
+                        )
                     else:
-                        trunk = (
-                            '<p>{}</p><p>VLANs &gt; {}</p>'
-                            ''.format(trunk, max_vlans))
+                        trunk = "<p>{}</p><p>VLANs &gt; {}</p>" "".format(
+                            trunk, max_vlans
+                        )
 
         # Return
         return trunk
@@ -395,8 +415,8 @@ class _Port(object):
 
         # Don't show manufacturer on trunk ports
         if bool(self.is_trunk()) is False:
-            if 'l1_macs' in port_data:
-                mac_addresses = port_data['l1_macs'][:4]
+            if "l1_macs" in port_data:
+                mac_addresses = port_data["l1_macs"][:4]
 
         # Return
         return mac_addresses
@@ -416,24 +436,24 @@ class _Port(object):
 
         # Assign speed
         if _port_up(port_data) is False:
-            speed = 'N/A'
+            speed = "N/A"
         else:
-            if 'ifHighSpeed' in port_data:
-                value = port_data['ifHighSpeed']
-            elif 'ifSpeed' in port_data:
-                value = int(port_data['ifSpeed']) / 1000000
+            if "ifHighSpeed" in port_data:
+                value = port_data["ifHighSpeed"]
+            elif "ifSpeed" in port_data:
+                value = int(port_data["ifSpeed"]) / 1000000
             else:
                 value = None
 
             if bool(value) is True:
                 if value >= 1000:
-                    speed = ('%.0fG') % (value / 1000)
+                    speed = ("%.0fG") % (value / 1000)
                 elif value > 0 and value < 1000:
-                    speed = ('%.0fM') % (value)
+                    speed = ("%.0fM") % (value)
                 else:
-                    speed = 'N/A'
+                    speed = "N/A"
             else:
-                speed = 'N/A'
+                speed = "N/A"
 
         # Return
         return speed
@@ -450,19 +470,18 @@ class _Port(object):
         """
         # Assign key variables
         port_data = self.port_data
-        vlans = 'N/A'
+        vlans = "N/A"
 
         # Assign VLAN
-        if 'l1_trunk' in port_data:
-            if port_data['l1_trunk'] is False:
-                if 'l1_vlans' in port_data:
-                    if port_data['l1_vlans'] is not None:
-                        values = [
-                            str(value) for value in port_data['l1_vlans']]
-                        vlans = ' '.join(values)
+        if "l1_trunk" in port_data:
+            if port_data["l1_trunk"] is False:
+                if "l1_vlans" in port_data:
+                    if port_data["l1_vlans"] is not None:
+                        values = [str(value) for value in port_data["l1_vlans"]]
+                        vlans = " ".join(values)
             else:
-                if 'l1_nativevlan' in port_data:
-                    vlans = str(port_data['l1_nativevlan'])
+                if "l1_nativevlan" in port_data:
+                    vlans = str(port_data["l1_nativevlan"])
 
         # Return
         return vlans
@@ -482,12 +501,12 @@ class _Port(object):
 
         # Assign state
         if _port_enabled(port_data) is False:
-            state = 'Disabled'
+            state = "Disabled"
         else:
             if _port_up(port_data) is False:
-                state = 'Inactive'
+                state = "Inactive"
             else:
-                state = 'Active'
+                state = "Active"
 
         # Return
         return state
@@ -504,21 +523,21 @@ class _Port(object):
         """
         # Assign key variables
         port_data = self.port_data
-        duplex = 'Unknown'
+        duplex = "Unknown"
         options = {
-            0: 'Unknown',
-            1: 'Half',
-            2: 'Full',
-            3: 'Half-Auto',
-            4: 'Full-Auto',
+            0: "Unknown",
+            1: "Half",
+            2: "Full",
+            3: "Half-Auto",
+            4: "Full-Auto",
         }
 
         # Assign duplex
         if _port_up(port_data) is False:
-            duplex = 'N/A'
+            duplex = "N/A"
         else:
-            if 'l1_duplex' in port_data:
-                duplex = options[port_data['l1_duplex']]
+            if "l1_duplex" in port_data:
+                duplex = options[port_data["l1_duplex"]]
 
         # Return
         return duplex
@@ -535,14 +554,15 @@ class _Port(object):
         """
         # Assign key variables
         port_data = self.port_data
-        value = ''
+        value = ""
 
         # Determine whether CDP is enabled and update string
-        if 'cdpCacheDeviceId' in port_data:
-            value = ('{}<br>{}<br>{}'.format(
-                port_data['cdpCacheDeviceId'],
-                port_data['cdpCachePlatform'],
-                port_data['cdpCacheDevicePort']))
+        if "cdpCacheDeviceId" in port_data:
+            value = "{}<br>{}<br>{}".format(
+                port_data["cdpCacheDeviceId"],
+                port_data["cdpCachePlatform"],
+                port_data["cdpCacheDevicePort"],
+            )
 
         # Return
         return value
@@ -559,14 +579,15 @@ class _Port(object):
         """
         # Assign key variables
         port_data = self.port_data
-        value = ''
+        value = ""
 
         # Determine whether LLDP is enabled and update string
-        if 'lldpRemSysDesc' in port_data:
-            value = ('{}<br>{}<br>{}'.format(
-                port_data['lldpRemSysName'],
-                port_data['lldpRemPortDesc'],
-                port_data['lldpRemSysDesc']))
+        if "lldpRemSysDesc" in port_data:
+            value = "{}<br>{}<br>{}".format(
+                port_data["lldpRemSysName"],
+                port_data["lldpRemPortDesc"],
+                port_data["lldpRemSysDesc"],
+            )
 
         # Return
         return value
@@ -576,12 +597,12 @@ class SystemTable(Table):
     """Declaration of the columns in the Systems table."""
 
     # Initialize class variables
-    parameter = Col('Parameter')
-    value = _RawCol('Value')
+    parameter = Col("Parameter")
+    value = _RawCol("Value")
 
     # Define the CSS class to use for the header row
-    thead_classes = ['tblHead']
-    classes = ['table']
+    thead_classes = ["tblHead"]
+    classes = ["table"]
 
 
 class SystemRow(object):
@@ -633,34 +654,29 @@ class System(object):
         rows = []
 
         # Configured name
-        rows.append(
-            SystemRow('System Name', self.system_data['sysName']))
+        rows.append(SystemRow("System Name", self.system_data["sysName"]))
 
         # System IP Address / Hostname
-        rows.append(
-            SystemRow('System Hostname', self.system_data['hostname']))
+        rows.append(SystemRow("System Hostname", self.system_data["hostname"]))
 
         # System Description
         rows.append(
             SystemRow(
-                'System Description',
-                textwrap.fill(
-                    self.system_data['sysDescr']).replace('\n', '<br>')))
+                "System Description",
+                textwrap.fill(self.system_data["sysDescr"]).replace("\n", "<br>"),
+            )
+        )
 
         # System Object ID
-        rows.append(
-            SystemRow('System sysObjectID', self.system_data['sysObjectID']))
+        rows.append(SystemRow("System sysObjectID", self.system_data["sysObjectID"]))
 
         # System Uptime
-        rows.append(
-            SystemRow('System Uptime', _uptime(self.system_data['sysUpTime'])))
+        rows.append(SystemRow("System Uptime", _uptime(self.system_data["sysUpTime"])))
 
         # Last time polled
-        timestamp = int(self.system_data['timestamp'])
-        date_string = datetime.fromtimestamp(
-            timestamp).strftime('%Y-%m-%d %H:%M:%S')
-        rows.append(
-            SystemRow('Time Last Polled', date_string))
+        timestamp = int(self.system_data["timestamp"])
+        date_string = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+        rows.append(SystemRow("Time Last Polled", date_string))
 
         # Return
         return rows
@@ -680,8 +696,8 @@ def _port_enabled(port_data):
     enabled = False
 
     # Assign state
-    if 'ifAdminStatus' in port_data:
-        value = port_data['ifAdminStatus']
+    if "ifAdminStatus" in port_data:
+        value = port_data["ifAdminStatus"]
         if value == 1:
             enabled = True
 
@@ -704,8 +720,8 @@ def _port_up(port_data):
 
     # Assign state
     if _port_enabled(port_data) is True:
-        if 'ifOperStatus' in port_data:
-            if port_data['ifOperStatus'] == 1:
+        if "ifOperStatus" in port_data:
+            if port_data["ifOperStatus"] == 1:
                 port_up = True
 
     # Return
@@ -723,11 +739,15 @@ def _uptime(seconds):
 
     """
     # Initialize key variables
-    (minutes, remainder_seconds) = divmod(seconds/100, 60)
+    (minutes, remainder_seconds) = divmod(seconds / 100, 60)
     (hours, remainder_minutes) = divmod(minutes, 60)
     (days, remainder_hours) = divmod(hours, 24)
 
     # Return
-    result = ('%.f Days, %d:%02d:%02d') % (
-        days, remainder_hours, remainder_minutes, remainder_seconds)
+    result = ("%.f Days, %d:%02d:%02d") % (
+        days,
+        remainder_hours,
+        remainder_minutes,
+        remainder_seconds,
+    )
     return result

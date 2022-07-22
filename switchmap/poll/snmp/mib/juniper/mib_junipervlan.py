@@ -52,9 +52,9 @@ class JuniperVlanQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (jnxExVlanTag)
-        test_oid = '.1.3.6.1.4.1.2636.3.40.1.5.1.7.1.3'
+        test_oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.7.1.3"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1', 'layer2'])
+        super().__init__(snmp_object, test_oid, tags=["layer1", "layer2"])
 
         # Get mapping of the VLAN's dot1dbaseport ID value to its jnxExVlanTag
         # Do this only once instead of every time we invoke a method
@@ -84,12 +84,12 @@ class JuniperVlanQuery(Query):
         # Get interface jnxExVlanTag data
         values = self.jnxexvlantag()
         for key, value in values.items():
-            final[key]['jnxExVlanTag'] = value
+            final[key]["jnxExVlanTag"] = value
 
         # Get interface jnxExVlanPortAccessMode data
         values = self.jnxexvlanportaccessmode()
         for key, value in values.items():
-            final[key]['jnxExVlanPortAccessMode'] = value
+            final[key]["jnxExVlanPortAccessMode"] = value
 
         # Return
         return final
@@ -110,7 +110,7 @@ class JuniperVlanQuery(Query):
         # Get interface jnxExVlanName data
         values = self.jnxexvlanname()
         for key, value in values.items():
-            final[key]['jnxExVlanName'] = value
+            final[key]["jnxExVlanName"] = value
 
         # Return
         return final
@@ -129,7 +129,7 @@ class JuniperVlanQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.4.1.2636.3.40.1.5.1.7.1.5'
+        oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.7.1.5"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             ifindex = self.baseportifindex[int(key)]
@@ -152,11 +152,11 @@ class JuniperVlanQuery(Query):
         data_dict = defaultdict(dict)
 
         # Process OID
-        oid = '.1.3.6.1.4.1.2636.3.40.1.5.1.7.1.3'
+        oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.7.1.3"
         results = self.snmp_object.walk(oid, normalized=False)
         for key in sorted(results.keys()):
             # The key is the full OID. Split this into its component nodes
-            nodes = key.split('.')
+            nodes = key.split(".")
 
             # Get the VLAN ID and corresponding VLAN tag
             vlan_id = nodes[-2]
@@ -187,14 +187,14 @@ class JuniperVlanQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.2636.3.40.1.5.1.5.1.2'
+        oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.5.1.2"
         results = self.snmp_object.walk(oid, normalized=True)
         for vlan_id, value in results.items():
             # Get VLAN tag
             vlan_tag = self.vlan_map[int(vlan_id)]
 
             # Assign value (Convert to string)
-            data_dict[vlan_tag] = str(bytes(value), encoding='utf-8')
+            data_dict[vlan_tag] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
@@ -213,7 +213,7 @@ class JuniperVlanQuery(Query):
         data_dict = defaultdict(dict)
 
         # Get a mapping of dot1dbaseport values to the corresponding ifindex
-        oid = '.1.3.6.1.4.1.2636.3.40.1.5.1.5.1.5'
+        oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.5.1.5"
         results = self.snmp_object.walk(oid, normalized=True)
         for key, value in results.items():
             # Process OID

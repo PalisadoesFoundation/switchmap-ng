@@ -48,9 +48,9 @@ def main():
 
     # Create DB connection pool
     if use_mysql is True:
-        db_url = ('mysql+pymysql://{}:{}@{}/{}'.format(
-            config.db_user(), config.db_pass(),
-            config.db_host(), config.db_name()))
+        db_url = "mysql+pymysql://{}:{}@{}/{}".format(
+            config.db_user(), config.db_pass(), config.db_host(), config.db_name()
+        )
 
         # Fix for multiprocessing on pools
         _add_engine_pidguard(QueuePool)
@@ -67,17 +67,14 @@ def main():
             pool_size=pool_size,
             pool_timeout=pool_timeout,
             pool_use_lifo=True,
-            future=True)
+            future=True,
+        )
 
         # Fix for multiprocessing on engines
         _add_engine_pidguard(ENGINE)
 
         # Create a scoped session for GRAPHQL and ORM operations
-        session = sessionmaker(
-            autoflush=True,
-            autocommit=False,
-            bind=ENGINE
-        )
+        session = sessionmaker(autoflush=True, autocommit=False, bind=ENGINE)
         SCOPED_SESSION = scoped_session(session)
 
     else:
@@ -105,7 +102,8 @@ def _add_engine_pidguard(engine):
         None
 
     """
-    @event.listens_for(engine, 'connect')
+
+    @event.listens_for(engine, "connect")
     def connect(dbapi_connection, connection_record):
         """Get the PID of the sub-process for connections.
 
@@ -119,9 +117,9 @@ def _add_engine_pidguard(engine):
 
         """
         # Update the connection_record variable for later
-        connection_record.info['pid'] = os.getpid()
+        connection_record.info["pid"] = os.getpid()
 
-    @event.listens_for(engine, 'checkout')
+    @event.listens_for(engine, "checkout")
     def checkout(dbapi_connection, connection_record, connection_proxy):
         """Checkout sub-processes connection for sub-processing if needed.
 
@@ -143,19 +141,25 @@ def _add_engine_pidguard(engine):
         pid = os.getpid()
 
         # Detect if this is a sub-process
-        if connection_record.info['pid'] != pid:
+        if connection_record.info["pid"] != pid:
             # substitute log.debug() or similar here as desired
-            log_message = ('''\
+            log_message = """\
 Parent process {} forked ({}) with an open database connection, \
 which is being discarded and recreated.\
-'''.format(connection_record.info['pid'], pid))
+""".format(
+                connection_record.info["pid"], pid
+            )
             log.log2debug(1143, log_message)
 
             connection_record.connection = connection_proxy.connection = None
-            raise exc.DisconnectionError('''\
+            raise exc.DisconnectionError(
+                """\
 Connection record belongs to pid {}, attempting to check out in pid {}\
-'''.format(connection_record.info['pid'], pid))
+""".format(
+                    connection_record.info["pid"], pid
+                )
+            )
 
 
-if __name__ == 'switchmap.db':
+if __name__ == "switchmap.db":
     main()

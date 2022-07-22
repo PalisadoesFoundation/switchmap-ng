@@ -37,14 +37,14 @@ class File(object):
 
         """
         # Read file
-        with open(self.tailed_file, 'r') as file_:
+        with open(self.tailed_file, "r") as file_:
             # Go to EOF and get file size
             file_.seek(0, 2)
             fsize = file_.tell()
 
             # Get position of last 10K characters, then read to the end
-            file_.seek(max(fsize-10000, 0), 0)
-            lines = file_.readlines()       # Read to end
+            file_.seek(max(fsize - 10000, 0), 0)
+            lines = file_.readlines()  # Read to end
 
         # Print last max_lines number of lines
         lines = lines[-max_lines:]
@@ -90,15 +90,15 @@ class File(object):
 
         # Check if exists
         if os.path.exists(file_) is False:
-            log_message = 'File {} does not exist.'.format(file_)
+            log_message = "File {} does not exist.".format(file_)
             log.log2die(1018, log_message)
 
         # Check if file
         if os.path.isfile(file_) is False:
-            log_message = '{} is not a file.'.format(file_)
+            log_message = "{} is not a file.".format(file_)
             log.log2die(1035, log_message)
 
         # Check if readable
         if not os.access(file_, os.R_OK):
-            log_message = 'File {} is not readable.'.format(file_)
+            log_message = "File {} is not readable.".format(file_)
             log.log2die(1036, log_message)

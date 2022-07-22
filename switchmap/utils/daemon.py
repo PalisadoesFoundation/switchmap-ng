@@ -52,12 +52,12 @@ class Daemon(object):
                 # Exit first parent
                 sys.exit(0)
         except OSError as err:
-            log_message = 'Daemon fork #1 failed: {}'.format(err)
-            log_message = '{} - PID file: {}'.format(log_message, self.pidfile)
+            log_message = "Daemon fork #1 failed: {}".format(err)
+            log_message = "{} - PID file: {}".format(log_message, self.pidfile)
             log.log2die(1060, log_message)
 
         # Decouple from parent environment
-        os.chdir('/')
+        os.chdir("/")
         os.setsid()
         os.umask(0)
 
@@ -69,16 +69,16 @@ class Daemon(object):
                 # exit from second parent
                 sys.exit(0)
         except OSError as err:
-            log_message = 'Daemon fork #2 failed: {}'.format(err)
-            log_message = '{} - PID file: {}'.format(log_message, self.pidfile)
+            log_message = "Daemon fork #2 failed: {}".format(err)
+            log_message = "{} - PID file: {}".format(log_message, self.pidfile)
             log.log2die(1061, log_message)
 
         # Redirect standard file descriptors
         sys.stdout.flush()
         sys.stderr.flush()
-        f_handle_si = open(os.devnull, 'r')
-        f_handle_so = open(os.devnull, 'a+')
-        f_handle_se = open(os.devnull, 'a+')
+        f_handle_si = open(os.devnull, "r")
+        f_handle_so = open(os.devnull, "a+")
+        f_handle_se = open(os.devnull, "a+")
 
         os.dup2(f_handle_si.fileno(), sys.stdin.fileno())
         os.dup2(f_handle_so.fileno(), sys.stdout.fileno())
@@ -87,8 +87,8 @@ class Daemon(object):
         # write pidfile
         atexit.register(self.delpid)
         pid = str(os.getpid())
-        with open(self.pidfile, 'w+') as f_handle:
-            f_handle.write(pid + '\n')
+        with open(self.pidfile, "w+") as f_handle:
+            f_handle.write(pid + "\n")
 
     def delpid(self):
         """Delete the PID file.
@@ -130,7 +130,7 @@ class Daemon(object):
         """
         # Check for a pidfile to see if the daemon already runs
         try:
-            with open(self.pidfile, 'r') as pf_handle:
+            with open(self.pidfile, "r") as pf_handle:
                 pid = int(pf_handle.read().strip())
 
         except IOError:
@@ -138,17 +138,18 @@ class Daemon(object):
 
         if pid:
             log_message = (
-                'PID file: {} already exists. Daemon already running?'
-                ''.format(self.pidfile))
+                "PID file: {} already exists. Daemon already running?"
+                "".format(self.pidfile)
+            )
             log.log2die(1062, log_message)
 
         # Start the daemon
         self.daemonize()
 
         # Log success
-        log_message = (
-            'Daemon {} started - PID file: {}'
-            ''.format(self.name, self.pidfile))
+        log_message = "Daemon {} started - PID file: {}" "".format(
+            self.name, self.pidfile
+        )
         log.log2info(1070, log_message)
 
         # Run code for daemon
@@ -178,15 +179,15 @@ class Daemon(object):
         """
         # Get the pid from the pidfile
         try:
-            with open(self.pidfile, 'r') as pf_handle:
+            with open(self.pidfile, "r") as pf_handle:
                 pid = int(pf_handle.read().strip())
         except IOError:
             pid = None
 
         if not pid:
-            log_message = (
-                'PID file: {} does not exist. Daemon not running?'
-                ''.format(self.pidfile))
+            log_message = "PID file: {} does not exist. Daemon not running?" "".format(
+                self.pidfile
+            )
             log.log2warning(1063, log_message)
             # Not an error in a restart
             return
@@ -209,22 +210,21 @@ class Daemon(object):
                 self.delpid()
                 self.dellock()
             else:
-                log_message = (str(err.args))
-                log_message = (
-                    '{} - PID file: {}'.format(log_message, self.pidfile))
+                log_message = str(err.args)
+                log_message = "{} - PID file: {}".format(log_message, self.pidfile)
                 log.log2die(1068, log_message)
         except:
-            log_message = (
-                'Unknown daemon "stop" error for PID file: {}'
-                ''.format(self.pidfile))
+            log_message = 'Unknown daemon "stop" error for PID file: {}' "".format(
+                self.pidfile
+            )
             log.log2die(1066, log_message)
 
         # Log success
         self.delpid()
         self.dellock()
-        log_message = (
-            'Daemon {} stopped - PID file: {}'
-            ''.format(self.name, self.pidfile))
+        log_message = "Daemon {} stopped - PID file: {}" "".format(
+            self.name, self.pidfile
+        )
         log.log2info(1071, log_message)
 
     def restart(self):
@@ -251,9 +251,9 @@ class Daemon(object):
         """
         # Get status
         if os.path.exists(self.pidfile) is True:
-            print('Daemon is running - {}'.format(self.name))
+            print("Daemon is running - {}".format(self.name))
         else:
-            print('Daemon is stopped - {}'.format(self.name))
+            print("Daemon is stopped - {}".format(self.name))
 
     def run(self):
         """You should override this method when you subclass Daemon.
@@ -279,7 +279,7 @@ class _Directory:
 
         """
         # Initialize key variables
-        self.root = '{}/.switchmap'.format(general.root_directory())
+        self.root = "{}/.switchmap".format(general.root_directory())
 
     def snmp(self):
         """Method for defining the hidden snmp directory.
@@ -292,7 +292,7 @@ class _Directory:
 
         """
         # Return
-        value = '{}/snmp'.format(self.root)
+        value = "{}/snmp".format(self.root)
         return value
 
     def pid(self):
@@ -306,7 +306,7 @@ class _Directory:
 
         """
         # Return
-        value = '{}/pid'.format(self.root)
+        value = "{}/pid".format(self.root)
         return value
 
     def lock(self):
@@ -320,7 +320,7 @@ class _Directory:
 
         """
         # Return
-        value = '{}/lock'.format(self.root)
+        value = "{}/lock".format(self.root)
         return value
 
 
@@ -354,7 +354,7 @@ class _File:
         # Return
         if create is True:
             _mkdir(self.directory.pid())
-        value = '{}/{}.pid'.format(self.directory.pid(), prefix)
+        value = "{}/{}.pid".format(self.directory.pid(), prefix)
         return value
 
     def snmp(self, prefix, create=True):
@@ -371,7 +371,7 @@ class _File:
         # Return
         if create is True:
             _mkdir(self.directory.snmp())
-        value = '{}/{}.snmp'.format(self.directory.snmp(), prefix)
+        value = "{}/{}.snmp".format(self.directory.snmp(), prefix)
         return value
 
     def lock(self, prefix, create=True):
@@ -388,7 +388,7 @@ class _File:
         # Return
         if create is True:
             _mkdir(self.directory.lock())
-        value = '{}/{}.lock'.format(self.directory.lock(), prefix)
+        value = "{}/{}.lock".format(self.directory.lock(), prefix)
         return value
 
 
@@ -524,7 +524,5 @@ def _mkdir(directory):
         os.makedirs(directory, mode=0o775)
     else:
         if os.path.isfile(directory) is True:
-            log_message = (
-                '{} is not a directory.'
-                ''.format(directory))
+            log_message = "{} is not a directory." "".format(directory)
             log.log2die(1043, log_message)

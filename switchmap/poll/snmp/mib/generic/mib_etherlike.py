@@ -51,9 +51,9 @@ class EtherlikeQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (dot3StatsDuplexStatus)
-        test_oid = '.1.3.6.1.2.1.10.7.2.1.19'
+        test_oid = ".1.3.6.1.2.1.10.7.2.1.19"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1'])
+        super().__init__(snmp_object, test_oid, tags=["layer1"])
 
     def layer1(self):
         """Get layer 1 data from device.
@@ -71,7 +71,7 @@ class EtherlikeQuery(Query):
         # Get interface dot3StatsDuplexStatus data
         values = self.dot3statsduplexstatus()
         for key, value in values.items():
-            final[key]['dot3StatsDuplexStatus'] = value
+            final[key]["dot3StatsDuplexStatus"] = value
 
         # Return
         return final
@@ -90,7 +90,7 @@ class EtherlikeQuery(Query):
         data_dict = defaultdict(dict)
 
         # OID to process
-        oid = '.1.3.6.1.2.1.10.7.2.1.19'
+        oid = ".1.3.6.1.2.1.10.7.2.1.19"
 
         # Return OID value. Used for unittests
         if oidonly is True:

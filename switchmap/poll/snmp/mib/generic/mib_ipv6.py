@@ -53,9 +53,9 @@ class Ipv6Query(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (ipv6Forwarding)
-        test_oid = '.1.3.6.1.2.1.55.1.1'
+        test_oid = ".1.3.6.1.2.1.55.1.1"
 
-        super().__init__(snmp_object, test_oid, tags=['layer3'])
+        super().__init__(snmp_object, test_oid, tags=["layer3"])
 
     def layer3(self):
         """Get layer 3 data from device.
@@ -73,7 +73,7 @@ class Ipv6Query(Query):
         # Get interface ifDescr data
         values = self.ipv6nettomediaphysaddress()
         for key, value in values.items():
-            final['ipv6NetToMediaPhysAddress'][key] = value
+            final["ipv6NetToMediaPhysAddress"][key] = value
 
         # Return
         return final
@@ -90,7 +90,7 @@ class Ipv6Query(Query):
         """
         # Initialize key variables
         data_dict = defaultdict(dict)
-        oid = '.1.3.6.1.2.1.55.1.12.1.2'
+        oid = ".1.3.6.1.2.1.55.1.12.1.2"
 
         # Get results
         results = self.snmp_object.swalk(oid, normalized=False)
@@ -99,24 +99,23 @@ class Ipv6Query(Query):
             macaddress = general.octetstr_2_string(mac_value)
 
             # Convert IP address from decimal to hex
-            nodes = key.split('.')
+            nodes = key.split(".")
             nodes_decimal = nodes[-16:]
             nodes_hex = []
             nodes_final = []
             for value in nodes_decimal:
                 # Convert deximal value to hex,
                 # then zero fill to ensure hex is two characters long
-                hexbyte = '{}'.format(hex(int(value)))[2:]
+                hexbyte = "{}".format(hex(int(value)))[2:]
                 nodes_hex.append(hexbyte.zfill(2))
 
             # Convert to list of four byte hex numbers
             for pointer in range(0, len(nodes_hex) - 1, 2):
-                fixed_value = (
-                    '{}{}'.format(nodes_hex[pointer], nodes_hex[pointer + 1]))
+                fixed_value = "{}{}".format(nodes_hex[pointer], nodes_hex[pointer + 1])
                 nodes_final.append(fixed_value)
 
             # Create IPv6 string
-            ipv6 = ':'.join(nodes_final)
+            ipv6 = ":".join(nodes_final)
 
             # Create ARP entry
             data_dict[ipv6] = macaddress

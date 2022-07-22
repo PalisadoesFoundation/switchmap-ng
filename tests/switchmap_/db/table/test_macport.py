@@ -8,25 +8,40 @@ import random
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(
-    os.path.abspath(os.path.join(
-        os.path.abspath(os.path.join(
-            os.path.abspath(os.path.join(
-                EXEC_DIR,
-                os.pardir)), os.pardir)), os.pardir)), os.pardir))
-_EXPECTED = '{0}switchmap-ng{0}tests{0}switchmap_{0}db{0}table'.format(os.sep)
+ROOT_DIR = os.path.abspath(
+    os.path.join(
+        os.path.abspath(
+            os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
+                    )
+                ),
+                os.pardir,
+            )
+        ),
+        os.pardir,
+    )
+)
+_EXPECTED = "{0}switchmap-ng{0}tests{0}switchmap_{0}db{0}table".format(os.sep)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
-    print('''This script is not installed in the "{0}" directory. Please fix.\
-'''.format(_EXPECTED))
+    print(
+        """This script is not installed in the "{0}" directory. Please fix.\
+""".format(
+            _EXPECTED
+        )
+    )
     sys.exit(2)
 
 
 # Create the necessary configuration to load the module
 from tests.testlib_ import setup
+
 CONFIG = setup.config()
 CONFIG.save()
 
@@ -100,7 +115,8 @@ class TestDbTableMacPort(unittest.TestCase):
         # Test after insertion of an initial row
         testimport.insert_row(row)
         preliminary_result = testimport.exists(
-            row.idx_l1interface, row.idx_mac)
+            row.idx_l1interface, row.idx_mac
+        )
         self.assertTrue(preliminary_result)
         self.assertEqual(_convert(preliminary_result), _convert(row))
 
@@ -137,8 +153,11 @@ class TestDbTableMacPort(unittest.TestCase):
                 # Entry must not be found
                 result = testimport.find_idx_mac(row.idx_mac)
                 if row.idx_mac not in finds:
-                    self.assertFalse(bool(
-                        testimport.exists(row.idx_l1interface, row.idx_mac)))
+                    self.assertFalse(
+                        bool(
+                            testimport.exists(row.idx_l1interface, row.idx_mac)
+                        )
+                    )
                     self.assertFalse(bool(result))
                 else:
                     self.assertTrue(bool(result))
@@ -147,7 +166,8 @@ class TestDbTableMacPort(unittest.TestCase):
                 # Insert entry and then it should be found
                 testimport.insert_row(row)
                 now_exists = testimport.exists(
-                    row.idx_l1interface, row.idx_mac)
+                    row.idx_l1interface, row.idx_mac
+                )
                 self.assertTrue(bool(now_exists))
 
                 post_result = testimport.find_idx_mac(now_exists.idx_mac)
@@ -195,13 +215,14 @@ class TestDbTableMacPort(unittest.TestCase):
         updated_row = MacPort(
             idx_l1interface=random.randint(1, MAXMAC),
             idx_mac=random.randint(1, MAXMAC),
-            enabled=row.enabled
+            enabled=row.enabled,
         )
         testimport.update_row(idx, updated_row)
 
         # Test the update
         result = testimport.exists(
-            updated_row.idx_l1interface, updated_row.idx_mac)
+            updated_row.idx_l1interface, updated_row.idx_mac
+        )
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(updated_row))
 
@@ -225,7 +246,7 @@ def _convert(row):
     result = IMacPort(
         idx_l1interface=row.idx_l1interface,
         idx_mac=row.idx_mac,
-        enabled=row.enabled
+        enabled=row.enabled,
     )
     return result
 
@@ -244,7 +265,7 @@ def _row():
     result = IMacPort(
         idx_l1interface=random.randint(1, MAXMAC),
         idx_mac=random.randint(1, MAXMAC),
-        enabled=1
+        enabled=1,
     )
     return result
 
@@ -260,12 +281,7 @@ def _prerequisites():
 
     """
     # Create result
-    event.insert_row(
-        IEvent(
-            name=data.random_string(),
-            enabled=1
-            )
-    )
+    event.insert_row(IEvent(name=data.random_string(), enabled=1))
     zone.insert_row(
         IZone(
             name=data.random_string(),
@@ -279,24 +295,21 @@ def _prerequisites():
             postal_code=data.random_string(),
             phone=data.random_string(),
             notes=data.random_string(),
-            enabled=1
+            enabled=1,
         )
     )
     oui.insert_row(
         IOui(
             oui=data.random_string(),
             organization=data.random_string(),
-            enabled=1
+            enabled=1,
         )
     )
     mac.insert_row(
-        [IMac(
-            idx_oui=1,
-            idx_event=1,
-            idx_zone=1,
-            mac=data.mac(),
-            enabled=1
-        ) for _ in range(MAXMAC)]
+        [
+            IMac(idx_oui=1, idx_event=1, idx_zone=1, mac=data.mac(), enabled=1)
+            for _ in range(MAXMAC)
+        ]
     )
     device.insert_row(
         IDevice(
@@ -309,36 +322,39 @@ def _prerequisites():
             sys_objectid=data.random_string(),
             sys_uptime=random.randint(0, 1000000),
             last_polled=random.randint(0, 1000000),
-            enabled=1
+            enabled=1,
         )
     )
     l1interface.insert_row(
-        [IL1Interface(
-            idx_device=1,
-            ifindex=random.randint(0, 1000000),
-            duplex=random.randint(0, 1000000),
-            ethernet=1,
-            nativevlan=random.randint(0, 1000000),
-            trunk=1,
-            ifspeed=random.randint(0, 1000000),
-            ifalias=data.random_string(),
-            ifdescr=data.random_string(),
-            ifadminstatus=random.randint(0, 1000000),
-            ifoperstatus=random.randint(0, 1000000),
-            ts_idle=random.randint(0, 1000000),
-            cdpcachedeviceid=data.random_string(),
-            cdpcachedeviceport=data.random_string(),
-            cdpcacheplatform=data.random_string(),
-            lldpremportdesc=data.random_string(),
-            lldpremsyscapenabled=data.random_string(),
-            lldpremsysdesc=data.random_string(),
-            lldpremsysname=data.random_string(),
-            enabled=1
-        ) for _ in range(MAXMAC)]
+        [
+            IL1Interface(
+                idx_device=1,
+                ifindex=random.randint(0, 1000000),
+                duplex=random.randint(0, 1000000),
+                ethernet=1,
+                nativevlan=random.randint(0, 1000000),
+                trunk=1,
+                ifspeed=random.randint(0, 1000000),
+                ifalias=data.random_string(),
+                ifdescr=data.random_string(),
+                ifadminstatus=random.randint(0, 1000000),
+                ifoperstatus=random.randint(0, 1000000),
+                ts_idle=random.randint(0, 1000000),
+                cdpcachedeviceid=data.random_string(),
+                cdpcachedeviceport=data.random_string(),
+                cdpcacheplatform=data.random_string(),
+                lldpremportdesc=data.random_string(),
+                lldpremsyscapenabled=data.random_string(),
+                lldpremsysdesc=data.random_string(),
+                lldpremsysname=data.random_string(),
+                enabled=1,
+            )
+            for _ in range(MAXMAC)
+        ]
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Do the unit test
     unittest.main()

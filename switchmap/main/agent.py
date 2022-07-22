@@ -145,54 +145,56 @@ class AgentCLI(object):
         """
         # Header for the help menu of the application
         parser = argparse.ArgumentParser(
-            description=additional_help,
-            formatter_class=argparse.RawTextHelpFormatter)
+            description=additional_help, formatter_class=argparse.RawTextHelpFormatter
+        )
 
         # CLI argument for starting
         parser.add_argument(
-            '--start',
+            "--start",
             required=False,
             default=False,
-            action='store_true',
-            help='Start the agent daemon.'
+            action="store_true",
+            help="Start the agent daemon.",
         )
 
         # CLI argument for stopping
         parser.add_argument(
-            '--stop',
+            "--stop",
             required=False,
             default=False,
-            action='store_true',
-            help='Stop the agent daemon.'
+            action="store_true",
+            help="Stop the agent daemon.",
         )
 
         # CLI argument for getting the status of the daemon
         parser.add_argument(
-            '--status',
+            "--status",
             required=False,
             default=False,
-            action='store_true',
-            help='Get daemon daemon status.'
+            action="store_true",
+            help="Get daemon daemon status.",
         )
 
         # CLI argument for restarting
         parser.add_argument(
-            '--restart',
+            "--restart",
             required=False,
             default=False,
-            action='store_true',
-            help='Restart the agent daemon.'
+            action="store_true",
+            help="Restart the agent daemon.",
         )
 
         # CLI argument for stopping
         parser.add_argument(
-            '--force',
+            "--force",
             required=False,
             default=False,
-            action='store_true',
+            action="store_true",
             help=textwrap.fill(
-                'Stops or restarts the agent daemon ungracefully when '
-                'used with --stop or --restart.', width=80)
+                "Stops or restarts the agent daemon ungracefully when "
+                "used with --stop or --restart.",
+                width=80,
+            ),
         )
 
         # Get the parser value
@@ -281,19 +283,21 @@ class AgentAPI(Agent):
         # Check for lock and pid files
         if os.path.exists(self.lockfile_parent) is True:
             log_message = (
-                'Lock file {} exists. Multiple API daemons running '
-                'API may have died '
-                'catastrophically in the past, in which case the lockfile '
-                'should be deleted. '
-                ''.format(self.lockfile_parent))
+                "Lock file {} exists. Multiple API daemons running "
+                "API may have died "
+                "catastrophically in the past, in which case the lockfile "
+                "should be deleted. "
+                "".format(self.lockfile_parent)
+            )
             log.log2see(1083, log_message)
 
         if os.path.exists(self.pidfile_parent) is True:
             log_message = (
-                'PID file: {} already exists. Daemon already running? '
-                'If not, it may have died catastrophically in the past '
-                'in which case you should use --stop --force to fix.'
-                ''.format(self.pidfile_parent))
+                "PID file: {} already exists. Daemon already running? "
+                "If not, it may have died catastrophically in the past "
+                "in which case you should use --stop --force to fix."
+                "".format(self.pidfile_parent)
+            )
             log.log2see(1084, log_message)
 
         ######################################################################
@@ -307,25 +311,24 @@ class AgentAPI(Agent):
         #
         ######################################################################
         options = {
-            'bind': (
-                '{}:{}'.format(config.listen_address(), config.bind_port())),
-            'accesslog': config.web_log_file(),
-            'errorlog': config.web_log_file(),
-            'capture_output': True,
-            'pidfile': self.pidfile_child,
-            'loglevel': config.log_level(),
-            'workers': _number_of_workers(),
-            'umask': 0o0007,
+            "bind": ("{}:{}".format(config.listen_address(), config.bind_port())),
+            "accesslog": config.web_log_file(),
+            "errorlog": config.web_log_file(),
+            "capture_output": True,
+            "pidfile": self.pidfile_child,
+            "loglevel": config.log_level(),
+            "workers": _number_of_workers(),
+            "umask": 0o0007,
         }
 
         # Log so that user running the script from the CLI knows that something
         # is happening
         log_message = (
-            'Switchmap API running on {}:{} and logging to file {}.'
-            ''.format(
-                config.listen_address(),
-                config.bind_port(),
-                config.web_log_file()))
+            "Switchmap API running on {}:{} and logging to file {}."
+            "".format(
+                config.listen_address(), config.bind_port(), config.web_log_file()
+            )
+        )
         log.log2info(1022, log_message)
 
         # Run
@@ -357,8 +360,13 @@ class StandaloneApplication(BaseApplication):
     def load_config(self):
         """Load the configuration."""
         # Initialize key variables
-        config = dict([(key, value) for key, value in self.options.items()
-                       if key in self.cfg.settings and value is not None])
+        config = dict(
+            [
+                (key, value)
+                for key, value in self.options.items()
+                if key in self.cfg.settings and value is not None
+            ]
+        )
 
         # Assign configuration parameters
         for key, value in config.items():

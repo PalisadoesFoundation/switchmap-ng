@@ -9,29 +9,55 @@ from mock import Mock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(
-    os.path.abspath(os.path.join(
-        os.path.abspath(os.path.join(
-            os.path.abspath(os.path.join(
-                os.path.abspath(os.path.join(
-                    os.path.abspath(os.path.join(
-                        EXEC_DIR,
-                        os.pardir)), os.pardir)), os.pardir)), os.pardir)),
-        os.pardir)), os.pardir))
-_EXPECTED = '''\
+ROOT_DIR = os.path.abspath(
+    os.path.join(
+        os.path.abspath(
+            os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.abspath(
+                            os.path.join(
+                                os.path.abspath(
+                                    os.path.join(
+                                        os.path.abspath(
+                                            os.path.join(EXEC_DIR, os.pardir)
+                                        ),
+                                        os.pardir,
+                                    )
+                                ),
+                                os.pardir,
+                            )
+                        ),
+                        os.pardir,
+                    )
+                ),
+                os.pardir,
+            )
+        ),
+        os.pardir,
+    )
+)
+_EXPECTED = """\
 {0}switchmap-ng{0}tests{0}switchmap_{0}poll{0}snmp{0}mib{0}cisco\
-'''.format(os.sep)
+""".format(
+    os.sep
+)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
-    print('''This script is not installed in the "{0}" directory. Please fix.\
-'''.format(_EXPECTED))
+    print(
+        """This script is not installed in the "{0}" directory. Please fix.\
+""".format(
+            _EXPECTED
+        )
+    )
     sys.exit(2)
 
 # Create the necessary configuration to load the module
 from tests.testlib_ import setup
+
 CONFIG = setup.config()
 CONFIG.save()
 
@@ -39,7 +65,7 @@ CONFIG.save()
 from switchmap.poll.snmp.mib.cisco import mib_ciscovtp as testimport
 
 
-class Query():
+class Query:
     """Class for snmp_manager.Query mock.
 
     A detailed tutorial about Python mocks can be found here:
@@ -110,83 +136,74 @@ class TestMibCiscoVTP(unittest.TestCase):
     # SNMPwalk results used by Mocks.
 
     # Normalized walk returning integers
-    nwalk_results_integer = {
-        100: 1234,
-        200: 5678
-    }
+    nwalk_results_integer = {100: 1234, 200: 5678}
 
     # Set the stage for SNMPwalk for integer results
     snmpobj_integer = Mock(spec=Query)
     mock_spec_integer = {
-        'swalk.return_value': nwalk_results_integer,
-        'walk.return_value': nwalk_results_integer,
-        }
+        "swalk.return_value": nwalk_results_integer,
+        "walk.return_value": nwalk_results_integer,
+    }
     snmpobj_integer.configure_mock(**mock_spec_integer)
 
     # Normalized walk returning integers for the ifIndex
-    nwalk_results_ifindex = {
-        100: 100,
-        200: 200
-    }
+    nwalk_results_ifindex = {100: 100, 200: 200}
 
     # Set the stage for SNMPwalk for integer results for the ifIndex
     snmpobj_ifindex = Mock(spec=Query)
     mock_spec_ifindex = {
-        'swalk.return_value': nwalk_results_ifindex,
-        'walk.return_value': nwalk_results_ifindex,
-        }
+        "swalk.return_value": nwalk_results_ifindex,
+        "walk.return_value": nwalk_results_ifindex,
+    }
     snmpobj_ifindex.configure_mock(**mock_spec_ifindex)
 
     # Normalized walk returning strings
-    nwalk_results_bytes = {
-        100: b'1234',
-        200: b'5678'
-    }
+    nwalk_results_bytes = {100: b"1234", 200: b"5678"}
 
     # Set the stage for SNMPwalk for string results
     snmpobj_bytes = Mock(spec=Query)
     mock_spec_bytes = {
-        'swalk.return_value': nwalk_results_bytes,
-        'walk.return_value': nwalk_results_bytes,
-        }
+        "swalk.return_value": nwalk_results_bytes,
+        "walk.return_value": nwalk_results_bytes,
+    }
     snmpobj_bytes.configure_mock(**mock_spec_bytes)
 
     # Normalized walk returning binary data
     nwalk_results_binary = {
-        100: binascii.unhexlify('1234'),
-        200: binascii.unhexlify('5678')
+        100: binascii.unhexlify("1234"),
+        200: binascii.unhexlify("5678"),
     }
 
     # Set the stage for SNMPwalk for binary results
     snmpobj_binary = Mock(spec=Query)
     mock_spec_binary = {
-        'swalk.return_value': nwalk_results_binary,
-        'walk.return_value': nwalk_results_binary,
-        }
+        "swalk.return_value": nwalk_results_binary,
+        "walk.return_value": nwalk_results_binary,
+    }
     snmpobj_binary.configure_mock(**mock_spec_binary)
 
     # Initializing key variables
     expected_dict = {
         100: {
-            'vlanTrunkPortDynamicState': 1234,
-            'vlanTrunkPortDynamicStatus': 1234,
-            'vlanTrunkPortNativeVlan': 1234,
-            'vlanTrunkPortEncapsulationType': 1234,
-            'vlanTrunkPortVlansEnabled': 1234,
-            'vtpVlanType': 1234,
-            'vtpVlanName': '1234',
-            'vtpVlanState': 1234
+            "vlanTrunkPortDynamicState": 1234,
+            "vlanTrunkPortDynamicStatus": 1234,
+            "vlanTrunkPortNativeVlan": 1234,
+            "vlanTrunkPortEncapsulationType": 1234,
+            "vlanTrunkPortVlansEnabled": 1234,
+            "vtpVlanType": 1234,
+            "vtpVlanName": "1234",
+            "vtpVlanState": 1234,
         },
         200: {
-            'vlanTrunkPortDynamicState': 5678,
-            'vlanTrunkPortDynamicStatus': 5678,
-            'vlanTrunkPortNativeVlan': 5678,
-            'vlanTrunkPortEncapsulationType': 5678,
-            'vlanTrunkPortVlansEnabled': 5678,
-            'vtpVlanType': 5678,
-            'vtpVlanName': '5678',
-            'vtpVlanState': 5678
-        }
+            "vlanTrunkPortDynamicState": 5678,
+            "vlanTrunkPortDynamicStatus": 5678,
+            "vlanTrunkPortNativeVlan": 5678,
+            "vlanTrunkPortEncapsulationType": 5678,
+            "vlanTrunkPortVlansEnabled": 5678,
+            "vtpVlanType": 5678,
+            "vtpVlanName": "5678",
+            "vtpVlanState": 5678,
+        },
     }
 
     @classmethod
@@ -233,8 +250,8 @@ class TestMibCiscoVTP(unittest.TestCase):
     def test_vlantrunkportencapsulationtype(self):
         """Testing function vlantrunkportencapsulationtype."""
         # Initialize key variables
-        oid_key = 'vlanTrunkPortEncapsulationType'
-        oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.3'
+        oid_key = "vlanTrunkPortEncapsulationType"
+        oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.3"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -252,8 +269,8 @@ class TestMibCiscoVTP(unittest.TestCase):
     def test_vlantrunkportnativevlan(self):
         """Testing function vlantrunkportnativevlan."""
         # Initialize key variables
-        oid_key = 'vlanTrunkPortNativeVlan'
-        oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.5'
+        oid_key = "vlanTrunkPortNativeVlan"
+        oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.5"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -271,8 +288,8 @@ class TestMibCiscoVTP(unittest.TestCase):
     def test_vlantrunkportdynamicstatus(self):
         """Testing function vlantrunkportdynamicstatus."""
         # Initialize key variables
-        oid_key = 'vlanTrunkPortDynamicStatus'
-        oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.14'
+        oid_key = "vlanTrunkPortDynamicStatus"
+        oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.14"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -290,8 +307,8 @@ class TestMibCiscoVTP(unittest.TestCase):
     def test_vlantrunkportdynamicstate(self):
         """Testing function vlantrunkportdynamicstate."""
         # Initialize key variables
-        oid_key = 'vlanTrunkPortDynamicState'
-        oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.13'
+        oid_key = "vlanTrunkPortDynamicState"
+        oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.13"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -309,8 +326,8 @@ class TestMibCiscoVTP(unittest.TestCase):
     def test_vtpvlanname(self):
         """Testing function vtpvlanname."""
         # Initialize key variables
-        oid_key = 'vtpVlanName'
-        oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.4'
+        oid_key = "vtpVlanName"
+        oid = ".1.3.6.1.4.1.9.9.46.1.3.1.1.4"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_bytes)
@@ -328,8 +345,8 @@ class TestMibCiscoVTP(unittest.TestCase):
     def test_vtpvlantype(self):
         """Testing function vtpvlantype."""
         # Initialize key variables
-        oid_key = 'vtpVlanType'
-        oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.3'
+        oid_key = "vtpVlanType"
+        oid = ".1.3.6.1.4.1.9.9.46.1.3.1.1.3"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -347,8 +364,8 @@ class TestMibCiscoVTP(unittest.TestCase):
     def test_vtpvlanstate(self):
         """Testing function vtpvlanstate."""
         # Initialize key variables
-        oid_key = 'vtpVlanState'
-        oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
+        oid_key = "vtpVlanState"
+        oid = ".1.3.6.1.4.1.9.9.46.1.3.1.1.2"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
@@ -368,7 +385,7 @@ class TestMibCiscoVTP(unittest.TestCase):
         pass
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Do the unit test
     unittest.main()

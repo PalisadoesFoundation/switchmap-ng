@@ -28,7 +28,7 @@ from switchmap.db.models import MacPort as _MacPort
 from switchmap.db.models import MacIp as _MacIp
 
 
-class Search():
+class Search:
     """Class that manages searches.
 
     Methods return lists of Found objects for the idx_l1interface table entries
@@ -99,11 +99,7 @@ class Search():
                 _macport = macport.find_idx_mac(exist.idx_mac)
                 if bool(_macport) is True:
                     for item in _macport:
-                        result.append(
-                            Found(
-                                idx_l1interface=item.idx_l1interface
-                            )
-                        )
+                        result.append(Found(idx_l1interface=item.idx_l1interface))
 
         # Return
         return result
@@ -130,11 +126,7 @@ class Search():
         for found in founds:
             macports_ = macport.find_idx_mac(found.idx_mac)
             for macport_ in macports_:
-                result.append(
-                    Found(
-                        idx_l1interface=macport_.idx_l1interface
-                    )
-                )
+                result.append(Found(idx_l1interface=macport_.idx_l1interface))
 
         # Return
         return result
@@ -159,11 +151,7 @@ class Search():
 
         # Search for ifalias on interfaces
         for found in founds:
-            result.append(
-                Found(
-                    idx_l1interface=found.idx_l1interface
-                )
-            )
+            result.append(Found(idx_l1interface=found.idx_l1interface))
 
         # Return
         return result
@@ -190,11 +178,7 @@ class Search():
         for found in founds:
             macports_ = macport.find_idx_mac(found.idx_mac)
             for macport_ in macports_:
-                result.append(
-                    Found(
-                        idx_l1interface=macport_.idx_l1interface
-                    )
-                )
+                result.append(Found(idx_l1interface=macport_.idx_l1interface))
 
         # Return
         return result

@@ -29,30 +29,29 @@ def systemd_daemon(agent_name, action=None):
 
     """
     # Initialize key variables
-    executable = '/bin/systemctl'
-    options = ['start', 'stop', 'restart']
+    executable = "/bin/systemctl"
+    options = ["start", "stop", "restart"]
     fixed_action = action.lower()
 
     # Check user is root
     running_username = getpass.getuser()
-    if running_username != 'root':
-        log_message = 'You can only run this command as the \'root\' user.'
+    if running_username != "root":
+        log_message = "You can only run this command as the 'root' user."
         log.log2die(1133, log_message)
 
     # Check if agent exists
     if systemd_exists(agent_name) is False:
-        log_message = 'systemd not configured for daemon {}'.format(agent_name)
+        log_message = "systemd not configured for daemon {}".format(agent_name)
         log.log2die(1026, log_message)
 
     # Process request
     if fixed_action in options:
-        command = '{} {} {}.service'.format(
-            executable, fixed_action, agent_name)
+        command = "{} {} {}.service".format(executable, fixed_action, agent_name)
         run_script(command)
     else:
-        log_message = (
-            'Invalid action "{}" for systemd daemon {}'
-            ''.format(action, agent_name))
+        log_message = 'Invalid action "{}" for systemd daemon {}' "".format(
+            action, agent_name
+        )
         log.log2die(1126, log_message)
 
 
@@ -68,7 +67,7 @@ def systemd_exists(agent_name):
     """
     # Initialize key variables
     exists = False
-    file_path = '/etc/systemd/system/{}.service'.format(agent_name)
+    file_path = "/etc/systemd/system/{}.service".format(agent_name)
 
     # Do check
     if os.path.isfile(file_path) is True:
@@ -87,9 +86,8 @@ def check_sudo():
 
     """
     # Prevent running as sudo user
-    if 'SUDO_UID' in os.environ:
-        log_message = (
-            'Cannot run script using "sudo".')
+    if "SUDO_UID" in os.environ:
+        log_message = 'Cannot run script using "sudo".'
         log.log2die(1132, log_message)
 
 
@@ -114,13 +112,14 @@ def check_user():
     # Prevent others from running the script
     if username != configured_username:
         log_message = (
-            'You can only run this script as user \'{}\' '
-            'in the configuration file. Try running the command like this:\n'
-            '').format(configured_username)
+            "You can only run this script as user '{}' "
+            "in the configuration file. Try running the command like this:\n"
+            ""
+        ).format(configured_username)
         print(log_message)
-        fixed_command = (
-            '$ su -c \'{}\' {}\n'.format(
-                ' '.join(sys.argv[:]), configured_username))
+        fixed_command = "$ su -c '{}' {}\n".format(
+            " ".join(sys.argv[:]), configured_username
+        )
         print(fixed_command)
         sys.exit(2)
 
@@ -135,7 +134,7 @@ def cli_help():
         None
 
     """
-    print('Try using command: {} --help'.format(' '.join(sys.argv)))
+    print("Try using command: {} --help".format(" ".join(sys.argv)))
     sys.exit(2)
 
 
@@ -174,7 +173,7 @@ def get_hosts():
 
     # Cycle through list of files in directory
     for filename in os.listdir(topology_directory):
-        if filename.endswith('.yaml'):
+        if filename.endswith(".yaml"):
             hostname = filename[:-5]
             hosts.append(hostname)
     return sorted(hosts)
@@ -195,18 +194,19 @@ def read_yaml_file(filepath, as_string=False):
     if as_string is False:
         result = {}
     else:
-        result = ''
+        result = ""
 
     # Read file
-    if filepath.endswith('.yaml'):
+    if filepath.endswith(".yaml"):
         try:
-            with open(filepath, 'r') as file_handle:
+            with open(filepath, "r") as file_handle:
                 yaml_from_file = file_handle.read()
         except:
             log_message = (
-                'Error reading file {}. Check permissions, '
-                'existence and file syntax.'
-                ''.format(filepath))
+                "Error reading file {}. Check permissions, "
+                "existence and file syntax."
+                "".format(filepath)
+            )
             log.log2die_safe(1024, log_message)
 
         # Get result
@@ -217,7 +217,7 @@ def read_yaml_file(filepath, as_string=False):
 
     else:
         # Die if not a YAML file
-        log_message = '{} is not a YAML file.'.format(filepath)
+        log_message = "{} is not a YAML file.".format(filepath)
         log.log2die_safe(1065, log_message)
 
     # Return
@@ -236,35 +236,36 @@ def read_yaml_files(directories):
     """
     # Initialize key variables
     yaml_found = False
-    yaml_from_file = ''
-    all_yaml_read = ''
+    yaml_from_file = ""
+    all_yaml_read = ""
 
     # Check each directory in sequence
     for config_directory in directories:
         # Check if config_directory exists
         if os.path.isdir(config_directory) is False:
-            log_message = (
-                'Configuration directory "{}" '
-                'doesn\'t exist!'.format(config_directory))
+            log_message = 'Configuration directory "{}" ' "doesn't exist!".format(
+                config_directory
+            )
             log.log2die_safe(1009, log_message)
 
         # Cycle through list of files in directory
         for filename in os.listdir(config_directory):
             # Examine all the '.yaml' files in directory
-            if filename.endswith('.yaml'):
+            if filename.endswith(".yaml"):
                 # Read YAML data
-                filepath = '{}/{}'.format(config_directory, filename)
+                filepath = "{}/{}".format(config_directory, filename)
                 yaml_from_file = read_yaml_file(filepath, as_string=True)
                 yaml_found = True
 
                 # Append yaml from file to all yaml previously read
-                all_yaml_read = '{}\n{}'.format(all_yaml_read, yaml_from_file)
+                all_yaml_read = "{}\n{}".format(all_yaml_read, yaml_from_file)
 
         # Verify YAML files found in directory
         if yaml_found is False:
             log_message = (
                 'No files found in directory "{}" with ".yaml" '
-                'extension.'.format(config_directory))
+                "extension.".format(config_directory)
+            )
             log.log2die_safe(1010, log_message)
 
     # Return
@@ -302,26 +303,22 @@ def run_script(cli_string, shell=False, die=True):
     """
     # Initialize key variables
     encoding = locale.getdefaultlocale()[1]
-    header_returncode = ('[Return Code]')
-    header_stdout = ('[Output]')
-    header_stderr = ('[Error Message]')
-    header_bad_cmd = ('[ERROR: Bad Command]')
-    log_message = ''
+    header_returncode = "[Return Code]"
+    header_stdout = "[Output]"
+    header_stderr = "[Error Message]"
+    header_bad_cmd = "[ERROR: Bad Command]"
+    log_message = ""
 
     # Create the subprocess object
     if shell is False:
-        do_command_list = list(cli_string.split(' '))
+        do_command_list = list(cli_string.split(" "))
         process = subprocess.Popen(
-            do_command_list,
-            shell=False,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+            do_command_list, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
     else:
         process = subprocess.Popen(
-            cli_string,
-            shell=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+            cli_string, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        )
     stdoutdata, stderrdata = process.communicate()
     returncode = process.returncode
 
@@ -329,38 +326,38 @@ def run_script(cli_string, shell=False, die=True):
     if die is True:
         if returncode != 0:
             # Print the Return Code header, Return Code, STDOUT header
-            string2print = '{} {} {} {}'.format(
-                header_bad_cmd, cli_string,
-                header_returncode, returncode)
-            log_message = '{}{}'.format(log_message, string2print)
+            string2print = "{} {} {} {}".format(
+                header_bad_cmd, cli_string, header_returncode, returncode
+            )
+            log_message = "{}{}".format(log_message, string2print)
 
             # Print the STDERR
-            string2print = '{}'.format(header_stderr)
-            log_message = '{} {}'.format(log_message, string2print)
-            for line in stderrdata.decode(encoding).split('\n'):
-                string2print = '{}'.format(line)
-                log_message = '{} {}'.format(log_message, string2print)
+            string2print = "{}".format(header_stderr)
+            log_message = "{} {}".format(log_message, string2print)
+            for line in stderrdata.decode(encoding).split("\n"):
+                string2print = "{}".format(line)
+                log_message = "{} {}".format(log_message, string2print)
 
             # Print the STDOUT
-            string2print = '{}'.format(header_stdout)
-            log_message = '{} {}'.format(log_message, string2print)
-            for line in stdoutdata.decode(encoding).split('\n'):
-                string2print = '{}'.format(line)
-                log_message = '{} {}'.format(log_message, string2print)
+            string2print = "{}".format(header_stdout)
+            log_message = "{} {}".format(log_message, string2print)
+            for line in stdoutdata.decode(encoding).split("\n"):
+                string2print = "{}".format(line)
+                log_message = "{} {}".format(log_message, string2print)
 
             # All done
             log.log2die(1074, log_message)
 
     # Return
     data = {
-        'stdout': stdoutdata.decode(),
-        'stderr': stderrdata.decode(),
-        'returncode': returncode
+        "stdout": stdoutdata.decode(),
+        "stderr": stderrdata.decode(),
+        "returncode": returncode,
     }
     return data
 
 
-def delete_files(directory, extension='.yaml'):
+def delete_files(directory, extension=".yaml"):
     """Delete all files of a specfic extension in a directory.
 
     Args:
@@ -373,26 +370,29 @@ def delete_files(directory, extension='.yaml'):
     """
     # Determine whether directory is valid
     if os.path.isdir(directory) is False:
-        log_message = 'Directory {} does not exist'.format(directory)
+        log_message = "Directory {} does not exist".format(directory)
         log.log2die_safe(1007, log_message)
 
     # Get list of files
     filelist = [
-        next_file for next_file in os.listdir(
-            directory) if next_file.endswith(extension)]
+        next_file
+        for next_file in os.listdir(directory)
+        if next_file.endswith(extension)
+    ]
 
     # Delete files
     for delete_file in filelist:
-        file_path = '{}/{}'.format(directory, delete_file)
+        file_path = "{}/{}".format(directory, delete_file)
         try:
             if os.path.isfile(file_path):
                 os.unlink(file_path)
         except Exception as exception_error:
-            log_message = 'Error: deleting files in {}. Error: {}'.format(
-                directory, exception_error)
+            log_message = "Error: deleting files in {}. Error: {}".format(
+                directory, exception_error
+            )
             log.log2die_safe(1014, log_message)
         except:
-            log_message = ('Unexpected error')
+            log_message = "Unexpected error"
             log.log2die_safe(1006, log_message)
 
 
@@ -407,7 +407,7 @@ def delete_yaml_files(directory):
 
     """
     # Delete files
-    delete_files(directory, extension='.yaml')
+    delete_files(directory, extension=".yaml")
 
 
 def config_directories():
@@ -426,10 +426,10 @@ def config_directories():
     # directory location. A good example of this is using a new config
     # directory for unit testing
     #####################################################################
-    if 'SWITCHMAP_CONFIGDIR' in os.environ:
-        config_directory = os.environ['SWITCHMAP_CONFIGDIR']
+    if "SWITCHMAP_CONFIGDIR" in os.environ:
+        config_directory = os.environ["SWITCHMAP_CONFIGDIR"]
     else:
-        config_directory = '{}/etc'.format(root_directory())
+        config_directory = "{}/etc".format(root_directory())
     directories = [config_directory]
 
     # Return
@@ -447,9 +447,9 @@ def cleanstring(data):
 
     """
     # Initialize key variables
-    nolinefeeds = data.replace('\n', ' ').replace('\r', '').strip()
+    nolinefeeds = data.replace("\n", " ").replace("\r", "").strip()
     words = nolinefeeds.split()
-    result = ' '.join(words)
+    result = " ".join(words)
 
     # Return
     return result
@@ -467,7 +467,7 @@ def search_file(filename):
     """
     # Initialize key variables
     result = None
-    search_path = os.environ['PATH']
+    search_path = os.environ["PATH"]
 
     paths = search_path.split(os.pathsep)
     for path in paths:
@@ -492,17 +492,17 @@ def move_files(source_dir, target_dir):
     """
     # Make sure source directory exists
     if os.path.exists(source_dir) is False:
-        log_message = 'Directory {} does not exist.'.format(source_dir)
+        log_message = "Directory {} does not exist.".format(source_dir)
         log.log2die(1435, log_message)
 
     # Make sure target directory exists
     if os.path.exists(target_dir) is False:
-        log_message = 'Directory {} does not exist.'.format(target_dir)
+        log_message = "Directory {} does not exist.".format(target_dir)
         log.log2die(1436, log_message)
 
     source_files = os.listdir(source_dir)
     for filename in source_files:
-        full_path = '{}/{}'.format(source_dir, filename)
+        full_path = "{}/{}".format(source_dir, filename)
         if os.path.isfile(full_path) is True:
             shutil.move(full_path, target_dir)
 
@@ -525,7 +525,7 @@ def create_yaml_file(data_dict, filepath, ignore_blanks=True):
 
     # Create file
     yaml_string = dict2yaml(data_dict)
-    with open(filepath, 'w') as file_handle:
+    with open(filepath, "w") as file_handle:
         file_handle.write(yaml_string)
 
 
@@ -540,9 +540,8 @@ def octetstr_2_string(bytes_string):
 
     """
     # Initialize key variables
-    octet_string = bytes_string.decode('utf-8')
+    octet_string = bytes_string.decode("utf-8")
 
     # Convert and return
-    result = ''.join(
-        ['%0.2x' % ord(_) for _ in octet_string])
+    result = "".join(["%0.2x" % ord(_) for _ in octet_string])
     return result.lower()

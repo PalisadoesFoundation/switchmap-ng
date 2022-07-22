@@ -52,9 +52,9 @@ class CiscoIetfIpQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (cInetNetToMediaPhysAddress)
-        test_oid = '.1.3.6.1.4.1.9.10.86.1.1.3.1.3'
+        test_oid = ".1.3.6.1.4.1.9.10.86.1.1.3.1.3"
 
-        super().__init__(snmp_object, test_oid, tags=['layer3'])
+        super().__init__(snmp_object, test_oid, tags=["layer3"])
 
     def layer3(self):
         """Get layer 3 data from device.
@@ -72,7 +72,7 @@ class CiscoIetfIpQuery(Query):
         # Get interface cInetNetToMediaPhysAddress data
         values = self.cinetnettomediaphysaddress()
         for key, mac_value in values.items():
-            final['cInetNetToMediaPhysAddress'][key] = mac_value[:12]
+            final["cInetNetToMediaPhysAddress"][key] = mac_value[:12]
 
         # Return
         return final
@@ -89,7 +89,7 @@ class CiscoIetfIpQuery(Query):
         """
         # Initialize key variables
         data_dict = defaultdict(dict)
-        oid = '.1.3.6.1.4.1.9.10.86.1.1.3.1.3'
+        oid = ".1.3.6.1.4.1.9.10.86.1.1.3.1.3"
 
         # Get results
         results = self.snmp_object.swalk(oid, normalized=False)
@@ -98,17 +98,17 @@ class CiscoIetfIpQuery(Query):
             macaddress = general.octetstr_2_string(mac_value)
 
             # Convert IP address from decimal to hex
-            nodes = key.split('.')
+            nodes = key.split(".")
             ipv6decimal = nodes[-16:]
             ipv6hex = []
             for value in ipv6decimal:
                 # Convert deximal value to hex,
                 # then zero fill to ensure hex is two characters long
-                hexbyte = '{}'.format(hex(int(value)))[2:]
+                hexbyte = "{}".format(hex(int(value)))[2:]
                 ipv6hex.append(hexbyte.zfill(2))
 
             # Create IPv6 string
-            ipv6 = ':'.join(ipv6hex)
+            ipv6 = ":".join(ipv6hex)
 
             # Create ARP entry
             data_dict[ipv6] = macaddress

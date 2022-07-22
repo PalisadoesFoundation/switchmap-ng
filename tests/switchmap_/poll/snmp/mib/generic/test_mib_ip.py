@@ -8,29 +8,55 @@ from mock import Mock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
-ROOT_DIR = os.path.abspath(os.path.join(
-    os.path.abspath(os.path.join(
-        os.path.abspath(os.path.join(
-            os.path.abspath(os.path.join(
-                os.path.abspath(os.path.join(
-                    os.path.abspath(os.path.join(
-                        EXEC_DIR,
-                        os.pardir)), os.pardir)), os.pardir)), os.pardir)),
-        os.pardir)), os.pardir))
-_EXPECTED = '''\
+ROOT_DIR = os.path.abspath(
+    os.path.join(
+        os.path.abspath(
+            os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.abspath(
+                            os.path.join(
+                                os.path.abspath(
+                                    os.path.join(
+                                        os.path.abspath(
+                                            os.path.join(EXEC_DIR, os.pardir)
+                                        ),
+                                        os.pardir,
+                                    )
+                                ),
+                                os.pardir,
+                            )
+                        ),
+                        os.pardir,
+                    )
+                ),
+                os.pardir,
+            )
+        ),
+        os.pardir,
+    )
+)
+_EXPECTED = """\
 {0}switchmap-ng{0}tests{0}switchmap_{0}poll{0}snmp{0}mib{0}generic\
-'''.format(os.sep)
+""".format(
+    os.sep
+)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
-    print('''This script is not installed in the "{0}" directory. Please fix.\
-'''.format(_EXPECTED))
+    print(
+        """This script is not installed in the "{0}" directory. Please fix.\
+""".format(
+            _EXPECTED
+        )
+    )
     sys.exit(2)
 
 # Create the necessary configuration to load the module
 from tests.testlib_ import setup
+
 CONFIG = setup.config()
 CONFIG.save()
 
@@ -38,7 +64,7 @@ CONFIG.save()
 from switchmap.poll.snmp.mib.generic import mib_ip as testimport
 
 
-class Query():
+class Query:
     """Class for snmp_manager.Query mock.
 
     A detailed tutorial about Python mocks can be found here:
@@ -110,42 +136,42 @@ class TestMibIp(unittest.TestCase):
 
     # Normalized walk returning binary data
     walk_results_ipv4_binary = {
-        '.1.3.6.1.2.1.4.22.1.2.0.10.10.10.10': b'\x00\x16\xc2\x9c\x15P\x00',
-        '.1.3.6.1.2.1.4.22.1.2.0.200.200.200.200': b'\xc2\x98\xc3\xae\xc3\x8bV%\xc2\xb6'
+        ".1.3.6.1.2.1.4.22.1.2.0.10.10.10.10": b"\x00\x16\xc2\x9c\x15P\x00",
+        ".1.3.6.1.2.1.4.22.1.2.0.200.200.200.200": b"\xc2\x98\xc3\xae\xc3\x8bV%\xc2\xb6",
     }
 
     # OID with IPv6 appended in decimal format
     walk_results_ipv6_binary = {
-        '.1.3.6.1.2.1.4.35.1.4.3.2.16.254.128.0.0.0.0.0.0'
-        '.53.111.109.168.125.42.84.88': b'\xc3\x94\xc2\x85d\xc2\x9f\xc3\x9c\x7f',
-        '.1.3.6.1.2.1.4.35.1.4.3.2.16.254.128.0.0.0.0.0.0'
-        '.2.30.201.255.254.172.62.123': b'\xc3\x80|\xc3\x91\xc2\xa0\xc3\x82\xc2\x85'
+        ".1.3.6.1.2.1.4.35.1.4.3.2.16.254.128.0.0.0.0.0.0"
+        ".53.111.109.168.125.42.84.88": b"\xc3\x94\xc2\x85d\xc2\x9f\xc3\x9c\x7f",
+        ".1.3.6.1.2.1.4.35.1.4.3.2.16.254.128.0.0.0.0.0.0"
+        ".2.30.201.255.254.172.62.123": b"\xc3\x80|\xc3\x91\xc2\xa0\xc3\x82\xc2\x85",
     }
 
     # Set the stage for SNMPwalk for binary results
     snmpobj_ipv4_binary = Mock(spec=Query)
     mock_spec_ipv4_binary = {
-        'swalk.return_value': walk_results_ipv4_binary,
-        'walk.return_value': walk_results_ipv4_binary,
-        }
+        "swalk.return_value": walk_results_ipv4_binary,
+        "walk.return_value": walk_results_ipv4_binary,
+    }
     snmpobj_ipv4_binary.configure_mock(**mock_spec_ipv4_binary)
 
     snmpobj_ipv6_binary = Mock(spec=Query)
     mock_spec_ipv6_binary = {
-        'swalk.return_value': walk_results_ipv6_binary,
-        'walk.return_value': walk_results_ipv6_binary,
-        }
+        "swalk.return_value": walk_results_ipv6_binary,
+        "walk.return_value": walk_results_ipv6_binary,
+    }
     snmpobj_ipv6_binary.configure_mock(**mock_spec_ipv6_binary)
 
     # Initialize expected results
     ipv4_expected_dict = {
-        '10.10.10.10': '00169c155000',
-        '200.200.200.200': '98eecb5625b6'
+        "10.10.10.10": "00169c155000",
+        "200.200.200.200": "98eecb5625b6",
     }
 
     ipv6_expected_dict = {
-        'fe80:0000:0000:0000:356f:6da8:7d2a:5458': 'd485649fdc7f',
-        'fe80:0000:0000:0000:021e:c9ff:feac:3e7b': 'c07cd1a0c285'
+        "fe80:0000:0000:0000:356f:6da8:7d2a:5458": "d485649fdc7f",
+        "fe80:0000:0000:0000:021e:c9ff:feac:3e7b": "c07cd1a0c285",
     }
 
     @classmethod
@@ -188,7 +214,7 @@ class TestMibIp(unittest.TestCase):
     def test_ipnettomediatable(self):
         """Testing method / function ipnettomediatable."""
         # Initialize key variables
-        oid = '.1.3.6.1.2.1.4.22.1.2'
+        oid = ".1.3.6.1.2.1.4.22.1.2"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_ipv4_binary)
@@ -206,7 +232,7 @@ class TestMibIp(unittest.TestCase):
     def test_ipnettophysicalphysaddress(self):
         """Testing method / function ipnettophysicalphysaddress."""
         # Initialize key variables
-        oid = '.1.3.6.1.2.1.4.35.1.4'
+        oid = ".1.3.6.1.2.1.4.35.1.4"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_ipv6_binary)
@@ -222,7 +248,7 @@ class TestMibIp(unittest.TestCase):
         self.assertEqual(results, oid)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
     # Do the unit test
     unittest.main()

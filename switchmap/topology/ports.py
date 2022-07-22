@@ -26,8 +26,8 @@ class Lookup(object):
         self.oui = {}
 
         # Read file
-        with open(mac_address_file, 'r') as csvfile:
-            spamreader = csv.reader(csvfile, delimiter=':')
+        with open(mac_address_file, "r") as csvfile:
+            spamreader = csv.reader(csvfile, delimiter=":")
             for row in spamreader:
                 mac_address = row[0]
                 manufacturer = row[1]
@@ -49,31 +49,31 @@ class Lookup(object):
         """
         # Initialize key variables
         listing = self._listing(mac_addresses)
-        html_manufacturer = ''
-        html_mac_address = ''
-        html_ip_address = ''
-        html_hostname = ''
+        html_manufacturer = ""
+        html_mac_address = ""
+        html_ip_address = ""
+        html_hostname = ""
         result = {}
 
         for item in listing:
-            html_hostname = '{}<p>{}<p>'.format(
-                html_hostname, item['hostname'])
-            html_manufacturer = '{}<p>{}<p>'.format(
-                html_manufacturer, item['manufacturer'])
-            html_ip_address = '{}<p>{}<p>'.format(
-                html_ip_address, item['ip_address'])
+            html_hostname = "{}<p>{}<p>".format(html_hostname, item["hostname"])
+            html_manufacturer = "{}<p>{}<p>".format(
+                html_manufacturer, item["manufacturer"]
+            )
+            html_ip_address = "{}<p>{}<p>".format(html_ip_address, item["ip_address"])
 
-            if bool(item['mac_address']) is True:
-                html_mac_address = '{}<p>{}<p>'.format(
-                    html_mac_address, item['mac_address'])
+            if bool(item["mac_address"]) is True:
+                html_mac_address = "{}<p>{}<p>".format(
+                    html_mac_address, item["mac_address"]
+                )
             else:
-                html_mac_address = ''
+                html_mac_address = ""
 
         # Return
-        result['ip_address'] = html_ip_address
-        result['hostname'] = html_hostname
-        result['manufacturer'] = html_manufacturer
-        result['mac_address'] = html_mac_address
+        result["ip_address"] = html_ip_address
+        result["hostname"] = html_hostname
+        result["manufacturer"] = html_manufacturer
+        result["mac_address"] = html_mac_address
         return result
 
     def _listing(self, mac_addresses):
@@ -95,39 +95,38 @@ class Lookup(object):
             # Get manufacturer
             manufacturer = self._manufacturer(mac_address)
             data_dict = {}
-            data_dict['mac_address'] = mac_address
-            data_dict['manufacturer'] = manufacturer
+            data_dict["mac_address"] = mac_address
+            data_dict["manufacturer"] = manufacturer
             preliminary_listing.append(data_dict)
 
         # Get IP address and hostname for each mac address
         for item in preliminary_listing:
-            mac_address = item['mac_address']
-            manufacturer = item['manufacturer']
+            mac_address = item["mac_address"]
+            manufacturer = item["manufacturer"]
 
             if mac_address in self.rarp_table:
                 # MAC address has related IP
                 if bool(self.rarp_table[mac_address]) is True:
                     for ip_address in self.rarp_table[mac_address]:
                         data_dict = {}
-                        data_dict['mac_address'] = mac_address
-                        data_dict['manufacturer'] = manufacturer
-                        data_dict['ip_address'] = ip_address
-                        data_dict['hostname'] = ''
+                        data_dict["mac_address"] = mac_address
+                        data_dict["manufacturer"] = manufacturer
+                        data_dict["ip_address"] = ip_address
+                        data_dict["hostname"] = ""
 
                         if ip_address in self.arp_table:
-                            if 'hostname' in self.arp_table[ip_address]:
-                                hostname = self.arp_table[
-                                    ip_address]['hostname']
-                                data_dict['hostname'] = hostname
+                            if "hostname" in self.arp_table[ip_address]:
+                                hostname = self.arp_table[ip_address]["hostname"]
+                                data_dict["hostname"] = hostname
 
                         listing.append(data_dict)
                 else:
                     # MAC address has no related IP
                     data_dict = {}
-                    data_dict['mac_address'] = mac_address
-                    data_dict['manufacturer'] = manufacturer
-                    data_dict['ip_address'] = ''
-                    data_dict['hostname'] = ''
+                    data_dict["mac_address"] = mac_address
+                    data_dict["manufacturer"] = manufacturer
+                    data_dict["ip_address"] = ""
+                    data_dict["hostname"] = ""
                     listing.append(data_dict)
 
         # Return
@@ -144,7 +143,7 @@ class Lookup(object):
 
         """
         # Initialize key variables
-        manufacturer = ''
+        manufacturer = ""
 
         # Process data
         mac_oui = mac_address[0:6]

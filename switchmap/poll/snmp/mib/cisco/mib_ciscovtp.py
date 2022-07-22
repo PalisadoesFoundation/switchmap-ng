@@ -55,9 +55,9 @@ class CiscoVtpQuery(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (vtpVlanState)
-        test_oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
+        test_oid = ".1.3.6.1.4.1.9.9.46.1.3.1.1.2"
 
-        super().__init__(snmp_object, test_oid, tags=['layer1', 'layer2'])
+        super().__init__(snmp_object, test_oid, tags=["layer1", "layer2"])
 
     def layer2(self):
         """Get layer 2 data from device.
@@ -75,17 +75,17 @@ class CiscoVtpQuery(Query):
         # Get interface vtpVlanName data
         values = self.vtpvlanname()
         for key, value in values.items():
-            final[key]['vtpVlanName'] = value
+            final[key]["vtpVlanName"] = value
 
         # Get interface vtpVlanType data
         values = self.vtpvlantype()
         for key, value in values.items():
-            final[key]['vtpVlanType'] = value
+            final[key]["vtpVlanType"] = value
 
         # Get interface vtpVlanState data
         values = self.vtpvlanstate()
         for key, value in values.items():
-            final[key]['vtpVlanState'] = value
+            final[key]["vtpVlanState"] = value
 
         # Return
         return final
@@ -106,27 +106,27 @@ class CiscoVtpQuery(Query):
         # Get interface vlanTrunkPortDynamicState data
         values = self.vlantrunkportdynamicstate()
         for key, value in values.items():
-            final[key]['vlanTrunkPortDynamicState'] = value
+            final[key]["vlanTrunkPortDynamicState"] = value
 
         # Get interface vlanTrunkPortDynamicStatus data
         values = self.vlantrunkportdynamicstatus()
         for key, value in values.items():
-            final[key]['vlanTrunkPortDynamicStatus'] = value
+            final[key]["vlanTrunkPortDynamicStatus"] = value
 
         # Get interface vlanTrunkPortNativeVlan data
         values = self.vlantrunkportnativevlan()
         for key, value in values.items():
-            final[key]['vlanTrunkPortNativeVlan'] = value
+            final[key]["vlanTrunkPortNativeVlan"] = value
 
         # Get interface vlanTrunkPortEncapsulationType data
         values = self.vlantrunkportencapsulationtype()
         for key, value in values.items():
-            final[key]['vlanTrunkPortEncapsulationType'] = value
+            final[key]["vlanTrunkPortEncapsulationType"] = value
 
         # Get interface vlanTrunkPortVlansEnabled data
         values = self.vlantrunkportvlansenabled()
         for key, value in values.items():
-            final[key]['vlanTrunkPortVlansEnabled'] = value
+            final[key]["vlanTrunkPortVlansEnabled"] = value
 
         # Return
         return final
@@ -146,7 +146,7 @@ class CiscoVtpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.3'
+        oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.3"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -175,7 +175,7 @@ class CiscoVtpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.5'
+        oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.5"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -204,7 +204,7 @@ class CiscoVtpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.14'
+        oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.14"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -233,7 +233,7 @@ class CiscoVtpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.13'
+        oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.13"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -261,7 +261,7 @@ class CiscoVtpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.4'
+        oid = ".1.3.6.1.4.1.9.9.46.1.3.1.1.4"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -270,7 +270,7 @@ class CiscoVtpQuery(Query):
         # Process results
         results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
-            data_dict[int(key)] = str(bytes(value), encoding='utf-8')
+            data_dict[int(key)] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
@@ -289,7 +289,7 @@ class CiscoVtpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.3'
+        oid = ".1.3.6.1.4.1.9.9.46.1.3.1.1.3"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -317,7 +317,7 @@ class CiscoVtpQuery(Query):
         data_dict = defaultdict(dict)
 
         # Descriptions
-        oid = '.1.3.6.1.4.1.9.9.46.1.3.1.1.2'
+        oid = ".1.3.6.1.4.1.9.9.46.1.3.1.1.2"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -351,7 +351,7 @@ class CiscoVtpQuery(Query):
         trunkstatus = self.vlantrunkportdynamicstatus()
 
         # OID to Process
-        oid = '.1.3.6.1.4.1.9.9.46.1.6.1.1.4'
+        oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.4"
 
         # Return OID value. Used for unittests
         if oidonly is True:
@@ -364,9 +364,8 @@ class CiscoVtpQuery(Query):
             ifindex = int(key)
 
             # Convert hex value to right justified 1024 character binary string
-            vlans_hex = binascii.hexlify(value).decode('utf-8')
-            binary_string = bin(int(
-                vlans_hex, base))[2:].zfill(length_in_bits)
+            vlans_hex = binascii.hexlify(value).decode("utf-8")
+            binary_string = bin(int(vlans_hex, base))[2:].zfill(length_in_bits)
 
             # Assign flag vlans on interface
             if trunkstatus[ifindex] == 1:

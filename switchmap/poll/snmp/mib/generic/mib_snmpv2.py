@@ -59,9 +59,9 @@ class Snmpv2Query(Query):
         self.snmp_object = snmp_object
 
         # Get one OID entry in MIB
-        test_oid = '.1.3.6.1.2.1.1.1.0'
+        test_oid = ".1.3.6.1.2.1.1.1.0"
 
-        super().__init__(snmp_object, test_oid, tags=['system'])
+        super().__init__(snmp_object, test_oid, tags=["system"])
 
     def system(self):
         """Get system data from device.
@@ -80,22 +80,21 @@ class Snmpv2Query(Query):
         key = 0
 
         # Process
-        oidroot = '.1.3.6.1.2.1.1'
+        oidroot = ".1.3.6.1.2.1.1"
         for node in range(1, 7):
-            oid = '{}.{}.0'.format(oidroot, node)
+            oid = "{}.{}.0".format(oidroot, node)
             results = self.snmp_object.get(oid, normalized=True)
             for value in results.values():
                 getvalues.append(value)
 
         # Assign values
-        data_dict['sysDescr'][key] = general.cleanstring(
-            getvalues[1].decode('utf-8'))
-        data_dict['sysObjectID'][key] = getvalues[2].decode('utf-8')
-        data_dict['sysUpTime'][key] = int(getvalues[3])
-        data_dict['sysContact'][key] = getvalues[4].decode('utf-8')
-        data_dict['sysName'][key] = getvalues[5].decode('utf-8')
-        data_dict['sysLocation'][key] = getvalues[6].decode('utf-8')
+        data_dict["sysDescr"][key] = general.cleanstring(getvalues[1].decode("utf-8"))
+        data_dict["sysObjectID"][key] = getvalues[2].decode("utf-8")
+        data_dict["sysUpTime"][key] = int(getvalues[3])
+        data_dict["sysContact"][key] = getvalues[4].decode("utf-8")
+        data_dict["sysName"][key] = getvalues[5].decode("utf-8")
+        data_dict["sysLocation"][key] = getvalues[6].decode("utf-8")
 
         # Return
-        final['SNMPv2-MIB'] = data_dict
+        final["SNMPv2-MIB"] = data_dict
         return final
