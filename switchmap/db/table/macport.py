@@ -50,7 +50,10 @@ def exists(idx_l1interface, idx_mac):
 
     # Get row from dataase
     statement = select(MacPort).where(
-        and_(MacPort.idx_mac == idx_mac, MacPort.idx_l1interface == idx_l1interface)
+        and_(
+            MacPort.idx_mac == idx_mac,
+            MacPort.idx_l1interface == idx_l1interface,
+        )
     )
     rows = db.db_select_row(1109, statement)
 

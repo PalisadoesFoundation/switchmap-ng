@@ -64,7 +64,9 @@ def main():
     args = parser.parse_args()
 
     # Check error codes
-    command = "{1}{0}tests{0}bin{0}error_code_report.py".format(os.sep, ROOT_DIR)
+    command = "{1}{0}tests{0}bin{0}error_code_report.py".format(
+        os.sep, ROOT_DIR
+    )
     run_script(command)
 
     # Run the test
@@ -102,9 +104,15 @@ def run_script(cli_string):
     """
     # Initialize key variables
     encoding = locale.getdefaultlocale()[1]
-    test_returncode = "----- Test Error Return Code -----------------------------"
-    test_stdoutdata = "----- Test Output ----------------------------------------"
-    test_stderrdata = "----- Test Error -----------------------------------------"
+    test_returncode = (
+        "----- Test Error Return Code -----------------------------"
+    )
+    test_stdoutdata = (
+        "----- Test Output ----------------------------------------"
+    )
+    test_stderrdata = (
+        "----- Test Error -----------------------------------------"
+    )
 
     # Say what we are doing
     string2print = "\nRunning Command: {}".format(cli_string)

@@ -37,7 +37,9 @@ def post_poll_cleanup(idx_event):
     for idx_device in idx_devices:
         # Disable Device
         statement = (
-            update(Device).where(Device.idx_device == idx_device).values({"enabled": 0})
+            update(Device)
+            .where(Device.idx_device == idx_device)
+            .values({"enabled": 0})
         )
         db.db_update(1124, statement)
 
@@ -51,13 +53,17 @@ def post_poll_cleanup(idx_event):
 
         # Disable Vlan
         statement = (
-            update(Vlan).where(Vlan.idx_device == idx_device).values({"enabled": 0})
+            update(Vlan)
+            .where(Vlan.idx_device == idx_device)
+            .values({"enabled": 0})
         )
         db.db_update(1127, statement)
 
         # Disable MacIp
         statement = (
-            update(MacIp).where(MacIp.idx_device == idx_device).values({"enabled": 0})
+            update(MacIp)
+            .where(MacIp.idx_device == idx_device)
+            .values({"enabled": 0})
         )
         db.db_update(1145, statement)
 
@@ -73,7 +79,9 @@ def post_poll_cleanup(idx_event):
     for not_idx_event in not_idx_events:
         # Disable Mac
         statement = (
-            update(Mac).where(Mac.idx_event == not_idx_event).values({"enabled": 0})
+            update(Mac)
+            .where(Mac.idx_event == not_idx_event)
+            .values({"enabled": 0})
         )
         db.db_update(1144, statement)
 
@@ -81,6 +89,8 @@ def post_poll_cleanup(idx_event):
 
         # Disable MacPort
         statement = (
-            update(MacPort).where(MacPort.idx_mac == idx_mac).values({"enabled": 0})
+            update(MacPort)
+            .where(MacPort.idx_mac == idx_mac)
+            .values({"enabled": 0})
         )
         db.db_update(1069, statement)

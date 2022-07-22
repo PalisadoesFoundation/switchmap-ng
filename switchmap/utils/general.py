@@ -46,7 +46,9 @@ def systemd_daemon(agent_name, action=None):
 
     # Process request
     if fixed_action in options:
-        command = "{} {} {}.service".format(executable, fixed_action, agent_name)
+        command = "{} {} {}.service".format(
+            executable, fixed_action, agent_name
+        )
         run_script(command)
     else:
         log_message = 'Invalid action "{}" for systemd daemon {}' "".format(
@@ -243,8 +245,9 @@ def read_yaml_files(directories):
     for config_directory in directories:
         # Check if config_directory exists
         if os.path.isdir(config_directory) is False:
-            log_message = 'Configuration directory "{}" ' "doesn't exist!".format(
-                config_directory
+            log_message = (
+                'Configuration directory "{}" '
+                "doesn't exist!".format(config_directory)
             )
             log.log2die_safe(1009, log_message)
 
@@ -284,7 +287,9 @@ def dict2yaml(data_dict):
     """
     # Process data
     json_string = json.dumps(data_dict)
-    yaml_string = yaml.dump(yaml.safe_load(json_string), default_flow_style=False)
+    yaml_string = yaml.dump(
+        yaml.safe_load(json_string), default_flow_style=False
+    )
 
     # Return
     return yaml_string
@@ -313,11 +318,17 @@ def run_script(cli_string, shell=False, die=True):
     if shell is False:
         do_command_list = list(cli_string.split(" "))
         process = subprocess.Popen(
-            do_command_list, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            do_command_list,
+            shell=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
     else:
         process = subprocess.Popen(
-            cli_string, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            cli_string,
+            shell=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
         )
     stdoutdata, stderrdata = process.communicate()
     returncode = process.returncode

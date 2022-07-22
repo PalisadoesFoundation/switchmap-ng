@@ -14,7 +14,8 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)), os.pardir
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
                     )
                 ),
                 os.pardir,

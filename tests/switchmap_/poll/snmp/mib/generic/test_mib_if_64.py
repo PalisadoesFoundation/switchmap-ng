@@ -213,7 +213,8 @@ class TestMibIf64(unittest.TestCase):
         for primary in results.keys():
             for secondary in results[primary].keys():
                 self.assertEqual(
-                    results[primary][secondary], self.expected_dict[primary][secondary]
+                    results[primary][secondary],
+                    self.expected_dict[primary][secondary],
                 )
 
     def test_ifhighspeed(self):

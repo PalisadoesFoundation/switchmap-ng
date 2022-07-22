@@ -50,7 +50,10 @@ def exists(idx_l1interface, idx_vlan):
 
     # Get row from dataase
     statement = select(VlanPort).where(
-        and_(VlanPort.idx_vlan == idx_vlan, VlanPort.idx_l1interface == idx_l1interface)
+        and_(
+            VlanPort.idx_vlan == idx_vlan,
+            VlanPort.idx_l1interface == idx_l1interface,
+        )
     )
     rows = db.db_select_row(1190, statement)
 

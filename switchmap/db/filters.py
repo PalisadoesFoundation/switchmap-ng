@@ -22,7 +22,18 @@ from switchmap.db.models import (
     Vlan as VlanModel,
 )
 
-_NUMERIC = ["eq", "ne", "is_null", "in", "not_in", "lt", "lte", "gt", "gte", "range"]
+_NUMERIC = [
+    "eq",
+    "ne",
+    "is_null",
+    "in",
+    "not_in",
+    "lt",
+    "lte",
+    "gt",
+    "gte",
+    "range",
+]
 _STRING = [
     "eq",
     "ne",

@@ -17,7 +17,9 @@ ROOT_DIR = os.path.abspath(
                     os.path.join(
                         os.path.abspath(
                             os.path.join(
-                                os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                                os.path.abspath(
+                                    os.path.join(EXEC_DIR, os.pardir)
+                                ),
                                 os.pardir,
                             )
                         ),
@@ -89,7 +91,9 @@ from switchmap.db.misc.interface import vlan as testimport
 MAXMAC = 100
 OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
 MACS = ["{0}{1}".format(_, data.mac()[:6]) for _ in OUIS]
-HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[:MAXMAC]
+HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[
+    :MAXMAC
+]
 IFALIASES = ["ALIAS_{0}".format(data.random_string()) for _ in range(MAXMAC)]
 ORGANIZATIONS = ["ORG_{0}".format(data.random_string()) for _ in range(MAXMAC)]
 IPADDRESSES = list(set([data.ip_() for _ in range(MAXMAC * 2)]))[:MAXMAC]
@@ -142,7 +146,10 @@ class TestFunctions(unittest.TestCase):
         lookup = {}
 
         # Prepare data for testing
-        for idx_l1interface, idx_vlans in self.prerequisites.idx_l1interface.items():
+        for (
+            idx_l1interface,
+            idx_vlans,
+        ) in self.prerequisites.idx_l1interface.items():
             for idx_vlan in idx_vlans:
                 detail = vlan.idx_exists(idx_vlan)
                 found = lookup.get(idx_l1interface)

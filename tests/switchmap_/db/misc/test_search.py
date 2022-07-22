@@ -14,7 +14,8 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)), os.pardir
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
                     )
                 ),
                 os.pardir,
@@ -74,7 +75,9 @@ from switchmap.db.misc import search as testimport
 MAXMAC = 100
 OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
 MACS = ["{0}{1}".format(_, data.mac()[:6]) for _ in OUIS]
-HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[:MAXMAC]
+HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[
+    :MAXMAC
+]
 IFALIASES = ["ALIAS_{0}".format(data.random_string()) for _ in range(MAXMAC)]
 ORGANIZATIONS = ["ORG_{0}".format(data.random_string()) for _ in range(MAXMAC)]
 IPADDRESSES = list(set([data.ip_() for _ in range(MAXMAC * 2)]))[:MAXMAC]
@@ -146,7 +149,9 @@ class TestSearch(unittest.TestCase):
             self.assertEqual(len(_macport), 1)
 
             # Test
-            self.assertEqual(result[0].idx_l1interface, _macport[0].idx_l1interface)
+            self.assertEqual(
+                result[0].idx_l1interface, _macport[0].idx_l1interface
+            )
 
     def test_ipaddress(self):
         """Testing function ipaddress."""
@@ -166,7 +171,9 @@ class TestSearch(unittest.TestCase):
             expected = macport.find_idx_mac(found[0].idx_mac)
             self.assertTrue(expected)
             self.assertEqual(len(expected), 1)
-            self.assertTrue(result[0].idx_l1interface, expected[0].idx_l1interface)
+            self.assertTrue(
+                result[0].idx_l1interface, expected[0].idx_l1interface
+            )
 
     def test_ifalias(self):
         """Testing function ifalias."""
@@ -197,7 +204,9 @@ class TestSearch(unittest.TestCase):
             expected = macport.find_idx_mac(found[0].idx_mac)
             self.assertTrue(expected)
             self.assertEqual(len(expected), 1)
-            self.assertTrue(result[0].idx_l1interface, expected[0].idx_l1interface)
+            self.assertTrue(
+                result[0].idx_l1interface, expected[0].idx_l1interface
+            )
 
 
 def _prerequisites():
@@ -236,7 +245,9 @@ def _prerequisites():
     )
     mac.insert_row(
         [
-            IMac(idx_oui=key + 1, idx_event=1, idx_zone=1, mac=value, enabled=1)
+            IMac(
+                idx_oui=key + 1, idx_event=1, idx_zone=1, mac=value, enabled=1
+            )
             for key, value in enumerate(MACS)
         ]
     )

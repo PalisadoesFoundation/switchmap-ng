@@ -81,8 +81,12 @@ def insert_row(rows):
             _Device(
                 idx_zone=row.idx_zone,
                 idx_event=row.idx_event,
-                sys_name=(null() if row.sys_name is None else row.sys_name.encode()),
-                hostname=(null() if row.hostname is None else row.hostname.encode()),
+                sys_name=(
+                    null() if row.sys_name is None else row.sys_name.encode()
+                ),
+                hostname=(
+                    null() if row.hostname is None else row.hostname.encode()
+                ),
                 name=(null() if row.name is None else row.name.encode()),
                 sys_description=(
                     null()
@@ -90,10 +94,16 @@ def insert_row(rows):
                     else row.sys_description.encode()
                 ),
                 sys_objectid=(
-                    null() if row.sys_objectid is None else row.sys_objectid.encode()
+                    null()
+                    if row.sys_objectid is None
+                    else row.sys_objectid.encode()
                 ),
-                sys_uptime=(null() if row.sys_uptime is None else row.sys_uptime),
-                last_polled=(0 if row.last_polled is None else row.last_polled),
+                sys_uptime=(
+                    null() if row.sys_uptime is None else row.sys_uptime
+                ),
+                last_polled=(
+                    0 if row.last_polled is None else row.last_polled
+                ),
                 enabled=row.enabled,
             )
         )
@@ -123,12 +133,18 @@ def update_row(idx, row):
                 "idx_zone": row.idx_zone,
                 "idx_event": row.idx_event,
                 "sys_name": (
-                    null() if bool(row.sys_name) is False else row.sys_name.encode()
+                    null()
+                    if bool(row.sys_name) is False
+                    else row.sys_name.encode()
                 ),
                 "hostname": (
-                    null() if bool(row.hostname) is False else row.hostname.encode()
+                    null()
+                    if bool(row.hostname) is False
+                    else row.hostname.encode()
                 ),
-                "name": (null() if bool(row.name) is False else row.name.encode()),
+                "name": (
+                    null() if bool(row.name) is False else row.name.encode()
+                ),
                 "sys_description": (
                     null()
                     if bool(row.sys_description) is False

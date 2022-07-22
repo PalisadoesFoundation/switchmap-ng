@@ -145,7 +145,8 @@ class AgentCLI(object):
         """
         # Header for the help menu of the application
         parser = argparse.ArgumentParser(
-            description=additional_help, formatter_class=argparse.RawTextHelpFormatter
+            description=additional_help,
+            formatter_class=argparse.RawTextHelpFormatter,
         )
 
         # CLI argument for starting
@@ -311,7 +312,9 @@ class AgentAPI(Agent):
         #
         ######################################################################
         options = {
-            "bind": ("{}:{}".format(config.listen_address(), config.bind_port())),
+            "bind": (
+                "{}:{}".format(config.listen_address(), config.bind_port())
+            ),
             "accesslog": config.web_log_file(),
             "errorlog": config.web_log_file(),
             "capture_output": True,
@@ -326,7 +329,9 @@ class AgentAPI(Agent):
         log_message = (
             "Switchmap API running on {}:{} and logging to file {}."
             "".format(
-                config.listen_address(), config.bind_port(), config.web_log_file()
+                config.listen_address(),
+                config.bind_port(),
+                config.web_log_file(),
             )
         )
         log.log2info(1022, log_message)

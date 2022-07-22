@@ -140,7 +140,9 @@ class TrunkAttribute:
     """
 
     idx = graphene.Int(description="Primary key index")
-    idx_l1interface = graphene.Int(description="L1 interface index foreign key")
+    idx_l1interface = graphene.Int(
+        description="L1 interface index foreign key"
+    )
     idx_vlan = graphene.Int(description="VLAN index foreign key")
     enabled = graphene.Int(description="Enabled")
     ts_modified = graphene.String(description="Row Modification Timestamp")

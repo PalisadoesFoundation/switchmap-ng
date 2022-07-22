@@ -185,8 +185,9 @@ class Daemon(object):
             pid = None
 
         if not pid:
-            log_message = "PID file: {} does not exist. Daemon not running?" "".format(
-                self.pidfile
+            log_message = (
+                "PID file: {} does not exist. Daemon not running?"
+                "".format(self.pidfile)
             )
             log.log2warning(1063, log_message)
             # Not an error in a restart
@@ -211,11 +212,14 @@ class Daemon(object):
                 self.dellock()
             else:
                 log_message = str(err.args)
-                log_message = "{} - PID file: {}".format(log_message, self.pidfile)
+                log_message = "{} - PID file: {}".format(
+                    log_message, self.pidfile
+                )
                 log.log2die(1068, log_message)
         except:
-            log_message = 'Unknown daemon "stop" error for PID file: {}' "".format(
-                self.pidfile
+            log_message = (
+                'Unknown daemon "stop" error for PID file: {}'
+                "".format(self.pidfile)
             )
             log.log2die(1066, log_message)
 

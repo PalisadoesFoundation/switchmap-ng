@@ -14,7 +14,8 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)), os.pardir
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
                     )
                 ),
                 os.pardir,
@@ -109,7 +110,9 @@ class TestDbTableMacIp(unittest.TestCase):
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        preliminary_result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
+        preliminary_result = testimport.exists(
+            row.idx_device, row.idx_mac, row.ip_
+        )
         self.assertTrue(preliminary_result)
         self.assertEqual(_convert(preliminary_result), _convert(row))
 
@@ -322,9 +325,15 @@ def _prerequisites():
         )
     )
     oui.insert_row(
-        IOui(oui=data.random_string(), organization=data.random_string(), enabled=1)
+        IOui(
+            oui=data.random_string(),
+            organization=data.random_string(),
+            enabled=1,
+        )
     )
-    mac.insert_row(IMac(idx_oui=1, idx_event=1, idx_zone=1, mac=data.mac(), enabled=1))
+    mac.insert_row(
+        IMac(idx_oui=1, idx_event=1, idx_zone=1, mac=data.mac(), enabled=1)
+    )
     device.insert_row(
         IDevice(
             idx_zone=1,

@@ -118,7 +118,9 @@ file and directory permissions.""".format(
             try:
                 os.remove(self.pidfile)
             except:
-                log_message = "PID file {} already deleted".format(self.pidfile)
+                log_message = "PID file {} already deleted".format(
+                    self.pidfile
+                )
                 log.log2warning(1152, log_message)
 
     def dellock(self):
@@ -196,8 +198,9 @@ file and directory permissions.""".format(
         # Check for a pidfile to see if the daemon already runs
         pid = _pid(self.pidfile)
         if bool(pid) is False:
-            log_message = "PID file: {} does not exist. Daemon not running?" "".format(
-                self.pidfile
+            log_message = (
+                "PID file: {} does not exist. Daemon not running?"
+                "".format(self.pidfile)
             )
             log.log2warning(1163, log_message)
             # Not an error in a restart
@@ -213,11 +216,14 @@ file and directory permissions.""".format(
                 self.dellock()
             else:
                 log_message = str(err.args)
-                log_message = "{} - PID file: {}".format(log_message, self.pidfile)
+                log_message = "{} - PID file: {}".format(
+                    log_message, self.pidfile
+                )
                 log.log2die(1166, log_message)
         except:
-            log_message = 'Unknown daemon "stopped" error for PID file: {}' "".format(
-                self.pidfile
+            log_message = (
+                'Unknown daemon "stopped" error for PID file: {}'
+                "".format(self.pidfile)
             )
             log.log2die(1165, log_message)
 

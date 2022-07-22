@@ -106,7 +106,9 @@ def findhostname(hostname):
 
     # Get row from database (Contains)
     statement = select(MacIp).where(
-        MacIp.hostname.like(func.concat(func.concat("%", hostname.encode(), "%")))
+        MacIp.hostname.like(
+            func.concat(func.concat("%", hostname.encode(), "%"))
+        )
     )
     rows_contains = db.db_select_row(1191, statement)
 
@@ -147,7 +149,9 @@ def insert_row(rows):
                 idx_mac=row.idx_mac,
                 ip_=row.ip_.encode(),
                 hostname=(
-                    null() if bool(row.hostname) is False else row.hostname.encode()
+                    null()
+                    if bool(row.hostname) is False
+                    else row.hostname.encode()
                 ),
                 version=row.version,
                 enabled=row.enabled,
@@ -181,7 +185,9 @@ def update_row(idx, row):
                 "ip_": row.ip_.encode(),
                 "version": row.version,
                 "hostname": (
-                    null() if bool(row.hostname) is False else row.hostname.encode()
+                    null()
+                    if bool(row.hostname) is False
+                    else row.hostname.encode()
                 ),
                 "enabled": row.enabled,
             }

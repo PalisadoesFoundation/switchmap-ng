@@ -111,7 +111,9 @@ class Ipv6Query(Query):
 
             # Convert to list of four byte hex numbers
             for pointer in range(0, len(nodes_hex) - 1, 2):
-                fixed_value = "{}{}".format(nodes_hex[pointer], nodes_hex[pointer + 1])
+                fixed_value = "{}{}".format(
+                    nodes_hex[pointer], nodes_hex[pointer + 1]
+                )
                 nodes_final.append(fixed_value)
 
             # Create IPv6 string

@@ -2,7 +2,9 @@
 
 from collections import namedtuple
 
-ROui = namedtuple("ROui", "idx_oui oui organization enabled ts_modified ts_created")
+ROui = namedtuple(
+    "ROui", "idx_oui oui organization enabled ts_modified ts_created"
+)
 IOui = namedtuple("IOui", "oui organization enabled")
 
 RZone = namedtuple(
@@ -44,12 +46,14 @@ lldpremsysdesc lldpremsysname enabled""",
 )
 
 RVlan = namedtuple(
-    "RVlan", "idx_vlan idx_device vlan name state enabled ts_modified ts_created"
+    "RVlan",
+    "idx_vlan idx_device vlan name state enabled ts_modified ts_created",
 )
 IVlan = namedtuple("IVlan", "idx_device vlan name state enabled")
 
 RTrunk = namedtuple(
-    "RTrunk", "idx_trunk idx_l1interface idx_vlan enabled ts_modified ts_created"
+    "RTrunk",
+    "idx_trunk idx_l1interface idx_vlan enabled ts_modified ts_created",
 )
 ITrunk = namedtuple("ITrunk", "idx_l1interface idx_vlan enabled")
 
@@ -58,7 +62,9 @@ RMacIp = namedtuple(
     """idx_macip idx_device idx_mac ip_ hostname version enabled \
 ts_modified ts_created""",
 )
-IMacIp = namedtuple("IMacIp", "idx_device idx_mac ip_ hostname version enabled")
+IMacIp = namedtuple(
+    "IMacIp", "idx_device idx_mac ip_ hostname version enabled"
+)
 
 RMac = namedtuple(
     "RMac",

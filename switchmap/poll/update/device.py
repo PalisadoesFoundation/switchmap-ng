@@ -143,9 +143,9 @@ class Device:
                 # layer subinterfaces whose data could be used
                 # for upper layer2 features such as VLANs and
                 # LAG trunking
-                higherlayers = updated_device_data["system"]["IF-MIB"]["ifStackStatus"][
-                    ifindex
-                ]
+                higherlayers = updated_device_data["system"]["IF-MIB"][
+                    "ifStackStatus"
+                ][ifindex]
 
                 # Update vlan to universal switchmap.port_data value
                 for ifstackhigherlayer in higherlayers:
@@ -183,7 +183,9 @@ class Device:
             updated_device_data["layer1"][ifindex] = port_data
 
         # Send log message
-        log_message = "Completed processing data from host {}".format(self._devicename)
+        log_message = "Completed processing data from host {}".format(
+            self._devicename
+        )
         log.log2debug(1160, log_message)
 
         # Return

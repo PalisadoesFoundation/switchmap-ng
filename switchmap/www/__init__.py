@@ -14,7 +14,12 @@ from switchmap.www.routes.api.devices import API_DEVICES
 from switchmap.www.routes.pages.index import INDEX
 from switchmap.www.routes.pages.devices import DEVICES
 from switchmap.www.routes.pages.search import SEARCH
-from switchmap import SITE_PREFIX, API_PREFIX, API_STATIC_FOLDER, API_TEMPLATE_FOLDER
+from switchmap import (
+    SITE_PREFIX,
+    API_PREFIX,
+    API_STATIC_FOLDER,
+    API_TEMPLATE_FOLDER,
+)
 
 # Initializes the Flask Object.
 # Make sure the static URL path is under the SITE_PREFIX.
@@ -32,7 +37,9 @@ API.register_blueprint(DEVICES, url_prefix=SITE_PREFIX)
 API.register_blueprint(SEARCH, url_prefix=SITE_PREFIX)
 
 # Function to easily find your assests
-API.jinja_env.globals["static"] = lambda filename: url_for("static", filename=filename)
+API.jinja_env.globals["static"] = lambda filename: url_for(
+    "static", filename=filename
+)
 
 
 @API.context_processor
@@ -51,5 +58,7 @@ def inject():
 
     # Return
     return dict(
-        hosts=hosts, url_home=SITE_PREFIX, url_static="{}/static".format(SITE_PREFIX)
+        hosts=hosts,
+        url_home=SITE_PREFIX,
+        url_static="{}/static".format(SITE_PREFIX),
     )

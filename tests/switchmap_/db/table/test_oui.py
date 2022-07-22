@@ -13,7 +13,8 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)), os.pardir
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
                     )
                 ),
                 os.pardir,
@@ -200,7 +201,9 @@ def _convert(row):
 
     """
     # Do conversion
-    result = IOui(oui=row.oui, organization=row.organization, enabled=row.enabled)
+    result = IOui(
+        oui=row.oui, organization=row.organization, enabled=row.enabled
+    )
     return result
 
 
@@ -215,7 +218,9 @@ def _row():
 
     """
     # Create result
-    result = IOui(oui=data.mac()[:6], organization=data.random_string(), enabled=1)
+    result = IOui(
+        oui=data.mac()[:6], organization=data.random_string(), enabled=1
+    )
     return result
 
 

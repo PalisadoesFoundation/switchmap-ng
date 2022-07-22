@@ -58,7 +58,11 @@ class Device(object):
         port_data = self.translation.ethernet_data()
 
         data = Port(
-            port_data, self.hostname, self.config, self.lookup, ifindexes=self.ifindexes
+            port_data,
+            self.hostname,
+            self.config,
+            self.lookup,
+            ifindexes=self.ifindexes,
         ).data()
 
         # Populate the table
@@ -234,7 +238,9 @@ class Port(object):
         config = self.config
 
         # Get idle data for device
-        idle_filepath = "{}/{}.yaml".format(config.idle_directory(), self.hostname)
+        idle_filepath = "{}/{}.yaml".format(
+            config.idle_directory(), self.hostname
+        )
         if os.path.isfile(idle_filepath) is True:
             idle_history = general.read_yaml_file(idle_filepath)
 
@@ -477,7 +483,9 @@ class _Port(object):
             if port_data["l1_trunk"] is False:
                 if "l1_vlans" in port_data:
                     if port_data["l1_vlans"] is not None:
-                        values = [str(value) for value in port_data["l1_vlans"]]
+                        values = [
+                            str(value) for value in port_data["l1_vlans"]
+                        ]
                         vlans = " ".join(values)
             else:
                 if "l1_nativevlan" in port_data:
@@ -663,19 +671,27 @@ class System(object):
         rows.append(
             SystemRow(
                 "System Description",
-                textwrap.fill(self.system_data["sysDescr"]).replace("\n", "<br>"),
+                textwrap.fill(self.system_data["sysDescr"]).replace(
+                    "\n", "<br>"
+                ),
             )
         )
 
         # System Object ID
-        rows.append(SystemRow("System sysObjectID", self.system_data["sysObjectID"]))
+        rows.append(
+            SystemRow("System sysObjectID", self.system_data["sysObjectID"])
+        )
 
         # System Uptime
-        rows.append(SystemRow("System Uptime", _uptime(self.system_data["sysUpTime"])))
+        rows.append(
+            SystemRow("System Uptime", _uptime(self.system_data["sysUpTime"]))
+        )
 
         # Last time polled
         timestamp = int(self.system_data["timestamp"])
-        date_string = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+        date_string = datetime.fromtimestamp(timestamp).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
         rows.append(SystemRow("Time Last Polled", date_string))
 
         # Return

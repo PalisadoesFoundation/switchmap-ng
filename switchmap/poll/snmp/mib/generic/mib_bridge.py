@@ -127,10 +127,14 @@ class BridgeQuery(Query):
         if bool(oid_exists) is True:
             # Get the vlantype
             oid_vtpvlantype = ".1.3.6.1.4.1.9.9.46.1.3.1.1.3"
-            vtpvlantype = self._snmp_object.swalk(oid_vtpvlantype, normalized=True)
+            vtpvlantype = self._snmp_object.swalk(
+                oid_vtpvlantype, normalized=True
+            )
 
             # Get VLANs and their states
-            vtpvlanstate = self._snmp_object.swalk(oid_vtpvlanstate, normalized=True)
+            vtpvlanstate = self._snmp_object.swalk(
+                oid_vtpvlanstate, normalized=True
+            )
 
             # Get the style of context name to be used for this type of device
             for vlan, state in vtpvlanstate.items():
@@ -222,7 +226,9 @@ class BridgeQuery(Query):
             baseportifindex = self.dot1dbaseport_2_ifindex()
             for dot1dbaseport, ifindex in baseportifindex.items():
                 if dot1dbaseport in dot1dbaseport_macs:
-                    final[ifindex]["l1_macs"] = dot1dbaseport_macs[dot1dbaseport]
+                    final[ifindex]["l1_macs"] = dot1dbaseport_macs[
+                        dot1dbaseport
+                    ]
 
         # Return
         return final
@@ -276,7 +282,9 @@ class BridgeQuery(Query):
         oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
         oid_exists = self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
-            results = self._snmp_object.walk(oid_dot1qvlanstaticname, normalized=True)
+            results = self._snmp_object.walk(
+                oid_dot1qvlanstaticname, normalized=True
+            )
             for key, value in results.items():
                 vlan_dict[key] = value
             for key, _ in vlan_dict.items():

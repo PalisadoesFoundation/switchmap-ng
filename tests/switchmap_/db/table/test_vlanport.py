@@ -15,7 +15,8 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)), os.pardir
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
                     )
                 ),
                 os.pardir,
@@ -117,7 +118,9 @@ class TestDbTableVlanPort(unittest.TestCase):
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        preliminary_result = testimport.exists(row.idx_l1interface, row.idx_vlan)
+        preliminary_result = testimport.exists(
+            row.idx_l1interface, row.idx_vlan
+        )
         self.assertTrue(preliminary_result)
         self.assertEqual(_convert(preliminary_result), _convert(row))
 
@@ -155,7 +158,11 @@ class TestDbTableVlanPort(unittest.TestCase):
                 result = testimport.find_idx_vlan(row.idx_vlan)
                 if row.idx_vlan not in finds:
                     self.assertFalse(
-                        bool(testimport.exists(row.idx_l1interface, row.idx_vlan))
+                        bool(
+                            testimport.exists(
+                                row.idx_l1interface, row.idx_vlan
+                            )
+                        )
                     )
                     self.assertFalse(bool(result))
                 else:
@@ -164,7 +171,9 @@ class TestDbTableVlanPort(unittest.TestCase):
 
                 # Insert entry and then it should be found
                 testimport.insert_row(row)
-                now_exists = testimport.exists(row.idx_l1interface, row.idx_vlan)
+                now_exists = testimport.exists(
+                    row.idx_l1interface, row.idx_vlan
+                )
                 self.assertTrue(bool(now_exists))
 
                 post_result = testimport.find_idx_vlan(now_exists.idx_vlan)
@@ -217,7 +226,9 @@ class TestDbTableVlanPort(unittest.TestCase):
         testimport.update_row(idx, updated_row)
 
         # Test the update
-        result = testimport.exists(updated_row.idx_l1interface, updated_row.idx_vlan)
+        result = testimport.exists(
+            updated_row.idx_l1interface, updated_row.idx_vlan
+        )
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(updated_row))
 
@@ -239,7 +250,9 @@ def _convert(row):
     """
     # Do conversion
     result = IVlanPort(
-        idx_l1interface=row.idx_l1interface, idx_vlan=row.idx_vlan, enabled=row.enabled
+        idx_l1interface=row.idx_l1interface,
+        idx_vlan=row.idx_vlan,
+        enabled=row.enabled,
     )
     return result
 
@@ -292,7 +305,11 @@ def _prerequisites():
         )
     )
     oui.insert_row(
-        IOui(oui=data.random_string(), organization=data.random_string(), enabled=1)
+        IOui(
+            oui=data.random_string(),
+            organization=data.random_string(),
+            enabled=1,
+        )
     )
     mac.insert_row(
         [

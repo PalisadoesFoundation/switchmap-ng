@@ -138,14 +138,17 @@ class Interact:
 
         # Fail if snmp_parameters dictionary is empty
         if snmp_parameters["snmp_version"] is None:
-            log_message = 'SNMP version is "None". Non existent host? - {}' "".format(
-                snmp_parameters["snmp_hostname"]
+            log_message = (
+                'SNMP version is "None". Non existent host? - {}'
+                "".format(snmp_parameters["snmp_hostname"])
             )
             log.log2die(1025, log_message)
 
         # Fail if snmp_parameters dictionary is empty
         if bool(snmp_parameters) is False:
-            log_message = "SNMP parameters provided are blank. " "Non existent host?"
+            log_message = (
+                "SNMP parameters provided are blank. " "Non existent host?"
+            )
             log.log2die(1045, log_message)
 
     def enterprise_number(self):
@@ -264,7 +267,10 @@ class Interact:
             validity = True
 
         if validity is False:
-            if self._oid_exists_walk(oid_to_get, context_name=context_name) is True:
+            if (
+                self._oid_exists_walk(oid_to_get, context_name=context_name)
+                is True
+            ):
                 validity = True
 
         # Return
@@ -538,19 +544,28 @@ class Interact:
             # Update the error message
             try_log_message = """\
 {}: [{}, {}, {}]""".format(
-                try_log_message, sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2]
+                try_log_message,
+                sys.exc_info()[0],
+                sys.exc_info()[1],
+                sys.exc_info()[2],
             )
 
             # Process easysnmp errors
             (_contactable, exists) = _process_error(
-                try_log_message, exception_error, check_reachability, check_existence
+                try_log_message,
+                exception_error,
+                check_reachability,
+                check_existence,
             )
 
         except SystemError as exception_error:
             # Update the error message
             try_log_message = """\
 {}: [{}, {}, {}]""".format(
-                try_log_message, sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2]
+                try_log_message,
+                sys.exc_info()[0],
+                sys.exc_info()[1],
+                sys.exc_info()[2],
             )
 
             # Process easysnmp errors
@@ -601,14 +616,17 @@ class _Session:
 
         # Fail if snmp_parameters dictionary is empty
         if snmp_parameters["snmp_version"] is None:
-            log_message = 'SNMP version is "None". Non existent host? - {}' "".format(
-                snmp_parameters["snmp_hostname"]
+            log_message = (
+                'SNMP version is "None". Non existent host? - {}'
+                "".format(snmp_parameters["snmp_hostname"])
             )
             log.log2die(1004, log_message)
 
         # Fail if snmp_parameters dictionary is empty
         if not snmp_parameters:
-            log_message = "SNMP parameters provided are blank. " "Non existent host?"
+            log_message = (
+                "SNMP parameters provided are blank. " "Non existent host?"
+            )
             log.log2die(1046, log_message)
 
         # Create SNMP session
@@ -759,21 +777,8 @@ def _process_error(
         if system_error is False:
             if (
                 isinstance(
-                    exception_error, easysnmp.exceptions.EasySNMPUnknownObjectIDError
-                )
-                is True
-            ):
-                exists = False
-                return (_contactable, exists)
-            elif (
-                isinstance(exception_error, easysnmp.exceptions.EasySNMPNoSuchNameError)
-                is True
-            ):
-                exists = False
-                return (_contactable, exists)
-            elif (
-                isinstance(
-                    exception_error, easysnmp.exceptions.EasySNMPNoSuchObjectError
+                    exception_error,
+                    easysnmp.exceptions.EasySNMPUnknownObjectIDError,
                 )
                 is True
             ):
@@ -781,7 +786,26 @@ def _process_error(
                 return (_contactable, exists)
             elif (
                 isinstance(
-                    exception_error, easysnmp.exceptions.EasySNMPNoSuchInstanceError
+                    exception_error,
+                    easysnmp.exceptions.EasySNMPNoSuchNameError,
+                )
+                is True
+            ):
+                exists = False
+                return (_contactable, exists)
+            elif (
+                isinstance(
+                    exception_error,
+                    easysnmp.exceptions.EasySNMPNoSuchObjectError,
+                )
+                is True
+            ):
+                exists = False
+                return (_contactable, exists)
+            elif (
+                isinstance(
+                    exception_error,
+                    easysnmp.exceptions.EasySNMPNoSuchInstanceError,
                 )
                 is True
             ):

@@ -99,7 +99,9 @@ class Search:
                 _macport = macport.find_idx_mac(exist.idx_mac)
                 if bool(_macport) is True:
                     for item in _macport:
-                        result.append(Found(idx_l1interface=item.idx_l1interface))
+                        result.append(
+                            Found(idx_l1interface=item.idx_l1interface)
+                        )
 
         # Return
         return result

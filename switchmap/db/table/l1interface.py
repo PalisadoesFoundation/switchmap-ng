@@ -50,7 +50,10 @@ def exists(idx_device, ifindex):
 
     # Get row from dataase
     statement = select(L1Interface).where(
-        and_(L1Interface.ifindex == ifindex, L1Interface.idx_device == idx_device)
+        and_(
+            L1Interface.ifindex == ifindex,
+            L1Interface.idx_device == idx_device,
+        )
     )
     rows = db.db_select_row(1205, statement)
 
@@ -77,7 +80,9 @@ def findifalias(ifalias):
 
     # Get row from database (Contains)
     statement = select(L1Interface).where(
-        L1Interface.ifalias.like(func.concat(func.concat("%", ifalias.encode(), "%")))
+        L1Interface.ifalias.like(
+            func.concat(func.concat("%", ifalias.encode(), "%"))
+        )
     )
     rows_contains = db.db_select_row(1188, statement)
 
@@ -118,15 +123,23 @@ def insert_row(rows):
                 ifindex=row.ifindex,
                 duplex=null() if row.duplex is None else row.duplex,
                 ethernet=null() if row.ethernet is None else row.ethernet,
-                nativevlan=(null() if row.nativevlan is None else row.nativevlan),
+                nativevlan=(
+                    null() if row.nativevlan is None else row.nativevlan
+                ),
                 trunk=null() if row.trunk is None else row.trunk,
                 ifspeed=null() if row.ifspeed is None else row.ifspeed,
-                ifalias=(null() if row.ifalias is None else row.ifalias.encode()),
-                ifdescr=(null() if row.ifdescr is None else row.ifdescr.encode()),
+                ifalias=(
+                    null() if row.ifalias is None else row.ifalias.encode()
+                ),
+                ifdescr=(
+                    null() if row.ifdescr is None else row.ifdescr.encode()
+                ),
                 ifadminstatus=(
                     null() if row.ifadminstatus is None else row.ifadminstatus
                 ),
-                ifoperstatus=(null() if row.ifoperstatus is None else row.ifoperstatus),
+                ifoperstatus=(
+                    null() if row.ifoperstatus is None else row.ifoperstatus
+                ),
                 ts_idle=0 if not bool(row.ts_idle) else row.ts_idle,
                 cdpcachedeviceid=(
                     null()
@@ -193,11 +206,17 @@ def update_row(idx, row):
                 "ifindex": row.ifindex,
                 "duplex": null() if row.duplex is None else row.duplex,
                 "ethernet": null() if row.ethernet is None else row.ethernet,
-                "nativevlan": (null() if row.nativevlan is None else row.nativevlan),
+                "nativevlan": (
+                    null() if row.nativevlan is None else row.nativevlan
+                ),
                 "trunk": null() if row.trunk is None else row.trunk,
                 "ifspeed": null() if row.ifspeed is None else row.ifspeed,
-                "ifalias": (null() if row.ifalias is None else row.ifalias.encode()),
-                "ifdescr": (null() if row.ifdescr is None else row.ifdescr.encode()),
+                "ifalias": (
+                    null() if row.ifalias is None else row.ifalias.encode()
+                ),
+                "ifdescr": (
+                    null() if row.ifdescr is None else row.ifdescr.encode()
+                ),
                 "ifadminstatus": (
                     null() if row.ifadminstatus is None else row.ifadminstatus
                 ),

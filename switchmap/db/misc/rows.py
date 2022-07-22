@@ -27,14 +27,22 @@ def device(row):
         idx_device=row.idx_device,
         idx_zone=row.idx_zone,
         idx_event=row.idx_event,
-        sys_name=(None if bool(row.sys_name) is False else row.sys_name.decode()),
-        hostname=(None if bool(row.hostname) is False else row.hostname.decode()),
+        sys_name=(
+            None if bool(row.sys_name) is False else row.sys_name.decode()
+        ),
+        hostname=(
+            None if bool(row.hostname) is False else row.hostname.decode()
+        ),
         name=(None if bool(row.name) is False else row.name.decode()),
         sys_description=(
-            None if bool(row.sys_description) is False else row.sys_description.decode()
+            None
+            if bool(row.sys_description) is False
+            else row.sys_description.decode()
         ),
         sys_objectid=(
-            None if bool(row.sys_objectid) is False else row.sys_objectid.decode()
+            None
+            if bool(row.sys_objectid) is False
+            else row.sys_objectid.decode()
         ),
         sys_uptime=row.sys_uptime,
         last_polled=row.last_polled,
@@ -92,16 +100,24 @@ def l1interface(row):
         ifoperstatus=row.ifoperstatus,
         ts_idle=row.ts_idle,
         cdpcachedeviceid=(
-            None if row.cdpcachedeviceid is None else row.cdpcachedeviceid.decode()
+            None
+            if row.cdpcachedeviceid is None
+            else row.cdpcachedeviceid.decode()
         ),
         cdpcachedeviceport=(
-            None if row.cdpcachedeviceport is None else row.cdpcachedeviceport.decode()
+            None
+            if row.cdpcachedeviceport is None
+            else row.cdpcachedeviceport.decode()
         ),
         cdpcacheplatform=(
-            None if row.cdpcacheplatform is None else row.cdpcacheplatform.decode()
+            None
+            if row.cdpcacheplatform is None
+            else row.cdpcacheplatform.decode()
         ),
         lldpremportdesc=(
-            None if row.lldpremportdesc is None else row.lldpremportdesc.decode()
+            None
+            if row.lldpremportdesc is None
+            else row.lldpremportdesc.decode()
         ),
         lldpremsyscapenabled=(
             None
@@ -161,7 +177,9 @@ def macip(row):
         idx_device=row.idx_device,
         idx_mac=row.idx_mac,
         ip_=None if bool(row.ip_) is False else row.ip_.decode(),
-        hostname=(None if bool(row.hostname) is False else row.hostname.decode()),
+        hostname=(
+            None if bool(row.hostname) is False else row.hostname.decode()
+        ),
         version=row.version,
         enabled=row.enabled,
         ts_created=row.ts_created,
@@ -207,7 +225,9 @@ def oui(row):
         idx_oui=row.idx_oui,
         oui=(None if bool(row.oui) is False else row.oui.decode()),
         organization=(
-            None if bool(row.organization) is False else row.organization.decode()
+            None
+            if bool(row.organization) is False
+            else row.organization.decode()
         ),
         enabled=row.enabled,
         ts_created=row.ts_created,
@@ -276,14 +296,18 @@ def zone(row):
     result = RZone(
         idx_zone=row.idx_zone,
         name=(None if row.name is None else row.name.decode()),
-        company_name=(None if row.company_name is None else row.company_name.decode()),
+        company_name=(
+            None if row.company_name is None else row.company_name.decode()
+        ),
         address_0=(None if row.address_0 is None else row.address_0.decode()),
         address_1=(None if row.address_1 is None else row.address_1.decode()),
         address_2=(None if row.address_2 is None else row.address_2.decode()),
         city=(None if row.city is None else row.city.decode()),
         state=(None if row.state is None else row.state.decode()),
         country=(None if row.country is None else row.country.decode()),
-        postal_code=(None if row.postal_code is None else row.postal_code.decode()),
+        postal_code=(
+            None if row.postal_code is None else row.postal_code.decode()
+        ),
         phone=(None if row.phone is None else row.phone.decode()),
         notes=(None if row.notes is None else row.notes.decode()),
         enabled=row.enabled,

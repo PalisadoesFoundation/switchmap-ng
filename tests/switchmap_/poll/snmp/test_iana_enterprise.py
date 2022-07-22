@@ -13,7 +13,8 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)), os.pardir
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
                     )
                 ),
                 os.pardir,
@@ -88,7 +89,9 @@ class TestMibIanaEnterprise(unittest.TestCase):
         self.assertEqual(result, True)
 
         # Test for fake vendor
-        testobj = test_class.Query(sysobjectid=".1.2.3.4.5.6.100000000000000.101.102")
+        testobj = test_class.Query(
+            sysobjectid=".1.2.3.4.5.6.100000000000000.101.102"
+        )
         result = testobj.is_cisco()
         self.assertEqual(result, False)
 
@@ -100,7 +103,9 @@ class TestMibIanaEnterprise(unittest.TestCase):
         self.assertEqual(result, True)
 
         # Test for fake vendor
-        testobj = test_class.Query(sysobjectid=".1.2.3.4.5.6.100000000000000.101.102")
+        testobj = test_class.Query(
+            sysobjectid=".1.2.3.4.5.6.100000000000000.101.102"
+        )
         result = testobj.is_juniper()
         self.assertEqual(result, False)
 

@@ -56,11 +56,15 @@ class Lookup(object):
         result = {}
 
         for item in listing:
-            html_hostname = "{}<p>{}<p>".format(html_hostname, item["hostname"])
+            html_hostname = "{}<p>{}<p>".format(
+                html_hostname, item["hostname"]
+            )
             html_manufacturer = "{}<p>{}<p>".format(
                 html_manufacturer, item["manufacturer"]
             )
-            html_ip_address = "{}<p>{}<p>".format(html_ip_address, item["ip_address"])
+            html_ip_address = "{}<p>{}<p>".format(
+                html_ip_address, item["ip_address"]
+            )
 
             if bool(item["mac_address"]) is True:
                 html_mac_address = "{}<p>{}<p>".format(
@@ -116,7 +120,9 @@ class Lookup(object):
 
                         if ip_address in self.arp_table:
                             if "hostname" in self.arp_table[ip_address]:
-                                hostname = self.arp_table[ip_address]["hostname"]
+                                hostname = self.arp_table[ip_address][
+                                    "hostname"
+                                ]
                                 data_dict["hostname"] = hostname
 
                         listing.append(data_dict)

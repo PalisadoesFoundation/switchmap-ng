@@ -113,7 +113,9 @@ def update_row(idx, row):
             {
                 "idx_device": row.idx_device,
                 "vlan": null() if bool(row.vlan) is False else row.vlan,
-                "name": (null() if bool(row.name) is False else row.name.encode()),
+                "name": (
+                    null() if bool(row.name) is False else row.name.encode()
+                ),
                 "state": null() if bool(row.state) is False else row.state,
                 "enabled": row.enabled,
             }

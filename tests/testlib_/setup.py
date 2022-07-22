@@ -19,7 +19,9 @@ import yaml
 
 
 # Initialize GLOBAL variables
-_UNITTEST_DIRECTORY = "{}{}.switchmap_unittests".format(os.environ["HOME"], os.sep)
+_UNITTEST_DIRECTORY = "{}{}.switchmap_unittests".format(
+    os.environ["HOME"], os.sep
+)
 
 # Application imports
 from . import data
@@ -216,7 +218,9 @@ def _directories(randomizer=False):
         base_directory = "{1}{0}tmp{0}{2}".format(
             os.sep,
             _UNITTEST_DIRECTORY,
-            "".join(random.choices(string.ascii_uppercase + string.digits, k=10)),
+            "".join(
+                random.choices(string.ascii_uppercase + string.digits, k=10)
+            ),
         )
 
     # Set global variables

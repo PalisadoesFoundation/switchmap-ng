@@ -13,7 +13,8 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)), os.pardir
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
                     )
                 ),
                 os.pardir,
@@ -243,7 +244,9 @@ def _row():
     mac = data.mac()
 
     # Create an OUI entry
-    oui.insert_row(IOui(oui=mac[:6], organization=data.random_string(), enabled=1))
+    oui.insert_row(
+        IOui(oui=mac[:6], organization=data.random_string(), enabled=1)
+    )
 
     # Get IDX OUI value
     idx_oui = oui.idx_oui(mac)

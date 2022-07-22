@@ -95,7 +95,9 @@ class Query:
 
         # Get system information from SNMPv2-MIB, ENTITY-MIB, IF-MIB
         # Instantiate a query object for each system query
-        for item in [Query(self.snmp_object) for Query in get_queries("system")]:
+        for item in [
+            Query(self.snmp_object) for Query in get_queries("system")
+        ]:
 
             if item.supported():
                 processed = True
@@ -123,7 +125,9 @@ class Query:
 
         # Get information layer1 queries
 
-        for item in [Query(self.snmp_object) for Query in get_queries("layer1")]:
+        for item in [
+            Query(self.snmp_object) for Query in get_queries("layer1")
+        ]:
             if item.supported():
                 processed = True
                 data = _add_layer1(item, data)
@@ -148,7 +152,9 @@ class Query:
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
 
-        for item in [Query(self.snmp_object) for Query in get_queries("layer2")]:
+        for item in [
+            Query(self.snmp_object) for Query in get_queries("layer2")
+        ]:
             if item.supported():
                 processed = True
                 data = _add_layer2(item, data)
@@ -173,7 +179,9 @@ class Query:
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
 
-        for item in [Query(self.snmp_object) for Query in get_queries("layer3")]:
+        for item in [
+            Query(self.snmp_object) for Query in get_queries("layer3")
+        ]:
             if item.supported():
                 processed = True
                 data = _add_layer3(item, data)

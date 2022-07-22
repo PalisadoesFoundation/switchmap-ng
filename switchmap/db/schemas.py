@@ -155,7 +155,9 @@ class Query(graphene.ObjectType):
 
     # Results as a single entry filtered by 'id' and as a list
     oui = graphene.relay.Node.Field(Oui)
-    all_oui = FilterableConnectionField(connection=Oui, sort=None, filters=OuiFilter())
+    all_oui = FilterableConnectionField(
+        connection=Oui, sort=None, filters=OuiFilter()
+    )
 
     # Results as a single entry filtered by 'id' and as a list
     trunk = graphene.relay.Node.Field(Trunk)

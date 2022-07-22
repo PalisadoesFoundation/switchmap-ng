@@ -201,7 +201,8 @@ class TestCiscoCDP(unittest.TestCase):
         for primary in results.keys():
             for secondary in results[primary].keys():
                 self.assertEqual(
-                    results[primary][secondary], expected_dict[primary][secondary]
+                    results[primary][secondary],
+                    expected_dict[primary][secondary],
                 )
 
     def test_cdpcachedeviceid(self):

@@ -58,7 +58,9 @@ class Zone(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
 
 class Oui(BASE):
@@ -77,7 +79,9 @@ class Oui(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
 
 class Event(BASE):
@@ -86,7 +90,9 @@ class Event(BASE):
     __tablename__ = "smap_event"
     __table_args__ = {"mysql_engine": "InnoDB"}
 
-    idx_event = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_event = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
     name = Column(VARBINARY(256), unique=True)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
@@ -95,7 +101,9 @@ class Event(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
 
 class Device(BASE):
@@ -104,7 +112,9 @@ class Device(BASE):
     __tablename__ = "smap_device"
     __table_args__ = {"mysql_engine": "InnoDB"}
 
-    idx_device = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_device = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
     idx_zone = Column(
         ForeignKey("smap_zone.idx_zone"),
         nullable=False,
@@ -133,15 +143,19 @@ class Device(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
     device_to_zone = relationship(
-        Zone, backref=backref("device_to_zone", uselist=True, cascade="delete,all")
+        Zone,
+        backref=backref("device_to_zone", uselist=True, cascade="delete,all"),
     )
 
     device_to_event = relationship(
-        Event, backref=backref("device_to_event", uselist=True, cascade="delete,all")
+        Event,
+        backref=backref("device_to_event", uselist=True, cascade="delete,all"),
     )
 
 
@@ -154,7 +168,9 @@ class L1Interface(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_l1interface = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_l1interface = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
     idx_device = Column(
         ForeignKey("smap_device.idx_device"),
         nullable=False,
@@ -187,12 +203,16 @@ class L1Interface(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
     l1interface_to_device = relationship(
         Device,
-        backref=backref("l1interface_to_device", uselist=True, cascade="delete,all"),
+        backref=backref(
+            "l1interface_to_device", uselist=True, cascade="delete,all"
+        ),
     )
 
 
@@ -223,11 +243,14 @@ class Vlan(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
     vlan_to_device = relationship(
-        Device, backref=backref("vlan_to_device", uselist=True, cascade="delete,all")
+        Device,
+        backref=backref("vlan_to_device", uselist=True, cascade="delete,all"),
     )
 
 
@@ -240,7 +263,9 @@ class VlanPort(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_vlanport = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_vlanport = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
     idx_l1interface = Column(
         ForeignKey("smap_l1interface.idx_l1interface"),
         nullable=False,
@@ -262,16 +287,23 @@ class VlanPort(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
     vlanport_to_l1interface = relationship(
         L1Interface,
-        backref=backref("vlanport_to_l1interface", uselist=True, cascade="delete,all"),
+        backref=backref(
+            "vlanport_to_l1interface", uselist=True, cascade="delete,all"
+        ),
     )
 
     vlanport_to_vlan = relationship(
-        Vlan, backref=backref("vlanport_to_vlan", uselist=True, cascade="delete,all")
+        Vlan,
+        backref=backref(
+            "vlanport_to_vlan", uselist=True, cascade="delete,all"
+        ),
     )
 
 
@@ -279,7 +311,10 @@ class Mac(BASE):
     """Database table definition."""
 
     __tablename__ = "smap_mac"
-    __table_args__ = (UniqueConstraint("mac", "idx_zone"), {"mysql_engine": "InnoDB"})
+    __table_args__ = (
+        UniqueConstraint("mac", "idx_zone"),
+        {"mysql_engine": "InnoDB"},
+    )
 
     idx_mac = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_oui = Column(
@@ -311,18 +346,22 @@ class Mac(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
     mac_to_oui = relationship(
         Oui, backref=backref("mac_to_oui", uselist=True, cascade="delete,all")
     )
 
     mac_to_event = relationship(
-        Event, backref=backref("mac_to_event", uselist=True, cascade="delete,all")
+        Event,
+        backref=backref("mac_to_event", uselist=True, cascade="delete,all"),
     )
 
     mac_to_zone = relationship(
-        Zone, backref=backref("mac_to_zone", uselist=True, cascade="delete,all")
+        Zone,
+        backref=backref("mac_to_zone", uselist=True, cascade="delete,all"),
     )
 
 
@@ -335,7 +374,9 @@ class MacIp(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_macip = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_macip = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
     idx_device = Column(
         ForeignKey("smap_device.idx_device"),
         nullable=False,
@@ -360,15 +401,19 @@ class MacIp(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
     macip_to_device = relationship(
-        Device, backref=backref("macip_to_device", uselist=True, cascade="delete,all")
+        Device,
+        backref=backref("macip_to_device", uselist=True, cascade="delete,all"),
     )
 
     macip_to_mac = relationship(
-        Mac, backref=backref("macip_to_mac", uselist=True, cascade="delete,all")
+        Mac,
+        backref=backref("macip_to_mac", uselist=True, cascade="delete,all"),
     )
 
 
@@ -381,7 +426,9 @@ class MacPort(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_macport = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_macport = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
     idx_l1interface = Column(
         ForeignKey("smap_l1interface.idx_l1interface"),
         nullable=False,
@@ -403,16 +450,21 @@ class MacPort(BASE):
         default=datetime.datetime.utcnow,
         onupdate=datetime.datetime.now,
     )
-    ts_created = Column(DateTime, nullable=False, default=datetime.datetime.utcnow)
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
 
     # Uses cascade='delete,all' to propagate the deletion of an entry
     macport_to_l1interface = relationship(
         L1Interface,
-        backref=backref("macport_to_l1interface", uselist=True, cascade="delete,all"),
+        backref=backref(
+            "macport_to_l1interface", uselist=True, cascade="delete,all"
+        ),
     )
 
     macport_to_mac = relationship(
-        Mac, backref=backref("macport_to_mac", uselist=True, cascade="delete,all")
+        Mac,
+        backref=backref("macport_to_mac", uselist=True, cascade="delete,all"),
     )
 
 

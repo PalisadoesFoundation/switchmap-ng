@@ -104,7 +104,9 @@ Minimum value {} is greater than {}. Please fix.\
 
     # Get duplicate codes
     _duplicates = [
-        item for item, count in collections.Counter(error_codes).items() if count > 1
+        item
+        for item, count in collections.Counter(error_codes).items()
+        if count > 1
     ]
     _duplicates.sort()
     if len(_duplicates) > entries:
@@ -151,7 +153,9 @@ Extremely small error code {} found. Must be greater than {}. Please fix.
 
     # Get available codes
     if bool(available_codes) is False:
-        available_codes = list(range(max(error_codes), max(error_codes) + entries + 1))
+        available_codes = list(
+            range(max(error_codes), max(error_codes) + entries + 1)
+        )
 
     # Print report
     print(
@@ -215,7 +219,9 @@ def _codes(filename, to_find):
     # Initalize key variables
     digits = re.compile(r"^.*?(\d+).*?$")
     metadata = []
-    Metadata = collections.namedtuple("Metadata", "filename, line, number, code")
+    Metadata = collections.namedtuple(
+        "Metadata", "filename, line, number, code"
+    )
 
     # Process file for codes
     with open(filename, "r") as lines:
@@ -244,7 +250,10 @@ def _codes(filename, to_find):
                     code_value = int(found.group(1))
                     metadata.append(
                         Metadata(
-                            filename=filename, line=line, number=count, code=code_value
+                            filename=filename,
+                            line=line,
+                            number=count,
+                            code=code_value,
                         )
                     )
 

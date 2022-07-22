@@ -306,7 +306,9 @@ def vlanport(data):
                                 l1_exists.idx_l1interface, vlan_exists.idx_vlan
                             )
                             if bool(vlanport_exists) is True:
-                                _vlanport.update_row(vlanport_exists.idx_vlanport, row)
+                                _vlanport.update_row(
+                                    vlanport_exists.idx_vlanport, row
+                                )
                             else:
                                 _vlanport.insert_row(row)
 
@@ -426,7 +428,9 @@ def macport(data):
                                 l1_exists.idx_l1interface, mac_exists.idx_mac
                             )
                             if bool(macport_exists) is True:
-                                _macport.update_row(macport_exists.idx_macport, row)
+                                _macport.update_row(
+                                    macport_exists.idx_macport, row
+                                )
                             else:
                                 _macport.insert_row(row)
 

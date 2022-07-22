@@ -189,7 +189,8 @@ class AgentCLI:
         """
         # Header for the help menu of the application
         parser = argparse.ArgumentParser(
-            description=additional_help, formatter_class=argparse.RawTextHelpFormatter
+            description=additional_help,
+            formatter_class=argparse.RawTextHelpFormatter,
         )
 
         # CLI argument for starting

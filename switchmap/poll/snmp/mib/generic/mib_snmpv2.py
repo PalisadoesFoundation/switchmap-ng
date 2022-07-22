@@ -88,7 +88,9 @@ class Snmpv2Query(Query):
                 getvalues.append(value)
 
         # Assign values
-        data_dict["sysDescr"][key] = general.cleanstring(getvalues[1].decode("utf-8"))
+        data_dict["sysDescr"][key] = general.cleanstring(
+            getvalues[1].decode("utf-8")
+        )
         data_dict["sysObjectID"][key] = getvalues[2].decode("utf-8")
         data_dict["sysUpTime"][key] = int(getvalues[3])
         data_dict["sysContact"][key] = getvalues[4].decode("utf-8")

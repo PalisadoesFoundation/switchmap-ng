@@ -16,7 +16,8 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)), os.pardir
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
                     )
                 ),
                 os.pardir,
@@ -239,12 +240,18 @@ class TestPollUpdateTopology(unittest.TestCase):
                     idx_zone=row.idx_zone,
                     idx_event=row.idx_event,
                     sys_name=(
-                        None if bool(row.sys_name) is False else row.sys_name.decode()
+                        None
+                        if bool(row.sys_name) is False
+                        else row.sys_name.decode()
                     ),
                     hostname=(
-                        None if bool(row.hostname) is False else row.hostname.decode()
+                        None
+                        if bool(row.hostname) is False
+                        else row.hostname.decode()
                     ),
-                    name=(None if bool(row.name) is False else row.name.decode()),
+                    name=(
+                        None if bool(row.name) is False else row.name.decode()
+                    ),
                     sys_description=(
                         None
                         if bool(row.sys_description) is False
@@ -1048,8 +1055,12 @@ class TestPollUpdateTopology(unittest.TestCase):
                     nativevlan=row.nativevlan,
                     trunk=row.trunk,
                     ifspeed=row.ifspeed,
-                    ifalias=(None if row.ifalias is None else row.ifalias.decode()),
-                    ifdescr=(None if row.ifdescr is None else row.ifdescr.decode()),
+                    ifalias=(
+                        None if row.ifalias is None else row.ifalias.decode()
+                    ),
+                    ifdescr=(
+                        None if row.ifdescr is None else row.ifdescr.decode()
+                    ),
                     ifadminstatus=row.ifadminstatus,
                     ifoperstatus=row.ifoperstatus,
                     ts_idle=row.ts_idle,

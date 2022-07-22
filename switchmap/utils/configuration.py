@@ -117,7 +117,8 @@ class Config(object):
         # Check if value exists
         if os.path.isdir(value) is False:
             log_message = (
-                'cache_directory: "{}" ' "in configuration doesn't exist!".format(value)
+                'cache_directory: "{}" '
+                "in configuration doesn't exist!".format(value)
             )
             log.log2die(1011, log_message)
 
@@ -381,7 +382,9 @@ class Config(object):
         # Get result
         key = "main"
         sub_key = "agent_threads"
-        configured_value = _key_sub_key(key, sub_key, self.config_dict, die=False)
+        configured_value = _key_sub_key(
+            key, sub_key, self.config_dict, die=False
+        )
 
         # Default to 20
         if bool(configured_value) is False:
@@ -698,7 +701,9 @@ def _key_sub_key(key, sub_key, config_dict, die=True):
     if key in config_dict:
         # Make sure we don't have a None value
         if config_dict[key] is None:
-            log_message = "Configuration value {}: is blank. Please fix." "".format(key)
+            log_message = (
+                "Configuration value {}: is blank. Please fix." "".format(key)
+            )
             log.log2die_safe(1037, log_message)
 
         # Get value we need

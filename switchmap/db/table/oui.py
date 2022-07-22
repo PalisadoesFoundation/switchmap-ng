@@ -139,7 +139,9 @@ def update_row(idx, row):
                     if bool(row.organization) is False
                     else row.organization.encode()
                 ),
-                "oui": (null() if bool(row.oui) is False else row.oui.encode()),
+                "oui": (
+                    null() if bool(row.oui) is False else row.oui.encode()
+                ),
                 "enabled": row.enabled,
             }
         )

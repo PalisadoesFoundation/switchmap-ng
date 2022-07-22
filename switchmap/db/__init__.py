@@ -49,7 +49,10 @@ def main():
     # Create DB connection pool
     if use_mysql is True:
         db_url = "mysql+pymysql://{}:{}@{}/{}".format(
-            config.db_user(), config.db_pass(), config.db_host(), config.db_name()
+            config.db_user(),
+            config.db_pass(),
+            config.db_host(),
+            config.db_name(),
         )
 
         # Fix for multiprocessing on pools

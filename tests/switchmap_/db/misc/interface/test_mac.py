@@ -16,7 +16,9 @@ ROOT_DIR = os.path.abspath(
                     os.path.join(
                         os.path.abspath(
                             os.path.join(
-                                os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                                os.path.abspath(
+                                    os.path.join(EXEC_DIR, os.pardir)
+                                ),
                                 os.pardir,
                             )
                         ),
@@ -84,7 +86,9 @@ from switchmap.db.misc.interface import mac as testimport
 MAXMAC = 100
 OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
 MACS = ["{0}{1}".format(_, data.mac()[:6]) for _ in OUIS]
-HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[:MAXMAC]
+HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[
+    :MAXMAC
+]
 IFALIASES = ["ALIAS_{0}".format(data.random_string()) for _ in range(MAXMAC)]
 ORGANIZATIONS = ["ORG_{0}".format(data.random_string()) for _ in range(MAXMAC)]
 IPADDRESSES = list(set([data.ip_() for _ in range(MAXMAC * 2)]))[:MAXMAC]
@@ -197,7 +201,9 @@ def _prerequisites():
     )
     mac.insert_row(
         [
-            IMac(idx_oui=key + 1, idx_event=1, idx_zone=1, mac=value, enabled=1)
+            IMac(
+                idx_oui=key + 1, idx_event=1, idx_zone=1, mac=value, enabled=1
+            )
             for key, value in enumerate(MACS)
         ]
     )

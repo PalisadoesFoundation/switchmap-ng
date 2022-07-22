@@ -39,7 +39,9 @@ from tests.testlib_ import data
 MAXMAC = 100
 OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
 MACS = ["{0}{1}".format(_, data.mac()[:6]) for _ in OUIS]
-HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[:MAXMAC]
+HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[
+    :MAXMAC
+]
 IFALIASES = ["ALIAS_{0}".format(data.random_string()) for _ in range(MAXMAC)]
 ORGANIZATIONS = ["ORG_{0}".format(data.random_string()) for _ in range(MAXMAC)]
 IPADDRESSES = list(set([data.ip_() for _ in range(MAXMAC * 2)]))[:MAXMAC]
@@ -88,7 +90,9 @@ def prerequisites():
     )
     mac.insert_row(
         [
-            IMac(idx_oui=key + 1, idx_event=1, idx_zone=1, mac=value, enabled=1)
+            IMac(
+                idx_oui=key + 1, idx_event=1, idx_zone=1, mac=value, enabled=1
+            )
             for key, value in enumerate(MACS)
         ]
     )
@@ -108,7 +112,13 @@ def prerequisites():
     )
     # Insert VLANs
     vlans = [
-        IVlan(idx_device=1, vlan=idx + 1, name=data.random_string(), state=1, enabled=1)
+        IVlan(
+            idx_device=1,
+            vlan=idx + 1,
+            name=data.random_string(),
+            state=1,
+            enabled=1,
+        )
         for idx in range(MAXMAC)
     ]
     vlan.insert_row(vlans)
