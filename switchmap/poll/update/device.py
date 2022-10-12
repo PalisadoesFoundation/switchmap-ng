@@ -36,7 +36,7 @@ class Device:
 
         """
         # Initialize key variables
-        self._devicename = data['misc']['host']
+        self._devicename = data["misc"]["host"]
         self._data = deepcopy(data)
 
     def process(self):
@@ -115,7 +115,7 @@ class Device:
         """
         # Initialize key variables
         updated_device_data = deepcopy(self._data)
-        layer1_data = updated_device_data['layer1']
+        layer1_data = updated_device_data["layer1"]
 
         # Send log message
         log_message = "Processing data from host {}".format(self._devicename)
@@ -129,7 +129,7 @@ class Device:
             # Process port_data
             if _is_ethernet(port_data) is True:
                 # Update Ethernet status
-                port_data['l1_ethernet'] = True
+                port_data["l1_ethernet"] = True
 
                 # Get the ifIndex of the lower layer interface
                 ifstacklowerlayer = ifindex
@@ -143,7 +143,7 @@ class Device:
                 # layer subinterfaces whose data could be used
                 # for upper layer2 features such as VLANs and
                 # LAG trunking
-                higherlayers = updated_device_data['system']['IF-MIB'][
+                higherlayers = updated_device_data["system"]["IF-MIB"][
                     "ifStackStatus"
                 ][ifindex]
 
@@ -153,18 +153,18 @@ class Device:
                     # interfaces. Use lower level ifIndex
                     if bool(ifstackhigherlayer) is False:
                         (
-                            port_data['l1_vlans'],
-                            port_data['l1_nativevlan'],
-                            port_data['l1_trunk'],
+                            port_data["l1_vlans"],
+                            port_data["l1_nativevlan"],
+                            port_data["l1_trunk"],
                         ) = _process_non_trunk(layer1_data[ifstacklowerlayer])
 
                     else:
                         meta = _process_trunk(
                             layer1_data[ifstackhigherlayer], higherlayers
                         )
-                        port_data['l1_vlans'] = meta.vlan
-                        port_data['l1_nativevlan'] = meta.nativevlan
-                        port_data['l1_trunk'] = meta.trunk
+                        port_data["l1_vlans"] = meta.vlan
+                        port_data["l1_nativevlan"] = meta.nativevlan
+                        port_data["l1_trunk"] = meta.trunk
 
                 #############################################################
                 #
@@ -173,14 +173,14 @@ class Device:
                 #############################################################
 
                 # Update duplex to universal switchmap.port_data value
-                port_data['l1_duplex'] = _duplex(deepcopy(port_data))
+                port_data["l1_duplex"] = _duplex(deepcopy(port_data))
 
             else:
                 # Update Ethernet status
-                port_data['l1_ethernet'] = False
+                port_data["l1_ethernet"] = False
 
             # Update the data
-            updated_device_data['layer1'][ifindex] = port_data
+            updated_device_data["layer1"][ifindex] = port_data
 
         # Send log message
         log_message = "Completed processing data from host {}".format(
@@ -262,26 +262,26 @@ def _juniper_fix(device_data):
     valid = False
 
     # Send log message
-    devicename = source['misc']['host']
+    devicename = source["misc"]["host"]
     log_message = "Starting data fixup of host {}".format(devicename)
     log.log2debug(1076, log_message)
 
     # Get ifStackStatus data
     if "system" in source:
-        if "IF-MIB" in source['system']:
-            if "ifStackStatus" in source['system']['IF-MIB']:
+        if "IF-MIB" in source["system"]:
+            if "ifStackStatus" in source["system"]["IF-MIB"]:
                 valid = True
 
     # Return if not valid
     if valid is False:
         # Send log message
-        devicename = source['misc']['host']
+        devicename = source["misc"]["host"]
         log_message = "Completed data fixup of host {}".format(devicename)
         log.log2debug(1146, log_message)
         return result
 
     # Get a list of ifIndex values to Process
-    status_values = source['system']['IF-MIB']['ifStackStatus']
+    status_values = source["system"]["IF-MIB"]["ifStackStatus"]
 
     # Get the ones that are non Ethernet and have Ethernet parents
     for parent, children in status_values.items():
@@ -290,13 +290,13 @@ def _juniper_fix(device_data):
                 continue
             else:
                 # Copy key values from child to parent
-                if source['layer1'][parent]['ifType'] == 6:
-                    for parameter, value in source['layer1'][child].items():
-                        if parameter not in result['layer1'][parent]:
-                            result['layer1'][parent][parameter] = value
+                if source["layer1"][parent]["ifType"] == 6:
+                    for parameter, value in source["layer1"][child].items():
+                        if parameter not in result["layer1"][parent]:
+                            result["layer1"][parent][parameter] = value
 
     # Send log message
-    devicename = source['misc']['host']
+    devicename = source["misc"]["host"]
     log_message = "Completed data fixup of host {}".format(devicename)
     log.log2debug(1147, log_message)
 
@@ -320,10 +320,10 @@ def _is_ethernet(port_data):
     # Process ifType
     if "ifType" in port_data:
         # Get port name
-        name = port_data['ifName'].lower()
+        name = port_data["ifName"].lower()
 
         # Process ethernet ports
-        if port_data['ifType'] == 6:
+        if port_data["ifType"] == 6:
             # VLAN L2 VLAN interfaces passing as Ethernet
             if name.startswith("vl") is False:
                 valid = True
@@ -347,22 +347,22 @@ def _vlan(port_data):
 
     # Determine vlan number for Cisco devices (Older models)
     if "vmVlan" in port_data:
-        vlans = [int(port_data['vmVlan'])]
+        vlans = [int(port_data["vmVlan"])]
 
     # Determine vlan number for Cisco devices (Newer models)
     if "vlanTrunkPortVlansEnabled" in port_data:
-        if isinstance(port_data['vlanTrunkPortVlansEnabled'], list) is True:
-            vlans = port_data['vlanTrunkPortVlansEnabled']
+        if isinstance(port_data["vlanTrunkPortVlansEnabled"], list) is True:
+            vlans = port_data["vlanTrunkPortVlansEnabled"]
         else:
-            vlans = [int(port_data['vlanTrunkPortVlansEnabled'])]
+            vlans = [int(port_data["vlanTrunkPortVlansEnabled"])]
 
     # Determine vlan number for Cisco devices (Router trunk subinterfaces)
     if "cviRoutedVlanIfIndex" in port_data:
-        vlans = port_data['cviRoutedVlanIfIndex']
+        vlans = port_data["cviRoutedVlanIfIndex"]
 
     # Determine vlan number for Juniper devices
     if "jnxExVlanTag" in port_data:
-        tags = port_data['jnxExVlanTag']
+        tags = port_data["jnxExVlanTag"]
         if bool(tags) is True:
             vlans = tags
 
@@ -386,11 +386,11 @@ def _nativevlan(port_data):
 
     # Determine native VLAN tag number for Cisco devices
     if "vlanTrunkPortNativeVlan" in port_data:
-        vlan = int(port_data['vlanTrunkPortNativeVlan'])
+        vlan = int(port_data["vlanTrunkPortNativeVlan"])
 
     # Determine native VLAN tag number for Juniper devices
     if "dot1qPvid" in port_data:
-        vlan = port_data['dot1qPvid']
+        vlan = port_data["dot1qPvid"]
 
     # Return
     return vlan
@@ -447,8 +447,8 @@ def _duplex(port_data):
     # The Cisco 3500XL is known to report incorrect duplex values.
     # Obsolete device, doesn't make sense supporting it.
     if not duplex and "c2900PortLinkbeatStatus" in port_data:
-        status_link = port_data['c2900PortLinkbeatStatus']
-        status_duplex = port_data['c2900PortDuplexStatus']
+        status_link = port_data["c2900PortLinkbeatStatus"]
+        status_duplex = port_data["c2900PortDuplexStatus"]
 
         if status_link == 3:
             # If no link beats (Not AutoNegotiate)
@@ -482,12 +482,12 @@ def _trunk(port_data):
 
     # Determine if trunk for Cisco devices
     if "vlanTrunkPortDynamicStatus" in port_data:
-        if port_data['vlanTrunkPortDynamicStatus'] == 1:
+        if port_data["vlanTrunkPortDynamicStatus"] == 1:
             trunk = True
 
     # Determine if trunk for Juniper devices
     if "jnxExVlanPortAccessMode" in port_data:
-        if port_data['jnxExVlanPortAccessMode'] == 2:
+        if port_data["jnxExVlanPortAccessMode"] == 2:
             trunk = True
 
     # Return

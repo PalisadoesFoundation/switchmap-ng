@@ -95,11 +95,11 @@ class Validate:
         # Probe device with all SNMP options
         for params_dict in self.snmp_config:
             # Only process enabled SNMP values
-            if bool(params_dict['enabled']) is False:
+            if bool(params_dict["enabled"]) is False:
                 continue
 
             # Update credentials
-            params_dict['snmp_hostname'] = self.hostname
+            params_dict["snmp_hostname"] = self.hostname
 
             # Setup contact with the remote device
             device = Interact(params_dict)
@@ -111,7 +111,7 @@ class Validate:
                     credentials = params_dict
                     break
             else:
-                if params_dict['group_name'] == group:
+                if params_dict["group_name"] == group:
                     # Verify connectivity
                     if device.contactable() is True:
                         credentials = params_dict
@@ -137,10 +137,10 @@ class Interact:
         self._snmp_params = snmp_parameters
 
         # Fail if snmp_parameters dictionary is empty
-        if snmp_parameters['snmp_version'] is None:
+        if snmp_parameters["snmp_version"] is None:
             log_message = (
                 'SNMP version is "None". Non existent host? - {}'
-                "".format(snmp_parameters['snmp_hostname'])
+                "".format(snmp_parameters["snmp_hostname"])
             )
             log.log2die(1025, log_message)
 
@@ -182,7 +182,7 @@ class Interact:
 
         """
         # Initialize key variables
-        hostname = self._snmp_params['snmp_hostname']
+        hostname = self._snmp_params["snmp_hostname"]
 
         # Return
         return hostname
@@ -216,7 +216,7 @@ class Interact:
         except:
             # Log a message
             log_message = "Unexpected SNMP error for device {}" "".format(
-                self._snmp_params['snmp_hostname']
+                self._snmp_params["snmp_hostname"]
             )
             log.log2die(1008, log_message)
 
@@ -510,7 +510,7 @@ class Interact:
         try_log_message = (
             "Error occurred during SNMP query on host "
             'OID {} from {} for context "{}"'
-            "".format(oid_to_get, snmp_params['snmp_hostname'], context_name)
+            "".format(oid_to_get, snmp_params["snmp_hostname"], context_name)
         )
 
         # Fill the results object by getting OID data
@@ -520,7 +520,7 @@ class Interact:
                 results = [session.get(oid_to_get)]
 
             else:
-                if snmp_params['snmp_version'] != 1:
+                if snmp_params["snmp_version"] != 1:
                     # Bulkwalk for SNMPv2 and SNMPv3
                     results = session.bulkwalk(
                         oid_to_get, non_repeaters=0, max_repetitions=25
@@ -582,7 +582,7 @@ class Interact:
                 sys.exc_info()[0],
                 sys.exc_info()[1],
                 sys.exc_info()[2],
-                snmp_params['snmp_hostname'],
+                snmp_params["snmp_hostname"],
             )
             log.log2die(1003, log_message)
 
@@ -615,10 +615,10 @@ class _Session:
         self._snmp_params = snmp_parameters
 
         # Fail if snmp_parameters dictionary is empty
-        if snmp_parameters['snmp_version'] is None:
+        if snmp_parameters["snmp_version"] is None:
             log_message = (
                 'SNMP version is "None". Non existent host? - {}'
-                "".format(snmp_parameters['snmp_hostname'])
+                "".format(snmp_parameters["snmp_hostname"])
             )
             log.log2die(1004, log_message)
 
@@ -643,28 +643,28 @@ class _Session:
 
         """
         # Create session
-        if self._snmp_params['snmp_version'] != 3:
+        if self._snmp_params["snmp_version"] != 3:
             session = easysnmp.Session(
-                community=self._snmp_params['snmp_community'],
-                hostname=self._snmp_params['snmp_hostname'],
-                version=self._snmp_params['snmp_version'],
-                remote_port=self._snmp_params['snmp_port'],
+                community=self._snmp_params["snmp_community"],
+                hostname=self._snmp_params["snmp_hostname"],
+                version=self._snmp_params["snmp_version"],
+                remote_port=self._snmp_params["snmp_port"],
                 use_numeric=True,
                 context=self._context_name,
             )
         else:
             session = easysnmp.Session(
-                hostname=self._snmp_params['snmp_hostname'],
-                version=self._snmp_params['snmp_version'],
-                remote_port=self._snmp_params['snmp_port'],
+                hostname=self._snmp_params["snmp_hostname"],
+                version=self._snmp_params["snmp_version"],
+                remote_port=self._snmp_params["snmp_port"],
                 use_numeric=True,
                 context=self._context_name,
                 security_level=self._security_level(),
-                security_username=self._snmp_params['snmp_secname'],
+                security_username=self._snmp_params["snmp_secname"],
                 privacy_protocol=self._priv_protocol(),
-                privacy_password=self._snmp_params['snmp_privpassword'],
+                privacy_password=self._snmp_params["snmp_privpassword"],
                 auth_protocol=self._auth_protocol(),
-                auth_password=self._snmp_params['snmp_authpassword'],
+                auth_password=self._snmp_params["snmp_authpassword"],
             )
 
         # Return
@@ -684,8 +684,8 @@ class _Session:
         snmp_params = self._snmp_params
 
         # Determine the security level
-        if bool(snmp_params['snmp_authprotocol']) is True:
-            if bool(snmp_params['snmp_privprotocol']) is True:
+        if bool(snmp_params["snmp_authprotocol"]) is True:
+            if bool(snmp_params["snmp_privprotocol"]) is True:
                 result = "authPriv"
             else:
                 result = "authNoPriv"
@@ -707,7 +707,7 @@ class _Session:
         """
         # Initialize key variables
         snmp_params = self._snmp_params
-        protocol = snmp_params['snmp_authprotocol']
+        protocol = snmp_params["snmp_authprotocol"]
 
         # Setup AuthProtocol (Default SHA)
         if bool(protocol) is False:
@@ -733,7 +733,7 @@ class _Session:
         """
         # Initialize key variables
         snmp_params = self._snmp_params
-        protocol = snmp_params['snmp_privprotocol']
+        protocol = snmp_params["snmp_privprotocol"]
 
         # Setup privProtocol (Default AES256)
         if bool(protocol) is False:

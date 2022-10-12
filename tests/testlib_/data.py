@@ -266,7 +266,7 @@ def ipv6():
 
     """
     # Return
-    bits = 16**4
+    bits = 16 ** 4
     result = ":".join(
         ("{:02x}".format(random.randint(0, bits)).zfill(4) for i in range(8))
     )

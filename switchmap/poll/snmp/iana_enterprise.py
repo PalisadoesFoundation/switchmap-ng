@@ -30,7 +30,7 @@ class Query:
         """
         # IANA SNMP enterprise numbers
         if sysobjectid is not None:
-            nodes = sysobjectid.split('.')
+            nodes = sysobjectid.split(".")
             self.enterprise_id = int(nodes[7])
         else:
             self.enterprise_id = int(enterprise)

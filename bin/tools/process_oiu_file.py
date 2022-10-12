@@ -104,6 +104,14 @@ def _cli():
         type=str,
         help=("Oui filename to process. Default: {}".format(default_filepath)),
     )
+    parser.add_argument(
+        "-n",
+        "--new_installation",
+        action="store_true",
+        help=(
+            "New installation. Checks for existing OUI database entries are not done"
+        ),
+    )
     args = parser.parse_args()
     return args
 

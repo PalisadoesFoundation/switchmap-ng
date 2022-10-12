@@ -98,8 +98,8 @@ def _do_poll(snmp_params):
 
     if bool(snmp_params) is True:
         if isinstance(snmp_params, dict) is True:
-            if 'enabled' in snmp_params:
-                if bool(snmp_params['enabled']) is True:
+            if "enabled" in snmp_params:
+                if bool(snmp_params["enabled"]) is True:
                     poll = True
             else:
                 # Default to poll unless otherwise stated
