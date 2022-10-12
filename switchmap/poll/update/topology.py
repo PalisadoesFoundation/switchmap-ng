@@ -62,17 +62,17 @@ def device(data, idx_event):
     """
     # Initialize key variables
     exists = False
-    hostname = data["misc"]["host"]
+    hostname = data['misc']['host']
     row = IDevice(
         idx_zone=1,
         idx_event=idx_event,
         hostname=hostname,
         name=hostname,
-        sys_name=data["system"]["SNMPv2-MIB"]["sysName"][0],
-        sys_description=data["system"]["SNMPv2-MIB"]["sysDescr"][0],
-        sys_objectid=data["system"]["SNMPv2-MIB"]["sysObjectID"][0],
-        sys_uptime=data["system"]["SNMPv2-MIB"]["sysUpTime"][0],
-        last_polled=data["misc"]["timestamp"],
+        sys_name=data['system']['SNMPv2-MIB']['sysName'][0],
+        sys_description=data['system']['SNMPv2-MIB']['sysDescr'][0],
+        sys_objectid=data['system']['SNMPv2-MIB']['sysObjectID'][0],
+        sys_uptime=data['system']['SNMPv2-MIB']['sysUpTime'][0],
+        last_polled=data['misc']['timestamp'],
         enabled=1,
     )
 
@@ -104,8 +104,8 @@ def l1interface(data):
     """
     # Initialize key variables
     exists = False
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
+    hostname = data['misc']['host']
+    interfaces = data['layer1']
 
     # Log
     log_message = "Updating L1Interface table for host {}".format(hostname)
@@ -123,8 +123,8 @@ def l1interface(data):
             # Update the database
             if bool(exists) is True:
                 # Calculate the ts_idle time
-                ifadminstatus = interface.get("ifAdminStatus")
-                ifoperstatus = interface.get("ifOperStatus")
+                ifadminstatus = interface.get('ifAdminStatus')
+                ifoperstatus = interface.get('ifOperStatus')
                 if ifadminstatus == 1 and ifoperstatus == 1:
                     # Port enabled with link
                     ts_idle = 0
@@ -144,22 +144,22 @@ def l1interface(data):
                 row = IL1Interface(
                     idx_device=device_.idx_device,
                     ifindex=ifindex,
-                    duplex=interface.get("l1_duplex"),
-                    ethernet=int(bool(interface.get("l1_ethernet"))),
-                    nativevlan=interface.get("l1_nativevlan"),
-                    trunk=int(bool(interface.get("l1_trunk"))),
-                    ifspeed=interface.get("ifSpeed"),
-                    ifalias=interface.get("ifAlias"),
-                    ifdescr=interface.get("ifDescr"),
-                    ifadminstatus=interface.get("ifAdminStatus"),
-                    ifoperstatus=interface.get("ifOperStatus"),
-                    cdpcachedeviceid=interface.get("cdpCacheDeviceId"),
-                    cdpcachedeviceport=interface.get("cdpCacheDevicePort"),
-                    cdpcacheplatform=interface.get("cdpCachePlatform"),
-                    lldpremportdesc=interface.get("lldpRemPortDesc"),
-                    lldpremsyscapenabled=interface.get("lldpRemSysCapEnabled"),
-                    lldpremsysdesc=interface.get("lldpRemSysDesc"),
-                    lldpremsysname=interface.get("lldpRemSysName"),
+                    duplex=interface.get('l1_duplex'),
+                    ethernet=int(bool(interface.get('l1_ethernet'))),
+                    nativevlan=interface.get('l1_nativevlan'),
+                    trunk=int(bool(interface.get('l1_trunk'))),
+                    ifspeed=interface.get('ifSpeed'),
+                    ifalias=interface.get('ifAlias'),
+                    ifdescr=interface.get('ifDescr'),
+                    ifadminstatus=interface.get('ifAdminStatus'),
+                    ifoperstatus=interface.get('ifOperStatus'),
+                    cdpcachedeviceid=interface.get('cdpCacheDeviceId'),
+                    cdpcachedeviceport=interface.get('cdpCacheDevicePort'),
+                    cdpcacheplatform=interface.get('cdpCachePlatform'),
+                    lldpremportdesc=interface.get('lldpRemPortDesc'),
+                    lldpremsyscapenabled=interface.get('lldpRemSysCapEnabled'),
+                    lldpremsysdesc=interface.get('lldpRemSysDesc'),
+                    lldpremsysname=interface.get('lldpRemSysName'),
                     ts_idle=ts_idle,
                     enabled=int(bool(exists.enabled)),
                 )
@@ -170,22 +170,22 @@ def l1interface(data):
                 row = IL1Interface(
                     idx_device=device_.idx_device,
                     ifindex=ifindex,
-                    duplex=interface.get("l1_duplex"),
-                    ethernet=int(bool(interface.get("l1_ethernet"))),
-                    nativevlan=interface.get("l1_nativevlan"),
-                    trunk=int(bool(interface.get("l1_trunk"))),
-                    ifspeed=interface.get("ifSpeed"),
-                    ifalias=interface.get("ifAlias"),
-                    ifdescr=interface.get("ifDescr"),
-                    ifadminstatus=interface.get("ifAdminStatus"),
-                    ifoperstatus=interface.get("ifOperStatus"),
-                    cdpcachedeviceid=interface.get("cdpCacheDeviceId"),
-                    cdpcachedeviceport=interface.get("cdpCacheDevicePort"),
-                    cdpcacheplatform=interface.get("cdpCachePlatform"),
-                    lldpremportdesc=interface.get("lldpRemPortDesc"),
-                    lldpremsyscapenabled=interface.get("lldpRemSysCapEnabled"),
-                    lldpremsysdesc=interface.get("lldpRemSysDesc"),
-                    lldpremsysname=interface.get("lldpRemSysName"),
+                    duplex=interface.get('l1_duplex'),
+                    ethernet=int(bool(interface.get('l1_ethernet'))),
+                    nativevlan=interface.get('l1_nativevlan'),
+                    trunk=int(bool(interface.get('l1_trunk'))),
+                    ifspeed=interface.get('ifSpeed'),
+                    ifalias=interface.get('ifAlias'),
+                    ifdescr=interface.get('ifDescr'),
+                    ifadminstatus=interface.get('ifAdminStatus'),
+                    ifoperstatus=interface.get('ifOperStatus'),
+                    cdpcachedeviceid=interface.get('cdpCacheDeviceId'),
+                    cdpcachedeviceport=interface.get('cdpCacheDevicePort'),
+                    cdpcacheplatform=interface.get('cdpCachePlatform'),
+                    lldpremportdesc=interface.get('lldpRemPortDesc'),
+                    lldpremsyscapenabled=interface.get('lldpRemSysCapEnabled'),
+                    lldpremsysdesc=interface.get('lldpRemSysDesc'),
+                    lldpremsysname=interface.get('lldpRemSysName'),
                     ts_idle=0,
                     enabled=1,
                 )
@@ -215,8 +215,8 @@ def vlan(data):
     """
     # Initialize key variables
     exists = False
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
+    hostname = data['misc']['host']
+    interfaces = data['layer1']
     rows = []
     unique_vlans = []
 
@@ -235,7 +235,7 @@ def vlan(data):
 
             # Process each Vlan
             if bool(exists) is True:
-                vlans = interface.get("l1_vlans")
+                vlans = interface.get('l1_vlans')
                 if isinstance(vlans, list) is True:
                     for next_vlan in vlans:
                         rows.append(
@@ -273,8 +273,8 @@ def vlanport(data):
 
     """
     # Initialize key variables
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
+    hostname = data['misc']['host']
+    interfaces = data['layer1']
 
     # Log
     log_message = "Updating VlanPort table for host {}".format(hostname)
@@ -290,7 +290,7 @@ def vlanport(data):
 
             # Process each Vlan
             if bool(l1_exists) is True:
-                _vlans = interface.get("l1_vlans")
+                _vlans = interface.get('l1_vlans')
                 if bool(_vlans) is True:
                     for item in sorted(_vlans):
                         # Ensure the Vlan exists in the database
@@ -330,8 +330,8 @@ def mac(data, idx_event):
     """
     # Initialize key variables
     exists = False
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
+    hostname = data['misc']['host']
+    interfaces = data['layer1']
     all_macs = []
     unique_macs = []
     unique_ouis = []
@@ -351,7 +351,7 @@ def mac(data, idx_event):
 
             # Process each Mac
             if bool(exists) is True:
-                these_macs = interface.get("l1_macs")
+                these_macs = interface.get('l1_macs')
                 if bool(these_macs) is True:
                     all_macs.extend(these_macs)
 
@@ -395,8 +395,8 @@ def macport(data):
 
     """
     # Initialize key variables
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
+    hostname = data['misc']['host']
+    interfaces = data['layer1']
 
     # Log
     log_message = "Updating MacPort table for host {}".format(hostname)
@@ -412,7 +412,7 @@ def macport(data):
 
             # Process each Mac
             if bool(l1_exists) is True:
-                _macs = interface.get("l1_macs")
+                _macs = interface.get('l1_macs')
                 if bool(_macs) is True:
                     for item in sorted(_macs):
                         # Ensure the Mac exists in the database
@@ -452,7 +452,7 @@ def macip(data, dns=True):
     # Initialize key variables
     ipv6 = None
     ipv4 = None
-    hostname = data["misc"]["host"]
+    hostname = data['misc']['host']
     adds = []
     updates = []
 
@@ -464,10 +464,10 @@ def macip(data, dns=True):
     device_ = _device.exists(hostname)
 
     # Get MacIp data
-    layer3 = data.get("layer3")
+    layer3 = data.get('layer3')
     if bool(layer3) is True and bool(device_) is True:
-        ipv4 = layer3.get("ipNetToMediaTable")
-        ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
+        ipv4 = layer3.get('ipNetToMediaTable')
+        ipv6 = layer3.get('ipNetToPhysicalPhysAddress')
 
         # Process IPv4 data
         if bool(ipv4) is True:

@@ -124,14 +124,14 @@ def _poll_devices():
             hostname=hostname,
             idx_event=_event.idx_event) for hostname in hostnames]
 
-    # for poll in polls:
-    #     _poll_single_device(poll)
+    for poll in polls:
+        _poll_single_device(poll)
 
     # Create a pool of sub process resources
-    with Pool(processes=threads_in_pool) as pool:
+    # with Pool(processes=threads_in_pool) as pool:
 
-        # Create sub processes from the pool
-        pool.map(_poll_single_device, polls)
+    #     # Create sub processes from the pool
+    #     pool.map(_poll_single_device, polls)
 
     # Disable any unused devices and/or MAC addresses
     disable.post_poll_cleanup(_event.idx_event)
