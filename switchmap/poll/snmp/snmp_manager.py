@@ -360,6 +360,7 @@ class Interact:
             context_name: Set the contextName used for SNMPv3 messages.
                 The default contextName is the empty string "".  Overrides the
                 defContext token in the snmp.conf file.
+            safe: Safe query if true. If there is an exception, then return blank values.
 
         Returns:
             results: Results
@@ -372,6 +373,7 @@ class Interact:
             check_reachability=True,
             check_existence=True,
             context_name=context_name,
+            safe=True,
         )
 
         # Return
@@ -384,6 +386,7 @@ class Interact:
         check_reachability=False,
         check_existence=False,
         context_name="",
+        safe=False,
     ):
         """Do an SNMPwalk.
 
@@ -403,6 +406,7 @@ class Interact:
             context_name: Set the contextName used for SNMPv3 messages.
                 The default contextName is the empty string "".  Overrides the
                 defContext token in the snmp.conf file.
+            safe: Safe query if true. If there is an exception, then return blank values.
 
         Returns:
             result: Dictionary of tuples (OID, value)
@@ -415,6 +419,7 @@ class Interact:
             check_existence=check_existence,
             normalized=normalized,
             context_name=context_name,
+            safe=safe,
         )
         return result
 
@@ -467,6 +472,7 @@ class Interact:
         check_existence=False,
         normalized=False,
         context_name="",
+        safe=False,
     ):
         """Do an SNMP query.
 
@@ -487,6 +493,7 @@ class Interact:
             context_name: Set the contextName used for SNMPv3 messages.
                 The default contextName is the empty string "".  Overrides the
                 defContext token in the snmp.conf file.
+            safe: Safe query if true. If there is an exception, then return blank values.
 
         Returns:
             Dictionary of tuples (OID, value)
@@ -505,13 +512,6 @@ class Interact:
 
         # Create SNMP session
         session = _Session(snmp_params, context_name=context_name).session
-
-        # Create failure log message
-        try_log_message = (
-            "Error occurred during SNMP query on host "
-            'OID {} from {} for context "{}"'
-            "".format(oid_to_get, snmp_params["snmp_hostname"], context_name)
-        )
 
         # Fill the results object by getting OID data
         try:
@@ -542,35 +542,32 @@ class Interact:
         ) as exception_error:
 
             # Update the error message
-            try_log_message = """\
-{}: [{}, {}, {}]""".format(
-                try_log_message,
-                sys.exc_info()[0],
-                sys.exc_info()[1],
-                sys.exc_info()[2],
+            log_message = _exception_message(
+                snmp_params["snmp_hostname"],
+                oid_to_get,
+                context_name,
+                sys.exc_info(),
             )
 
             # Process easysnmp errors
             (_contactable, exists) = _process_error(
-                try_log_message,
+                log_message,
                 exception_error,
                 check_reachability,
                 check_existence,
             )
 
         except SystemError as exception_error:
-            # Update the error message
-            try_log_message = """\
-{}: [{}, {}, {}]""".format(
-                try_log_message,
-                sys.exc_info()[0],
-                sys.exc_info()[1],
-                sys.exc_info()[2],
+            log_message = _exception_message(
+                snmp_params["snmp_hostname"],
+                oid_to_get,
+                context_name,
+                sys.exc_info(),
             )
 
             # Process easysnmp errors
             (_contactable, exists) = _process_error(
-                try_log_message,
+                log_message,
                 exception_error,
                 check_reachability,
                 check_existence,
@@ -578,13 +575,19 @@ class Interact:
             )
 
         except:
-            log_message = "Unexpected error: {}, {}, {}, {}" "".format(
-                sys.exc_info()[0],
-                sys.exc_info()[1],
-                sys.exc_info()[2],
+            # Update the error message
+            log_message = _exception_message(
                 snmp_params["snmp_hostname"],
+                oid_to_get,
+                context_name,
+                sys.exc_info(),
             )
-            log.log2die(1003, log_message)
+            if bool(safe):
+                _contactable = None
+                exists = None
+                log.log2info(1209, log_message)
+            else:
+                log.log2die(1003, log_message)
 
         # Format results
         values = _format_results(results, oid_to_get, normalized=normalized)
@@ -746,6 +749,39 @@ class _Session:
 
         # Return
         return result
+
+
+def _exception_message(hostname, oid, context, exc_info):
+    """Create a standardized exception message.
+
+    Args:
+        hostname: Hostname
+        oid: OID being polled
+        context: SNMP context
+        exc_info: Exception information
+
+    Returns:
+        result: Exception message
+
+    """
+    # Create failure log message
+    try_log_message = (
+        "Error occurred during SNMP query on host "
+        'OID {} from {} for context "{}"'
+        "".format(oid, hostname, context)
+    )
+
+    # Add exception information
+    result = """\
+{}: [{}, {}, {}]""".format(
+        try_log_message,
+        exc_info[0],
+        exc_info[1],
+        exc_info[2],
+    )
+
+    # Return
+    return result
 
 
 def _process_error(

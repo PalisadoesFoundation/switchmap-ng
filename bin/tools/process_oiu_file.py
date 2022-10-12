@@ -2,6 +2,11 @@
 """Script to update the Oui table."""
 
 # Standard imports
+from switchmap.core import log
+from switchmap.db.table import IOui
+from switchmap.db.table import oui
+from switchmap.db.models import Oui
+from switchmap.db import db
 import sys
 import os
 import argparse
@@ -25,10 +30,6 @@ else:
     sys.exit(2)
 
 # Import project libraries
-from switchmap.db import db
-from switchmap.db.models import Oui
-from switchmap.db.table import oui
-from switchmap.db.table import IOui
 
 
 def main():
@@ -44,14 +45,15 @@ def main():
     # Read Oui file
     args = _cli()
     df_ = _read_file(args.filename)
-    _update_db(df_)
+    _update_db(df_, new=args.new_installation)
 
 
-def _update_db(df_):
+def _update_db(df_, new=False):
     """Update the database with Oui data.
 
     Args:
         df_: pd.Dataframe
+        new: True if newly created DB. Existing records are not checked.
 
     Returns:
         None
@@ -62,14 +64,21 @@ def _update_db(df_):
 
     # Process DataFrame (Enables)
     for _, row in df_.iterrows():
-        db_record = oui.exists(row["oui"])
+        db_record = oui.exists(row["oui"]) if bool(new) else False
         file_record = IOui(
             oui=row["oui"], organization=row["organization"], enabled=1
         )
 
         # Process insertions and updates
         if bool(db_record) is False:
-            inserts.append(file_record)
+            try:
+                inserts.append(file_record)
+            except:
+                log_message = """OUI: {} for organization: {} already exists. Ignoring. Don\'t use the --new_installation flag for updating the OUI data.""".format(
+                    row["oui"], row["organization"]
+                )
+
+                log.log2see(1116, log_message)
         else:
             if db_record.organization != file_record.organization:
                 oui.update_row(db_record.idx_oui, file_record)
