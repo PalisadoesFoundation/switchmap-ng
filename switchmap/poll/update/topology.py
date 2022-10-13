@@ -2,6 +2,7 @@
 
 import time
 import socket
+import yaml
 
 from switchmap.core import log
 from switchmap.core import general
@@ -39,6 +40,11 @@ def process(data, idx_event, dns=True):
         None
 
     """
+    # Dump data to file
+    filepath = '/tmp/{}.yaml'.format(data["misc"]["host"])
+    with open(filepath, 'w') as outfile:
+        yaml.dump(data, outfile, default_flow_style=False)
+
     # Process the device
     device(data, idx_event)
     l1interface(data)
@@ -250,8 +256,11 @@ def vlan(data):
 
     # Do Vlan insertions
     unique_vlans = list(set(rows))
+
     for item in unique_vlans:
+
         vlan_exists = _vlan.exists(item.idx_device, item.vlan)
+
         if vlan_exists is False:
             _vlan.insert_row(item)
         else:

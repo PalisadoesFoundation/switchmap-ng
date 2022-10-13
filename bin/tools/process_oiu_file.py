@@ -2,7 +2,6 @@
 """Script to update the Oui table."""
 
 # Standard imports
-from switchmap.db.misc import oui as _oui
 import os
 import argparse
 import sys
@@ -24,6 +23,7 @@ else:
     sys.exit(2)
 
 # Package imports
+from switchmap.db.misc import oui as _oui
 
 
 def main():
