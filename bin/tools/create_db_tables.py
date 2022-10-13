@@ -27,6 +27,7 @@ from switchmap.db.table import IZone
 from switchmap.db.table import IOui
 from switchmap.db.table import zone
 from switchmap.db.table import oui
+from switchmap.db.misc import oui as _oui
 
 
 def main():
@@ -39,6 +40,12 @@ def main():
         None
 
     """
+    # Initialize key variables
+    oui_filepath = """\
+{1}{0}setup{0}data{0}mac_address_file.txt""".format(
+        os.sep, _ROOT_DIRECTORY
+    )
+
     # Create database
     models.create_all_tables()
 
@@ -68,6 +75,9 @@ def main():
                 enabled=1,
             )
         )
+
+        # Populate the OUI data
+        _oui.update_db_oui(oui_filepath, new=True)
 
 
 if __name__ == "__main__":

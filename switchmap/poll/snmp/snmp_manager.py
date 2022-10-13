@@ -209,7 +209,7 @@ class Interact:
             if bool(result) is True:
                 contactable = True
 
-        except Exception as _:
+        except Exception:
             # Not contactable
             contactable = False
 
@@ -360,7 +360,8 @@ class Interact:
             context_name: Set the contextName used for SNMPv3 messages.
                 The default contextName is the empty string "".  Overrides the
                 defContext token in the snmp.conf file.
-            safe: Safe query if true. If there is an exception, then return blank values.
+            safe: Safe query if true. If there is an exception, then return \
+                blank values.
 
         Returns:
             results: Results
@@ -406,7 +407,8 @@ class Interact:
             context_name: Set the contextName used for SNMPv3 messages.
                 The default contextName is the empty string "".  Overrides the
                 defContext token in the snmp.conf file.
-            safe: Safe query if true. If there is an exception, then return blank values.
+            safe: Safe query if true. If there is an exception, then return \
+                blank values.
 
         Returns:
             result: Dictionary of tuples (OID, value)
@@ -493,7 +495,8 @@ class Interact:
             context_name: Set the contextName used for SNMPv3 messages.
                 The default contextName is the empty string "".  Overrides the
                 defContext token in the snmp.conf file.
-            safe: Safe query if true. If there is an exception, then return blank values.
+            safe: Safe query if true. If there is an exception, then return\
+                blank values.
 
         Returns:
             Dictionary of tuples (OID, value)

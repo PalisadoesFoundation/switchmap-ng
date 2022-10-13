@@ -2,16 +2,10 @@
 """Script to update the Oui table."""
 
 # Standard imports
-from switchmap.core import log
-from switchmap.db.table import IOui
-from switchmap.db.table import oui
-from switchmap.db.models import Oui
-from switchmap.db import db
-import sys
+from switchmap.db.misc import oui as _oui
 import os
 import argparse
-
-import pandas
+import sys
 
 # Try to create a working PYTHONPATH
 _SCRIPT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
@@ -29,11 +23,11 @@ else:
     )
     sys.exit(2)
 
-# Import project libraries
+# Package imports
 
 
 def main():
-    """Create database.
+    """Update database with OUI data.
 
     Args:
         None
@@ -44,48 +38,7 @@ def main():
     """
     # Read Oui file
     args = _cli()
-    df_ = _read_file(args.filename)
-    _update_db(df_, new=args.new_installation)
-
-
-def _update_db(df_, new=False):
-    """Update the database with Oui data.
-
-    Args:
-        df_: pd.Dataframe
-        new: True if newly created DB. Existing records are not checked.
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    inserts = []
-
-    # Process DataFrame (Enables)
-    for _, row in df_.iterrows():
-        db_record = oui.exists(row["oui"]) if bool(new) else False
-        file_record = IOui(
-            oui=row["oui"], organization=row["organization"], enabled=1
-        )
-
-        # Process insertions and updates
-        if bool(db_record) is False:
-            try:
-                inserts.append(file_record)
-            except:
-                log_message = """OUI: {} for organization: {} already exists. Ignoring. Don\'t use the --new_installation flag for updating the OUI data.""".format(
-                    row["oui"], row["organization"]
-                )
-
-                log.log2see(1116, log_message)
-        else:
-            if db_record.organization != file_record.organization:
-                oui.update_row(db_record.idx_oui, file_record)
-
-    # Do insertions
-    if bool(inserts):
-        oui.insert_row(inserts)
+    _oui.update_db_oui(args.filename, new=args.new_installation)
 
 
 def _cli():
@@ -118,27 +71,12 @@ def _cli():
         "--new_installation",
         action="store_true",
         help=(
-            "New installation. Checks for existing OUI database entries are not done"
+            """New installation. Checks for existing OUI database entries are \
+not done"""
         ),
     )
     args = parser.parse_args()
     return args
-
-
-def _read_file(filepath):
-    """Read Oui file.
-
-    Args:
-        filepath: Name of file to process
-
-    Returns:
-        df_: DataFrame of data
-
-    """
-    # Initialize key variables
-    df_ = pandas.read_csv(filepath, delimiter=":")
-    df_.columns = ["oui", "organization"]
-    return df_
 
 
 if __name__ == "__main__":
