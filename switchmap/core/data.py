@@ -2,6 +2,8 @@
 
 # Standard libraries
 import hashlib
+from copy import deepcopy
+import datetime
 
 
 def hashstring(string, sha=256, utf8=False):
@@ -42,4 +44,52 @@ def hashstring(string, sha=256, utf8=False):
         result = target_hash
 
     # Return
+    return result
+
+
+def dictify(data):
+    """Convert NamedTuple to dict.
+
+    Args:
+        data: NamedTuple
+
+    Returns:
+        result: Dict representation of object
+
+    """
+    # Initialize key variables
+
+    if isinstance(data, tuple):
+        result = {}
+        converted = data._asdict()
+        for key, value in converted.items():
+            # Convert datetime objects to a serializable object
+            if isinstance(value, datetime.datetime):
+                value = _time(value)
+            result[key] = dictify(value)
+    elif isinstance(data, list):
+        result = []
+        for value in data:
+            item = dictify(value)
+            # Convert datetime objects to a serializable object
+            if isinstance(item, datetime.datetime):
+                item = _time(item)
+            result.append(item)
+    else:
+        result = data
+    return result
+
+
+def _time(data):
+    """Convert Date to string.
+
+    Args:
+        data: datetime object
+
+    Returns:
+        result: String time
+
+    """
+    # Initialize key variables
+    result = data.strftime("%Y-%m-%d %H:%M:%S.%f")
     return result
