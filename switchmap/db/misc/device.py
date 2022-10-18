@@ -5,6 +5,7 @@ from sqlalchemy import select
 # Import project libraries
 from switchmap.db import db
 from switchmap import InterfaceDetail
+from switchmap import DeviceDetail
 from switchmap.db.models import L1Interface as _L1Interface
 from switchmap.db.models import MacPort as _MacPort
 from switchmap.db.table import device
@@ -29,6 +30,22 @@ class Device:
         # Initialize key variables
         self._hostname = hostname
         self._device = device.exists(self._hostname)
+
+    def data(self):
+        """Return complete device.
+
+        Args:
+            None
+
+        Returns:
+            Result: DeviceDetail object
+
+        """
+        # Get data
+        interfaces_ = self.interfaces()
+        device_ = self.device()
+        result = DeviceDetail(RDevice=device_, InterfaceDetails=interfaces_)
+        return result
 
     def device(self):
         """Return system summary data.
