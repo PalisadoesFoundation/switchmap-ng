@@ -49,6 +49,7 @@ def dictify(data):
         result = {}
         converted = data._asdict()
         for key, value in converted.items():
+            # Convert datetime objects to a serializable object
             if isinstance(value, datetime.datetime):
                 value = _time(value)
             result[key] = dictify(value)
@@ -56,6 +57,7 @@ def dictify(data):
         result = []
         for value in data:
             item = dictify(value)
+            # Convert datetime objects to a serializable object
             if isinstance(item, datetime.datetime):
                 item = _time(item)
             result.append(item)
