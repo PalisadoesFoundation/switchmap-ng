@@ -44,6 +44,7 @@ CONFIG.save()
 
 from switchmap import IP
 from switchmap.core import data
+from switchmap import DeviceDetail
 
 
 class TestFunctions(unittest.TestCase):
@@ -104,7 +105,26 @@ class TestFunctions(unittest.TestCase):
     def test_check_dictify(self):
         """Testing method / function check_dictify."""
         # Initializing key variables
-        pass
+        test_tuple = DeviceDetail(
+            RDevice=1,
+            InterfaceDetails=[
+                DeviceDetail(RDevice=2, InterfaceDetails=[3, 4, 5, 6]),
+                7,
+                DeviceDetail(RDevice=8, InterfaceDetails=9),
+            ],
+        )
+        expected = {
+            "InterfaceDetails": [
+                {"InterfaceDetails": [3, 4, 5, 6], "RDevice": 2},
+                7,
+                {"InterfaceDetails": 9, "RDevice": 8},
+            ],
+            "RDevice": 1,
+        }
+
+        # Test
+        result = data.dictify(test_tuple)
+        self.assertEqual(result, expected)
 
 
 if __name__ == "__main__":
