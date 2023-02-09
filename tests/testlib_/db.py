@@ -6,8 +6,8 @@ from __future__ import print_function
 from sqlalchemy.orm import Session
 
 # Application imports
-from switchmap.db import models
-from switchmap.db import ENGINE
+from switchmap.server.db import models
+from switchmap.server.db import ENGINE
 
 from switchmap.core.configuration import Config
 from switchmap.core import log

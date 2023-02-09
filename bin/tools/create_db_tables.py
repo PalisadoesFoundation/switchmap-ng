@@ -22,12 +22,12 @@ else:
     sys.exit(2)
 
 # Switchmap-NG standard imports
-from switchmap.db.misc import oui as _oui
-from switchmap.db.table import oui
-from switchmap.db.table import zone
-from switchmap.db.table import IOui
-from switchmap.db.table import IZone
-from switchmap.db import models
+from switchmap.server.db.misc import oui as _oui
+from switchmap.server.db.table import oui
+from switchmap.server.db.table import zone
+from switchmap.server.db.table import IOui
+from switchmap.server.db.table import IZone
+from switchmap.server.db import models
 
 
 def main():

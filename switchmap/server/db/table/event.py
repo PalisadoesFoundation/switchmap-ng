@@ -3,7 +3,7 @@
 from sqlalchemy import select, update
 
 # Import project libraries
-from switchmap.server.db.import db
+from switchmap.server.db import db
 from switchmap.server.db.models import Event
 from switchmap.server.db.misc import rows as _rows
 

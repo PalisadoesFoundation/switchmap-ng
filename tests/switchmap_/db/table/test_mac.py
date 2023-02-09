@@ -44,17 +44,17 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.db.table import mac as testimport
-from switchmap.db.table import event
-from switchmap.db.table import zone
-from switchmap.db.table import oui
+from switchmap.server.db.table import mac as testimport
+from switchmap.server.db.table import event
+from switchmap.server.db.table import zone
+from switchmap.server.db.table import oui
 from switchmap.db.models import Mac
-from switchmap.db.table import RMac
-from switchmap.db.table import IMac
-from switchmap.db.table import IEvent
-from switchmap.db.table import IZone
-from switchmap.db.table import IOui
-from switchmap.db import models
+from switchmap.server.db.table import RMac
+from switchmap.server.db.table import IMac
+from switchmap.server.db.table import IEvent
+from switchmap.server.db.table import IZone
+from switchmap.server.db.table import IOui
+from switchmap.server.db import models
 
 from tests.testlib_ import db
 from tests.testlib_ import data

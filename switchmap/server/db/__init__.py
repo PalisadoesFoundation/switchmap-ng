@@ -3,7 +3,6 @@
 
 # Main python libraries
 import os
-import sys
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import event
@@ -164,5 +163,5 @@ Connection record belongs to pid {}, attempting to check out in pid {}\
             )
 
 
-if __name__ == "switchmap.db":
+if __name__ == "switchmap.server.db":
     main()

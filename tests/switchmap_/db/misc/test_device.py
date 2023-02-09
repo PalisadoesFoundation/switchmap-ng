@@ -47,34 +47,34 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.db.table import macport
-from switchmap.db.table import event
-from switchmap.db.table import zone
-from switchmap.db.table import oui
-from switchmap.db.table import mac
-from switchmap.db.table import macip
-from switchmap.db.table import device
-from switchmap.db.table import l1interface
+from switchmap.server.db.table import macport
+from switchmap.server.db.table import event
+from switchmap.server.db.table import zone
+from switchmap.server.db.table import oui
+from switchmap.server.db.table import mac
+from switchmap.server.db.table import macip
+from switchmap.server.db.table import device
+from switchmap.server.db.table import l1interface
 from switchmap.db.models import MacPort
-from switchmap.db.table import RMacPort
-from switchmap.db.table import IMacPort
-from switchmap.db.table import IMac
-from switchmap.db.table import IEvent
-from switchmap.db.table import IZone
-from switchmap.db.table import IOui
-from switchmap.db.table import IDevice
-from switchmap.db.table import IL1Interface
-from switchmap.db.table import IMacIp
-from switchmap.db import models
+from switchmap.server.db.table import RMacPort
+from switchmap.server.db.table import IMacPort
+from switchmap.server.db.table import IMac
+from switchmap.server.db.table import IEvent
+from switchmap.server.db.table import IZone
+from switchmap.server.db.table import IOui
+from switchmap.server.db.table import IDevice
+from switchmap.server.db.table import IL1Interface
+from switchmap.server.db.table import IMacIp
+from switchmap.server.db import models
 from switchmap.core import general
 from switchmap import Found, MacDetail
-from switchmap.db import db as realdb
+from switchmap.server.db import db as realdb
 
 from tests.testlib_ import db
 from tests.testlib_ import data
 
-from switchmap.db.misc import device as testimport
-from switchmap.db.misc.interface import mac as macdetail
+from switchmap.server.db.misc import device as testimport
+from switchmap.server.db.misc.interface import mac as macdetail
 
 MAXMAC = 100
 OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]

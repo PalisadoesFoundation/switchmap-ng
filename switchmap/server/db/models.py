@@ -12,7 +12,7 @@ from sqlalchemy.sql.expression import Null
 from sqlalchemy.orm import Session
 
 # Project imports
-from switchmap.server.db.import SCOPED_SESSION, ENGINE
+from switchmap.server.db import SCOPED_SESSION, ENGINE
 
 ###############################################################################
 # Create BASE SQLAlchemy class. This must be in the same file as the database

@@ -4,7 +4,7 @@
 from sqlalchemy import select, and_
 
 # Application imports
-from switchmap.server.db.import db
+from switchmap.server.db import db
 from switchmap.server.db.misc import rows as _rows
 from switchmap.server.db.models import Vlan as _Vlan
 from switchmap.server.db.models import VlanPort as _VlanPort

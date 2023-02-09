@@ -23,7 +23,7 @@ else:
     sys.exit(2)
 
 # Package imports
-from switchmap.db.misc import oui as _oui
+from switchmap.server.db.misc import oui as _oui
 
 
 def main():

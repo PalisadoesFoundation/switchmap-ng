@@ -31,9 +31,7 @@ MacDetail = namedtuple(
 InterfaceDetail = namedtuple(
     "InterfaceDetail", "RL1Interface MacDetails RVlans"
 )
-DeviceDetail = namedtuple(
-    'DeviceDetail', 'RDevice InterfaceDetails'
-)
+DeviceDetail = namedtuple("DeviceDetail", "RDevice InterfaceDetails")
 
 
 def main():

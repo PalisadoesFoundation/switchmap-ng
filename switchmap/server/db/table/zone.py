@@ -4,7 +4,7 @@
 from sqlalchemy import select, update, null
 
 # Import project libraries
-from switchmap.server.db.import db
+from switchmap.server.db import db
 from switchmap.server.db.models import Zone
 from switchmap.server.db.misc import rows as _rows
 

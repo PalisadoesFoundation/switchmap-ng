@@ -177,7 +177,7 @@ class Test_Config(unittest.TestCase):
     def test_web_log_file(self):
         """Testing function web_log_file."""
         # Run test
-        expected = "{}{}switchmap-ng-api.log".format(
+        expected = "{}{}switchmap_dashboard.log".format(
             self._config.metadata.log_directory, os.sep
         )
         result = self.config.web_log_file()

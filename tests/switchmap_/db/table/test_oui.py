@@ -44,11 +44,11 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.db.table import oui as testimport
+from switchmap.server.db.table import oui as testimport
 from switchmap.db.models import Oui
-from switchmap.db.table import ROui
-from switchmap.db.table import IOui
-from switchmap.db import models
+from switchmap.server.db.table import ROui
+from switchmap.server.db.table import IOui
+from switchmap.server.db import models
 
 from tests.testlib_ import db
 from tests.testlib_ import data

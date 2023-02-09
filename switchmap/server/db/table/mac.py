@@ -3,7 +3,7 @@
 from sqlalchemy import select, update, null
 
 # Import project libraries
-from switchmap.server.db.import db
+from switchmap.server.db import db
 from switchmap.server.db.models import Mac
 from switchmap.server.db.misc import rows as _rows
 from switchmap.server.db.table import oui

@@ -7,7 +7,7 @@ from switchmap import MacDetail
 from switchmap.server.db.table import mac
 from switchmap.server.db.table import macport
 
-from switchmap.server.db.import db
+from switchmap.server.db import db
 from switchmap.server.db.models import Mac as _Mac
 from switchmap.server.db.models import Oui as _Oui
 from switchmap.server.db.models import MacPort as _MacPort

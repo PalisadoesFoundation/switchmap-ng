@@ -182,8 +182,8 @@ class _DaemonSystemD(object):
         groupname = grp.getgrgid(self.gid).gr_name
         system_directory = "/etc/systemd/system"
         system_command = "/bin/systemctl daemon-reload"
-        poller_service = "switchmap-ng-poller.service"
-        api_service = "switchmap-ng-api.service"
+        poller_service = "switchmap_poller.service"
+        api_service = "switchmap_dashboard.service"
 
         # Do nothing if systemd isn't installed
         if os.path.isdir(system_directory) is False:
@@ -266,7 +266,7 @@ class _Daemons(object):
             None
         """
         # Get daemon status
-        daemons = ["switchmap-ng-api", "switchmap-ng-poller"]
+        daemons = ["switchmap_dashboard", "switchmap_poller"]
         for daemon in daemons:
             # Initialize key variables
             success = False

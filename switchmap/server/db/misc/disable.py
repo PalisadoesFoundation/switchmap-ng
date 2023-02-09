@@ -2,7 +2,7 @@
 
 from sqlalchemy import select, update
 
-from switchmap.server.db.import db
+from switchmap.server.db import db
 from switchmap.server.db.models import Device
 from switchmap.server.db.models import L1Interface
 from switchmap.server.db.models import Vlan

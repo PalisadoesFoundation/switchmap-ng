@@ -44,11 +44,11 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.db.table import zone as testimport
+from switchmap.server.db.table import zone as testimport
 from switchmap.db.models import Zone
-from switchmap.db.table import RZone
-from switchmap.db.table import IZone
-from switchmap.db import models
+from switchmap.server.db.table import RZone
+from switchmap.server.db.table import IZone
+from switchmap.server.db import models
 
 from tests.testlib_ import db
 from tests.testlib_ import data

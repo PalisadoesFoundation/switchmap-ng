@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 # Import project libraries
 from switchmap.core import log
-from switchmap.server.db.import ENGINE
+from switchmap.server.db import ENGINE
 
 
 def db_select_row(error_code, statement):

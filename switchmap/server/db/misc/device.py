@@ -3,7 +3,7 @@
 from sqlalchemy import select
 
 # Import project libraries
-from switchmap.server.db.import db
+from switchmap.server.db import db
 from switchmap import InterfaceDetail
 from switchmap import DeviceDetail
 from switchmap.server.db.models import L1Interface as _L1Interface

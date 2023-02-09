@@ -45,15 +45,15 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.db.table import device as testimport
-from switchmap.db.table import event
-from switchmap.db.table import zone
+from switchmap.server.db.table import device as testimport
+from switchmap.server.db.table import event
+from switchmap.server.db.table import zone
 from switchmap.db.models import Device
-from switchmap.db.table import RDevice
-from switchmap.db.table import IDevice
-from switchmap.db.table import IEvent
-from switchmap.db.table import IZone
-from switchmap.db import models
+from switchmap.server.db.table import RDevice
+from switchmap.server.db.table import IDevice
+from switchmap.server.db.table import IEvent
+from switchmap.server.db.table import IZone
+from switchmap.server.db import models
 
 from tests.testlib_ import db
 from tests.testlib_ import data

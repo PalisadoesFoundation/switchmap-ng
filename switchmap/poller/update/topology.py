@@ -41,8 +41,8 @@ def process(data, idx_event, dns=True):
 
     """
     # Dump data to file
-    filepath = '/tmp/{}.yaml'.format(data["misc"]["host"])
-    with open(filepath, 'w') as outfile:
+    filepath = "/tmp/{}.yaml".format(data["misc"]["host"])
+    with open(filepath, "w") as outfile:
         yaml.dump(data, outfile, default_flow_style=False)
 
     # Process the device

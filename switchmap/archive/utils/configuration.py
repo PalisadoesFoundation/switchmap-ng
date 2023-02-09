@@ -468,7 +468,7 @@ class Config(object):
 
         """
         # Get new result
-        result = "{}/switchmap-ng-api.log".format(self.log_directory())
+        result = "{}/switchmap_dashboard.log".format(self.log_directory())
 
         # Return
         return result

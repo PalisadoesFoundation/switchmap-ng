@@ -61,19 +61,19 @@ from switchmap.db.models import Mac
 from switchmap.db.models import Vlan
 from switchmap.db.models import L1Interface
 from switchmap.db.models import Device
-from switchmap.db.table import event
-from switchmap.db.table import zone
-from switchmap.db.table import oui
-from switchmap.db.table import IEvent
-from switchmap.db.table import IOui
-from switchmap.db.table import IZone
-from switchmap.db.table import RMacPort
-from switchmap.db.table import RVlanPort
-from switchmap.db.table import RMacIp
-from switchmap.db.table import RMac
-from switchmap.db.table import RVlan
-from switchmap.db.table import RL1Interface
-from switchmap.db.table import RDevice
+from switchmap.server.db.table import event
+from switchmap.server.db.table import zone
+from switchmap.server.db.table import oui
+from switchmap.server.db.table import IEvent
+from switchmap.server.db.table import IOui
+from switchmap.server.db.table import IZone
+from switchmap.server.db.table import RMacPort
+from switchmap.server.db.table import RVlanPort
+from switchmap.server.db.table import RMacIp
+from switchmap.server.db.table import RMac
+from switchmap.server.db.table import RVlan
+from switchmap.server.db.table import RL1Interface
+from switchmap.server.db.table import RDevice
 
 from tests.testlib_ import db as dblib
 from tests.testlib_ import data as datalib

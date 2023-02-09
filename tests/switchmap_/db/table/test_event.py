@@ -44,11 +44,11 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.db.table import event as testimport
+from switchmap.server.db.table import event as testimport
 from switchmap.db.models import Event
-from switchmap.db.table import REvent
-from switchmap.db.table import IEvent
-from switchmap.db import models
+from switchmap.server.db.table import REvent
+from switchmap.server.db.table import IEvent
+from switchmap.server.db import models
 
 from tests.testlib_ import db
 from tests.testlib_ import data
