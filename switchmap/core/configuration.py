@@ -273,6 +273,22 @@ class _Config:
         # Return
         return result
 
+    def log_file_web(self):
+        """Get log_file.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get new result
+        result = "{}/switchmap-ng-web.log".format(self.log_directory())
+
+        # Return
+        return result
+
     def log_level(self):
         """Get log_level.
 

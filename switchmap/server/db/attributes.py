@@ -16,27 +16,6 @@ import graphene
 ###############################################################################
 
 
-class DeviceAttribute:
-    """Descriptive attributes of the Device table.
-
-    A generic class to mutualize description of attributes for both queries
-    and mutations.
-
-    """
-
-    idx = graphene.Int(description="Primary key index")
-    idx_zone = graphene.Int(description="System zone")
-    sys_name = graphene.Int(description="System name")
-    hostname = graphene.Int(description="System hostname")
-    sys_description = graphene.Int(description="System description")
-    sys_objectid = graphene.Int(description="System SNMP sysobjectid")
-    sys_uptime = graphene.Int(description="System uptime")
-    last_polled = graphene.Int(description="Timestamp of last poll")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
-
-
 class ZoneAttribute:
     """Descriptive attributes of the Zone table.
 
@@ -45,7 +24,7 @@ class ZoneAttribute:
 
     """
 
-    idx = graphene.Int(description="Primary key index")
+    idx_zone = graphene.Int(description="Primary key index")
     name = graphene.String(description="Zone name")
     company_name = graphene.String(description="Company name")
     address_0 = graphene.String(description="Address Line 0")
@@ -62,6 +41,58 @@ class ZoneAttribute:
     ts_created = graphene.String(description="Row Creation Timestamp")
 
 
+class OuiAttribute:
+    """Descriptive attributes of the Oui table.
+
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+
+    """
+
+    idx_oui = graphene.Int(description="Primary key index")
+    oui = graphene.String(description="Organizationally unique identifier")
+    manufacturer = graphene.Int(description="Organization")
+    enabled = graphene.Int(description="Enabled")
+    ts_modified = graphene.String(description="Row Modification Timestamp")
+    ts_created = graphene.String(description="Row Creation Timestamp")
+
+
+class EventAttribute:
+    """Descriptive attributes of the Event table.
+
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+
+    """
+
+    idx_event = graphene.Int(description="Primary key index")
+    name = graphene.String(description="Name of event")
+    enabled = graphene.Int(description="Enabled")
+    ts_modified = graphene.String(description="Row Modification Timestamp")
+    ts_created = graphene.String(description="Row Creation Timestamp")
+
+
+class DeviceAttribute:
+    """Descriptive attributes of the Device table.
+
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+
+    """
+
+    idx_device = graphene.Int(description="Primary key index")
+    idx_zone = graphene.Int(description="System zone")
+    sys_name = graphene.Int(description="System name")
+    hostname = graphene.Int(description="System hostname")
+    sys_description = graphene.Int(description="System description")
+    sys_objectid = graphene.Int(description="System SNMP sysobjectid")
+    sys_uptime = graphene.Int(description="System uptime")
+    last_polled = graphene.Int(description="Timestamp of last poll")
+    enabled = graphene.Int(description="Enabled")
+    ts_modified = graphene.String(description="Row Modification Timestamp")
+    ts_created = graphene.String(description="Row Creation Timestamp")
+
+
 class L1InterfaceAttribute:
     """Descriptive attributes of the L1Interface table.
 
@@ -70,7 +101,7 @@ class L1InterfaceAttribute:
 
     """
 
-    idx = graphene.Int(description="Primary key index")
+    idx_l1interface = graphene.Int(description="Primary key index")
     idx_device = graphene.Int(description="Device index foreign key")
     ifindex = graphene.Int(description="Interface IfIndex")
     duplex = graphene.Int(description="Duplex code")
@@ -95,6 +126,59 @@ class L1InterfaceAttribute:
     ts_created = graphene.String(description="Row Creation Timestamp")
 
 
+class VlanAttribute:
+    """Descriptive attributes of the Vlan table.
+
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+
+    """
+
+    idx_vlan = graphene.Int(description="Primary key index")
+    idx_device = graphene.Int(description="Device index foreign key")
+    vlan = graphene.Int(description="VLAN number")
+    name = graphene.Int(description="VLAN name")
+    state = graphene.Int(description="VLAN state")
+    enabled = graphene.Int(description="Enabled")
+    ts_modified = graphene.String(description="Row Modification Timestamp")
+    ts_created = graphene.String(description="Row Creation Timestamp")
+
+
+class VlanPortAttribute:
+    """Descriptive attributes of the VlanPort table.
+
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+
+    """
+
+    idx_vlanport = graphene.Int(description="Primary key index")
+    idx_device = graphene.Int(description="Device index foreign key")
+    idx_l1interface = graphene.Int(description="L1Interface index foreign key")
+    idx_vlan = graphene.Int(description="Vlan index foreign key")
+    enabled = graphene.Int(description="Enabled")
+    ts_modified = graphene.String(description="Row Modification Timestamp")
+    ts_created = graphene.String(description="Row Creation Timestamp")
+
+
+class MacAttribute:
+    """Descriptive attributes of the Mac table.
+
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+
+    """
+
+    idx_mac = graphene.Int(description="Primary key index")
+    idx_oui = graphene.Int(description="OUI index foreign key")
+    idx_event = graphene.Int(description="Event index foreign key")
+    idx_zone = graphene.Int(description="Zone index foreign key")
+    mac = graphene.String(description="MAC address")
+    enabled = graphene.Int(description="Enabled")
+    ts_modified = graphene.String(description="Row Modification Timestamp")
+    ts_created = graphene.String(description="Row Creation Timestamp")
+
+
 class MacIpAttribute:
     """Descriptive attributes of the MacIp table.
 
@@ -103,9 +187,9 @@ class MacIpAttribute:
 
     """
 
-    idx = graphene.Int(description="Primary key index")
+    idx_macip = graphene.Int(description="Primary key index")
     idx_device = graphene.Int(description="Device index foreign key")
-    idx_oui = graphene.Int(description="Oui index foreign key")
+    idx_mac = graphene.Int(description="MAC address index foreign key")
     ip_ = graphene.String(description="IP address")
     mac = graphene.String(description="MAC address")
     version = graphene.String(description="IPv4 or IPv6")
@@ -115,53 +199,17 @@ class MacIpAttribute:
     ts_created = graphene.String(description="Row Creation Timestamp")
 
 
-class OuiAttribute:
-    """Descriptive attributes of the Oui table.
+class MacPortAttribute:
+    """Descriptive attributes of the MacPort table.
 
     A generic class to mutualize description of attributes for both queries
     and mutations.
 
     """
 
-    idx = graphene.Int(description="Primary key index")
-    oui = graphene.String(description="Organizationally unique identifier")
-    manufacturer = graphene.Int(description="Organization")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
-
-
-class TrunkAttribute:
-    """Descriptive attributes of the Trunk table.
-
-    A generic class to mutualize description of attributes for both queries
-    and mutations.
-
-    """
-
-    idx = graphene.Int(description="Primary key index")
-    idx_l1interface = graphene.Int(
-        description="L1 interface index foreign key"
-    )
-    idx_vlan = graphene.Int(description="VLAN index foreign key")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
-
-
-class VlanAttribute:
-    """Descriptive attributes of the Vlan table.
-
-    A generic class to mutualize description of attributes for both queries
-    and mutations.
-
-    """
-
-    idx = graphene.Int(description="Primary key index")
-    idx_device = graphene.Int(description="Device index foreign key")
-    vlan = graphene.Int(description="VLAN number")
-    name = graphene.Int(description="VLAN name")
-    state = graphene.Int(description="VLAN state")
+    idx_macport = graphene.Int(description="Primary key index")
+    idx_mac = graphene.Int(description="MAC address index foreign key")
+    idx_l1interface = graphene.Int(description="L1Interface index foreign key")
     enabled = graphene.Int(description="Enabled")
     ts_modified = graphene.String(description="Row Modification Timestamp")
     ts_created = graphene.String(description="Row Creation Timestamp")

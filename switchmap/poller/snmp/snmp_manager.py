@@ -10,7 +10,7 @@ from easysnmp import exceptions
 from switchmap import Config
 from switchmap.core import log
 from switchmap.core import files
-from switchmap.poller.r.snmp import iana_enterprise
+from . import iana_enterprise
 
 
 class Validate:

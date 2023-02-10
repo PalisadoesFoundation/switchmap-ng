@@ -3,8 +3,8 @@
 
 # Switchmap imports
 from switchmap import Config, ConfigSNMP
-from switchmap.poller.r.snmp import snmp_info
-from switchmap.poller.r.snmp import snmp_manager
+from . import snmp_info
+from . import snmp_manager
 from switchmap.core import log
 
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Switchmap WSGI script.
 
-Serves as a Gunicorn WSGI entry point for switchmap-ng-dashboard
+Serves as a Gunicorn WSGI entry point for switchmap-ng-api
 
 """
 
@@ -23,8 +23,8 @@ else:
 
 # Switchmap libraries
 from switchmap.core.agent import Agent, AgentCLI, AgentAPI
-from switchmap import AGENT_DASHBOARD, AGENT_DASHBOARD_CHILD
-from switchmap.www import DASHBOARD
+from switchmap import AGENT_API, AGENT_API_CHILD
+from switchmap.server.api import API
 
 from switchmap import Config
 
@@ -43,12 +43,12 @@ def main():
     config = Config()
 
     # Create agent object for web_proxy
-    agent_gunicorn = Agent(AGENT_DASHBOARD_CHILD, config=config)
+    agent_gunicorn = Agent(AGENT_API_CHILD, config=config)
 
     # Create agent for daemon
     agent_api = AgentAPI(
-        AGENT_DASHBOARD,
-        AGENT_DASHBOARD_CHILD,
+        AGENT_API,
+        AGENT_API_CHILD,
         API,
         config=config)
 

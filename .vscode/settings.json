@@ -4,7 +4,7 @@
         "--max-line-length=80",
         "--ignore=E402,E722",
     ],
-    "python.formatting.provider": "autopep8",
+    "python.formatting.provider": "black",
     "python.formatting.autopep8Args": [
         "--max-line-length=80",
         "--ignore=E402"

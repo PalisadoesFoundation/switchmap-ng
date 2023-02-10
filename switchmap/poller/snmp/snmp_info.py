@@ -3,8 +3,8 @@
 import time
 from collections import defaultdict
 
-from switchmap.poller.r.snmp import iana_enterprise
-from switchmap.poller.r.snmp import get_queries
+from . import iana_enterprise
+from . import get_queries
 
 
 class Query:

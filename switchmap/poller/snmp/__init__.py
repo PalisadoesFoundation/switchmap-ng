@@ -1,26 +1,26 @@
 """Switchmap-NG snmp package."""
 
-from switchmap.poller.r.snmp.mib.generic.mib_bridge import BridgeQuery
-from switchmap.poller.r.snmp.mib.generic.mib_entity import EntityQuery
-from switchmap.poller.r.snmp.mib.generic.mib_essswitch import EssSwitchQuery
-from switchmap.poller.r.snmp.mib.generic.mib_etherlike import EtherlikeQuery
-from switchmap.poller.r.snmp.mib.generic.mib_if import IfQuery
-from switchmap.poller.r.snmp.mib.generic.mib_if_64 import If64Query
-from switchmap.poller.r.snmp.mib.generic.mib_ip import IpQuery
-from switchmap.poller.r.snmp.mib.generic.mib_ipv6 import Ipv6Query
-from switchmap.poller.r.snmp.mib.generic.mib_lldp import LldpQuery
-from switchmap.poller.r.snmp.mib.generic.mib_qbridge import QbridgeQuery
-from switchmap.poller.r.snmp.mib.generic.mib_snmpv2 import Snmpv2Query
+from .mib.generic.mib_bridge import BridgeQuery
+from .mib.generic.mib_entity import EntityQuery
+from .mib.generic.mib_essswitch import EssSwitchQuery
+from .mib.generic.mib_etherlike import EtherlikeQuery
+from .mib.generic.mib_if import IfQuery
+from .mib.generic.mib_if_64 import If64Query
+from .mib.generic.mib_ip import IpQuery
+from .mib.generic.mib_ipv6 import Ipv6Query
+from .mib.generic.mib_lldp import LldpQuery
+from .mib.generic.mib_qbridge import QbridgeQuery
+from .mib.generic.mib_snmpv2 import Snmpv2Query
 
-from switchmap.poller.r.snmp.mib.cisco import CiscoC2900Query
-from switchmap.poller.r.snmp.mib.cisco import CiscoCdpQuery
-from switchmap.poller.r.snmp.mib.cisco import CiscoIetfIpQuery
-from switchmap.poller.r.snmp.mib.cisco import CiscoStackQuery
-from switchmap.poller.r.snmp.mib.cisco import CiscoVlanMembershipQuery
-from switchmap.poller.r.snmp.mib.cisco import CiscoVlanIftableRelationshipQuery
-from switchmap.poller.r.snmp.mib.cisco import CiscoVtpQuery
+from .mib.cisco import CiscoC2900Query
+from .mib.cisco import CiscoCdpQuery
+from .mib.cisco import CiscoIetfIpQuery
+from .mib.cisco import CiscoStackQuery
+from .mib.cisco import CiscoVlanMembershipQuery
+from .mib.cisco import CiscoVlanIftableRelationshipQuery
+from .mib.cisco import CiscoVtpQuery
 
-from switchmap.poller.r.snmp.mib.juniper import JuniperVlanQuery
+from .mib.juniper import JuniperVlanQuery
 
 
 __all__ = ("cisco", "juniper")

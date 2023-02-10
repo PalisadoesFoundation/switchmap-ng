@@ -11,42 +11,34 @@ Based on the pages at:
 # PIP3 imports
 import graphene
 from graphene import relay
-from graphene_sqlalchemy import SQLAlchemyObjectType
-
-# Graphene Filtering
-from graphene_sqlalchemy_filter import FilterableConnectionField
+from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 
 # Import models
 from switchmap.server.db.models import (
     Device as DeviceModel,
+    Event as EventModel,
     L1Interface as L1InterfaceModel,
     Zone as ZoneModel,
     MacIp as MacIpModel,
     Oui as OuiModel,
-    Trunk as TrunkModel,
     Vlan as VlanModel,
-)
-
-# Import filters
-from switchmap.server.db.filters import (
-    DeviceFilter,
-    ZoneFilter,
-    L1InterfaceFilter,
-    MacIpFilter,
-    OuiFilter,
-    TrunkFilter,
-    VlanFilter,
+    Mac as MacModel,
+    MacPort as MacPortModel,
+    VlanPort as VlanPortModel,
 )
 
 # Import attributes
 from switchmap.server.db.attributes import (
     DeviceAttribute,
-    ZoneAttribute,
+    EventAttribute,
     L1InterfaceAttribute,
+    MacAttribute,
     MacIpAttribute,
+    MacPortAttribute,
     OuiAttribute,
-    TrunkAttribute,
     VlanAttribute,
+    VlanPortAttribute,
+    ZoneAttribute,
 )
 
 ###############################################################################
@@ -64,6 +56,16 @@ class Device(SQLAlchemyObjectType, DeviceAttribute):
         interfaces = (graphene.relay.Node,)
 
 
+class Event(SQLAlchemyObjectType, EventAttribute):
+    """Device node."""
+
+    class Meta:
+        """Define the metadata."""
+
+        model = EventModel
+        interfaces = (graphene.relay.Node,)
+
+
 class L1Interface(SQLAlchemyObjectType, L1InterfaceAttribute):
     """L1Interface node."""
 
@@ -71,6 +73,16 @@ class L1Interface(SQLAlchemyObjectType, L1InterfaceAttribute):
         """Define the metadata."""
 
         model = L1InterfaceModel
+        interfaces = (graphene.relay.Node,)
+
+
+class Mac(SQLAlchemyObjectType, MacAttribute):
+    """Mac node."""
+
+    class Meta:
+        """Define the metadata."""
+
+        model = MacModel
         interfaces = (graphene.relay.Node,)
 
 
@@ -94,6 +106,16 @@ class MacIp(SQLAlchemyObjectType, MacIpAttribute):
         interfaces = (graphene.relay.Node,)
 
 
+class MacPort(SQLAlchemyObjectType, MacPortAttribute):
+    """MacPort node."""
+
+    class Meta:
+        """Define the metadata."""
+
+        model = MacPortModel
+        interfaces = (graphene.relay.Node,)
+
+
 class Oui(SQLAlchemyObjectType, OuiAttribute):
     """Oui node."""
 
@@ -101,16 +123,6 @@ class Oui(SQLAlchemyObjectType, OuiAttribute):
         """Define the metadata."""
 
         model = OuiModel
-        interfaces = (graphene.relay.Node,)
-
-
-class Trunk(SQLAlchemyObjectType, TrunkAttribute):
-    """Trunk node."""
-
-    class Meta:
-        """Define the metadata."""
-
-        model = TrunkModel
         interfaces = (graphene.relay.Node,)
 
 
@@ -124,6 +136,16 @@ class Vlan(SQLAlchemyObjectType, VlanAttribute):
         interfaces = (graphene.relay.Node,)
 
 
+class VlanPort(SQLAlchemyObjectType, VlanPortAttribute):
+    """VlanPort node."""
+
+    class Meta:
+        """Define the metadata."""
+
+        model = VlanPortModel
+        interfaces = (graphene.relay.Node,)
+
+
 class Query(graphene.ObjectType):
     """Define GraphQL queries."""
 
@@ -131,45 +153,43 @@ class Query(graphene.ObjectType):
 
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
-    all_device = FilterableConnectionField(
-        connection=Device, sort=None, filters=DeviceFilter()
-    )
+    devices = SQLAlchemyConnectionField(Device.connection, sort=None)
+
+    # Results as a single entry filtered by 'id' and as a list
+    event = graphene.relay.Node.Field(Event)
+    events = SQLAlchemyConnectionField(Event.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     l1interface = graphene.relay.Node.Field(L1Interface)
-    all_l1interface = FilterableConnectionField(
-        connection=L1Interface, filters=L1InterfaceFilter()
-    )
+    l1interfaces = SQLAlchemyConnectionField(L1Interface.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     zone = graphene.relay.Node.Field(Zone)
-    all_zone = FilterableConnectionField(
-        connection=Zone, sort=None, filters=ZoneFilter()
-    )
+    zones = SQLAlchemyConnectionField(Zone.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
-    mac = graphene.relay.Node.Field(MacIp)
-    all_mac = FilterableConnectionField(
-        connection=MacIp, sort=None, filters=MacIpFilter()
-    )
+    mac = graphene.relay.Node.Field(Mac)
+    macs = SQLAlchemyConnectionField(Mac.connection, sort=None)
+
+    # Results as a single entry filtered by 'id' and as a list
+    macip = graphene.relay.Node.Field(MacIp)
+    macips = SQLAlchemyConnectionField(MacIp.connection, sort=None)
+
+    # Results as a single entry filtered by 'id' and as a list
+    macport = graphene.relay.Node.Field(MacPort)
+    macports = SQLAlchemyConnectionField(MacPort.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     oui = graphene.relay.Node.Field(Oui)
-    all_oui = FilterableConnectionField(
-        connection=Oui, sort=None, filters=OuiFilter()
-    )
-
-    # Results as a single entry filtered by 'id' and as a list
-    trunk = graphene.relay.Node.Field(Trunk)
-    all_trunk = FilterableConnectionField(
-        connection=Trunk, sort=None, filters=TrunkFilter()
-    )
+    ouis = SQLAlchemyConnectionField(Oui.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     vlan = graphene.relay.Node.Field(Vlan)
-    all_vlan = FilterableConnectionField(
-        connection=Vlan, sort=None, filters=VlanFilter()
-    )
+    vlans = SQLAlchemyConnectionField(Vlan.connection, sort=None)
+
+    # Results as a single entry filtered by 'id' and as a list
+    vlanport = graphene.relay.Node.Field(VlanPort)
+    vlanports = SQLAlchemyConnectionField(VlanPort.connection, sort=None)
 
 
 # Make the schema global

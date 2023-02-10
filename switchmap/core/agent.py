@@ -321,8 +321,8 @@ class AgentAPI(Agent):
         Agent.__init__(self, parent, child=child, config=_config)
         self._app = app
         self._agent_api_variable = AgentAPIVariable(
-            ip_bind_port=_config.ip_bind_port(),
-            ip_listen_address=_config.ip_listen_address(),
+            ip_bind_port=_config.bind_port(),
+            ip_listen_address=_config.listen_address(),
         )
 
     def query(self):
@@ -366,8 +366,8 @@ fix.""".format(
         ######################################################################
         options = {
             "bind": _ip_binding(self._agent_api_variable),
-            "accesslog": self.config.log_file_api(),
-            "errorlog": self.config.log_file_api(),
+            "accesslog": self.config.log_file_web(),
+            "errorlog": self.config.log_file_web(),
             "capture_output": True,
             "pidfile": self._pidfile_child,
             "loglevel": self.config.log_level(),
@@ -380,7 +380,7 @@ fix.""".format(
         log_message = "API running on {}:{} and logging to file {}." "".format(
             self._agent_api_variable.ip_listen_address,
             self._agent_api_variable.ip_bind_port,
-            self.config.log_file_api(),
+            self.config.log_file_web(),
         )
         log.log2info(1088, log_message)
 

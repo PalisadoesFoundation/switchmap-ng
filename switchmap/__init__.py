@@ -13,14 +13,17 @@ from .core import log
 from .poller.update import TrunkInterface
 from .core.configuration import Config, ConfigSNMP
 
-# Create global variables for the API
+# Create global variables for the various daemons
 SITE_PREFIX = "/switchmap-ng"
-API_PREFIX = "{}/api/v1".format(SITE_PREFIX)
-API_STATIC_FOLDER = "static/default"
-API_TEMPLATE_FOLDER = "templates/default"
-AGENT_API_CHILD = "switchmap-ng-gunicorn"
+API_PREFIX = "{}/api".format(SITE_PREFIX)
+DASHBOARD_PREFIX = "{}/dashboard".format(SITE_PREFIX)
+DASHBOARD_STATIC_FOLDER = "static/default"
+DASHBOARD_TEMPLATE_FOLDER = "templates/default"
 AGENT_POLLER = "Poller"
+AGENT_DASHBOARD = "Dashboard"
+AGENT_DASHBOARD_CHILD = "switchmap-ng-dashboard"
 AGENT_API = "API"
+AGENT_API_CHILD = "switchmap-ng-api"
 
 # Important tuples
 Found = namedtuple("Found", "idx_l1interface")

@@ -1,4 +1,4 @@
-"""Module of switchmap API routes.
+"""Module of switchmap DASHBOARD routes.
 
 Contains all routes that switchmap.s Flask webserver uses
 
@@ -10,39 +10,39 @@ from flask import Flask, url_for
 from switchmap.utils import general
 
 # Do remaining switchmap-ng importations
-from switchmap.www.routes.api.devices import API_DEVICES
+from switchmap.www.routes.DASHBOARD.devices import DASHBOARD_DEVICES
 from switchmap.www.routes.pages.index import INDEX
 from switchmap.www.routes.pages.devices import DEVICES
 from switchmap.www.routes.pages.search import SEARCH
 from switchmap import (
     SITE_PREFIX,
-    API_PREFIX,
-    API_STATIC_FOLDER,
-    API_TEMPLATE_FOLDER,
+    DASHBOARD_PREFIX,
+    DASHBOARD_STATIC_FOLDER,
+    DASHBOARD_TEMPLATE_FOLDER,
 )
 
 # Initializes the Flask Object.
 # Make sure the static URL path is under the SITE_PREFIX.
-API = Flask(
+DASHBOARD = Flask(
     __name__,
     static_url_path="{}/static".format(SITE_PREFIX),
-    static_folder=API_STATIC_FOLDER,
-    template_folder=API_TEMPLATE_FOLDER,
+    static_folder=DASHBOARD_STATIC_FOLDER,
+    template_folder=DASHBOARD_TEMPLATE_FOLDER,
 )
 
 # Register Blueprints
-API.register_blueprint(API_DEVICES, url_prefix=API_PREFIX)
-API.register_blueprint(INDEX, url_prefix=SITE_PREFIX)
-API.register_blueprint(DEVICES, url_prefix=SITE_PREFIX)
-API.register_blueprint(SEARCH, url_prefix=SITE_PREFIX)
+DASHBOARD.register_blueprint(DASHBOARD_DEVICES, url_prefix=DASHBOARD_PREFIX)
+DASHBOARD.register_blueprint(INDEX, url_prefix=SITE_PREFIX)
+DASHBOARD.register_blueprint(DEVICES, url_prefix=SITE_PREFIX)
+DASHBOARD.register_blueprint(SEARCH, url_prefix=SITE_PREFIX)
 
 # Function to easily find your assests
-API.jinja_env.globals["static"] = lambda filename: url_for(
+DASHBOARD.jinja_env.globals["static"] = lambda filename: url_for(
     "static", filename=filename
 )
 
 
-@API.context_processor
+@DASHBOARD.context_processor
 def inject():
     """Function for injecting global variables for use by templates.
 
