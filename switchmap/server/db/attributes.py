@@ -142,6 +142,11 @@ def resolve_sys_description(obj, _):
     return obj.sys_description.decode()
 
 
+def resolve_sys_uptime(obj, _):
+    """Convert 'sys_uptime' from Null to zero."""
+    return float(obj.sys_uptime) if bool(obj.sys_uptime) else 0
+
+
 def resolve_sys_objectid(obj, _):
     """Convert 'sys_objectid' from bytes to string."""
     return obj.sys_objectid.decode()
@@ -241,7 +246,9 @@ class DeviceAttribute:
     sys_objectid = graphene.String(
         resolver=resolve_sys_objectid, description="System SNMP sysobjectid"
     )
-    sys_uptime = graphene.Int(description="System uptime")
+    sys_uptime = graphene.Float(
+        resolver=resolve_sys_uptime, description="System uptime"
+    )
     last_polled = graphene.Int(description="Timestamp of last poll")
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
