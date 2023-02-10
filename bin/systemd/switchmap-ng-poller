@@ -116,7 +116,7 @@ class PollingAgent(Agent):
             pollertime = int(time.time()) - ts_poller_start
             log_message = (
                 'Completed device polling sequence. {}s loop duration, {}s poller uptime'
-                ''.format(looptime, pollertime)
+                ''.format(looptime, pollertime))
             log.log2info(1125, log_message)
 
             # Sleep for "delay" seconds
