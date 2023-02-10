@@ -82,10 +82,11 @@ class PollingAgent(Agent):
         """
         # Initialize key variables
         delay = self.server_config.polling_interval()
-        ts_start = int(time.time())
+        ts_poller_start = int(time.time())
 
         # Post data to the remote server
         while True:
+            ts_loop_start = int(time.time())
             log_message = ('Starting device polling sequence.')
             log.log2info(1056, log_message)
 
@@ -111,9 +112,11 @@ class PollingAgent(Agent):
             general.move_files(
                 temp_topology_directory, topology_directory)
 
+            looptime   = int(time.time()) - ts_loop_start
+            pollertime = int(time.time()) - ts_poller_start
             log_message = (
-                'Completed device polling sequence. {}s duration'
-                ''.format(int(time.time()) - ts_start))
+                'Completed device polling sequence. {}s loop duration, {}s poller uptime'
+                ''.format(looptime, pollertime)
             log.log2info(1125, log_message)
 
             # Sleep for "delay" seconds
