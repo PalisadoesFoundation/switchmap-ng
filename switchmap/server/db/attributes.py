@@ -11,6 +11,17 @@ Based on the pages at:
 # PIP3 imports
 import graphene
 
+
+###############################################################################
+# Define Resolvers
+###############################################################################
+
+
+def resolve_hostname(obj, _):
+    """Convert 'hostname' from bytes to string."""
+    return obj.hostname.decode()
+
+
 ###############################################################################
 # Define Attribues
 ###############################################################################
@@ -83,9 +94,11 @@ class DeviceAttribute:
     idx_device = graphene.Int(description="Primary key index")
     idx_zone = graphene.Int(description="System zone")
     sys_name = graphene.Int(description="System name")
-    hostname = graphene.Int(description="System hostname")
-    sys_description = graphene.Int(description="System description")
-    sys_objectid = graphene.Int(description="System SNMP sysobjectid")
+    hostname = graphene.String(
+        resolver=resolve_hostname, description="System hostname"
+    )
+    sys_description = graphene.String(description="System description")
+    sys_objectid = graphene.String(description="System SNMP sysobjectid")
     sys_uptime = graphene.Int(description="System uptime")
     last_polled = graphene.Int(description="Timestamp of last poll")
     enabled = graphene.Int(description="Enabled")
