@@ -17,9 +17,134 @@ import graphene
 ###############################################################################
 
 
+def resolve_address_0(obj, _):
+    """Convert 'address_0' from bytes to string."""
+    return obj.address_0.decode()
+
+
+def resolve_address_1(obj, _):
+    """Convert 'address_1' from bytes to string."""
+    return obj.address_1.decode()
+
+
+def resolve_address_2(obj, _):
+    """Convert 'address_2' from bytes to string."""
+    return obj.address_2.decode()
+
+
+def resolve_cdpcachedeviceid(obj, _):
+    """Convert 'cdpcachedeviceid' from bytes to string."""
+    return obj.cdpcachedeviceid.decode()
+
+
+def resolve_cdpcacheplatform(obj, _):
+    """Convert 'cdpcacheplatform' from bytes to string."""
+    return obj.cdpcacheplatform.decode()
+
+
+def resolve_cdpcachedeviceport(obj, _):
+    """Convert 'cdpcachedeviceport' from bytes to string."""
+    return obj.cdpcachedeviceport.decode()
+
+
+def resolve_city(obj, _):
+    """Convert 'city' from bytes to string."""
+    return obj.city.decode()
+
+
+def resolve_company_name(obj, _):
+    """Convert 'company_name' from bytes to string."""
+    return obj.company_name.decode()
+
+
+def resolve_country(obj, _):
+    """Convert 'country' from bytes to string."""
+    return obj.country.decode()
+
+
 def resolve_hostname(obj, _):
     """Convert 'hostname' from bytes to string."""
     return obj.hostname.decode()
+
+
+def resolve_ifalias(obj, _):
+    """Convert 'ifalias' from bytes to string."""
+    return obj.ifalias.decode()
+
+
+def resolve_ifdescr(obj, _):
+    """Convert 'ifdescr' from bytes to string."""
+    return obj.ifdescr.decode()
+
+
+def resolve_ip_(obj, _):
+    """Convert 'ip_' from bytes to string."""
+    return obj.ip_.decode()
+
+
+def resolve_lldpremportdesc(obj, _):
+    """Convert 'lldpremportdesc' from bytes to string."""
+    return obj.lldpremportdesc.decode()
+
+
+def resolve_lldpremsyscapenabled(obj, _):
+    """Convert 'lldpremsyscapenabled' from bytes to string."""
+    return obj.lldpremsyscapenabled.decode()
+
+
+def resolve_lldpremsysdesc(obj, _):
+    """Convert 'lldpremsysdesc' from bytes to string."""
+    return obj.lldpremsysdesc.decode()
+
+
+def resolve_lldpremsysname(obj, _):
+    """Convert 'lldpremsysname' from bytes to string."""
+    return obj.lldpremsysname.decode()
+
+
+def resolve_mac(obj, _):
+    """Convert 'mac' from bytes to string."""
+    return obj.mac.decode()
+
+
+def resolve_name(obj, _):
+    """Convert 'name' from bytes to string."""
+    return obj.name.decode()
+
+
+def resolve_notes(obj, _):
+    """Convert 'notes' from bytes to string."""
+    return obj.notes.decode()
+
+
+def resolve_oui(obj, _):
+    """Convert 'oui' from bytes to string."""
+    return obj.oui.decode()
+
+
+def resolve_phone(obj, _):
+    """Convert 'phone' from bytes to string."""
+    return obj.phone.decode()
+
+
+def resolve_postal_code(obj, _):
+    """Convert 'postal_code' from bytes to string."""
+    return obj.postal_code.decode()
+
+
+def resolve_state(obj, _):
+    """Convert 'state' from bytes to string."""
+    return obj.state.decode()
+
+
+def resolve_sys_description(obj, _):
+    """Convert 'sys_description' from bytes to string."""
+    return obj.sys_description.decode()
+
+
+def resolve_sys_objectid(obj, _):
+    """Convert 'sys_objectid' from bytes to string."""
+    return obj.sys_objectid.decode()
 
 
 ###############################################################################
@@ -36,20 +161,30 @@ class ZoneAttribute:
     """
 
     idx_zone = graphene.Int(description="Primary key index")
-    name = graphene.String(description="Zone name")
-    company_name = graphene.String(description="Company name")
-    address_0 = graphene.String(description="Address Line 0")
-    address_1 = graphene.String(description="Address Line 1")
-    address_2 = graphene.String(description="Address Line 2")
-    city = graphene.String(description="City")
-    state = graphene.String(description="State")
-    country = graphene.String(description="Country")
-    postal_code = graphene.String(description="Postal code")
-    phone = graphene.String(description="Phone")
-    notes = graphene.String(description="Notes")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    name = graphene.String(resolver=resolve_name, description="Zone name")
+    company_name = graphene.String(
+        resolver=resolve_company_name, description="Company name"
+    )
+    address_0 = graphene.String(
+        resolver=resolve_address_0, description="Address Line 0"
+    )
+    address_1 = graphene.String(
+        resolver=resolve_address_1, description="Address Line 1"
+    )
+    address_2 = graphene.String(
+        resolver=resolve_address_2, description="Address Line 2"
+    )
+    city = graphene.String(resolver=resolve_city, description="City")
+    state = graphene.String(resolver=resolve_state, description="State")
+    country = graphene.String(resolver=resolve_country, description="Country")
+    postal_code = graphene.String(
+        resolver=resolve_postal_code, description="Postal code"
+    )
+    phone = graphene.String(resolver=resolve_phone, description="Phone")
+    notes = graphene.String(resolver=resolve_notes, description="Notes")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
 
 
 class OuiAttribute:
@@ -61,11 +196,14 @@ class OuiAttribute:
     """
 
     idx_oui = graphene.Int(description="Primary key index")
-    oui = graphene.String(description="Organizationally unique identifier")
+    oui = graphene.String(
+        resolver=resolve_oui,
+        description="Organizationally unique identifier",
+    )
     manufacturer = graphene.Int(description="Organization")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
 
 
 class EventAttribute:
@@ -77,10 +215,10 @@ class EventAttribute:
     """
 
     idx_event = graphene.Int(description="Primary key index")
-    name = graphene.String(description="Name of event")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    name = graphene.String(resolver=resolve_name, description="Name of event")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
 
 
 class DeviceAttribute:
@@ -97,13 +235,17 @@ class DeviceAttribute:
     hostname = graphene.String(
         resolver=resolve_hostname, description="System hostname"
     )
-    sys_description = graphene.String(description="System description")
-    sys_objectid = graphene.String(description="System SNMP sysobjectid")
+    sys_description = graphene.String(
+        resolver=resolve_sys_description, description="System description"
+    )
+    sys_objectid = graphene.String(
+        resolver=resolve_sys_objectid, description="System SNMP sysobjectid"
+    )
     sys_uptime = graphene.Int(description="System uptime")
     last_polled = graphene.Int(description="Timestamp of last poll")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
 
 
 class L1InterfaceAttribute:
@@ -121,22 +263,41 @@ class L1InterfaceAttribute:
     ethernet = graphene.Int(description="Ethernet port True/False")
     nativevlan = graphene.Int(description="Interface native VLAN")
     trunk = graphene.Int(description="Trunk True/False")
-    ifspeed = graphene.String(description="Interface speed")
-    ifalias = graphene.String(description="Interface alias")
-    ifdescr = graphene.String(description="Interface description")
+    ifspeed = graphene.Int(description="Interface speed")
+    ifalias = graphene.String(
+        resolver=resolve_ifalias, description="Interface alias"
+    )
+    ifdescr = graphene.String(
+        resolver=resolve_ifdescr, description="Interface description"
+    )
     ifadminstatus = graphene.Int(description="Interface admin status")
     ifoperstatus = graphene.Int(description="Interface operational status")
     ts_idle = graphene.Int(description="Seconds Idle")
-    cdpcachedeviceid = graphene.String(description="CDP device ID")
-    cdpcachedeviceport = graphene.String(description="CDP device port")
-    cdpcacheplatform = graphene.String(description="CDP platform")
-    lldpremportdesc = graphene.String(description="LLDP port description")
-    lldpremsyscapenabled = graphene.String(description="Enabled")
-    lldpremsysdesc = graphene.String(description="LLDP system description")
-    lldpremsysname = graphene.String(description="LLDP system name")
-    enabled = graphene.String(description="LLDP enabled capabilities")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    cdpcachedeviceid = graphene.String(
+        resolver=resolve_cdpcachedeviceid, description="CDP device ID"
+    )
+    cdpcachedeviceport = graphene.String(
+        resolver=resolve_cdpcachedeviceport, description="CDP device port"
+    )
+    cdpcacheplatform = graphene.String(
+        resolver=resolve_cdpcacheplatform, description="CDP platform"
+    )
+    lldpremportdesc = graphene.String(
+        resolver=resolve_lldpremportdesc, description="LLDP port description"
+    )
+    lldpremsyscapenabled = graphene.String(
+        resolver=resolve_lldpremsyscapenabled,
+        description="LLDP capabilities enabled",
+    )
+    lldpremsysdesc = graphene.String(
+        resolver=resolve_lldpremsysdesc, description="LLDP system description"
+    )
+    lldpremsysname = graphene.String(
+        resolver=resolve_lldpremsysname, description="LLDP system name"
+    )
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
 
 
 class VlanAttribute:
@@ -152,9 +313,9 @@ class VlanAttribute:
     vlan = graphene.Int(description="VLAN number")
     name = graphene.Int(description="VLAN name")
     state = graphene.Int(description="VLAN state")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
 
 
 class VlanPortAttribute:
@@ -169,9 +330,9 @@ class VlanPortAttribute:
     idx_device = graphene.Int(description="Device index foreign key")
     idx_l1interface = graphene.Int(description="L1Interface index foreign key")
     idx_vlan = graphene.Int(description="Vlan index foreign key")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
 
 
 class MacAttribute:
@@ -186,10 +347,10 @@ class MacAttribute:
     idx_oui = graphene.Int(description="OUI index foreign key")
     idx_event = graphene.Int(description="Event index foreign key")
     idx_zone = graphene.Int(description="Zone index foreign key")
-    mac = graphene.String(description="MAC address")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    mac = graphene.String(resolver=resolve_mac, description="MAC address")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
 
 
 class MacIpAttribute:
@@ -203,13 +364,15 @@ class MacIpAttribute:
     idx_macip = graphene.Int(description="Primary key index")
     idx_device = graphene.Int(description="Device index foreign key")
     idx_mac = graphene.Int(description="MAC address index foreign key")
-    ip_ = graphene.String(description="IP address")
-    mac = graphene.String(description="MAC address")
-    version = graphene.String(description="IPv4 or IPv6")
-    hostname = graphene.String(description="Hostname")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    ip_ = graphene.String(resolver=resolve_ip_, description="IP address")
+    mac = graphene.String(resolver=resolve_mac, description="MAC address")
+    version = graphene.Int(description="IPv4 or IPv6")
+    hostname = graphene.String(
+        resolver=resolve_hostname, description="Hostname"
+    )
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
 
 
 class MacPortAttribute:
@@ -223,6 +386,6 @@ class MacPortAttribute:
     idx_macport = graphene.Int(description="Primary key index")
     idx_mac = graphene.Int(description="MAC address index foreign key")
     idx_l1interface = graphene.Int(description="L1Interface index foreign key")
-    enabled = graphene.Int(description="Enabled")
-    ts_modified = graphene.String(description="Row Modification Timestamp")
-    ts_created = graphene.String(description="Row Creation Timestamp")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.Date(description="Row Modification Timestamp")
+    ts_created = graphene.Date(description="Row Creation Timestamp")
