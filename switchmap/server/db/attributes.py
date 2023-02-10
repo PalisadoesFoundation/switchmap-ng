@@ -183,8 +183,8 @@ class ZoneAttribute:
     phone = graphene.String(resolver=resolve_phone, description="Phone")
     notes = graphene.String(resolver=resolve_notes, description="Notes")
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
 class OuiAttribute:
@@ -202,8 +202,8 @@ class OuiAttribute:
     )
     manufacturer = graphene.Int(description="Organization")
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
 class EventAttribute:
@@ -217,8 +217,8 @@ class EventAttribute:
     idx_event = graphene.Int(description="Primary key index")
     name = graphene.String(resolver=resolve_name, description="Name of event")
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
 class DeviceAttribute:
@@ -244,8 +244,8 @@ class DeviceAttribute:
     sys_uptime = graphene.Int(description="System uptime")
     last_polled = graphene.Int(description="Timestamp of last poll")
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
 class L1InterfaceAttribute:
@@ -296,8 +296,8 @@ class L1InterfaceAttribute:
         resolver=resolve_lldpremsysname, description="LLDP system name"
     )
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
 class VlanAttribute:
@@ -314,8 +314,8 @@ class VlanAttribute:
     name = graphene.Int(description="VLAN name")
     state = graphene.Int(description="VLAN state")
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
 class VlanPortAttribute:
@@ -331,8 +331,8 @@ class VlanPortAttribute:
     idx_l1interface = graphene.Int(description="L1Interface index foreign key")
     idx_vlan = graphene.Int(description="Vlan index foreign key")
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
 class MacAttribute:
@@ -349,8 +349,8 @@ class MacAttribute:
     idx_zone = graphene.Int(description="Zone index foreign key")
     mac = graphene.String(resolver=resolve_mac, description="MAC address")
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
 class MacIpAttribute:
@@ -371,8 +371,8 @@ class MacIpAttribute:
         resolver=resolve_hostname, description="Hostname"
     )
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
 class MacPortAttribute:
@@ -387,5 +387,5 @@ class MacPortAttribute:
     idx_mac = graphene.Int(description="MAC address index foreign key")
     idx_l1interface = graphene.Int(description="L1Interface index foreign key")
     enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.Date(description="Row Modification Timestamp")
-    ts_created = graphene.Date(description="Row Creation Timestamp")
+    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
+    ts_created = graphene.DateTime(description="Row Creation Timestamp")
