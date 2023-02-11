@@ -134,6 +134,56 @@ class _File:
         return value
 
 
+def read_yaml_files(directories):
+    """Read the contents of all yaml files in a directory.
+
+    Args:
+        directories: List of directory names with configuration files
+
+    Returns:
+        config_dict: Dict of yaml read
+
+    """
+    # Initialize key variables
+    yaml_found = False
+    yaml_from_file = ""
+    all_yaml_read = ""
+
+    # Check each directory in sequence
+    for config_directory in directories:
+        # Check if config_directory exists
+        if os.path.isdir(config_directory) is False:
+            log_message = (
+                'Configuration directory "{}" '
+                "doesn't exist!".format(config_directory)
+            )
+            log.log2die_safe(1009, log_message)
+
+        # Cycle through list of files in directory
+        for filename in os.listdir(config_directory):
+            # Examine all the '.yaml' files in directory
+            if filename.endswith(".yaml"):
+                # Read YAML data
+                filepath = "{}/{}".format(config_directory, filename)
+                yaml_from_file = read_yaml_file(filepath, as_string=True)
+                yaml_found = True
+
+                # Append yaml from file to all yaml previously read
+                all_yaml_read = "{}\n{}".format(all_yaml_read, yaml_from_file)
+
+        # Verify YAML files found in directory
+        if yaml_found is False:
+            log_message = (
+                'No files found in directory "{}" with ".yaml" '
+                "extension.".format(config_directory)
+            )
+            log.log2die_safe(1010, log_message)
+
+    # Return
+    config_dict = yaml.safe_load(all_yaml_read)
+    return config_dict
+
+
 def read_yaml_file(filepath, as_string=False, die=True):
     """Read the contents of a YAML file.
 
@@ -154,21 +204,6 @@ def read_yaml_file(filepath, as_string=False, die=True):
 
     # Read file
     if filepath.endswith(".yaml"):
-        try:
-            with open(filepath, "r") as file_handle:
-                yaml_from_file = file_handle.read()
-        except:
-            log_message = (
-                "Error reading file {}. Check permissions, "
-                "existence and file syntax."
-                "".format(filepath)
-            )
-            if bool(die) is True:
-                log.log2die_safe(2006, log_message)
-            else:
-                log.log2debug(1056, log_message)
-                return {}
-
         # Get result
         if as_string is False:
             try:
@@ -184,8 +219,22 @@ def read_yaml_file(filepath, as_string=False, die=True):
                 else:
                     log.log2debug(1002, log_message)
                     return {}
+
         else:
-            result = yaml_from_file
+            try:
+                with open(filepath, "r") as file_handle:
+                    result = file_handle.read()
+            except:
+                log_message = (
+                    "Error reading file {}. Check permissions, "
+                    "existence and file syntax."
+                    "".format(filepath)
+                )
+                if bool(die) is True:
+                    log.log2die_safe(2006, log_message)
+                else:
+                    log.log2debug(1056, log_message)
+                    return {}
 
     else:
         # Die if not a YAML file
