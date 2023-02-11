@@ -85,10 +85,9 @@ class _GetLog:
         config_log_level = config.log_level()
 
         # Set logging level
-        if config_log_level in levels:
-            log_level = levels[config_log_level]
-        else:
-            log_level = levels["debug"]
+        log_level = levels.get(
+            str(config_log_level).lower(), levels.get("debug")
+        )
 
         # create logger with app_name
         self.logger_file = logging.getLogger("{}_file".format(app_name))

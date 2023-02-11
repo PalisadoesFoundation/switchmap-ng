@@ -410,7 +410,7 @@ main:
     username: {}
     agent_subprocesses: 20
     bind_port: 7000
-    cache_directory:
+    system_directory:
     hostnames:
       - {}
       - {}

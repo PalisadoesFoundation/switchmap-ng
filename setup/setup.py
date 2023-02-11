@@ -92,9 +92,9 @@ class _Configuration(object):
         updated_list = []
         config = copy.deepcopy(self.config)
         directory = self.directories[0]
-        directory_keys = ["log_directory", "cache_directory"]
+        directory_keys = ["log_directory", "system_directory"]
 
-        # Update log_directory and cache_directory
+        # Update log_directory and system_directory
         if isinstance(config, dict) is True:
             if "main" in config:
                 for next_key in directory_keys:
@@ -143,7 +143,7 @@ class _Configuration(object):
         config = copy.deepcopy(_config)
         dir_dict = {
             "log_directory": "log",
-            "cache_directory": "cache",
+            "system_directory": "system",
         }
         directory = general.root_directory()
 
