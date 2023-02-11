@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Class for normalizing the data read from YAML files."""
 
 import os

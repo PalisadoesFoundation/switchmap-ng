@@ -1,4 +1,3 @@
-#!usr/bin/env python3
 """Class for creating device web pages."""
 
 import textwrap

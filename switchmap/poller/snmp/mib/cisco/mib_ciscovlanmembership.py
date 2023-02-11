@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Module for CISCO-VLAN-MEMBERSHIP-MIB."""
 
 from collections import defaultdict

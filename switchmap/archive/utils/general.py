@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Switchmap-NG general library."""
 
 import os

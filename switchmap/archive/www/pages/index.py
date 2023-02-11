@@ -1,4 +1,3 @@
-#!usr/bin/env python3
 """Class for creating home web pages."""
 
 # PIP3 imports

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """SNMP Poller module."""
 
 # Switchmap imports

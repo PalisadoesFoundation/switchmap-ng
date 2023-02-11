@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Class interacts with CISCO-IETF-IP-MIB."""
 
 

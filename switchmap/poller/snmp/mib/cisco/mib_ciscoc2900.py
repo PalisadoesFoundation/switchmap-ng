@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Module for CISCO-C2900-MIB."""
 
 from collections import defaultdict

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """switchmap.classes that manage various configurations."""
 
 import os.path

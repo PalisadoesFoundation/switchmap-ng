@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Module for LLDP-MIB."""
 
 from collections import defaultdict
