@@ -25,8 +25,8 @@ class _Config:
         # Initialize key variables
         self._config = config_.get("main")
 
-    def agent_threads(self):
-        """Get agent_threads.
+    def agent_subprocesses(self):
+        """Get agent_subprocesses.
 
         Args:
             None
@@ -36,7 +36,7 @@ class _Config:
 
         """
         # Get result
-        configured_value = self._config.get("agent_threads")
+        configured_value = self._config.get("agent_subprocesses")
 
         # Default to 20
         if bool(configured_value) is False:

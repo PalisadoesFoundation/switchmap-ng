@@ -9,7 +9,7 @@ import ipaddress as ipaddress_
 
 # Application libraries
 from switchmap.core import log
-from switchmap import ConfigCore
+from switchmap.core.configuration import ConfigCore
 from switchmap import IP
 
 

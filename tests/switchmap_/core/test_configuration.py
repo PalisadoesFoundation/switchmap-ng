@@ -62,8 +62,8 @@ class Test_Config(unittest.TestCase):
         """Testing function __init__."""
         pass
 
-    def test_agent_threads(self):
-        """Testing function agent_threads."""
+    def test_agent_subprocesses(self):
+        """Testing function agent_subprocesses."""
         # Run test
         pass
 
@@ -246,6 +246,5 @@ class TestConfigSNMP(unittest.TestCase):
 
 
 if __name__ == "__main__":
-
     # Do the unit test
     unittest.main()

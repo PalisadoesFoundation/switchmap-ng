@@ -172,6 +172,5 @@ class TestMibQBridge(unittest.TestCase):
 
 
 if __name__ == "__main__":
-
     # Do the unit test
     unittest.main()

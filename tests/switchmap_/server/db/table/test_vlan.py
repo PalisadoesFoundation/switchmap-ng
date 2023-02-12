@@ -278,6 +278,5 @@ def _prerequisites():
 
 
 if __name__ == "__main__":
-
     # Do the unit test
     unittest.main()

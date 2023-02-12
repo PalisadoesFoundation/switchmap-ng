@@ -86,7 +86,6 @@ def post_poll_cleanup(idx_event):
         db.db_update(1144, statement)
 
     for idx_mac in idx_macs:
-
         # Disable MacPort
         statement = (
             update(MacPort)

@@ -207,7 +207,6 @@ def _macaddress(_search, ifindex_data):
     for macaddress, devices in ifindex_data.items():
         # Find search string in MAC address keys
         for possible in _search:
-
             if possible in "{}".format(macaddress).lower():
                 # Get all the devices and ifindexes that have the MAC
                 for device, ifindexes in devices.items():

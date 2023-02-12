@@ -2,13 +2,9 @@
 
 import os.path
 import os
-import multiprocessing
 
 # Import project libraries
 from switchmap.core.configuration import ConfigCore
-from switchmap.core import log
-
-
 
 
 class ConfigServer(ConfigCore):

@@ -98,7 +98,6 @@ class Query:
         for item in [
             Query(self.snmp_object) for Query in get_queries("system")
         ]:
-
             if item.supported():
                 processed = True
                 data = _add_system(item, data)

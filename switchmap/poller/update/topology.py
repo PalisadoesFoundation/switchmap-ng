@@ -121,7 +121,6 @@ def l1interface(data):
     device_ = _device.exists(hostname)
 
     if bool(device_) is True:
-
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
             exists = _l1interface.exists(device_.idx_device, ifindex)
@@ -203,7 +202,6 @@ def l1interface(data):
         log.log2debug(1138, log_message)
 
     else:
-
         # Log
         log_message = "No interfaces detected for for host {}".format(hostname)
         log.log2debug(1139, log_message)
@@ -234,7 +232,6 @@ def vlan(data):
     device_ = _device.exists(hostname)
 
     if bool(device_) is True:
-
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
             exists = _l1interface.exists(device_.idx_device, ifindex)
@@ -258,7 +255,6 @@ def vlan(data):
     unique_vlans = list(set(rows))
 
     for item in unique_vlans:
-
         vlan_exists = _vlan.exists(item.idx_device, item.vlan)
 
         if vlan_exists is False:

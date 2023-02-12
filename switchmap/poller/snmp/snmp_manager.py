@@ -7,7 +7,7 @@ import easysnmp
 from easysnmp import exceptions
 
 # Import project libraries
-from switchmap.poller.configuration import PollerConfig
+from switchmap.poller.configuration import ConfigPoller
 from switchmap.core import log
 from switchmap.core import files
 from . import iana_enterprise
@@ -46,7 +46,7 @@ class Validate:
         group_key = "group_name"
 
         # Create cache directory / file if not yet created
-        filename = files.snmp_file(self.hostname, PollerConfig())
+        filename = files.snmp_file(self.hostname, ConfigPoller())
         if os.path.exists(filename) is True:
             cache_exists = True
 
@@ -543,7 +543,6 @@ class Interact:
             exceptions.EasySNMPNoSuchInstanceError,
             exceptions.EasySNMPUndeterminedTypeError,
         ) as exception_error:
-
             # Update the error message
             log_message = _exception_message(
                 snmp_params["snmp_hostname"],

@@ -368,8 +368,8 @@ class Config(object):
             result = 86400
         return result
 
-    def agent_threads(self):
-        """Get agent_threads.
+    def agent_subprocesses(self):
+        """Get agent_subprocesses.
 
         Args:
             None
@@ -380,7 +380,7 @@ class Config(object):
         """
         # Get result
         key = "main"
-        sub_key = "agent_threads"
+        sub_key = "agent_subprocesses"
         configured_value = _key_sub_key(
             key, sub_key, self.config_dict, die=False
         )

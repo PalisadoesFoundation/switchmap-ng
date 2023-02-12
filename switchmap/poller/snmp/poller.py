@@ -33,12 +33,14 @@ class Poll:
 
         """
         # Initialize key variables
-        self._server_config = ConfigPoller()()
+        self._server_config = ConfigPoller()
         self._hostname = hostname
         self._snmp_object = None
 
         # Get snmp configuration information from Switchmap-NG
-        validate = snmp_manager.Validate(hostname, _server_config.snmp_auth())
+        validate = snmp_manager.Validate(
+            hostname, self._server_config.snmp_auth()
+        )
         snmp_params = validate.credentials()
 
         # Create an SNMP object for querying

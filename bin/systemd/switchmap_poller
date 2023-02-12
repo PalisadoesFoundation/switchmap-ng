@@ -16,13 +16,16 @@ from collections import namedtuple
 _SYS_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 _BIN_DIRECTORY = os.path.abspath(os.path.join(_SYS_DIRECTORY, os.pardir))
 _ROOT_DIRECTORY = os.path.abspath(os.path.join(_BIN_DIRECTORY, os.pardir))
-if _SYS_DIRECTORY.endswith(
-        '{0}switchmap-ng{0}bin{0}systemd'.format(os.sep)) is True:
+if (
+    _SYS_DIRECTORY.endswith("{0}switchmap-ng{0}bin{0}systemd".format(os.sep))
+    is True
+):
     sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
         'This script is not installed in the "switchmap-ng{0}bin{0}systemd" '
-        'directory. Please fix.'.format(os.sep))
+        "directory. Please fix.".format(os.sep)
+    )
     sys.exit(2)
 
 # Import app libraries
@@ -38,7 +41,7 @@ from switchmap.core import log
 
 # We have to create this named tuple outside the multiprocessing Pool
 # for it to be pickled
-_Poll = namedtuple('_Poll', 'hostname idx_event')
+_Poll = namedtuple("_Poll", "hostname idx_event")
 
 
 class PollingAgent(Agent):
@@ -82,16 +85,18 @@ class PollingAgent(Agent):
             ts_start = int(time.time())
 
             # Log
-            log_message = ('Starting device polling sequence.')
+            log_message = "Starting device polling sequence."
             log.log2info(1056, log_message)
 
             # Poll after sleeping
             _poll_devices()
 
             # Log
-            log_message = ('''\
+            log_message = """\
 Completed device polling sequence. {}s duration\
-'''.format(int(time.time()) - ts_start))
+""".format(
+                int(time.time()) - ts_start
+            )
             log.log2info(1125, log_message)
 
             # Sleep for "delay" seconds
@@ -113,15 +118,15 @@ def _poll_devices():
     _event = _create_event()
 
     # Get the number of threads to use in the pool
-    threads_in_pool = config.agent_threads()
+    threads_in_pool = config.agent_subprocesses()
 
     # Create a list of polling objects
     hostnames = sorted(config.hostnames())
 
     polls = [
-        _Poll(
-            hostname=hostname,
-            idx_event=_event.idx_event) for hostname in hostnames]
+        _Poll(hostname=hostname, idx_event=_event.idx_event)
+        for hostname in hostnames
+    ]
 
     for poll in polls:
         _poll_single_device(poll)
@@ -153,16 +158,25 @@ def _poll_single_device(poll):
     # Poll data for obviously valid hostnames (eg. "None" used in installation)
     if bool(hostname) is True:
         if isinstance(hostname, str) is True:
-            if hostname.lower() != 'none':
+            if hostname.lower() != "none":
                 poll = poller.Poll(hostname)
                 snmp_data = poll.query()
 
-                # Process device data
-                _device = device.Device(snmp_data)
-                data = _device.process()
+                # Process if we get valid data
+                if bool(snmp_data):
+                    # Process device data
+                    _device = device.Device(snmp_data)
+                    data = _device.process()
 
-                # Update the database tables with polled data
-                topology.process(data, idx_event)
+                    # Update the database tables with polled data
+                    topology.process(data, idx_event)
+                else:
+                    log_message = """\
+Device {} returns no data. Check your connectivity and/or SNMP configuration\
+""".format(
+                        hostname
+                    )
+                    log.log2debug(1022, log_message)
 
 
 def _create_event():
@@ -183,10 +197,7 @@ def _create_event():
             break
 
     # Return
-    row = IEvent(
-        name=_event,
-        enabled=1
-    )
+    row = IEvent(name=_event, enabled=1)
     event.insert_row(row)
     result = event.exists(_event)
     return result

@@ -164,6 +164,5 @@ class TestMibIpv6(unittest.TestCase):
 
 
 if __name__ == "__main__":
-
     # Do the unit test
     unittest.main()

@@ -26,6 +26,7 @@ class _Config:
         filepath = files.config_filepath()
         self._config_complete = files.read_yaml_file(filepath)
 
+
 class ConfigCore(_Config):
     """Class gathers all configuration information."""
 
@@ -79,7 +80,7 @@ class ConfigCore(_Config):
 
         """
         # Get result
-        result = self._config.get(
+        result = self._config_core.get(
             "daemon_directory",
             "{}{}daemon".format(self.system_directory(), os.sep),
         )
@@ -87,7 +88,8 @@ class ConfigCore(_Config):
         # Check if value exists
         if os.path.isdir(result) is False:
             daemon_message = (
-                'daemon_directory: "{}" ' "in configuration doesn't exist!"
+                'daemon_directory: "{}" '
+                "in the configuration file(s) doesn't exist!"
             ).format(result)
             log.log2die_safe(1089, daemon_message)
 
@@ -112,7 +114,8 @@ class ConfigCore(_Config):
         # Check if value exists
         if os.path.isdir(result) is False:
             log_message = (
-                'log_directory: "{}" ' "in configuration doesn't exist!"
+                'log_directory: "{}" '
+                "in the configuration file(s) doesn't exist!"
             ).format(result)
             log.log2die_safe(1090, log_message)
 
@@ -163,11 +166,17 @@ class ConfigCore(_Config):
         """
         # Get result
         result = self._config_core.get("system_directory")
+        if bool(result) is False:
+            result = "{}{}var".format(
+                os.sep.join(os.path.split(__file__)[0].split(os.sep)[:-2]),
+                os.sep,
+            )
 
         # Check if value exists
         if os.path.isdir(result) is False:
             daemon_message = (
-                'system_directory: "{}" ' "in configuration doesn't exist!"
+                'system_directory: "{}" '
+                "in the configuration file(s) doesn't exist!"
             ).format(result)
             log.log2die_safe(1089, daemon_message)
 

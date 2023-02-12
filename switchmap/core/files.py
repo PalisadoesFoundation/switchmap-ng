@@ -309,14 +309,6 @@ def lock_file(agent_name, config):
     f_obj = _File(config)
     result = f_obj.lock(agent_name)
     return result
-  
-
-
-
-
-
-
-
 
 
 def snmp_file(hostname, config):

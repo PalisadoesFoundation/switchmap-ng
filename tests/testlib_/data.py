@@ -43,7 +43,7 @@ snmp_groups:
 
 _CONFIG_TESTER_YAML = """
 main:
-  agent_threads: 35
+  agent_subprocesses: 35
   bind_port: 7027
   daemon_directory: XXX
   hostnames:
@@ -266,7 +266,7 @@ def ipv6():
 
     """
     # Return
-    bits = 16 ** 4
+    bits = 16**4
     result = ":".join(
         ("{:02x}".format(random.randint(0, bits)).zfill(4) for i in range(8))
     )
