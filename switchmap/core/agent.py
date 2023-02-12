@@ -25,7 +25,7 @@ from gunicorn.app.base import BaseApplication
 from switchmap.core.daemon import Daemon, GracefulDaemon
 from switchmap.core import files
 from switchmap.core import log
-from switchmap.core.configuration import Config
+from switchmap.core.configuration import ConfigCore
 from switchmap.core.variables import AgentAPIVariable
 
 
@@ -38,7 +38,7 @@ class Agent:
         Args:
             parent: Name of parent daemon
             child: Name of child daemon
-            config: Config object
+            config: ConfigCore object
 
         Returns:
             None
@@ -46,7 +46,7 @@ class Agent:
         """
         # Initialize key variables (Parent)
         if config is None:
-            self.config = Config()
+            self.config = ConfigCore()
         else:
             self.config = config
         self.parent = parent
@@ -305,7 +305,7 @@ class AgentAPI(Agent):
             parent: Name of parent daemon
             child: Name of child daemon
             app: Flask App
-            config: Config object
+            config: ConfigCore object
 
         Returns:
             None
@@ -313,7 +313,7 @@ class AgentAPI(Agent):
         """
         # Initialize key variables
         if config is None:
-            _config = Config()
+            _config = ConfigCore()
         else:
             _config = config
 

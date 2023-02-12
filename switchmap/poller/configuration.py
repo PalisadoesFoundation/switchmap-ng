@@ -4,11 +4,11 @@ import os.path
 import os
 import multiprocessing
 
-from switchmap.core.configuration import Main
+from switchmap.core.configuration import ConfigCore
 from switchmap.core import log
 
 
-class Poller(Main):
+class ConfigPoller(ConfigCore):
     """Class gathers all configuration information."""
 
     def __init__(self):
@@ -22,7 +22,7 @@ class Poller(Main):
 
         """
         # Instantiate sub class
-        Main.__init__(self)
+        ConfigCore.__init__(self)
 
         # Initialize key variables
         self._config_poller = self._config_complete.get("poller")

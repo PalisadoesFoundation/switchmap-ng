@@ -33,7 +33,7 @@ from switchmap.poller.update import device, topology
 from switchmap.server.db.misc import disable
 from switchmap.server.db.table import event, IEvent
 from switchmap.core import general
-from switchmap import Config
+from switchmap.poller.configuration import ConfigPoller
 from switchmap.core import log
 
 # We have to create this named tuple outside the multiprocessing Pool
@@ -61,7 +61,7 @@ class PollingAgent(Agent):
         self.name = parent
 
         # Get configuration
-        self._server_config = Config()
+        self._server_config = ConfigPoller()
 
     def query(self):
         """Query all remote hosts for data.
@@ -109,7 +109,7 @@ def _poll_devices():
 
     """
     # Get configuration
-    config = Config()
+    config = ConfigPoller()
     _event = _create_event()
 
     # Get the number of threads to use in the pool

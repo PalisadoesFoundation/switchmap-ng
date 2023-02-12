@@ -26,7 +26,7 @@ from switchmap.core.agent import Agent, AgentCLI, AgentAPI
 from switchmap import AGENT_API, AGENT_API_CHILD
 from switchmap.server.api import API
 
-from switchmap import Config
+from switchmap.server.configuration import ConfigServer
 
 
 def main():
@@ -40,7 +40,7 @@ def main():
 
     """
     # Initialize key variables
-    config = Config()
+    config = ConfigServer()
 
     # Create agent object for web_proxy
     agent_gunicorn = Agent(AGENT_API_CHILD, config=config)

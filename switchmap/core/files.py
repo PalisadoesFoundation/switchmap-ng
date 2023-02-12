@@ -207,7 +207,8 @@ def read_yaml_file(filepath, as_string=False, die=True):
         # Get result
         if as_string is False:
             try:
-                result = yaml.safe_load(yaml_from_file)
+                with open(filepath, "r") as yaml_from_file:
+                    result = yaml.safe_load(yaml_from_file)
             except:
                 log_message = (
                     "Error reading file {}. Check permissions, "
@@ -308,6 +309,14 @@ def lock_file(agent_name, config):
     f_obj = _File(config)
     result = f_obj.lock(agent_name)
     return result
+  
+
+
+
+
+
+
+
 
 
 def snmp_file(hostname, config):

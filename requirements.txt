@@ -11,9 +11,10 @@ gunicorn==20.0.4
 # Polling
 easysnmp==0.2.5
 
-# Database
+# Data and Database
 pymysql==1.0.2
 SQLAlchemy==1.4.31
+pandas==1.5.3
 
 # GraphQL interface for Flask
 git+https://github.com/graphql-python/graphene-sqlalchemy.git@refs/pull/378/merge

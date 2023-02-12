@@ -9,7 +9,7 @@ import ipaddress as ipaddress_
 
 # Application libraries
 from switchmap.core import log
-from switchmap import Config
+from switchmap import ConfigCore
 from switchmap import IP
 
 
@@ -25,7 +25,7 @@ def check_user():
     """
     # Initialize key variables
     username = getpass.getuser()
-    config = Config()
+    config = ConfigCore()
     configured_username = config.username()
 
     # Prevent running as sudo user

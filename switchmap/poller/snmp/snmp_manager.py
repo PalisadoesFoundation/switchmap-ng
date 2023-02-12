@@ -7,7 +7,7 @@ import easysnmp
 from easysnmp import exceptions
 
 # Import project libraries
-from switchmap import Config
+from switchmap.poller.configuration import PollerConfig
 from switchmap.core import log
 from switchmap.core import files
 from . import iana_enterprise
@@ -46,7 +46,7 @@ class Validate:
         group_key = "group_name"
 
         # Create cache directory / file if not yet created
-        filename = files.snmp_file(self.hostname, Config())
+        filename = files.snmp_file(self.hostname, PollerConfig())
         if os.path.exists(filename) is True:
             cache_exists = True
 

@@ -9,7 +9,7 @@ from switchmap.core import files
 from switchmap.core import log
 
 
-class Config:
+class _Config:
     """Class gathers all configuration information."""
 
     def __init__(self):
@@ -26,8 +26,7 @@ class Config:
         filepath = files.config_filepath()
         self._config_complete = files.read_yaml_file(filepath)
 
-
-class Main(Config):
+class ConfigCore(_Config):
     """Class gathers all configuration information."""
 
     def __init__(self):
@@ -41,10 +40,10 @@ class Main(Config):
 
         """
         # Instantiate sub class
-        Config.__init__(self)
+        _Config.__init__(self)
 
         # Initialize key variables
-        self._config_main = self._config_complete.get("main")
+        self._config_core = self._config_complete.get("core")
 
     def agent_subprocesses(self):
         """Get agent_subprocesses.
@@ -57,7 +56,7 @@ class Main(Config):
 
         """
         # Get threads
-        threads = max(1, self._config_main.get("agent_subprocesses", 20))
+        threads = max(1, self._config_core.get("agent_subprocesses", 20))
 
         # Get CPU cores
         cores = multiprocessing.cpu_count()
@@ -106,7 +105,7 @@ class Main(Config):
 
         """
         # Get result
-        result = self._config_main.get(
+        result = self._config_core.get(
             "log_directory", "{}{}log".format(self.system_directory(), os.sep)
         )
 
@@ -147,7 +146,7 @@ class Main(Config):
 
         """
         # Get result
-        result = self._config_main.get("log_level", "debug")
+        result = self._config_core.get("log_level", "debug")
 
         # Return
         return result
@@ -163,7 +162,7 @@ class Main(Config):
 
         """
         # Get result
-        result = self._config_main.get("system_directory")
+        result = self._config_core.get("system_directory")
 
         # Check if value exists
         if os.path.isdir(result) is False:
@@ -186,5 +185,5 @@ class Main(Config):
 
         """
         # Get result
-        result = self._config_main.get("username", None)
+        result = self._config_core.get("username", None)
         return result

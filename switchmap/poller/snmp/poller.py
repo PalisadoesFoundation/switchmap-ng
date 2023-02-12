@@ -1,7 +1,7 @@
 """SNMP Poller module."""
 
 # Switchmap imports
-from switchmap import Config, ConfigSNMP
+from switchmap.poller.configuration import ConfigPoller
 from . import snmp_info
 from . import snmp_manager
 from switchmap.core import log
@@ -33,13 +33,12 @@ class Poll:
 
         """
         # Initialize key variables
-        self._server_config = Config()
-        snmp_config = ConfigSNMP()
+        self._server_config = ConfigPoller()()
         self._hostname = hostname
         self._snmp_object = None
 
         # Get snmp configuration information from Switchmap-NG
-        validate = snmp_manager.Validate(hostname, snmp_config.snmp_auth())
+        validate = snmp_manager.Validate(hostname, _server_config.snmp_auth())
         snmp_params = validate.credentials()
 
         # Create an SNMP object for querying

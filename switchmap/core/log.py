@@ -67,7 +67,7 @@ class _GetLog:
     def __init__(self):
         """Initialize the class."""
         # Application libraries
-        from switchmap.core.configuration import Config
+        from switchmap.core.configuration import ConfigCore
 
         # Define key variables
         app_name = "switchmap"
@@ -80,7 +80,7 @@ class _GetLog:
         }
 
         # Get the logging directory
-        config = Config()
+        config = ConfigCore()
         log_file = config.log_file()
         config_log_level = config.log_level()
 
@@ -292,9 +292,9 @@ Bug: Exception Type:{}, Exception Instance: {}, Stack Trace Object: {}]\
         log2warning(code, message)
 
     # Write trace to log file
-    from switchmap.core.configuration import Config
+    from switchmap.core.configuration import ConfigCore
 
-    config = Config()
+    config = ConfigCore()
     log_file = config.log_file()
     with open(log_file, "a+") as _fh:
         traceback.print_tb(exc_traceback, file=_fh)

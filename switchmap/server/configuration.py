@@ -5,11 +5,13 @@ import os
 import multiprocessing
 
 # Import project libraries
-from switchmap.core.configuration import Main
+from switchmap.core.configuration import ConfigCore
 from switchmap.core import log
 
 
-class Server(Main):
+
+
+class ConfigServer(ConfigCore):
     """Class gathers all configuration information."""
 
     def __init__(self):
@@ -23,7 +25,7 @@ class Server(Main):
 
         """
         # Instantiate sub class
-        Main.__init__(self)
+        ConfigCore.__init__(self)
 
         # Initialize key variables
         self._config_server = self._config_complete.get("server")

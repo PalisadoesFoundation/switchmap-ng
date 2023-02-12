@@ -10,7 +10,7 @@ from sqlalchemy import exc
 from sqlalchemy.pool import QueuePool
 
 # Project libraries
-from switchmap import Config
+from switchmap.server.configuration import ConfigServer
 from switchmap.core import log
 
 #############################################################################
@@ -41,7 +41,7 @@ def main():
     db_url = None
 
     # Define SQLAlchemy parameters from configuration
-    config = Config()
+    config = ConfigServer()
     pool_size = config.db_pool_size()
     max_overflow = config.db_max_overflow()
 
