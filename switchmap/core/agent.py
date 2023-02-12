@@ -366,8 +366,8 @@ fix.""".format(
         ######################################################################
         options = {
             "bind": _ip_binding(self._agent_api_variable),
-            "accesslog": self.config.log_file_web(),
-            "errorlog": self.config.log_file_web(),
+            "accesslog": self.config.daemon_log_file(),
+            "errorlog": self.config.daemon_log_file(),
             "capture_output": True,
             "pidfile": self._pidfile_child,
             "loglevel": self.config.log_level(),
@@ -380,7 +380,7 @@ fix.""".format(
         log_message = "API running on {}:{} and logging to file {}." "".format(
             self._agent_api_variable.ip_listen_address,
             self._agent_api_variable.ip_bind_port,
-            self.config.log_file_web(),
+            self.config.daemon_log_file(),
         )
         log.log2info(1088, log_message)
 

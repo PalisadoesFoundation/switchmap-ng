@@ -118,7 +118,7 @@ def _poll_devices():
     _event = _create_event()
 
     # Get the number of threads to use in the pool
-    threads_in_pool = config.agent_subprocesses()
+    pool_size = config.agent_subprocesses()
 
     # Create a list of polling objects
     hostnames = sorted(config.hostnames())
@@ -132,7 +132,7 @@ def _poll_devices():
         _poll_single_device(poll)
 
     # Create a pool of sub process resources
-    # with Pool(processes=threads_in_pool) as pool:
+    # with Pool(processes=pool_size) as pool:
 
     #     # Create sub processes from the pool
     #     pool.map(_poll_single_device, polls)

@@ -2,7 +2,6 @@
 
 import os.path
 import os
-import multiprocessing
 
 from switchmap.core.configuration import ConfigCore
 from switchmap.core import log

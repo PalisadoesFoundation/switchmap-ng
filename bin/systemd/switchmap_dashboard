@@ -13,12 +13,13 @@ import os
 _SYS_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 _BIN_DIRECTORY = os.path.abspath(os.path.join(_SYS_DIRECTORY, os.pardir))
 _ROOT_DIRECTORY = os.path.abspath(os.path.join(_BIN_DIRECTORY, os.pardir))
-if _SYS_DIRECTORY.endswith('/switchmap-ng/bin/systemd') is True:
+if _SYS_DIRECTORY.endswith("/switchmap-ng/bin/systemd") is True:
     sys.path.append(_ROOT_DIRECTORY)
 else:
     print(
         'This script is not installed in the "switchmap-ng/bin/systemd"'
-        ' directory. Please fix.')
+        " directory. Please fix."
+    )
     sys.exit(2)
 
 # Switchmap libraries
@@ -47,10 +48,8 @@ def main():
 
     # Create agent for daemon
     agent_api = AgentAPI(
-        AGENT_DASHBOARD,
-        AGENT_DASHBOARD_CHILD,
-        API,
-        config=config)
+        AGENT_DASHBOARD, AGENT_DASHBOARD_CHILD, DASHBOARD, config=config
+    )
 
     # Do control (API first, Gunicorn second)
     cli = AgentCLI()
@@ -58,5 +57,5 @@ def main():
     cli.control(agent_gunicorn)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
