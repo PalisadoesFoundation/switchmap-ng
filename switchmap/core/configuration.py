@@ -44,7 +44,17 @@ class ConfigCore(_Config):
         _Config.__init__(self)
 
         # Initialize key variables
-        self._config_core = self._config_complete.get("core")
+        section = "core"
+        self._config_core = self._config_complete.get(section)
+
+        # Error if incorrectly configured
+        if bool(self._config_core) is False:
+            log_message = (
+                'No "{}:" section found in the configuration file(s)'.format(
+                    section
+                )
+            )
+            log.log2die_safe(1006, log_message)
 
     def agent_subprocesses(self):
         """Get agent_subprocesses.
@@ -178,7 +188,7 @@ class ConfigCore(_Config):
                 'system_directory: "{}" '
                 "in the configuration file(s) doesn't exist!"
             ).format(result)
-            log.log2die_safe(1089, daemon_message)
+            log.log2die_safe(1011, daemon_message)
 
         # Return
         return result

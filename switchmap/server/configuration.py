@@ -5,6 +5,7 @@ import os
 
 # Import project libraries
 from switchmap.core.configuration import ConfigCore
+from switchmap.core import log
 
 
 class ConfigServer(ConfigCore):
@@ -24,7 +25,17 @@ class ConfigServer(ConfigCore):
         ConfigCore.__init__(self)
 
         # Initialize key variables
-        self._config_server = self._config_complete.get("server")
+        section = "server"
+        self._config_server = self._config_complete.get(section)
+
+        # Error if incorrectly configured
+        if bool(self._config_server) is False:
+            log_message = (
+                'No "{}:" section found in the configuration file(s)'.format(
+                    section
+                )
+            )
+            log.log2die_safe(1014, log_message)
 
     def bind_port(self):
         """Get bind_port.

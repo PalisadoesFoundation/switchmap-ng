@@ -14,13 +14,15 @@ import random
 import string
 from collections import namedtuple
 from copy import deepcopy
+import shutil
 
 import yaml
 
 
 # Initialize GLOBAL variables
-_UNITTEST_DIRECTORY = "{}{}.switchmap_unittests".format(
-    os.environ["HOME"], os.sep
+_UNITTEST_STRING = "switchmap_unittests"
+_UNITTEST_DIRECTORY = "{0}{1}.{2}".format(
+    os.environ["HOME"], os.sep, _UNITTEST_STRING
 )
 
 # Application imports
@@ -30,7 +32,7 @@ from . import data
 Metadata = namedtuple(
     "Metadata",
     """\
-config log_directory daemon_directory config_directory base_directory""",
+config system_directory config_directory base_directory""",
 )
 
 
@@ -55,25 +57,29 @@ class Config:
         # Get metadata
         _metadata = _directories(randomizer=randomizer)
 
+        # Define necessary directories for tests using configurations to work
+        log_directory = "{0}{1}{0}log".format(
+            os.sep, _metadata.system_directory
+        )
+
         # Create directories
         directories = [
             _metadata.config_directory,
-            _metadata.log_directory,
-            _metadata.daemon_directory,
+            _metadata.system_directory,
+            log_directory,
         ]
         for directory in directories:
             if os.path.isdir(directory) is False:
                 os.makedirs(directory, mode=0o750, exist_ok=True)
 
         # Update configuration
-        config_["main"]["log_directory"] = _metadata.log_directory
-        config_["main"]["daemon_directory"] = _metadata.daemon_directory
+        config_["core"]["system_directory"] = _metadata.system_directory
+        config_["core"]["log_directory"] = log_directory
 
         # Create the metadata object
         self.metadata = Metadata(
             config=config_,
-            log_directory=_metadata.log_directory,
-            daemon_directory=_metadata.daemon_directory,
+            system_directory=_metadata.system_directory,
             config_directory=_metadata.config_directory,
             base_directory=_metadata.base_directory,
         )
@@ -112,15 +118,20 @@ class Config:
 
         """
         # Delete directories
-        directories = [
-            self.metadata.log_directory,
-            self.metadata.daemon_directory,
-            self.metadata.config_directory,
-        ]
-        for directory in directories:
-            _delete_files(directory)
-        if self._randomizer is True:
-            _delete_files(self.metadata.base_directory)
+        if _UNITTEST_STRING in self.metadata.base_directory:
+            shutil.rmtree(self.metadata.base_directory)
+
+        # if self._randomizer is False:
+        # directories = [
+        #     self.metadata.system_directory,
+        #     self.metadata.config_directory,
+        # ]
+        # for directory in directories:
+        #     if _UNITTEST_STRING in directory:
+        #         shutil.rmtree(directory)
+        # if self._randomizer is True:
+        #     if _UNITTEST_STRING in self.metadata.base_directory:
+        #         shutil.rmtree(self.metadata.base_directory)
 
 
 def setenv(directory=None):
@@ -176,28 +187,6 @@ def config():
     return result
 
 
-def _delete_files(directory):
-    """Delete all files in directory."""
-    # Do nothing if the directory does not exist
-    if os.path.isdir(directory) is False:
-        return
-
-    # Cleanup files in temp directories
-    filenames = [
-        filename
-        for filename in os.listdir(directory)
-        if os.path.isfile(os.path.join(directory, filename))
-    ]
-
-    # Get the full filepath for the cache file and remove filepath
-    for filename in filenames:
-        filepath = os.path.join(directory, filename)
-        os.remove(filepath)
-
-    # Remove directory after files are deleted.
-    os.rmdir(directory)
-
-
 def _directories(randomizer=False):
     """Initialize the class.
 
@@ -224,15 +213,13 @@ def _directories(randomizer=False):
         )
 
     # Set global variables
-    log_directory = "{}{}log".format(base_directory, os.sep)
     config_directory = "{}{}etc".format(base_directory, os.sep)
-    daemon_directory = "{}{}daemon".format(base_directory, os.sep)
+    system_directory = "{}{}var".format(base_directory, os.sep)
 
     # Return
     result = Metadata(
         config=None,
-        log_directory=log_directory,
-        daemon_directory=daemon_directory,
+        system_directory=system_directory,
         config_directory=config_directory,
         base_directory=base_directory,
     )

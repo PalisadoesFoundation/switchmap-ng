@@ -24,7 +24,17 @@ class ConfigPoller(ConfigCore):
         ConfigCore.__init__(self)
 
         # Initialize key variables
-        self._config_poller = self._config_complete.get("poller")
+        section = "poller"
+        self._config_poller = self._config_complete.get(section)
+
+        # Error if incorrectly configured
+        if bool(self._config_poller) is False:
+            log_message = (
+                'No "{}:" section found in the configuration file(s)'.format(
+                    section
+                )
+            )
+            log.log2die_safe(1007, log_message)
 
     def daemon_log_file(self):
         """Get daemon_log_file.

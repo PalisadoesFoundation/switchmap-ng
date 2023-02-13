@@ -47,7 +47,7 @@ class Test_Config(unittest.TestCase):
 
     _config = setup.Config(data.configtester(), randomizer=True)
     _config.save()
-    config = test_module.Config()
+    config = test_module.ConfigCore()
 
     # Required
     maxDiff = None
@@ -64,91 +64,30 @@ class Test_Config(unittest.TestCase):
 
     def test_agent_subprocesses(self):
         """Testing function agent_subprocesses."""
-        # Run test
+        # Pass, this varies according to the number CPU cores on the system
         pass
 
-    def test_bind_port(self):
-        """Testing function bind_port."""
+    def test_system_directory(self):
+        """Testing function system_directory."""
         # Run test
-        expected = 7027
-        result = self.config.bind_port()
-        self.assertEqual(result, expected)
-
-    def test_daemon_directory(self):
-        """Testing function daemon_directory."""
-        # Run test
-        expected = self._config.metadata.daemon_directory
-        result = self.config.daemon_directory()
-        self.assertEqual(result, expected)
-
-    def test_db_host(self):
-        """Testing function db_host."""
-        # Run test
-        expected = "Mwxu7gnv29AbLGyz"
-        result = self.config.db_host()
-        self.assertEqual(result, expected)
-
-    def test_db_name(self):
-        """Testing function db_name."""
-        # Run test
-        expected = "JkfSJnhZTh55wJy4"
-        result = self.config.db_name()
-        self.assertEqual(result, expected)
-
-    def test_db_max_overflow(self):
-        """Testing function db_max_overflow."""
-        # Run test
-        expected = 30
-        result = self.config.db_max_overflow()
-        self.assertEqual(result, expected)
-
-    def test_db_pass(self):
-        """Testing function db_pass."""
-        # Run test
-        expected = "nhZThsh4gPMwxu75"
-        result = self.config.db_pass()
-        self.assertEqual(result, expected)
-
-    def test_db_pool_size(self):
-        """Testing function db_pool_size."""
-        # Run test
-        expected = 30
-        result = self.config.db_pool_size()
-        self.assertEqual(result, expected)
-
-    def test_db_user(self):
-        """Testing function db_user."""
-        # Run test
-        expected = "7MKG2dstsh4gPe2X"
-        result = self.config.db_user()
-        self.assertEqual(result, expected)
-
-    def test_hostnames(self):
-        """Testing function hostnames."""
-        # Run test
-        expected = ["unittest.example.org"]
-        result = self.config.hostnames()
-        self.assertEqual(result, expected)
-
-    def test_listen_address(self):
-        """Testing function listen_address."""
-        # Run test
-        expected = "MKG2dst7sh4gPe2X"
-        result = self.config.listen_address()
+        expected = self._config.metadata.system_directory
+        result = self.config.system_directory()
         self.assertEqual(result, expected)
 
     def test_log_directory(self):
         """Testing function log_directory."""
         # Run test
-        expected = self._config.metadata.log_directory
+        expected = "{0}{1}{0}log".format(
+            os.sep, self._config.metadata.system_directory
+        )
         result = self.config.log_directory()
         self.assertEqual(result, expected)
 
     def test_log_file(self):
         """Testing function log_file."""
         # Run test
-        expected = "{}{}switchmap-ng.log".format(
-            self._config.metadata.log_directory, os.sep
+        expected = "{0}{1}{0}log{0}switchmap-ng.log".format(
+            os.sep, self._config.metadata.system_directory
         )
         result = self.config.log_file()
         self.assertEqual(result, expected)
@@ -156,15 +95,8 @@ class Test_Config(unittest.TestCase):
     def test_log_level(self):
         """Testing function log_level."""
         # Run test
-        expected = "debug"
+        expected = "info"
         result = self.config.log_level()
-        self.assertEqual(result, expected)
-
-    def test_polling_interval(self):
-        """Testing function polling_interval."""
-        # Run test
-        expected = 21600
-        result = self.config.polling_interval()
         self.assertEqual(result, expected)
 
     def test_username(self):
@@ -173,76 +105,6 @@ class Test_Config(unittest.TestCase):
         expected = "7gnv2Mwxu9AbLGyz"
         result = self.config.username()
         self.assertEqual(result, expected)
-
-    def test_web_log_file(self):
-        """Testing function web_log_file."""
-        # Run test
-        expected = "{}{}switchmap_dashboard.log".format(
-            self._config.metadata.log_directory, os.sep
-        )
-        result = self.config.web_log_file()
-        self.assertEqual(result, expected)
-
-
-class Test_ConfigSNMP(unittest.TestCase):
-    """Checks all class_config methods."""
-
-    #########################################################################
-    # General object setup
-    #########################################################################
-
-    _config = setup.Config(data.configtester(), randomizer=True)
-    _config.save()
-    config = test_module.ConfigSNMP()
-
-    # Required
-    maxDiff = None
-
-    @classmethod
-    def tearDownClass(cls):
-        """Remove any extraneous directories."""
-        # Cleanup
-        cls._config.cleanup()
-
-    def test___init__(self):
-        """Testing function __init__."""
-        pass
-
-    def test_snmp_auth(self):
-        """Testing function snmp_auth."""
-        # Run test
-        expected = [
-            {
-                "enabled": True,
-                "group_name": "zg8rcJPmAygbwSeA",
-                "snmp_authpassword": "Gnn5999YqCMbre9W",
-                "snmp_authprotocol": "sha",
-                "snmp_community": None,
-                "snmp_port": 161,
-                "snmp_privpassword": "Jgt8MFTEhyh9s2ju",
-                "snmp_privprotocol": "aes",
-                "snmp_secname": "NT9degJu9NBWbxRK",
-                "snmp_version": 3,
-            }
-        ]
-        result = self.config.snmp_auth()
-        self.assertEqual(result, expected)
-
-
-class TestConfig(unittest.TestCase):
-    """Checks all class_config methods."""
-
-    def test___init__(self):
-        """Testing function __init__."""
-        pass
-
-
-class TestConfigSNMP(unittest.TestCase):
-    """Checks all class_config methods."""
-
-    def test___init__(self):
-        """Testing function __init__."""
-        pass
 
 
 if __name__ == "__main__":

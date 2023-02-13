@@ -2,7 +2,6 @@
 
 import os.path
 import os
-import multiprocessing
 
 # Import project libraries
 from switchmap.core.configuration import ConfigCore
@@ -26,7 +25,17 @@ class ConfigDashboard(ConfigCore):
         ConfigCore.__init__(self)
 
         # Initialize key variables
-        self._config_dashboard = self._config_complete.get("dashboard")
+        section = "dashboard"
+        self._config_dashboard = self._config_complete.get(section)
+
+        # Error if incorrectly configured
+        if bool(self._config_dashboard) is False:
+            log_message = (
+                'No "{}:" section found in the configuration file(s)'.format(
+                    section
+                )
+            )
+            log.log2die_safe(1016, log_message)
 
     def bind_port(self):
         """Get bind_port.

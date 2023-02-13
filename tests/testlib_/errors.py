@@ -35,6 +35,10 @@ Minimum value {} is greater than {}. Please fix.\
         "{0}.git{0}".format(os.sep),
         "{0}__pycache__{0}".format(os.sep),
         ".egg",
+        "{0}venv{0}".format(os.sep),
+        "{0}env{0}".format(os.sep),
+        "{0}deprecated{0}".format(os.sep),
+        "{0}archive{0}".format(os.sep),
         "{0}docs{0}".format(os.sep),
         "{0}var{0}".format(os.sep),
     ]
@@ -46,6 +50,7 @@ Minimum value {} is greater than {}. Please fix.\
         "log2debug(",
         "log2live(",
         "log2warn(",
+        "log2see_safe(",
         "log2die(",
         "log2quiet(",
         "log2info(",

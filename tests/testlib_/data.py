@@ -14,9 +14,9 @@ import struct
 import yaml
 
 _CONFIG_YAML = """
-main:
+core:
   bind_port: 8027
-  daemon_directory: XXX
+  system_directory: XXX
   hostnames:
   - unittest-01.example.org
   - unittest-02.example.org
@@ -42,31 +42,39 @@ snmp_groups:
 """
 
 _CONFIG_TESTER_YAML = """
-main:
+core:
   agent_subprocesses: 35
-  bind_port: 7027
-  daemon_directory: XXX
-  hostnames:
-  - unittest.example.org
-  listen_address: MKG2dst7sh4gPe2X
-  log_directory: YYY
-  log_level: debug
-  polling_interval: 21600
+  log_level: info
   username: 7gnv2Mwxu9AbLGyz
+  log_directory: YYY
+  system_directory: XXX
+
+server:
+  bind_port: 7027
+  listen_address: MKG2dst7sh4gPe2X
   db_host: Mwxu7gnv29AbLGyz
   db_name: JkfSJnhZTh55wJy4
   db_user: 7MKG2dstsh4gPe2X
   db_pass: nhZThsh4gPMwxu75
-snmp_groups:
-- group_name: zg8rcJPmAygbwSeA
-  snmp_authpassword: Gnn5999YqCMbre9W
-  snmp_authprotocol: sha
-  snmp_community: null
-  snmp_port: 161
-  snmp_privpassword: Jgt8MFTEhyh9s2ju
-  snmp_privprotocol: aes
-  snmp_secname: NT9degJu9NBWbxRK
-  snmp_version: 3
+
+dashboard:
+  bind_port: 8034
+  listen_address: t7sh4gPe2XMKG2ds
+
+poller:
+  polling_interval: 21600
+  hostnames:
+    - unittest.example.org
+  snmp_groups:
+    - group_name: zg8rcJPmAygbwSeA
+      snmp_authpassword: Gnn5999YqCMbre9W
+      snmp_authprotocol: sha
+      snmp_community: null
+      snmp_port: 161
+      snmp_privpassword: Jgt8MFTEhyh9s2ju
+      snmp_privprotocol: aes
+      snmp_secname: NT9degJu9NBWbxRK
+      snmp_version: 3
 """
 
 

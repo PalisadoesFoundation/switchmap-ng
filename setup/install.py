@@ -305,7 +305,7 @@ class _Daemons(object):
             # Message if no success
             if success is False:
                 log_message = "Failed to start daemon {}.".format(daemon)
-                log.log2see_safe(1001, log_message)
+                log.log2see_safe(1017, log_message)
 
     def _restart(self, daemon):
         """Start or restart daemon.
@@ -362,7 +362,7 @@ class _Daemons(object):
         response = general.run_script(script_name, die=False)
         if bool(response["returncode"]) is True:
             log_message = "Could not {} daemon {}.".format(attempt, daemon)
-            log.log2see_safe(1127, log_message)
+            log.log2see_safe(1018, log_message)
 
         # Return after waiting for daemons to startup properly
         running = self._running(daemon)
