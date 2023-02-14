@@ -5,6 +5,8 @@ import os
 import sys
 import unittest
 from copy import deepcopy
+from pprint import pprint
+
 
 from sqlalchemy import select
 
@@ -1243,6 +1245,11 @@ class TestPollUpdateTopology(unittest.TestCase):
                     ts_modified=None,
                 )
             )
+        print("\n\n\n\n\n")
+        print("00000000000000000000")
+        pprint(result[:10])
+        print("\n\n\n\n\n")
+
         self.assertEqual(result[:10], expected)
 
     def test_mac(self):
@@ -1773,6 +1780,10 @@ class TestPollUpdateTopology(unittest.TestCase):
                     ts_modified=None,
                 )
             )
+        print("\n\n\n\n")
+        print("11111111111111111111")
+        pprint(result[:10])
+        print("\n\n\n\n")
         self.assertEqual(result[:10], expected)
 
     def test__process_macip(self):
