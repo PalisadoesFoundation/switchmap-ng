@@ -3,7 +3,6 @@
 from switchmap.server.db.table import RMacPort
 from switchmap.server.db.table import RL1Interface
 from switchmap.server.db.table import RDevice
-from switchmap.server.db.table import REvent
 from switchmap.server.db.table import RMac
 from switchmap.server.db.table import RMacIp
 from switchmap.server.db.table import ROui
@@ -26,7 +25,6 @@ def device(row):
     result = RDevice(
         idx_device=row.idx_device,
         idx_zone=row.idx_zone,
-        idx_event=row.idx_event,
         sys_name=(
             None if bool(row.sys_name) is False else row.sys_name.decode()
         ),
@@ -46,27 +44,6 @@ def device(row):
         ),
         sys_uptime=row.sys_uptime,
         last_polled=row.last_polled,
-        enabled=row.enabled,
-        ts_created=row.ts_created,
-        ts_modified=row.ts_modified,
-    )
-    return result
-
-
-def event(row):
-    """Convert table row to tuple.
-
-    Args:
-        row: Event row
-
-    Returns:
-        result: REvent tuple
-
-    """
-    # Initialize key variables
-    result = REvent(
-        idx_event=row.idx_event,
-        name=row.name.decode(),
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
@@ -151,7 +128,6 @@ def mac(row):
     result = RMac(
         idx_mac=row.idx_mac,
         idx_oui=row.idx_oui,
-        idx_event=row.idx_event,
         idx_zone=row.idx_zone,
         mac=(None if bool(row.mac) is False else row.mac.decode()),
         enabled=row.enabled,

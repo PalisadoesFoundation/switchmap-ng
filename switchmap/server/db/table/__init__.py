@@ -20,13 +20,13 @@ postal_code phone notes enabled""",
 
 RDevice = namedtuple(
     "RDevice",
-    """idx_device idx_zone idx_event sys_name hostname name \
+    """idx_device idx_zone  sys_name hostname name \
 sys_description sys_objectid sys_uptime last_polled \
 enabled ts_modified ts_created""",
 )
 IDevice = namedtuple(
     "IDevice",
-    """idx_zone idx_event sys_name hostname name \
+    """idx_zone  sys_name hostname name \
 sys_description sys_objectid sys_uptime last_polled enabled""",
 )
 
@@ -68,14 +68,11 @@ IMacIp = namedtuple(
 
 RMac = namedtuple(
     "RMac",
-    """idx_mac idx_oui idx_event idx_zone mac enabled \
+    """idx_mac idx_oui  idx_zone mac enabled \
 ts_modified ts_created""",
 )
-IMac = namedtuple("IMac", "idx_oui idx_event idx_zone mac enabled")
-TopologyMac = namedtuple("TopologyMac", "idx_event idx_zone mac enabled")
-
-REvent = namedtuple("REvent", "idx_event name enabled ts_modified ts_created")
-IEvent = namedtuple("IEvent", "name enabled")
+IMac = namedtuple("IMac", "idx_oui  idx_zone mac enabled")
+TopologyMac = namedtuple("TopologyMac", " idx_zone mac enabled")
 
 RMacPort = namedtuple(
     "RMacPort",

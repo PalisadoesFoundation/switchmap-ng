@@ -84,28 +84,6 @@ class Oui(BASE):
     )
 
 
-class Event(BASE):
-    """Database table definition."""
-
-    __tablename__ = "smap_event"
-    __table_args__ = {"mysql_engine": "InnoDB"}
-
-    idx_event = Column(
-        BIGINT(20, unsigned=True), primary_key=True, unique=True
-    )
-    name = Column(VARBINARY(256), unique=True)
-    enabled = Column(BIT(1), default=1)
-    ts_modified = Column(
-        DateTime,
-        nullable=False,
-        default=datetime.datetime.utcnow,
-        onupdate=datetime.datetime.now,
-    )
-    ts_created = Column(
-        DateTime, nullable=False, default=datetime.datetime.utcnow
-    )
-
-
 class Device(BASE):
     """Database table definition."""
 
@@ -117,13 +95,6 @@ class Device(BASE):
     )
     idx_zone = Column(
         ForeignKey("smap_zone.idx_zone"),
-        nullable=False,
-        index=True,
-        default=1,
-        server_default=text("1"),
-    )
-    idx_event = Column(
-        ForeignKey("smap_event.idx_event"),
         nullable=False,
         index=True,
         default=1,
@@ -151,11 +122,6 @@ class Device(BASE):
     device_to_zone = relationship(
         Zone,
         backref=backref("device_to_zone", uselist=True, cascade="delete,all"),
-    )
-
-    device_to_event = relationship(
-        Event,
-        backref=backref("device_to_event", uselist=True, cascade="delete,all"),
     )
 
 
@@ -324,13 +290,6 @@ class Mac(BASE):
         default=1,
         server_default=text("1"),
     )
-    idx_event = Column(
-        ForeignKey("smap_event.idx_event"),
-        nullable=False,
-        index=True,
-        default=1,
-        server_default=text("1"),
-    )
     idx_zone = Column(
         ForeignKey("smap_zone.idx_zone"),
         nullable=False,
@@ -352,11 +311,6 @@ class Mac(BASE):
 
     mac_to_oui = relationship(
         Oui, backref=backref("mac_to_oui", uselist=True, cascade="delete,all")
-    )
-
-    mac_to_event = relationship(
-        Event,
-        backref=backref("mac_to_event", uselist=True, cascade="delete,all"),
     )
 
     mac_to_zone = relationship(

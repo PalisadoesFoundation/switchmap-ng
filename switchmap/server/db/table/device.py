@@ -80,7 +80,6 @@ def insert_row(rows):
         inserts.append(
             _Device(
                 idx_zone=row.idx_zone,
-                idx_event=row.idx_event,
                 sys_name=(
                     null() if row.sys_name is None else row.sys_name.encode()
                 ),
@@ -131,7 +130,6 @@ def update_row(idx, row):
         .values(
             {
                 "idx_zone": row.idx_zone,
-                "idx_event": row.idx_event,
                 "sys_name": (
                     null()
                     if bool(row.sys_name) is False

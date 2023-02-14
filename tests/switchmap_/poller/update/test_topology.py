@@ -63,12 +63,6 @@ from switchmap.server.db.models import Mac
 from switchmap.server.db.models import Vlan
 from switchmap.server.db.models import L1Interface
 from switchmap.server.db.models import Device
-from switchmap.server.db.table import event
-from switchmap.server.db.table import zone
-from switchmap.server.db.table import oui
-from switchmap.server.db.table import IEvent
-from switchmap.server.db.table import IOui
-from switchmap.server.db.table import IZone
 from switchmap.server.db.table import RMacPort
 from switchmap.server.db.table import RVlanPort
 from switchmap.server.db.table import RMacIp
@@ -98,48 +92,6 @@ def _prerequisites():
     return result
 
 
-def _insert_data():
-    """Insert new Event record.
-
-    Args:
-        None
-
-    Returns:
-        result: REvent object
-
-    """
-    # Initialize key variables
-    name = datalib.random_string()
-
-    # Insert OUI
-    oui.insert_row(IOui(oui=None, organization=None, enabled=1))
-
-    # Insert zone
-    zone.insert_row(
-        IZone(
-            name=datalib.random_string(),
-            company_name=datalib.random_string(),
-            address_0=datalib.random_string(),
-            address_1=datalib.random_string(),
-            address_2=datalib.random_string(),
-            city=datalib.random_string(),
-            state=datalib.random_string(),
-            country=datalib.random_string(),
-            postal_code=datalib.random_string(),
-            phone=datalib.random_string(),
-            notes=datalib.random_string(),
-            enabled=1,
-        )
-    )
-
-    # Insert event
-    event.insert_row(IEvent(name=name, enabled=1))
-
-    # Get event data
-    result = event.exists(name)
-    return result
-
-
 def _reset_db():
     """Reset the database.
 
@@ -165,11 +117,6 @@ def _reset_db():
     # Create database tables
     models.create_all_tables()
 
-    # Create event record
-    _event = _insert_data()
-    idx_event = _event.idx_event
-    return idx_event
-
 
 class TestPollUpdateTopology(unittest.TestCase):
     """Checks all functions and methods."""
@@ -182,7 +129,7 @@ class TestPollUpdateTopology(unittest.TestCase):
     def setUpClass(cls):
         """Execute these steps before starting tests."""
         # Reset the database
-        cls.idx_event = _reset_db()
+        _reset_db()
 
     @classmethod
     def tearDownClass(cls):
@@ -206,11 +153,10 @@ class TestPollUpdateTopology(unittest.TestCase):
             RDevice(
                 idx_device=1,
                 idx_zone=1,
-                idx_event=1,
                 sys_name="device-08.example.org",
                 hostname="device-08.example.org",
                 name="device-08.example.org",
-                sys_description="Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version 15.2(1)E3, RELEASE SOFTWARE (fc1) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2014 by Cisco Systems, Inc. Compiled Mon 05-May-14 06:16 by prod_rel_team",
+                sys_description="a8b19bed-d300-40eb-bafc-b99dedb94414",
                 sys_objectid=".1.3.6.1.4.1.9.1.516",
                 sys_uptime=300982385,
                 last_polled=1656692061,
@@ -220,15 +166,12 @@ class TestPollUpdateTopology(unittest.TestCase):
             )
         ]
 
-        # Reset the database
-        idx_event = self.idx_event
-
         # Process the device
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite events
-        testimport.device(data, idx_event)
+        # Process all the pre-requisite updates
+        testimport.device(data)
 
         # Verify macport data
         statement = select(Device)
@@ -240,7 +183,6 @@ class TestPollUpdateTopology(unittest.TestCase):
                 RDevice(
                     idx_device=row.idx_device,
                     idx_zone=row.idx_zone,
-                    idx_event=row.idx_event,
                     sys_name=(
                         None
                         if bool(row.sys_name) is False
@@ -822,7 +764,7 @@ class TestPollUpdateTopology(unittest.TestCase):
                 cdpcacheplatform="cisco WS-C3750X-48",
                 lldpremportdesc="Trunk to device-08.example.org Gi1/0/2",
                 lldpremsyscapenabled="0010000000000000",
-                lldpremsysdesc="Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version 15.2(4)E8, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2019 by Cisco Systems, Inc. Compiled Fri 15-Mar-19 09:00 by prod_rel_team",
+                lldpremsysdesc="a76af21e-9299-4384-af56-283e7f31b585",
                 lldpremsysname="device-10.example.org",
                 enabled=1,
                 ts_modified=None,
@@ -1030,15 +972,12 @@ class TestPollUpdateTopology(unittest.TestCase):
             ),
         ]
 
-        # Reset the database
-        idx_event = self.idx_event
-
         # Process the device
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite events
-        testimport.device(data, idx_event)
+        # Process all the pre-requisite updates
+        testimport.device(data)
         testimport.l1interface(data)
 
         # Verify macport data
@@ -1215,15 +1154,12 @@ class TestPollUpdateTopology(unittest.TestCase):
             ),
         ]
 
-        # Reset the database
-        idx_event = self.idx_event
-
         # Process the device
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite events
-        testimport.device(data, idx_event)
+        # Process all the pre-requisite updates
+        testimport.device(data)
         testimport.l1interface(data)
         testimport.vlan(data)
 
@@ -1260,7 +1196,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=1,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="00005e000102",
                 enabled=1,
@@ -1270,7 +1205,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=2,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="00005e000104",
                 enabled=1,
@@ -1280,7 +1214,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=3,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="000de065f744",
                 enabled=1,
@@ -1290,7 +1223,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=4,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="00163e000001",
                 enabled=1,
@@ -1300,7 +1232,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=5,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="00163e000002",
                 enabled=1,
@@ -1310,7 +1241,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=6,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="00163e000003",
                 enabled=1,
@@ -1320,7 +1250,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=7,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="00163e00000b",
                 enabled=1,
@@ -1330,7 +1259,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=8,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="00163e00000d",
                 enabled=1,
@@ -1340,7 +1268,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=9,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="00163e00000e",
                 enabled=1,
@@ -1350,7 +1277,6 @@ class TestPollUpdateTopology(unittest.TestCase):
             RMac(
                 idx_mac=10,
                 idx_oui=1,
-                idx_event=1,
                 idx_zone=1,
                 mac="00163e00000f",
                 enabled=1,
@@ -1359,18 +1285,15 @@ class TestPollUpdateTopology(unittest.TestCase):
             ),
         ]
 
-        # Reset the database
-        idx_event = self.idx_event
-
         # Process the device
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite events
-        testimport.device(data, idx_event)
+        # Process all the pre-requisite updates
+        testimport.device(data)
         testimport.l1interface(data)
         testimport.vlan(data)
-        testimport.mac(data, idx_event)
+        testimport.mac(data)
 
         # Verify macport data
         statement = select(Mac)
@@ -1382,7 +1305,6 @@ class TestPollUpdateTopology(unittest.TestCase):
                 RMac(
                     idx_mac=row.idx_mac,
                     idx_oui=row.idx_oui,
-                    idx_event=row.idx_event,
                     idx_zone=row.idx_zone,
                     mac=row.mac.decode(),
                     enabled=row.enabled,
@@ -1509,18 +1431,15 @@ class TestPollUpdateTopology(unittest.TestCase):
             ),
         ]
 
-        # Reset the database
-        idx_event = self.idx_event
-
         # Process the device
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite events
-        testimport.device(data, idx_event)
+        # Process all the pre-requisite updates
+        testimport.device(data)
         testimport.l1interface(data)
         testimport.vlan(data)
-        testimport.mac(data, idx_event)
+        testimport.mac(data)
         testimport.macip(data, dns=False)
 
         # Verify macport data
@@ -1631,18 +1550,15 @@ class TestPollUpdateTopology(unittest.TestCase):
             ),
         ]
 
-        # Reset the database
-        idx_event = self.idx_event
-
         # Process the device
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite events
-        testimport.device(data, idx_event)
+        # Process all the pre-requisite updates
+        testimport.device(data)
         testimport.l1interface(data)
         testimport.vlan(data)
-        testimport.mac(data, idx_event)
+        testimport.mac(data)
         testimport.macip(data, dns=False)
         testimport.macport(data)
 
@@ -1751,15 +1667,12 @@ class TestPollUpdateTopology(unittest.TestCase):
             ),
         ]
 
-        # Reset the database
-        idx_event = self.idx_event
-
         # Process the device
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite events
-        testimport.device(data, idx_event)
+        # Process all the pre-requisite updates
+        testimport.device(data)
         testimport.l1interface(data)
         testimport.vlan(data)
         testimport.vlanport(data)

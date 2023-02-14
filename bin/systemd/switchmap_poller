@@ -33,7 +33,6 @@ from switchmap import AGENT_POLLER
 from switchmap.core.agent import Agent, AgentCLI
 from switchmap.poller.snmp import poller
 from switchmap.poller.update import device, topology
-from switchmap.server.db.misc import disable
 from switchmap.server.db.table import event, IEvent
 from switchmap.core import general
 from switchmap.poller.configuration import ConfigPoller
@@ -136,9 +135,6 @@ def _poll_devices():
 
     #     # Create sub processes from the pool
     #     pool.map(_poll_single_device, polls)
-
-    # Disable any unused devices and/or MAC addresses
-    disable.post_poll_cleanup(_event.idx_event)
 
 
 def _poll_single_device(poll):

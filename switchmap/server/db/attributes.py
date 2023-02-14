@@ -211,21 +211,6 @@ class OuiAttribute:
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
-class EventAttribute:
-    """Descriptive attributes of the Event table.
-
-    A generic class to mutualize description of attributes for both queries
-    and mutations.
-
-    """
-
-    idx_event = graphene.Int(description="Primary key index")
-    name = graphene.String(resolver=resolve_name, description="Name of event")
-    enabled = graphene.Boolean(description="Enabled")
-    ts_modified = graphene.DateTime(description="Row Modification Timestamp")
-    ts_created = graphene.DateTime(description="Row Creation Timestamp")
-
-
 class DeviceAttribute:
     """Descriptive attributes of the Device table.
 
@@ -352,7 +337,6 @@ class MacAttribute:
 
     idx_mac = graphene.Int(description="Primary key index")
     idx_oui = graphene.Int(description="OUI index foreign key")
-    idx_event = graphene.Int(description="Event index foreign key")
     idx_zone = graphene.Int(description="Zone index foreign key")
     mac = graphene.String(resolver=resolve_mac, description="MAC address")
     enabled = graphene.Boolean(description="Enabled")

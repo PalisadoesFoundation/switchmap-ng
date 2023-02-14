@@ -62,7 +62,6 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.server.db.table import macport
-from switchmap.server.db.table import event
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui
 from switchmap.server.db.table import mac
@@ -71,7 +70,6 @@ from switchmap.server.db.table import device
 from switchmap.server.db.table import l1interface
 from switchmap.server.db.table import IMacPort
 from switchmap.server.db.table import IMac
-from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IOui
 from switchmap.server.db.table import IDevice
@@ -179,7 +177,6 @@ def _prerequisites():
     result = {}
 
     # Insert the necessary rows
-    event.insert_row(IEvent(name=data.random_string(), enabled=1))
     zone.insert_row(
         IZone(
             name=data.random_string(),
@@ -204,16 +201,13 @@ def _prerequisites():
     )
     mac.insert_row(
         [
-            IMac(
-                idx_oui=key + 1, idx_event=1, idx_zone=1, mac=value, enabled=1
-            )
+            IMac(idx_oui=key + 1, idx_zone=1, mac=value, enabled=1)
             for key, value in enumerate(MACS)
         ]
     )
     device.insert_row(
         IDevice(
             idx_zone=1,
-            idx_event=1,
             sys_name=data.random_string(),
             hostname=data.random_string(),
             name=data.random_string(),

@@ -125,7 +125,6 @@ def insert_row(rows):
         inserts.append(
             Mac(
                 idx_oui=idx_oui,
-                idx_event=row.idx_event,
                 idx_zone=row.idx_zone,
                 mac=(null() if bool(mac) is False else mac.encode()),
                 enabled=row.enabled,
@@ -161,7 +160,6 @@ def update_row(idx, row):
         .values(
             {
                 "idx_oui": idx_oui,
-                "idx_event": row.idx_event,
                 "idx_zone": row.idx_zone,
                 "mac": (null() if bool(mac) is False else mac.encode()),
                 "enabled": row.enabled,

@@ -55,12 +55,10 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.server.db.table import mac as testimport
-from switchmap.server.db.table import event
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui
 from switchmap.server.db.models import Mac
 from switchmap.server.db.table import IMac
-from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IOui
 from switchmap.server.db import models
@@ -193,7 +191,6 @@ class TestDbTableMac(unittest.TestCase):
         idx = result.idx_mac
         updated_row = Mac(
             idx_oui=row.idx_oui,
-            idx_event=row.idx_event,
             idx_zone=row.idx_zone,
             mac=data.mac(),
             enabled=row.enabled,
@@ -206,11 +203,9 @@ class TestDbTableMac(unittest.TestCase):
 
         # Everything except the idx_oui should be the same.
         # The newly generated MAC address will not have an OUI entry.
-        self.assertEqual(result.idx_event, updated_row.idx_event)
         self.assertEqual(result.enabled, updated_row.enabled)
         self.assertEqual(result.mac, updated_row.mac)
         self.assertEqual(result.idx_zone, updated_row.idx_zone)
-        self.assertEqual(result.idx_event, updated_row.idx_event)
 
     def test__row(self):
         """Testing function _row."""
@@ -231,7 +226,6 @@ def _convert(row):
     # Do conversion
     result = IMac(
         idx_oui=row.idx_oui,
-        idx_event=row.idx_event,
         idx_zone=row.idx_zone,
         mac=row.mac,
         enabled=row.enabled,
@@ -261,7 +255,7 @@ def _row():
     idx_oui = oui.idx_oui(mac)
 
     # Create result
-    result = IMac(idx_oui=idx_oui, idx_event=1, idx_zone=1, mac=mac, enabled=1)
+    result = IMac(idx_oui=idx_oui, idx_zone=1, mac=mac, enabled=1)
 
     return result
 
@@ -277,7 +271,6 @@ def _prerequisites():
 
     """
     # Create database entries
-    event.insert_row(IEvent(name=data.random_string(), enabled=1))
     zone.insert_row(
         IZone(
             name=data.random_string(),

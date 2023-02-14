@@ -28,12 +28,11 @@ from switchmap.server.db.table import (
 )
 
 
-def process(data, idx_event, dns=True):
+def process(data, dns=True):
     """Process data received from a device.
 
     Args:
         data: Device data (dict)
-        idx_event: Event idx_event
         dns: Do DNS lookups if True
 
     Returns:
@@ -46,21 +45,20 @@ def process(data, idx_event, dns=True):
         yaml.dump(data, outfile, default_flow_style=False)
 
     # Process the device
-    device(data, idx_event)
+    device(data)
     l1interface(data)
     vlan(data)
     vlanport(data)
-    mac(data, idx_event)
+    mac(data)
     macip(data, dns=dns)
     macport(data)
 
 
-def device(data, idx_event):
+def device(data):
     """Update the Device DB table.
 
     Args:
         data: Device data (dict)
-        idx_event: Event idx_event
 
     Returns:
         None
@@ -71,7 +69,6 @@ def device(data, idx_event):
     hostname = data["misc"]["host"]
     row = IDevice(
         idx_zone=1,
-        idx_event=idx_event,
         hostname=hostname,
         name=hostname,
         sys_name=data["system"]["SNMPv2-MIB"]["sysName"][0],
@@ -322,12 +319,11 @@ def vlanport(data):
     log.log2debug(1195, log_message)
 
 
-def mac(data, idx_event):
+def mac(data):
     """Update the Mac DB table.
 
     Args:
         data: Device data (dict)
-        idx_event: Event idx_event
 
     Returns:
         None
@@ -375,7 +371,6 @@ def mac(data, idx_event):
         row = IMac(
             idx_oui=lookup.get(item[:6], 1),
             idx_zone=1,
-            idx_event=idx_event,
             mac=item,
             enabled=1,
         )

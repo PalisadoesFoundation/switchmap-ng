@@ -56,12 +56,10 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.server.db.table import vlan as testimport
-from switchmap.server.db.table import event
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import device
 from switchmap.server.db.models import Vlan
 from switchmap.server.db.table import IVlan
-from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IDevice
 from switchmap.server.db import models
@@ -244,7 +242,6 @@ def _prerequisites():
 
     """
     # Create result
-    event.insert_row(IEvent(name=data.random_string(), enabled=1))
     zone.insert_row(
         IZone(
             name=data.random_string(),
@@ -264,7 +261,6 @@ def _prerequisites():
     device.insert_row(
         IDevice(
             idx_zone=1,
-            idx_event=1,
             sys_name=data.random_string(),
             hostname=data.random_string(),
             name=data.random_string(),
