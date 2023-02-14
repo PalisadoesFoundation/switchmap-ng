@@ -2,7 +2,6 @@
 
 # Standard libraries
 import hashlib
-from copy import deepcopy
 import datetime
 
 

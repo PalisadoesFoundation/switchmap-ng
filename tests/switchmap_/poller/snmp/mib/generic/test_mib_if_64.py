@@ -61,7 +61,7 @@ CONFIG = setup.config()
 CONFIG.save()
 
 # Import other required libraries
-from switchmap.poll.snmp.mib.generic import mib_if_64 as testimport
+from switchmap.poller.snmp.mib.generic import mib_if_64 as testimport
 
 
 class Query:

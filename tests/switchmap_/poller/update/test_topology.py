@@ -50,17 +50,17 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.poll.update import topology as testimport
-from switchmap.poll.update import device
-from switchmap.db import db
-from switchmap.db import models
-from switchmap.db.models import VlanPort
-from switchmap.db.models import MacPort
-from switchmap.db.models import MacIp
-from switchmap.db.models import Mac
-from switchmap.db.models import Vlan
-from switchmap.db.models import L1Interface
-from switchmap.db.models import Device
+from switchmap.poller.update import topology as testimport
+from switchmap.poller.update import device
+from switchmap.server.db import db
+from switchmap.server.db import models
+from switchmap.server.db.models import VlanPort
+from switchmap.server.db.models import MacPort
+from switchmap.server.db.models import MacIp
+from switchmap.server.db.models import Mac
+from switchmap.server.db.models import Vlan
+from switchmap.server.db.models import L1Interface
+from switchmap.server.db.models import Device
 from switchmap.server.db.table import event
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui

@@ -61,7 +61,7 @@ from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui
 from switchmap.server.db.table import mac
 from switchmap.server.db.table import device
-from switchmap.db.models import MacIp
+from switchmap.server.db.models import MacIp
 from switchmap.server.db.table import IMacIp
 from switchmap.server.db.table import IMac
 from switchmap.server.db.table import IEvent

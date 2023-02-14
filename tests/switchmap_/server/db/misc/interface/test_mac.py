@@ -77,7 +77,7 @@ from switchmap.server.db.table import IOui
 from switchmap.server.db.table import IDevice
 from switchmap.server.db.table import IL1Interface
 from switchmap.server.db.table import IMacIp
-from switchmap.db import models
+from switchmap.server.db import models
 from switchmap import MacDetail
 
 from tests.testlib_ import db

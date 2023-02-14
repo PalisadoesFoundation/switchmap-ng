@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from switchmap.server.db import models
 from switchmap.server.db import ENGINE
 
-from switchmap.core.configuration import Config
+from switchmap.server.configuration import ConfigServer
 from switchmap.core import log
 
 
@@ -28,7 +28,7 @@ class Database:
         """
         # Make sure we are doing operations only on a test database
         expected = "switchmap_unittest"
-        config = Config()
+        config = ConfigServer()
         if config.db_name() != expected:
             log_message = """\
 The database under test must be named {}""".format(

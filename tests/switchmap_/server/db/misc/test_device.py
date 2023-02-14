@@ -65,7 +65,7 @@ from switchmap.server.db.table import mac
 from switchmap.server.db.table import macip
 from switchmap.server.db.table import device
 from switchmap.server.db.table import l1interface
-from switchmap.db.models import MacPort
+from switchmap.server.db.models import MacPort
 from switchmap.server.db.table import IMacPort
 from switchmap.server.db.table import IMac
 from switchmap.server.db.table import IEvent

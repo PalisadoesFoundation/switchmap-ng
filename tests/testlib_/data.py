@@ -15,30 +15,34 @@ import yaml
 
 _CONFIG_YAML = """
 core:
-  bind_port: 8027
   system_directory: XXX
-  hostnames:
-  - unittest-01.example.org
-  - unittest-02.example.org
-  listen_address: localhost
   log_directory: YYY
   log_level: debug
   polling_interval: 21600
   username: switchmap
+server:
+  bind_port: 9000
+  listen_address: localhost
   db_host: localhost
   db_name: switchmap_unittest
   db_user: travis
   db_pass: 7F4Gj7HJIDT5xJPs
-snmp_groups:
-- group_name: h55wJy4JkfSJnhZT
-  snmp_authpassword: v29AbLMwxu7gnGyz
-  snmp_authprotocol: sha
-  snmp_community: null
-  snmp_port: 161
-  snmp_privpassword: sh4gPe7MKG2dst2X
-  snmp_privprotocol: aes
-  snmp_secname: 76v4PjWHpDmzy6cx
-  snmp_version: 3
+poller:
+  bind_port: 9001
+  listen_address: localhost
+  hostnames:
+    - unittest-01.example.org
+    - unittest-02.example.org
+  snmp_groups:
+    - group_name: h55wJy4JkfSJnhZT
+      snmp_authpassword: v29AbLMwxu7gnGyz
+      snmp_authprotocol: sha
+      snmp_community: null
+      snmp_port: 161
+      snmp_privpassword: sh4gPe7MKG2dst2X
+      snmp_privprotocol: aes
+      snmp_secname: 76v4PjWHpDmzy6cx
+      snmp_version: 3
 """
 
 _CONFIG_TESTER_YAML = """
@@ -274,7 +278,7 @@ def ipv6():
 
     """
     # Return
-    bits = 16**4
+    bits = 16 ** 4
     result = ":".join(
         ("{:02x}".format(random.randint(0, bits)).zfill(4) for i in range(8))
     )

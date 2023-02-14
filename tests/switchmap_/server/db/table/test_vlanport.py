@@ -63,7 +63,7 @@ from switchmap.server.db.table import vlan
 from switchmap.server.db.table import mac
 from switchmap.server.db.table import device
 from switchmap.server.db.table import l1interface
-from switchmap.db.models import VlanPort
+from switchmap.server.db.models import VlanPort
 from switchmap.server.db.table import IVlanPort
 from switchmap.server.db.table import IVlan
 from switchmap.server.db.table import IMac

@@ -61,7 +61,7 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.server.db.table import vlan
-from switchmap.db import models
+from switchmap.server.db import models
 
 from tests.testlib_ import db
 from tests.testlib_ import data

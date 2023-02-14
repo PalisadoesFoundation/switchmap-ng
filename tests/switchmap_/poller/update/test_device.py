@@ -48,7 +48,7 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.poll.update import device as testimport
+from switchmap.poller.update import device as testimport
 from switchmap import TrunkInterface
 
 from tests.testlib_ import data

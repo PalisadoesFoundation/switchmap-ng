@@ -58,7 +58,7 @@ from switchmap.server.db.table import mac as testimport
 from switchmap.server.db.table import event
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui
-from switchmap.db.models import Mac
+from switchmap.server.db.models import Mac
 from switchmap.server.db.table import IMac
 from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IZone

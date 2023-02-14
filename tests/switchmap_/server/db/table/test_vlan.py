@@ -59,7 +59,7 @@ from switchmap.server.db.table import vlan as testimport
 from switchmap.server.db.table import event
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import device
-from switchmap.db.models import Vlan
+from switchmap.server.db.models import Vlan
 from switchmap.server.db.table import IVlan
 from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IZone

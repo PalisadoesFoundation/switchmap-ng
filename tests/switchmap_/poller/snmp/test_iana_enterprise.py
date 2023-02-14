@@ -46,7 +46,7 @@ CONFIG = setup.config()
 CONFIG.save()
 
 # Import other required libraries
-from switchmap.poll.snmp import iana_enterprise as test_class
+from switchmap.poller.snmp import iana_enterprise as test_class
 
 
 class TestMibIanaEnterprise(unittest.TestCase):

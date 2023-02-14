@@ -38,7 +38,7 @@ setup.setenv()
 from switchmap.dashboard import configuration as test_module
 
 
-class Test_Config(unittest.TestCase):
+class Test_ConfigDashboard(unittest.TestCase):
     """Checks all class_config methods."""
 
     #########################################################################

@@ -62,7 +62,7 @@ CONFIG = setup.config()
 CONFIG.save()
 
 # Import other required libraries
-from switchmap.poll.snmp.mib.cisco import mib_ciscovtp as testimport
+from switchmap.poller.snmp.mib.cisco import mib_ciscovtp as testimport
 
 
 class Query:

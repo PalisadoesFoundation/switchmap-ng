@@ -59,7 +59,7 @@ from switchmap.server.db.table import l1interface as testimport
 from switchmap.server.db.table import event
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import device
-from switchmap.db.models import L1Interface
+from switchmap.server.db.models import L1Interface
 from switchmap.server.db.table import IL1Interface
 from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IZone
