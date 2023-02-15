@@ -58,9 +58,7 @@ class Config:
         _metadata = _directories(randomizer=randomizer)
 
         # Define necessary directories for tests using configurations to work
-        log_directory = "{0}{1}{0}log".format(
-            os.sep, _metadata.system_directory
-        )
+        log_directory = "{1}{0}log".format(os.sep, _metadata.system_directory)
 
         # Create directories
         directories = [
