@@ -55,7 +55,7 @@ def exists(idx_device, ifindex):
             L1Interface.idx_device == idx_device,
         )
     )
-    rows = db.db_select_row(1205, statement)
+    rows = db.db_select_row(1024, statement)
 
     # Return
     for row in rows:

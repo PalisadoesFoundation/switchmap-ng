@@ -5,7 +5,6 @@ import os
 import sys
 import unittest
 from copy import deepcopy
-from pprint import pprint
 
 
 from sqlalchemy import select
@@ -56,6 +55,7 @@ CONFIG.save()
 from switchmap.poller.update import topology as testimport
 from switchmap.poller.update import device
 from switchmap.server.db.table import zone
+from switchmap.server.db.table import oui
 from switchmap.server.db import db
 from switchmap.server.db import models
 from switchmap.server.db.models import VlanPort
@@ -73,6 +73,7 @@ from switchmap.server.db.table import RVlan
 from switchmap.server.db.table import RL1Interface
 from switchmap.server.db.table import RDevice
 from switchmap.server.db.table import IZone
+from switchmap.server.db.table import IOui
 
 from tests.testlib_ import db as dblib
 from tests.testlib_ import data as datalib
@@ -120,7 +121,7 @@ def _reset_db():
     # Create database tables
     models.create_all_tables()
 
-    # Create result
+    # Create a zone
     zone.insert_row(
         IZone(
             name=data.random_string(),
@@ -137,6 +138,9 @@ def _reset_db():
             enabled=1,
         )
     )
+
+    # Create an OUI entry
+    oui.insert_row(IOui(oui="testing", organization="testing", enabled=1))
 
 
 class TestPollUpdateTopologyFunctions(unittest.TestCase):
@@ -1393,7 +1397,6 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         self.assertEqual(result[:25], expected)
 
     def test_mac(self):
-        return
         """Testing function mac."""
         # Initialize key variables
         result = []
@@ -1488,17 +1491,156 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                 ts_modified=None,
                 ts_created=None,
             ),
+            RMac(
+                idx_mac=11,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000010",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=12,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000011",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=13,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000012",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=14,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000013",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=15,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000014",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=16,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000016",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=17,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000017",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=18,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000018",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=19,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000019",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=20,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e00001a",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=21,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e00001c",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=22,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e00001d",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=23,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e00001e",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=24,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e00001f",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMac(
+                idx_mac=25,
+                idx_oui=1,
+                idx_zone=1,
+                mac="00163e000020",
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
         ]
 
         # Process the device
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite updates
-        testimport.device(data)
-        testimport.l1interface(data)
-        testimport.vlan(data)
-        testimport.mac(data)
+        # Make sure the device exists
+        exists = testimport.device(data)
+
+        # Test transaction
+        tester = testimport.Topology(exists, data)
+        tester.l1interface()
+        tester.vlan()
+        tester.vlanport()
+        tester.mac()
 
         # Verify macport data
         statement = select(Mac)
@@ -1517,10 +1659,10 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                     ts_modified=None,
                 )
             )
-        self.assertEqual(result[:10], expected)
+        result.sort(key=lambda x: (x.mac))
+        self.assertEqual(result[:25], expected)
 
     def test_macip(self):
-        return
         """Testing function macip."""
         # Initialize key variables
         result = []
@@ -1641,12 +1783,17 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite updates
-        testimport.device(data)
-        testimport.l1interface(data)
-        testimport.vlan(data)
-        testimport.mac(data)
-        testimport.macip(data, dns=False)
+        # Make sure the device exists
+        exists = testimport.device(data)
+
+        # Test transaction
+        tester = testimport.Topology(exists, data, dns=False)
+        tester.l1interface()
+        tester.vlan()
+        tester.vlanport()
+        tester.mac()
+        tester.macport()
+        tester.macip()
 
         # Verify macport data
         statement = select(MacIp)
@@ -1668,15 +1815,10 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                 )
             )
 
-        print("\n\n\n\n")
-        print("11111111111111111111")
-        pprint(result[:25])
-        print("\n\n\n\n")
-
+        result.sort(key=lambda x: (x.idx_macip))
         self.assertEqual(result[:10], expected)
 
     def test_macport(self):
-        return
         """Testing function macport."""
         # Initialize key variables
         result = []
@@ -1761,19 +1903,142 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                 ts_modified=None,
                 ts_created=None,
             ),
+            RMacPort(
+                idx_macport=11,
+                idx_l1interface=43,
+                idx_mac=39,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=12,
+                idx_l1interface=43,
+                idx_mac=44,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=13,
+                idx_l1interface=43,
+                idx_mac=51,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=14,
+                idx_l1interface=43,
+                idx_mac=52,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=15,
+                idx_l1interface=43,
+                idx_mac=64,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=16,
+                idx_l1interface=43,
+                idx_mac=65,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=17,
+                idx_l1interface=43,
+                idx_mac=73,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=18,
+                idx_l1interface=43,
+                idx_mac=95,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=19,
+                idx_l1interface=43,
+                idx_mac=96,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=20,
+                idx_l1interface=43,
+                idx_mac=104,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=21,
+                idx_l1interface=43,
+                idx_mac=115,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=22,
+                idx_l1interface=43,
+                idx_mac=129,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=23,
+                idx_l1interface=43,
+                idx_mac=132,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=24,
+                idx_l1interface=44,
+                idx_mac=5,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=25,
+                idx_l1interface=44,
+                idx_mac=6,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
         ]
 
         # Process the device
         _device = device.Device(_prerequisites())
         data = _device.process()
 
-        # Process all the pre-requisite updates
-        testimport.device(data)
-        testimport.l1interface(data)
-        testimport.vlan(data)
-        testimport.mac(data)
-        testimport.macip(data, dns=False)
-        testimport.macport(data)
+        # Make sure the device exists
+        exists = testimport.device(data)
+
+        # Test transaction
+        tester = testimport.Topology(exists, data)
+        tester.l1interface()
+        tester.vlan()
+        tester.vlanport()
+        tester.mac()
+        tester.macport()
 
         # Verify macport data
         statement = select(MacPort)
@@ -1791,7 +2056,9 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                     ts_modified=None,
                 )
             )
-        self.assertEqual(result[:10], expected)
+        # Sort by idx_vlanport
+        result.sort(key=lambda x: (x.idx_macport))
+        self.assertEqual(result[:25], expected)
 
     def test_vlanport(self):
         """Testing function vlanport."""
@@ -2030,7 +2297,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                 )
             )
 
-        # Sort by idx_vlan, idx_device and vlan
+        # Sort by idx_vlanport
         result.sort(key=lambda x: (x.idx_vlanport))
         self.assertEqual(result[:25], expected)
 

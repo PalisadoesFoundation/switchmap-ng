@@ -51,7 +51,7 @@ def exists(idx_device, vlan):
     statement = select(Vlan).where(
         and_(Vlan.vlan == vlan, Vlan.idx_device == idx_device)
     )
-    rows = db.db_select_row(1226, statement)
+    rows = db.db_select_row(1022, statement)
 
     # Return
     for row in rows:

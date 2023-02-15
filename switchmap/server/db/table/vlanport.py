@@ -55,7 +55,7 @@ def exists(idx_l1interface, idx_vlan):
             VlanPort.idx_l1interface == idx_l1interface,
         )
     )
-    rows = db.db_select_row(1190, statement)
+    rows = db.db_select_row(1026, statement)
 
     # Return
     for row in rows:

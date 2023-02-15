@@ -147,3 +147,27 @@ def update_row(idx, row):
         )
     )
     db.db_update(1118, statement)
+
+
+def ouis():
+    """Get all the OUIs.
+
+    Args:
+        None
+
+    Returns:
+        result: ROui record
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get data
+    statement = select(Oui)
+    rows = db.db_select_row(1005, statement)
+
+    # Return
+    for row in rows:
+        result.append(_rows.oui(row))
+    return result

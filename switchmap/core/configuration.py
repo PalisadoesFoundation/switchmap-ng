@@ -143,7 +143,7 @@ class ConfigCore(_Config):
 
         """
         # Get new result
-        result = "{}{}switchmap-ng.log".format(self.log_directory(), os.sep)
+        result = "{}{}switchmap.log".format(self.log_directory(), os.sep)
 
         # Return
         return result

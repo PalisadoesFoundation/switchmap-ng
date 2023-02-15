@@ -120,6 +120,76 @@ def _lookup(idx_device):
     return result
 
 
+class Status:
+    def __init__(self):
+        self._vlan = False
+        self._vlanport = False
+        self._mac = False
+        self._macport = False
+        self._macip = False
+        self._l1interface = False
+
+    @property
+    def l1interface(self):
+        """Getting the 'l1interface' property."""
+        return self._l1interface
+
+    @l1interface.setter
+    def l1interface(self, value):
+        """Setting the 'l1interface' property."""
+        self._l1interface = value
+
+    @property
+    def macip(self):
+        """Getting the 'macip' property."""
+        return self._macip
+
+    @macip.setter
+    def macip(self, value):
+        """Setting the 'macip' property."""
+        self._macip = value
+
+    @property
+    def macport(self):
+        """Getting the 'macport' property."""
+        return self._macport
+
+    @macport.setter
+    def macport(self, value):
+        """Setting the 'macport' property."""
+        self._macport = value
+
+    @property
+    def mac(self):
+        """Getting the 'mac' property."""
+        return self._mac
+
+    @mac.setter
+    def mac(self, value):
+        """Setting the 'mac' property."""
+        self._mac = value
+
+    @property
+    def vlanport(self):
+        """Getting the 'vlanport' property."""
+        return self._vlanport
+
+    @vlanport.setter
+    def vlanport(self, value):
+        """Setting the 'vlanport' property."""
+        self._vlanport = value
+
+    @property
+    def vlan(self):
+        """Getting the 'vlan' property."""
+        return self._vlan
+
+    @vlan.setter
+    def vlan(self, value):
+        """Setting the 'vlan' property."""
+        self._vlan = value
+
+
 class Topology:
     """Update Device data in the database."""
 
@@ -143,6 +213,8 @@ class Topology:
             bool(data),
             isinstance(data, dict),
         ]
+        self._status = Status()
+        self._start = int(time.time())
 
     def process(self):
         """Process data received from a device.
@@ -156,10 +228,10 @@ class Topology:
         """
         self.l1interface()
         self.vlan()
-        # self.vlanport(data)
-        # self.mac(data)
-        # self.macip(data, dns=dns)
-        # self.macport(data)
+        self.vlanport()
+        self.mac()
+        self.macport()
+        self.macip()
 
     def l1interface(self):
         """Update the L1interface DB table.
@@ -177,19 +249,16 @@ class Topology:
             log_message = "No interfaces detected for for host {}".format(
                 self._device.hostname
             )
-            log.log2debug(1139, log_message)
+            log.log2debug(1021, log_message)
             return
 
         # Initialize more key variables
         data = self._data
-        interfaces = data["layer1"]
+        interfaces = data.get("layer1")
         inserts = []
 
         # Log
-        log_message = "Updating L1Interface table for host {}".format(
-            self._device.hostname
-        )
-        log.log2debug(1128, log_message)
+        self.log("L1Interface")
 
         # Get all the existing ifindexes
         all_ifindexes = {
@@ -279,10 +348,10 @@ class Topology:
             _l1interface.insert_row(inserts)
 
         # Log
-        log_message = "Updated L1Interface table for host {}".format(
-            self._device.hostname
-        )
-        log.log2debug(1138, log_message)
+        self.log("L1Interface", updated=True)
+
+        # Everything is completed
+        self._status.l1interface = True
 
     def vlan(self):
         """Update the Vlan DB table.
@@ -294,50 +363,39 @@ class Topology:
             None
 
         """
-        # Test validity
-        if bool(self._valid) is False:
-            # Log
-            log_message = "No VLANs detected for for host {}".format(
-                self._device.hostname
-            )
-            log.log2debug(1139, log_message)
+        # Test prerequisite
+        if bool(self._status.l1interface) is False:
+            self.log_invalid("Vlan")
             return
 
         # Initialize key variables
-        interfaces = self._data["layer1"]
+        interfaces = self._data.get("layer1")
         rows = []
         unique_vlans = []
         inserts = []
         lookup = _lookup(self._device.idx_device)
 
         # Log
-        log_message = "Updating Vlan table for host {}".format(
-            self._device.hostname
-        )
-        log.log2debug(1131, log_message)
+        self.log("Vlan")
 
         # Get all the existing ifindexes and VLANs.
-        all_ifindexes = [_.ifindex for _ in lookup.ifindexes]
         all_vlans = {_.vlan: _ for _ in lookup.vlans}
 
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
-            exists = ifindex in all_ifindexes
-
-            # Process each Vlan
-            if bool(exists) is True:
-                vlans = interface.get("l1_vlans")
-                if isinstance(vlans, list) is True:
-                    for next_vlan in vlans:
-                        rows.append(
-                            IVlan(
-                                idx_device=self._device.idx_device,
-                                vlan=next_vlan,
-                                name=None,
-                                state=0,
-                                enabled=1,
-                            )
+            # Process the VLANs on the interface
+            vlans = interface.get("l1_vlans")
+            if isinstance(vlans, list) is True:
+                for next_vlan in vlans:
+                    rows.append(
+                        IVlan(
+                            idx_device=self._device.idx_device,
+                            vlan=next_vlan,
+                            name=None,
+                            state=0,
+                            enabled=1,
                         )
+                    )
 
         # Do VLAN insertions
         unique_vlans = list(set(rows))
@@ -359,10 +417,10 @@ class Topology:
             _vlan.insert_row(inserts)
 
         # Log
-        log_message = "Updated Vlan table for host {}".format(
-            self._device.hostname
-        )
-        log.log2debug(1140, log_message)
+        self.log("Vlan", updated=True)
+
+        # Everything is completed
+        self._status.vlan = True
 
     def vlanport(self):
         """Update the VlanPort DB table.
@@ -374,30 +432,21 @@ class Topology:
             None
 
         """
-        # Test validity
-        if bool(self._valid) is False:
-            # Log
-            log_message = (
-                "No VLAN to port mappings detected for for host {}".format(
-                    self._device.hostname
-                )
-            )
-            log.log2debug(1139, log_message)
+        # Test prerequisite
+        if bool(self._status.vlan) is False:
+            self.log_invalid("VlanPort")
             return
 
         # Initialize key variables
         VlanInterface = namedtuple("VlanInterface", "idx_l1interface idx_vlan")
-        interfaces = self._data["layer1"]
+        interfaces = self._data.get("layer1")
         lookup = _lookup(self._device.idx_device)
         inserts = []
 
         # Log
-        log_message = "Updating VlanPort table for host {}".format(
-            self._device.hostname
-        )
-        log.log2debug(1194, log_message)
+        self.log("VlanPort")
 
-        # Get all the existing ifindexes and VLANs
+        # Get all the existing ifindexes, VLANs and VlanPorts
         all_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
         all_vlans = {_.vlan: _ for _ in lookup.vlans}
         all_vlan_ports = {
@@ -448,42 +497,45 @@ class Topology:
             _vlanport.insert_row(inserts)
 
         # Log
-        log_message = "Updated VlanPort table for host {}".format(
-            self._device.hostname
-        )
-        log.log2debug(1195, log_message)
+        self.log("VlanPort", updated=True)
 
+        # Everything is completed
+        self._status.vlanport = True
 
-def mac(data):
-    """Update the Mac DB table.
+    def mac(self):
+        """Update the Mac DB table.
 
-    Args:
-        data: Device data (dict)
+        Args:
+            None
 
-    Returns:
-        None
+        Returns:
+            None
 
-    """
-    # Initialize key variables
-    exists = False
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
-    all_macs = []
-    unique_macs = []
-    unique_ouis = []
-    lookup = {}
+        """
+        # Test prerequisite
+        if bool(self._status.vlanport) is False:
+            self.log_invalid("Mac")
+            return
 
-    # Log
-    log_message = "Updating Mac table for host {}".format(hostname)
-    log.log2debug(1134, log_message)
+        # Initialize key variables
+        exists = False
+        interfaces = self._data.get("layer1")
+        all_macs = []
+        unique_macs = []
+        unique_ouis = []
+        inserts = []
+        lookup = {}
+        db_lookup = _lookup(self._device.idx_device)
 
-    # Get device data
-    device_ = _device.exists(hostname)
+        # Log
+        self.log("Mac")
 
-    if bool(device_) is True:
+        # Get all the existing ifindexes
+        all_ifindexes = [_.ifindex for _ in db_lookup.ifindexes]
+
         # Process each interface
         for ifindex, interface in interfaces.items():
-            exists = _l1interface.exists(device_.idx_device, ifindex)
+            exists = ifindex in all_ifindexes
 
             # Process each Mac
             if bool(exists) is True:
@@ -491,144 +543,207 @@ def mac(data):
                 if bool(these_macs) is True:
                     all_macs.extend(these_macs)
 
-    # Get macs and ouis
-    unique_macs = list(set(_.lower() for _ in all_macs))
-    unique_ouis = list(set([_[:6].lower() for _ in unique_macs]))
+        # Get macs and ouis
+        unique_macs = list(set(_.lower() for _ in all_macs))
+        unique_ouis = list(set([_[:6].lower() for _ in unique_macs]))
 
-    # Process ouis
-    for item in sorted(unique_ouis):
-        exists = _oui.exists(item)
-        lookup[item] = exists.idx_oui if bool(exists) is True else 1
+        # Process ouis
+        for item in sorted(unique_ouis):
+            exists = _oui.exists(item)
+            lookup[item] = exists.idx_oui if bool(exists) is True else 1
 
-    # Process macs
-    for item in sorted(unique_macs):
-        exists = _mac.exists(item)
-        row = IMac(
-            idx_oui=lookup.get(item[:6], 1),
-            idx_zone=1,
-            mac=item,
-            enabled=1,
-        )
-        if bool(exists) is False:
-            _mac.insert_row(row)
-        else:
-            _mac.update_row(exists.idx_mac, row)
+        # Process macs
+        for item in sorted(unique_macs):
+            exists = _mac.exists(item)
+            row = IMac(
+                idx_oui=lookup.get(item[:6], 1),
+                idx_zone=1,
+                mac=item,
+                enabled=1,
+            )
+            if bool(exists) is False:
+                # _mac.insert_row(row)
+                inserts.append(row)
+            else:
+                _mac.update_row(exists.idx_mac, row)
 
-    # Log
-    log_message = "Updated Mac table for host {}".format(hostname)
-    log.log2debug(1136, log_message)
+        # Insert if required
+        if bool(inserts) is True:
+            _mac.insert_row(inserts)
 
+        # Log
+        self.log("Mac", updated=True)
 
-def macport(data):
-    """Update the MacPort DB table.
+        # Everything is completed
+        self._status.mac = True
 
-    Args:
-        data: Device data (dict)
+    def macport(self):
+        """Update the MacPort DB table.
 
-    Returns:
+        Args:
         None
 
-    """
-    # Initialize key variables
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
+        Returns:
+            None
 
-    # Log
-    log_message = "Updating MacPort table for host {}".format(hostname)
-    log.log2debug(1135, log_message)
+        """
+        # Test prerequisite
+        if bool(self._status.mac) is False:
+            self.log_invalid("MacPort")
+            return
 
-    # Get device data
-    device_ = _device.exists(hostname)
+        # Initialize key variables
+        interfaces = self._data.get("layer1")
+        lookup = _lookup(self._device.idx_device)
 
-    if bool(device_) is True:
+        # Log
+        self.log("MacPort")
+
+        # Get all the existing ifindexes
+        all_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
+
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
-            l1_exists = _l1interface.exists(device_.idx_device, ifindex)
+            l1_exists = all_ifindexes.get(ifindex)
 
             # Process each Mac
-            if bool(l1_exists) is True:
-                _macs = interface.get("l1_macs")
-                if bool(_macs) is True:
-                    for item in sorted(_macs):
-                        # Ensure the Mac exists in the database
-                        mac_exists = _mac.exists(item)
-                        if bool(mac_exists) is True:
-                            row = IMacPort(
-                                idx_l1interface=l1_exists.idx_l1interface,
-                                idx_mac=mac_exists.idx_mac,
-                                enabled=1,
+            _macs = interface.get("l1_macs")
+            if bool(_macs) is True:
+                for item in sorted(_macs):
+                    # Ensure the Mac exists in the database
+                    mac_exists = _mac.exists(item)
+                    if bool(mac_exists) is True:
+                        row = IMacPort(
+                            idx_l1interface=l1_exists.idx_l1interface,
+                            idx_mac=mac_exists.idx_mac,
+                            enabled=1,
+                        )
+                        # Update the MacPort database table
+                        macport_exists = _macport.exists(
+                            l1_exists.idx_l1interface,
+                            mac_exists.idx_mac,
+                        )
+                        if bool(macport_exists) is True:
+                            _macport.update_row(
+                                macport_exists.idx_macport, row
                             )
-                            # Update the MacPort database table
-                            macport_exists = _macport.exists(
-                                l1_exists.idx_l1interface, mac_exists.idx_mac
-                            )
-                            if bool(macport_exists) is True:
-                                _macport.update_row(
-                                    macport_exists.idx_macport, row
-                                )
-                            else:
-                                _macport.insert_row(row)
+                        else:
+                            _macport.insert_row(row)
 
-    # Log
-    log_message = "Updated MacPort table for host {}".format(hostname)
-    log.log2debug(1141, log_message)
+        # Log
+        self.log("MacPort", updated=True)
 
+        # Everything is completed
+        self._status.macport = True
 
-def macip(data, dns=True):
-    """Update the MacIp DB table.
+    def macip(self):
+        """Update the MacIp DB table.
 
-    Args:
-        data: MacIp data
+        Args:
+            data: MacIp data
 
-    Returns:
-        None
+        Returns:
+            None
 
-    """
-    # Initialize key variables
-    ipv6 = None
-    ipv4 = None
-    hostname = data["misc"]["host"]
-    adds = []
-    updates = []
+        """
+        # Test prerequisite
+        if bool(self._status.macport) is False:
+            self.log_invalid("MacIp")
+            return
 
-    # Log
-    log_message = "Updating MacIp table for host {}".format(hostname)
-    log.log2debug(1148, log_message)
+        # Initialize key variables
+        dns = self._dns
+        ipv6 = None
+        ipv4 = None
+        adds = []
+        updates = []
 
-    # Get device data
-    device_ = _device.exists(hostname)
+        # Log
+        self.log("MacIp")
 
-    # Get MacIp data
-    layer3 = data.get("layer3")
-    if bool(layer3) is True and bool(device_) is True:
-        ipv4 = layer3.get("ipNetToMediaTable")
-        ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
+        # Get MacIp data
+        layer3 = self._data.get("layer3")
+        if bool(layer3) is True:
+            ipv4 = layer3.get("ipNetToMediaTable")
+            ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
 
-        # Process IPv4 data
-        if bool(ipv4) is True:
-            result = _process_macip(
-                ProcessMacIP(table=ipv4, device=device_, version=4), dns=dns
-            )
-            adds.extend(result.adds)
-            updates.extend(result.updates)
+            # Process IPv4 data
+            if bool(ipv4) is True:
+                result = _process_macip(
+                    ProcessMacIP(
+                        table=ipv4,
+                        idx_device=self._device.idx_device,
+                        version=4,
+                    ),
+                    dns=dns,
+                )
+                adds.extend(result.adds)
+                updates.extend(result.updates)
 
-        # Process IPv6 data
-        if bool(ipv6) is True:
-            result = _process_macip(
-                ProcessMacIP(table=ipv6, device=device_, version=6), dns=dns
-            )
-            adds.extend(result.adds)
-            updates.extend(result.updates)
+            # Process IPv6 data
+            if bool(ipv6) is True:
+                result = _process_macip(
+                    ProcessMacIP(
+                        table=ipv6,
+                        idx_device=self._device.idx_device,
+                        version=6,
+                    ),
+                    dns=dns,
+                )
+                adds.extend(result.adds)
+                updates.extend(result.updates)
 
-    # Do the Updates
-    for item in sorted(updates):
-        _macip.update_row(item.idx_macip, item.row)
-    for item in sorted(adds):
-        _macip.insert_row(item)
+        # Do the Updates
+        for item in sorted(updates):
+            _macip.update_row(item.idx_macip, item.row)
 
-    # Log
-    log_message = "Updated MacIp table for host {}".format(hostname)
-    log.log2debug(1149, log_message)
+        # Do the adds
+        _macip.insert_row(sorted(adds))
+
+        # Log
+        self.log("MacIp", updated=True)
+
+    def log(self, table, updated=False):
+        """Standard log messaging.
+
+        Args:
+            table: Name of table being updated
+            updated: True if the table has been updated
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        log_message = '\
+{} table update "{}" for host {}, {} seconds after starting'.format(
+            "Completed" if bool(updated) else "Starting",
+            table,
+            self._device.hostname,
+            int(time.time()) - self._start,
+        )
+        log.log2debug(1028, log_message)
+
+    def log_invalid(self, table):
+        """Standard log messaging.
+
+        Args:
+            table: Name of table being updated
+            updated: True if the table has been updated
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        log_message = "\
+Invalid update sequence for table {} when processing host {}, {} seconds\
+after starting".format(
+            table,
+            self._device.hostname,
+            int(time.time()) - self._start,
+        )
+        log.log2debug(1029, log_message)
 
 
 def _process_macip(info, dns=True):
@@ -662,7 +777,7 @@ def _process_macip(info, dns=True):
         if bool(mac_exists) is True:
             # Does the record exist?
             macip_exists = _macip.exists(
-                info.device.idx_device, mac_exists.idx_mac, ip_address
+                info.idx_device, mac_exists.idx_mac, ip_address
             )
 
             # Get hostname for DB
@@ -676,7 +791,7 @@ def _process_macip(info, dns=True):
 
             # Create a DB record
             row = IMacIp(
-                idx_device=info.device.idx_device,
+                idx_device=info.idx_device,
                 idx_mac=mac_exists.idx_mac,
                 ip_=ip_address,
                 hostname=hostname,

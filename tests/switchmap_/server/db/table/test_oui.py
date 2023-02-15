@@ -192,6 +192,43 @@ class TestDbTableOui(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(updated_row))
 
+    def test_ouis(self):
+        """Testing function ouis."""
+        # Initialize key variables
+        inserts = testimport.ouis()
+        maximum = 10
+        start = len(inserts)
+        stop = start + maximum
+
+        # Insert `maximum` values
+        for _ in range(stop - start):
+            # Create record
+            row = _row()
+
+            # Test before insertion of an initial row
+            result = testimport.exists(row.oui)
+            self.assertFalse(result)
+
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.oui)
+            self.assertTrue(result)
+
+            # Update list of values inserted
+            inserts.append(result)
+
+        # Test
+        results = testimport.ouis()
+        results.sort(key=lambda x: (x.oui))
+        inserts.sort(key=lambda x: (x.oui))
+
+        # Test the length of the results
+        self.assertEqual(len(results), stop)
+        self.assertEqual(len(inserts), stop)
+
+        for key, result in enumerate(results):
+            self.assertEqual(_convert(result), _convert(inserts[key]))
+
     def test__row(self):
         """Testing function _row."""
         # This function is tested by all the other tests
