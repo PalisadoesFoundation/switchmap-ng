@@ -97,7 +97,7 @@ class Test_ConfigDashboard(unittest.TestCase):
     def test_log_directory(self):
         """Testing function log_directory."""
         # Run test
-        expected = "{0}{1}{0}log".format(
+        expected = "{1}{0}log".format(
             os.sep, self._config.metadata.system_directory
         )
         result = self.config.log_directory()
@@ -106,7 +106,7 @@ class Test_ConfigDashboard(unittest.TestCase):
     def test_log_file(self):
         """Testing function log_file."""
         # Run test
-        expected = "{0}{1}{0}log{0}switchmap.log".format(
+        expected = "{1}{0}log{0}switchmap.log".format(
             os.sep, self._config.metadata.system_directory
         )
         result = self.config.log_file()
