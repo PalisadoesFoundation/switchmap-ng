@@ -118,12 +118,15 @@ class Config:
         # Check for the existence of the directories
         if self._randomizer is True:
             if _UNITTEST_STRING in self.metadata.base_directory:
-                shutil.rmtree(self.metadata.base_directory)
+                if os.isdir(self.metadata.base_directory):
+                    shutil.rmtree(self.metadata.base_directory)
         else:
             if _UNITTEST_STRING in self.metadata.system_directory:
-                shutil.rmtree(self.metadata.system_directory)
+                if os.isdir(self.metadata.system_directory):
+                    shutil.rmtree(self.metadata.system_directory)
             if _UNITTEST_STRING in self.metadata.config_directory:
-                shutil.rmtree(self.metadata.config_directory)
+                if os.isdir(self.metadata.config_directory):
+                    shutil.rmtree(self.metadata.config_directory)
 
 
 def setenv(directory=None):
