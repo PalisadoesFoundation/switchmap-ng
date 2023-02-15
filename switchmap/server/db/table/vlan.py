@@ -60,6 +60,30 @@ def exists(idx_device, vlan):
     return result
 
 
+def vlans(idx_device):
+    """Get all VLANs for a device.
+
+    Args:
+        idx_device: Device index
+
+    Returns:
+        result: list of RVlan tuples
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get vlan from database
+    statement = select(Vlan).where(Vlan.idx_device == idx_device)
+    rows = db.db_select_row(1226, statement)
+
+    # Return
+    for row in rows:
+        result.append(_rows.vlan(row))
+    return result
+
+
 def insert_row(rows):
     """Create a Vlan table entry.
 

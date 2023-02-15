@@ -64,6 +64,32 @@ def exists(idx_device, ifindex):
     return result
 
 
+def ifindexes(idx_device):
+    """Get all the L1Interface table records for a device.
+
+    Args:
+        idx_device: Device.idx_device
+
+    Returns:
+        result: RL1Interface tuple
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get row from dataase
+    statement = select(L1Interface).where(
+        L1Interface.idx_device == idx_device,
+    )
+    rows = db.db_select_row(1205, statement)
+
+    # Return
+    for row in rows:
+        result.append(_rows.l1interface(row))
+    return result
+
+
 def findifalias(ifalias):
     """Find ifalias.
 
@@ -71,7 +97,7 @@ def findifalias(ifalias):
         ifalias: Hostname
 
     Returns:
-        result: L1Interface tuple
+        result: list of L1Interface tuples
 
     """
     # Initialize key variables

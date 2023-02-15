@@ -2,11 +2,15 @@
 
 import time
 import socket
+from collections import namedtuple
+from copy import deepcopy
+
 import yaml
 
 from switchmap.core import log
 from switchmap.core import general
 from switchmap.server.db.table import device as _device
+from switchmap.server.db.misc import device as _misc_device
 from switchmap.server.db.table import l1interface as _l1interface
 from switchmap.server.db.table import vlan as _vlan
 from switchmap.server.db.table import macip as _macip
@@ -45,13 +49,9 @@ def process(data, dns=True):
         yaml.dump(data, outfile, default_flow_style=False)
 
     # Process the device
-    device(data)
-    l1interface(data)
-    vlan(data)
-    vlanport(data)
-    mac(data)
-    macip(data, dns=dns)
-    macport(data)
+    meta = device(data)
+    _topology = Topology(meta, data, dns=dns)
+    _topology.process()
 
 
 def device(data):
@@ -89,38 +89,116 @@ def device(data):
         _device.update_row(exists.idx_device, row)
     else:
         _device.insert_row(row)
+        exists = _device.exists(row.hostname)
 
     # Log
     log_message = "Updated Device table for host {}".format(hostname)
     log.log2debug(1137, log_message)
 
+    # Return
+    return exists
 
-def l1interface(data):
-    """Update the L1interface DB table.
+
+def _lookup(idx_device):
+    """Create in memory lookup data for the device.
 
     Args:
-        data: Device data (dict)
+        idx_device: device index
 
     Returns:
-        None
+        result: Lookup object
 
     """
     # Initialize key variables
-    exists = False
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
+    Lookup = namedtuple("Lookup", "ifindexes vlans")
 
-    # Log
-    log_message = "Updating L1Interface table for host {}".format(hostname)
-    log.log2debug(1128, log_message)
+    # Return
+    result = Lookup(
+        ifindexes=_l1interface.ifindexes(idx_device),
+        vlans=_vlan.vlans(idx_device),
+    )
+    return result
 
-    # Get device data
-    device_ = _device.exists(hostname)
 
-    if bool(device_) is True:
+class Topology:
+    """Update Device data in the database."""
+
+    def __init__(self, exists, data, dns=True):
+        """Initialize class.
+
+        Args:
+            exists: RDevice object
+            data: Dict of device data
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        self._data = deepcopy(data)
+        self._device = exists
+        self._dns = dns
+        self._valid = False not in [
+            bool(_device.idx_exists(exists.idx_device)),
+            bool(data),
+            isinstance(data, dict),
+        ]
+
+    def process(self):
+        """Process data received from a device.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        self.l1interface()
+        self.vlan()
+        # self.vlanport(data)
+        # self.mac(data)
+        # self.macip(data, dns=dns)
+        # self.macport(data)
+
+    def l1interface(self):
+        """Update the L1interface DB table.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Test validity
+        if bool(self._valid) is False:
+            # Log
+            log_message = "No interfaces detected for for host {}".format(
+                self._device.hostname
+            )
+            log.log2debug(1139, log_message)
+            return
+
+        # Initialize more key variables
+        data = self._data
+        interfaces = data["layer1"]
+        inserts = []
+
+        # Log
+        log_message = "Updating L1Interface table for host {}".format(
+            self._device.hostname
+        )
+        log.log2debug(1128, log_message)
+
+        # Get all the existing ifindexes
+        all_ifindexes = {
+            _.ifindex: _ for _ in _lookup(self._device.idx_device).ifindexes
+        }
+
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
-            exists = _l1interface.exists(device_.idx_device, ifindex)
+            exists = all_ifindexes.get(ifindex)
 
             # Update the database
             if bool(exists) is True:
@@ -144,7 +222,7 @@ def l1interface(data):
 
                 # Add new row to the database table
                 row = IL1Interface(
-                    idx_device=device_.idx_device,
+                    idx_device=self._device.idx_device,
                     ifindex=ifindex,
                     duplex=interface.get("l1_duplex"),
                     ethernet=int(bool(interface.get("l1_ethernet"))),
@@ -169,69 +247,82 @@ def l1interface(data):
                 _l1interface.update_row(exists.idx_l1interface, row)
             else:
                 # Add new row to the database table
-                row = IL1Interface(
-                    idx_device=device_.idx_device,
-                    ifindex=ifindex,
-                    duplex=interface.get("l1_duplex"),
-                    ethernet=int(bool(interface.get("l1_ethernet"))),
-                    nativevlan=interface.get("l1_nativevlan"),
-                    trunk=int(bool(interface.get("l1_trunk"))),
-                    ifspeed=interface.get("ifSpeed"),
-                    ifalias=interface.get("ifAlias"),
-                    ifdescr=interface.get("ifDescr"),
-                    ifadminstatus=interface.get("ifAdminStatus"),
-                    ifoperstatus=interface.get("ifOperStatus"),
-                    cdpcachedeviceid=interface.get("cdpCacheDeviceId"),
-                    cdpcachedeviceport=interface.get("cdpCacheDevicePort"),
-                    cdpcacheplatform=interface.get("cdpCachePlatform"),
-                    lldpremportdesc=interface.get("lldpRemPortDesc"),
-                    lldpremsyscapenabled=interface.get("lldpRemSysCapEnabled"),
-                    lldpremsysdesc=interface.get("lldpRemSysDesc"),
-                    lldpremsysname=interface.get("lldpRemSysName"),
-                    ts_idle=0,
-                    enabled=1,
+                inserts.append(
+                    IL1Interface(
+                        idx_device=self._device.idx_device,
+                        ifindex=ifindex,
+                        duplex=interface.get("l1_duplex"),
+                        ethernet=int(bool(interface.get("l1_ethernet"))),
+                        nativevlan=interface.get("l1_nativevlan"),
+                        trunk=int(bool(interface.get("l1_trunk"))),
+                        ifspeed=interface.get("ifSpeed"),
+                        ifalias=interface.get("ifAlias"),
+                        ifdescr=interface.get("ifDescr"),
+                        ifadminstatus=interface.get("ifAdminStatus"),
+                        ifoperstatus=interface.get("ifOperStatus"),
+                        cdpcachedeviceid=interface.get("cdpCacheDeviceId"),
+                        cdpcachedeviceport=interface.get("cdpCacheDevicePort"),
+                        cdpcacheplatform=interface.get("cdpCachePlatform"),
+                        lldpremportdesc=interface.get("lldpRemPortDesc"),
+                        lldpremsyscapenabled=interface.get(
+                            "lldpRemSysCapEnabled"
+                        ),
+                        lldpremsysdesc=interface.get("lldpRemSysDesc"),
+                        lldpremsysname=interface.get("lldpRemSysName"),
+                        ts_idle=0,
+                        enabled=1,
+                    )
                 )
 
-                _l1interface.insert_row(row)
+        # Insert if necessary
+        if bool(inserts):
+            _l1interface.insert_row(inserts)
 
         # Log
-        log_message = "Updated L1Interface table for host {}".format(hostname)
+        log_message = "Updated L1Interface table for host {}".format(
+            self._device.hostname
+        )
         log.log2debug(1138, log_message)
 
-    else:
+    def vlan(self):
+        """Update the Vlan DB table.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Test validity
+        if bool(self._valid) is False:
+            # Log
+            log_message = "No VLANs detected for for host {}".format(
+                self._device.hostname
+            )
+            log.log2debug(1139, log_message)
+            return
+
+        # Initialize key variables
+        interfaces = self._data["layer1"]
+        rows = []
+        unique_vlans = []
+        inserts = []
+        lookup = _lookup(self._device.idx_device)
+
         # Log
-        log_message = "No interfaces detected for for host {}".format(hostname)
-        log.log2debug(1139, log_message)
+        log_message = "Updating Vlan table for host {}".format(
+            self._device.hostname
+        )
+        log.log2debug(1131, log_message)
 
+        # Get all the existing ifindexes and VLANs.
+        all_ifindexes = [_.ifindex for _ in lookup.ifindexes]
+        all_vlans = {_.vlan: _ for _ in lookup.vlans}
 
-def vlan(data):
-    """Update the Vlan DB table.
-
-    Args:
-        data: Device data (dict)
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    exists = False
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
-    rows = []
-    unique_vlans = []
-
-    # Log
-    log_message = "Updating Vlan table for host {}".format(hostname)
-    log.log2debug(1131, log_message)
-
-    # Get device data
-    device_ = _device.exists(hostname)
-
-    if bool(device_) is True:
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
-            exists = _l1interface.exists(device_.idx_device, ifindex)
+            exists = ifindex in all_ifindexes
 
             # Process each Vlan
             if bool(exists) is True:
@@ -240,7 +331,7 @@ def vlan(data):
                     for next_vlan in vlans:
                         rows.append(
                             IVlan(
-                                idx_device=device_.idx_device,
+                                idx_device=self._device.idx_device,
                                 vlan=next_vlan,
                                 name=None,
                                 state=0,
@@ -248,75 +339,119 @@ def vlan(data):
                             )
                         )
 
-    # Do Vlan insertions
-    unique_vlans = list(set(rows))
+        # Do VLAN insertions
+        unique_vlans = list(set(rows))
 
-    for item in unique_vlans:
-        vlan_exists = _vlan.exists(item.idx_device, item.vlan)
+        # Sort by VLAN number and idx_device
+        unique_vlans.sort(key=lambda x: (x.vlan, x.idx_device))
 
-        if vlan_exists is False:
-            _vlan.insert_row(item)
-        else:
-            _vlan.update_row(vlan_exists.idx_vlan, item)
+        for item in unique_vlans:
+            # vlan_exists = _vlan.exists(item.idx_device, item.vlan)
+            vlan_exists = all_vlans.get(item.vlan)
 
-    # Log
-    log_message = "Updated Vlan table for host {}".format(hostname)
-    log.log2debug(1140, log_message)
+            if bool(vlan_exists) is False:
+                inserts.append(item)
+            else:
+                _vlan.update_row(vlan_exists, item)
 
+        # Insert if required
+        if bool(inserts) is True:
+            _vlan.insert_row(inserts)
 
-def vlanport(data):
-    """Update the VlanPort DB table.
+        # Log
+        log_message = "Updated Vlan table for host {}".format(
+            self._device.hostname
+        )
+        log.log2debug(1140, log_message)
 
-    Args:
-        data: Device data (dict)
+    def vlanport(self):
+        """Update the VlanPort DB table.
 
-    Returns:
-        None
+        Args:
+            None
 
-    """
-    # Initialize key variables
-    hostname = data["misc"]["host"]
-    interfaces = data["layer1"]
+        Returns:
+            None
 
-    # Log
-    log_message = "Updating VlanPort table for host {}".format(hostname)
-    log.log2debug(1194, log_message)
+        """
+        # Test validity
+        if bool(self._valid) is False:
+            # Log
+            log_message = (
+                "No VLAN to port mappings detected for for host {}".format(
+                    self._device.hostname
+                )
+            )
+            log.log2debug(1139, log_message)
+            return
 
-    # Get device data
-    device_ = _device.exists(hostname)
+        # Initialize key variables
+        VlanInterface = namedtuple("VlanInterface", "idx_l1interface idx_vlan")
+        interfaces = self._data["layer1"]
+        lookup = _lookup(self._device.idx_device)
+        inserts = []
 
-    if bool(device_) is True:
+        # Log
+        log_message = "Updating VlanPort table for host {}".format(
+            self._device.hostname
+        )
+        log.log2debug(1194, log_message)
+
+        # Get all the existing ifindexes and VLANs
+        all_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
+        all_vlans = {_.vlan: _ for _ in lookup.vlans}
+        all_vlan_ports = {
+            VlanInterface(
+                idx_l1interface=_.idx_l1interface, idx_vlan=_.idx_vlan
+            ): _
+            for _ in _misc_device.vlanports(self._device.idx_device)
+        }
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
-            l1_exists = _l1interface.exists(device_.idx_device, ifindex)
+            l1_exists = all_ifindexes.get(ifindex)
 
-            # Process each Vlan
+            # Check for VLANs on the interface
             if bool(l1_exists) is True:
                 _vlans = interface.get("l1_vlans")
+
+                # Process found VLANs
                 if bool(_vlans) is True:
                     for item in sorted(_vlans):
+
                         # Ensure the Vlan exists in the database
-                        vlan_exists = _vlan.exists(device_.idx_device, item)
+                        vlan_exists = all_vlans.get(item)
                         if bool(vlan_exists) is True:
                             row = IVlanPort(
                                 idx_l1interface=l1_exists.idx_l1interface,
                                 idx_vlan=vlan_exists.idx_vlan,
                                 enabled=1,
                             )
-                            # Update the VlanPort database table
-                            vlanport_exists = _vlanport.exists(
-                                l1_exists.idx_l1interface, vlan_exists.idx_vlan
+
+                            # Verify that a VLAN / Port mapping exists
+                            vlanport_exists = all_vlan_ports.get(
+                                VlanInterface(
+                                    idx_l1interface=l1_exists.idx_l1interface,
+                                    idx_vlan=vlan_exists.idx_vlan,
+                                )
                             )
+
+                            # Update the VLAN / Port mapping
                             if bool(vlanport_exists) is True:
                                 _vlanport.update_row(
                                     vlanport_exists.idx_vlanport, row
                                 )
                             else:
-                                _vlanport.insert_row(row)
+                                inserts.append(row)
 
-    # Log
-    log_message = "Updated VlanPort table for host {}".format(hostname)
-    log.log2debug(1195, log_message)
+        # Insert if required
+        if bool(inserts) is True:
+            _vlanport.insert_row(inserts)
+
+        # Log
+        log_message = "Updated VlanPort table for host {}".format(
+            self._device.hostname
+        )
+        log.log2debug(1195, log_message)
 
 
 def mac(data):

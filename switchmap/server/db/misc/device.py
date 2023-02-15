@@ -1,6 +1,6 @@
 """Module for querying the Device table."""
 
-from sqlalchemy import select
+from sqlalchemy import select, and_
 
 # Import project libraries
 from switchmap.server.db import db
@@ -8,6 +8,8 @@ from switchmap import InterfaceDetail
 from switchmap import DeviceDetail
 from switchmap.server.db.models import L1Interface as _L1Interface
 from switchmap.server.db.models import MacPort as _MacPort
+from switchmap.server.db.models import VlanPort as _VlanPort
+from switchmap.server.db.models import Vlan as _Vlan
 from switchmap.server.db.table import device
 from switchmap.server.db.misc import rows as _rows
 from switchmap.server.db.misc.interface import mac as macdetail
@@ -118,3 +120,32 @@ class Device:
 
         # Get interface data
         return result
+
+
+def vlanports(idx_device):
+    """Get all the VlanPorts for a device.
+
+    Args:
+        idx_device:
+
+    Returns:
+        result: List of RVlanPort tuple
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get row from dataase
+    statement = select(_VlanPort).where(
+        and_(
+            _Vlan.idx_device == idx_device,
+            _Vlan.idx_vlan == _VlanPort.idx_vlan,
+        )
+    )
+    rows = db.db_select_row(1190, statement)
+
+    # Return
+    for row in rows:
+        result.append(_rows.vlanport(row))
+    return result
