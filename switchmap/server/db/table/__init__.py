@@ -18,6 +18,9 @@ IZone = namedtuple(
 postal_code phone notes enabled""",
 )
 
+REvent = namedtuple("REvent", "idx_event name enabled ts_modified ts_created")
+IEvent = namedtuple("IEvent", "name enabled")
+
 RDevice = namedtuple(
     "RDevice",
     """idx_device idx_zone  sys_name hostname name \

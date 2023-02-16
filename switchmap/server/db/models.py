@@ -84,6 +84,28 @@ class Oui(BASE):
     )
 
 
+class Event(BASE):
+    """Database table definition."""
+
+    __tablename__ = "smap_event"
+    __table_args__ = {"mysql_engine": "InnoDB"}
+
+    idx_event = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
+    name = Column(VARBINARY(256), unique=True)
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.now,
+    )
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+
+
 class Device(BASE):
     """Database table definition."""
 
