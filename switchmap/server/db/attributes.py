@@ -157,6 +157,32 @@ def resolve_sys_objectid(obj, _):
 ###############################################################################
 
 
+class EventAttribute:
+    """Descriptive attributes of the Event table.
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+    """
+
+    idx_event = graphene.Int(description="Primary key index")
+    name = graphene.Int(resolver=resolve_name, description="Event name")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.String(description="Row Modification Timestamp")
+    ts_created = graphene.String(description="Row Creation Timestamp")
+
+
+class RootAttribute:
+    """Descriptive attributes of the Event table.
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+    """
+
+    idx_root = graphene.Int(description="Primary key index")
+    idx_event = graphene.Int(description="Event index foreign key")
+    enabled = graphene.Boolean(description="Enabled")
+    ts_modified = graphene.String(description="Row Modification Timestamp")
+    ts_created = graphene.String(description="Row Creation Timestamp")
+
+
 class ZoneAttribute:
     """Descriptive attributes of the Zone table.
 
@@ -166,6 +192,7 @@ class ZoneAttribute:
     """
 
     idx_zone = graphene.Int(description="Primary key index")
+    idx_event = graphene.Int(description="Event index foreign key")
     name = graphene.String(resolver=resolve_name, description="Zone name")
     company_name = graphene.String(
         resolver=resolve_company_name, description="Company name"
@@ -220,7 +247,7 @@ class DeviceAttribute:
     """
 
     idx_device = graphene.Int(description="Primary key index")
-    idx_zone = graphene.Int(description="System zone")
+    idx_zone = graphene.Int(description="Zone index foreign key")
     sys_name = graphene.Int(description="System name")
     hostname = graphene.String(
         resolver=resolve_hostname, description="System hostname"

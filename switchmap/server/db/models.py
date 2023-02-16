@@ -33,36 +33,6 @@ _METADATA = BASE.metadata
 ###############################################################################
 
 
-class Zone(BASE):
-    """Database table definition."""
-
-    __tablename__ = "smap_zone"
-    __table_args__ = {"mysql_engine": "InnoDB"}
-
-    idx_zone = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
-    name = Column(VARBINARY(256))
-    company_name = Column(VARBINARY(256), nullable=True, default=Null)
-    address_0 = Column(VARBINARY(256), nullable=True, default=Null)
-    address_1 = Column(VARBINARY(256), nullable=True, default=Null)
-    address_2 = Column(VARBINARY(256), nullable=True, default=Null)
-    city = Column(VARBINARY(128), nullable=True, default=Null)
-    state = Column(VARBINARY(128), nullable=True, default=Null)
-    country = Column(VARBINARY(128), nullable=True, default=Null)
-    postal_code = Column(VARBINARY(64), nullable=True, default=Null)
-    phone = Column(VARBINARY(128), nullable=True, default=Null)
-    notes = Column(VARBINARY(2048), nullable=True, default=Null)
-    enabled = Column(BIT(1), default=1)
-    ts_modified = Column(
-        DateTime,
-        nullable=False,
-        default=datetime.datetime.utcnow,
-        onupdate=datetime.datetime.now,
-    )
-    ts_created = Column(
-        DateTime, nullable=False, default=datetime.datetime.utcnow
-    )
-
-
 class Oui(BASE):
     """Database table definition."""
 
@@ -103,6 +73,81 @@ class Event(BASE):
     )
     ts_created = Column(
         DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+
+
+class Root(BASE):
+    """Database table definition."""
+
+    __tablename__ = "smap_root"
+    __table_args__ = {"mysql_engine": "InnoDB"}
+
+    idx_root = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_event = Column(
+        ForeignKey("smap_event.idx_event"),
+        nullable=False,
+        index=True,
+        default=1,
+        server_default=text("1"),
+    )
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.now,
+    )
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+
+    # Uses cascade='delete,all' to propagate the deletion of an entry
+    root_to_event = relationship(
+        Event,
+        backref=backref("root_to_event", uselist=True, cascade="delete,all"),
+    )
+
+
+class Zone(BASE):
+    """Database table definition."""
+
+    __tablename__ = "smap_zone"
+    __table_args__ = {"mysql_engine": "InnoDB"}
+
+    idx_zone = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_event = Column(
+        ForeignKey("smap_event.idx_event"),
+        nullable=False,
+        index=True,
+        default=1,
+        server_default=text("1"),
+    )
+    name = Column(VARBINARY(256))
+    company_name = Column(VARBINARY(256), nullable=True, default=Null)
+    address_0 = Column(VARBINARY(256), nullable=True, default=Null)
+    address_1 = Column(VARBINARY(256), nullable=True, default=Null)
+    address_2 = Column(VARBINARY(256), nullable=True, default=Null)
+    city = Column(VARBINARY(128), nullable=True, default=Null)
+    state = Column(VARBINARY(128), nullable=True, default=Null)
+    country = Column(VARBINARY(128), nullable=True, default=Null)
+    postal_code = Column(VARBINARY(64), nullable=True, default=Null)
+    phone = Column(VARBINARY(128), nullable=True, default=Null)
+    notes = Column(VARBINARY(2048), nullable=True, default=Null)
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.now,
+    )
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+
+    # Uses cascade='delete,all' to propagate the deletion of an entry
+    zone_to_event = relationship(
+        Event,
+        backref=backref("zone_to_event", uselist=True, cascade="delete,all"),
     )
 
 

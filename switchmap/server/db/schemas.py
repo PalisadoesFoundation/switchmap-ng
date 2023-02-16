@@ -16,6 +16,8 @@ from graphene_sqlalchemy.fields import BatchSQLAlchemyConnectionField
 
 # Import models
 from switchmap.server.db.models import (
+    Event as EventModel,
+    Root as RootModel,
     Device as DeviceModel,
     L1Interface as L1InterfaceModel,
     Zone as ZoneModel,
@@ -29,6 +31,8 @@ from switchmap.server.db.models import (
 
 # Import attributes
 from switchmap.server.db.attributes import (
+    EventAttribute,
+    RootAttribute,
     DeviceAttribute,
     L1InterfaceAttribute,
     MacAttribute,
@@ -43,6 +47,26 @@ from switchmap.server.db.attributes import (
 ###############################################################################
 # Define Schemas
 ###############################################################################
+
+
+class Event(SQLAlchemyObjectType, EventAttribute):
+    """Event node."""
+
+    class Meta:
+        """Define the metadata."""
+
+        model = EventModel
+        interfaces = (graphene.relay.Node,)
+
+
+class Root(SQLAlchemyObjectType, RootAttribute):
+    """Root node."""
+
+    class Meta:
+        """Define the metadata."""
+
+        model = RootModel
+        interfaces = (graphene.relay.Node,)
 
 
 class Device(SQLAlchemyObjectType, DeviceAttribute):
@@ -151,6 +175,14 @@ class Query(graphene.ObjectType):
     # Results as a single entry filtered by 'id' and as a list
     zone = graphene.relay.Node.Field(Zone)
     zones = BatchSQLAlchemyConnectionField(Zone.connection, sort=None)
+
+    # Results as a single entry filtered by 'id' and as a list
+    root = graphene.relay.Node.Field(Root)
+    roots = BatchSQLAlchemyConnectionField(Root.connection, sort=None)
+
+    # Results as a single entry filtered by 'id' and as a list
+    event = graphene.relay.Node.Field(Event)
+    events = BatchSQLAlchemyConnectionField(Event.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     mac = graphene.relay.Node.Field(Mac)
