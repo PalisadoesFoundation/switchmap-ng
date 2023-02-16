@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Test the mac module."""
+"""Test the root module."""
 
 import os
 import sys
@@ -54,22 +54,17 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.server.db.table import mac as testimport
-from switchmap.server.db.table import zone
-from switchmap.server.db.table import event
-from switchmap.server.db.table import oui
-from switchmap.server.db.models import Mac
-from switchmap.server.db.table import IMac
-from switchmap.server.db.table import IZone
+from switchmap.server.db.table import root as testimport
+from switchmap.server.db.table import IRoot
 from switchmap.server.db.table import IEvent
-from switchmap.server.db.table import IOui
+from switchmap.server.db.table import event
 from switchmap.server.db import models
 
 from tests.testlib_ import db
 from tests.testlib_ import data
 
 
-class TestDbTableMac(unittest.TestCase):
+class TestDbTableRoot(unittest.TestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -109,17 +104,17 @@ class TestDbTableMac(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        nonexistent = testimport.exists(row.mac)
+        nonexistent = testimport.exists(row.name)
         self.assertFalse(nonexistent)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        preliminary_result = testimport.exists(row.mac)
+        preliminary_result = testimport.exists(row.name)
         self.assertTrue(preliminary_result)
         self.assertEqual(_convert(preliminary_result), _convert(row))
 
         # Test idx_index function
-        result = testimport.idx_exists(preliminary_result.idx_mac)
+        result = testimport.idx_exists(preliminary_result.idx_root)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(preliminary_result))
 
@@ -129,33 +124,14 @@ class TestDbTableMac(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.mac)
+        result = testimport.exists(row.name)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.mac)
+        result = testimport.exists(row.name)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
-        self.assertTrue(row.idx_oui != 1)
-
-    def test_findmac(self):
-        """Testing function findmac."""
-        # Create record
-        row = _row()
-
-        # Test before insertion of an initial row
-        result = testimport.findmac(row.mac)
-        self.assertFalse(bool(result))
-
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.findmac(row.mac)
-        self.assertTrue(bool(result))
-        self.assertTrue(isinstance(result, list))
-        self.assertEqual(len(result), 1)
-        self.assertEqual(_convert(result[0]), _convert(row))
-        self.assertTrue(row.idx_oui != 1)
 
     def test_insert_row(self):
         """Testing function insert_row."""
@@ -163,15 +139,14 @@ class TestDbTableMac(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.mac)
+        result = testimport.exists(row.name)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.mac)
+        result = testimport.exists(row.name)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
-        self.assertTrue(row.idx_oui != 1)
 
     def test_update_row(self):
         """Testing function update_row."""
@@ -179,35 +154,65 @@ class TestDbTableMac(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.mac)
+        result = testimport.exists(row.name)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.mac)
+        result = testimport.exists(row.name)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
-        self.assertTrue(row.idx_oui != 1)
 
         # Do an update
-        idx = result.idx_mac
-        updated_row = Mac(
-            idx_oui=row.idx_oui,
-            idx_zone=row.idx_zone,
-            mac=data.mac(),
+        idx = result.idx_root
+        updated_row = IRoot(
+            idx_event=1,
+            name=data.random_string(),
             enabled=row.enabled,
         )
         testimport.update_row(idx, updated_row)
 
         # Test the update
-        result = testimport.exists(updated_row.mac)
+        result = testimport.exists(updated_row.name)
         self.assertTrue(result)
+        self.assertEqual(_convert(result), _convert(updated_row))
 
-        # Everything except the idx_oui should be the same.
-        # The newly generated MAC address will not have an OUI entry.
-        self.assertEqual(result.enabled, updated_row.enabled)
-        self.assertEqual(result.mac, updated_row.mac)
-        self.assertEqual(result.idx_zone, updated_row.idx_zone)
+    def test_roots(self):
+        """Testing function roots."""
+        # Initialize key variables
+        inserts = testimport.roots()
+        maximum = 10
+        start = len(inserts)
+        stop = start + maximum
+
+        # Insert `maximum` values
+        for _ in range(stop - start):
+            # Create record
+            row = _row()
+
+            # Test before insertion of an initial row
+            result = testimport.exists(row.name)
+            self.assertFalse(result)
+
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.name)
+            self.assertTrue(result)
+
+            # Update list of values inserted
+            inserts.append(result)
+
+        # Test
+        results = testimport.roots()
+        results.sort(key=lambda x: (x.name))
+        inserts.sort(key=lambda x: (x.name))
+
+        # Test the length of the results
+        self.assertEqual(len(results), stop)
+        self.assertEqual(len(inserts), stop)
+
+        for key, result in enumerate(results):
+            self.assertEqual(_convert(result), _convert(inserts[key]))
 
     def test__row(self):
         """Testing function _row."""
@@ -216,49 +221,40 @@ class TestDbTableMac(unittest.TestCase):
 
 
 def _convert(row):
-    """Convert RMac to IMac record.
+    """Convert RRoot to IRoot record.
 
     Args:
-        row: RMac/IMac record
+        row: RRoot/IRoot record
 
     Returns:
-        result: IMac result
+        result: IRoot result
 
     """
     # Do conversion
-    result = IMac(
-        idx_oui=row.idx_oui,
-        idx_zone=row.idx_zone,
-        mac=row.mac,
+    result = IRoot(
+        idx_event=row.idx_event,
+        name=row.name,
         enabled=row.enabled,
     )
     return result
 
 
 def _row():
-    """Create an IMac record.
+    """Create an IRoot record.
 
     Args:
         None
 
     Returns:
-        result: IMac object
+        result: IRoot object
 
     """
-    # Initialize key variables
-    mac = data.mac()
-
-    # Create an OUI entry
-    oui.insert_row(
-        IOui(oui=mac[:6], organization=data.random_string(), enabled=1)
-    )
-
-    # Get IDX OUI value
-    idx_oui = oui.idx_oui(mac)
-
     # Create result
-    result = IMac(idx_oui=idx_oui, idx_zone=1, mac=mac, enabled=1)
-
+    result = IRoot(
+        idx_event=1,
+        name=data.random_string(),
+        enabled=1,
+    )
     return result
 
 
@@ -269,31 +265,16 @@ def _prerequisites():
         None
 
     Returns:
-        mac: MAC address for testing
+        None
 
     """
-    # Create database entries
-    event_name = data.random_string()
-    event.insert_row(IEvent(name=event_name, enabled=1))
-    row = event.exists(event_name)
-    zone.insert_row(
-        IZone(
-            idx_event=row.idx_event,
+    # Create result
+    event.insert_row(
+        IEvent(
             name=data.random_string(),
-            company_name=data.random_string(),
-            address_0=data.random_string(),
-            address_1=data.random_string(),
-            address_2=data.random_string(),
-            city=data.random_string(),
-            state=data.random_string(),
-            country=data.random_string(),
-            postal_code=data.random_string(),
-            phone=data.random_string(),
-            notes=data.random_string(),
             enabled=1,
         )
     )
-    oui.insert_row(IOui(oui=None, organization=None, enabled=1))
 
 
 if __name__ == "__main__":

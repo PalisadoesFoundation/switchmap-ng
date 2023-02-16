@@ -5,6 +5,7 @@ import os
 import sys
 import unittest
 
+
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
 ROOT_DIR = os.path.abspath(
@@ -13,7 +14,14 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.path.abspath(
+                            os.path.join(
+                                os.path.abspath(
+                                    os.path.join(EXEC_DIR, os.pardir)
+                                ),
+                                os.pardir,
+                            )
+                        ),
                         os.pardir,
                     )
                 ),
@@ -23,7 +31,10 @@ ROOT_DIR = os.path.abspath(
         os.pardir,
     )
 )
-_EXPECTED = "{0}switchmap-ng{0}tests{0}switchmap_{0}db{0}table".format(os.sep)
+_EXPECTED = """\
+{0}switchmap-ng{0}tests{0}switchmap_{0}server{0}db{0}table""".format(
+    os.sep
+)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
@@ -157,6 +168,43 @@ class TestDbTableEvent(unittest.TestCase):
         result = testimport.exists(updated_row.name)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(updated_row))
+
+    def test_events(self):
+        """Testing function events."""
+        # Initialize key variables
+        inserts = testimport.events()
+        maximum = 10
+        start = len(inserts)
+        stop = start + maximum
+
+        # Insert `maximum` values
+        for _ in range(stop - start):
+            # Create record
+            row = _row()
+
+            # Test before insertion of an initial row
+            result = testimport.exists(row.name)
+            self.assertFalse(result)
+
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.name)
+            self.assertTrue(result)
+
+            # Update list of values inserted
+            inserts.append(result)
+
+        # Test
+        results = testimport.events()
+        results.sort(key=lambda x: (x.name))
+        inserts.sort(key=lambda x: (x.name))
+
+        # Test the length of the results
+        self.assertEqual(len(results), stop)
+        self.assertEqual(len(inserts), stop)
+
+        for key, result in enumerate(results):
+            self.assertEqual(_convert(result), _convert(inserts[key]))
 
     def test__row(self):
         """Testing function _row."""

@@ -80,6 +80,7 @@ def insert_row(rows):
     for row in rows:
         inserts.append(
             Zone(
+                idx_event=row.idx_event,
                 name=(
                     null() if bool(row.name) is False else row.name.encode()
                 ),
@@ -151,6 +152,7 @@ def update_row(idx, row):
         .where(Zone.idx_zone == idx)
         .values(
             {
+                "idx_event": row.idx_event,
                 "name": (
                     null() if bool(row.name) is False else row.name.encode()
                 ),

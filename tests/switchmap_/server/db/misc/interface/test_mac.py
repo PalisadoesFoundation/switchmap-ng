@@ -67,12 +67,14 @@ from switchmap.server.db.table import oui
 from switchmap.server.db.table import mac
 from switchmap.server.db.table import macip
 from switchmap.server.db.table import device
+from switchmap.server.db.table import event
 from switchmap.server.db.table import l1interface
 from switchmap.server.db.table import IMacPort
 from switchmap.server.db.table import IMac
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IOui
 from switchmap.server.db.table import IDevice
+from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IL1Interface
 from switchmap.server.db.table import IMacIp
 from switchmap.server.db import models
@@ -177,9 +179,15 @@ def _prerequisites():
     result = {}
 
     # Insert the necessary rows
+    event_name = data.random_string()
+    zone_name = data.random_string()
+    device_name = data.random_string()
+    event.insert_row(IEvent(name=event_name, enabled=1))
+    row = event.exists(event_name)
     zone.insert_row(
         IZone(
-            name=data.random_string(),
+            idx_event=row.idx_event,
+            name=zone_name,
             company_name=data.random_string(),
             address_0=data.random_string(),
             address_1=data.random_string(),
@@ -193,6 +201,8 @@ def _prerequisites():
             enabled=1,
         )
     )
+    zone_row = zone.exists(zone_name)
+
     oui.insert_row(
         [
             IOui(oui=OUIS[key], organization=value, enabled=1)
@@ -201,15 +211,20 @@ def _prerequisites():
     )
     mac.insert_row(
         [
-            IMac(idx_oui=key + 1, idx_zone=1, mac=value, enabled=1)
+            IMac(
+                idx_oui=key + 1,
+                idx_zone=zone_row.idx_zone,
+                mac=value,
+                enabled=1,
+            )
             for key, value in enumerate(MACS)
         ]
     )
     device.insert_row(
         IDevice(
-            idx_zone=1,
+            idx_zone=zone_row.idx_zone,
             sys_name=data.random_string(),
-            hostname=data.random_string(),
+            hostname=device_name,
             name=data.random_string(),
             sys_description=data.random_string(),
             sys_objectid=data.random_string(),
@@ -218,10 +233,13 @@ def _prerequisites():
             enabled=1,
         )
     )
+    device_row = device.exists(device_name)
+
+    # Insert interfaces
     l1interface.insert_row(
         [
             IL1Interface(
-                idx_device=1,
+                idx_device=device_row.idx_device,
                 ifindex=random.randint(0, 1000000),
                 duplex=random.randint(0, 1000000),
                 ethernet=1,

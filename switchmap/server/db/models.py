@@ -90,6 +90,7 @@ class Root(BASE):
         default=1,
         server_default=text("1"),
     )
+    name = Column(VARBINARY(256), unique=True)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,

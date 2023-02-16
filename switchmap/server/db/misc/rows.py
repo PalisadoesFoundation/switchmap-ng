@@ -9,6 +9,8 @@ from switchmap.server.db.table import ROui
 from switchmap.server.db.table import RVlan
 from switchmap.server.db.table import RVlanPort
 from switchmap.server.db.table import RZone
+from switchmap.server.db.table import REvent
+from switchmap.server.db.table import RRoot
 
 
 def device(row):
@@ -44,6 +46,43 @@ def device(row):
         ),
         sys_uptime=row.sys_uptime,
         last_polled=row.last_polled,
+        enabled=row.enabled,
+        ts_created=row.ts_created,
+        ts_modified=row.ts_modified,
+    )
+    return result
+
+
+def root(row):
+    """Convert table row to tuple.
+    Args:
+        row: Root row
+    Returns:
+        result: RRoot tuple
+    """
+    # Initialize key variables
+    result = RRoot(
+        idx_root=row.idx_root,
+        idx_event=row.idx_event,
+        name=row.name.decode(),
+        enabled=row.enabled,
+        ts_created=row.ts_created,
+        ts_modified=row.ts_modified,
+    )
+    return result
+
+
+def event(row):
+    """Convert table row to tuple.
+    Args:
+        row: Event row
+    Returns:
+        result: REvent tuple
+    """
+    # Initialize key variables
+    result = REvent(
+        idx_event=row.idx_event,
+        name=row.name.decode(),
         enabled=row.enabled,
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
@@ -271,6 +310,7 @@ def zone(row):
     # Initialize key variables
     result = RZone(
         idx_zone=row.idx_zone,
+        idx_event=row.idx_event,
         name=(None if row.name is None else row.name.decode()),
         company_name=(
             None if row.company_name is None else row.company_name.decode()

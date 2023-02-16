@@ -56,6 +56,7 @@ from switchmap.poller.update import topology as testimport
 from switchmap.poller.update import device
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui
+from switchmap.server.db.table import event
 from switchmap.server.db import db
 from switchmap.server.db import models
 from switchmap.server.db.models import VlanPort
@@ -74,12 +75,13 @@ from switchmap.server.db.table import RL1Interface
 from switchmap.server.db.table import RDevice
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IOui
+from switchmap.server.db.table import IEvent
 
 from tests.testlib_ import db as dblib
 from tests.testlib_ import data as datalib
 
 
-def _prerequisites():
+def _polled_data():
     """Create prerequisite data.
 
     Strip out all l1_ keys from the data
@@ -122,8 +124,12 @@ def _reset_db():
     models.create_all_tables()
 
     # Create a zone
+    event_name = data.random_string()
+    event.insert_row(IEvent(name=event_name, enabled=1))
+    row = event.exists(event_name)
     zone.insert_row(
         IZone(
+            idx_event=row.idx_event,
             name=data.random_string(),
             company_name=data.random_string(),
             address_0=data.random_string(),
@@ -192,7 +198,7 @@ class TestPollUpdateTopologyFunctions(unittest.TestCase):
         ]
 
         # Process the device
-        _device = device.Device(_prerequisites())
+        _device = device.Device(_polled_data())
         data = _device.process()
 
         # Process all the pre-requisite updates
@@ -1027,7 +1033,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         ]
 
         # Process the device
-        _device = device.Device(_prerequisites())
+        _device = device.Device(_polled_data())
         data = _device.process()
 
         # Make sure the device exists
@@ -1362,7 +1368,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         ]
 
         # Process the device
-        _device = device.Device(_prerequisites())
+        _device = device.Device(_polled_data())
         data = _device.process()
 
         # Make sure the device exists
@@ -1629,7 +1635,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         ]
 
         # Process the device
-        _device = device.Device(_prerequisites())
+        _device = device.Device(_polled_data())
         data = _device.process()
 
         # Make sure the device exists
@@ -1780,7 +1786,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         ]
 
         # Process the device
-        _device = device.Device(_prerequisites())
+        _device = device.Device(_polled_data())
         data = _device.process()
 
         # Make sure the device exists
@@ -2026,7 +2032,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         ]
 
         # Process the device
-        _device = device.Device(_prerequisites())
+        _device = device.Device(_polled_data())
         data = _device.process()
 
         # Make sure the device exists
@@ -2268,7 +2274,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         ]
 
         # Process the device
-        _device = device.Device(_prerequisites())
+        _device = device.Device(_polled_data())
         data = _device.process()
 
         # Make sure the device exists

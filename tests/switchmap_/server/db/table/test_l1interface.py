@@ -58,10 +58,12 @@ CONFIG.save()
 from switchmap.server.db.table import l1interface as testimport
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import device
+from switchmap.server.db.table import event
 from switchmap.server.db.models import L1Interface
 from switchmap.server.db.table import IL1Interface
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IDevice
+from switchmap.server.db.table import IEvent
 from switchmap.server.db import models
 
 from tests.testlib_ import db
@@ -139,6 +141,9 @@ class TestDbTableL1interface(unittest.TestCase):
 
     def test_ifindexes(self):
         """Testing function ifindexes."""
+        # Initialize key variables
+        maximum = 10
+
         # Create record
         row = _row()
 
@@ -146,16 +151,39 @@ class TestDbTableL1interface(unittest.TestCase):
         result = testimport.exists(row.idx_device, row.ifindex)
         self.assertFalse(result)
 
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_device, row.ifindex)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(row))
+        # Get existing values
+        inserts = testimport.ifindexes(row.idx_device)
+        start = len(inserts)
+        stop = start + maximum
 
-        # Test after insertion of an initial row
-        result = testimport.ifindexes(row.idx_device)
-        fixed_result = [_convert(_) for _ in result]
-        self.assertTrue(_convert(row) in fixed_result)
+        # Insert `maximum` values
+        for _ in range(stop - start):
+            # Create record
+            row = _row()
+
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_device, row.ifindex)
+            self.assertFalse(result)
+
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.idx_device, row.ifindex)
+            self.assertTrue(result)
+
+            # Update list of values inserted
+            inserts.append(result)
+
+        # Test
+        results = testimport.ifindexes(row.idx_device)
+        results.sort(key=lambda x: (x.ifindex))
+        inserts.sort(key=lambda x: (x.ifindex))
+
+        # Test the length of the results
+        self.assertEqual(len(results), stop)
+        self.assertEqual(len(inserts), stop)
+
+        for key, result in enumerate(results):
+            self.assertEqual(_convert(result), _convert(inserts[key]))
 
     def test_findifalias(self):
         """Testing function findifalias."""
@@ -329,8 +357,12 @@ def _prerequisites():
 
     """
     # Create result
+    event_name = data.random_string()
+    event.insert_row(IEvent(name=event_name, enabled=1))
+    row = event.exists(event_name)
     zone.insert_row(
         IZone(
+            idx_event=row.idx_event,
             name=data.random_string(),
             company_name=data.random_string(),
             address_0=data.random_string(),

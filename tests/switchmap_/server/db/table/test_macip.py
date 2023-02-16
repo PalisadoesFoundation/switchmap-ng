@@ -60,10 +60,12 @@ from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui
 from switchmap.server.db.table import mac
 from switchmap.server.db.table import device
+from switchmap.server.db.table import event
 from switchmap.server.db.models import MacIp
 from switchmap.server.db.table import IMacIp
 from switchmap.server.db.table import IMac
 from switchmap.server.db.table import IZone
+from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IOui
 from switchmap.server.db.table import IDevice
 from switchmap.server.db import models
@@ -314,8 +316,12 @@ def _prerequisites():
 
     """
     # Create result
+    event_name = data.random_string()
+    event.insert_row(IEvent(name=event_name, enabled=1))
+    row = event.exists(event_name)
     zone.insert_row(
         IZone(
+            idx_event=row.idx_event,
             name=data.random_string(),
             company_name=data.random_string(),
             address_0=data.random_string(),

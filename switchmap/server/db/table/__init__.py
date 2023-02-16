@@ -9,13 +9,23 @@ IOui = namedtuple("IOui", "oui organization enabled")
 
 RZone = namedtuple(
     "RZone",
-    """idx_zone name company_name address_0 address_1 address_2 city \
-state country postal_code phone notes enabled ts_modified ts_created""",
+    """idx_zone idx_event name company_name address_0 address_1 address_2 \
+city state country postal_code phone notes enabled ts_modified ts_created""",
 )
 IZone = namedtuple(
     "IZone",
-    """name company_name address_0 address_1 address_2 city state country \
-postal_code phone notes enabled""",
+    """idx_event name company_name address_0 address_1 address_2 city \
+state country postal_code phone notes enabled""",
+)
+
+RRoot = namedtuple(
+    "RRoot",
+    "idx_root idx_event name enabled ts_modified ts_created",
+)
+
+IRoot = namedtuple(
+    "IRoot",
+    "idx_event name enabled",
 )
 
 REvent = namedtuple("REvent", "idx_event name enabled ts_modified ts_created")

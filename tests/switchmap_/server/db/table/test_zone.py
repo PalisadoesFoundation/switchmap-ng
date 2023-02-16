@@ -55,7 +55,9 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.server.db.table import zone as testimport
+from switchmap.server.db.table import event
 from switchmap.server.db.table import IZone
+from switchmap.server.db.table import IEvent
 from switchmap.server.db import models
 
 from tests.testlib_ import db
@@ -82,6 +84,9 @@ class TestDbTableZone(unittest.TestCase):
 
         # Create database tables
         models.create_all_tables()
+
+        # Pollinate db with prerequisites
+        _prerequisites()
 
     @classmethod
     def tearDownClass(cls):
@@ -161,6 +166,7 @@ class TestDbTableZone(unittest.TestCase):
         # Do an update
         idx = result.idx_zone
         updated_row = IZone(
+            idx_event=row.idx_event,
             name=data.random_string(),
             company_name=row.company_name,
             address_0=row.address_0,
@@ -199,6 +205,7 @@ def _convert(row):
     """
     # Do conversion
     result = IZone(
+        idx_event=row.idx_event,
         name=row.name,
         company_name=row.company_name,
         address_0=row.address_0,
@@ -226,7 +233,11 @@ def _row():
 
     """
     # Create result
+    event_name = data.random_string()
+    event.insert_row(IEvent(name=event_name, enabled=1))
+    row = event.exists(event_name)
     result = IZone(
+        idx_event=row.idx_event,
         name=data.random_string(),
         company_name=data.random_string(),
         address_0=data.random_string(),
@@ -241,6 +252,20 @@ def _row():
         enabled=1,
     )
     return result
+
+
+def _prerequisites():
+    """Create prerequisite rows.
+
+    Args:
+        None
+
+    Returns:
+        None
+
+    """
+    # Create result
+    event.insert_row(IEvent(name=data.random_string(), enabled=1))
 
 
 if __name__ == "__main__":

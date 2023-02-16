@@ -3,7 +3,7 @@
 from sqlalchemy import select, update
 
 # Import project libraries
-from switchmap.server.db.import db
+from switchmap.server.db import db
 from switchmap.server.db.models import Event
 from switchmap.server.db.misc import rows as _rows
 
@@ -15,7 +15,7 @@ def idx_exists(idx):
         idx: idx_event
 
     Returns:
-        result: RZone object
+        result: REvent object
 
     """
     # Initialize key variables
@@ -24,7 +24,7 @@ def idx_exists(idx):
 
     # Get data
     statement = select(Event).where(Event.idx_event == idx)
-    rows = db.db_select_row(1122, statement)
+    rows = db.db_select_row(1032, statement)
 
     # Return
     for row in rows:
@@ -107,3 +107,27 @@ def update_row(idx, row):
         )
     )
     db.db_update(1111, statement)
+
+
+def events():
+    """Get list of Events.
+
+    Args:
+        idx: idx_event
+
+    Returns:
+        result: REvent object
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get data
+    statement = select(Event)
+    rows = db.db_select_row(1122, statement)
+
+    # Return
+    for row in rows:
+        result.append(_rows.event(row))
+    return result

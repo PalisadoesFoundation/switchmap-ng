@@ -59,6 +59,7 @@ CONFIG.save()
 
 from switchmap.server.db.table import macport
 from switchmap.server.db.table import zone
+from switchmap.server.db.table import event
 from switchmap.server.db.table import oui
 from switchmap.server.db.table import mac
 from switchmap.server.db.table import macip
@@ -70,6 +71,7 @@ from switchmap.server.db.table import IMac
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IOui
 from switchmap.server.db.table import IDevice
+from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IL1Interface
 from switchmap.server.db.table import IMacIp
 from switchmap.server.db import models
@@ -191,9 +193,14 @@ def _prerequisites():
 
     """
     # Insert the necessary rows
+    event_name = data.random_string()
+    zone_name = data.random_string()
+    event.insert_row(IEvent(name=event_name, enabled=1))
+    row = event.exists(event_name)
     zone.insert_row(
         IZone(
-            name=data.random_string(),
+            idx_event=row.idx_event,
+            name=zone_name,
             company_name=data.random_string(),
             address_0=data.random_string(),
             address_1=data.random_string(),
@@ -207,6 +214,8 @@ def _prerequisites():
             enabled=1,
         )
     )
+    zone_row = zone.exists(zone_name)
+
     oui.insert_row(
         [
             IOui(oui=OUIS[key], organization=value, enabled=1)
@@ -221,7 +230,7 @@ def _prerequisites():
     )
     device.insert_row(
         IDevice(
-            idx_zone=1,
+            idx_zone=zone_row.idx_zone,
             sys_name=data.random_string(),
             hostname=data.random_string(),
             name=data.random_string(),
