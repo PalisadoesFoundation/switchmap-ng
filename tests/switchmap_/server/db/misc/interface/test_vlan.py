@@ -4,7 +4,6 @@
 import os
 import sys
 import unittest
-import random
 
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
 ROOT_DIR = os.path.abspath(
@@ -64,22 +63,9 @@ from switchmap.server.db.table import vlan
 from switchmap.server.db import models
 
 from tests.testlib_ import db
-from tests.testlib_ import data
 from tests.testlib_ import interface
 
 from switchmap.server.db.misc.interface import vlan as testimport
-
-MAXMAC = 100
-OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
-MACS = ["{0}{1}".format(_, data.mac()[:6]) for _ in OUIS]
-HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[
-    :MAXMAC
-]
-IFALIASES = ["ALIAS_{0}".format(data.random_string()) for _ in range(MAXMAC)]
-ORGANIZATIONS = ["ORG_{0}".format(data.random_string()) for _ in range(MAXMAC)]
-IPADDRESSES = list(set([data.ip_() for _ in range(MAXMAC * 2)]))[:MAXMAC]
-IDX_MACS = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
-RANDOM_INDEX = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
 
 
 class TestFunctions(unittest.TestCase):

@@ -56,14 +56,8 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.server.db.table import l1interface as testimport
-from switchmap.server.db.table import zone
-from switchmap.server.db.table import device
-from switchmap.server.db.table import event
 from switchmap.server.db.models import L1Interface
 from switchmap.server.db.table import IL1Interface
-from switchmap.server.db.table import IZone
-from switchmap.server.db.table import IDevice
-from switchmap.server.db.table import IEvent
 from switchmap.server.db import models
 
 from tests.testlib_ import db
@@ -92,7 +86,7 @@ class TestDbTableL1interface(unittest.TestCase):
         models.create_all_tables()
 
         # Pollinate db with prerequisites
-        _prerequisites()
+        db.populate()
 
     @classmethod
     def tearDownClass(cls):
@@ -344,52 +338,6 @@ def _row():
         enabled=1,
     )
     return result
-
-
-def _prerequisites():
-    """Create prerequisite rows.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-    # Create result
-    event_name = data.random_string()
-    event.insert_row(IEvent(name=event_name, enabled=1))
-    row = event.exists(event_name)
-    zone.insert_row(
-        IZone(
-            idx_event=row.idx_event,
-            name=data.random_string(),
-            company_name=data.random_string(),
-            address_0=data.random_string(),
-            address_1=data.random_string(),
-            address_2=data.random_string(),
-            city=data.random_string(),
-            state=data.random_string(),
-            country=data.random_string(),
-            postal_code=data.random_string(),
-            phone=data.random_string(),
-            notes=data.random_string(),
-            enabled=1,
-        )
-    )
-    device.insert_row(
-        IDevice(
-            idx_zone=1,
-            sys_name=data.random_string(),
-            hostname=data.random_string(),
-            name=data.random_string(),
-            sys_description=data.random_string(),
-            sys_objectid=data.random_string(),
-            sys_uptime=random.randint(0, 1000000),
-            last_polled=random.randint(0, 1000000),
-            enabled=1,
-        )
-    )
 
 
 if __name__ == "__main__":

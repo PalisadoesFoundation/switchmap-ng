@@ -56,8 +56,6 @@ CONFIG.save()
 
 from switchmap.server.db.table import root as testimport
 from switchmap.server.db.table import IRoot
-from switchmap.server.db.table import IEvent
-from switchmap.server.db.table import event
 from switchmap.server.db import models
 
 from tests.testlib_ import db
@@ -86,7 +84,7 @@ class TestDbTableRoot(unittest.TestCase):
         models.create_all_tables()
 
         # Pollinate db with prerequisites
-        _prerequisites()
+        db.populate()
 
     @classmethod
     def tearDownClass(cls):
@@ -256,25 +254,6 @@ def _row():
         enabled=1,
     )
     return result
-
-
-def _prerequisites():
-    """Create prerequisite rows.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-    # Create result
-    event.insert_row(
-        IEvent(
-            name=data.random_string(),
-            enabled=1,
-        )
-    )
 
 
 if __name__ == "__main__":

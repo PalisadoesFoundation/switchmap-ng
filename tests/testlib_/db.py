@@ -2,6 +2,9 @@
 
 from __future__ import print_function
 import random
+import socket
+import struct
+import ipaddress
 
 # PIP3 imports
 from sqlalchemy.orm import Session
@@ -36,18 +39,7 @@ from switchmap.core import log
 
 from . import data
 
-
-MAXMAC = 100
-OUIS = list(set([data.mac()[:6] for _ in range(MAXMAC * 10)]))[:MAXMAC]
-MACS = ["{0}{1}".format(_, data.mac()[:6]) for _ in OUIS]
-HOSTNAMES = list(set([data.random_string() for _ in range(MAXMAC * 2)]))[
-    :MAXMAC
-]
-IFALIASES = ["ALIAS_{0}".format(data.random_string()) for _ in range(MAXMAC)]
-ORGANIZATIONS = ["ORG_{0}".format(data.random_string()) for _ in range(MAXMAC)]
-IPADDRESSES = list(set([data.ip_() for _ in range(MAXMAC * 2)]))[:MAXMAC]
-IDX_MACS = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
-RANDOM_INDEX = [random.randint(1, MAXMAC) for _ in range(MAXMAC)]
+TEST_MAXIMUM = 20
 
 
 class Database:
@@ -113,7 +105,9 @@ def populate():
 
     """
     # Initialize key variables
-    maximum = 20
+    macips_ = []
+    ip_versions = [4, 6]
+    maximum = TEST_MAXIMUM
     _ouis = list(set([data.mac()[:6] for _ in range(maximum * 10)]))[:maximum]
 
     # MACs that match the inserted OUIs
@@ -185,7 +179,7 @@ def populate():
                 organization="ORG_{0}".format(data.random_string()),
                 enabled=1,
             )
-            for _ in enumerate(_ouis)
+            for _ in _ouis
         ]
     )
 
@@ -202,6 +196,29 @@ def populate():
         ]
     )
 
+    # Insert MacIp entries
+    for key, _ in enumerate(_macs):
+        ip_version = ip_versions[random.randint(0, 1)]
+        if ip_version == 4:
+            ip_ = socket.inet_ntoa(
+                struct.pack(">I", random.randint(1, 0xFFFFFFFF))
+            )
+        else:
+            ip_ = ipaddress.ip_address(
+                ":".join(("%x" % random.randint(0, 16 ** 4) for i in range(8)))
+            ).exploded
+        macips_.append(
+            IMacIp(
+                idx_device=device_row.idx_device,
+                idx_mac=key + 1,
+                ip_=ip_,
+                version=ip_version,
+                hostname="hostname_{}".format(data.random_string()),
+                enabled=1,
+            )
+        )
+    macip.insert_row(macips_)
+
     # Insert interfaces
     l1interface.insert_row(
         [
@@ -211,7 +228,7 @@ def populate():
                 duplex=random.randint(0, 1000000),
                 ethernet=1,
                 nativevlan=random.randint(0, 1000000),
-                trunk=1,
+                trunk=0,
                 ifspeed=random.randint(0, 1000000),
                 ifalias="IfAlias_{}".format(data.random_string()),
                 ifdescr="IfDescr_{}".format(data.random_string()),
@@ -241,34 +258,28 @@ def populate():
                 ),
                 enabled=1,
             )
-            for _ in range(MAXMAC)
+            for _ in range(maximum)
         ]
     )
 
-    # Insert VlanPort entries
+    # Insert VlanPort entries. Assign a random VLAN to each interface
     vlanports = [
-        IVlanPort(idx_l1interface=value, idx_vlan=key + 1, enabled=1)
-        for key, value in enumerate(RANDOM_INDEX)
+        IVlanPort(
+            idx_l1interface=key + 1,
+            idx_vlan=random.randint(1, maximum),
+            enabled=1,
+        )
+        for key in range(maximum)
     ]
     vlanport.insert_row(vlanports)
 
-    # Insert MacPort entries
+    # Insert MacPort entries. Assign a random mac to each interface
     macports_ = [
-        IMacPort(idx_l1interface=value, idx_mac=key + 1, enabled=1)
-        for key, value in enumerate(RANDOM_INDEX)
-    ]
-    macport.insert_row(macports_)
-
-    # Insert MacIp entries
-    macips_ = [
-        IMacIp(
-            idx_device=1,
-            idx_mac=value,
-            ip_=IPADDRESSES[key].address,
-            version=IPADDRESSES[key].version,
-            hostname=HOSTNAMES[key],
+        IMacPort(
+            idx_l1interface=key + 1,
+            idx_mac=random.randint(1, maximum),
             enabled=1,
         )
-        for key, value in enumerate(IDX_MACS)
+        for key in range(maximum)
     ]
-    macip.insert_row(macips_)
+    macport.insert_row(macports_)

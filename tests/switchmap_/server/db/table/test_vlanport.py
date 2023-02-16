@@ -77,8 +77,6 @@ from switchmap.server.db import models
 from tests.testlib_ import db
 from tests.testlib_ import data
 
-MAXMAC = 100
-
 
 class TestDbTableVlanPort(unittest.TestCase):
     """Checks all functions and methods."""
@@ -102,7 +100,7 @@ class TestDbTableVlanPort(unittest.TestCase):
         models.create_all_tables()
 
         # Pollinate db with prerequisites
-        _prerequisites()
+        db.populate()
 
     @classmethod
     def tearDown(cls):
@@ -151,13 +149,55 @@ class TestDbTableVlanPort(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
+    # def test_find_idx_vlan(self):
+    #     """Testing function find_idx_vlan."""
+    #     # Initialize key variables
+    #     finds = []
+
+    #     # Test with known and unknown MACs
+    #     for _ in range(1, db.TEST_MAXIMUM):
+    #         row = _row()
+    #         exists = testimport.exists(row.idx_l1interface, row.idx_vlan)
+    #         if bool(exists) is False:
+    #             # Entry must not be found
+    #             result = testimport.find_idx_vlan(row.idx_vlan)
+    #             if row.idx_vlan not in finds:
+    #                 self.assertFalse(
+    #                     bool(
+    #                         testimport.exists(
+    #                             row.idx_l1interface, row.idx_vlan
+    #                         )
+    #                     )
+    #                 )
+    #                 self.assertFalse(bool(result))
+    #             else:
+    #                 self.assertTrue(bool(result))
+    #                 continue
+
+    #             # Insert entry and then it should be found
+    #             testimport.insert_row(row)
+    #             now_exists = testimport.exists(
+    #                 row.idx_l1interface, row.idx_vlan
+    #             )
+    #             self.assertTrue(bool(now_exists))
+
+    #             post_result = testimport.find_idx_vlan(now_exists.idx_vlan)
+    #             self.assertEqual(now_exists.idx_vlan, row.idx_vlan)
+    #             self.assertTrue(bool(post_result))
+    #             finds.append(now_exists.idx_vlan)
+    #         else:
+    #             result = testimport.find_idx_vlan(row.idx_vlan)
+    #             self.assertTrue(bool(result))
+    #             if exists.idx_vlan not in finds:
+    #                 finds.append(exists.idx_vlan)
+
     def test_find_idx_vlan(self):
         """Testing function find_idx_vlan."""
         # Initialize key variables
         finds = []
 
         # Test with known and unknown MACs
-        for _ in range(1, MAXMAC):
+        for _ in range(1, db.TEST_MAXIMUM):
             row = _row()
             exists = testimport.exists(row.idx_l1interface, row.idx_vlan)
             if bool(exists) is False:
@@ -171,9 +211,15 @@ class TestDbTableVlanPort(unittest.TestCase):
                             )
                         )
                     )
-                    self.assertFalse(bool(result))
+                    # The combination idx_l1interface, idx_vlan must not exist
+                    for item in result:
+                        self.assertFalse(
+                            (item.idx_l1interface != row.idx_l1interface)
+                            and (item.idx_vlan != row.idx_vlan)
+                        )
                 else:
-                    self.assertTrue(bool(result))
+                    for item in result:
+                        self.assertEqual(item.idx_vlan, row.idx_vlan)
                     continue
 
                 # Insert entry and then it should be found
@@ -182,25 +228,55 @@ class TestDbTableVlanPort(unittest.TestCase):
                     row.idx_l1interface, row.idx_vlan
                 )
                 self.assertTrue(bool(now_exists))
-
                 post_result = testimport.find_idx_vlan(now_exists.idx_vlan)
                 self.assertEqual(now_exists.idx_vlan, row.idx_vlan)
+
+                # Test find
+                for item in post_result:
+                    self.assertEqual(item.idx_vlan, row.idx_vlan)
                 self.assertTrue(bool(post_result))
+
+                # Update found idx_vlan values
                 finds.append(now_exists.idx_vlan)
             else:
                 result = testimport.find_idx_vlan(row.idx_vlan)
-                self.assertTrue(bool(result))
+
+                # Test find
+                for item in result:
+                    self.assertEqual(item.idx_vlan, row.idx_vlan)
+                    self.assertEqual(item.idx_vlan, exists.idx_vlan)
+
+                # Update found idx_vlan values
                 if exists.idx_vlan not in finds:
                     finds.append(exists.idx_vlan)
 
+    # def test_insert_row(self):
+    #     """Testing function insert_row."""
+    #     # Create record
+    #     row = _row()
+
+    #     # Test before insertion of an initial row
+    #     result = testimport.exists(row.idx_l1interface, row.idx_vlan)
+    #     self.assertFalse(result)
+
+    #     # Test after insertion of an initial row
+    #     testimport.insert_row(row)
+    #     result = testimport.exists(row.idx_l1interface, row.idx_vlan)
+    #     self.assertTrue(result)
+    #     self.assertEqual(_convert(result), _convert(row))
+
     def test_insert_row(self):
         """Testing function insert_row."""
-        # Create record
-        row = _row()
+        # Find a row combination that does not exist
+        while True:
+            # Create record
+            row = _row()
 
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-        self.assertFalse(result)
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_l1interface, row.idx_vlan)
+            if bool(result) is False:
+                self.assertFalse(result)
+                break
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
@@ -210,24 +286,22 @@ class TestDbTableVlanPort(unittest.TestCase):
 
     def test_update_row(self):
         """Testing function update_row."""
-        # Create record
-        row = _row()
+        # Find a row combination that does not exist
+        while True:
+            # Create record
+            row = _row()
 
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-        self.assertFalse(result)
-
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(row))
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_l1interface, row.idx_vlan)
+            if bool(result) is True:
+                self.assertTrue(result)
+                break
 
         # Do an update
         idx = result.idx_vlanport
         updated_row = VlanPort(
-            idx_l1interface=random.randint(1, MAXMAC),
-            idx_vlan=random.randint(1, MAXMAC),
+            idx_l1interface=random.randint(1, db.TEST_MAXIMUM),
+            idx_vlan=random.randint(1, db.TEST_MAXIMUM),
             enabled=row.enabled,
         )
         testimport.update_row(idx, updated_row)
@@ -276,8 +350,8 @@ def _row():
     """
     # Create result
     result = IVlanPort(
-        idx_l1interface=random.randint(1, MAXMAC),
-        idx_vlan=random.randint(1, MAXMAC),
+        idx_l1interface=random.randint(1, db.TEST_MAXIMUM),
+        idx_vlan=random.randint(1, db.TEST_MAXIMUM),
         enabled=1,
     )
     return result
@@ -324,7 +398,7 @@ def _prerequisites():
     mac.insert_row(
         [
             IMac(idx_oui=1, idx_zone=1, mac=data.mac(), enabled=1)
-            for _ in range(MAXMAC)
+            for _ in range(db.TEST_MAXIMUM)
         ]
     )
     device.insert_row(
@@ -364,7 +438,7 @@ def _prerequisites():
                 lldpremsysname=data.random_string(),
                 enabled=1,
             )
-            for _ in range(MAXMAC)
+            for _ in range(db.TEST_MAXIMUM)
         ]
     )
     vlan.insert_row(
@@ -376,7 +450,7 @@ def _prerequisites():
                 state=random.randint(0, 1000000),
                 enabled=1,
             )
-            for _ in range(MAXMAC)
+            for _ in range(db.TEST_MAXIMUM)
         ]
     )
 

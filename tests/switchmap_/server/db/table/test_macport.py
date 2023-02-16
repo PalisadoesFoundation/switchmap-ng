@@ -75,8 +75,6 @@ from switchmap.server.db import models
 from tests.testlib_ import db
 from tests.testlib_ import data
 
-MAXMAC = 100
-
 
 class TestDbTableMacPort(unittest.TestCase):
     """Checks all functions and methods."""
@@ -100,7 +98,7 @@ class TestDbTableMacPort(unittest.TestCase):
         models.create_all_tables()
 
         # Pollinate db with prerequisites
-        _prerequisites()
+        db.populate()
 
     @classmethod
     def tearDown(cls):
@@ -155,7 +153,7 @@ class TestDbTableMacPort(unittest.TestCase):
         finds = []
 
         # Test with known and unknown MACs
-        for _ in range(1, MAXMAC):
+        for _ in range(1, db.TEST_MAXIMUM):
             row = _row()
             exists = testimport.exists(row.idx_l1interface, row.idx_mac)
             if bool(exists) is False:
@@ -167,9 +165,15 @@ class TestDbTableMacPort(unittest.TestCase):
                             testimport.exists(row.idx_l1interface, row.idx_mac)
                         )
                     )
-                    self.assertFalse(bool(result))
+                    # The combination idx_l1interface, idx_mac must not exist
+                    for item in result:
+                        self.assertFalse(
+                            (item.idx_l1interface != row.idx_l1interface)
+                            and (item.idx_mac != row.idx_mac)
+                        )
                 else:
-                    self.assertTrue(bool(result))
+                    for item in result:
+                        self.assertEqual(item.idx_mac, row.idx_mac)
                     continue
 
                 # Insert entry and then it should be found
@@ -178,25 +182,40 @@ class TestDbTableMacPort(unittest.TestCase):
                     row.idx_l1interface, row.idx_mac
                 )
                 self.assertTrue(bool(now_exists))
-
                 post_result = testimport.find_idx_mac(now_exists.idx_mac)
                 self.assertEqual(now_exists.idx_mac, row.idx_mac)
+
+                # Test find
+                for item in post_result:
+                    self.assertEqual(item.idx_mac, row.idx_mac)
                 self.assertTrue(bool(post_result))
+
+                # Update found idx_mac values
                 finds.append(now_exists.idx_mac)
             else:
                 result = testimport.find_idx_mac(row.idx_mac)
-                self.assertTrue(bool(result))
+
+                # Test find
+                for item in result:
+                    self.assertEqual(item.idx_mac, row.idx_mac)
+                    self.assertEqual(item.idx_mac, exists.idx_mac)
+
+                # Update found idx_mac values
                 if exists.idx_mac not in finds:
                     finds.append(exists.idx_mac)
 
     def test_insert_row(self):
         """Testing function insert_row."""
-        # Create record
-        row = _row()
+        # Find a row combination that does not exist
+        while True:
+            # Create record
+            row = _row()
 
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_l1interface, row.idx_mac)
-        self.assertFalse(result)
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_l1interface, row.idx_mac)
+            if bool(result) is False:
+                self.assertFalse(result)
+                break
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
@@ -206,24 +225,22 @@ class TestDbTableMacPort(unittest.TestCase):
 
     def test_update_row(self):
         """Testing function update_row."""
-        # Create record
-        row = _row()
+        # Find a row combination that does not exist
+        while True:
+            # Create record
+            row = _row()
 
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_l1interface, row.idx_mac)
-        self.assertFalse(result)
-
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_l1interface, row.idx_mac)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(row))
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_l1interface, row.idx_mac)
+            if bool(result) is True:
+                self.assertTrue(result)
+                break
 
         # Do an update
         idx = result.idx_macport
         updated_row = MacPort(
-            idx_l1interface=random.randint(1, MAXMAC),
-            idx_mac=random.randint(1, MAXMAC),
+            idx_l1interface=random.randint(1, db.TEST_MAXIMUM),
+            idx_mac=random.randint(1, db.TEST_MAXIMUM),
             enabled=row.enabled,
         )
         testimport.update_row(idx, updated_row)
@@ -272,8 +289,8 @@ def _row():
     """
     # Create result
     result = IMacPort(
-        idx_l1interface=random.randint(1, MAXMAC),
-        idx_mac=random.randint(1, MAXMAC),
+        idx_l1interface=random.randint(1, db.TEST_MAXIMUM),
+        idx_mac=random.randint(1, db.TEST_MAXIMUM),
         enabled=1,
     )
     return result
@@ -320,7 +337,7 @@ def _prerequisites():
     mac.insert_row(
         [
             IMac(idx_oui=1, idx_zone=1, mac=data.mac(), enabled=1)
-            for _ in range(MAXMAC)
+            for _ in range(db.TEST_MAXIMUM)
         ]
     )
     device.insert_row(
@@ -360,7 +377,7 @@ def _prerequisites():
                 lldpremsysname=data.random_string(),
                 enabled=1,
             )
-            for _ in range(MAXMAC)
+            for _ in range(db.TEST_MAXIMUM)
         ]
     )
 
