@@ -104,12 +104,12 @@ class TestDbTableDevice(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        nonexistent = testimport.exists(row.hostname)
+        nonexistent = testimport.exists(row.idx_zone, row.hostname)
         self.assertFalse(nonexistent)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        preliminary_result = testimport.exists(row.hostname)
+        preliminary_result = testimport.exists(row.idx_zone, row.hostname)
         self.assertTrue(preliminary_result)
         self.assertEqual(_convert(preliminary_result), _convert(row))
 
@@ -124,12 +124,12 @@ class TestDbTableDevice(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.hostname)
+        result = testimport.exists(row.idx_zone, row.hostname)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.hostname)
+        result = testimport.exists(row.idx_zone, row.hostname)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
@@ -139,12 +139,12 @@ class TestDbTableDevice(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.hostname)
+        result = testimport.exists(row.idx_zone, row.hostname)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.hostname)
+        result = testimport.exists(row.idx_zone, row.hostname)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
@@ -154,12 +154,12 @@ class TestDbTableDevice(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.hostname)
+        result = testimport.exists(row.idx_zone, row.hostname)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.hostname)
+        result = testimport.exists(row.idx_zone, row.hostname)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
@@ -179,7 +179,7 @@ class TestDbTableDevice(unittest.TestCase):
         testimport.update_row(idx, updated_row)
 
         # Test the update
-        result = testimport.exists(updated_row.hostname)
+        result = testimport.exists(updated_row.idx_zone, updated_row.hostname)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(updated_row))
 

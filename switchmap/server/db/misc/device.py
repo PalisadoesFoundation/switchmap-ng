@@ -19,10 +19,11 @@ from switchmap.server.db.misc.interface import vlan
 class Device:
     """Get all Device data."""
 
-    def __init__(self, hostname):
+    def __init__(self, idx_zone, hostname):
         """Initialize class.
 
         Args:
+            idx_zone: Zone index to which the data belongs
             hostname: Hostname to process
 
         Returns:
@@ -31,7 +32,7 @@ class Device:
         """
         # Initialize key variables
         self._hostname = hostname
-        self._device = device.exists(self._hostname)
+        self._device = device.exists(idx_zone, self._hostname)
 
     def data(self):
         """Return complete device.

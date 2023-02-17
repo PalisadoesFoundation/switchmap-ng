@@ -156,6 +156,8 @@ class TestPollUpdateTopologyFunctions(unittest.TestCase):
     # General object setup
     #########################################################################
 
+    idx_zone = 1
+
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
@@ -202,7 +204,7 @@ class TestPollUpdateTopologyFunctions(unittest.TestCase):
         data = _device.process()
 
         # Process all the pre-requisite updates
-        testimport.device(data)
+        testimport.device(self.idx_zone, data)
 
         # Verify macport data
         statement = select(Device)
@@ -253,6 +255,8 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
     #########################################################################
     # General object setup
     #########################################################################
+
+    idx_zone = 1
 
     @classmethod
     def setUpClass(cls):
@@ -1037,7 +1041,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         data = _device.process()
 
         # Make sure the device exists
-        exists = testimport.device(data)
+        exists = testimport.device(self.idx_zone, data)
 
         # Test transaction
         tester = testimport.Topology(exists, data)
@@ -1372,7 +1376,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         data = _device.process()
 
         # Make sure the device exists
-        exists = testimport.device(data)
+        exists = testimport.device(self.idx_zone, data)
 
         # Test transaction
         tester = testimport.Topology(exists, data)
@@ -1639,7 +1643,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         data = _device.process()
 
         # Make sure the device exists
-        exists = testimport.device(data)
+        exists = testimport.device(self.idx_zone, data)
 
         # Test transaction
         tester = testimport.Topology(exists, data)
@@ -1790,7 +1794,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         data = _device.process()
 
         # Make sure the device exists
-        exists = testimport.device(data)
+        exists = testimport.device(self.idx_zone, data)
 
         # Test transaction
         tester = testimport.Topology(exists, data, dns=False)
@@ -2036,7 +2040,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         data = _device.process()
 
         # Make sure the device exists
-        exists = testimport.device(data)
+        exists = testimport.device(self.idx_zone, data)
 
         # Test transaction
         tester = testimport.Topology(exists, data)
@@ -2278,7 +2282,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         data = _device.process()
 
         # Make sure the device exists
-        exists = testimport.device(data)
+        exists = testimport.device(self.idx_zone, data)
 
         # Test transaction
         tester = testimport.Topology(exists, data)

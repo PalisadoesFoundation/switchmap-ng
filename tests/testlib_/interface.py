@@ -112,7 +112,7 @@ def prerequisites():
             enabled=1,
         )
     )
-    device_row = device.exists(device_name)
+    device_row = device.exists(zone_row.idx_zone, device_name)
 
     # Insert VLANs
     vlans = [

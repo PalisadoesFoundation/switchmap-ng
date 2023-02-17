@@ -32,11 +32,12 @@ from switchmap.server.db.table import (
 )
 
 
-def process(data, dns=True):
+def process(data, idx_zone, dns=True):
     """Process data received from a device.
 
     Args:
         data: Device data (dict)
+        idx_zone: Zone index to which the data belongs
         dns: Do DNS lookups if True
 
     Returns:
@@ -49,15 +50,16 @@ def process(data, dns=True):
         yaml.dump(data, outfile, default_flow_style=False)
 
     # Process the device
-    meta = device(data)
+    meta = device(idx_zone, data)
     _topology = Topology(meta, data, dns=dns)
     _topology.process()
 
 
-def device(data):
+def device(idx_zone, data):
     """Update the Device DB table.
 
     Args:
+        idx_zone: Zone index to which the data belongs
         data: Device data (dict)
 
     Returns:
@@ -68,7 +70,7 @@ def device(data):
     exists = False
     hostname = data["misc"]["host"]
     row = IDevice(
-        idx_zone=1,
+        idx_zone=idx_zone,
         hostname=hostname,
         name=hostname,
         sys_name=data["system"]["SNMPv2-MIB"]["sysName"][0],
@@ -84,12 +86,12 @@ def device(data):
     log.log2debug(1080, log_message)
 
     # Update the database
-    exists = _device.exists(row.hostname)
+    exists = _device.exists(row.idx_zone, row.hostname)
     if bool(exists) is True:
         _device.update_row(exists.idx_device, row)
     else:
         _device.insert_row(row)
-        exists = _device.exists(row.hostname)
+        exists = _device.exists(row.idx_zone, row.hostname)
 
     # Log
     log_message = "Updated Device table for host {}".format(hostname)

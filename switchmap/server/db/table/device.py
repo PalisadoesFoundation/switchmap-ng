@@ -1,6 +1,6 @@
 """Module for querying the Device table."""
 
-from sqlalchemy import select, update, null
+from sqlalchemy import select, update, null, and_
 
 # Import project libraries
 from switchmap.server.db import db
@@ -33,10 +33,11 @@ def idx_exists(idx):
     return result
 
 
-def exists(hostname):
+def exists(idx_zone, hostname):
     """Determine whether hostname exists in the Device table.
 
     Args:
+        idx_zone: Zone index
         hostname: Device
 
     Returns:
@@ -48,7 +49,11 @@ def exists(hostname):
     rows = []
 
     # Get hostname from database
-    statement = select(_Device).where(_Device.hostname == hostname.encode())
+    statement = select(_Device).where(
+        and_(
+            _Device.hostname == hostname.encode(), _Device.idx_zone == idx_zone
+        )
+    )
     rows = db.db_select_row(1107, statement)
 
     # Return

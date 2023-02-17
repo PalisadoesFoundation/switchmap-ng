@@ -110,11 +110,10 @@ class TestDevice(unittest.TestCase):
         """Testing function device."""
         # Initialize key variables
         device_ = device.idx_exists(1)
-        hostname = device_.hostname
 
         # Test
-        expected = device.exists(hostname)
-        meta = testimport.Device(hostname)
+        expected = device.exists(device_.idx_zone, device_.hostname)
+        meta = testimport.Device(device_.idx_zone, device_.hostname)
         result = meta.device()
         self.assertEqual(result, expected)
 
@@ -122,10 +121,9 @@ class TestDevice(unittest.TestCase):
         """Testing function interfaces."""
         # Initialize key variables
         device_ = device.idx_exists(1)
-        hostname = device_.hostname
 
         # Test
-        meta = testimport.Device(hostname)
+        meta = testimport.Device(device_.idx_zone, device_.hostname)
         results = meta.interfaces()
 
         for key in range(db.TEST_MAXIMUM):
