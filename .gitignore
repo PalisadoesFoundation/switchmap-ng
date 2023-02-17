@@ -62,7 +62,6 @@ lib/
 lib64/
 parts/
 sdist/
-var/
 wheels/
 share/python-wheels/
 *.egg-info/
@@ -216,6 +215,7 @@ cython_debug/
 deprecated/
 
 # Ignore files in these directories and ALL subdirectories
+var/**
 var/daemon/**
 var/log/**
 var/cache/**
