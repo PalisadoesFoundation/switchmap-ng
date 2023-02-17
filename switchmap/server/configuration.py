@@ -155,20 +155,6 @@ class ConfigServer(ConfigCore):
         # Return
         return result
 
-    def listen_address(self):
-        """Get listen_address.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_server.get("listen_address", "0.0.0.0")
-        return result
-
     def daemon_log_file(self):
         """Get daemon_log_file.
 
@@ -185,4 +171,18 @@ class ConfigServer(ConfigCore):
         )
 
         # Return
+        return result
+
+    def listen_address(self):
+        """Get listen_address.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_server.get("listen_address", "0.0.0.0")
         return result

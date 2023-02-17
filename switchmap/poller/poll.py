@@ -112,7 +112,7 @@ def _create_event():
         if bool(exists) is False:
             break
 
-    # Return
+    # Get REvent object
     row = IEvent(name=_event, enabled=1)
     event.insert_row(row)
     result = event.exists(_event)

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Test the general module."""
 
-import getpass
 import unittest
 import random
 import os
@@ -42,7 +41,6 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap import IP
 from switchmap.core import data
 from switchmap import DeviceDetail
 
@@ -88,9 +86,11 @@ class TestFunctions(unittest.TestCase):
         expecteds = [
             "f53766caaf3a1f567c6013ecafb840818eee2901",
             "1ca8f5952d077dc378ae02deb6cec31587d3e6c064c51923e2ddde5c",
-            "30b7c3d10960bfa47d304d3503bd247277aad3d145c135254e19f7b755806a7073af64e608a604595797d35136cb74fa",
+            "30b7c3d10960bfa47d304d3503bd247277aad3d145c135254e19f7b755806a7"
+            "073af64e608a604595797d35136cb74fa",
             "4aeedc4229622c1724f7be54ad8f48ae748dc52b4bf14aadac50fc77a757fb01",
-            "8bd7add2b47e3ad2e352d75a9392404e6b56bf2f91bddf092ceb0006a6097323b9dffd813f16aebc1c0f3b8f2e722d7ad5c2800c0930937bea62d7afb61bec95",
+            "8bd7add2b47e3ad2e352d75a9392404e6b56bf2f91bddf092ceb0006a609732"
+            "3b9dffd813f16aebc1c0f3b8f2e722d7ad5c2800c0930937bea62d7afb61bec95",
         ]
 
         # Test
