@@ -63,6 +63,7 @@ lib64/
 parts/
 sdist/
 wheels/
+var/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
@@ -216,9 +217,9 @@ deprecated/
 
 # Ignore files in these directories and ALL subdirectories
 var/**
-var/daemon/**
-var/log/**
-var/cache/**
+#var/daemon/**
+#var/log/**
+#var/cache/**
 etc/**
 
 # There are exceptions
