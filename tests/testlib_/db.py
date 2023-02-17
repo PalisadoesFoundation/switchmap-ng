@@ -201,7 +201,7 @@ def populate():
         ip_version = ip_versions[random.randint(0, 1)]
         if ip_version == 4:
             ip_ = socket.inet_ntoa(
-                struct.pack(">I", random.randint(1, 0xFFFFFFFF))
+                struct.pack(">I", random.randint(1, 0xFFFFFFFE))
             )
         else:
             ip_ = ipaddress.ip_address(

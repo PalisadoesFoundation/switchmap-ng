@@ -69,6 +69,13 @@ class Test_ConfigServer(unittest.TestCase):
         result = self.config.bind_port()
         self.assertEqual(result, expected)
 
+    def test_cache_directory(self):
+        """Testing function cache_directory."""
+        # Run test
+        expected = "{}{}cache".format(self.config.system_directory(), os.sep)
+        result = self.config.cache_directory()
+        self.assertEqual(result, expected)
+
     def test_db_host(self):
         """Testing function db_host."""
         # Run test

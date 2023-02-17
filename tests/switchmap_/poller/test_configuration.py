@@ -148,6 +148,48 @@ class Test_ConfigPoller(unittest.TestCase):
         result = self.config.log_level()
         self.assertEqual(result, expected)
 
+    def test_server_address(self):
+        """Testing function server_address."""
+        # Run test
+        expected = "bwSeAzPmAygg8rcJ"
+        result = self.config.server_address()
+        self.assertEqual(result, expected)
+
+    def test_server_bind_port(self):
+        """Testing function server_bind_port."""
+        # Run test
+        expected = 9876
+        result = self.config.server_bind_port()
+        self.assertEqual(result, expected)
+
+    def test_server_https(self):
+        """Testing function server_https."""
+        # Run test
+        expected = False
+        result = self.config.server_https()
+        self.assertEqual(result, expected)
+
+    def test_server_password(self):
+        """Testing function server_password."""
+        # Run test
+        expected = None
+        result = self.config.server_password()
+        self.assertEqual(result, expected)
+
+    def test_server_url_root(self):
+        """Testing function server_url_root."""
+        # Run test
+        expected = "http://bwSeAzPmAygg8rcJ:9876"
+        result = self.config.server_url_root()
+        self.assertEqual(result, expected)
+
+    def test_server_username(self):
+        """Testing function server_username."""
+        # Run test
+        expected = None
+        result = self.config.server_username()
+        self.assertEqual(result, expected)
+
     def test_username(self):
         """Testing function username."""
         # Run test

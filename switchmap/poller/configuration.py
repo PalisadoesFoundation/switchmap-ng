@@ -5,7 +5,6 @@ import os
 
 from switchmap.core.configuration import ConfigCore
 from switchmap.core import log
-from switchmap.core import files
 
 
 class ConfigPoller(ConfigCore):
@@ -36,37 +35,6 @@ class ConfigPoller(ConfigCore):
                 )
             )
             log.log2die_safe(1007, log_message)
-
-    def cache_directory(self):
-        """Determine the cache_directory.
-
-        Args:
-            None
-
-        Returns:
-            result: configured cache_directory
-
-        """
-        # Get result
-        result = self._config_core.get(
-            "cache_directory",
-            "{}{}cache".format(self.system_directory(), os.sep),
-        )
-
-        # Create the directory if not found
-        if os.path.isdir(result) is False:
-            files.mkdir(result)
-
-        # Check if value exists
-        if os.path.isdir(result) is False:
-            cache_message = (
-                'cache_directory: "{}" '
-                "in the configuration file(s) doesn't exist!"
-            ).format(result)
-            log.log2die_safe(1090, cache_message)
-
-        # Return
-        return result
 
     def daemon_log_file(self):
         """Get daemon_log_file.
@@ -120,6 +88,128 @@ class ConfigPoller(ConfigCore):
         """
         # Get result
         result = self._config_poller.get("polling_interval", 86400)
+        return result
+
+    def server_address(self):
+        """Get server_address.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_poller.get("server_address", "0.0.0.0")
+        return result
+
+    def server_bind_port(self):
+        """Get server_bind_port.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_poller.get("server_bind_port", 7000)
+        return result
+
+    def server_https(self):
+        """Get server_https.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_poller.get("server_https", None)
+        if result is None:
+            result = False
+        elif result is False:
+            pass
+        elif isinstance(result, str):
+            if result.lower() == "none":
+                result = False
+            elif result.lower() == "false":
+                result = False
+            elif result.lower() == "true":
+                result = True
+        return bool(result)
+
+    def server_password(self):
+        """Get server_password.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_poller.get("server_password", None)
+        if result is None:
+            result = None
+        elif result is False:
+            pass
+        elif isinstance(result, str):
+            if result.lower() == "none":
+                result = None
+            elif result.lower() == "false":
+                result = None
+        return result
+
+    def server_username(self):
+        """Get server_username.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_poller.get("server_username", None)
+        if result is None:
+            result = None
+        elif result is False:
+            pass
+        elif isinstance(result, str):
+            if result.lower() == "none":
+                result = None
+            elif result.lower() == "false":
+                result = None
+        return result
+
+    def server_url_root(self):
+        """Return server_url_root value.
+
+        Args:
+            None
+
+        Returns:
+            result: server_url_root value
+
+        """
+        # Get parameter
+        if self.server_https() is True:
+            result = "https://{}:{}".format(
+                self.server_address(), self.server_bind_port()
+            )
+        else:
+            result = "http://{}:{}".format(
+                self.server_address(), self.server_bind_port()
+            )
+
+        # Return
         return result
 
     def snmp_auth(self):

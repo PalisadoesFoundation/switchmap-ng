@@ -67,6 +67,11 @@ dashboard:
 
 poller:
   polling_interval: 21600
+  server_address: bwSeAzPmAygg8rcJ
+  server_bind_port: 9876
+  server_username: null
+  server_password: None
+  server_https: False
   hostnames:
     - unittest.example.org
   snmp_groups:

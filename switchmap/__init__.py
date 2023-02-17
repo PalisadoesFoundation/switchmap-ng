@@ -13,16 +13,23 @@ from .core import log
 from .poller.update import TrunkInterface
 
 # Create global variables for the various daemons
-SITE_PREFIX = "/switchmap-ng"
+SITE_PREFIX = "/switchmap"
+
+# API URIs
 API_PREFIX = "{}/api".format(SITE_PREFIX)
+API_POLLER_POST_URI = "/post/poller"
+
+# DASHBOARD related
 DASHBOARD_PREFIX = "{}/dashboard".format(SITE_PREFIX)
 DASHBOARD_STATIC_FOLDER = "static/default"
 DASHBOARD_TEMPLATE_FOLDER = "templates/default"
+
+# Agent related
 AGENT_POLLER = "Poller"
 AGENT_DASHBOARD = "Dashboard"
-AGENT_DASHBOARD_CHILD = "switchmap-ng-dashboard"
+AGENT_DASHBOARD_CHILD = "switchmap-dashboard"
 AGENT_API = "API"
-AGENT_API_CHILD = "switchmap-ng-api"
+AGENT_API_CHILD = "switchmap-api"
 
 # Important tuples
 Found = namedtuple("Found", "idx_l1interface")

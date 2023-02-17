@@ -434,6 +434,48 @@ def _message(code, message, error=True):
     return output
 
 
+class ExceptionWrapper(object):
+    """Class to handle unexpected exceptions with multiprocessing.
+
+    Based on:
+        https://stackoverflow.com/questions/6126007/python-getting-a-traceback-from-a-multiprocessing-process
+
+        _NOTE_ The subprocess needs to return a value for this to work.
+        Returning an implicit "None" isn't sufficient
+
+    """
+
+    def __init__(self, error_exception):
+        """Initialize the class.
+
+        Args:
+            error_exception: Exception object
+
+        Returns:
+            None
+
+        """
+        # Process
+        self._error_exception = error_exception
+        (self._etype, self._evalue, self._etraceback) = sys.exc_info()
+
+    def re_raise(self):
+        """Extend the re_raise method.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Log message
+        log2exception(1249, (self._etype, self._evalue, self._etraceback))
+
+        # Process traceback
+        raise self._error_exception.with_traceback(self._etraceback)
+
+
 def env():
     """Check enviroment variables before running scripts.
 
