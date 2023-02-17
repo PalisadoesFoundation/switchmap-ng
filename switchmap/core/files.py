@@ -25,7 +25,7 @@ class _Directory:
 
         """
         # Initialize key variables
-        self._system_root = config.daemon_directory()
+        self._system_root = config.system_directory()
 
     def pid(self):
         """Define the hidden pid directory.

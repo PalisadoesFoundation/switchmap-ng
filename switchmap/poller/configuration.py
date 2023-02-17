@@ -5,6 +5,7 @@ import os
 
 from switchmap.core.configuration import ConfigCore
 from switchmap.core import log
+from switchmap.core import files
 
 
 class ConfigPoller(ConfigCore):
@@ -36,6 +37,37 @@ class ConfigPoller(ConfigCore):
             )
             log.log2die_safe(1007, log_message)
 
+    def cache_directory(self):
+        """Determine the cache_directory.
+
+        Args:
+            None
+
+        Returns:
+            result: configured cache_directory
+
+        """
+        # Get result
+        result = self._config_core.get(
+            "cache_directory",
+            "{}{}cache".format(self.system_directory(), os.sep),
+        )
+
+        # Create the directory if not found
+        if os.path.isdir(result) is False:
+            files.mkdir(result)
+
+        # Check if value exists
+        if os.path.isdir(result) is False:
+            cache_message = (
+                'cache_directory: "{}" '
+                "in the configuration file(s) doesn't exist!"
+            ).format(result)
+            log.log2die_safe(1090, cache_message)
+
+        # Return
+        return result
+
     def daemon_log_file(self):
         """Get daemon_log_file.
 
@@ -52,20 +84,6 @@ class ConfigPoller(ConfigCore):
         )
 
         # Return
-        return result
-
-    def polling_interval(self):
-        """Get polling_interval.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_poller.get("polling_interval", 86400)
         return result
 
     def hostnames(self):
@@ -88,6 +106,20 @@ class ConfigPoller(ConfigCore):
             result = sorted(candidates)
 
         # Return
+        return result
+
+    def polling_interval(self):
+        """Get polling_interval.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_poller.get("polling_interval", 86400)
         return result
 
     def snmp_auth(self):
