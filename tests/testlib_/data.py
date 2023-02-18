@@ -72,8 +72,20 @@ poller:
   server_username: null
   server_password: None
   server_https: False
-  hostnames:
-    - unittest.example.org
+  zones:
+    - zone: SITE-A
+      hostnames:
+        - hostname1
+        - hostname2
+        - hostname3
+    - zone: SITE-B
+      hostnames:
+        - hostnameA
+        - hostnameB
+        - hostnameC
+    - zone: SITE-C
+      hostnames:
+    - zone:
   snmp_groups:
     - group_name: zg8rcJPmAygbwSeA
       snmp_authpassword: Gnn5999YqCMbre9W
@@ -84,6 +96,16 @@ poller:
       snmp_privprotocol: aes
       snmp_secname: NT9degJu9NBWbxRK
       snmp_version: 3
+    - group_name: PmAygbwzg8rcJSeA
+      snmp_authpassword: 9YqCMGnn599bre9W
+      snmp_authprotocol: sha
+      snmp_community: null
+      snmp_port: 3456
+      snmp_privpassword: FTEhyh9sJgt8M2ju
+      snmp_privprotocol: aes
+      snmp_secname: degJu9NNT9BWbxRK
+      snmp_version: 2
+
 """
 
 

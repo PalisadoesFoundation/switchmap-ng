@@ -5,6 +5,7 @@ import os
 
 from switchmap.core.configuration import ConfigCore
 from switchmap.core import log
+from switchmap.poller import ZONE, SNMP
 
 
 class ConfigPoller(ConfigCore):
@@ -216,55 +217,84 @@ class ConfigPoller(ConfigCore):
         """Get list of dicts of SNMP information in configuration file.
 
         Args:
-            group: Group name to filter results by
+            None
 
         Returns:
-            snmp_data: List of SNMP data dicts found in configuration file.
+            snmp_data: List of SNMP objects.
 
         """
         # Initialize key variables
-        all_groups = self._config_poller.get("snmp_groups", [])
-        template = {
-            "snmp_version": 2,
-            "snmp_secname": None,
-            "snmp_community": None,
-            "snmp_authprotocol": None,
-            "snmp_authpassword": None,
-            "snmp_privprotocol": None,
-            "snmp_privpassword": None,
-            "snmp_port": 161,
-            "group_name": None,
-            "enabled": True,
-        }
+        _groups = self._config_poller.get("snmp_groups", [])
         result = []
 
         # Read configuration's SNMP information. Return 'None' if none found
-        if isinstance(all_groups, list) is True:
-            if len(all_groups) < 1:
-                return None
+        if isinstance(_groups, list) is True:
+            if len(_groups) < 1:
+                return result
         else:
-            return None
+            return result
 
         # Start populating information
-        for next_group in all_groups:
+        for _group in _groups:
             # Next entry if this is not a dict
-            if isinstance(next_group, dict) is False:
+            if isinstance(_group, dict) is False:
+                continue
+
+            # Apply values
+            result.append(
+                SNMP(
+                    enabled=_group.get("enabled", True),
+                    group=_group.get("group_name"),
+                    version=int(_group.get("snmp_version", 3)),
+                    secname=_group.get("snmp_secname"),
+                    authprotocol=_group.get("snmp_authprotocol"),
+                    authpassword=_group.get("snmp_authpassword"),
+                    privprotocol=_group.get("snmp_privprotocol"),
+                    privpassword=_group.get("snmp_privpassword"),
+                    port=int(_group.get("snmp_port", 161)),
+                    community=_group.get("snmp_community"),
+                )
+            )
+
+        # Return
+        return result
+
+    def zones(self):
+        """Get list of dicts of polling zone information in configuration file.
+
+        Args:
+            None
+
+        Returns:
+            result: List of ZONE objects.
+
+        """
+        # Initialize key variables
+        _zones = self._config_poller.get("zones", [])
+        result = []
+
+        # Read configuration. Return [] if none found
+        if isinstance(_zones, list) is True:
+            if len(_zones) < 1:
+                return result
+        else:
+            return result
+
+        # Start populating information
+        for _zone in _zones:
+            # Next entry if this is not a dict
+            if isinstance(_zone, dict) is False:
                 continue
 
             # Assign good data
-            new_dict = {}
-            for key, _ in template.items():
-                if key in next_group:
-                    new_dict[key] = next_group[key]
-                else:
-                    new_dict[key] = template[key]
-
-            # Convert relevant strings to integers
-            new_dict["snmp_version"] = int(new_dict["snmp_version"])
-            new_dict["snmp_port"] = int(new_dict["snmp_port"])
-
-            # Append data to list
-            result.append(new_dict)
+            result.append(
+                ZONE(
+                    name=_zone.get("zone"),
+                    hostnames=_zone.get("hostnames")
+                    if isinstance(_zone.get("hostnames"), list)
+                    else None,
+                )
+            )
 
         # Return
         return result

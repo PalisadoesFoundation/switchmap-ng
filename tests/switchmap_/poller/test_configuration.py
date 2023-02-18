@@ -36,6 +36,7 @@ from tests.testlib_ import data, setup
 setup.setenv()
 
 from switchmap.poller import configuration as test_module
+from switchmap.poller import ZONE, SNMP
 
 
 class Test_ConfigPoller(unittest.TestCase):
@@ -62,13 +63,6 @@ class Test_ConfigPoller(unittest.TestCase):
         """Testing function __init__."""
         pass
 
-    def test_hostnames(self):
-        """Testing function hostnames."""
-        # Run test
-        expected = ["unittest.example.org"]
-        result = self.config.hostnames()
-        self.assertEqual(result, expected)
-
     def test_polling_interval(self):
         """Testing function polling_interval."""
         # Run test
@@ -85,24 +79,97 @@ class Test_ConfigPoller(unittest.TestCase):
         result = self.config.daemon_log_file()
         self.assertEqual(result, expected)
 
+    def test_server_address(self):
+        """Testing function server_address."""
+        # Run test
+        expected = "bwSeAzPmAygg8rcJ"
+        result = self.config.server_address()
+        self.assertEqual(result, expected)
+
+    def test_server_bind_port(self):
+        """Testing function server_bind_port."""
+        # Run test
+        expected = 9876
+        result = self.config.server_bind_port()
+        self.assertEqual(result, expected)
+
+    def test_server_https(self):
+        """Testing function server_https."""
+        # Run test
+        expected = False
+        result = self.config.server_https()
+        self.assertEqual(result, expected)
+
+    def test_server_password(self):
+        """Testing function server_password."""
+        # Run test
+        expected = None
+        result = self.config.server_password()
+        self.assertEqual(result, expected)
+
+    def test_server_url_root(self):
+        """Testing function server_url_root."""
+        # Run test
+        expected = "http://bwSeAzPmAygg8rcJ:9876"
+        result = self.config.server_url_root()
+        self.assertEqual(result, expected)
+
+    def test_server_username(self):
+        """Testing function server_username."""
+        # Run test
+        expected = None
+        result = self.config.server_username()
+        self.assertEqual(result, expected)
+
     def test_snmp_auth(self):
         """Testing function snmp_auth."""
         # Run test
         expected = [
-            {
-                "enabled": True,
-                "group_name": "zg8rcJPmAygbwSeA",
-                "snmp_authpassword": "Gnn5999YqCMbre9W",
-                "snmp_authprotocol": "sha",
-                "snmp_community": None,
-                "snmp_port": 161,
-                "snmp_privpassword": "Jgt8MFTEhyh9s2ju",
-                "snmp_privprotocol": "aes",
-                "snmp_secname": "NT9degJu9NBWbxRK",
-                "snmp_version": 3,
-            }
+            SNMP(
+                enabled=True,
+                group="zg8rcJPmAygbwSeA",
+                authpassword="Gnn5999YqCMbre9W",
+                authprotocol="sha",
+                community=None,
+                port=161,
+                privpassword="Jgt8MFTEhyh9s2ju",
+                privprotocol="aes",
+                secname="NT9degJu9NBWbxRK",
+                version=3,
+            ),
+            SNMP(
+                enabled=True,
+                group="PmAygbwzg8rcJSeA",
+                authpassword="9YqCMGnn599bre9W",
+                authprotocol="sha",
+                community=None,
+                port=3456,
+                privpassword="FTEhyh9sJgt8M2ju",
+                privprotocol="aes",
+                secname="degJu9NNT9BWbxRK",
+                version=2,
+            ),
         ]
+
         result = self.config.snmp_auth()
+        self.assertEqual(result, expected)
+
+    def test_zones(self):
+        """Testing function zones."""
+        # Run test
+        expected = [
+            ZONE(
+                name="SITE-A",
+                hostnames=["hostname1", "hostname2", "hostname3"],
+            ),
+            ZONE(
+                name="SITE-B",
+                hostnames=["hostnameA", "hostnameB", "hostnameC"],
+            ),
+            ZONE(name="SITE-C", hostnames=None),
+            ZONE(name=None, hostnames=None),
+        ]
+        result = self.config.zones()
         self.assertEqual(result, expected)
 
     ######################################################################
@@ -146,48 +213,6 @@ class Test_ConfigPoller(unittest.TestCase):
         # Run test
         expected = "info"
         result = self.config.log_level()
-        self.assertEqual(result, expected)
-
-    def test_server_address(self):
-        """Testing function server_address."""
-        # Run test
-        expected = "bwSeAzPmAygg8rcJ"
-        result = self.config.server_address()
-        self.assertEqual(result, expected)
-
-    def test_server_bind_port(self):
-        """Testing function server_bind_port."""
-        # Run test
-        expected = 9876
-        result = self.config.server_bind_port()
-        self.assertEqual(result, expected)
-
-    def test_server_https(self):
-        """Testing function server_https."""
-        # Run test
-        expected = False
-        result = self.config.server_https()
-        self.assertEqual(result, expected)
-
-    def test_server_password(self):
-        """Testing function server_password."""
-        # Run test
-        expected = None
-        result = self.config.server_password()
-        self.assertEqual(result, expected)
-
-    def test_server_url_root(self):
-        """Testing function server_url_root."""
-        # Run test
-        expected = "http://bwSeAzPmAygg8rcJ:9876"
-        result = self.config.server_url_root()
-        self.assertEqual(result, expected)
-
-    def test_server_username(self):
-        """Testing function server_username."""
-        # Run test
-        expected = None
-        result = self.config.server_username()
         self.assertEqual(result, expected)
 
     def test_username(self):

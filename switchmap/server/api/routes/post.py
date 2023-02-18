@@ -2,10 +2,10 @@
 
 # Standard imports
 import os
-import json
 
 # PIP3 imports
 from flask import Blueprint, request
+import yaml
 
 # Repository imports
 from switchmap.core import log
@@ -38,27 +38,33 @@ def post_device_data():
     except:
         hostname = None
 
-    # Only write data if file doesn't exist. This reduces the risk of duplicate
-    # data if data from a previously existing file is still being ingested.
-    filepath = "{}{}{}.json".format(config.cache_directory(), os.sep, hostname)
-    if os.path.exists(filepath) is False:
-        # Write data to file
-        data_as_string = json.dumps(data)
-        with open(filepath, "w") as f_handle:
-            f_handle.write(data_as_string)
-
-        # Log
-        log_message = "Successfully created data cache file {}.".format(
-            filepath
+    if bool(hostname):
+        # Only write data if file doesn't exist. This reduces the risk of
+        # duplicate data if data from a previously existing file is still
+        # being ingested.
+        filepath = "{}{}{}.yaml".format(
+            config.cache_directory(), os.sep, hostname
         )
-        log.log2info(1043, log_message)
+        if os.path.exists(filepath) is False:
+            # Write data to file
+            # data_as_string = json.dumps(data)
+            with open(filepath, "w") as f_handle:
+                yaml.dump(data, f_handle)
 
-    else:
-        # Log
-        log_message = "Cache file {} already exists. Will not update.".format(
-            filepath
-        )
-        log.log2info(1042, log_message)
+            # Log
+            log_message = "Successfully created data cache file {}.".format(
+                filepath
+            )
+            log.log2info(1043, log_message)
+
+        else:
+            # Log
+            log_message = (
+                "Cache file {} already exists. Will not update.".format(
+                    filepath
+                )
+            )
+            log.log2info(1042, log_message)
 
     # Return
     return "OK"

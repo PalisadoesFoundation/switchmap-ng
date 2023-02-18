@@ -2,6 +2,7 @@
 
 # Switchmap imports
 from switchmap.poller.configuration import ConfigPoller
+from switchmap.poller import POLLING_OPTIONS, SNMP, POLL
 from . import snmp_info
 from . import snmp_manager
 from switchmap.core import log
@@ -39,13 +40,21 @@ class Poll:
 
         # Get snmp configuration information from Switchmap-NG
         validate = snmp_manager.Validate(
-            hostname, self._server_config.snmp_auth()
+            POLLING_OPTIONS(
+                hostname=hostname,
+                authorizations=self._server_config.snmp_auth(),
+            )
         )
-        snmp_params = validate.credentials()
+        authorization = validate.credentials()
 
         # Create an SNMP object for querying
-        if _do_poll(snmp_params) is True:
-            self._snmp_object = snmp_manager.Interact(snmp_params)
+        if _do_poll(authorization) is True:
+            self._snmp_object = snmp_manager.Interact(
+                POLL(
+                    hostname=hostname,
+                    authorization=authorization,
+                )
+            )
         else:
             log_message = (
                 "Uncontactable or disabled host {}, or no valid SNMP "
@@ -83,11 +92,11 @@ Querying topology data from host {}.""".format(
         return _data
 
 
-def _do_poll(snmp_params):
+def _do_poll(authorization):
     """Determine whether doing a poll is valid.
 
     Args:
-        snmp_params: Dict of SMNP parameters
+        authorization: SNMP object
 
     Returns:
         poll: True if a poll should be done
@@ -96,14 +105,9 @@ def _do_poll(snmp_params):
     # Initialize key variables
     poll = False
 
-    if bool(snmp_params) is True:
-        if isinstance(snmp_params, dict) is True:
-            if "enabled" in snmp_params:
-                if bool(snmp_params["enabled"]) is True:
-                    poll = True
-            else:
-                # Default to poll unless otherwise stated
-                poll = True
+    if bool(authorization) is True:
+        if isinstance(authorization, SNMP) is True:
+            poll = bool(authorization.enabled)
 
     # Return
     return poll

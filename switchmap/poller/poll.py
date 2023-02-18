@@ -31,6 +31,10 @@ def devices():
         None
 
     """
+    # Initialize key variables
+    arguments = []
+    _META = namedtuple("_META", "zone hostname")
+
     # Get configuration
     config = ConfigPoller()
 
@@ -38,25 +42,29 @@ def devices():
     pool_size = config.agent_subprocesses()
 
     # Create a list of polling objects
-    hostnames = sorted(config.hostnames())
+    zones = sorted(config.zones())
 
-    polls = [_Poll(hostname=hostname) for hostname in hostnames]
+    # Create a list of arguments
+    for zone in zones:
+        arguments.extend(
+            _META(zone=zone.name, hostname=_) for _ in zone.hostnames
+        )
 
-    for poll in polls:
-        device(poll)
+    for argument in arguments:
+        device(argument)
 
     # Create a pool of sub process resources
     # with Pool(processes=pool_size) as pool:
 
     #     # Create sub processes from the pool
-    #     pool.map(_poll_single_device, polls)
+    #     pool.map(device, arguments)
 
 
 def device(poll):
     """Poll single device for data and create YAML files.
 
     Args:
-        poll: _Poll object
+        poll: _META object
 
     Returns:
         None
@@ -64,6 +72,7 @@ def device(poll):
     """
     # Initialize key variables
     hostname = poll.hostname
+    zone = poll.zone
 
     # Poll data for obviously valid hostnames (eg. "None" used in installation)
     if bool(hostname) is True:
@@ -73,10 +82,11 @@ def device(poll):
                 snmp_data = poll.query()
 
                 # Process if we get valid data
-                if bool(snmp_data):
+                if bool(snmp_data) and isinstance(snmp_data, dict):
                     # Process device data
                     _device = udevice.Device(snmp_data)
                     data = _device.process()
+                    data["misc"]["zone"] = zone
 
                     # Update the database tables with polled data
                     rest.post(API_POLLER_POST_URI, data)

@@ -41110,6 +41110,7 @@ misc:
   IANAEnterpriseNumber: 9
   host: device-08.example.org
   timestamp: 1656692061
+  zone: TEST123
 system:
   ENTITY-MIB:
     entPhysicalClass:

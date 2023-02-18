@@ -8,6 +8,7 @@ from easysnmp import exceptions
 
 # Import project libraries
 from switchmap.poller.configuration import ConfigPoller
+from switchmap.poller import POLL
 from switchmap.core import log
 from switchmap.core import files
 from . import iana_enterprise
@@ -16,20 +17,18 @@ from . import iana_enterprise
 class Validate:
     """Class Verify SNMP data."""
 
-    def __init__(self, hostname, snmp_config):
+    def __init__(self, options):
         """Intialize the class.
 
         Args:
-            hostname: Name of host
-            snmp_config: List of dicts of possible snmp configurations
+            options: POLLING_OPTIONS object
 
         Returns:
             None
 
         """
         # Initialize key variables
-        self.snmp_config = snmp_config
-        self.hostname = hostname
+        self._options = options
 
     def credentials(self):
         """Determine the valid SNMP credentials for a host.
@@ -38,114 +37,107 @@ class Validate:
             None
 
         Returns:
-            credentials: Dict of snmp_credentials to use
+            authentication: SNMP object
 
         """
         # Initialize key variables
         cache_exists = False
-        group_key = "group_name"
 
         # Create cache directory / file if not yet created
-        filename = files.snmp_file(self.hostname, ConfigPoller())
+        filename = files.snmp_file(self._options.hostname, ConfigPoller())
         if os.path.exists(filename) is True:
             cache_exists = True
 
         # Create file if necessary
         if cache_exists is False:
             # Get credentials
-            credentials = self._credentials()
+            authentication = self.validation()
 
             # Save credentials if successful
-            if credentials is not None:
-                _update_cache(filename, credentials[group_key])
+            if bool(authentication):
+                _update_cache(filename, authentication.group)
 
         else:
             # Read credentials from cache
             if os.path.isfile(filename):
                 with open(filename) as f_handle:
-                    group_name = f_handle.readline()
+                    group = f_handle.readline()
 
             # Get credentials
-            credentials = self._credentials(group_name)
+            authentication = self.validation(group)
 
             # Try the rest if these credentials fail
-            if credentials is None:
-                credentials = self._credentials()
+            if bool(authentication) is False:
+                authentication = self.validation()
 
             # Update cache if found
-            if credentials is not None:
-                _update_cache(filename, credentials[group_key])
+            if bool(authentication):
+                _update_cache(filename, authentication.group)
 
         # Return
-        return credentials
+        return authentication
 
-    def _credentials(self, group=None):
-        """Determine the valid SNMP credentials for a host.
+    def validation(self, group=None):
+        """Determine the valid SNMP authorization for a host.
 
         Args:
             group: SNMP group name to try
 
         Returns:
-            credentials: Dict of snmp_credentials to use
+            result: SNMP object
 
         """
         # Initialize key variables
-        credentials = None
+        result = None
 
         # Probe device with all SNMP options
-        for params_dict in self.snmp_config:
+        for authorization in self._options.authorizations:
             # Only process enabled SNMP values
-            if bool(params_dict["enabled"]) is False:
+            if bool(authorization.enabled) is False:
                 continue
 
-            # Update credentials
-            params_dict["snmp_hostname"] = self.hostname
-
             # Setup contact with the remote device
-            device = Interact(params_dict)
+            device = Interact(
+                POLL(
+                    hostname=self._options.hostname,
+                    authorization=authorization,
+                )
+            )
 
             # Try successive groups
             if group is None:
                 # Verify connectivity
                 if device.contactable() is True:
-                    credentials = params_dict
+                    result = authorization
                     break
             else:
-                if params_dict["group_name"] == group:
+                if authorization.group == group:
                     # Verify connectivity
                     if device.contactable() is True:
-                        credentials = params_dict
+                        result = authorization
 
         # Return
-        return credentials
+        return result
 
 
 class Interact:
     """Class Gets SNMP data."""
 
-    def __init__(self, snmp_parameters):
+    def __init__(self, _poll):
         """Intialize the class.
 
         Args:
-            snmp_parameters: Dict of SNMP parameters to use
+            _poll: POLL object
 
         Returns:
             None
 
         """
         # Initialize key variables
-        self._snmp_params = snmp_parameters
+        self._poll = _poll
 
-        # Fail if snmp_parameters dictionary is empty
-        if snmp_parameters["snmp_version"] is None:
-            log_message = (
-                'SNMP version is "None". Non existent host? - {}'
-                "".format(snmp_parameters["snmp_hostname"])
-            )
-            log.log2die(1025, log_message)
-
-        # Fail if snmp_parameters dictionary is empty
-        if bool(snmp_parameters) is False:
+        # Fail if there is no authentication
+        if bool(self._poll.authorization) is False:
             log_message = (
                 "SNMP parameters provided are blank. " "Non existent host?"
             )
@@ -182,7 +174,7 @@ class Interact:
 
         """
         # Initialize key variables
-        hostname = self._snmp_params["snmp_hostname"]
+        hostname = self._poll.hostname
 
         # Return
         return hostname
@@ -216,7 +208,7 @@ class Interact:
         except:
             # Log a message
             log_message = "Unexpected SNMP error for device {}" "".format(
-                self._snmp_params["snmp_hostname"]
+                self._poll.hostname
             )
             log.log2die(1008, log_message)
 
@@ -503,7 +495,6 @@ class Interact:
 
         """
         # Initialize variables
-        snmp_params = self._snmp_params
         _contactable = True
         exists = True
         results = []
@@ -514,7 +505,7 @@ class Interact:
             log.log2die(1057, log_message)
 
         # Create SNMP session
-        session = _Session(snmp_params, context_name=context_name).session
+        session = _Session(self._poll, context_name=context_name).session
 
         # Fill the results object by getting OID data
         try:
@@ -523,7 +514,7 @@ class Interact:
                 results = [session.get(oid_to_get)]
 
             else:
-                if snmp_params["snmp_version"] != 1:
+                if self._poll.authorization.version != 1:
                     # Bulkwalk for SNMPv2 and SNMPv3
                     results = session.bulkwalk(
                         oid_to_get, non_repeaters=0, max_repetitions=25
@@ -545,7 +536,7 @@ class Interact:
         ) as exception_error:
             # Update the error message
             log_message = _exception_message(
-                snmp_params["snmp_hostname"],
+                self._poll.hostname,
                 oid_to_get,
                 context_name,
                 sys.exc_info(),
@@ -561,7 +552,7 @@ class Interact:
 
         except SystemError as exception_error:
             log_message = _exception_message(
-                snmp_params["snmp_hostname"],
+                self._poll.hostname,
                 oid_to_get,
                 context_name,
                 sys.exc_info(),
@@ -579,7 +570,7 @@ class Interact:
         except:
             # Update the error message
             log_message = _exception_message(
-                snmp_params["snmp_hostname"],
+                self._poll.hostname,
                 oid_to_get,
                 context_name,
                 sys.exc_info(),
@@ -601,11 +592,11 @@ class Interact:
 class _Session:
     """Class to create an SNMP session with a device."""
 
-    def __init__(self, snmp_parameters, context_name=""):
+    def __init__(self, _poll, context_name=""):
         """Initialize the class.
 
         Args:
-            snmp_parameters: Dict of SNMP paramerters
+            _poll: POLL object
             context_name: Name of context
 
         Returns:
@@ -613,22 +604,13 @@ class _Session:
 
         """
         # Initialize key variables
-        self._snmp_params = {}
         self._context_name = context_name
 
         # Assign variables
-        self._snmp_params = snmp_parameters
+        self._poll = _poll
 
-        # Fail if snmp_parameters dictionary is empty
-        if snmp_parameters["snmp_version"] is None:
-            log_message = (
-                'SNMP version is "None". Non existent host? - {}'
-                "".format(snmp_parameters["snmp_hostname"])
-            )
-            log.log2die(1004, log_message)
-
-        # Fail if snmp_parameters dictionary is empty
-        if not snmp_parameters:
+        # Fail if there is no authentication
+        if bool(self._poll.authorization) is False:
             log_message = (
                 "SNMP parameters provided are blank. " "Non existent host?"
             )
@@ -648,28 +630,28 @@ class _Session:
 
         """
         # Create session
-        if self._snmp_params["snmp_version"] != 3:
+        if self._poll.authorization.version != 3:
             session = easysnmp.Session(
-                community=self._snmp_params["snmp_community"],
-                hostname=self._snmp_params["snmp_hostname"],
-                version=self._snmp_params["snmp_version"],
-                remote_port=self._snmp_params["snmp_port"],
+                community=self._poll.authorization.community,
+                hostname=self._poll.hostname,
+                version=self._poll.authorization.version,
+                remote_port=self._poll.authorization.port,
                 use_numeric=True,
                 context=self._context_name,
             )
         else:
             session = easysnmp.Session(
-                hostname=self._snmp_params["snmp_hostname"],
-                version=self._snmp_params["snmp_version"],
-                remote_port=self._snmp_params["snmp_port"],
+                hostname=self._poll.hostname,
+                version=self._poll.authorization.version,
+                remote_port=self._poll.authorization.port,
                 use_numeric=True,
                 context=self._context_name,
                 security_level=self._security_level(),
-                security_username=self._snmp_params["snmp_secname"],
+                security_username=self._poll.authorization.secname,
                 privacy_protocol=self._priv_protocol(),
-                privacy_password=self._snmp_params["snmp_privpassword"],
+                privacy_password=self._poll.authorization.privpassword,
                 auth_protocol=self._auth_protocol(),
-                auth_password=self._snmp_params["snmp_authpassword"],
+                auth_password=self._poll.authorization.authpassword,
             )
 
         # Return
@@ -679,18 +661,15 @@ class _Session:
         """Create string for security level.
 
         Args:
-            snmp_params: Dict of SNMP paramerters
+            None
 
         Returns:
             result: security level
 
         """
-        # Initialize key variables
-        snmp_params = self._snmp_params
-
         # Determine the security level
-        if bool(snmp_params["snmp_authprotocol"]) is True:
-            if bool(snmp_params["snmp_privprotocol"]) is True:
+        if bool(self._poll.authorization.authprotocol) is True:
+            if bool(self._poll.authorization.privprotocol) is True:
                 result = "authPriv"
             else:
                 result = "authNoPriv"
@@ -704,15 +683,14 @@ class _Session:
         """Get AuthProtocol to use.
 
         Args:
-            snmp_params: Dict of SNMP paramerters
+            None
 
         Returns:
             result: Protocol to be used in session
 
         """
         # Initialize key variables
-        snmp_params = self._snmp_params
-        protocol = snmp_params["snmp_authprotocol"]
+        protocol = self._poll.authorization.authprotocol
 
         # Setup AuthProtocol (Default SHA)
         if bool(protocol) is False:
@@ -730,15 +708,14 @@ class _Session:
         """Get privProtocol to use.
 
         Args:
-            snmp_params: Dict of SNMP paramerters
+            None
 
         Returns:
             result: Protocol to be used in session
 
         """
         # Initialize key variables
-        snmp_params = self._snmp_params
-        protocol = snmp_params["snmp_privprotocol"]
+        protocol = self._poll.authorization.privprotocol
 
         # Setup privProtocol (Default AES256)
         if bool(protocol) is False:
@@ -1001,8 +978,8 @@ def _oid_valid_format(oid):
     return True
 
 
-def _update_cache(filename, snmp_group):
-    """Update the SNMP credentials cache file with successful snmp_group.
+def _update_cache(filename, group):
+    """Update the SNMP credentials cache file with successful group.
 
     Args:
         filename: Cache filename
@@ -1014,4 +991,4 @@ def _update_cache(filename, snmp_group):
     """
     # Do update
     with open(filename, "w+") as env:
-        env.write(snmp_group)
+        env.write(group)
