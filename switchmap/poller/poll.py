@@ -134,7 +134,7 @@ def cli_device(hostname):
     for zone in zones:
         for next_hostname in zone.hostnames:
             if next_hostname == hostname:
-                arguments.extend(
+                arguments.append(
                     _META(zone=zone.name, hostname=hostname, id=id_)
                 )
 
