@@ -104,12 +104,12 @@ class TestDbTableZone(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        nonexistent = testimport.exists(row.name)
+        nonexistent = testimport.exists(row.idx_event, row.name)
         self.assertFalse(nonexistent)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        preliminary_result = testimport.exists(row.name)
+        preliminary_result = testimport.exists(row.idx_event, row.name)
         self.assertTrue(preliminary_result)
         self.assertEqual(_convert(preliminary_result), _convert(row))
 
@@ -139,12 +139,12 @@ class TestDbTableZone(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.name)
+        result = testimport.exists(row.idx_event, row.name)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.name)
+        result = testimport.exists(row.idx_event, row.name)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
@@ -154,12 +154,12 @@ class TestDbTableZone(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.name)
+        result = testimport.exists(row.idx_event, row.name)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.name)
+        result = testimport.exists(row.idx_event, row.name)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
@@ -183,7 +183,7 @@ class TestDbTableZone(unittest.TestCase):
         testimport.update_row(idx, updated_row)
 
         # Test the update
-        result = testimport.exists(updated_row.name)
+        result = testimport.exists(updated_row.idx_event, updated_row.name)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(updated_row))
 

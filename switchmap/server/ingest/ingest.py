@@ -10,8 +10,10 @@ from switchmap.core import files
 from switchmap.core import general
 from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IZone
+from switchmap.server.db.table import IRoot
 from switchmap.server.db.table import event as _event
 from switchmap.server.db.table import zone as _zone
+from switchmap.server.db.table import root as _root
 from switchmap.server import ZoneData
 from switchmap.server.ingest import topology
 
@@ -102,6 +104,16 @@ Ingest lock file {} exists. Is an ingest process already running?\
 
                 # Create sub processes from the pool
                 pool.map(single, zones)
+
+            # Update the event pointer in the root table
+            root = _root.idx_exists(1)
+            if bool(root):
+                _root.update_row(
+                    root.idx_root,
+                    IRoot(
+                        idx_event=event.idx_event, name=root.name, enabled=1
+                    ),
+                )
 
 
 def single(item):

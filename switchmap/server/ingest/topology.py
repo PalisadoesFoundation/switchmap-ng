@@ -5,8 +5,7 @@ import socket
 from collections import namedtuple
 from copy import deepcopy
 
-import yaml
-
+# Application imports
 from switchmap.core import log
 from switchmap.core import general
 from switchmap.server.db.table import device as _device
@@ -44,11 +43,6 @@ def process(data, idx_zone, dns=True):
         None
 
     """
-    # Dump data to file
-    filepath = "/tmp/{}.yaml".format(data["misc"]["host"])
-    with open(filepath, "w") as outfile:
-        yaml.dump(data, outfile, default_flow_style=False)
-
     # Process the device
     meta = device(idx_zone, data)
     _topology = Topology(meta, data, dns=dns)
