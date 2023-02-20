@@ -7,6 +7,9 @@ Updates the database with device SNMP data.
 # Standard libraries
 from multiprocessing import Pool
 from collections import namedtuple
+import uuid
+import time
+from pprint import pprint
 
 # Import app libraries
 from switchmap import API_POLLER_POST_URI
@@ -16,9 +19,7 @@ from switchmap.poller import rest
 from switchmap.poller.configuration import ConfigPoller
 from switchmap.core import log
 
-# We have to create this named tuple outside the multiprocessing Pool
-# for it to be pickled
-_Poll = namedtuple("_Poll", "hostname")
+_META = namedtuple("_META", "zone hostname id")
 
 
 def devices():
@@ -33,10 +34,12 @@ def devices():
     """
     # Initialize key variables
     arguments = []
-    _META = namedtuple("_META", "zone hostname")
 
     # Get configuration
     config = ConfigPoller()
+
+    # Create ID
+    id_ = _get_id()
 
     # Get the number of threads to use in the pool
     pool_size = config.agent_subprocesses()
@@ -47,7 +50,7 @@ def devices():
     # Create a list of arguments
     for zone in zones:
         arguments.extend(
-            _META(zone=zone.name, hostname=_) for _ in zone.hostnames
+            _META(zone=zone.name, hostname=_, id=id_) for _ in zone.hostnames
         )
 
     for argument in arguments:
@@ -60,11 +63,12 @@ def devices():
     #     pool.map(device, arguments)
 
 
-def device(poll):
+def device(poll, post=True):
     """Poll single device for data and create YAML files.
 
     Args:
         poll: _META object
+        post: Post the data if True, else just print it.
 
     Returns:
         None
@@ -73,6 +77,7 @@ def device(poll):
     # Initialize key variables
     hostname = poll.hostname
     zone = poll.zone
+    id_ = poll.id
 
     # Poll data for obviously valid hostnames (eg. "None" used in installation)
     if bool(hostname) is True:
@@ -87,9 +92,13 @@ def device(poll):
                     _device = udevice.Device(snmp_data)
                     data = _device.process()
                     data["misc"]["zone"] = zone
+                    data["misc"]["id"] = id_
 
-                    # Update the database tables with polled data
-                    rest.post(API_POLLER_POST_URI, data)
+                    if bool(post) is True:
+                        # Update the database tables with polled data
+                        rest.post(API_POLLER_POST_URI, data)
+                    else:
+                        pprint(data)
                 else:
                     log_message = """\
 Device {} returns no data. Check your connectivity and/or SNMP configuration\
@@ -97,3 +106,55 @@ Device {} returns no data. Check your connectivity and/or SNMP configuration\
                         hostname
                     )
                     log.log2debug(1036, log_message)
+
+
+def cli_device(hostname):
+    """Poll single device for data and create YAML files.
+
+    Args:
+        Hostname: Host to poll
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    arguments = []
+
+    # Get configuration
+    config = ConfigPoller()
+
+    # Create ID
+    id_ = _get_id()
+
+    # Create a list of polling objects
+    zones = sorted(config.zones())
+
+    # Create a list of arguments
+    for zone in zones:
+        for next_hostname in zone.hostnames:
+            if next_hostname == hostname:
+                arguments.extend(
+                    _META(zone=zone.name, hostname=hostname, id=id_)
+                )
+
+    if bool(arguments) is True:
+        for argument in arguments:
+            device(argument, post=False)
+    else:
+        log_message = "No hostname {} found in configuration".format(hostname)
+        log.log2see(1036, log_message)
+
+
+def _get_id():
+    """Generate a polling ID.
+
+    Args:
+        None
+
+    Returns:
+        result: ID string
+    """
+    # Return
+    result = "{}{}".format(uuid.uuid4().hex, time.time()).replace(".", "")
+    return result

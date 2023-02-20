@@ -470,7 +470,6 @@ class Topology:
                 # Process found VLANs
                 if bool(_vlans) is True:
                     for item in sorted(_vlans):
-
                         # Ensure the Vlan exists in the database
                         vlan_exists = all_vlans.get(item)
                         if bool(vlan_exists) is True:
