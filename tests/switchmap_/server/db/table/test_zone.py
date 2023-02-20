@@ -124,12 +124,12 @@ class TestDbTableZone(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.name)
+        result = testimport.exists(row.idx_event, row.name)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.name)
+        result = testimport.exists(row.idx_event, row.name)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 

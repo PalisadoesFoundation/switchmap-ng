@@ -76,6 +76,15 @@ class Test_ConfigServer(unittest.TestCase):
         result = self.config.cache_directory()
         self.assertEqual(result, expected)
 
+    def test_daemon_log_file(self):
+        """Testing function daemon_log_file."""
+        # Run test
+        expected = "{1}{0}log{0}switchmap-server.log".format(
+            os.sep, self._config.metadata.system_directory
+        )
+        result = self.config.daemon_log_file()
+        self.assertEqual(result, expected)
+
     def test_db_host(self):
         """Testing function db_host."""
         # Run test
@@ -125,13 +134,11 @@ class Test_ConfigServer(unittest.TestCase):
         result = self.config.listen_address()
         self.assertEqual(result, expected)
 
-    def test_daemon_log_file(self):
-        """Testing function daemon_log_file."""
+    def test_ingest_directory(self):
+        """Testing function ingest_directory."""
         # Run test
-        expected = "{1}{0}log{0}switchmap-server.log".format(
-            os.sep, self._config.metadata.system_directory
-        )
-        result = self.config.daemon_log_file()
+        expected = "{}{}ingest".format(self.config.system_directory(), os.sep)
+        result = self.config.ingest_directory()
         self.assertEqual(result, expected)
 
     ######################################################################

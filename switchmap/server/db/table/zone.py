@@ -1,7 +1,7 @@
 """Module for querying the Zone table."""
 
 
-from sqlalchemy import select, update, null
+from sqlalchemy import select, update, null, and_
 
 # Import project libraries
 from switchmap.server.db import db
@@ -34,10 +34,11 @@ def idx_exists(idx):
     return result
 
 
-def exists(name):
+def exists(idx_event, name):
     """Determine whether name exists in the Zone table.
 
     Args:
+        idx_event: Event index
         name: Zone
 
     Returns:
@@ -49,7 +50,9 @@ def exists(name):
     rows = []
 
     # Get name from database
-    statement = select(Zone).where(Zone.name == name.encode())
+    statement = select(Zone).where(
+        and_(Zone.name == name.encode(), Zone.idx_event == idx_event)
+    )
     rows = db.db_select_row(1175, statement)
 
     # Return

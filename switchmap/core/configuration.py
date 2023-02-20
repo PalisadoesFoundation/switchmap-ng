@@ -1,4 +1,4 @@
-"""switchmap.classes that manage various configurations."""
+"""switchmap classes that manage various configurations."""
 
 import os.path
 import os

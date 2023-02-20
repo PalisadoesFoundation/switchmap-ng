@@ -1,4 +1,4 @@
-"""switchmap.classes that manage various configurations."""
+"""switchmap classes that manage various configurations."""
 
 import os.path
 import os
@@ -201,6 +201,37 @@ class ConfigServer(ConfigCore):
         result = "{}{}switchmap-server.log".format(
             self.log_directory(), os.sep
         )
+
+        # Return
+        return result
+
+    def ingest_directory(self):
+        """Determine the ingest_directory.
+
+        Args:
+            None
+
+        Returns:
+            result: configured ingest_directory
+
+        """
+        # Get result
+        result = self._config_core.get(
+            "ingest_directory",
+            "{}{}ingest".format(self.system_directory(), os.sep),
+        )
+
+        # Create the directory if not found
+        if os.path.isdir(result) is False:
+            files.mkdir(result)
+
+        # Check if value exists
+        if os.path.isdir(result) is False:
+            log_message = (
+                'ingest_directory: "{}" '
+                "in the configuration file(s) doesn't exist!"
+            ).format(result)
+            log.log2die_safe(1004, log_message)
 
         # Return
         return result

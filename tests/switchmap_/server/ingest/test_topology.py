@@ -27,8 +27,7 @@ ROOT_DIR = os.path.abspath(
         os.pardir,
     )
 )
-_EXPECTED = """{0}switchmap-ng{0}tests{0}switchmap_{0}poller{0}update\
-""".format(
+_EXPECTED = "{0}switchmap-ng{0}tests{0}switchmap_{0}server{0}ingest".format(
     os.sep
 )
 if EXEC_DIR.endswith(_EXPECTED) is True:
@@ -52,8 +51,8 @@ from tests.testlib_ import data
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.poller.update import topology as testimport
 from switchmap.poller.update import device
+from switchmap.server.ingest import topology as testimport
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui
 from switchmap.server.db.table import event

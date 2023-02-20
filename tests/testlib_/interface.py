@@ -80,7 +80,7 @@ def prerequisites():
             enabled=1,
         )
     )
-    zone_row = zone.exists(zone_name)
+    zone_row = zone.exists(row.idx_event, zone_name)
 
     oui.insert_row(
         [

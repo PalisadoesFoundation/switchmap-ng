@@ -27,7 +27,7 @@ from switchmap.poller import poll
 
 
 def main():
-    """Start the switchmap.agent.
+    """Runs a test poll of the selected device.
 
     Args:
         None

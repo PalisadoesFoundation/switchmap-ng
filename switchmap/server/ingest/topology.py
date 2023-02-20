@@ -18,8 +18,6 @@ from switchmap.server.db.table import macport as _macport
 from switchmap.server.db.table import vlanport as _vlanport
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import oui as _oui
-from switchmap.server.db.table import event as _event
-from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import (
     IDevice,
     IL1Interface,
@@ -810,28 +808,4 @@ def _process_macip(info, dns=True):
 
     # Return
     result = TopologyResult(adds=adds, updates=updates)
-    return result
-
-
-def _create_event():
-    """Get and event ID for the next polling cycle.
-
-    Args:
-        None
-
-    Returns:
-        result: Event ID that doesn't already exist
-
-    """
-    # Get configuration
-    while True:
-        event = general.random_hash()
-        exists = event.exists(_event)
-        if bool(exists) is False:
-            break
-
-    # Get REvent object
-    row = IEvent(name=_event, enabled=1)
-    _event.insert_row(row)
-    result = _event.exists(_event)
     return result

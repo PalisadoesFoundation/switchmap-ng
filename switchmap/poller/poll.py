@@ -7,8 +7,6 @@ Updates the database with device SNMP data.
 # Standard libraries
 from multiprocessing import Pool
 from collections import namedtuple
-import uuid
-import time
 from pprint import pprint
 
 # Import app libraries
@@ -19,7 +17,7 @@ from switchmap.poller import rest
 from switchmap.poller.configuration import ConfigPoller
 from switchmap.core import log
 
-_META = namedtuple("_META", "zone hostname id")
+_META = namedtuple("_META", "zone hostname")
 
 
 def devices():
@@ -38,9 +36,6 @@ def devices():
     # Get configuration
     config = ConfigPoller()
 
-    # Create ID
-    id_ = _get_id()
-
     # Get the number of threads to use in the pool
     pool_size = config.agent_subprocesses()
 
@@ -50,7 +45,7 @@ def devices():
     # Create a list of arguments
     for zone in zones:
         arguments.extend(
-            _META(zone=zone.name, hostname=_, id=id_) for _ in zone.hostnames
+            _META(zone=zone.name, hostname=_) for _ in zone.hostnames
         )
 
     for argument in arguments:
@@ -77,7 +72,6 @@ def device(poll, post=True):
     # Initialize key variables
     hostname = poll.hostname
     zone = poll.zone
-    id_ = poll.id
 
     # Poll data for obviously valid hostnames (eg. "None" used in installation)
     if bool(hostname) is True:
@@ -92,7 +86,6 @@ def device(poll, post=True):
                     _device = udevice.Device(snmp_data)
                     data = _device.process()
                     data["misc"]["zone"] = zone
-                    data["misc"]["id"] = id_
 
                     if bool(post) is True:
                         # Update the database tables with polled data
@@ -105,7 +98,7 @@ Device {} returns no data. Check your connectivity and/or SNMP configuration\
 """.format(
                         hostname
                     )
-                    log.log2debug(1036, log_message)
+                    log.log2debug(1025, log_message)
 
 
 def cli_device(hostname):
@@ -124,9 +117,6 @@ def cli_device(hostname):
     # Get configuration
     config = ConfigPoller()
 
-    # Create ID
-    id_ = _get_id()
-
     # Create a list of polling objects
     zones = sorted(config.zones())
 
@@ -134,9 +124,7 @@ def cli_device(hostname):
     for zone in zones:
         for next_hostname in zone.hostnames:
             if next_hostname == hostname:
-                arguments.append(
-                    _META(zone=zone.name, hostname=hostname, id=id_)
-                )
+                arguments.append(_META(zone=zone.name, hostname=hostname))
 
     if bool(arguments) is True:
         for argument in arguments:
@@ -144,17 +132,3 @@ def cli_device(hostname):
     else:
         log_message = "No hostname {} found in configuration".format(hostname)
         log.log2see(1036, log_message)
-
-
-def _get_id():
-    """Generate a polling ID.
-
-    Args:
-        None
-
-    Returns:
-        result: ID string
-    """
-    # Return
-    result = "{}{}".format(uuid.uuid4().hex, time.time()).replace(".", "")
-    return result

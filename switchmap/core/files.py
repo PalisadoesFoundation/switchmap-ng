@@ -3,6 +3,7 @@
 import os
 import sys
 import subprocess
+import shutil
 
 # PIP imports
 import yaml
@@ -132,6 +133,25 @@ class _File:
             mkdir(self._directory.snmp())
         value = "{}{}{}.snmp".format(self._directory.snmp(), os.sep, prefix)
         return value
+
+
+def move_yaml_files(src, dst):
+    """Move all yaml files from source to destination directory.
+
+    Args:
+        src: Source directory
+        dst: Destination directory
+
+    Returns:
+        None
+
+    """
+    # Copy files
+    src_files = os.listdir(src)
+    for filename in src_files:
+        filepath = os.path.join(src, filename)
+        if os.path.isfile(filepath) and filepath.lower().endswith(".yaml"):
+            shutil.copy(filepath, dst)
 
 
 def read_yaml_files(directories):
