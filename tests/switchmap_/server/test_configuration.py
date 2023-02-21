@@ -141,6 +141,13 @@ class Test_ConfigServer(unittest.TestCase):
         result = self.config.ingest_directory()
         self.assertEqual(result, expected)
 
+    def test_ingest_interval(self):
+        """Testing function ingest_interval."""
+        # Run test
+        expected = 98712
+        result = self.config.ingest_interval()
+        self.assertEqual(result, expected)
+
     ######################################################################
     ######################################################################
     # All 'core:' configuration file parameters must pass. Tests below

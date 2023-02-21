@@ -26,6 +26,7 @@ DASHBOARD_TEMPLATE_FOLDER = "templates/default"
 
 # Agent related
 AGENT_POLLER = "Poller"
+AGENT_INGESTER = "Ingester"
 AGENT_DASHBOARD = "Dashboard"
 AGENT_DASHBOARD_CHILD = "switchmap-dashboard"
 AGENT_API = "API"

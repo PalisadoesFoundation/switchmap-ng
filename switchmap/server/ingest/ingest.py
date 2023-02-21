@@ -2,6 +2,7 @@
 
 import os.path
 import os
+import tempfile
 
 # Import project libraries
 from multiprocessing import Pool
@@ -21,11 +22,13 @@ from switchmap.server.ingest import topology
 class Ingest:
     """Read cache files in the DB."""
 
-    def __init__(self, config):
+    def __init__(self, config, test=False, test_cache_directory=None):
         """Initialize class.
 
         Args:
             config: ConfigServer object
+            test: True if testing
+            test_cache_directory: Ingest directory. Only used when testing.
 
         Returns:
             None
@@ -33,6 +36,8 @@ class Ingest:
         """
         # Initialize key variables
         self._config = config
+        self._test = test
+        self._test_cache_directory = test_cache_directory
         self._name = "ingest"
 
     def process(self):
@@ -45,6 +50,13 @@ class Ingest:
             None
 
         """
+        # Initialize key variables
+        cache_directory = (
+            self._config.cache_directory()
+            if bool(self._test) is False
+            else self._test_cache_directory
+        )
+
         # Test for the lock file
         lock_file = files.lock_file(self._name, self._config)
         if os.path.isfile(lock_file) is True:
@@ -59,13 +71,15 @@ Ingest lock file {} exists. Is an ingest process already running?\
         # Create lock file
         open(lock_file, "a").close()
 
-        # Copy files from cache to ingest
-        files.move_yaml_files(
-            self._config.cache_directory(), self._config.ingest_directory()
-        )
+        # Process files
+        with tempfile.TemporaryDirectory(
+            dir=self._config.ingest_directory()
+        ) as _stream:
+            # Copy files from cache to ingest
+            files.move_yaml_files(cache_directory, _stream.name)
 
-        # Parallel process the files
-        self.parallel()
+            # Parallel process the files
+            self.parallel()
 
         # Delete lock file
         os.remove(lock_file)
@@ -99,21 +113,37 @@ Ingest lock file {} exists. Is an ingest process already running?\
             for filepath in filepaths:
                 zones.append(_get_zone(event, filepath))
 
-            # Create a pool of sub process resources
-            with Pool(processes=pool_size) as pool:
+            if bool(self._test) is False:
+                ############################
+                # Process files in parallel
+                ############################
 
-                # Create sub processes from the pool
-                pool.map(single, zones)
+                # Create a pool of sub process resources
+                with Pool(processes=pool_size) as pool:
+                    # Create sub processes from the pool
+                    pool.map(single, zones)
 
-            # Update the event pointer in the root table
-            root = _root.idx_exists(1)
-            if bool(root):
-                _root.update_row(
-                    root.idx_root,
-                    IRoot(
-                        idx_event=event.idx_event, name=root.name, enabled=1
-                    ),
-                )
+                # Update the event pointer in the root table
+                # We don't do this for testing
+                root = _root.idx_exists(1)
+                if bool(root):
+                    _root.update_row(
+                        root.idx_root,
+                        IRoot(
+                            idx_event=event.idx_event,
+                            name=root.name,
+                            enabled=1,
+                        ),
+                    )
+            else:
+                ############################
+                # Process files sequentially
+                ############################
+                for zone in zones:
+                    single(zone)
+
+                # TODO Delete all DB records related to the event
+                _event.delete(event.idx_event)
 
 
 def single(item):

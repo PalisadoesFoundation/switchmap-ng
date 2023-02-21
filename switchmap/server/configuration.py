@@ -236,6 +236,20 @@ class ConfigServer(ConfigCore):
         # Return
         return result
 
+    def ingest_interval(self):
+        """Get ingest_interval.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_poller.get("ingest_interval", 86400)
+        return result
+
     def listen_address(self):
         """Get listen_address.
 

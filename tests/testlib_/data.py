@@ -66,6 +66,7 @@ dashboard:
   listen_address: t7sh4gPe2XMKG2ds
 
 poller:
+  ingest_interval: 98712
   polling_interval: 21600
   server_address: bwSeAzPmAygg8rcJ
   server_bind_port: 9876
@@ -305,7 +306,7 @@ def ipv6():
 
     """
     # Return
-    bits = 16 ** 4
+    bits = 16**4
     result = ":".join(
         ("{:02x}".format(random.randint(0, bits)).zfill(4) for i in range(8))
     )

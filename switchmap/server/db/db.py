@@ -149,6 +149,40 @@ Only the "Update" ORM expression is supported. Not "{}"'''.format(
     return result
 
 
+def db_delete_row(error_code, statement):
+    """Support 'Delete' actions for __ENTIRE__ row.
+
+    Args:
+        error_code: Error code to use in messages
+        statement: SqlALchemy statement to execute. This must only reference
+            an ORM Row object.
+
+    Returns:
+        result: List of objects resulting from Delete
+
+    https://docs.sqlalchemy.org/en/14/orm/session_api.html#sqlalchemy.orm.Session
+
+    """
+    # Check to ensure the function executes the correct type of statement
+    if isinstance(statement, Delete) is False:
+        log_message = '''\
+Only the "Delete" ORM expression is supported. Not "{}"'''.format(
+            type(statement)
+        )
+        log.log2die(error_code, log_message)
+
+    # Process transaction
+    with ENGINE.connect() as connection:
+        with Session(bind=connection, future=True) as session:
+            try:
+                session.execute(statement).scalars().all()
+            except:
+                # Log error
+                log.log2info(error_code, 'DB "delete_row" error.')
+                log.log2exception(error_code, sys.exc_info())
+                raise
+
+
 def db_delete(error_code, statement):
     """Provide a transactional support for Delete actions.
 

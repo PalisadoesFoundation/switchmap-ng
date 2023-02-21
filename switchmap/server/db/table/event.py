@@ -1,6 +1,6 @@
 """Module for querying the Event table."""
 
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete as _delete
 
 # Import project libraries
 from switchmap.server.db import db
@@ -131,3 +131,18 @@ def events():
     for row in rows:
         result.append(_rows.event(row))
     return result
+
+
+def delete(idx):
+    """Delete event.
+
+    Args:
+        idx: idx_event
+
+    Returns:
+        None
+
+    """
+    # Delete data
+    statement = _delete(Event).where(Event.idx_event == idx)
+    db.db_delete_row(1032, statement)

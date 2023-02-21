@@ -70,6 +70,7 @@ Minimum value {} is greater than {}. Please fix.\
         r".db_delete(",
         r".db_update(",
         ".db_select_row(",
+        ".db_delete_row(",
         r".db_modify(",
         r".db_query(",
     )
