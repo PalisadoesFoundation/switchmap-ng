@@ -53,6 +53,12 @@ class Oui(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
+    # Define relationships
+    macs = relationship(
+        "Mac",
+        backref=backref("Oui", uselist=True, cascade="delete,all"),
+    )
+
 
 class Event(BASE):
     """Database table definition."""
@@ -75,6 +81,17 @@ class Event(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
+    # Define relationships
+    roots = relationship(
+        "Root",
+        backref=backref("Event", uselist=True, cascade="delete,all"),
+    )
+
+    zones = relationship(
+        "Zone",
+        backref=backref("Event", uselist=True, cascade="delete,all"),
+    )
+
 
 class Root(BASE):
     """Database table definition."""
@@ -84,7 +101,7 @@ class Root(BASE):
 
     idx_root = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_event = Column(
-        ForeignKey("smap_event.idx_event"),
+        ForeignKey(Event.idx_event),
         nullable=False,
         index=True,
         default=1,
@@ -102,12 +119,6 @@ class Root(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Uses cascade='delete,all' to propagate the deletion of an entry
-    root_to_event = relationship(
-        Event,
-        backref=backref("root_to_event", uselist=True, cascade="delete,all"),
-    )
-
 
 class Zone(BASE):
     """Database table definition."""
@@ -117,7 +128,7 @@ class Zone(BASE):
 
     idx_zone = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_event = Column(
-        ForeignKey("smap_event.idx_event"),
+        ForeignKey(Event.idx_event),
         nullable=False,
         index=True,
         default=1,
@@ -145,10 +156,15 @@ class Zone(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Uses cascade='delete,all' to propagate the deletion of an entry
-    zone_to_event = relationship(
-        Event,
-        backref=backref("zone_to_event", uselist=True, cascade="delete,all"),
+    # Define relationships
+    devices = relationship(
+        "Device",
+        backref=backref("Zone", uselist=True, cascade="delete,all"),
+    )
+
+    macs = relationship(
+        "Mac",
+        backref=backref("Zone", uselist=True, cascade="delete,all"),
     )
 
 
@@ -162,7 +178,7 @@ class Device(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_zone = Column(
-        ForeignKey("smap_zone.idx_zone"),
+        ForeignKey(Zone.idx_zone),
         nullable=False,
         index=True,
         default=1,
@@ -186,10 +202,20 @@ class Device(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Uses cascade='delete,all' to propagate the deletion of an entry
-    device_to_zone = relationship(
-        Zone,
-        backref=backref("device_to_zone", uselist=True, cascade="delete,all"),
+    # Define relationships
+    l1interfaces = relationship(
+        "L1Interface",
+        backref=backref("Device", uselist=True, cascade="delete,all"),
+    )
+
+    vlans = relationship(
+        "Vlan",
+        backref=backref("Device", uselist=True, cascade="delete,all"),
+    )
+
+    macips = relationship(
+        "MacIp",
+        backref=backref("Device", uselist=True, cascade="delete,all"),
     )
 
 
@@ -206,7 +232,7 @@ class L1Interface(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_device = Column(
-        ForeignKey("smap_device.idx_device"),
+        ForeignKey(Device.idx_device),
         nullable=False,
         index=True,
         default=1,
@@ -241,12 +267,15 @@ class L1Interface(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Uses cascade='delete,all' to propagate the deletion of an entry
-    l1interface_to_device = relationship(
-        Device,
-        backref=backref(
-            "l1interface_to_device", uselist=True, cascade="delete,all"
-        ),
+    # Define relationships
+    vlanports = relationship(
+        "VlanPort",
+        backref=backref("L1Interface", uselist=True, cascade="delete,all"),
+    )
+
+    macports = relationship(
+        "MacPort",
+        backref=backref("L1Interface", uselist=True, cascade="delete,all"),
     )
 
 
@@ -261,7 +290,7 @@ class Vlan(BASE):
 
     idx_vlan = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_device = Column(
-        ForeignKey("smap_device.idx_device"),
+        ForeignKey(Device.idx_device),
         nullable=False,
         index=True,
         default=1,
@@ -281,10 +310,10 @@ class Vlan(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Uses cascade='delete,all' to propagate the deletion of an entry
-    vlan_to_device = relationship(
-        Device,
-        backref=backref("vlan_to_device", uselist=True, cascade="delete,all"),
+    # Define relationships
+    vlanports = relationship(
+        "VlanPort",
+        backref=backref("Vlan", uselist=True, cascade="delete,all"),
     )
 
 
@@ -301,14 +330,14 @@ class VlanPort(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_l1interface = Column(
-        ForeignKey("smap_l1interface.idx_l1interface"),
+        ForeignKey(L1Interface.idx_l1interface),
         nullable=False,
         index=True,
         default=1,
         server_default=text("1"),
     )
     idx_vlan = Column(
-        ForeignKey("smap_vlan.idx_vlan"),
+        ForeignKey(Vlan.idx_vlan),
         nullable=False,
         index=True,
         default=1,
@@ -325,21 +354,6 @@ class VlanPort(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Uses cascade='delete,all' to propagate the deletion of an entry
-    vlanport_to_l1interface = relationship(
-        L1Interface,
-        backref=backref(
-            "vlanport_to_l1interface", uselist=True, cascade="delete,all"
-        ),
-    )
-
-    vlanport_to_vlan = relationship(
-        Vlan,
-        backref=backref(
-            "vlanport_to_vlan", uselist=True, cascade="delete,all"
-        ),
-    )
-
 
 class Mac(BASE):
     """Database table definition."""
@@ -352,14 +366,14 @@ class Mac(BASE):
 
     idx_mac = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_oui = Column(
-        ForeignKey("smap_oui.idx_oui"),
+        ForeignKey(Oui.idx_oui),
         nullable=False,
         index=True,
         default=1,
         server_default=text("1"),
     )
     idx_zone = Column(
-        ForeignKey("smap_zone.idx_zone"),
+        ForeignKey(Zone.idx_zone),
         nullable=False,
         index=True,
         default=1,
@@ -377,13 +391,15 @@ class Mac(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    mac_to_oui = relationship(
-        Oui, backref=backref("mac_to_oui", uselist=True, cascade="delete,all")
+    # Define relationships
+    macports = relationship(
+        "MacPort",
+        backref=backref("Mac", uselist=True, cascade="delete,all"),
     )
 
-    mac_to_zone = relationship(
-        Zone,
-        backref=backref("mac_to_zone", uselist=True, cascade="delete,all"),
+    macips = relationship(
+        "MacIp",
+        backref=backref("Mac", uselist=True, cascade="delete,all"),
     )
 
 
@@ -400,14 +416,14 @@ class MacIp(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_device = Column(
-        ForeignKey("smap_device.idx_device"),
+        ForeignKey(Device.idx_device),
         nullable=False,
         index=True,
         default=1,
         server_default=text("1"),
     )
     idx_mac = Column(
-        ForeignKey("smap_mac.idx_mac"),
+        ForeignKey(Mac.idx_mac),
         nullable=False,
         index=True,
         default=1,
@@ -427,17 +443,6 @@ class MacIp(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Uses cascade='delete,all' to propagate the deletion of an entry
-    macip_to_device = relationship(
-        Device,
-        backref=backref("macip_to_device", uselist=True, cascade="delete,all"),
-    )
-
-    macip_to_mac = relationship(
-        Mac,
-        backref=backref("macip_to_mac", uselist=True, cascade="delete,all"),
-    )
-
 
 class MacPort(BASE):
     """Database table definition."""
@@ -452,14 +457,14 @@ class MacPort(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_l1interface = Column(
-        ForeignKey("smap_l1interface.idx_l1interface"),
+        ForeignKey(L1Interface.idx_l1interface),
         nullable=False,
         index=True,
         default=1,
         server_default=text("1"),
     )
     idx_mac = Column(
-        ForeignKey("smap_mac.idx_mac"),
+        ForeignKey(Mac.idx_mac),
         nullable=False,
         index=True,
         default=1,
@@ -474,19 +479,6 @@ class MacPort(BASE):
     )
     ts_created = Column(
         DateTime, nullable=False, default=datetime.datetime.utcnow
-    )
-
-    # Uses cascade='delete,all' to propagate the deletion of an entry
-    macport_to_l1interface = relationship(
-        L1Interface,
-        backref=backref(
-            "macport_to_l1interface", uselist=True, cascade="delete,all"
-        ),
-    )
-
-    macport_to_mac = relationship(
-        Mac,
-        backref=backref("macport_to_mac", uselist=True, cascade="delete,all"),
     )
 
 

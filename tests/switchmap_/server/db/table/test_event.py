@@ -57,6 +57,8 @@ CONFIG.save()
 
 from switchmap.server.db.table import event as testimport
 from switchmap.server.db.table import IEvent
+from switchmap.server.db.table import device
+from switchmap.server.db.table import l1interface
 from switchmap.server.db import models
 
 from tests.testlib_ import db
@@ -83,6 +85,9 @@ class TestDbTableEvent(unittest.TestCase):
 
         # Create database tables
         models.create_all_tables()
+
+        # Pollinate db with prerequisites
+        db.populate()
 
     @classmethod
     def tearDownClass(cls):
@@ -205,6 +210,59 @@ class TestDbTableEvent(unittest.TestCase):
 
         for key, result in enumerate(results):
             self.assertEqual(_convert(result), _convert(inserts[key]))
+
+    def test_delete(self):
+        """Testing function delete."""
+        # Initialize key variables
+        first = 1
+
+        ####################################################################
+        # Test deletion of event on a brand new database
+        ####################################################################
+
+        # Test before insertion of an initial row
+        print(testimport.events())
+        result = testimport.idx_exists(first)
+        self.assertTrue(result)
+
+        # Test existence of cascading dependencies
+        result = device.idx_exists(first)
+        self.assertTrue(result)
+        result = l1interface.idx_exists(first)
+        self.assertTrue(result)
+
+        # Do deletion
+        testimport.delete(first)
+        result = testimport.idx_exists(first)
+        self.assertFalse(result)
+
+        # Test existence of cascading dependencies
+        result = device.idx_exists(first)
+        self.assertFalse(result)
+        result = l1interface.idx_exists(first)
+        self.assertFalse(result)
+
+        ####################################################################
+        # Create a brand new record and test deletion
+        ####################################################################
+
+        # Create record
+        row = _row()
+
+        # Test before insertion of an initial row
+        nonexistent = testimport.exists(row.name)
+        self.assertFalse(nonexistent)
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        preliminary_result = testimport.exists(row.name)
+        self.assertTrue(preliminary_result)
+        self.assertEqual(_convert(preliminary_result), _convert(row))
+
+        # Test delete function
+        testimport.delete(preliminary_result.idx_event)
+        result = testimport.exists(row.name)
+        self.assertFalse(result)
 
     def test__row(self):
         """Testing function _row."""

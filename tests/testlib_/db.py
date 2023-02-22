@@ -22,6 +22,7 @@ from switchmap.server.db.table import mac
 from switchmap.server.db.table import macip
 from switchmap.server.db.table import event
 from switchmap.server.db.table import device
+from switchmap.server.db.table import root
 from switchmap.server.db.table import l1interface
 from switchmap.server.db.table import IMacPort
 from switchmap.server.db.table import IVlanPort
@@ -33,6 +34,7 @@ from switchmap.server.db.table import IDevice
 from switchmap.server.db.table import IL1Interface
 from switchmap.server.db.table import IMacIp
 from switchmap.server.db.table import IEvent
+from switchmap.server.db.table import IRoot
 
 from switchmap.server.configuration import ConfigServer
 from switchmap.core import log
@@ -122,6 +124,11 @@ def populate():
     event.insert_row(IEvent(name=event_name, enabled=1))
     row = event.exists(event_name)
 
+    # Create Root record
+    root.insert_row(
+        IRoot(idx_event=row.idx_event, name=data.random_string(), enabled=1)
+    )
+
     # Create Zone record
     zone.insert_row(
         IZone(
@@ -205,7 +212,7 @@ def populate():
             )
         else:
             ip_ = ipaddress.ip_address(
-                ":".join(("%x" % random.randint(0, 16 ** 4) for i in range(8)))
+                ":".join(("%x" % random.randint(0, 16**4) for i in range(8)))
             ).exploded
         macips_.append(
             IMacIp(

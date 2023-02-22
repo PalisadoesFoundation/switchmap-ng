@@ -7,6 +7,8 @@ from switchmap.server.db import db
 from switchmap.server.db.models import Event
 from switchmap.server.db.misc import rows as _rows
 
+from switchmap.server.db.models import Root
+
 
 def idx_exists(idx):
     """Determine whether primary key exists.
@@ -143,6 +145,18 @@ def delete(idx):
         None
 
     """
+    # Verify existence
+    result = idx_exists(idx)
+    if bool(result) is False:
+        return
+
+    # Delete root
+    statement = _delete(Root).where(Root.idx_event == idx)
+
+    print("\n\n\n\n")
+    print("boo")
+    print("\n\n\n\n")
+
     # Delete data
     statement = _delete(Event).where(Event.idx_event == idx)
-    db.db_delete_row(1032, statement)
+    db.db_delete(1032, statement)
