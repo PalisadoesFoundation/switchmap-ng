@@ -127,7 +127,7 @@ def insert_row(rows):
                 idx_oui=idx_oui,
                 idx_zone=row.idx_zone,
                 mac=(null() if bool(mac) is False else mac.encode()),
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -162,7 +162,7 @@ def update_row(idx, row):
                 "idx_oui": idx_oui,
                 "idx_zone": row.idx_zone,
                 "mac": (null() if bool(mac) is False else mac.encode()),
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

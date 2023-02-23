@@ -67,15 +67,6 @@ def prerequisites():
         IZone(
             idx_event=row.idx_event,
             name=zone_name,
-            company_name=data.random_string(),
-            address_0=data.random_string(),
-            address_1=data.random_string(),
-            address_2=data.random_string(),
-            city=data.random_string(),
-            state=data.random_string(),
-            country=data.random_string(),
-            postal_code=data.random_string(),
-            phone=data.random_string(),
             notes=data.random_string(),
             enabled=1,
         )

@@ -8,6 +8,8 @@ from switchmap.server.db.models import Event
 from switchmap.server.db.misc import rows as _rows
 
 from switchmap.server.db.models import Root
+from switchmap.server.db.table import IEvent
+from switchmap.core import general
 
 
 def idx_exists(idx):
@@ -79,7 +81,11 @@ def insert_row(rows):
 
     # Create objects
     for row in rows:
-        inserts.append(Event(name=row.name.encode(), enabled=row.enabled))
+        inserts.append(
+            Event(
+                name=row.name.encode(), enabled=int(bool(row.enabled) is True)
+            )
+        )
 
     # Insert
     if bool(inserts):
@@ -104,7 +110,7 @@ def update_row(idx, row):
         .values(
             {
                 "name": row.name.encode(),
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )
@@ -150,13 +156,37 @@ def delete(idx):
     if bool(result) is False:
         return
 
-    # Delete root
-    statement = _delete(Root).where(Root.idx_event == idx)
+    # Don't delete the very first record.
+    # This must always exist for polling to work correctly
+    if idx != 1:
+        # Delete data
+        statement = _delete(Event).where(Event.idx_event == idx)
+        db.db_delete(1055, statement)
 
-    print("\n\n\n\n")
-    print("boo")
-    print("\n\n\n\n")
+        # Delete root
+        statement = _delete(Root).where(Root.idx_event == idx)
+        db.db_delete(1053, statement)
 
-    # Delete data
-    statement = _delete(Event).where(Event.idx_event == idx)
-    db.db_delete(1032, statement)
+
+def create():
+    """Create an event.
+
+    Args:
+        None
+
+    Returns:
+        result: Event object for row that doesn't already exist
+
+    """
+    # Get configuration
+    while True:
+        name = general.random_hash()
+        _exists = exists(name)
+        if bool(_exists) is False:
+            break
+
+    # Get REvent object
+    row = IEvent(name=name, enabled=1)
+    insert_row(row)
+    result = exists(name)
+    return result

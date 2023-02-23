@@ -182,6 +182,15 @@ Only the "Delete" ORM expression is supported. Not "{}"'''.format(
                 log.log2exception(error_code, sys.exc_info())
                 raise
 
+            try:
+                session.commit()
+            except:
+                # Recover and log error
+                session.rollback()
+                log.log2info(error_code, 'DB "delete_row" commit error.')
+                log.log2exception(error_code, sys.exc_info())
+                raise
+
 
 def db_delete(error_code, statement):
     """Provide a transactional support for Delete actions.

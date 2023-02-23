@@ -111,7 +111,7 @@ def insert_row(rows):
             MacPort(
                 idx_l1interface=row.idx_l1interface,
                 idx_mac=row.idx_mac,
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -139,7 +139,7 @@ def update_row(idx, row):
             {
                 "idx_l1interface": row.idx_l1interface,
                 "idx_mac": row.idx_mac,
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

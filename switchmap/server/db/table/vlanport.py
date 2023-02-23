@@ -111,7 +111,7 @@ def insert_row(rows):
             VlanPort(
                 idx_l1interface=row.idx_l1interface,
                 idx_vlan=row.idx_vlan,
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -139,7 +139,7 @@ def update_row(idx, row):
             {
                 "idx_l1interface": row.idx_l1interface,
                 "idx_vlan": row.idx_vlan,
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

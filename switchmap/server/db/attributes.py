@@ -17,21 +17,6 @@ import graphene
 ###############################################################################
 
 
-def resolve_address_0(obj, _):
-    """Convert 'address_0' from bytes to string."""
-    return obj.address_0.decode()
-
-
-def resolve_address_1(obj, _):
-    """Convert 'address_1' from bytes to string."""
-    return obj.address_1.decode()
-
-
-def resolve_address_2(obj, _):
-    """Convert 'address_2' from bytes to string."""
-    return obj.address_2.decode()
-
-
 def resolve_cdpcachedeviceid(obj, _):
     """Convert 'cdpcachedeviceid' from bytes to string."""
     return obj.cdpcachedeviceid.decode()
@@ -45,21 +30,6 @@ def resolve_cdpcacheplatform(obj, _):
 def resolve_cdpcachedeviceport(obj, _):
     """Convert 'cdpcachedeviceport' from bytes to string."""
     return obj.cdpcachedeviceport.decode()
-
-
-def resolve_city(obj, _):
-    """Convert 'city' from bytes to string."""
-    return obj.city.decode()
-
-
-def resolve_company_name(obj, _):
-    """Convert 'company_name' from bytes to string."""
-    return obj.company_name.decode()
-
-
-def resolve_country(obj, _):
-    """Convert 'country' from bytes to string."""
-    return obj.country.decode()
 
 
 def resolve_hostname(obj, _):
@@ -122,21 +92,6 @@ def resolve_oui(obj, _):
     return obj.oui.decode()
 
 
-def resolve_phone(obj, _):
-    """Convert 'phone' from bytes to string."""
-    return obj.phone.decode()
-
-
-def resolve_postal_code(obj, _):
-    """Convert 'postal_code' from bytes to string."""
-    return obj.postal_code.decode()
-
-
-def resolve_state(obj, _):
-    """Convert 'state' from bytes to string."""
-    return obj.state.decode()
-
-
 def resolve_sys_description(obj, _):
     """Convert 'sys_description' from bytes to string."""
     return obj.sys_description.decode()
@@ -194,25 +149,6 @@ class ZoneAttribute:
     idx_zone = graphene.Int(description="Primary key index")
     idx_event = graphene.Int(description="Event index foreign key")
     name = graphene.String(resolver=resolve_name, description="Zone name")
-    company_name = graphene.String(
-        resolver=resolve_company_name, description="Company name"
-    )
-    address_0 = graphene.String(
-        resolver=resolve_address_0, description="Address Line 0"
-    )
-    address_1 = graphene.String(
-        resolver=resolve_address_1, description="Address Line 1"
-    )
-    address_2 = graphene.String(
-        resolver=resolve_address_2, description="Address Line 2"
-    )
-    city = graphene.String(resolver=resolve_city, description="City")
-    state = graphene.String(resolver=resolve_state, description="State")
-    country = graphene.String(resolver=resolve_country, description="Country")
-    postal_code = graphene.String(
-        resolver=resolve_postal_code, description="Postal code"
-    )
-    phone = graphene.String(resolver=resolve_phone, description="Phone")
     notes = graphene.String(resolver=resolve_notes, description="Notes")
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")

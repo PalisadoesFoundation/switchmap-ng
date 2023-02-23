@@ -53,14 +53,6 @@ class Oui(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Define relationships from parent to child
-    # Note: (no backref, variable name pluralization)
-    # macs = relationship(
-    #     "Mac",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
-
 
 class Event(BASE):
     """Database table definition."""
@@ -82,19 +74,6 @@ class Event(BASE):
     ts_created = Column(
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
-
-    # Define relationships from parent to child
-    # Note: (no backref, variable name pluralization)
-    # zones = relationship(
-    #     "Zone",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
-    # roots = relationship(
-    #     "Root",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
 
 
 class Root(BASE):
@@ -150,15 +129,6 @@ class Zone(BASE):
         server_default=text("1"),
     )
     name = Column(VARBINARY(256))
-    company_name = Column(VARBINARY(256), nullable=True, default=Null)
-    address_0 = Column(VARBINARY(256), nullable=True, default=Null)
-    address_1 = Column(VARBINARY(256), nullable=True, default=Null)
-    address_2 = Column(VARBINARY(256), nullable=True, default=Null)
-    city = Column(VARBINARY(128), nullable=True, default=Null)
-    state = Column(VARBINARY(128), nullable=True, default=Null)
-    country = Column(VARBINARY(128), nullable=True, default=Null)
-    postal_code = Column(VARBINARY(64), nullable=True, default=Null)
-    phone = Column(VARBINARY(128), nullable=True, default=Null)
     notes = Column(VARBINARY(2048), nullable=True, default=Null)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
@@ -181,19 +151,6 @@ class Zone(BASE):
             passive_deletes=True,
         ),
     )
-
-    # Define relationships from parent to child
-    # Note: (no backref, variable name pluralization)
-    # devices = relationship(
-    #     "Device",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
-    # macs = relationship(
-    #     "Mac",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
 
 
 class Device(BASE):
@@ -240,24 +197,6 @@ class Device(BASE):
             passive_deletes=True,
         ),
     )
-
-    # Define relationships from parent to child
-    # Note: (no backref, variable name pluralization)
-    # l1interfaces = relationship(
-    #     "L1Interface",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
-    # vlans = relationship(
-    #     "Vlan",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
-    # macips = relationship(
-    #     "MacIp",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
 
 
 class L1Interface(BASE):
@@ -319,19 +258,6 @@ class L1Interface(BASE):
         ),
     )
 
-    # Define relationships from parent to child
-    # Note: (no backref, variable name pluralization)
-    # vlanports = relationship(
-    #     "VlanPort",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
-    # macports = relationship(
-    #     "MacPort",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
-
 
 class Vlan(BASE):
     """Database table definition."""
@@ -374,14 +300,6 @@ class Vlan(BASE):
             passive_deletes=True,
         ),
     )
-
-    # Define relationships from parent to child
-    # Note: (no backref, variable name pluralization)
-    # vlanports = relationship(
-    #     "VlanPort",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
 
 
 class VlanPort(BASE):
@@ -492,19 +410,6 @@ class Mac(BASE):
             "macs", cascade="all, delete, delete-orphan", passive_deletes=True
         ),
     )
-
-    # Define relationships from parent to child
-    # Note: (no backref, variable name pluralization)
-    # macports = relationship(
-    #     "MacPort",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
-    # macips = relationship(
-    #     "MacIp",
-    #     cascade="all, delete, delete-orphan",
-    #     passive_deletes=True,
-    # )
 
 
 class MacIp(BASE):

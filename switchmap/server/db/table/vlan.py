@@ -109,7 +109,7 @@ def insert_row(rows):
                 vlan=null() if row.vlan is None else row.vlan,
                 name=null() if bool(row.name) is False else row.name.encode(),
                 state=null() if bool(row.state) is False else row.state,
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -141,7 +141,7 @@ def update_row(idx, row):
                     null() if bool(row.name) is False else row.name.encode()
                 ),
                 "state": null() if bool(row.state) is False else row.state,
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

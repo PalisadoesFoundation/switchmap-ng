@@ -108,7 +108,7 @@ def insert_row(rows):
                 last_polled=(
                     0 if row.last_polled is None else row.last_polled
                 ),
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -164,7 +164,7 @@ def update_row(idx, row):
                 "last_polled": (
                     0 if bool(row.last_polled) is False else row.last_polled
                 ),
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

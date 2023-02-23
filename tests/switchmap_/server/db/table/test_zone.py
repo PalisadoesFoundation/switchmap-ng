@@ -168,15 +168,6 @@ class TestDbTableZone(unittest.TestCase):
         updated_row = IZone(
             idx_event=row.idx_event,
             name=data.random_string(),
-            company_name=row.company_name,
-            address_0=row.address_0,
-            address_1=row.address_1,
-            address_2=row.address_2,
-            city=row.city,
-            state=row.city,
-            country=row.country,
-            postal_code=row.postal_code,
-            phone=row.phone,
             notes=data.random_string(),
             enabled=row.enabled,
         )
@@ -207,15 +198,6 @@ def _convert(row):
     result = IZone(
         idx_event=row.idx_event,
         name=row.name,
-        company_name=row.company_name,
-        address_0=row.address_0,
-        address_1=row.address_1,
-        address_2=row.address_2,
-        city=row.city,
-        state=row.city,
-        country=row.country,
-        postal_code=row.postal_code,
-        phone=row.phone,
         notes=row.notes,
         enabled=row.enabled,
     )
@@ -239,15 +221,6 @@ def _row():
     result = IZone(
         idx_event=row.idx_event,
         name=data.random_string(),
-        company_name=data.random_string(),
-        address_0=data.random_string(),
-        address_1=data.random_string(),
-        address_2=data.random_string(),
-        city=data.random_string(),
-        state=data.random_string(),
-        country=data.random_string(),
-        postal_code=data.random_string(),
-        phone=data.random_string(),
         notes=data.random_string(),
         enabled=1,
     )

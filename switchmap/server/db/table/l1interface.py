@@ -202,7 +202,7 @@ def insert_row(rows):
                     if row.lldpremsysname is None
                     else row.lldpremsysname.encode()
                 ),
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -285,7 +285,7 @@ def update_row(idx, row):
                     if row.lldpremsysname is None
                     else row.lldpremsysname.encode()
                 ),
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

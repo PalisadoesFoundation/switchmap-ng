@@ -24,9 +24,11 @@ else:
 # Switchmap-NG standard imports
 from switchmap.server.db.misc import oui as _oui
 from switchmap.server.db.table import oui
-from switchmap.server.db.table import zone
+from switchmap.server.db.table import event
+from switchmap.server.db.table import root
 from switchmap.server.db.table import IOui
-from switchmap.server.db.table import IZone
+from switchmap.server.db.table import IEvent
+from switchmap.server.db.table import IRoot
 from switchmap.server.db import models
 
 
@@ -49,22 +51,19 @@ def main():
     # Create database
     models.create_all_tables()
 
-    # Create the default zone
-    exists = zone.idx_exists(1)
+    # Create the default event
+    exists = event.idx_exists(1)
     if bool(exists) is False:
-        zone.insert_row(
-            IZone(
-                name="Default",
-                company_name=None,
-                address_0=None,
-                address_1=None,
-                address_2=None,
-                city=None,
-                state=None,
-                country=None,
-                postal_code=None,
-                phone=None,
-                notes=None,
+        event.insert_row(
+            IEvent(
+                name="SWITCHMAP - DO NOT DELETE THIS ROW",
+                enabled=1,
+            )
+        )
+        root.insert_row(
+            IRoot(
+                idx_event=1,
+                name="SWITCHMAP - DO NOT DELETE THIS ROW",
                 enabled=1,
             )
         )

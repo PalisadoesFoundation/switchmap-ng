@@ -8,8 +8,6 @@ import tempfile
 from multiprocessing import Pool
 from switchmap.core import log
 from switchmap.core import files
-from switchmap.core import general
-from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IRoot
 from switchmap.server.db.table import event as _event
@@ -107,7 +105,7 @@ Ingest lock file {} exists. Is an ingest process already running?\
         # Parallel processing
         if bool(filepaths) is True:
             # Create an event
-            event = _create_event()
+            event = _event.create()
 
             # Get the zone data from each file
             for filepath in filepaths:
@@ -142,8 +140,8 @@ Ingest lock file {} exists. Is an ingest process already running?\
                 for zone in zones:
                     single(zone)
 
-                # TODO Delete all DB records related to the event
-                _event.delete(event.idx_event)
+            # Delete all DB records related to the event
+            _event.delete(event.idx_event)
 
 
 def single(item):
@@ -158,30 +156,6 @@ def single(item):
     """
     # Process the ingested data
     topology.process(item.data, item.idx_zone)
-
-
-def _create_event():
-    """Get and _event ID for the next polling cycle.
-
-    Args:
-        None
-
-    Returns:
-        result: Event ID that doesn't already exist
-
-    """
-    # Get configuration
-    while True:
-        event = general.random_hash()
-        exists = _event.exists(event)
-        if bool(exists) is False:
-            break
-
-    # Get REvent object
-    row = IEvent(name=event, enabled=1)
-    _event.insert_row(row)
-    result = _event.exists(event)
-    return result
 
 
 def _filepaths(src):
@@ -228,15 +202,6 @@ def _get_zone(event, filepath):
             IZone(
                 idx_event=event.idx_event,
                 name=name,
-                company_name=None,
-                address_0=None,
-                address_1=None,
-                address_2=None,
-                city=None,
-                state=None,
-                country=None,
-                postal_code=None,
-                phone=None,
                 notes=None,
                 enabled=1,
             )

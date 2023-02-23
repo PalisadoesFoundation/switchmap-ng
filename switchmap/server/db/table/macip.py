@@ -154,7 +154,7 @@ def insert_row(rows):
                     else row.hostname.encode()
                 ),
                 version=row.version,
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -189,7 +189,7 @@ def update_row(idx, row):
                     if bool(row.hostname) is False
                     else row.hostname.encode()
                 ),
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

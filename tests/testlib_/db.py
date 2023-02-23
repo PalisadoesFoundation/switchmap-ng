@@ -33,7 +33,6 @@ from switchmap.server.db.table import IOui
 from switchmap.server.db.table import IDevice
 from switchmap.server.db.table import IL1Interface
 from switchmap.server.db.table import IMacIp
-from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IRoot
 
 from switchmap.server.configuration import ConfigServer
@@ -116,33 +115,25 @@ def populate():
     _macs = ["{0}{1}".format(_, data.mac()[:6]) for _ in _ouis]
 
     # Insert the necessary rows
-    event_name = data.random_string()
     zone_name = data.random_string()
     device_name = data.random_string()
 
-    # Create Event record
-    event.insert_row(IEvent(name=event_name, enabled=1))
-    row = event.exists(event_name)
+    for _ in list(range(2)):
+        # Create Event records
+        row = event.create()
 
-    # Create Root record
-    root.insert_row(
-        IRoot(idx_event=row.idx_event, name=data.random_string(), enabled=1)
-    )
+        # Create Root record
+        root.insert_row(
+            IRoot(
+                idx_event=row.idx_event, name=data.random_string(), enabled=1
+            )
+        )
 
     # Create Zone record
     zone.insert_row(
         IZone(
             idx_event=row.idx_event,
             name=zone_name,
-            company_name=data.random_string(),
-            address_0=data.random_string(),
-            address_1=data.random_string(),
-            address_2=data.random_string(),
-            city=data.random_string(),
-            state=data.random_string(),
-            country=data.random_string(),
-            postal_code=data.random_string(),
-            phone=data.random_string(),
             notes=data.random_string(),
             enabled=1,
         )
@@ -212,7 +203,7 @@ def populate():
             )
         else:
             ip_ = ipaddress.ip_address(
-                ":".join(("%x" % random.randint(0, 16**4) for i in range(8)))
+                ":".join(("%x" % random.randint(0, 16 ** 4) for i in range(8)))
             ).exploded
         macips_.append(
             IMacIp(

@@ -82,7 +82,7 @@ def insert_row(rows):
             Root(
                 idx_event=row.idx_event,
                 name=row.name.encode(),
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -110,7 +110,7 @@ def update_row(idx, row):
             {
                 "idx_event": row.idx_event,
                 "name": row.name.encode(),
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

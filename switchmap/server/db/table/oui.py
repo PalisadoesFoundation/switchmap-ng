@@ -108,7 +108,7 @@ def insert_row(rows):
                     if bool(row.organization) is False
                     else row.organization.encode()
                 ),
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -142,7 +142,7 @@ def update_row(idx, row):
                 "oui": (
                     null() if bool(row.oui) is False else row.oui.encode()
                 ),
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

@@ -87,49 +87,10 @@ def insert_row(rows):
                 name=(
                     null() if bool(row.name) is False else row.name.encode()
                 ),
-                company_name=(
-                    null()
-                    if bool(row.company_name) is False
-                    else row.company_name.encode()
-                ),
-                address_0=(
-                    null()
-                    if bool(row.address_0) is False
-                    else row.address_0.encode()
-                ),
-                address_1=(
-                    null()
-                    if bool(row.address_1) is False
-                    else row.address_1.encode()
-                ),
-                address_2=(
-                    null()
-                    if bool(row.address_2) is False
-                    else row.address_2.encode()
-                ),
-                city=(
-                    null() if bool(row.city) is False else row.city.encode()
-                ),
-                state=(
-                    null() if bool(row.state) is False else row.state.encode()
-                ),
-                country=(
-                    null()
-                    if bool(row.country) is False
-                    else row.country.encode()
-                ),
-                postal_code=(
-                    null()
-                    if bool(row.postal_code) is False
-                    else row.postal_code.encode()
-                ),
-                phone=(
-                    null() if bool(row.phone) is False else row.phone.encode()
-                ),
                 notes=(
                     null() if bool(row.notes) is False else row.notes.encode()
                 ),
-                enabled=row.enabled,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -159,49 +120,10 @@ def update_row(idx, row):
                 "name": (
                     null() if bool(row.name) is False else row.name.encode()
                 ),
-                "company_name": (
-                    null()
-                    if bool(row.company_name) is False
-                    else row.company_name.encode()
-                ),
-                "address_0": (
-                    null()
-                    if bool(row.address_0) is False
-                    else row.address_0.encode()
-                ),
-                "address_1": (
-                    null()
-                    if bool(row.address_1) is False
-                    else row.address_1.encode()
-                ),
-                "address_2": (
-                    null()
-                    if bool(row.address_2) is False
-                    else row.address_2.encode()
-                ),
-                "city": (
-                    null() if bool(row.city) is False else row.city.encode()
-                ),
-                "state": (
-                    null() if bool(row.state) is False else row.state.encode()
-                ),
-                "country": (
-                    null()
-                    if bool(row.country) is False
-                    else row.country.encode()
-                ),
-                "postal_code": (
-                    null()
-                    if bool(row.postal_code) is False
-                    else row.postal_code.encode()
-                ),
-                "phone": (
-                    null() if bool(row.phone) is False else row.phone.encode()
-                ),
                 "notes": (
                     null() if bool(row.notes) is False else row.notes.encode()
                 ),
-                "enabled": row.enabled,
+                "enabled": int(bool(row.enabled) is True),
             }
         )
     )

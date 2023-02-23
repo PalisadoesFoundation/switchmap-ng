@@ -57,8 +57,7 @@ CONFIG.save()
 
 from switchmap.server.db.table import event as testimport
 from switchmap.server.db.table import IEvent
-from switchmap.server.db.table import device
-from switchmap.server.db.table import l1interface
+from switchmap.server.db.table import root
 from switchmap.server.db import models
 
 from tests.testlib_ import db
@@ -220,27 +219,32 @@ class TestDbTableEvent(unittest.TestCase):
         # Test deletion of event on a brand new database
         ####################################################################
 
-        # Test before insertion of an initial row
-        print(testimport.events())
-        result = testimport.idx_exists(first)
-        self.assertTrue(result)
+        # Get the database state before
+        before = testimport.events()
 
-        # Test existence of cascading dependencies
-        result = device.idx_exists(first)
-        self.assertTrue(result)
-        result = l1interface.idx_exists(first)
-        self.assertTrue(result)
+        # Get the most recent event
+        recent_idx_event = max([_.idx_event for _ in before])
 
-        # Do deletion
+        # Attempt deletion of the first event. Nothing should change
         testimport.delete(first)
+
         result = testimport.idx_exists(first)
+        self.assertTrue(result)
+
+        result = root.idx_exists(first)
+        self.assertTrue(result)
+
+        # Delete the most recent
+        testimport.delete(recent_idx_event)
+
+        # Test that the original is not there
+        result = testimport.idx_exists(recent_idx_event)
         self.assertFalse(result)
 
-        # Test existence of cascading dependencies
-        result = device.idx_exists(first)
-        self.assertFalse(result)
-        result = l1interface.idx_exists(first)
-        self.assertFalse(result)
+        # Test that the most recent one is not there
+        after = testimport.events()
+        self.assertEqual(len(after) + 1, len(before))
+        self.assertEqual(after, before[:-1])
 
         ####################################################################
         # Create a brand new record and test deletion

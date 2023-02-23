@@ -46,7 +46,7 @@ def device(row):
         ),
         sys_uptime=row.sys_uptime,
         last_polled=row.last_polled,
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -65,7 +65,7 @@ def root(row):
         idx_root=row.idx_root,
         idx_event=row.idx_event,
         name=row.name.decode(),
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -83,7 +83,7 @@ def event(row):
     result = REvent(
         idx_event=row.idx_event,
         name=row.name.decode(),
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -146,7 +146,7 @@ def l1interface(row):
         lldpremsysname=(
             None if row.lldpremsysname is None else row.lldpremsysname.decode()
         ),
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -169,7 +169,7 @@ def mac(row):
         idx_oui=row.idx_oui,
         idx_zone=row.idx_zone,
         mac=(None if bool(row.mac) is False else row.mac.decode()),
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -196,7 +196,7 @@ def macip(row):
             None if bool(row.hostname) is False else row.hostname.decode()
         ),
         version=row.version,
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -218,7 +218,7 @@ def macport(row):
         idx_macport=row.idx_macport,
         idx_l1interface=row.idx_l1interface,
         idx_mac=row.idx_mac,
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -244,7 +244,7 @@ def oui(row):
             if bool(row.organization) is False
             else row.organization.decode()
         ),
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -268,7 +268,7 @@ def vlan(row):
         vlan=row.vlan,
         name=None if bool(row.name) is False else row.name.decode(),
         state=row.state,
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -290,7 +290,7 @@ def vlanport(row):
         idx_vlanport=row.idx_vlanport,
         idx_l1interface=row.idx_l1interface,
         idx_vlan=row.idx_vlan,
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )
@@ -312,21 +312,8 @@ def zone(row):
         idx_zone=row.idx_zone,
         idx_event=row.idx_event,
         name=(None if row.name is None else row.name.decode()),
-        company_name=(
-            None if row.company_name is None else row.company_name.decode()
-        ),
-        address_0=(None if row.address_0 is None else row.address_0.decode()),
-        address_1=(None if row.address_1 is None else row.address_1.decode()),
-        address_2=(None if row.address_2 is None else row.address_2.decode()),
-        city=(None if row.city is None else row.city.decode()),
-        state=(None if row.state is None else row.state.decode()),
-        country=(None if row.country is None else row.country.decode()),
-        postal_code=(
-            None if row.postal_code is None else row.postal_code.decode()
-        ),
-        phone=(None if row.phone is None else row.phone.decode()),
         notes=(None if row.notes is None else row.notes.decode()),
-        enabled=row.enabled,
+        enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
     )

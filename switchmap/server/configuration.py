@@ -63,7 +63,7 @@ class ConfigServer(ConfigCore):
 
         """
         # Get result
-        result = self._config_core.get(
+        result = self._config_server.get(
             "cache_directory",
             "{}{}cache".format(self.system_directory(), os.sep),
         )
@@ -216,7 +216,7 @@ class ConfigServer(ConfigCore):
 
         """
         # Get result
-        result = self._config_core.get(
+        result = self._config_server.get(
             "ingest_directory",
             "{}{}ingest".format(self.system_directory(), os.sep),
         )
@@ -247,7 +247,7 @@ class ConfigServer(ConfigCore):
 
         """
         # Get result
-        result = self._config_poller.get("ingest_interval", 86400)
+        result = self._config_server.get("ingest_interval", 86400)
         return result
 
     def listen_address(self):
