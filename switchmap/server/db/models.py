@@ -55,11 +55,11 @@ class Oui(BASE):
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    macs = relationship(
-        "Mac",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
+    # macs = relationship(
+    #     "Mac",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
 
 
 class Event(BASE):
@@ -85,16 +85,16 @@ class Event(BASE):
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    zones = relationship(
-        "Zone",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
-    roots = relationship(
-        "Root",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
+    # zones = relationship(
+    #     "Zone",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
+    # roots = relationship(
+    #     "Root",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
 
 
 class Root(BASE):
@@ -128,7 +128,7 @@ class Root(BASE):
     event = relationship(
         "Event",
         backref=backref(
-            "roots_",
+            "roots",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -176,7 +176,7 @@ class Zone(BASE):
     event = relationship(
         "Event",
         backref=backref(
-            "zones_",
+            "zones",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -184,16 +184,16 @@ class Zone(BASE):
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    devices = relationship(
-        "Device",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
-    macs = relationship(
-        "Mac",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
+    # devices = relationship(
+    #     "Device",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
+    # macs = relationship(
+    #     "Mac",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
 
 
 class Device(BASE):
@@ -235,7 +235,7 @@ class Device(BASE):
     device = relationship(
         "Zone",
         backref=backref(
-            "devices_",
+            "devices",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -243,21 +243,21 @@ class Device(BASE):
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    l1interfaces = relationship(
-        "L1Interface",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
-    vlans = relationship(
-        "Vlan",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
-    macips = relationship(
-        "MacIp",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
+    # l1interfaces = relationship(
+    #     "L1Interface",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
+    # vlans = relationship(
+    #     "Vlan",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
+    # macips = relationship(
+    #     "MacIp",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
 
 
 class L1Interface(BASE):
@@ -313,7 +313,7 @@ class L1Interface(BASE):
     device = relationship(
         "Device",
         backref=backref(
-            "l1interfaces_",
+            "l1interfaces",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -321,16 +321,16 @@ class L1Interface(BASE):
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    vlanports = relationship(
-        "VlanPort",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
-    macports = relationship(
-        "MacPort",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
+    # vlanports = relationship(
+    #     "VlanPort",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
+    # macports = relationship(
+    #     "MacPort",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
 
 
 class Vlan(BASE):
@@ -369,7 +369,7 @@ class Vlan(BASE):
     device = relationship(
         "Device",
         backref=backref(
-            "vlans_",
+            "vlans",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -377,11 +377,11 @@ class Vlan(BASE):
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    vlanports = relationship(
-        "VlanPort",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
+    # vlanports = relationship(
+    #     "VlanPort",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
 
 
 class VlanPort(BASE):
@@ -426,7 +426,7 @@ class VlanPort(BASE):
     vlan = relationship(
         "Vlan",
         backref=backref(
-            "vlanports_",
+            "vlanports",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -435,7 +435,7 @@ class VlanPort(BASE):
     l1interfaces = relationship(
         "L1Interface",
         backref=backref(
-            "vlanports_",
+            "vlanports",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -483,28 +483,28 @@ class Mac(BASE):
     oui = relationship(
         "Oui",
         backref=backref(
-            "macs_", cascade="all, delete, delete-orphan", passive_deletes=True
+            "macs", cascade="all, delete, delete-orphan", passive_deletes=True
         ),
     )
     zone = relationship(
         "Zone",
         backref=backref(
-            "macs_", cascade="all, delete, delete-orphan", passive_deletes=True
+            "macs", cascade="all, delete, delete-orphan", passive_deletes=True
         ),
     )
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    macports = relationship(
-        "MacPort",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
-    macips = relationship(
-        "MacIp",
-        cascade="all, delete, delete-orphan",
-        passive_deletes=True,
-    )
+    # macports = relationship(
+    #     "MacPort",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
+    # macips = relationship(
+    #     "MacIp",
+    #     cascade="all, delete, delete-orphan",
+    #     passive_deletes=True,
+    # )
 
 
 class MacIp(BASE):
@@ -552,7 +552,7 @@ class MacIp(BASE):
     device = relationship(
         "Device",
         backref=backref(
-            "macips_",
+            "macips",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -561,7 +561,7 @@ class MacIp(BASE):
     mac = relationship(
         "Mac",
         backref=backref(
-            "macips_",
+            "macips",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -610,7 +610,7 @@ class MacPort(BASE):
     mac = relationship(
         "Mac",
         backref=backref(
-            "macports_",
+            "macports",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
@@ -619,7 +619,7 @@ class MacPort(BASE):
     l1interfaces = relationship(
         "L1Interface",
         backref=backref(
-            "macports_",
+            "macports",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
