@@ -55,7 +55,11 @@ class Oui(BASE):
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    macs = relationship("Mac", cascade="all, delete, delete-orphan")
+    macs = relationship(
+        "Mac",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class Event(BASE):
@@ -81,9 +85,16 @@ class Event(BASE):
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    # roots = relationship("Root", cascade="all, delete, delete-orphan")
-    zones = relationship("Zone", cascade="all, delete, delete-orphan")
-    roots = relationship("Root", cascade="all, delete, delete-orphan")
+    zones = relationship(
+        "Zone",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
+    roots = relationship(
+        "Root",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class Root(BASE):
@@ -94,8 +105,8 @@ class Root(BASE):
 
     idx_root = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_event = Column(
-        ForeignKey(Event.idx_event),
-        nullable=False,
+        ForeignKey(Event.idx_event, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
@@ -116,7 +127,11 @@ class Root(BASE):
     # (with backref to plural variable in parent table definition)
     event = relationship(
         "Event",
-        backref=backref("roots_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "roots_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
 
@@ -128,8 +143,8 @@ class Zone(BASE):
 
     idx_zone = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_event = Column(
-        ForeignKey(Event.idx_event),
-        nullable=False,
+        ForeignKey(Event.idx_event, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
@@ -160,13 +175,25 @@ class Zone(BASE):
     # (with backref to plural variable in parent table definition)
     event = relationship(
         "Event",
-        backref=backref("zones_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "zones_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    devices = relationship("Device", cascade="all, delete, delete-orphan")
-    macs = relationship("Mac", cascade="all, delete, delete-orphan")
+    devices = relationship(
+        "Device",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
+    macs = relationship(
+        "Mac",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class Device(BASE):
@@ -179,8 +206,8 @@ class Device(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_zone = Column(
-        ForeignKey(Zone.idx_zone),
-        nullable=False,
+        ForeignKey(Zone.idx_zone, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
@@ -207,16 +234,30 @@ class Device(BASE):
     # (with backref to plural variable in parent table definition)
     device = relationship(
         "Zone",
-        backref=backref("devices_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "devices_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
     l1interfaces = relationship(
-        "L1Interface", cascade="all, delete, delete-orphan"
+        "L1Interface",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
     )
-    vlans = relationship("Vlan", cascade="all, delete, delete-orphan")
-    macips = relationship("MacIp", cascade="all, delete, delete-orphan")
+    vlans = relationship(
+        "Vlan",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
+    macips = relationship(
+        "MacIp",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class L1Interface(BASE):
@@ -232,8 +273,8 @@ class L1Interface(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_device = Column(
-        ForeignKey(Device.idx_device),
-        nullable=False,
+        ForeignKey(Device.idx_device, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
@@ -271,13 +312,25 @@ class L1Interface(BASE):
     # (with backref to plural variable in parent table definition)
     device = relationship(
         "Device",
-        backref=backref("l1interfaces_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "l1interfaces_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    vlanports = relationship("VlanPort", cascade="all, delete, delete-orphan")
-    macports = relationship("MacPort", cascade="all, delete, delete-orphan")
+    vlanports = relationship(
+        "VlanPort",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
+    macports = relationship(
+        "MacPort",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class Vlan(BASE):
@@ -291,8 +344,8 @@ class Vlan(BASE):
 
     idx_vlan = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_device = Column(
-        ForeignKey(Device.idx_device),
-        nullable=False,
+        ForeignKey(Device.idx_device, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
@@ -315,12 +368,20 @@ class Vlan(BASE):
     # (with backref to plural variable in parent table definition)
     device = relationship(
         "Device",
-        backref=backref("vlans_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "vlans_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    vlanports = relationship("VlanPort", cascade="all, delete, delete-orphan")
+    vlanports = relationship(
+        "VlanPort",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class VlanPort(BASE):
@@ -336,15 +397,15 @@ class VlanPort(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_l1interface = Column(
-        ForeignKey(L1Interface.idx_l1interface),
-        nullable=False,
+        ForeignKey(L1Interface.idx_l1interface, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
     )
     idx_vlan = Column(
-        ForeignKey(Vlan.idx_vlan),
-        nullable=False,
+        ForeignKey(Vlan.idx_vlan, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
@@ -364,12 +425,20 @@ class VlanPort(BASE):
     # (with backref to plural variable in parent table definition)
     vlan = relationship(
         "Vlan",
-        backref=backref("vlanports_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "vlanports_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
     l1interfaces = relationship(
         "L1Interface",
-        backref=backref("vlanports_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "vlanports_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
 
@@ -385,14 +454,14 @@ class Mac(BASE):
     idx_mac = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_oui = Column(
         ForeignKey(Oui.idx_oui),
-        nullable=False,
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
     )
     idx_zone = Column(
-        ForeignKey(Zone.idx_zone),
-        nullable=False,
+        ForeignKey(Zone.idx_zone, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
@@ -412,16 +481,30 @@ class Mac(BASE):
     # Define relationships from child to parent
     # (with backref to plural variable in parent table definition)
     oui = relationship(
-        "Oui", backref=backref("macs_", cascade="all, delete, delete-orphan")
+        "Oui",
+        backref=backref(
+            "macs_", cascade="all, delete, delete-orphan", passive_deletes=True
+        ),
     )
     zone = relationship(
-        "Zone", backref=backref("macs_", cascade="all, delete, delete-orphan")
+        "Zone",
+        backref=backref(
+            "macs_", cascade="all, delete, delete-orphan", passive_deletes=True
+        ),
     )
 
     # Define relationships from parent to child
     # Note: (no backref, variable name pluralization)
-    macports = relationship("MacPort", cascade="all, delete, delete-orphan")
-    macips = relationship("MacIp", cascade="all, delete, delete-orphan")
+    macports = relationship(
+        "MacPort",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
+    macips = relationship(
+        "MacIp",
+        cascade="all, delete, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class MacIp(BASE):
@@ -437,15 +520,15 @@ class MacIp(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_device = Column(
-        ForeignKey(Device.idx_device),
-        nullable=False,
+        ForeignKey(Device.idx_device, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
     )
     idx_mac = Column(
-        ForeignKey(Mac.idx_mac),
-        nullable=False,
+        ForeignKey(Mac.idx_mac, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
@@ -468,11 +551,20 @@ class MacIp(BASE):
     # (with backref to plural variable in parent table definition)
     device = relationship(
         "Device",
-        backref=backref("macips_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "macips_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
     mac = relationship(
-        "Mac", backref=backref("macips_", cascade="all, delete, delete-orphan")
+        "Mac",
+        backref=backref(
+            "macips_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
 
@@ -489,15 +581,15 @@ class MacPort(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_l1interface = Column(
-        ForeignKey(L1Interface.idx_l1interface),
-        nullable=False,
+        ForeignKey(L1Interface.idx_l1interface, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
     )
     idx_mac = Column(
-        ForeignKey(Mac.idx_mac),
-        nullable=False,
+        ForeignKey(Mac.idx_mac, ondelete="CASCADE"),
+        nullable=True,
         index=True,
         default=1,
         server_default=text("1"),
@@ -517,12 +609,20 @@ class MacPort(BASE):
     # (with backref to plural variable in parent table definition)
     mac = relationship(
         "Mac",
-        backref=backref("macports_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "macports_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
     l1interfaces = relationship(
         "L1Interface",
-        backref=backref("macports_", cascade="all, delete, delete-orphan"),
+        backref=backref(
+            "macports_",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
     )
 
 
