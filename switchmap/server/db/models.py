@@ -53,11 +53,9 @@ class Oui(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Define relationships
-    macs = relationship(
-        "Mac",
-        backref=backref("Oui", uselist=True, cascade="delete,all"),
-    )
+    # Define relationships from parent to child
+    # Note: (no backref, variable name pluralization)
+    macs = relationship("Mac", cascade="all, delete, delete-orphan")
 
 
 class Event(BASE):
@@ -81,16 +79,11 @@ class Event(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Define relationships
-    roots = relationship(
-        "Root",
-        backref=backref("Event", uselist=True, cascade="delete,all"),
-    )
-
-    zones = relationship(
-        "Zone",
-        backref=backref("Event", uselist=True, cascade="delete,all"),
-    )
+    # Define relationships from parent to child
+    # Note: (no backref, variable name pluralization)
+    # roots = relationship("Root", cascade="all, delete, delete-orphan")
+    zones = relationship("Zone", cascade="all, delete, delete-orphan")
+    roots = relationship("Root", cascade="all, delete, delete-orphan")
 
 
 class Root(BASE):
@@ -117,6 +110,13 @@ class Root(BASE):
     )
     ts_created = Column(
         DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    event = relationship(
+        "Event",
+        backref=backref("roots_", cascade="all, delete, delete-orphan"),
     )
 
 
@@ -156,16 +156,17 @@ class Zone(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Define relationships
-    devices = relationship(
-        "Device",
-        backref=backref("Zone", uselist=True, cascade="delete,all"),
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    event = relationship(
+        "Event",
+        backref=backref("zones_", cascade="all, delete, delete-orphan"),
     )
 
-    macs = relationship(
-        "Mac",
-        backref=backref("Zone", uselist=True, cascade="delete,all"),
-    )
+    # Define relationships from parent to child
+    # Note: (no backref, variable name pluralization)
+    devices = relationship("Device", cascade="all, delete, delete-orphan")
+    macs = relationship("Mac", cascade="all, delete, delete-orphan")
 
 
 class Device(BASE):
@@ -202,21 +203,20 @@ class Device(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Define relationships
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    device = relationship(
+        "Zone",
+        backref=backref("devices_", cascade="all, delete, delete-orphan"),
+    )
+
+    # Define relationships from parent to child
+    # Note: (no backref, variable name pluralization)
     l1interfaces = relationship(
-        "L1Interface",
-        backref=backref("Device", uselist=True, cascade="delete,all"),
+        "L1Interface", cascade="all, delete, delete-orphan"
     )
-
-    vlans = relationship(
-        "Vlan",
-        backref=backref("Device", uselist=True, cascade="delete,all"),
-    )
-
-    macips = relationship(
-        "MacIp",
-        backref=backref("Device", uselist=True, cascade="delete,all"),
-    )
+    vlans = relationship("Vlan", cascade="all, delete, delete-orphan")
+    macips = relationship("MacIp", cascade="all, delete, delete-orphan")
 
 
 class L1Interface(BASE):
@@ -267,16 +267,17 @@ class L1Interface(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Define relationships
-    vlanports = relationship(
-        "VlanPort",
-        backref=backref("L1Interface", uselist=True, cascade="delete,all"),
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    device = relationship(
+        "Device",
+        backref=backref("l1interfaces_", cascade="all, delete, delete-orphan"),
     )
 
-    macports = relationship(
-        "MacPort",
-        backref=backref("L1Interface", uselist=True, cascade="delete,all"),
-    )
+    # Define relationships from parent to child
+    # Note: (no backref, variable name pluralization)
+    vlanports = relationship("VlanPort", cascade="all, delete, delete-orphan")
+    macports = relationship("MacPort", cascade="all, delete, delete-orphan")
 
 
 class Vlan(BASE):
@@ -310,11 +311,16 @@ class Vlan(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Define relationships
-    vlanports = relationship(
-        "VlanPort",
-        backref=backref("Vlan", uselist=True, cascade="delete,all"),
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    device = relationship(
+        "Device",
+        backref=backref("vlans_", cascade="all, delete, delete-orphan"),
     )
+
+    # Define relationships from parent to child
+    # Note: (no backref, variable name pluralization)
+    vlanports = relationship("VlanPort", cascade="all, delete, delete-orphan")
 
 
 class VlanPort(BASE):
@@ -354,6 +360,18 @@ class VlanPort(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    vlan = relationship(
+        "Vlan",
+        backref=backref("vlanports_", cascade="all, delete, delete-orphan"),
+    )
+
+    l1interfaces = relationship(
+        "L1Interface",
+        backref=backref("vlanports_", cascade="all, delete, delete-orphan"),
+    )
+
 
 class Mac(BASE):
     """Database table definition."""
@@ -391,16 +409,19 @@ class Mac(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
-    # Define relationships
-    macports = relationship(
-        "MacPort",
-        backref=backref("Mac", uselist=True, cascade="delete,all"),
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    oui = relationship(
+        "Oui", backref=backref("macs_", cascade="all, delete, delete-orphan")
+    )
+    zone = relationship(
+        "Zone", backref=backref("macs_", cascade="all, delete, delete-orphan")
     )
 
-    macips = relationship(
-        "MacIp",
-        backref=backref("Mac", uselist=True, cascade="delete,all"),
-    )
+    # Define relationships from parent to child
+    # Note: (no backref, variable name pluralization)
+    macports = relationship("MacPort", cascade="all, delete, delete-orphan")
+    macips = relationship("MacIp", cascade="all, delete, delete-orphan")
 
 
 class MacIp(BASE):
@@ -443,6 +464,17 @@ class MacIp(BASE):
         DateTime, nullable=False, default=datetime.datetime.utcnow
     )
 
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    device = relationship(
+        "Device",
+        backref=backref("macips_", cascade="all, delete, delete-orphan"),
+    )
+
+    mac = relationship(
+        "Mac", backref=backref("macips_", cascade="all, delete, delete-orphan")
+    )
+
 
 class MacPort(BASE):
     """Database table definition."""
@@ -479,6 +511,18 @@ class MacPort(BASE):
     )
     ts_created = Column(
         DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    mac = relationship(
+        "Mac",
+        backref=backref("macports_", cascade="all, delete, delete-orphan"),
+    )
+
+    l1interfaces = relationship(
+        "L1Interface",
+        backref=backref("macports_", cascade="all, delete, delete-orphan"),
     )
 
 
