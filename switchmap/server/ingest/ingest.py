@@ -72,17 +72,18 @@ Ingest lock file {} exists. Is an ingest process already running?\
         # Process files
         with tempfile.TemporaryDirectory(
             dir=self._config.ingest_directory()
-        ) as _stream:
+        ) as tmpdir:
+
             # Copy files from cache to ingest
-            files.move_yaml_files(cache_directory, _stream.name)
+            files.move_yaml_files(cache_directory, tmpdir)
 
             # Parallel process the files
-            self.parallel()
+            self.parallel(tmpdir)
 
         # Delete lock file
         os.remove(lock_file)
 
-    def parallel(self):
+    def parallel(self, src):
         """Ingest the files in parallel.
 
         Args:
@@ -94,7 +95,7 @@ Ingest lock file {} exists. Is an ingest process already running?\
         """
         # Initialize key variables
         zones = []
-        src = self._config.ingest_directory()
+        # src = self._config.ingest_directory()
 
         # Get the number of threads to use in the pool
         pool_size = self._config.agent_subprocesses()
@@ -137,11 +138,12 @@ Ingest lock file {} exists. Is an ingest process already running?\
                 ############################
                 # Process files sequentially
                 ############################
+                print(zones)
                 for zone in zones:
                     single(zone)
 
             # Delete all DB records related to the event
-            _event.delete(event.idx_event)
+            # _event.delete(event.idx_event)
 
 
 def single(item):
@@ -198,7 +200,7 @@ def _get_zone(event, filepath):
     name = data["misc"]["zone"]
     exists = _zone.exists(event.idx_event, name)
     if bool(exists) is False:
-        _zone.insert(
+        _zone.insert_row(
             IZone(
                 idx_event=event.idx_event,
                 name=name,

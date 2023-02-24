@@ -53,26 +53,26 @@ database is automatically deleted.""",
 
     # CLI argument for starting
     parser.add_argument(
-        "--ingest_directory",
+        "--cache_directory",
         required=True,
         type=str,
-        help="Directory where the ingest files are located.",
+        help="Directory where the cache files are located.",
     )
     args = parser.parse_args()
 
     # Get the source directory
-    ingest_directory = args.ingest_directory
+    cache_directory = args.cache_directory
 
     # Fail if the directory does not exist
-    if bool(os.path.isdir(ingest_directory)) is False:
+    if bool(os.path.isdir(cache_directory)) is False:
         log_message = "Ingest directory {} does not exist".format(
-            ingest_directory
+            cache_directory
         )
         log.log2die(1051, log_message)
 
     # Ingest data
     _ingest = ingest.Ingest(
-        config, test=True, test_cache_directory=args.ingest_directory
+        config, test=True, test_cache_directory=args.cache_directory
     )
     _ingest.process()
 
