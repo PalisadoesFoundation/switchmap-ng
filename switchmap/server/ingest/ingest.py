@@ -27,6 +27,7 @@ class Ingest:
             config: ConfigServer object
             test: True if testing
             test_cache_directory: Ingest directory. Only used when testing.
+            purge: Purge events if True
 
         Returns:
             None
@@ -105,6 +106,7 @@ Ingest lock file {} exists. Is an ingest process already running?\
 
         # Parallel processing
         if bool(filepaths) is True:
+
             # Create an event
             event = _event.create()
 
@@ -134,6 +136,15 @@ Ingest lock file {} exists. Is an ingest process already running?\
                             enabled=1,
                         ),
                     )
+
+                # Purge data if requested
+                if bool(self._config.purge_after_ingest()) is True:
+                    log_message = (
+                        "Purging database based on configuration parameters."
+                    )
+                    log.log2debug(1058, log_message)
+                    _event.purge()
+
             else:
                 ############################
                 # Process files sequentially
@@ -142,8 +153,9 @@ Ingest lock file {} exists. Is an ingest process already running?\
                 for zone in zones:
                     single(zone)
 
-            # Delete all DB records related to the event
-            # _event.delete(event.idx_event)
+                # Delete all DB records related to the event.
+                # This is only done for testing
+                _event.delete(event.idx_event)
 
 
 def single(item):

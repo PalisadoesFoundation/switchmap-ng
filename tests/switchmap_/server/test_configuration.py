@@ -148,6 +148,13 @@ class Test_ConfigServer(unittest.TestCase):
         result = self.config.ingest_interval()
         self.assertEqual(result, expected)
 
+    def test_purge_after_ingest(self):
+        """Testing function purge_after_ingest."""
+        # Run test
+        expected = False
+        result = self.config.purge_after_ingest()
+        self.assertEqual(result, expected)
+
     ######################################################################
     ######################################################################
     # All 'core:' configuration file parameters must pass. Tests below

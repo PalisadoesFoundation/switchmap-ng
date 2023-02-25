@@ -5,6 +5,7 @@ import os
 
 from switchmap.core.configuration import ConfigCore
 from switchmap.core import log
+from switchmap.core import general
 from switchmap.poller import ZONE, SNMP
 
 
@@ -131,18 +132,8 @@ class ConfigPoller(ConfigCore):
         """
         # Get result
         result = self._config_poller.get("server_https", None)
-        if result is None:
-            result = False
-        elif result is False:
-            pass
-        elif isinstance(result, str):
-            if result.lower() == "none":
-                result = False
-            elif result.lower() == "false":
-                result = False
-            elif result.lower() == "true":
-                result = True
-        return bool(result)
+        result = general.make_bool(result)
+        return result
 
     def server_password(self):
         """Get server_password.

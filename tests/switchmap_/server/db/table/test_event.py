@@ -268,6 +268,55 @@ class TestDbTableEvent(unittest.TestCase):
         result = testimport.exists(row.name)
         self.assertFalse(result)
 
+    def test_create(self):
+        """Testing function create."""
+        # Get the state before
+        before = testimport.events()
+
+        # Create event
+        _event = testimport.create()
+
+        # Get the state before
+        after = testimport.events()
+
+        # Test Event entries
+        expected = before
+        expected.append(_event)
+        expected.sort(key=lambda x: (x.idx_event))
+        after.sort(key=lambda x: (x.idx_event))
+        self.assertEqual(after, expected)
+
+        # Test Root entries
+        roots = root.roots()
+        self.assertEqual(len(roots), len(after) + 2)
+
+        for item in roots:
+            if item.idx_root != 1:
+                result = testimport.idx_exists(item.idx_event)
+                self.assertTrue(result)
+
+    def test_purge(self):
+        """Testing function purge."""
+        # Create additional events
+        for _ in range(10):
+            testimport.create()
+
+        # Get the state before
+        before = testimport.events()
+
+        # Purge events
+        testimport.purge()
+
+        # Get the after state
+        after = testimport.events()
+
+        # Test
+        self.assertTrue(len(after) == 2)
+        indexes_before = [_.idx_event for _ in before]
+        indexes_after = [_.idx_event for _ in before]
+        self.assertEqual(min(indexes_before), min(indexes_after))
+        self.assertEqual(max(indexes_before), max(indexes_after))
+
     def test__row(self):
         """Testing function _row."""
         # This function is tested by all the other tests

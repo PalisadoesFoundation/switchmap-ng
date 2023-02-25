@@ -6,6 +6,7 @@ import os
 # Import project libraries
 from switchmap.core.configuration import ConfigCore
 from switchmap.core import log
+from switchmap.core import general
 from switchmap.core import files
 
 
@@ -262,4 +263,21 @@ class ConfigServer(ConfigCore):
         """
         # Get result
         result = self._config_server.get("listen_address", "0.0.0.0")
+        return result
+
+    def purge_after_ingest(self):
+        """Return purge_after_ingest value.
+
+        Args:
+            None
+
+        Returns:
+            result: purge_after_ingest value
+
+        """
+        # Get parameter
+        result = self._config_server.get("purge_after_ingest", True)
+        result = general.make_bool(result)
+
+        # Return
         return result

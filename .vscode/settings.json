@@ -11,6 +11,7 @@
     ],
     "python.formatting.autopep8Args": [
         "--max-line-length=80",
-        "--ignore=E402"
+        "--ignore=E402,E722"
     ],
+    "restructuredtext.preview.name": "docutils",
 }

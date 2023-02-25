@@ -10,6 +10,7 @@ import yaml
 
 # Application libraries
 from switchmap.core import log
+from switchmap.core import general
 
 
 class _Directory:
@@ -57,7 +58,7 @@ class _Directory:
         return value
 
     def snmp(self):
-        """Method for defining the hidden snmp directory.
+        """Define the hidden snmp directory.
 
         Args:
             None
@@ -118,7 +119,7 @@ class _File:
         return value
 
     def snmp(self, prefix, create=True):
-        """Method for defining the hidden snmp directory.
+        """Define the hidden snmp directory.
 
         Args:
             prefix: Prefix of file
@@ -268,6 +269,10 @@ def read_yaml_file(filepath, as_string=False, die=True):
                 return {}
             else:
                 return ""
+
+    # Convert all dict keys to int
+    if bool(as_string) is False:
+        result = general.consistent_keys(result)
 
     # Return
     return result

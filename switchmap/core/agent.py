@@ -96,7 +96,7 @@ class _AgentRun:
         self._agent_ = agent
 
     def run(self):
-        """Start Polling
+        """Start Polling.
 
         Args:
             None
@@ -111,7 +111,7 @@ class _AgentRun:
 
 
 class AgentDaemon(_AgentRun, Daemon):
-    """Class that manages base agent daemonization"""
+    """Class that manages base agent daemonization."""
 
     def __init__(self, agent):
         """Initialize the class.

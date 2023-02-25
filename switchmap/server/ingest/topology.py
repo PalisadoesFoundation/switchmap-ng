@@ -67,10 +67,10 @@ def device(idx_zone, data):
         idx_zone=idx_zone,
         hostname=hostname,
         name=hostname,
-        sys_name=data["system"]["SNMPv2-MIB"]["sysName"]["0"],
-        sys_description=data["system"]["SNMPv2-MIB"]["sysDescr"]["0"],
-        sys_objectid=data["system"]["SNMPv2-MIB"]["sysObjectID"]["0"],
-        sys_uptime=data["system"]["SNMPv2-MIB"]["sysUpTime"]["0"],
+        sys_name=data["system"]["SNMPv2-MIB"]["sysName"][0],
+        sys_description=data["system"]["SNMPv2-MIB"]["sysDescr"][0],
+        sys_objectid=data["system"]["SNMPv2-MIB"]["sysObjectID"][0],
+        sys_uptime=data["system"]["SNMPv2-MIB"]["sysUpTime"][0],
         last_polled=data["misc"]["timestamp"],
         enabled=1,
     )
@@ -117,7 +117,10 @@ def _lookup(idx_device):
 
 
 class Status:
+    """Tracks the status of various Topology methods."""
+
     def __init__(self):
+        """Instantiate the class."""
         self._vlan = False
         self._vlanport = False
         self._mac = False
@@ -127,62 +130,62 @@ class Status:
 
     @property
     def l1interface(self):
-        """Getting the 'l1interface' property."""
+        """Provide the value of  the 'l1interface' property."""
         return self._l1interface
 
     @l1interface.setter
     def l1interface(self, value):
-        """Setting the 'l1interface' property."""
+        """Set the 'l1interface' property."""
         self._l1interface = value
 
     @property
     def macip(self):
-        """Getting the 'macip' property."""
+        """Provide the value of  the 'macip' property."""
         return self._macip
 
     @macip.setter
     def macip(self, value):
-        """Setting the 'macip' property."""
+        """Set the 'macip' property."""
         self._macip = value
 
     @property
     def macport(self):
-        """Getting the 'macport' property."""
+        """Provide the value of  the 'macport' property."""
         return self._macport
 
     @macport.setter
     def macport(self, value):
-        """Setting the 'macport' property."""
+        """Set the 'macport' property."""
         self._macport = value
 
     @property
     def mac(self):
-        """Getting the 'mac' property."""
+        """Provide the value of  the 'mac' property."""
         return self._mac
 
     @mac.setter
     def mac(self, value):
-        """Setting the 'mac' property."""
+        """Set the 'mac' property."""
         self._mac = value
 
     @property
     def vlanport(self):
-        """Getting the 'vlanport' property."""
+        """Provide the value of  the 'vlanport' property."""
         return self._vlanport
 
     @vlanport.setter
     def vlanport(self, value):
-        """Setting the 'vlanport' property."""
+        """Set the 'vlanport' property."""
         self._vlanport = value
 
     @property
     def vlan(self):
-        """Getting the 'vlan' property."""
+        """Provide the value of  the 'vlan' property."""
         return self._vlan
 
     @vlan.setter
     def vlan(self, value):
-        """Setting the 'vlan' property."""
+        """Set the 'vlan' property."""
         self._vlan = value
 
 
@@ -699,7 +702,7 @@ class Topology:
         self.log("MacIp", updated=True)
 
     def log(self, table, updated=False):
-        """Standard log messaging.
+        """Create standardized log messaging.
 
         Args:
             table: Name of table being updated
@@ -720,7 +723,7 @@ class Topology:
         log.log2debug(1028, log_message)
 
     def log_invalid(self, table):
-        """Standard log messaging.
+        """Create standardized log messaging for invalid states.
 
         Args:
             table: Name of table being updated

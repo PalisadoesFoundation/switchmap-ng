@@ -9,6 +9,8 @@ from switchmap.server.db.misc import rows as _rows
 
 from switchmap.server.db.models import Root
 from switchmap.server.db.table import IEvent
+from switchmap.server.db.table import IRoot
+from switchmap.server.db.table import root
 from switchmap.core import general
 
 
@@ -189,4 +191,32 @@ def create():
     row = IEvent(name=name, enabled=1)
     insert_row(row)
     result = exists(name)
+
+    # Create a root entry
+    root.insert_row(
+        IRoot(idx_event=result.idx_event, name=result.name, enabled=True)
+    )
     return result
+
+
+def purge():
+    """Purge all events except the first and last.
+
+    Args:
+        None
+
+    Returns:
+        result: None
+
+    """
+    # Get all the event data
+    _events = events()
+
+    # Get the first and last event
+    indexes = [_.idx_event for _ in _events]
+    first = min(indexes)
+    last = max(indexes)
+
+    for item in _events:
+        if (item.idx_event != first) and (item.idx_event != last):
+            delete(item.idx_event)

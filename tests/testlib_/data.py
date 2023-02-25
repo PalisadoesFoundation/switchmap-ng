@@ -5,13 +5,15 @@ import random
 from collections import namedtuple
 from string import ascii_uppercase
 from io import StringIO
-from copy import deepcopy
 import os
 import binascii
 import socket
 import struct
 
 import yaml
+
+# Import app library
+from switchmap.core import general
 
 _CONFIG_YAML = """
 core:
@@ -57,6 +59,7 @@ server:
   bind_port: 7027
   listen_address: MKG2dst7sh4gPe2X
   ingest_interval: 98712
+  purge_after_ingest: False
   db_host: Mwxu7gnv29AbLGyz
   db_name: JkfSJnhZTh55wJy4
   db_user: 7MKG2dstsh4gPe2X
@@ -160,7 +163,7 @@ def polled_data(strip=True):
         item = yaml.safe_load(stream)
 
     # Convert all the integer string keys to integer
-    result = _walk_dict(item)
+    result = general.consistent_keys(item)
 
     # Remove all the extraneous L1 keys that start with 'l1_'
     if bool(strip) is True:
@@ -213,58 +216,6 @@ def _dict(item):
     return result
 
 
-def _walk_dict(_data):
-    """Convert dict keys to ints if possible.
-
-    Args:
-        _data: Multidimensional dict
-
-    Returns:
-        result: dict
-
-    """
-    # Initialize key variables
-    result = {}
-    _data = deepcopy(_data)
-
-    # Recursively get data
-    for key, value in _data.items():
-        if isinstance(value, dict):
-            walk_result = _walk_dict(value)
-            result[key] = _key_to_int(walk_result)
-        else:
-            result[key] = value
-
-    # Return
-    return result
-
-
-def _key_to_int(_data):
-    """Convert dict keys to ints if possible.
-
-    Args:
-        _data: dict
-
-    Returns:
-        result: dict
-
-    """
-    # Initialize key variables
-    result = {}
-    _data = deepcopy(_data)
-
-    if isinstance(_data, dict):
-        for key, value in _data.items():
-            try:
-                fixed_key = int(key)
-            except:
-                fixed_key = key
-            result[fixed_key] = value
-    else:
-        result = _data
-    return result
-
-
 def mac():
     """Generate a random mac address.
 
@@ -306,7 +257,7 @@ def ipv6():
 
     """
     # Return
-    bits = 16 ** 4
+    bits = 16**4
     result = ":".join(
         ("{:02x}".format(random.randint(0, bits)).zfill(4) for i in range(8))
     )

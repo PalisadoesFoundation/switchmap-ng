@@ -6,6 +6,7 @@ import os
 import random
 import re
 import ipaddress as ipaddress_
+from copy import deepcopy
 
 # Application libraries
 from switchmap.core import log
@@ -181,4 +182,81 @@ def ipaddress(_ip):
         # Create IP record
         address = meta.exploded.lower()
         result = IP(address=address, version=meta.version)
+    return result
+
+
+def make_bool(result):
+    """Create a boolean version of the argument.
+
+    Args:
+        result: Object to transform
+
+    Returns:
+        result: boolean
+
+    """
+    # Process
+    if result is None:
+        result = False
+    elif result is False:
+        pass
+    elif isinstance(result, str):
+        if result.lower() == "none":
+            result = False
+        elif result.lower() == "false":
+            result = False
+        elif result.lower() == "true":
+            result = True
+    return bool(result)
+
+
+def consistent_keys(_data):
+    """Convert dict keys to ints if possible.
+
+    Args:
+        _data: Multidimensional dict
+
+    Returns:
+        result: dict
+
+    """
+    # Initialize key variables
+    result = {}
+    _data = deepcopy(_data)
+
+    # Recursively get data
+    for key, value in _data.items():
+        if isinstance(value, dict):
+            walk_result = consistent_keys(value)
+            result[key] = _key_to_int(walk_result)
+        else:
+            result[key] = value
+
+    # Return
+    return result
+
+
+def _key_to_int(_data):
+    """Convert dict keys to ints if possible.
+
+    Args:
+        _data: dict
+
+    Returns:
+        result: dict
+
+    """
+    # Initialize key variables
+    result = {}
+    _data = deepcopy(_data)
+
+    if isinstance(_data, dict):
+        for key, value in _data.items():
+            try:
+                fixed_key = int(key)
+            except:
+                fixed_key = key
+            result[fixed_key] = value
+    else:
+        result = _data
     return result

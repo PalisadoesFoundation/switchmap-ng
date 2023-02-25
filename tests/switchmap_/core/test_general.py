@@ -175,6 +175,64 @@ class TestFunctions(unittest.TestCase):
             result = general.ipaddress(item)
             self.assertEqual(expected[index], result)
 
+    def test_make_bool(self):
+        """Testing function make_bool."""
+        # Initializing key variables
+        inputs = [
+            -1,
+            1,
+            "akjdfk",
+            "True",
+            "true",
+            "tRUe",
+            "false",
+            "False",
+            "FalsE",
+            None,
+            "NoNe",
+            "none",
+            "",
+            0,
+        ]
+        expected = [
+            True,
+            True,
+            True,
+            True,
+            True,
+            True,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+            False,
+        ]
+
+        # Test
+        for index, item in enumerate(inputs):
+            result = general.make_bool(item)
+            self.assertEqual(expected[index], result)
+
+    def test_consistent_keys(self):
+        """Testing function consistent_keys."""
+        # Initializing key variables
+        input_dict = {}
+        _data = {1: True, "1": True, "ABC": True, False: True}
+        expected = {
+            0: {1: True, "ABC": True, 0: True},
+            1: {1: True, "ABC": True, 0: True},
+            2: {1: True, "ABC": True, 0: True},
+        }
+
+        # Test
+        for _ in range(3):
+            input_dict[_] = _data
+        result = general.consistent_keys(input_dict)
+        self.assertEqual(result, expected)
+
 
 if __name__ == "__main__":
     # Do the unit test
