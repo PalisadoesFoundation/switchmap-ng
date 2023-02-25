@@ -169,17 +169,3 @@ class ConfigCore(_Config):
 
         # Return
         return result
-
-    def username(self):
-        """Get username.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_core.get("username", None)
-        return result

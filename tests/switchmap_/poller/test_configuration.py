@@ -154,6 +154,13 @@ class Test_ConfigPoller(unittest.TestCase):
         result = self.config.snmp_auth()
         self.assertEqual(result, expected)
 
+    def test_username(self):
+        """Testing function username."""
+        # Run test
+        expected = "nv2Mwx7gu9AbLGyz"
+        result = self.config.username()
+        self.assertEqual(result, expected)
+
     def test_zones(self):
         """Testing function zones."""
         # Run test
@@ -213,13 +220,6 @@ class Test_ConfigPoller(unittest.TestCase):
         # Run test
         expected = "info"
         result = self.config.log_level()
-        self.assertEqual(result, expected)
-
-    def test_username(self):
-        """Testing function username."""
-        # Run test
-        expected = "7gnv2Mwxu9AbLGyz"
-        result = self.config.username()
         self.assertEqual(result, expected)
 
 

@@ -10,15 +10,14 @@ from copy import deepcopy
 
 # Application libraries
 from switchmap.core import log
-from switchmap.core.configuration import ConfigCore
 from switchmap import IP
 
 
-def check_user():
+def check_user(config):
     """Check to make sure the user environment is correct.
 
     Args:
-        None
+        config: Config object
 
     Returns:
         None
@@ -26,7 +25,6 @@ def check_user():
     """
     # Initialize key variables
     username = getpass.getuser()
-    config = ConfigCore()
     configured_username = config.username()
 
     # Prevent running as sudo user

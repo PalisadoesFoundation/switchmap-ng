@@ -155,6 +155,13 @@ class Test_ConfigServer(unittest.TestCase):
         result = self.config.purge_after_ingest()
         self.assertEqual(result, expected)
 
+    def test_username(self):
+        """Testing function username."""
+        # Run test
+        expected = "7gnv2Mwxu9AbLGyz"
+        result = self.config.username()
+        self.assertEqual(result, expected)
+
     ######################################################################
     ######################################################################
     # All 'core:' configuration file parameters must pass. Tests below
@@ -196,13 +203,6 @@ class Test_ConfigServer(unittest.TestCase):
         # Run test
         expected = "info"
         result = self.config.log_level()
-        self.assertEqual(result, expected)
-
-    def test_username(self):
-        """Testing function username."""
-        # Run test
-        expected = "7gnv2Mwxu9AbLGyz"
-        result = self.config.username()
         self.assertEqual(result, expected)
 
 

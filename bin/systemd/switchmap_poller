@@ -110,7 +110,8 @@ def main():
 
     """
     # Check user
-    general.check_user()
+    config = ConfigPoller()
+    general.check_user(config)
 
     # Get configuration
     agent_poller = PollingAgent(AGENT_POLLER)

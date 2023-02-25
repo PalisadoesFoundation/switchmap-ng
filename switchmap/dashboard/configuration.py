@@ -82,3 +82,17 @@ class ConfigDashboard(ConfigCore):
 
         # Return
         return result
+
+    def username(self):
+        """Get username.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_dashboard.get("username", "switchmap")
+        return result

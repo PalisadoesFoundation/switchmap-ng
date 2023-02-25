@@ -19,7 +19,7 @@ parameter sets in the ``snmp_group`` section till successful.
 
 ::
 
-    main:
+    core:
         log_directory: /home/switchmap-ng/log
         log_level: info
         system_directory: /opt/switchmap-ng/cache
@@ -55,7 +55,7 @@ parameter sets in the ``snmp_group`` section till successful.
           snmp_privpassword: secret_password
 
 
-The ``main:`` Section
+The ``core:`` Section
 ~~~~~~~~~~~~~~~~~~~~~
 
 This is the section of the configuration file that governs the general operation of ``switchmap-ng``. Here is how it is configured.
@@ -63,38 +63,106 @@ This is the section of the configuration file that governs the general operation
 =================================== ========
 Parameter                           Description
 =================================== ========
-``main:``                           YAML key describing the server configuration.
-``log_directory:``                  The directory where ``switchmap-ng`` places its log files
+``core:``                           YAML key describing the server configuration.
+``system_directory:``               Location where temporary data files are stored. Make sure that the switchmap username has write access to it.
+``log_directory:``                  The directory where ``switchmap-ng`` places its log files. Make sure that the switchmap username has write access to it. Defaults to the `log/` subdirectory of `system_directory`
 ``log_level:``                      Defines the logging level. ``debug`` level is the most verbose, followed by ``info``, ``warning`` and ``critical``
-``system_directory:``                Location where data retrieved from devices will be stored.
-``agent_subprocesses:``             The maximum number of subprocesses used to collect data from devices
-``listen_address:``                 IP address the API will be using. The default is ``localhhost``. This should not need to be changed.
-``bind_port:``                      The TCP port the API will use. This should not need to be changed.
-``hostnames:``                      A list of hosts that will be polled for data.
-``polling_interval:``               The frequency in seconds with which the poller will query devices
+``agent_subprocesses:``             The maximum number of subprocesses used to process data. Defaults to the number of CPU cores in the system.
 =================================== ========
 
-The ``snmp_groups:`` Section
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The ``dashboard:`` Section
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is the section of the configuration file that governs the dashboard operation of ``switchmap-ng``. Here is how it is configured.
+
+=================================== ========
+Parameter                           Description
+=================================== ========
+``dashboard:``                      YAML key describing the poller configuration.
+``listen_address:``                 IP address the dashboard will be using to host web pages. The default is ``localhhost``. This should be changed to the IP address of the dashboard server's network interface that web browsers can access. 
+``bind_port:``                      The TCP port the dashboard will use. This should not need to be changed.
+``username:``                       The username under which all switchmap-ng dashboard daemons will run. This is set to ensure that unauthorized users run the daemon code.
+=================================== ========
+
+The ``server:`` Section
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This is the section of the configuration file that governs the API server operation of ``switchmap-ng``. Here is how it is configured.
+
+=================================== ========
+Parameter                           Description
+=================================== ========
+``server:``                         YAML key describing the poller configuration.
+``username:``                       The username under which all switchmap-ng poller daemons will run. This is set to ensure that unauthorized users run the daemon code.
+``listen_address:``                 IP address the server will be using to host web pages. The default is ``localhhost``. This should be changed to the IP address of a server network interface that the poller can access over the network. If the poller daemon resides on the same server then the default is OK.
+``bind_port:``                      The TCP port the API will use. This should not need to be changed.
+``cache_directory:``                The directory where ``switchmap-ng`` places files containing polling data from the poller. Make sure that the switchmap username has write access to it. Defaults to the `cache/` subdirectory of `system_directory`
+``db_host:``                        Database server hostname
+``db_user:``                        Database username
+``db_name:``                        Database name
+``db_pass:``                        Database password
+``db_pool_size:``                   Size of the database connection pool. The default value is sufficient in most cases.
+``db_max_overflow:``                TBD
+``ingest_directory:``               The directory where ``switchmap-ng`` temporarily stores cache files while they are being processed. Make sure that the switchmap username has write access to it. Defaults to the `ingest/` subdirectory of `system_directory`
+``ingest_interval:``                The frequency with which the ingester daemon checks for new cache files in seconds. This must not be less than the poller's `polling_interval` value.
+``purge_after_ingest:``             When `True` (default) only the most recently polled data is stored in the database.
+=================================== ========
+
+
+The ``poller:`` Section
+~~~~~~~~~~~~~~~~~~~~~~~
+
+This is the section of the configuration file that governs the general operation of ``switchmap-ng``. Here is how it is configured.
+
+=================================== ========
+Parameter                           Description
+=================================== ========
+``poller:``                         YAML key describing the poller configuration.
+``username:``                       The username under which all switchmap-ng poller daemons will run. This is set to ensure that unauthorized users run the daemon code.
+``polling_interval:``               The frequency in seconds with which the poller will query devices
+``server_bind_port:``               The TCP port the API server uses. This must match the `bind_port` setting in the API server's configuration.
+``server_https:``                   Set this to `True` if the poller needs to use HTTPs to access the API server. Switchmap only uses SSL to encrypt data sent over the network. Default `False`.
+``server_password:``                The HTTPS simple authentication password that the API server uses.
+``server_username:``                The HTTPS simple authentication username that the API server uses.
+``hostnames:``                      A list of hosts that will be polled for data.
+=================================== ========
+
+
+The ``zones:`` Poller Section
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is the section of the configuration file that lists the devices that will be polled for data. This is how ``switchmap-ng`` uses this information.
+
+=================================== ========
+Parameter                           Description
+=================================== ========
+``zones:``                          YAML key describing groups of devices grouped in zones.
+``zone:``                           Name of the zone
+``notes:``                          A brief line of text describing the zone
+``hostnames:``                      A list of devices that need to be polled
+=================================== ========
+
+
+The ``snmp_groups:`` Poller Section
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is the section of the configuration file that governs the SNMP credentials to be used to retrieve data from devices. You can have multiple groups, each with a separate ``group_name``. This is how ``switchmap-ng`` uses this information.
 
 1. ``switchmap-ng`` will attempt to use each set of group credentials until it is successful. It will skip devices that it cannot authenticate against or reach.
 2. ``switchmap-ng`` will keep track of the most recently used credentials to successfully obtain data and will use these credentials first.
 
-
 =================================== ========
 Parameter                           Description
 =================================== ========
-snmp_groups:                        YAML key describing groups of SNMP authentication parameter. All parameter groups are listed under this key.
-group_name:                         Descriptive name for the group
-snmp_version:                       SNMP version. Must be present even if blank. Only SNMP versions 2 and 3 are supported by the project.
-snmp_secname:                       SNMP security name (SNMP version 3 only). Must be present even if blank.
-snmp_community:                     SNMP community (SNMP version 2 only). Must be present even if blank.
-snmp_port:                          SNMP Authprotocol (SNMP version 3 only). Must be present even if blank.
-snmp_authprotocol:                  SNMP AuthPassword (SNMP version 3 only). Must be present even if blank. 
-snmp_authpassword:                  SNMP PrivProtocol (SNMP version 3 only). Must be present even if blank.
-snmp_privprotocol:                  SNMP PrivProtocol (SNMP version 3 only). Must be present even if blank.
-snmp_privpassword:                  SNMP PrivPassword (SNMP version 3 only). Must be present even if blank.
-snmp_port:                          SNMP UDP port
+``snmp_groups:``                    YAML key describing groups of SNMP authentication parameter. All parameter groups are listed under this key.
+``group_name:``                     Descriptive name for the group
+``snmp_version:``                   SNMP version. Must be present even if blank. Only SNMP versions 2 and 3 are supported by the project.
+``snmp_secname:``                   SNMP security name (SNMP version 3 only). Must be present even if blank.
+``snmp_community:``                 SNMP community (SNMP version 2 only). Must be present even if blank.
+``snmp_port:``                      SNMP Authprotocol (SNMP version 3 only). Must be present even if blank.
+``snmp_authprotocol:``              SNMP AuthPassword (SNMP version 3 only). Must be present even if blank. 
+``snmp_authpassword:``              SNMP PrivProtocol (SNMP version 3 only). Must be present even if blank.
+``snmp_privprotocol:``              SNMP PrivProtocol (SNMP version 3 only). Must be present even if blank.
+``snmp_privpassword:``              SNMP PrivPassword (SNMP version 3 only). Must be present even if blank.
+``snmp_port:``                      SNMP UDP port
 =================================== ========

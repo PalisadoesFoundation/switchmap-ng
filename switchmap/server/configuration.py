@@ -276,8 +276,22 @@ class ConfigServer(ConfigCore):
 
         """
         # Get parameter
-        result = self._config_server.get("purge_after_ingest", True)
+        result = self._config__server.get("purge_after_ingest", True)
         result = general.make_bool(result)
 
         # Return
+        return result
+
+    def username(self):
+        """Get username.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_server.get("username", "switchmap")
         return result

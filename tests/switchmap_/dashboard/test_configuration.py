@@ -76,6 +76,13 @@ class Test_ConfigDashboard(unittest.TestCase):
         result = self.config.listen_address()
         self.assertEqual(result, expected)
 
+    def test_username(self):
+        """Testing function username."""
+        # Run test
+        expected = "switchmap"
+        result = self.config.username()
+        self.assertEqual(result, expected)
+
     ######################################################################
     ######################################################################
     # All 'core:' configuration file parameters must pass. Tests below
@@ -117,13 +124,6 @@ class Test_ConfigDashboard(unittest.TestCase):
         # Run test
         expected = "info"
         result = self.config.log_level()
-        self.assertEqual(result, expected)
-
-    def test_username(self):
-        """Testing function username."""
-        # Run test
-        expected = "7gnv2Mwxu9AbLGyz"
-        result = self.config.username()
         self.assertEqual(result, expected)
 
 

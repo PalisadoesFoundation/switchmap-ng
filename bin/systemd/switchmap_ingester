@@ -111,7 +111,8 @@ def main():
 
     """
     # Check user
-    general.check_user()
+    config = ConfigServer()
+    general.check_user(config)
 
     # Get configuration
     agent_poller = IngesterAgent(AGENT_INGESTER)

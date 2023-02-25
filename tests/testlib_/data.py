@@ -21,8 +21,8 @@ core:
   log_directory: YYY
   log_level: debug
   polling_interval: 21600
-  username: switchmap
 server:
+  username: switchmap
   bind_port: 9000
   listen_address: localhost
   db_host: localhost
@@ -32,6 +32,7 @@ server:
 poller:
   bind_port: 9001
   listen_address: localhost
+  username: switchmap
   hostnames:
     - unittest-01.example.org
     - unittest-02.example.org
@@ -51,11 +52,11 @@ _CONFIG_TESTER_YAML = """
 core:
   agent_subprocesses: 35
   log_level: info
-  username: 7gnv2Mwxu9AbLGyz
   log_directory: YYY
   system_directory: XXX
 
 server:
+  username: 7gnv2Mwxu9AbLGyz
   bind_port: 7027
   listen_address: MKG2dst7sh4gPe2X
   ingest_interval: 98712
@@ -70,6 +71,7 @@ dashboard:
   listen_address: t7sh4gPe2XMKG2ds
 
 poller:
+  username: nv2Mwx7gu9AbLGyz
   polling_interval: 21600
   server_address: bwSeAzPmAygg8rcJ
   server_bind_port: 9876
