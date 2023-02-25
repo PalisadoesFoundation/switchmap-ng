@@ -5,22 +5,43 @@ Manages parameters required by all classes in the module.
 
 """
 
+# Standard imports
+from collections import namedtuple
+
 # Do library imports
 from .core import log
-from .poll.update import TrunkInterface
-from .core.configuration import Config
+from .poller.update import TrunkInterface
 
+# Create global variables for the various daemons
+SITE_PREFIX = "/switchmap"
 
-# Create global variables for the API
-SITE_PREFIX = '/switchmap-ng'
-API_PREFIX = '{}/api/v1'.format(SITE_PREFIX)
-API_STATIC_FOLDER = 'static/default'
-API_TEMPLATE_FOLDER = 'templates/default'
-API_EXECUTABLE = 'switchmap-ng-api'
-API_GUNICORN_AGENT = 'switchmap-ng-gunicorn'
-POLLER_EXECUTABLE = 'switchmap-ng-poller'
-AGENT_POLLER = 'Poller'
-AGENT_API = 'API'
+# API URIs
+API_PREFIX = "{}/api".format(SITE_PREFIX)
+API_POLLER_POST_URI = "/post/poller"
+
+# DASHBOARD related
+DASHBOARD_PREFIX = "{}/dashboard".format(SITE_PREFIX)
+DASHBOARD_STATIC_FOLDER = "static/default"
+DASHBOARD_TEMPLATE_FOLDER = "templates/default"
+
+# Agent related
+AGENT_POLLER = "Poller"
+AGENT_INGESTER = "Ingester"
+AGENT_DASHBOARD = "Dashboard"
+AGENT_DASHBOARD_CHILD = "switchmap-dashboard"
+AGENT_API = "API"
+AGENT_API_CHILD = "switchmap-api"
+
+# Important tuples
+Found = namedtuple("Found", "idx_l1interface")
+IP = namedtuple("IP", "address version")
+MacDetail = namedtuple(
+    "MacDetail", "hostname mac ip_ organization idx_l1interface idx_mac"
+)
+InterfaceDetail = namedtuple(
+    "InterfaceDetail", "RL1Interface MacDetails RVlans"
+)
+DeviceDetail = namedtuple("DeviceDetail", "RDevice InterfaceDetails")
 
 
 def main():
@@ -37,5 +58,5 @@ def main():
     log.check_environment()
 
 
-if __name__ == 'switchmap':
+if __name__ == "switchmap":
     main()

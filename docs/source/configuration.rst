@@ -22,7 +22,7 @@ parameter sets in the ``snmp_group`` section till successful.
     main:
         log_directory: /home/switchmap-ng/log
         log_level: info
-        cache_directory: /opt/switchmap-ng/cache
+        system_directory: /opt/switchmap-ng/cache
         agent_subprocesses: 20
         bind_port: 7000
         listen_address: 0.0.0.0
@@ -66,7 +66,7 @@ Parameter                           Description
 ``main:``                           YAML key describing the server configuration.
 ``log_directory:``                  The directory where ``switchmap-ng`` places its log files
 ``log_level:``                      Defines the logging level. ``debug`` level is the most verbose, followed by ``info``, ``warning`` and ``critical``
-``cache_directory:``                Location where data retrieved from devices will be stored.
+``system_directory:``                Location where data retrieved from devices will be stored.
 ``agent_subprocesses:``             The maximum number of subprocesses used to collect data from devices
 ``listen_address:``                 IP address the API will be using. The default is ``localhhost``. This should not need to be changed.
 ``bind_port:``                      The TCP port the API will use. This should not need to be changed.

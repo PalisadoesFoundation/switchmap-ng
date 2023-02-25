@@ -25,11 +25,11 @@ from gunicorn.app.base import BaseApplication
 from switchmap.core.daemon import Daemon, GracefulDaemon
 from switchmap.core import files
 from switchmap.core import log
-from switchmap.core.configuration import Config
+from switchmap.core.configuration import ConfigCore
 from switchmap.core.variables import AgentAPIVariable
 
 
-class Agent():
+class Agent:
     """Agent class for daemons."""
 
     def __init__(self, parent, child=None, config=None):
@@ -38,7 +38,7 @@ class Agent():
         Args:
             parent: Name of parent daemon
             child: Name of child daemon
-            config: Config object
+            config: ConfigCore object
 
         Returns:
             None
@@ -46,7 +46,7 @@ class Agent():
         """
         # Initialize key variables (Parent)
         if config is None:
-            self.config = Config()
+            self.config = ConfigCore()
         else:
             self.config = config
         self.parent = parent
@@ -79,7 +79,7 @@ class Agent():
         pass
 
 
-class _AgentRun():
+class _AgentRun:
     """Class that defines basic run function for AgentDaemons."""
 
     def __init__(self, agent):
@@ -152,7 +152,7 @@ class GracefulAgentDaemon(_AgentRun, GracefulDaemon):
         GracefulDaemon.__init__(self, agent)
 
 
-class AgentCLI():
+class AgentCLI:
     """Class that manages the agent CLI.
 
     Args:
@@ -190,53 +190,56 @@ class AgentCLI():
         # Header for the help menu of the application
         parser = argparse.ArgumentParser(
             description=additional_help,
-            formatter_class=argparse.RawTextHelpFormatter)
+            formatter_class=argparse.RawTextHelpFormatter,
+        )
 
         # CLI argument for starting
         parser.add_argument(
-            '--start',
+            "--start",
             required=False,
             default=False,
-            action='store_true',
-            help='Start the agent daemon.'
+            action="store_true",
+            help="Start the agent daemon.",
         )
 
         # CLI argument for stopping
         parser.add_argument(
-            '--stop',
+            "--stop",
             required=False,
             default=False,
-            action='store_true',
-            help='Stop the agent daemon.'
+            action="store_true",
+            help="Stop the agent daemon.",
         )
 
         # CLI argument for getting the status of the daemon
         parser.add_argument(
-            '--status',
+            "--status",
             required=False,
             default=False,
-            action='store_true',
-            help='Get daemon daemon status.'
+            action="store_true",
+            help="Get daemon daemon status.",
         )
 
         # CLI argument for restarting
         parser.add_argument(
-            '--restart',
+            "--restart",
             required=False,
             default=False,
-            action='store_true',
-            help='Restart the agent daemon.'
+            action="store_true",
+            help="Restart the agent daemon.",
         )
 
         # CLI argument for stopping
         parser.add_argument(
-            '--force',
+            "--force",
             required=False,
             default=False,
-            action='store_true',
+            action="store_true",
             help=textwrap.fill(
-                'Stops or restarts the agent daemon ungracefully when '
-                'used with --stop or --restart.', width=80)
+                "Stops or restarts the agent daemon ungracefully when "
+                "used with --stop or --restart.",
+                width=80,
+            ),
         )
 
         # Get the parser value
@@ -302,7 +305,7 @@ class AgentAPI(Agent):
             parent: Name of parent daemon
             child: Name of child daemon
             app: Flask App
-            config: Config object
+            config: ConfigCore object
 
         Returns:
             None
@@ -310,7 +313,7 @@ class AgentAPI(Agent):
         """
         # Initialize key variables
         if config is None:
-            _config = Config()
+            _config = ConfigCore()
         else:
             _config = config
 
@@ -318,8 +321,9 @@ class AgentAPI(Agent):
         Agent.__init__(self, parent, child=child, config=_config)
         self._app = app
         self._agent_api_variable = AgentAPIVariable(
-            ip_bind_port=_config.ip_bind_port(),
-            ip_listen_address=_config.ip_listen_address())
+            ip_bind_port=_config.bind_port(),
+            ip_listen_address=_config.listen_address(),
+        )
 
     def query(self):
         """Query all remote targets for data.
@@ -333,17 +337,21 @@ class AgentAPI(Agent):
         """
         # Check for lock and pid files
         if os.path.exists(self.lockfile_parent) is True:
-            log_message = ('''\
+            log_message = """\
 Lock file {} exists. Multiple API daemons running API may have died \
 catastrophically in the past, in which case the lockfile should be deleted.\
-'''.format(self.lockfile_parent))
+""".format(
+                self.lockfile_parent
+            )
             log.log2see(1142, log_message)
 
         if os.path.exists(self.pidfile_parent) is True:
-            log_message = ('''\
+            log_message = """\
 PID file: {} already exists. Daemon already running? If not, it may have died \
 catastrophically in the past in which case you should use --stop --force to \
-fix.'''.format(self.pidfile_parent))
+fix.""".format(
+                self.pidfile_parent
+            )
             log.log2see(1123, log_message)
 
         ######################################################################
@@ -357,24 +365,23 @@ fix.'''.format(self.pidfile_parent))
         #
         ######################################################################
         options = {
-            'bind': _ip_binding(self._agent_api_variable),
-            'accesslog': self.config.log_file_api(),
-            'errorlog': self.config.log_file_api(),
-            'capture_output': True,
-            'pidfile': self._pidfile_child,
-            'loglevel': self.config.log_level(),
-            'workers': _number_of_workers(),
-            'umask': 0o0007,
+            "bind": _ip_binding(self._agent_api_variable),
+            "accesslog": self.config.daemon_log_file(),
+            "errorlog": self.config.daemon_log_file(),
+            "capture_output": True,
+            "pidfile": self._pidfile_child,
+            "loglevel": self.config.log_level(),
+            "workers": _number_of_workers(),
+            "umask": 0o0007,
         }
 
         # Log so that user running the script from the CLI knows that something
         # is happening
-        log_message = (
-            'API running on {}:{} and logging to file {}.'
-            ''.format(
-                self._agent_api_variable.ip_listen_address,
-                self._agent_api_variable.ip_bind_port,
-                self.config.log_file_api()))
+        log_message = "API running on {}:{} and logging to file {}." "".format(
+            self._agent_api_variable.ip_listen_address,
+            self._agent_api_variable.ip_bind_port,
+            self.config.daemon_log_file(),
+        )
         log.log2info(1088, log_message)
 
         # Run
@@ -407,18 +414,27 @@ class _StandaloneApplication(BaseApplication):
         """Load the configuration."""
         # Initialize key variables
         now = datetime.now()
-        config = dict([(key, value) for key, value in self.options.items()
-                       if key in self.cfg.settings and value is not None])
+        config = dict(
+            [
+                (key, value)
+                for key, value in self.options.items()
+                if key in self.cfg.settings and value is not None
+            ]
+        )
 
         # Assign configuration parameters
         for key, value in config.items():
             self.cfg.set(key.lower(), value)
 
         # Print configuration dictionary settings
-        print('''{} Agent {} - Gunicorn configuration\
-'''.format(now.strftime('%Y-%m-%d %H:%M:%S.%f'), self.parent))
+        print(
+            """{} Agent {} - Gunicorn configuration\
+""".format(
+                now.strftime("%Y-%m-%d %H:%M:%S.%f"), self.parent
+            )
+        )
         for name, value in self.cfg.settings.items():
-            print('  {} = {}'.format(name, value.get()))
+            print("  {} = {}".format(name, value.get()))
 
     def load(self):
         """Run the Flask application throught the Gunicorn WSGI."""
@@ -449,15 +465,15 @@ def _ip_binding(aav):
     try:
         ip_object = ipaddress.ip_address(ip_address)
     except:
-        result = '{}:{}'.format(ip_address, ip_bind_port)
+        result = "{}:{}".format(ip_address, ip_bind_port)
 
     if bool(result) is False:
         # Is this an IPv4 address?
         ipv4 = isinstance(ip_object, ipaddress.IPv4Address)
         if ipv4 is True:
-            result = '{}:{}'.format(ip_address, ip_bind_port)
+            result = "{}:{}".format(ip_address, ip_bind_port)
         else:
-            result = '[{}]:{}'.format(ip_address, ip_bind_port)
+            result = "[{}]:{}".format(ip_address, ip_bind_port)
 
     # Return result
     return result

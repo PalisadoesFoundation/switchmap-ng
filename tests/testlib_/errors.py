@@ -22,29 +22,58 @@ def check_source_code(root, minimum=0, maximum=0):
     """
     # Make sure minimum < maximum
     if minimum > maximum:
-        log_message = ('''\
+        log_message = """\
 Minimum value {} is greater than {}. Please fix.\
-'''.format(minimum, maximum))
+""".format(
+            minimum, maximum
+        )
         print(log_message)
         sys.exit(2)
 
     # Define where the application lives
     ignore_paths = [
-        '{0}.git{0}'.format(os.sep),
-        '{0}__pycache__{0}'.format(os.sep),
-        '.egg',
-        '{0}docs{0}'.format(os.sep),
-        '{0}var{0}'.format(os.sep)
+        "{0}.git{0}".format(os.sep),
+        "{0}__pycache__{0}".format(os.sep),
+        ".egg",
+        "{0}venv{0}".format(os.sep),
+        "{0}env{0}".format(os.sep),
+        "{0}deprecated{0}".format(os.sep),
+        "{0}archive{0}".format(os.sep),
+        "{0}docs{0}".format(os.sep),
+        "{0}var{0}".format(os.sep),
     ]
     error_functions = (
-        'log2die_safe(', 'log2warning(',
-        'log2exception(', 'log2exception_die(',
-        'log2debug(', 'log2live(', 'log2warn(', 'log2die(', 'log2quiet(',
-        'log2info(', 'log2screen(', 'log2see(', r'.modify(', r'.query(',
-        r'db.replace(', '.add_all(', r'.db_modify(', r'.db_query(',
-        r'.db_commit(', r'.db_replace(', r'.db_add(', '.db_add_all(',
-        r'.db_select(', r'.db_delete(', r'.db_update(', '.db_select_row(',
-        r'.db_modify(', r'.db_query(')
+        "log2die_safe(",
+        "log2warning(",
+        "log2exception(",
+        "log2exception_die(",
+        "log2debug(",
+        "log2live(",
+        "log2warn(",
+        "log2see_safe(",
+        "log2die(",
+        "log2quiet(",
+        "log2info(",
+        "log2screen(",
+        "log2see(",
+        r".modify(",
+        r".query(",
+        r"db.replace(",
+        ".add_all(",
+        r".db_modify(",
+        r".db_query(",
+        r".db_commit(",
+        r".db_replace(",
+        r".db_add(",
+        ".db_add_all(",
+        r".db_select(",
+        r".db_delete(",
+        r".db_update(",
+        ".db_select_row(",
+        ".db_delete_row(",
+        r".db_modify(",
+        r".db_query(",
+    )
     error_codes = []
     available_codes = []
     entries = 5
@@ -65,10 +94,14 @@ Minimum value {} is greater than {}. Please fix.\
         metadata = _codes(python_file, to_find)
         error_codes.extend([x.code for x in metadata])
         for item in metadata:
-            line = ['''\
+            line = [
+                """\
     file: {}
     line: {}
-    text: {}'''.format(item.filename, item.number, item.line)]
+    text: {}""".format(
+                    item.filename, item.number, item.line
+                )
+            ]
             value = status.get(item.code)
             if value is None:
                 status[item.code] = line
@@ -77,21 +110,26 @@ Minimum value {} is greater than {}. Please fix.\
 
     # Get duplicate codes
     _duplicates = [
-        item for item, count in collections.Counter(
-            error_codes).items() if count > 1]
+        item
+        for item, count in collections.Counter(error_codes).items()
+        if count > 1
+    ]
     _duplicates.sort()
     if len(_duplicates) > entries:
-        duplicates = '{} plus {} more...'.format(
-            _duplicates[0:entries], len(_duplicates) - entries)
+        duplicates = "{} plus {} more...".format(
+            _duplicates[0:entries], len(_duplicates) - entries
+        )
     else:
         duplicates = _duplicates
 
     # Determine whether codes are in range (MAX)
     code_max = max(error_codes)
     if int(code_max) > maximum:
-        log_message = ('''\
+        log_message = """\
 Extremely large error code {} found. Must be less than {}. Please fix.
-'''.format(code_max, maximum))
+""".format(
+            code_max, maximum
+        )
         print(log_message)
 
         # Print line information
@@ -102,9 +140,11 @@ Extremely large error code {} found. Must be less than {}. Please fix.
     # Determine whether codes are in range (MIN)
     code_min = min(error_codes)
     if int(code_min) < minimum:
-        log_message = ('''\
+        log_message = """\
 Extremely small error code {} found. Must be greater than {}. Please fix.
-'''.format(code_min, minimum))
+""".format(
+            code_min, minimum
+        )
         print(log_message)
 
         # Print line information
@@ -120,10 +160,12 @@ Extremely small error code {} found. Must be greater than {}. Please fix.
     # Get available codes
     if bool(available_codes) is False:
         available_codes = list(
-            range(max(error_codes), max(error_codes) + entries + 1))
+            range(max(error_codes), max(error_codes) + entries + 1)
+        )
 
     # Print report
-    print('''
+    print(
+        """
 Application Logging Error Code Summary Report
 ---------------------------------------------
 Starting Code              : {}
@@ -131,31 +173,41 @@ Ending Code                : {}
 Duplicate Codes to Resolve : {}
 Available Codes            : {}
 Status                     : {}\
-'''.format(min(error_codes),
-           max(error_codes),
-           duplicates,
-           available_codes[0:entries],
-           'OK' if bool(duplicates) is False else 'Error'
-           ))
+""".format(
+            min(error_codes),
+            max(error_codes),
+            duplicates,
+            available_codes[0:entries],
+            "OK" if bool(duplicates) is False else "Error",
+        )
+    )
 
     # Exit with error if duplicate codes found
     if bool(_duplicates) is True:
         for next_duplicate in _duplicates:
-            print('''
+            print(
+                """
 -----------------------------------
 Duplicates for code        : {}
-'''.format(next_duplicate))
+""".format(
+                    next_duplicate
+                )
+            )
             for item in status[next_duplicate]:
-                print('{}'.format(item))
+                print("{}".format(item))
         sys.exit(1)
 
     # Exit with error if code values are out of range
     if (min(error_codes) < minimum) or (max(error_codes) > maximum):
-        print('''
+        print(
+            """
 
 ERROR: Error codes values out of range {} to {}. Please resolve.
 
-'''.format(minimum, maximum))
+""".format(
+                minimum, maximum
+            )
+        )
         sys.exit(1)
 
 
@@ -171,13 +223,14 @@ def _codes(filename, to_find):
 
     """
     # Initalize key variables
-    digits = re.compile(r'^.*?(\d+).*?$')
+    digits = re.compile(r"^.*?(\d+).*?$")
     metadata = []
     Metadata = collections.namedtuple(
-        'Metadata', 'filename, line, number, code')
+        "Metadata", "filename, line, number, code"
+    )
 
     # Process file for codes
-    with open(filename, 'r') as lines:
+    with open(filename, "r") as lines:
         # Read each line of the file
         count = 0
         for line in lines:
@@ -185,25 +238,30 @@ def _codes(filename, to_find):
             count += 1
 
             # Ignore lines without a '(' in it
-            if '(' not in line:
+            if "(" not in line:
                 continue
 
             # Ignore lines starting with comments
-            if line.strip().startswith('#'):
+            if line.strip().startswith("#"):
                 continue
 
             match_obj = to_find.search(line)
             if bool(match_obj) is True:
                 # Search for digits in the arguments of the functions
                 # in the error_functions
-                components = line.split('(')
-                arguments = ' '.join(components[1:])
+                components = line.split("(")
+                arguments = " ".join(components[1:])
                 found = digits.match(arguments)
                 if bool(found) is True:
                     code_value = int(found.group(1))
                     metadata.append(
-                        Metadata(filename=filename, line=line,
-                                 number=count, code=code_value))
+                        Metadata(
+                            filename=filename,
+                            line=line,
+                            number=count,
+                            code=code_value,
+                        )
+                    )
 
     # Return
     return metadata
@@ -220,7 +278,7 @@ def _wordlist_to_regex(words):
 
     """
     escaped = map(re.escape, words)
-    combined = '|'.join(sorted(escaped, key=len, reverse=True))
+    combined = "|".join(sorted(escaped, key=len, reverse=True))
     result = re.compile(combined)
     return result
 
@@ -245,7 +303,7 @@ def _files(root, ignore_paths):
             file_path = os.path.join(directory, filename)
 
             # Ignore pre-defined file extensions
-            if file_path.endswith('.py') is False:
+            if file_path.endswith(".py") is False:
                 continue
 
             # Ignore pre-defined paths

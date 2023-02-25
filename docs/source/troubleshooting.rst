@@ -15,7 +15,7 @@ Start the ``switchmap-ng`` API interactively.
 
 ::
 
-    $ bin/switchmap-ng-api --start
+    $ bin/switchmap_dashboard --start
 
 
 Start the Poller Interactively
@@ -24,7 +24,7 @@ The poller will need to be running prior to testing.
 
 ::
 
-    $ bin/switchmap-ng-poller --start
+    $ bin/switchmap_poller --start
 
 
 Test Poller Functionality
@@ -54,13 +54,13 @@ Testing the API is easy. Just visit the following URL:
 
 
 A sample system startup script can be found in the
-``examples/linux/systemd/switchmap-ng-poller.service`` file. Follow the instructions in the file to make changes to the startup operation of the ``poller`` daemon.
+``examples/linux/systemd/switchmap_poller.service`` file. Follow the instructions in the file to make changes to the startup operation of the ``poller`` daemon.
 
-**Note:** There will be no visible output when the ``poller`` is running. The ``poller`` logs its status to the ``log/switchmap-ng.log`` file by default. You will be able to see this interaction dynamically by running the following command:
+**Note:** There will be no visible output when the ``poller`` is running. The ``poller`` logs its status to the ``log/switchmap.log`` file by default. You will be able to see this interaction dynamically by running the following command:
 
 ::
 
-    $ tail -f etc/switchmap-ng.log
+    $ tail -f etc/switchmap.log
 
 
 Troubleshooting Using System Logs
@@ -71,18 +71,18 @@ There are different log files to check.
 Troubleshooting the API
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-There will be no visible output when the ``API`` is running. The ``API`` logs its status to the ``log/switchmap-ng-api.log`` file by default. You will be able to see this interaction dynamically by running the following command:
+There will be no visible output when the ``API`` is running. The ``API`` logs its status to the ``log/switchmap_dashboard.log`` file by default. You will be able to see this interaction dynamically by running the following command:
 
 ::
 
-    $ tail -f etc/switchmap-ng-api.log
+    $ tail -f etc/switchmap_dashboard.log
 
 Troubleshooting the Poller
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There will be no visible output when the ``Poller`` is running. The ``Poller`` logs its status to the ``log/switchmap-ng.log`` file by default. You will be able to see this interaction dynamically by running the following command:
+There will be no visible output when the ``Poller`` is running. The ``Poller`` logs its status to the ``log/switchmap.log`` file by default. You will be able to see this interaction dynamically by running the following command:
 
 ::
 
-    $ tail -f etc/switchmap-ng.log
+    $ tail -f etc/switchmap.log
 

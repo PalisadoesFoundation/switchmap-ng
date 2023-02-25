@@ -1,0 +1,16 @@
+{
+    "python.linting.enabled": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=80",
+        "--ignore=E402,E722,W503",
+    ],
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "79"
+    ],
+    "python.formatting.autopep8Args": [
+        "--max-line-length=80",
+        "--ignore=E402"
+    ],
+}

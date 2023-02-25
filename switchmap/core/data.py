@@ -2,6 +2,7 @@
 
 # Standard libraries
 import hashlib
+import datetime
 
 
 def hashstring(string, sha=256, utf8=False):
@@ -45,31 +46,49 @@ def hashstring(string, sha=256, utf8=False):
     return result
 
 
-def is_numeric(val):
-    """Check if argument is a number.
+def dictify(data):
+    """Convert NamedTuple to dict.
 
     Args:
-        val: String to check
+        data: NamedTuple
 
     Returns:
-        True if a number
+        result: Dict representation of object
 
     """
-    # Try edge case
-    if val is True:
-        return False
-    if val is False:
-        return False
-    if val is None:
-        return False
+    # Initialize key variables
 
-    # Try conversions
-    try:
-        float(val)
-        return True
-    except ValueError:
-        return False
-    except TypeError:
-        return False
-    except:
-        return False
+    if isinstance(data, tuple):
+        result = {}
+        converted = data._asdict()
+        for key, value in converted.items():
+            # Convert datetime objects to a serializable object
+            if isinstance(value, datetime.datetime):
+                value = _time(value)
+            result[key] = dictify(value)
+    elif isinstance(data, list):
+        result = []
+        for value in data:
+            item = dictify(value)
+            # Convert datetime objects to a serializable object
+            if isinstance(item, datetime.datetime):
+                item = _time(item)
+            result.append(item)
+    else:
+        result = data
+    return result
+
+
+def _time(data):
+    """Convert Date to string.
+
+    Args:
+        data: datetime object
+
+    Returns:
+        result: String time
+
+    """
+    # Initialize key variables
+    result = data.strftime("%Y-%m-%d %H:%M:%S.%f")
+    return result
