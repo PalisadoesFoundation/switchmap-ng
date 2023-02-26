@@ -218,5 +218,7 @@ def purge():
     last = max(indexes)
 
     for item in _events:
-        if (item.idx_event != first) and (item.idx_event != last):
+        if item.idx_event == 1:
+            continue
+        elif (item.idx_event != first) and (item.idx_event != last):
             delete(item.idx_event)

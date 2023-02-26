@@ -371,7 +371,7 @@ class Mac(BASE):
 
     idx_mac = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_oui = Column(
-        ForeignKey(Oui.idx_oui),
+        ForeignKey(Oui.idx_oui, ondelete="CASCADE"),
         nullable=True,
         index=True,
         default=1,

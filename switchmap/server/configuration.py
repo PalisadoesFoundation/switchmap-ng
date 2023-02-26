@@ -276,7 +276,7 @@ class ConfigServer(ConfigCore):
 
         """
         # Get parameter
-        result = self._config__server.get("purge_after_ingest", True)
+        result = self._config_server.get("purge_after_ingest", True)
         result = general.make_bool(result)
 
         # Return

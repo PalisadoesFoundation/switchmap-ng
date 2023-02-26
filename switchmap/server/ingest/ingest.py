@@ -149,7 +149,6 @@ Ingest lock file {} exists. Is an ingest process already running?\
                 ############################
                 # Process files sequentially
                 ############################
-                print(zones)
                 for zone in zones:
                     single(zone)
 
