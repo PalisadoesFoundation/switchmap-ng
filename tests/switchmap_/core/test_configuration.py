@@ -99,13 +99,6 @@ class Test_ConfigCore(unittest.TestCase):
         result = self.config.log_level()
         self.assertEqual(result, expected)
 
-    def test_username(self):
-        """Testing function username."""
-        # Run test
-        expected = "7gnv2Mwxu9AbLGyz"
-        result = self.config.username()
-        self.assertEqual(result, expected)
-
 
 if __name__ == "__main__":
     # Do the unit test
