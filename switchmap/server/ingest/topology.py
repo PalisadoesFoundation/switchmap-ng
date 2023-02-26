@@ -555,7 +555,7 @@ class Topology:
             exists = _mac.exists(item)
             row = IMac(
                 idx_oui=lookup.get(item[:6], 1),
-                idx_zone=1,
+                idx_zone=self._device.idx_zone,
                 mac=item,
                 enabled=1,
             )
