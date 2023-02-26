@@ -27,7 +27,6 @@ from switchmap.server.db.table import oui
 from switchmap.server.db.table import event
 from switchmap.server.db.table import root
 from switchmap.server.db.table import IOui
-from switchmap.server.db.table import IEvent
 from switchmap.server.db.table import IRoot
 from switchmap.server.db import models
 
@@ -54,16 +53,12 @@ def main():
     # Create the default event
     exists = event.idx_exists(1)
     if bool(exists) is False:
-        event.insert_row(
-            IEvent(
-                name="SWITCHMAP - DO NOT DELETE THIS ROW",
-                enabled=1,
-            )
-        )
+        warning_message = "SWITCHMAP - DO NOT DELETE THIS ROW"
+        _event = event.create(name=warning_message)
         root.insert_row(
             IRoot(
-                idx_event=1,
-                name="SWITCHMAP - DO NOT DELETE THIS ROW",
+                idx_event=_event.idx_event,
+                name=warning_message,
                 enabled=1,
             )
         )

@@ -56,24 +56,11 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.server.db.table import macport as testimport
-from switchmap.server.db.table import zone
-from switchmap.server.db.table import oui
-from switchmap.server.db.table import mac
-from switchmap.server.db.table import device
-from switchmap.server.db.table import event
-from switchmap.server.db.table import l1interface
 from switchmap.server.db.models import MacPort
 from switchmap.server.db.table import IMacPort
-from switchmap.server.db.table import IMac
-from switchmap.server.db.table import IZone
-from switchmap.server.db.table import IEvent
-from switchmap.server.db.table import IOui
-from switchmap.server.db.table import IDevice
-from switchmap.server.db.table import IL1Interface
 from switchmap.server.db import models
 
 from tests.testlib_ import db
-from tests.testlib_ import data
 
 
 class TestDbTableMacPort(unittest.TestCase):
@@ -294,83 +281,6 @@ def _row():
         enabled=1,
     )
     return result
-
-
-def _prerequisites():
-    """Create prerequisite rows.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-    # Create result
-    event_name = data.random_string()
-    event.insert_row(IEvent(name=event_name, enabled=1))
-    row = event.exists(event_name)
-    zone.insert_row(
-        IZone(
-            idx_event=row.idx_event,
-            name=data.random_string(),
-            notes=data.random_string(),
-            enabled=1,
-        )
-    )
-    oui.insert_row(
-        IOui(
-            oui=data.random_string(),
-            organization=data.random_string(),
-            enabled=1,
-        )
-    )
-    mac.insert_row(
-        [
-            IMac(idx_oui=1, idx_zone=1, mac=data.mac(), enabled=1)
-            for _ in range(db.TEST_MAXIMUM)
-        ]
-    )
-    device.insert_row(
-        IDevice(
-            idx_zone=1,
-            sys_name=data.random_string(),
-            hostname=data.random_string(),
-            name=data.random_string(),
-            sys_description=data.random_string(),
-            sys_objectid=data.random_string(),
-            sys_uptime=random.randint(0, 1000000),
-            last_polled=random.randint(0, 1000000),
-            enabled=1,
-        )
-    )
-    l1interface.insert_row(
-        [
-            IL1Interface(
-                idx_device=1,
-                ifindex=random.randint(0, 1000000),
-                duplex=random.randint(0, 1000000),
-                ethernet=1,
-                nativevlan=random.randint(0, 1000000),
-                trunk=1,
-                ifspeed=random.randint(0, 1000000),
-                ifalias=data.random_string(),
-                ifdescr=data.random_string(),
-                ifadminstatus=random.randint(0, 1000000),
-                ifoperstatus=random.randint(0, 1000000),
-                ts_idle=random.randint(0, 1000000),
-                cdpcachedeviceid=data.random_string(),
-                cdpcachedeviceport=data.random_string(),
-                cdpcacheplatform=data.random_string(),
-                lldpremportdesc=data.random_string(),
-                lldpremsyscapenabled=data.random_string(),
-                lldpremsysdesc=data.random_string(),
-                lldpremsysname=data.random_string(),
-                enabled=1,
-            )
-            for _ in range(db.TEST_MAXIMUM)
-        ]
-    )
 
 
 if __name__ == "__main__":

@@ -119,7 +119,10 @@ class EventAttribute:
     """
 
     idx_event = graphene.Int(description="Primary key index")
-    name = graphene.Int(resolver=resolve_name, description="Event name")
+    name = graphene.String(resolver=resolve_name, description="Event name")
+    epoch_utc = graphene.Int(
+        resolver=resolve_name, description="Epoch UTC timestamp"
+    )
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.String(description="Row Modification Timestamp")
     ts_created = graphene.String(description="Row Creation Timestamp")
@@ -133,6 +136,7 @@ class RootAttribute:
 
     idx_root = graphene.Int(description="Primary key index")
     idx_event = graphene.Int(description="Event index foreign key")
+    name = graphene.String(resolver=resolve_name, description="Root name")
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.String(description="Row Modification Timestamp")
     ts_created = graphene.String(description="Row Creation Timestamp")

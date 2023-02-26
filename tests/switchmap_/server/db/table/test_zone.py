@@ -57,7 +57,6 @@ CONFIG.save()
 from switchmap.server.db.table import zone as testimport
 from switchmap.server.db.table import event
 from switchmap.server.db.table import IZone
-from switchmap.server.db.table import IEvent
 from switchmap.server.db import models
 
 from tests.testlib_ import db
@@ -216,8 +215,7 @@ def _row():
     """
     # Create result
     event_name = data.random_string()
-    event.insert_row(IEvent(name=event_name, enabled=1))
-    row = event.exists(event_name)
+    row = event.create(name=event_name)
     result = IZone(
         idx_event=row.idx_event,
         name=data.random_string(),

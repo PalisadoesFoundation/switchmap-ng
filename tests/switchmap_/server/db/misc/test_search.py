@@ -70,7 +70,6 @@ from switchmap.server.db.table import IOui
 from switchmap.server.db.table import IDevice
 from switchmap.server.db.table import IL1Interface
 from switchmap.server.db.table import IMacIp
-from switchmap.server.db.table import IEvent
 from switchmap.server.db import models
 from switchmap.core import general
 
@@ -229,8 +228,7 @@ def _prerequisites():
     # Insert the necessary rows
     event_name = data.random_string()
     zone_name = data.random_string()
-    event.insert_row(IEvent(name=event_name, enabled=1))
-    row = event.exists(event_name)
+    row = event.create(name=event_name)
     zone.insert_row(
         IZone(
             idx_event=row.idx_event,

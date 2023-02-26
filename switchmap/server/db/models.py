@@ -64,6 +64,7 @@ class Event(BASE):
         BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     name = Column(VARBINARY(256), unique=True)
+    epoch_utc = Column(BIGINT(20, unsigned=True))
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,

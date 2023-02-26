@@ -83,6 +83,7 @@ def event(row):
     result = REvent(
         idx_event=row.idx_event,
         name=row.name.decode(),
+        epoch_utc=row.epoch_utc,
         enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,

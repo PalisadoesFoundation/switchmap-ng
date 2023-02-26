@@ -4,6 +4,7 @@
 import os
 import sys
 import unittest
+import time
 
 
 # Try to create a working PYTHONPATH
@@ -165,7 +166,11 @@ class TestDbTableEvent(unittest.TestCase):
 
         # Do an update
         idx = result.idx_event
-        updated_row = IEvent(name=data.random_string(), enabled=row.enabled)
+        updated_row = IEvent(
+            name=data.random_string(),
+            epoch_utc=int(time.time()) * 1000,
+            enabled=row.enabled,
+        )
         testimport.update_row(idx, updated_row)
 
         # Test the update
@@ -334,7 +339,9 @@ def _convert(row):
 
     """
     # Do conversion
-    result = IEvent(name=row.name, enabled=row.enabled)
+    result = IEvent(
+        name=row.name, epoch_utc=row.epoch_utc, enabled=row.enabled
+    )
     return result
 
 
@@ -349,7 +356,9 @@ def _row():
 
     """
     # Create result
-    result = IEvent(name=data.random_string(), enabled=1)
+    result = IEvent(
+        name=data.random_string(), epoch_utc=int(time.time()) * 1000, enabled=1
+    )
     return result
 
 

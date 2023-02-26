@@ -26,8 +26,10 @@ IRoot = namedtuple(
     "idx_event name enabled",
 )
 
-REvent = namedtuple("REvent", "idx_event name enabled ts_modified ts_created")
-IEvent = namedtuple("IEvent", "name enabled")
+REvent = namedtuple(
+    "REvent", "idx_event name epoch_utc enabled ts_modified ts_created"
+)
+IEvent = namedtuple("IEvent", "name epoch_utc enabled")
 
 RDevice = namedtuple(
     "RDevice",

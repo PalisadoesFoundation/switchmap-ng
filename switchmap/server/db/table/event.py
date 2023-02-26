@@ -1,5 +1,8 @@
 """Module for querying the Event table."""
+# Standard imports
+from datetime import datetime, timezone
 
+# PIP imports
 from sqlalchemy import select, update, delete as _delete
 
 # Import project libraries
@@ -85,7 +88,9 @@ def insert_row(rows):
     for row in rows:
         inserts.append(
             Event(
-                name=row.name.encode(), enabled=int(bool(row.enabled) is True)
+                name=row.name.encode(),
+                epoch_utc=row.epoch_utc,
+                enabled=int(bool(row.enabled) is True),
             )
         )
 
@@ -170,11 +175,11 @@ def delete(idx):
         db.db_delete(1053, statement)
 
 
-def create():
+def create(name=None):
     """Create an event.
 
     Args:
-        None
+        name: Alternative name
 
     Returns:
         result: Event object for row that doesn't already exist
@@ -186,15 +191,21 @@ def create():
         _exists = exists(name)
         if bool(_exists) is False:
             break
+    # Get the epoch timestamp
+    epoch_utc = int(datetime.now(timezone.utc).timestamp())
 
     # Get REvent object
-    row = IEvent(name=name, enabled=1)
+    row = IEvent(name=name, epoch_utc=epoch_utc, enabled=1)
     insert_row(row)
     result = exists(name)
 
     # Create a root entry
     root.insert_row(
-        IRoot(idx_event=result.idx_event, name=result.name, enabled=True)
+        IRoot(
+            idx_event=result.idx_event,
+            name=name if bool(name) else result.name,
+            enabled=True,
+        )
     )
     return result
 

@@ -74,7 +74,6 @@ from switchmap.server.db.table import RL1Interface
 from switchmap.server.db.table import RDevice
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IOui
-from switchmap.server.db.table import IEvent
 
 from tests.testlib_ import db as dblib
 from tests.testlib_ import data as datalib
@@ -124,8 +123,7 @@ def _reset_db():
 
     # Create a zone
     event_name = data.random_string()
-    event.insert_row(IEvent(name=event_name, enabled=1))
-    row = event.exists(event_name)
+    row = event.create(name=event_name)
     zone.insert_row(
         IZone(
             idx_event=row.idx_event,
@@ -269,7 +267,6 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         pass
 
     def test_l1interface(self):
-        return  # OK
         """Testing function l1interface."""
         # Initialize key variables
         result = []
