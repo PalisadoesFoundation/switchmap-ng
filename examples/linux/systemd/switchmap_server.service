@@ -36,9 +36,9 @@ Environment=VIRTUAL_ENV=$CODEROOT/venv/bin
 Environment=PATH=$CODEROOT/venv/bin:$PATH 
 Environment=START=--start "STOP=--stop --force" "RESTART=--restart --force"
 ExecStart=
-ExecStart=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_service $START'
-ExecStop=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_service $STOP'
-ExecReload=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_service $RESTART'
+ExecStart=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_server $START'
+ExecStop=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_server $STOP'
+ExecReload=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_server $RESTART'
 RemainAfterExit=yes
 GuessMainPID=yes
 Type=forking
