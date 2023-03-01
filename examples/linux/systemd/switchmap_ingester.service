@@ -8,25 +8,25 @@
 #    to run as.
 # 4) Edit the ExecStart statement (Leave the first one blank!)
 # 5) Run the command "systemctl daemon-reload". This needs to be run only once
-# 6) Run the command "systemctl start switchmap_dashboard.service" to start
-# 7) Run the command "systemctl stop switchmap_dashboard.service" to stop
-# 8) Run the command "systemctl restart switchmap_dashboard.service" to restart
-# 9) Run the command "systemctl enable switchmap_dashboard.service" to make
-#    switchmap_dashboard start automatically on boot
+# 6) Run the command "systemctl start switchmap_ingester.service" to start
+# 7) Run the command "systemctl stop switchmap_ingester.service" to stop
+# 8) Run the command "systemctl restart switchmap_ingester.service" to restart
+# 9) Run the command "systemctl enable switchmap_ingester.service" to make
+#    switchmap_ingester start automatically on boot
 #
 ################################################################################
 
 [Unit]
-Description=switchmap_dashboard: Network state web application
+Description=switchmap_ingester: Network state web application
 
 [Service]
 User=switchmap
 Group=switchmap
 Environment=PYTHONPATH=/home/switchmap-ng START=--start "STOP=--stop --force" "RESTART=--restart --force"
 ExecStart=
-ExecStart=/home/switchmap-ng/bin/systemd/switchmap_dashboard $START
-ExecStop=/home/switchmap-ng/bin/systemd/switchmap_dashboard $STOP
-ExecReload=/home/switchmap-ng/bin/systemd/switchmap_dashboard $RESTART
+ExecStart=/home/switchmap-ng/bin/systemd/switchmap_ingester $START
+ExecStop=/home/switchmap-ng/bin/systemd/switchmap_ingester $STOP
+ExecReload=/home/switchmap-ng/bin/systemd/switchmap_ingester $RESTART
 RemainAfterExit=yes
 GuessMainPID=yes
 Type=forking

@@ -97,13 +97,12 @@ Parameter                           Description
 ``listen_address:``                 IP address the server will be using to host web pages. The default is ``localhhost``. This should be changed to the IP address of a server network interface that the poller can access over the network. If the poller daemon resides on the same server then the default is OK.
 ``bind_port:``                      The TCP port the API will use. This should not need to be changed.
 ``cache_directory:``                The directory where ``switchmap-ng`` places files containing polling data from the poller. Make sure that the switchmap username has write access to it. Defaults to the `cache/` subdirectory of `system_directory`
-``db_host:``                        Database server hostname
-``db_user:``                        Database username
-``db_name:``                        Database name
-``db_pass:``                        Database password
+``db_host:``                        MySQL database server hostname
+``db_user:``                        MySQL database username
+``db_name:``                        MySQL database name
+``db_pass:``                        MySQL database password
 ``db_pool_size:``                   Size of the database connection pool. The default value is sufficient in most cases.
 ``db_max_overflow:``                TBD
-``ingest_directory:``               The directory where ``switchmap-ng`` temporarily stores cache files while they are being processed. Make sure that the switchmap username has write access to it. Defaults to the `ingest/` subdirectory of `system_directory`
 ``ingest_interval:``                The frequency with which the ingester daemon checks for new cache files in seconds. This must not be less than the poller's `polling_interval` value.
 ``purge_after_ingest:``             When `True` (default) only the most recently polled data is stored in the database.
 =================================== ========

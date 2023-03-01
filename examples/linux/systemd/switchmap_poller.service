@@ -15,8 +15,8 @@
 Description=switchmap-ng: Network state SNMP poller
 
 [Service]
-User=switchmap-ng
-Group=switchmap-ng
+User=switchmap
+Group=switchmap
 Environment=PYTHONPATH=/home/switchmap-ng START=--start "STOP=--stop --force" "RESTART=--restart --force"
 ExecStart=
 ExecStart=/home/switchmap-ng/bin/systemd/switchmap_poller $START

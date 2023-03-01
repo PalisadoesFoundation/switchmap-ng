@@ -213,14 +213,11 @@ class ConfigServer(ConfigCore):
             None
 
         Returns:
-            result: configured ingest_directory
+            result: ingest_directory
 
         """
         # Get result
-        result = self._config_server.get(
-            "ingest_directory",
-            "{}{}ingest".format(self.system_directory(), os.sep),
-        )
+        result = "{}{}ingest".format(self.cache_directory(), os.sep)
 
         # Create the directory if not found
         if os.path.isdir(result) is False:

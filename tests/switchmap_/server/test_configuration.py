@@ -137,7 +137,9 @@ class Test_ConfigServer(unittest.TestCase):
     def test_ingest_directory(self):
         """Testing function ingest_directory."""
         # Run test
-        expected = "{}{}ingest".format(self.config.system_directory(), os.sep)
+        expected = "{0}{1}cache{1}ingest".format(
+            self.config.system_directory(), os.sep
+        )
         result = self.config.ingest_directory()
         self.assertEqual(result, expected)
 

@@ -28,6 +28,7 @@ class _Directory:
         """
         # Initialize key variables
         self._system_root = config.system_directory()
+        self._daemon_root = config.daemon_directory()
 
     def pid(self):
         """Define the hidden pid directory.
@@ -40,7 +41,7 @@ class _Directory:
 
         """
         # Return
-        value = "{}{}pid".format(self._system_root, os.sep)
+        value = "{}{}pid".format(self._daemon_root, os.sep)
         return value
 
     def lock(self):
@@ -54,7 +55,7 @@ class _Directory:
 
         """
         # Return
-        value = "{}{}lock".format(self._system_root, os.sep)
+        value = "{}{}lock".format(self._daemon_root, os.sep)
         return value
 
     def snmp(self):

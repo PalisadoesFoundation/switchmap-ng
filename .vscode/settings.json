@@ -14,6 +14,6 @@
         "--ignore=E722"
     ],
     "python.linting.pydocstyleArgs": ["--ignore=E402,D406,D407,D213,D203"],
-    "python.linting.pycodestyleArgs": ["--ignore=E402,W503"],
+    "python.linting.pycodestyleArgs": ["--ignore=E402,W503,E722"],
     "restructuredtext.preview.name": "docutils",
 }

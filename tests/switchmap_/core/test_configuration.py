@@ -67,11 +67,13 @@ class Test_ConfigCore(unittest.TestCase):
         # Pass, this varies according to the number CPU cores on the system
         pass
 
-    def test_system_directory(self):
-        """Testing function system_directory."""
+    def test_daemon_directory(self):
+        """Testing function daemon_directory."""
         # Run test
-        expected = self._config.metadata.system_directory
-        result = self.config.system_directory()
+        expected = "{1}{0}daemon".format(
+            os.sep, self._config.metadata.system_directory
+        )
+        result = self.config.daemon_directory()
         self.assertEqual(result, expected)
 
     def test_log_directory(self):
@@ -97,6 +99,13 @@ class Test_ConfigCore(unittest.TestCase):
         # Run test
         expected = "info"
         result = self.config.log_level()
+        self.assertEqual(result, expected)
+
+    def test_system_directory(self):
+        """Testing function system_directory."""
+        # Run test
+        expected = self._config.metadata.system_directory
+        result = self.config.system_directory()
         self.assertEqual(result, expected)
 
 

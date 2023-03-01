@@ -79,6 +79,34 @@ class ConfigCore(_Config):
         # Return
         return result
 
+    def daemon_directory(self):
+        """Determine the daemon_directory.
+
+        Args:
+            None
+
+        Returns:
+            result: daemon_directory
+
+        """
+        # Get result
+        result = "{}{}daemon".format(self.system_directory(), os.sep)
+
+        # Create the directory if not found
+        if os.path.isdir(result) is False:
+            files.mkdir(result)
+
+        # Check if value exists
+        if os.path.isdir(result) is False:
+            log_message = (
+                'daemon_directory: "{}" '
+                "in the configuration file(s) doesn't exist!"
+            ).format(result)
+            log.log2die_safe(1012, log_message)
+
+        # Return
+        return result
+
     def log_directory(self):
         """Determine the log_directory.
 
