@@ -13,52 +13,46 @@ import traceback
 LOGGER = {}
 
 
-def check_environment():
-    """Check environmental variables. Die if incorrect.
+class ExceptionWrapper:
+    """Class to handle unexpected exceptions with multiprocessing.
 
-    Args:
-        None
+    Based on:
+        https://stackoverflow.com/questions/6126007/python-getting-a-traceback-from-a-multiprocessing-process
 
-    Returns:
-        path: Path to the configurtion directory
+        _NOTE_ The subprocess needs to return a value for this to work.
+        Returning an implicit "None" isn't sufficient
 
     """
-    # Get environment
-    _config_directory = os.environ.get("SWITCHMAP_CONFIGDIR")
 
-    # Verify configuration directory
-    if bool(_config_directory) is False:
-        log_message = """\
-Environment variable $SWITCHMAP_CONFIGDIR needs to be set to the \
-configuration directory location."""
-        log2die_safe(1159, log_message)
+    def __init__(self, error_exception):
+        """Initialize the class.
 
-    try:
-        path = os.path.abspath(os.path.expanduser(_config_directory))
-    except:
-        log_message = """\
-Environment variable $SWITCHMAP_CONFIGDIR set to invalid directory "{}"\
-""".format(
-            path
-        )
-        # Must print statement as logging requires a config directory
-        log2die_safe(1086, log_message)
+        Args:
+            error_exception: Exception object
 
-    # Verify configuration directory existence
-    if (os.path.exists(path) is False) or (os.path.isdir(path) is False):
-        log_message = """\
-Environment variable $SWITCHMAP_CONFIGDIR set to directory {} that \
-does not exist""".format(
-            path
-        )
-        # Must print statement as logging requires a config directory
-        log2die_safe(1020, log_message)
+        Returns:
+            None
 
-    # Set the path
-    os.environ["SWITCHMAP_CONFIGDIR"] = path
+        """
+        # Process
+        self._error_exception = error_exception
+        (self._etype, self._evalue, self._etraceback) = sys.exc_info()
 
-    # Return
-    return path
+    def re_raise(self):
+        """Extend the re_raise method.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Log message
+        log2exception(1249, (self._etype, self._evalue, self._etraceback))
+
+        # Process traceback
+        raise self._error_exception.with_traceback(self._etraceback)
 
 
 class _GetLog:
@@ -434,66 +428,65 @@ def _message(code, message, error=True):
     return output
 
 
-class ExceptionWrapper(object):
-    """Class to handle unexpected exceptions with multiprocessing.
-
-    Based on:
-        https://stackoverflow.com/questions/6126007/python-getting-a-traceback-from-a-multiprocessing-process
-
-        _NOTE_ The subprocess needs to return a value for this to work.
-        Returning an implicit "None" isn't sufficient
-
-    """
-
-    def __init__(self, error_exception):
-        """Initialize the class.
-
-        Args:
-            error_exception: Exception object
-
-        Returns:
-            None
-
-        """
-        # Process
-        self._error_exception = error_exception
-        (self._etype, self._evalue, self._etraceback) = sys.exc_info()
-
-    def re_raise(self):
-        """Extend the re_raise method.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Log message
-        log2exception(1249, (self._etype, self._evalue, self._etraceback))
-
-        # Process traceback
-        raise self._error_exception.with_traceback(self._etraceback)
-
-
-def env():
-    """Check enviroment variables before running scripts.
+def check_environment():
+    """Check environmental variables. Die if incorrect.
 
     Args:
         None
 
     Returns:
-        None
+        path: Path to the configurtion directory
 
     """
-    # Make sure the SWITCHMAP_CONFIGDIR environment variable is set
-    if "SWITCHMAP_CONFIGDIR" not in os.environ:
-        log_message = "The SWITCHMAP_CONFIGDIR environment variable not set."
-        log2die_safe(1150, log_message)
+    # Get environment
+    _config_directory = os.environ.get("SWITCHMAP_CONFIGDIR")
 
-    # Make sure the SWITCHMAP_CONFIGDIR environment variable is set to unittest
-    if "unittest" in os.environ["SWITCHMAP_CONFIGDIR"].lower():
+    # Verify configuration directory
+    if bool(_config_directory) is False:
+        _config_directory = "{}/etc".format(root_directory())
+
+    # Expand the path in case it contains a "~" character
+    try:
+        path = os.path.abspath(os.path.expanduser(_config_directory))
+    except:
         log_message = """\
-The SWITCHMAP_CONFIGDIR is set to a unittest directory. Daemon cannot be run\
-"""
-        log2die_safe(1151, log_message)
+Environment variable $SWITCHMAP_CONFIGDIR set to invalid directory "{}"\
+""".format(
+            path
+        )
+        # Must print statement as logging requires a config directory
+        log2die_safe(1086, log_message)
+
+    # Verify configuration directory existence
+    if (os.path.exists(path) is False) or (os.path.isdir(path) is False):
+        log_message = """\
+Environment variable $SWITCHMAP_CONFIGDIR set to directory {} that \
+does not exist""".format(
+            path
+        )
+        # Must print statement as logging requires a config directory
+        log2die_safe(1020, log_message)
+
+    # Set the path
+    os.environ["SWITCHMAP_CONFIGDIR"] = path
+
+    # Return
+    return path
+
+
+def root_directory():
+    """Determine the root directory in which switchmap is installed.
+
+    Args:
+        None
+
+    Returns:
+        result: Root directory
+
+    """
+    # Get the directory of the switchmap library
+    libdir = os.path.dirname(os.path.realpath(__file__))
+    result = os.path.dirname(os.path.dirname(libdir))
+
+    # Return
+    return result

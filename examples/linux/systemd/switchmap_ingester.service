@@ -2,34 +2,44 @@
 #
 # READ ALL STEPS BEFORE PROCEEDING
 #
-# 1) Copy this file to the /etc/systemd/system directory
-# 2) Edit the PYTHONPATH path
+# 1) Copy this file to one of these directories depending on your Linux version
+#        i.  RedHat variants: /usr/lib/systemd/system/
+#        ii. Debian/Ubuntu variants: /lib/systemd/system/
+# 2) Edit the CODEROOT path the full path switchmap code's root directory
 # 3) Edit the User and Group to match the POSIX user you want the daemon
 #    to run as.
-# 4) Edit the ExecStart statement (Leave the first one blank!)
-# 5) Run the command "systemctl daemon-reload". This needs to be run only once
-# 6) Run the command "systemctl start switchmap_ingester.service" to start
-# 7) Run the command "systemctl stop switchmap_ingester.service" to stop
-# 8) Run the command "systemctl restart switchmap_ingester.service" to restart
-# 9) Run the command "systemctl enable switchmap_ingester.service" to make
+# 4) Run the command "sudo systemctl daemon-reload". This needs to be run only once
+# 5) Run the command "sudo systemctl start switchmap_ingester.service" to start
+# 6) Run the command "sudo systemctl stop switchmap_ingester.service" to stop
+# 7) Run the command "sudo systemctl restart switchmap_ingester.service" to restart
+# 8) Run the command "sudo systemctl enable switchmap_ingester.service" to make
 #    switchmap_ingester start automatically on boot
 #
 ################################################################################
 
 [Unit]
-Description=switchmap_ingester: Network state web application
+Description=switchmap_ingester: Network state data processor
 
 [Service]
 User=switchmap
 Group=switchmap
-Environment=PYTHONPATH=/home/switchmap-ng START=--start "STOP=--stop --force" "RESTART=--restart --force"
+Environment=CODEROOT=/home/switchmap-ng
+
+################################################################################
+# No need to edit anything below here
+################################################################################
+
+Environment=VIRTUAL_ENV=$CODEROOT/venv/bin
+Environment=PATH=$CODEROOT/venv/bin:$PATH 
+Environment=START=--start "STOP=--stop --force" "RESTART=--restart --force"
 ExecStart=
-ExecStart=/home/switchmap-ng/bin/systemd/switchmap_ingester $START
-ExecStop=/home/switchmap-ng/bin/systemd/switchmap_ingester $STOP
-ExecReload=/home/switchmap-ng/bin/systemd/switchmap_ingester $RESTART
+ExecStart=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_ingester $START'
+ExecStop=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_ingester $STOP'
+ExecReload=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_ingester $RESTART'
 RemainAfterExit=yes
 GuessMainPID=yes
 Type=forking
+RuntimeDirectory=switchmap
 
 [Install]
 WantedBy=default.target

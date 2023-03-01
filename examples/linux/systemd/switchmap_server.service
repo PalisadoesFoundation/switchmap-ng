@@ -9,16 +9,16 @@
 # 3) Edit the User and Group to match the POSIX user you want the daemon
 #    to run as.
 # 4) Run the command "sudo systemctl daemon-reload". This needs to be run only once
-# 5) Run the command "sudo systemctl start switchmap_poller.service" to start
-# 6) Run the command "sudo systemctl stop switchmap_poller.service" to stop
-# 7) Run the command "sudo systemctl restart switchmap_poller.service" to restart
-# 8) Run the command "sudo systemctl enable switchmap_poller.service" to make
-#    switchmap_poller start automatically on boot
+# 5) Run the command "sudo systemctl start switchmap_service.service" to start
+# 6) Run the command "sudo systemctl stop switchmap_service.service" to stop
+# 7) Run the command "sudo systemctl restart switchmap_service.service" to restart
+# 8) Run the command "sudo systemctl enable switchmap_service.service" to make
+#    switchmap_service start automatically on boot
 #
 ################################################################################
 
 [Unit]
-Description=switchmap-ng: Network state SNMP poller
+Description=switchmap_service: Network state data API
 
 [Service]
 User=switchmap
@@ -33,14 +33,13 @@ Environment=VIRTUAL_ENV=$CODEROOT/venv/bin
 Environment=PATH=$CODEROOT/venv/bin:$PATH 
 Environment=START=--start "STOP=--stop --force" "RESTART=--restart --force"
 ExecStart=
-ExecStart=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_poller $START'
-ExecStop=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_poller $STOP'
-ExecReload=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_poller $RESTART'
+ExecStart=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_service $START'
+ExecStop=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_service $STOP'
+ExecReload=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_service $RESTART'
 RemainAfterExit=yes
 GuessMainPID=yes
 Type=forking
 RuntimeDirectory=switchmap
-
 
 [Install]
 WantedBy=default.target

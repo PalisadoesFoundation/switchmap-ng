@@ -90,7 +90,10 @@ class ConfigCore(_Config):
 
         """
         # Get result
-        result = "{}{}daemon".format(self.system_directory(), os.sep)
+        result = self._config_core.get(
+            "daemon_directory",
+            "{}{}daemon".format(self.system_directory(), os.sep),
+        )
 
         # Create the directory if not found
         if os.path.isdir(result) is False:
