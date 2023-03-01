@@ -1,14 +1,23 @@
 Configuration
 =============
 
-The ``examples/configuration`` directory includes a sample file that
+The ``examples/etc`` directory includes a sample file that
 can be edited. ``switchmap-ng`` assumes all files in this directory, or any
 other specified configuration directory, only contains ``switchmap-ng``
 configuration files. Most user will only need to edit the three files
 supplied.
 
-You must place your configuration file in the ``etc/`` directory as your
-permanent configuration file location.
+Setting Your Configuration File
+-------------------------------
+
+All switchmap executables default to searching for configuration files in the ``etc/`` directory of the ``switchmap-ng`` code base.
+
+This can be changed by setting the ``SWITCHMAP_CONFIGDIR`` environmental variable to the location of your choice. This can be done like this:
+
+::
+
+    export SWITCHMAP_CONFIGDIR=/path/to/the/configuration/directory
+
 
 Sample Configuration File
 -------------------------
@@ -17,22 +26,61 @@ Here is a sample configuration file that will be explained later in
 detail. ``switchmap-ng`` will attempt to contact hosts with each of the
 parameter sets in the ``snmp_group`` section till successful.
 
-::
+**NOTE:** If a default value is mentioned in the documentation it means that if the corresponding parameter is left out of the configuration, that the default value will be assumed. 
 
-    core:
-        log_directory: /home/switchmap-ng/log
-        log_level: info
-        system_directory: /opt/switchmap-ng/var
-        daemon_directory: /var/run/switchmap
-        agent_subprocesses: 20
-        bind_port: 7000
-        listen_address: 0.0.0.0
+..  code-block:: yaml
+
+  core:
+    agent_subprocesses: 20
+    system_directory: /path/to/system/directory
+    log_level: debug
+    log_directory: /path/to/log/directory
+    daemon_directory: /path/to/daemon/directory
+
+  dashboard:
+    bind_port: 7001
+    listen_address: localhost
+
+  server:
+    username: switchmap
+    listen_address: localhost
+    bind_port: 7000
+    ingest_interval: 86400
+    purge_after_ingest: True
+    cache_directory: /path/to/cache/directory
+    db_host: localhost
+    db_name: switchmap
+    db_user: switchmap
+    db_pass: CHANGE_ME_NOW
+    db_pool_size: 30
+
+  poller:
+    username: switchmap
+    polling_interval: 86400
+    server_address: localhost
+    server_bind_port: 7000
+    server_username: null
+    server_password: None
+    server_https: false
+    zones:
+      - zone: TEST
         hostnames:
           - 192.168.1.1
           - 192.168.1.2
           - 192.168.1.3
           - 192.168.1.4
-        polling_interval: 86400
+    snmp_groups:
+
+      - group_name: V2
+        snmp_version: 2
+        snmp_secname:
+        snmp_community: Q6RNgKDntG77xseZ
+        snmp_port: 161
+        snmp_authprotocol:
+        snmp_authpassword:
+        snmp_privprotocol:
+        snmp_privpassword:
+        enabled: True
 
     snmp_groups:
         - group_name: Corporate Campus

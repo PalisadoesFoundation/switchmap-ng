@@ -41,7 +41,7 @@ Ubuntu / Debian / Mint
 
 The commands for installing the dependencies are:
 
-::
+.. code-block:: bash
 
     $ sudo apt-get -y install python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev python3-venv
 
@@ -52,7 +52,7 @@ Centos / Fedora
 The commands for installing the dependencies are:
 
 
-::
+.. code-block:: bash
 
     $ sudo dnf -y install python3 python3-pip net-snmp-utils net-snmp-devel gcc python-devel python3-virtualenv
 
@@ -69,7 +69,7 @@ Clone the Repository
 Now clone the repository and copy the sample configuration file to its
 final location.
 
-::
+.. code-block:: bash
 
     $ git clone https://github.com/PalisadoesFoundation/switchmap-ng
     $ cd switchmap-ng
@@ -89,7 +89,7 @@ The following commands will:
 
 Here are the commands:
 
-::
+.. code-block:: bash
 
     $ cd /path/to/switchmap
     $ python3 -m pip install --user virtualenv
@@ -102,14 +102,14 @@ You will now need to activate the use of these copied python files by ``switchma
 
 Here are the commands:
 
-::
+.. code-block:: bash
 
     $ source venv/bin/activate
     (venv) $ 
 
 Now you can install the extra python packages using ``pip3`` referencing the packages in the ``requirements.txt`` file
 
-::
+.. code-block:: bash
 
     (venv) $ pip3 install -r requirements.txt
 
@@ -124,7 +124,7 @@ Please read the :doc:`configuration` file beforehand before proceeding.
 
 Edit your configuration file with the appropriate configuration options. Here are the steps using the ``vim`` editor:
 
-::
+.. code-block:: bash
 
     $ cp examples/etc/config.yaml etc/config.yaml
     $ vim etc/config.yaml
@@ -136,7 +136,7 @@ Run Installation Script
 
 You will now need to run the database installation script. This creates the database tables and populates some of them with important data.
 
-::
+..  code-block:: bash
 
     (venv) $ bin/tools/create_db_tables.py
 
@@ -150,7 +150,7 @@ Testing Polling
 ~~~~~~~~~~~~~~~
 You can test your SNMP configuration and connectivity to your devices using the ``switchmap_poller_test.py`` utility like this:
 
-::
+..  code-block:: bash
 
     $ bin/tools/switchmap_poller_test.py --hostname HOSTNAME
 

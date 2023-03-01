@@ -5,15 +5,17 @@
 # 1) Copy this file to one of these directories depending on your Linux version
 #        i.  RedHat variants: /usr/lib/systemd/system/
 #        ii. Debian/Ubuntu variants: /lib/systemd/system/
-# 2) Edit the CODEROOT path the full path switchmap code's root directory
-# 3) Edit the User and Group to match the POSIX user you want the daemon
+# 2) Edit the CODEROOT path to be the full path switchmap code's root directory
+# 3) Edit the SWITCHMAP_CONFIGDIR path to be the full path configuration file 
+#    directory. This defaults to etc/ directory of the switchmap code base
+# 4) Edit the User and Group to match the POSIX user you want the daemon
 #    to run as.
-# 4) Run the command "sudo systemctl daemon-reload". This needs to be run only once
-# 5) Run the command "sudo systemctl start switchmap_service.service" to start
-# 6) Run the command "sudo systemctl stop switchmap_service.service" to stop
-# 7) Run the command "sudo systemctl restart switchmap_service.service" to restart
-# 8) Run the command "sudo systemctl enable switchmap_service.service" to make
-#    switchmap_service start automatically on boot
+# 5) Run the command "sudo systemctl daemon-reload". This needs to be run only once
+# 6) Run the command "sudo systemctl start switchmap_server.service" to start
+# 7) Run the command "sudo systemctl stop switchmap_server.service" to stop
+# 8) Run the command "sudo systemctl restart switchmap_server.service" to restart
+# 9) Run the command "sudo systemctl enable switchmap_server.service" to make
+#    switchmap_server start automatically on boot
 #
 ################################################################################
 
@@ -24,6 +26,7 @@ Description=switchmap_service: Network state data API
 User=switchmap
 Group=switchmap
 Environment=CODEROOT=/home/switchmap-ng
+Environment=SWITCHMAP_CONFIGDIR=
 
 ################################################################################
 # No need to edit anything below here
