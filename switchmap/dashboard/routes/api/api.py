@@ -10,6 +10,7 @@ from flask import Blueprint, jsonify
 
 # Application imports
 from switchmap.core import rest
+from switchmap.core import graphene
 from switchmap.dashboard.configuration import ConfigDashboard
 
 # Define the API global variable
@@ -59,7 +60,8 @@ def dashboard():
 """
     #
     # Get the data
-    data = rest.get_graphql(query, config)
+    _data = rest.get_graphql(query, config)
+    data = graphene.normalize(_data)
 
     # Return
     return jsonify(data)
