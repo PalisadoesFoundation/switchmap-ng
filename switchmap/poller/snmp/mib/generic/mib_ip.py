@@ -38,7 +38,7 @@ class IpQuery(Query):
     """
 
     def __init__(self, snmp_object):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py
@@ -115,7 +115,7 @@ class IpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=False)
+        results = self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Determine IP address
             nodes = key.split(".")

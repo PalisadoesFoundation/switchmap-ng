@@ -37,7 +37,7 @@ class If64Query(Query):
     """
 
     def __init__(self, snmp_object):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py
@@ -137,7 +137,7 @@ class If64Query(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -166,7 +166,7 @@ class If64Query(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -195,7 +195,7 @@ class If64Query(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -224,7 +224,7 @@ class If64Query(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -253,7 +253,7 @@ class If64Query(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -282,7 +282,7 @@ class If64Query(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -311,7 +311,7 @@ class If64Query(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -342,7 +342,7 @@ class If64Query(Query):
 
         # Process results
         if safe is False:
-            results = self.snmp_object.walk(oid, normalized=True)
+            results = self.snmp_object.swalk(oid, normalized=True)
         else:
             results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -375,7 +375,7 @@ class If64Query(Query):
 
         # Process results
         if safe is False:
-            results = self.snmp_object.walk(oid, normalized=True)
+            results = self.snmp_object.swalk(oid, normalized=True)
         else:
             results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():

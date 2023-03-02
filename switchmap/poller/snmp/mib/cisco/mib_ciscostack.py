@@ -36,7 +36,7 @@ class CiscoStackQuery(Query):
     """
 
     def __init__(self, snmp_object):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py
@@ -95,7 +95,7 @@ class CiscoStackQuery(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Assign duplex value to ifindex key
             ifindex = dot1dbaseport[int(key)]
@@ -124,7 +124,7 @@ class CiscoStackQuery(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 

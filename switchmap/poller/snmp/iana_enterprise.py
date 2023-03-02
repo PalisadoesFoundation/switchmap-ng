@@ -18,7 +18,7 @@ class Query:
     """
 
     def __init__(self, enterprise=None, sysobjectid=None):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: Dict of SNMP parameters to use in querying device

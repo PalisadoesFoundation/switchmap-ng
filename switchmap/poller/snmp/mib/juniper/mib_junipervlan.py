@@ -39,7 +39,7 @@ class JuniperVlanQuery(Query):
     """
 
     def __init__(self, snmp_object):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py
@@ -130,7 +130,7 @@ class JuniperVlanQuery(Query):
 
         # Process OID
         oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.7.1.5"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             ifindex = self.baseportifindex[int(key)]
             data_dict[ifindex] = value
@@ -153,7 +153,7 @@ class JuniperVlanQuery(Query):
 
         # Process OID
         oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.7.1.3"
-        results = self.snmp_object.walk(oid, normalized=False)
+        results = self.snmp_object.swalk(oid, normalized=False)
         for key in sorted(results.keys()):
             # The key is the full OID. Split this into its component nodes
             nodes = key.split(".")
@@ -188,7 +188,7 @@ class JuniperVlanQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.5.1.2"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for vlan_id, value in results.items():
             # Get VLAN tag
             vlan_tag = self.vlan_map[int(vlan_id)]
@@ -214,7 +214,7 @@ class JuniperVlanQuery(Query):
 
         # Get a mapping of dot1dbaseport values to the corresponding ifindex
         oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.5.1.5"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = int(value)

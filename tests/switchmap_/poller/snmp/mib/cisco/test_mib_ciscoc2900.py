@@ -202,7 +202,7 @@ class TestMibCiscoc2900(unittest.TestCase):
 
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {"walk.return_value": self.nwalk_results_integer}
+        mock_spec = {"swalk.return_value": self.nwalk_results_integer}
         snmpobj.configure_mock(**mock_spec)
 
         # Get results

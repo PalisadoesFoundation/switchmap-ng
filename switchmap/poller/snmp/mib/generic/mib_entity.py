@@ -43,7 +43,7 @@ class EntityQuery(Query):
     """
 
     def __init__(self, snmp_object):
-        """Function for intializing the class.
+        """Intialize the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py
@@ -118,7 +118,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.2"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -142,7 +142,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.5"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -166,7 +166,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.10"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -190,7 +190,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.11"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -214,7 +214,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.13"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -238,7 +238,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.7"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -262,7 +262,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.8"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -286,7 +286,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.9"
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()

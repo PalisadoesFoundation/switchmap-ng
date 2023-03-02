@@ -24,7 +24,7 @@ class Query:
     tags = []
 
     def __init__(self, snmp_object, test_oid, tags):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py

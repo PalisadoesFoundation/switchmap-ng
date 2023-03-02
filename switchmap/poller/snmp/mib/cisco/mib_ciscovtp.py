@@ -41,7 +41,7 @@ class CiscoVtpQuery(Query):
     """
 
     def __init__(self, snmp_object):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py

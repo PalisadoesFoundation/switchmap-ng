@@ -39,7 +39,7 @@ class QbridgeQuery(Query):
     """
 
     def __init__(self, snmp_object):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py
@@ -122,7 +122,7 @@ class QbridgeQuery(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             ifindex = self.baseportifindex[int(key)]
             data_dict[ifindex] = value
@@ -150,7 +150,7 @@ class QbridgeQuery(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[key] = str(bytes(value), encoding="utf-8")
 

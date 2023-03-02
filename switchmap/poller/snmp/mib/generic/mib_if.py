@@ -38,7 +38,7 @@ class IfQuery(Query):
     """
 
     def __init__(self, snmp_object):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py
@@ -157,7 +157,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -188,7 +188,7 @@ class IfQuery(Query):
 
         # Process results
         if safe is False:
-            results = self.snmp_object.walk(oid, normalized=True)
+            results = self.snmp_object.swalk(oid, normalized=True)
         else:
             results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -221,7 +221,7 @@ class IfQuery(Query):
 
         # Process results
         if safe is False:
-            results = self.snmp_object.walk(oid, normalized=True)
+            results = self.snmp_object.swalk(oid, normalized=True)
         else:
             results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -254,7 +254,7 @@ class IfQuery(Query):
 
         # Process results
         if safe is False:
-            results = self.snmp_object.walk(oid, normalized=True)
+            results = self.snmp_object.swalk(oid, normalized=True)
         else:
             results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
@@ -285,7 +285,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -314,7 +314,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -343,7 +343,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -372,7 +372,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -401,7 +401,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8")
@@ -430,7 +430,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8")
@@ -459,7 +459,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -488,7 +488,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID to get MAC address
             data_dict[int(key)] = general.octetstr_2_string(value)
@@ -517,7 +517,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -546,7 +546,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -575,7 +575,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -604,7 +604,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=True)
+        results = self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -680,7 +680,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.walk(oid, normalized=False)
+        results = self.snmp_object.swalk(oid, normalized=False)
         for key in results.keys():
             # Get higher and lower layer index values
             nodes = key.split(".")

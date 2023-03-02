@@ -38,7 +38,7 @@ class BridgeQuery(Query):
     """
 
     def __init__(self, snmp_object):
-        """Function for intializing the class.
+        """Instantiate the class.
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py
@@ -281,7 +281,7 @@ class BridgeQuery(Query):
         oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
         oid_exists = self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
-            results = self._snmp_object.walk(
+            results = self._snmp_object.swalk(
                 oid_dot1qvlanstaticname, normalized=True
             )
             for key, value in results.items():
