@@ -342,7 +342,7 @@ class VlanPort(BASE):
 
     # Define relationships from child to parent
     # (with backref to plural variable in parent table definition)
-    vlan = relationship(
+    vlans = relationship(
         "Vlan",
         backref=backref(
             "vlanports",
@@ -351,7 +351,7 @@ class VlanPort(BASE):
         ),
     )
 
-    l1interfaces = relationship(
+    l1interface = relationship(
         "L1Interface",
         backref=backref(
             "vlanports",
@@ -464,7 +464,7 @@ class MacIp(BASE):
         ),
     )
 
-    mac = relationship(
+    macs = relationship(
         "Mac",
         backref=backref(
             "macips",
@@ -513,7 +513,7 @@ class MacPort(BASE):
 
     # Define relationships from child to parent
     # (with backref to plural variable in parent table definition)
-    mac = relationship(
+    macs = relationship(
         "Mac",
         backref=backref(
             "macports",
@@ -522,7 +522,7 @@ class MacPort(BASE):
         ),
     )
 
-    l1interfaces = relationship(
+    l1interface = relationship(
         "L1Interface",
         backref=backref(
             "macports",

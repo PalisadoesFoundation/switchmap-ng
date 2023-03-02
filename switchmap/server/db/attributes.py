@@ -114,8 +114,10 @@ def resolve_sys_objectid(obj, _):
 
 class EventAttribute:
     """Descriptive attributes of the Event table.
+
     A generic class to mutualize description of attributes for both queries
     and mutations.
+
     """
 
     idx_event = graphene.Int(description="Primary key index")
@@ -130,8 +132,10 @@ class EventAttribute:
 
 class RootAttribute:
     """Descriptive attributes of the Event table.
+
     A generic class to mutualize description of attributes for both queries
     and mutations.
+
     """
 
     idx_root = graphene.Int(description="Primary key index")
