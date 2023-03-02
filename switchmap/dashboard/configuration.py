@@ -4,11 +4,11 @@ import os.path
 import os
 
 # Import project libraries
-from switchmap.core.configuration import ConfigCore
+from switchmap.core.configuration import ConfigAPIClient
 from switchmap.core import log
 
 
-class ConfigDashboard(ConfigCore):
+class ConfigDashboard(ConfigAPIClient):
     """Class gathers all configuration information."""
 
     def __init__(self):
@@ -21,11 +21,11 @@ class ConfigDashboard(ConfigCore):
             None
 
         """
-        # Instantiate sub class
-        ConfigCore.__init__(self)
-
         # Initialize key variables
         section = "dashboard"
+
+        # Instantiate sub class
+        ConfigAPIClient.__init__(self, section)
         self._config_dashboard = self._config_complete.get(section)
 
         # Error if incorrectly configured

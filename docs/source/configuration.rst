@@ -128,7 +128,12 @@ Parameter                           Description
 The ``dashboard:`` Section
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the section of the configuration file that governs the dashboard operation of ``switchmap-ng``. Here is how it is configured.
+This section of the configuration file:
+
+1) needs to be added to the ``core:`` section if you plan to configure your server to be a webserver to display the results.
+2) governs the dashboard operation of ``switchmap-ng``. 
+
+Here is how it is configured:
 
 =================================== ========
 Parameter                           Description
@@ -142,7 +147,12 @@ Parameter                           Description
 The ``server:`` Section
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the section of the configuration file that governs the API server operation of ``switchmap-ng``. Here is how it is configured.
+This section of the configuration file:
+
+1) needs to be added to the ``core:`` section if you plan to configure your server to be an API server.
+2) governs the API server operation of ``switchmap-ng``. Here is how it is configured.
+
+Here is how it is configured:
 
 =================================== ========
 Parameter                           Description
@@ -166,7 +176,12 @@ Parameter                           Description
 The ``poller:`` Section
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-This is the section of the configuration file that governs the general operation of ``switchmap-ng``. Here is how it is configured.
+This section of the configuration file:
+
+1) needs to be added to the ``core:`` section if you plan to configure your server to be SNMP poller server.
+2) governs the polling operation of ``switchmap-ng``. 
+
+Here is how it is configured.
 
 =================================== ========
 Parameter                           Description

@@ -3,13 +3,12 @@
 import os.path
 import os
 
-from switchmap.core.configuration import ConfigCore
+from switchmap.core.configuration import ConfigAPIClient
 from switchmap.core import log
-from switchmap.core import general
 from switchmap.poller import ZONE, SNMP
 
 
-class ConfigPoller(ConfigCore):
+class ConfigPoller(ConfigAPIClient):
     """Class gathers all configuration information."""
 
     def __init__(self):
@@ -22,11 +21,13 @@ class ConfigPoller(ConfigCore):
             None
 
         """
-        # Instantiate sub class
-        ConfigCore.__init__(self)
-
         # Initialize key variables
         section = "poller"
+
+        # Instantiate sub class
+        ConfigAPIClient.__init__(self, section)
+
+        # Get poller config
         self._config_poller = self._config_complete.get(section)
 
         # Error if incorrectly configured
@@ -90,118 +91,6 @@ class ConfigPoller(ConfigCore):
         """
         # Get result
         result = self._config_poller.get("polling_interval", 86400)
-        return result
-
-    def server_address(self):
-        """Get server_address.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_poller.get("server_address", "0.0.0.0")
-        return result
-
-    def server_bind_port(self):
-        """Get server_bind_port.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_poller.get("server_bind_port", 7000)
-        return result
-
-    def server_https(self):
-        """Get server_https.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_poller.get("server_https", None)
-        result = general.make_bool(result)
-        return result
-
-    def server_password(self):
-        """Get server_password.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_poller.get("server_password", None)
-        if result is None:
-            result = None
-        elif result is False:
-            pass
-        elif isinstance(result, str):
-            if result.lower() == "none":
-                result = None
-            elif result.lower() == "false":
-                result = None
-        return result
-
-    def server_username(self):
-        """Get server_username.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_poller.get("server_username", None)
-        if result is None:
-            result = None
-        elif result is False:
-            pass
-        elif isinstance(result, str):
-            if result.lower() == "none":
-                result = None
-            elif result.lower() == "false":
-                result = None
-        return result
-
-    def server_url_root(self):
-        """Return server_url_root value.
-
-        Args:
-            None
-
-        Returns:
-            result: server_url_root value
-
-        """
-        # Get parameter
-        if self.server_https() is True:
-            result = "https://{}:{}".format(
-                self.server_address(), self.server_bind_port()
-            )
-        else:
-            result = "http://{}:{}".format(
-                self.server_address(), self.server_bind_port()
-            )
-
-        # Return
         return result
 
     def snmp_auth(self):

@@ -69,6 +69,11 @@ server:
 dashboard:
   bind_port: 8034
   listen_address: t7sh4gPe2XMKG2ds
+  server_address: bwSeygg8rcJAzPmA
+  server_bind_port: 7546
+  server_username: t7sh4gG2dsPe2XMK
+  server_password: t7sPe2XMKh4gG2ds
+  server_https: True
 
 poller:
   username: nv2Mwx7gu9AbLGyz

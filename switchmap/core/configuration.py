@@ -7,6 +7,7 @@ import multiprocessing
 # Import project libraries
 from switchmap.core import files
 from switchmap.core import log
+from switchmap.core import general
 
 
 class _Config:
@@ -197,6 +198,147 @@ class ConfigCore(_Config):
                 "in the configuration file(s) doesn't exist!"
             ).format(result)
             log.log2die_safe(1011, daemon_message)
+
+        # Return
+        return result
+
+
+class ConfigAPIClient(ConfigCore):
+    """Class gathers all configuration information."""
+
+    def __init__(self, section):
+        """Intialize the class.
+
+        Args:
+            section: Section of the config file to read
+
+        Returns:
+            None
+
+        """
+        # Instantiate sub class
+        ConfigCore.__init__(self)
+
+        # Initialize key variables
+        self._config_api_client = self._config_complete.get(section)
+
+        # Error if incorrectly configured
+        if bool(self._config_api_client) is False:
+            log_message = (
+                'No "{}:" section found in the configuration file(s)'.format(
+                    section
+                )
+            )
+            log.log2die_safe(1006, log_message)
+
+    def server_address(self):
+        """Get server_address.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_client.get("server_address", "0.0.0.0")
+        return result
+
+    def server_bind_port(self):
+        """Get server_bind_port.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_client.get("server_bind_port", 7000)
+        return result
+
+    def server_https(self):
+        """Get server_https.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_client.get("server_https", None)
+        result = general.make_bool(result)
+        return result
+
+    def server_password(self):
+        """Get server_password.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_client.get("server_password", None)
+        if result is None:
+            result = None
+        elif result is False:
+            pass
+        elif isinstance(result, str):
+            if result.lower() == "none":
+                result = None
+            elif result.lower() == "false":
+                result = None
+        return result
+
+    def server_username(self):
+        """Get server_username.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_client.get("server_username", None)
+        if result is None:
+            result = None
+        elif result is False:
+            pass
+        elif isinstance(result, str):
+            if result.lower() == "none":
+                result = None
+            elif result.lower() == "false":
+                result = None
+        return result
+
+    def server_url_root(self):
+        """Return server_url_root value.
+
+        Args:
+            None
+
+        Returns:
+            result: server_url_root value
+
+        """
+        # Get parameter
+        if self.server_https() is True:
+            result = "https://{}:{}".format(
+                self.server_address(), self.server_bind_port()
+            )
+        else:
+            result = "http://{}:{}".format(
+                self.server_address(), self.server_bind_port()
+            )
 
         # Return
         return result

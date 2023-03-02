@@ -25,7 +25,7 @@ else:
 # Switchmap libraries
 from switchmap.core.agent import Agent, AgentCLI, AgentAPI
 from switchmap import AGENT_DASHBOARD, AGENT_DASHBOARD_CHILD
-from switchmap.www import DASHBOARD
+from switchmap.dashboard import DASHBOARD
 
 from switchmap.dashboard.configuration import ConfigDashboard
 

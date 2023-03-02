@@ -21,6 +21,10 @@ Features
 4. Threaded polling of devices for data. Fast.
 5. Support for Cisco and Juniper gear. More expected to added with time.
 6. Support for SNMPv2 and/or SNMPv3 for all configured network devices.
+7. The separation of functions into three roles which can be distributed amongst one or more systems.
+    1. **Dashboard**: A web server that presents the results
+    2. **Poller**: The system that polls SNMP data
+    3. **API Server**: The system that interacts with the Poller, Dashboard and a backend MySQL compatible RDBMS database.
 
 We are always looking for more contributors!
 
