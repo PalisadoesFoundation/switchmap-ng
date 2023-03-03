@@ -1,10 +1,15 @@
 """Class for creating home web pages."""
 
+# Standard imports
+from collections import namedtuple
+
 # PIP3 imports
-from flask_table import Table, Col, create_table
+from flask_table import Table, Col, create_table, NestedTableCol
 
 # Import switchmap.libraries
 from switchmap import SITE_PREFIX
+
+DeviceMeta = namedtuple("DeviceMeta", "hostname idx_device")
 
 
 class _RawCol(Col):
@@ -14,7 +19,7 @@ class _RawCol(Col):
         return content
 
 
-class HomePage(object):
+class HomePage:
     """Class that creates the homepages's various HTML tables."""
 
     def __init__(self, zones):
@@ -30,8 +35,8 @@ class HomePage(object):
         # Initialize key variables
         self._zones = zones
 
-    def data(self):
-        """Create data table for the devices.
+    def html(self):
+        """Create HTML table for the devices.
 
         Args:
             None
@@ -41,31 +46,56 @@ class HomePage(object):
 
         """
         # Initialize key variables
-        data = Device(self.hostnames).data()
+        html_list = []
 
-        # Populate the table
-        table = DeviceTable(data)
-
-        # Get HTML
-        html = table.__html__()
-
-        # Return
-        return html
-
-    def zones(self):
-        """Create data table for the devices.
-
-        Args:
-            None
-
-        Returns:
-            html: HTML table string
-
-        """
         # Iterate over the zones
         for item in self._zones:
-            zone = item.get("zone")
+            # Initialize loop variables
+            devices = []
+
+            # Create a table for each zone
+            zone = item.get("name")
             ZoneTable = create_table("ZoneTable").add_column("zone", Col(zone))
+            ZoneTable.objects = NestedTableCol("objects", DeviceTable)
+
+            # Extract the device data to create the table rows.
+            for dev_item in item.get("devices"):
+                devices.append(
+                    DeviceMeta(
+                        hostname=dev_item.get("hostname"),
+                        idx_device=dev_item.get("idxDevice"),
+                    )
+                )
+            device_rows = rows(devices)
+
+            # Append the result to create a table object
+            table = DeviceTable(device_rows)
+
+            # Convert the table to HTML, add the HTML to a list
+            html_list.append(wrapper(zone, table.__html__()))
+
+        # Return tables
+        html = "".join(html_list)
+        return html
+
+
+class ZoneRow:
+    """Declaration of the rows in the Zone table."""
+
+    def __init__(self, zone, device_rows):
+        """Initialize the class.
+
+        Args:
+            zone: Name of zone
+            device_rows: List of DeviceRows objects
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        self.zone = zone
+        self.device_rows = device_rows
 
 
 class DeviceTable(Table):
@@ -81,7 +111,7 @@ class DeviceTable(Table):
     classes = ["table"]
 
 
-class DeviceRow(object):
+class DevicesRow:
     """Declaration of the rows in the Devices table."""
 
     def __init__(self, row_data):
@@ -101,60 +131,84 @@ class DeviceRow(object):
         self.col3 = row_data[3]
 
 
-class Device(object):
-    """Class that creates the data to be presented for the devices."""
+def rows(devices):
+    """Return data for the device's system information.
 
-    def __init__(self, hostnames):
-        """Instantiate the class.
+    Args:
+        devices: List of DeviceMeta objects
 
-        Args:
-            hostnames: A list of hostnames
+    Returns:
+        rows: List of Col objects
 
-        Returns:
-            None
+    """
+    # Initialize key variables
+    _rows = []
+    links = []
+    column = 0
+    max_columns = 3
 
-        """
-        # Initialize key variables
-        self.hostnames = hostnames
+    # Create list of links for table
+    for device in devices:
+        # Get URL link for device page
+        url = "{}/devices/{}".format(SITE_PREFIX, device.idx_device)
+        link = '<a href="{}">{}</a>'.format(url, device.hostname)
+        links.append(link)
 
-    def data(self):
-        """Return data for the device's system information.
+    # Add links to table rows
+    row_data = [""] * (max_columns + 1)
+    for index, link in enumerate(links):
+        row_data[column] = links[index]
 
-        Args:
-            None
+        # Create new row when max number of columns reached
+        column += 1
+        if column > max_columns:
+            _rows.append(DevicesRow(row_data))
+            row_data = [""] * (max_columns + 1)
+            column = 0
 
-        Returns:
-            rows: List of Col objects
+    # Append a row if max number of columns wasn't reached before
+    if column > 0 and column <= max_columns:
+        _rows.append(DevicesRow(row_data))
 
-        """
-        # Initialize key variables
-        rows = []
-        links = []
-        column = 0
-        max_columns = 3
+    # Return
+    return _rows
 
-        # Create list of links for table
-        for hostname in self.hostnames:
-            # Get URL link for device page
-            url = "{}/devices/{}".format(SITE_PREFIX, hostname)
-            link = '<a href="{}">{}</a>'.format(url, hostname)
-            links.append(link)
 
-        # Add links to table rows
-        row_data = [""] * (max_columns + 1)
-        for index, link in enumerate(links):
-            row_data[column] = links[index]
+def wrapper(zone, table):
+    """Wrap the data in HTML stuff.
 
-            # Create new row when max number of columns reached
-            column += 1
-            if column > max_columns:
-                rows.append(DeviceRow(row_data))
-                row_data = [""] * (max_columns + 1)
-                column = 0
+    Args:
+        zone: zone
+        table: Table HTML
 
-        # Append a row if max number of columns wasn't reached before
-        if column > 0 and column <= max_columns:
-            rows.append(DeviceRow(row_data))
+    Returns:
+        result: HTML
 
-        # Return
-        return rows
+    """
+
+    result = """
+    <div class="row">
+      <div class="col-lg-12">
+          <div class="panel panel-default">
+              <div class="panel-heading">
+                  {}
+              </div>
+              <!-- /.panel-heading -->
+              <div class="panel-body">
+                  <div class="table-responsive table-bordered">
+                      {}
+                  </div>
+                  <!-- /.table-responsive -->
+              </div>
+              <!-- /.panel-body -->
+          </div>
+          <!-- /.panel -->
+      </div>
+    </div>
+""".format(
+        zone, table
+    )
+    result = result.replace(
+        "<thead><tr><th></th><th></th><th></th><th></th></tr></thead>", ""
+    )
+    return result

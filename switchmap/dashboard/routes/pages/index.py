@@ -7,7 +7,7 @@ Contains all routes that switchmap.s Flask webserver uses
 from flask import Blueprint, render_template, jsonify
 
 # Application imports
-# from switchmap.dashboard.pages.index import HomePage
+from switchmap.dashboard.pages.index import HomePage
 from switchmap.dashboard import uri
 from switchmap.core import rest
 from switchmap.dashboard.configuration import ConfigDashboard
@@ -30,9 +30,9 @@ def index():
     # Get data to display
     config = ConfigDashboard()
     data = rest.get(uri.dashboard(), config, server=False)
-    return jsonify(data)
+    # return jsonify(data)
 
-    # hosts = general.get_hosts()
-    # homepage = HomePage(hosts)
-    # device_table = homepage.data()
-    # return render_template("index.html", device_table=device_table)
+    # Convert data to HTML and return it to the browser
+    homepage = HomePage(data)
+    tables = homepage.html()
+    return render_template("index.html", device_table=tables)
