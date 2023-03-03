@@ -4,13 +4,13 @@ import os.path
 import os
 
 # Import project libraries
-from switchmap.core.configuration import ConfigCore
+from switchmap.core.configuration import ConfigAPI
 from switchmap.core import log
 from switchmap.core import general
 from switchmap.core import files
 
 
-class ConfigServer(ConfigCore):
+class ConfigServer(ConfigAPI):
     """Class gathers all configuration information."""
 
     def __init__(self):
@@ -23,11 +23,13 @@ class ConfigServer(ConfigCore):
             None
 
         """
-        # Instantiate sub class
-        ConfigCore.__init__(self)
-
         # Initialize key variables
         section = "server"
+
+        # Instantiate sub classes
+        ConfigAPI.__init__(self, section)
+
+        # Initialize key variables
         self._config_server = self._config_complete.get(section)
 
         # Error if incorrectly configured
@@ -39,8 +41,8 @@ class ConfigServer(ConfigCore):
             )
             log.log2die_safe(1014, log_message)
 
-    def bind_port(self):
-        """Get bind_port.
+    def api_bind_port(self):
+        """Get api_bind_port.
 
         Args:
             None
@@ -50,7 +52,7 @@ class ConfigServer(ConfigCore):
 
         """
         # Get result
-        result = self._config_server.get("bind_port", 7000)
+        result = self._config_server.get("api_bind_port", 7000)
         return result
 
     def cache_directory(self):
@@ -188,8 +190,8 @@ class ConfigServer(ConfigCore):
         # Return
         return result
 
-    def daemon_log_file(self):
-        """Get daemon_log_file.
+    def api_log_file(self):
+        """Get api_log_file.
 
         Args:
             None
@@ -246,20 +248,6 @@ class ConfigServer(ConfigCore):
         """
         # Get result
         result = self._config_server.get("ingest_interval", 86400)
-        return result
-
-    def listen_address(self):
-        """Get listen_address.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_server.get("listen_address", "0.0.0.0")
         return result
 
     def purge_after_ingest(self):

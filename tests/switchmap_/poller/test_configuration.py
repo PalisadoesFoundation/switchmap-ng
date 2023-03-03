@@ -70,13 +70,13 @@ class Test_ConfigPoller(unittest.TestCase):
         result = self.config.polling_interval()
         self.assertEqual(result, expected)
 
-    def test_daemon_log_file(self):
-        """Testing function daemon_log_file."""
+    def test_api_log_file(self):
+        """Testing function api_log_file."""
         # Run test
         expected = "{1}{0}log{0}switchmap-poller.log".format(
             os.sep, self._config.metadata.system_directory
         )
-        result = self.config.daemon_log_file()
+        result = self.config.api_log_file()
         self.assertEqual(result, expected)
 
     def test_server_address(self):

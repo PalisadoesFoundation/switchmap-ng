@@ -39,11 +39,11 @@ parameter sets in the ``snmp_group`` section till successful.
 
   dashboard:
     bind_port: 7001
-    listen_address: localhost
+    api_listen_address: localhost
 
   server:
     username: switchmap
-    listen_address: localhost
+    api_listen_address: localhost
     bind_port: 7000
     ingest_interval: 86400
     purge_after_ingest: True
@@ -139,9 +139,17 @@ Here is how it is configured:
 Parameter                           Description
 =================================== ========
 ``dashboard:``                      YAML key describing the poller configuration.
-``listen_address:``                 IP address the dashboard will be using to host web pages. The default is ``localhhost``. This should be changed to the IP address of the dashboard server's network interface that web browsers can access. 
-``bind_port:``                      The TCP port the dashboard will use. This should not need to be changed.
+``api_listen_address:``             IP address the dashboard will be using to host web pages. The default is ``localhost``. This should be changed to the IP address of the dashboard server's network interface that web browsers can access. 
+``api_bind_port``                   The TCP port the dashboard will use. This should not need to be changed.
+``api_https:``                      Set this to `True` if web browsers need to use HTTPs to access the dashboard pages. Switchmap only uses the SSL capabilities of the pre-installed webserver of your choice to encrypt data sent over the network. Default `False`.
+``api_password:``                   The HTTPS simple authentication password that the dashboard server uses. Defaults to ``None``.
+``api_username:``                   The HTTPS simple authentication username that the dashbord server uses. Defaults to ``None``.
 ``username:``                       The username under which all switchmap-ng dashboard daemons will run. This is set to ensure that unauthorized users run the daemon code.
+``server_address:``                 The IP address to use for contacting the server. The default is ``localhost``.
+``server_bind_port:``               The TCP port the API server uses. This must match the ``bind_port`` setting in the API server's configuration.
+``server_https:``                   Set this to `True` if the poller needs to use HTTPs to access the API server. Switchmap only uses the SSL capabilities of the pre-installed webserver of your choice to encrypt data sent over the network. Default `False`.
+``server_password:``                The HTTPS simple authentication password that the API server uses.
+``server_username:``                The HTTPS simple authentication username that the API server uses.
 =================================== ========
 
 The ``server:`` Section
@@ -159,8 +167,11 @@ Parameter                           Description
 =================================== ========
 ``server:``                         YAML key describing the poller configuration.
 ``username:``                       The username under which all switchmap-ng poller daemons will run. This is set to ensure that unauthorized users run the daemon code.
-``listen_address:``                 IP address the server will be using to host web pages. The default is ``localhhost``. This should be changed to the IP address of a server network interface that the poller can access over the network. If the poller daemon resides on the same server then the default is OK.
-``bind_port:``                      The TCP port the API will use. This should not need to be changed.
+``api_listen_address:``             IP address the server will be using to host web pages. The default is ``localhost``. This should be changed to the IP address of a server network interface that the poller can access over the network. If the poller daemon resides on the same server then the default is OK.
+``api_bind_port``                   The TCP port the API will use. This should not need to be changed.
+``api_https:``                      Set this to `True` if web browsers need to use HTTPs to access the API pages. Switchmap only uses the SSL capabilities of the pre-installed webserver of your choice to encrypt data sent over the network. Default `False`.
+``api_password:``                   The HTTPS simple authentication password that the API server uses. Defaults to ``None``.
+``api_username:``                   The HTTPS simple authentication username that the dashbord server uses. Defaults to ``None``.
 ``cache_directory:``                The directory where ``switchmap-ng`` places files containing polling data from the poller. Make sure that the switchmap username has write access to it. Defaults to the `cache/` subdirectory of `system_directory`
 ``db_host:``                        MySQL database server hostname
 ``db_user:``                        MySQL database username
@@ -189,8 +200,9 @@ Parameter                           Description
 ``poller:``                         YAML key describing the poller configuration.
 ``username:``                       The username under which all switchmap-ng poller daemons will run. This is set to ensure that unauthorized users run the daemon code.
 ``polling_interval:``               The frequency in seconds with which the poller will query devices
+``server_address:``                 The IP address to use for contacting the server. The default is ``localhost``.
 ``server_bind_port:``               The TCP port the API server uses. This must match the `bind_port` setting in the API server's configuration.
-``server_https:``                   Set this to `True` if the poller needs to use HTTPs to access the API server. Switchmap only uses SSL to encrypt data sent over the network. Default `False`.
+``server_https:``                   Set this to `True` if the poller needs to use HTTPs to access the API server. Switchmap only uses the SSL capabilities of the pre-installed webserver of your choice to encrypt data sent over the network. Default `False`.
 ``server_password:``                The HTTPS simple authentication password that the API server uses.
 ``server_username:``                The HTTPS simple authentication username that the API server uses.
 ``hostnames:``                      A list of hosts that will be polled for data.

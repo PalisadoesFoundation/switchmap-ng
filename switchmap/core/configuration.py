@@ -193,11 +193,11 @@ class ConfigCore(_Config):
 
         # Check if value exists
         if os.path.isdir(result) is False:
-            daemon_message = (
+            api_message = (
                 'system_directory: "{}" '
                 "in the configuration file(s) doesn't exist!"
             ).format(result)
-            log.log2die_safe(1011, daemon_message)
+            log.log2die_safe(1011, api_message)
 
         # Return
         return result
@@ -229,7 +229,7 @@ class ConfigAPIClient(ConfigCore):
                     section
                 )
             )
-            log.log2die_safe(1006, log_message)
+            log.log2die_safe(1013, log_message)
 
     def server_address(self):
         """Get server_address.
@@ -242,7 +242,7 @@ class ConfigAPIClient(ConfigCore):
 
         """
         # Get result
-        result = self._config_api_client.get("server_address", "0.0.0.0")
+        result = self._config_api_client.get("server_address", "localhost")
         return result
 
     def server_bind_port(self):
@@ -338,6 +338,133 @@ class ConfigAPIClient(ConfigCore):
         else:
             result = "http://{}:{}".format(
                 self.server_address(), self.server_bind_port()
+            )
+
+        # Return
+        return result
+
+
+class ConfigAPI(ConfigCore):
+    """Class gathers all configuration information."""
+
+    def __init__(self, section):
+        """Intialize the class.
+
+        Args:
+            section: Section of the config file to read
+
+        Returns:
+            None
+
+        """
+        # Instantiate sub class
+        ConfigCore.__init__(self)
+
+        # Initialize key variables
+        self._config_api_server = self._config_complete.get(section)
+
+        # Error if incorrectly configured
+        if bool(self._config_api_server) is False:
+            log_message = (
+                'No "{}:" section found in the configuration file(s)'.format(
+                    section
+                )
+            )
+            log.log2die_safe(1015, log_message)
+
+    def api_listen_address(self):
+        """Get api_listen_address.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_server.get("api_listen_address", "localhost")
+        return result
+
+    def api_https(self):
+        """Get api_https.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_server.get("api_https", None)
+        result = general.make_bool(result)
+        return result
+
+    def api_password(self):
+        """Get api_password.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_server.get("api_password", None)
+        if result is None:
+            result = None
+        elif result is False:
+            pass
+        elif isinstance(result, str):
+            if result.lower() == "none":
+                result = None
+            elif result.lower() == "false":
+                result = None
+        return result
+
+    def api_username(self):
+        """Get api_username.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_server.get("api_username", None)
+        if result is None:
+            result = None
+        elif result is False:
+            pass
+        elif isinstance(result, str):
+            if result.lower() == "none":
+                result = None
+            elif result.lower() == "false":
+                result = None
+        return result
+
+    def api_url_root(self):
+        """Return api_url_root value.
+
+        Args:
+            None
+
+        Returns:
+            result: api_url_root value
+
+        """
+        # Get parameter
+        if self.api_https() is True:
+            result = "https://{}:{}".format(
+                self.api_listen_address(), self.api_bind_port()
+            )
+        else:
+            result = "http://{}:{}".format(
+                self.api_listen_address(), self.api_bind_port()
             )
 
         # Return

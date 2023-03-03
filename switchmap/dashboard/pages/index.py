@@ -90,7 +90,7 @@ class Device(object):
     """Class that creates the data to be presented for the devices."""
 
     def __init__(self, hostnames):
-        """Method instantiating the class.
+        """Instantiate the class.
 
         Args:
             hostnames: A list of hostnames

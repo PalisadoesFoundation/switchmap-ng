@@ -39,8 +39,8 @@ class ConfigPoller(ConfigAPIClient):
             )
             log.log2die_safe(1007, log_message)
 
-    def daemon_log_file(self):
-        """Get daemon_log_file.
+    def api_log_file(self):
+        """Get api_log_file.
 
         Args:
             None

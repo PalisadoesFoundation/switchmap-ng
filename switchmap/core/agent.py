@@ -321,8 +321,8 @@ class AgentAPI(Agent):
         Agent.__init__(self, parent, child=child, config=_config)
         self._app = app
         self._agent_api_variable = AgentAPIVariable(
-            ip_bind_port=_config.bind_port(),
-            ip_listen_address=_config.listen_address(),
+            ip_bind_port=_config.api_bind_port(),
+            ip_listen_address=_config.api_listen_address(),
         )
 
     def query(self):
@@ -366,8 +366,8 @@ fix.""".format(
         ######################################################################
         options = {
             "bind": _ip_binding(self._agent_api_variable),
-            "accesslog": self.config.daemon_log_file(),
-            "errorlog": self.config.daemon_log_file(),
+            "accesslog": self.config.api_log_file(),
+            "errorlog": self.config.api_log_file(),
             "capture_output": True,
             "pidfile": self._pidfile_child,
             "loglevel": self.config.log_level(),
@@ -380,7 +380,7 @@ fix.""".format(
         log_message = "API running on {}:{} and logging to file {}." "".format(
             self._agent_api_variable.ip_listen_address,
             self._agent_api_variable.ip_bind_port,
-            self.config.daemon_log_file(),
+            self.config.api_log_file(),
         )
         log.log2info(1088, log_message)
 
@@ -398,7 +398,8 @@ class _StandaloneApplication(BaseApplication):
     def __init__(self, app, parent, options=None):
         """Initialize the class.
 
-        args:
+        Args:
+
             app: Flask application object of type Flask(__name__)
             parent: Name of parent process that is invoking the API
             options: Gunicorn CLI options

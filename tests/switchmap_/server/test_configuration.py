@@ -62,11 +62,11 @@ class Test_ConfigServer(unittest.TestCase):
         """Testing function __init__."""
         pass
 
-    def test_bind_port(self):
-        """Testing function bind_port."""
+    def test_api_bind_port(self):
+        """Testing function api_bind_port."""
         # Run test
         expected = 7027
-        result = self.config.bind_port()
+        result = self.config.api_bind_port()
         self.assertEqual(result, expected)
 
     def test_cache_directory(self):
@@ -76,13 +76,13 @@ class Test_ConfigServer(unittest.TestCase):
         result = self.config.cache_directory()
         self.assertEqual(result, expected)
 
-    def test_daemon_log_file(self):
-        """Testing function daemon_log_file."""
+    def test_api_log_file(self):
+        """Testing function api_log_file."""
         # Run test
         expected = "{1}{0}log{0}switchmap-server.log".format(
             os.sep, self._config.metadata.system_directory
         )
-        result = self.config.daemon_log_file()
+        result = self.config.api_log_file()
         self.assertEqual(result, expected)
 
     def test_db_host(self):
@@ -127,13 +127,6 @@ class Test_ConfigServer(unittest.TestCase):
         result = self.config.db_user()
         self.assertEqual(result, expected)
 
-    def test_listen_address(self):
-        """Testing function listen_address."""
-        # Run test
-        expected = "MKG2dst7sh4gPe2X"
-        result = self.config.listen_address()
-        self.assertEqual(result, expected)
-
     def test_ingest_directory(self):
         """Testing function ingest_directory."""
         # Run test
@@ -162,6 +155,47 @@ class Test_ConfigServer(unittest.TestCase):
         # Run test
         expected = "7gnv2Mwxu9AbLGyz"
         result = self.config.username()
+        self.assertEqual(result, expected)
+
+    ######################################################################
+    ######################################################################
+    # All ConfigAPI configuration file parameters must pass. Tests below
+    ######################################################################
+    ######################################################################
+
+    def test_api_listen_address(self):
+        """Testing function api_listen_address."""
+        # Run test
+        expected = "MKG2dst7sh4gPe2X"
+        result = self.config.api_listen_address()
+        self.assertEqual(result, expected)
+
+    def test_api_https(self):
+        """Testing function api_https."""
+        # Run test
+        expected = False
+        result = self.config.api_https()
+        self.assertEqual(result, expected)
+
+    def test_api_password(self):
+        """Testing function api_password."""
+        # Run test
+        expected = "z2vucEsOP3s1Rep6LSwe"
+        result = self.config.api_password()
+        self.assertEqual(result, expected)
+
+    def test_api_url_root(self):
+        """Testing function api_url_root."""
+        # Run test
+        expected = "http://MKG2dst7sh4gPe2X:7027"
+        result = self.config.api_url_root()
+        self.assertEqual(result, expected)
+
+    def test_api_username(self):
+        """Testing function api_username."""
+        # Run test
+        expected = "Baprat9udri2wed5LzUB"
+        result = self.config.api_username()
         self.assertEqual(result, expected)
 
     ######################################################################

@@ -16,7 +16,7 @@ INDEX = Blueprint("INDEX", __name__)
 
 @INDEX.route("/")
 def index():
-    """Function for creating host tables.
+    """Create the dashboard home page.
 
     Args:
         None

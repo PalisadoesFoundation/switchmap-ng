@@ -208,7 +208,7 @@ def _get(url, config, die=True, query=None, stream=False):
         if die is True:
             log.log2die(1598, log_message)
         else:
-            log.log2info(1022, log_message)
+            log.log2info(1017, log_message)
 
     # Return
     response = ServerResponse(response=response, success=success)

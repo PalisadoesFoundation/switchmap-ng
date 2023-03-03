@@ -62,18 +62,11 @@ class Test_ConfigDashboard(unittest.TestCase):
         """Testing function __init__."""
         pass
 
-    def test_bind_port(self):
-        """Testing function bind_port."""
+    def test_api_bind_port(self):
+        """Testing function api_bind_port."""
         # Run test
         expected = 8034
-        result = self.config.bind_port()
-        self.assertEqual(result, expected)
-
-    def test_listen_address(self):
-        """Testing function listen_address."""
-        # Run test
-        expected = "t7sh4gPe2XMKG2ds"
-        result = self.config.listen_address()
+        result = self.config.api_bind_port()
         self.assertEqual(result, expected)
 
     def test_server_address(self):
@@ -123,6 +116,47 @@ class Test_ConfigDashboard(unittest.TestCase):
         # Run test
         expected = "switchmap"
         result = self.config.username()
+        self.assertEqual(result, expected)
+
+    ######################################################################
+    ######################################################################
+    # All ConfigAPI configuration file parameters must pass. Tests below
+    ######################################################################
+    ######################################################################
+
+    def test_api_listen_address(self):
+        """Testing function api_listen_address."""
+        # Run test
+        expected = "Drobugo8u6Lchlkiwl5o"
+        result = self.config.api_listen_address()
+        self.assertEqual(result, expected)
+
+    def test_api_https(self):
+        """Testing function api_https."""
+        # Run test
+        expected = False
+        result = self.config.api_https()
+        self.assertEqual(result, expected)
+
+    def test_api_password(self):
+        """Testing function api_password."""
+        # Run test
+        expected = None
+        result = self.config.api_password()
+        self.assertEqual(result, expected)
+
+    def test_api_url_root(self):
+        """Testing function api_url_root."""
+        # Run test
+        expected = "http://Drobugo8u6Lchlkiwl5o:8034"
+        result = self.config.api_url_root()
+        self.assertEqual(result, expected)
+
+    def test_api_username(self):
+        """Testing function api_username."""
+        # Run test
+        expected = None
+        result = self.config.api_username()
         self.assertEqual(result, expected)
 
     ######################################################################

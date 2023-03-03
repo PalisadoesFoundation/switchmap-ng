@@ -46,15 +46,15 @@ class Daemon:
 
         """
         # Initialize key variables
-        daemon_log_file = self._config.log_file()
+        api_log_file = self._config.log_file()
 
         # Make sure that the log file is accessible.
         try:
-            open(daemon_log_file, "a").close()
+            open(api_log_file, "a").close()
         except:
             log_message = """Cannot access daemon log file {}. Please check \
 file and directory permissions.""".format(
-                daemon_log_file
+                api_log_file
             )
             log.log2die(1162, log_message)
 
@@ -89,9 +89,9 @@ file and directory permissions.""".format(
         # Redirect standard file descriptors, but first make sure that the
         sys.stdout.flush()
         sys.stderr.flush()
-        f_handle_si = open(daemon_log_file, "r")
-        f_handle_so = open(daemon_log_file, "a+")
-        f_handle_se = open(daemon_log_file, "a+")
+        f_handle_si = open(api_log_file, "r")
+        f_handle_so = open(api_log_file, "a+")
+        f_handle_se = open(api_log_file, "a+")
         os.dup2(f_handle_si.fileno(), sys.stdin.fileno())
         os.dup2(f_handle_so.fileno(), sys.stdout.fileno())
         os.dup2(f_handle_se.fileno(), sys.stderr.fileno())

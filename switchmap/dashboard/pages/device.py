@@ -198,7 +198,7 @@ class Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, device_data, hostname, config, lookup, ifindexes=None):
-        """Method instantiating the class.
+        """Instantiate the class.
 
         Args:
             device_data: Dictionary of device data
@@ -334,7 +334,7 @@ class _Port(object):
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, port_data):
-        """Method instantiating the class.
+        """Instantiate the class.
 
         Args:
             port_data: Dictionary of port data
@@ -635,7 +635,7 @@ class System(object):
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, system_data):
-        """Method instantiating the class.
+        """Instantiate the class.
 
         Args:
             system_data: Dictionary of system data

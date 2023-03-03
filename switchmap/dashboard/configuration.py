@@ -4,11 +4,11 @@ import os.path
 import os
 
 # Import project libraries
-from switchmap.core.configuration import ConfigAPIClient
+from switchmap.core.configuration import ConfigAPIClient, ConfigAPI
 from switchmap.core import log
 
 
-class ConfigDashboard(ConfigAPIClient):
+class ConfigDashboard(ConfigAPIClient, ConfigAPI):
     """Class gathers all configuration information."""
 
     def __init__(self):
@@ -26,6 +26,7 @@ class ConfigDashboard(ConfigAPIClient):
 
         # Instantiate sub class
         ConfigAPIClient.__init__(self, section)
+        ConfigAPI.__init__(self, section)
         self._config_dashboard = self._config_complete.get(section)
 
         # Error if incorrectly configured
@@ -37,8 +38,8 @@ class ConfigDashboard(ConfigAPIClient):
             )
             log.log2die_safe(1016, log_message)
 
-    def bind_port(self):
-        """Get bind_port.
+    def api_bind_port(self):
+        """Get api_bind_port.
 
         Args:
             None
@@ -48,25 +49,11 @@ class ConfigDashboard(ConfigAPIClient):
 
         """
         # Get result
-        result = self._config_dashboard.get("bind_port", 7001)
+        result = self._config_dashboard.get("api_bind_port", 7001)
         return result
 
-    def listen_address(self):
-        """Get listen_address.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get result
-        result = self._config_dashboard.get("listen_address", "0.0.0.0")
-        return result
-
-    def daemon_log_file(self):
-        """Get daemon_log_file.
+    def api_log_file(self):
+        """Get api_log_file.
 
         Args:
             None

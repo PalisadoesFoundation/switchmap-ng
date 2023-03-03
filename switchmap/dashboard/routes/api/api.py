@@ -25,7 +25,7 @@ def dashboard():
         None
 
     Returns:
-        JSON of device data
+        JSON of zone data
 
     """
     # Initialize key variables
@@ -58,10 +58,16 @@ def dashboard():
 }
 
 """
-    #
+
     # Get the data
-    _data = rest.get_graphql(query, config)
-    data = graphene.normalize(_data)
+    result = rest.get_graphql(query, config)
+    normalized = graphene.normalize(result)
+
+    # Get the zone data list
+    data = normalized.get("data")
+    roots = data.get("roots")
+    event = roots[0].get("event")
+    zones = event.get("zones")
 
     # Return
-    return jsonify(data)
+    return jsonify(zones)

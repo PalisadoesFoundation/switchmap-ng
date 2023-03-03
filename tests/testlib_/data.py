@@ -23,15 +23,15 @@ core:
   polling_interval: 21600
 server:
   username: switchmap
-  bind_port: 9000
-  listen_address: localhost
+  api_bind_port: 9000
+  api_listen_address: localhost
   db_host: localhost
   db_name: switchmap_unittest
   db_user: travis
   db_pass: 7F4Gj7HJIDT5xJPs
 poller:
-  bind_port: 9001
-  listen_address: localhost
+  api_bind_port: 9001
+  api_listen_address: localhost
   username: switchmap
   hostnames:
     - unittest-01.example.org
@@ -57,8 +57,11 @@ core:
 
 server:
   username: 7gnv2Mwxu9AbLGyz
-  bind_port: 7027
-  listen_address: MKG2dst7sh4gPe2X
+  api_bind_port: 7027
+  api_listen_address: MKG2dst7sh4gPe2X
+  api_username: Baprat9udri2wed5LzUB
+  api_password: z2vucEsOP3s1Rep6LSwe
+  api_https: False
   ingest_interval: 98712
   purge_after_ingest: False
   db_host: Mwxu7gnv29AbLGyz
@@ -67,8 +70,11 @@ server:
   db_pass: nhZThsh4gPMwxu75
 
 dashboard:
-  bind_port: 8034
-  listen_address: t7sh4gPe2XMKG2ds
+  api_bind_port: 8034
+  api_listen_address: Drobugo8u6Lchlkiwl5o
+  api_username: none
+  api_password: null
+  api_https: False
   server_address: bwSeygg8rcJAzPmA
   server_bind_port: 7546
   server_username: t7sh4gG2dsPe2XMK
