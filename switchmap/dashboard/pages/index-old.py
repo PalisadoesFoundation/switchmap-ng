@@ -1,7 +1,7 @@
 """Class for creating home web pages."""
 
 # PIP3 imports
-from flask_table import Table, Col, create_table
+from flask_table import Table, Col
 
 # Import switchmap.libraries
 from switchmap import SITE_PREFIX
@@ -17,7 +17,7 @@ class _RawCol(Col):
 class HomePage(object):
     """Class that creates the homepages's various HTML tables."""
 
-    def __init__(self, zones):
+    def __init__(self, hostnames):
         """Initialize the class.
 
         Args:
@@ -28,7 +28,7 @@ class HomePage(object):
 
         """
         # Initialize key variables
-        self._zones = zones
+        self.hostnames = hostnames
 
     def data(self):
         """Create data table for the devices.
@@ -51,21 +51,6 @@ class HomePage(object):
 
         # Return
         return html
-
-    def zones(self):
-        """Create data table for the devices.
-
-        Args:
-            None
-
-        Returns:
-            html: HTML table string
-
-        """
-        # Iterate over the zones
-        for item in self._zones:
-            zone = item.get("zone")
-            ZoneTable = create_table("ZoneTable").add_column("zone", Col(zone))
 
 
 class DeviceTable(Table):

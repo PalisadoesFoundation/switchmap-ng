@@ -4,11 +4,13 @@ Contains all routes that switchmap.s Flask webserver uses
 
 """
 # Flask imports
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, jsonify
 
-# Switchmap-NG imports
-from switchmap.utils import general
-from switchmap.dashboard.pages.index import HomePage
+# Application imports
+# from switchmap.dashboard.pages.index import HomePage
+from switchmap.dashboard import uri
+from switchmap.core import rest
+from switchmap.dashboard.configuration import ConfigDashboard
 
 # Define the INDEX global variable
 INDEX = Blueprint("INDEX", __name__)
@@ -25,8 +27,12 @@ def index():
         HTML
 
     """
-    # Get a list of hostnames
-    hosts = general.get_hosts()
-    homepage = HomePage(hosts)
-    device_table = homepage.data()
-    return render_template("index.html", device_table=device_table)
+    # Get data to display
+    config = ConfigDashboard()
+    data = rest.get(uri.dashboard(), config, server=False)
+    return jsonify(data)
+
+    # hosts = general.get_hosts()
+    # homepage = HomePage(hosts)
+    # device_table = homepage.data()
+    # return render_template("index.html", device_table=device_table)

@@ -77,12 +77,13 @@ def post(uri, data, config):
     return success
 
 
-def get(uri, config, die=True):
+def get(uri, config, server=True, die=True):
     """Get data fro URI from API server.
 
     Args:
         uri: URI for posting
         config: ConfigAPIClient object
+        server: True if getting data from a server
         die: Die if the connection fails if True
 
     Returns:
@@ -93,11 +94,15 @@ def get(uri, config, die=True):
     data = []
 
     # Create the URL for posting
-    url_root = config.server_url_root()
+    if bool(server) is True:
+        url_root = config.server_url_root()
+    else:
+        url_root = config.api_url_root()
+
     url = _clean_url("{}/{}".format(url_root, uri))
 
     # Return
-    data = _get_json(url, die=die)
+    data = _get_json(url, config, die=die)
     return data
 
 
