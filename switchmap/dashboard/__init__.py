@@ -3,11 +3,14 @@
 Contains all routes that switchmap.s Flask webserver uses
 
 """
+# Standard imports
+from collections import namedtuple
+
 # Pip imports
 from flask import Flask, url_for
 
-# Switchmap-NG imports
-# from switchmap.utils import general
+# Used in building HTML tables
+DeviceMeta = namedtuple("DeviceMeta", "hostname idx_device")
 
 # Do remaining switchmap-ng importations
 from switchmap.dashboard.routes.api.api import API

@@ -122,10 +122,10 @@ class PortTable(Table):
     def get_tr_attrs(self, item):
         """Apply CSS class attributes to regular table row.
 
-        args:
+        Args:
             item: Row of data
 
-        returns:
+        Returns:
             class of active stuff
 
         """
@@ -190,7 +190,7 @@ class PortRow(object):
         return bool(self.state == "Active")
 
     def enabled(self):
-        """Enabled ports."""
+        """Enable ports."""
         return bool(self.state != "Disabled")
 
 

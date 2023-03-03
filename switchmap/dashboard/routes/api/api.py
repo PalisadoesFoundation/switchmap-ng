@@ -71,3 +71,52 @@ def dashboard():
 
     # Return
     return jsonify(zones)
+
+
+@API.route("/devices/<int:idx_device>", methods=["GET"])
+def devices(idx_device):
+    """Get device data.
+
+    Args:
+        None
+
+    Returns:
+        JSON of zone data
+
+    """
+    # Initialize key variables
+    config = ConfigDashboard()
+    query = """
+{
+  devices(filter: {idxDevice: {eq: IDX_DEVICE}}) {
+    edges {
+      node {
+        hostname
+        l1interfaces {
+          edges {
+            node {
+              ifdescr
+              ifalias
+              ifoperstatus
+              duplex
+            }
+          }
+        }
+      }
+    }
+  }
+}
+""".replace(
+        "IDX_DEVICE", str(idx_device)
+    )
+
+    # Get the data
+    result = rest.get_graphql(query, config)
+    normalized = graphene.normalize(result)
+
+    # Get the zone data list
+    data = normalized.get("data")
+    device = data.get("devices")[0]
+
+    # Return
+    return jsonify(device)

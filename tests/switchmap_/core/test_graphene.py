@@ -2,10 +2,8 @@
 """Test the general module."""
 
 import unittest
-import random
 import os
 import sys
-import string
 import json
 
 # Try to create a working PYTHONPATH
@@ -50,13 +48,6 @@ class TestFunctions(unittest.TestCase):
     #########################################################################
     # General object setup
     #########################################################################
-
-    # Required
-    maxDiff = None
-
-    random_string = "".join(
-        [random.choice(string.ascii_letters + string.digits) for n in range(9)]
-    )
 
     @classmethod
     def setUpClass(cls):

@@ -1,15 +1,12 @@
 """Class for creating home web pages."""
 
-# Standard imports
-from collections import namedtuple
-
 # PIP3 imports
 from flask_table import Table, Col, create_table, NestedTableCol
 
 # Import switchmap.libraries
 from switchmap import SITE_PREFIX
-
-DeviceMeta = namedtuple("DeviceMeta", "hostname idx_device")
+from . import layouts
+from switchmap.dashboard import DeviceMeta
 
 
 class _RawCol(Col):
@@ -72,7 +69,7 @@ class HomePage:
             table = DeviceTable(device_rows)
 
             # Convert the table to HTML, add the HTML to a list
-            html_list.append(wrapper(zone, table.__html__()))
+            html_list.append(layouts.table_wrapper(zone, table.__html__()))
 
         # Return tables
         html = "".join(html_list)
@@ -172,43 +169,3 @@ def rows(devices):
 
     # Return
     return _rows
-
-
-def wrapper(zone, table):
-    """Wrap the data in HTML stuff.
-
-    Args:
-        zone: zone
-        table: Table HTML
-
-    Returns:
-        result: HTML
-
-    """
-
-    result = """
-    <div class="row">
-      <div class="col-lg-12">
-          <div class="panel panel-default">
-              <div class="panel-heading">
-                  {}
-              </div>
-              <!-- /.panel-heading -->
-              <div class="panel-body">
-                  <div class="table-responsive table-bordered">
-                      {}
-                  </div>
-                  <!-- /.table-responsive -->
-              </div>
-              <!-- /.panel-body -->
-          </div>
-          <!-- /.panel -->
-      </div>
-    </div>
-""".format(
-        zone, table
-    )
-    result = result.replace(
-        "<thead><tr><th></th><th></th><th></th><th></th></tr></thead>", ""
-    )
-    return result

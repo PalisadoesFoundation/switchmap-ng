@@ -4,7 +4,7 @@ Contains all routes that switchmap.s Flask webserver uses
 
 """
 # Flask imports
-from flask import Blueprint, render_template, jsonify
+from flask import Blueprint, render_template
 
 # Application imports
 from switchmap.dashboard.pages.index import HomePage
