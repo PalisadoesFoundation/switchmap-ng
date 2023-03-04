@@ -201,28 +201,6 @@ class TestDbTableL1interface(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(_convert(result[0]), _convert(row))
 
-    def test_findifname(self):
-        """Testing function findifname."""
-        # Create record
-        row = _row()
-
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_device, row.ifindex)
-        self.assertFalse(result)
-
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.findifname(row.idx_device, row.ifname)
-        self.assertTrue(result)
-        self.assertEqual(len(result), 1)
-        self.assertEqual(_convert(result[0]), _convert(row))
-
-        # Test after insertion of an initial row
-        result = testimport.findifname(row.idx_device, row.ifname[2:-2])
-        self.assertTrue(result)
-        self.assertEqual(len(result), 1)
-        self.assertEqual(_convert(result[0]), _convert(row))
-
     def test_insert_row(self):
         """Testing function insert_row."""
         # Create record

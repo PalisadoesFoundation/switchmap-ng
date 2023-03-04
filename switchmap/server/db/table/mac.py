@@ -1,6 +1,6 @@
 """Module for querying the Mac table."""
 
-from sqlalchemy import select, update, null
+from sqlalchemy import select, update, null, and_
 
 # Import project libraries
 from switchmap.server.db import db
@@ -63,10 +63,11 @@ def exists(_mac):
     return result
 
 
-def findmac(macs):
+def findmac(idx_zone, macs):
     """Determine whether MAC exists in the Mac table.
 
     Args:
+        idx_zone: Zone index
         _mac: Mac address
 
     Returns:
@@ -87,7 +88,9 @@ def findmac(macs):
             all_macs.append(general.mac(item).encode())
 
         # Get row from dataase
-        statement = select(Mac).where(Mac.mac.in_(all_macs))
+        statement = select(Mac).where(
+            and_(Mac.mac.in_(all_macs), Mac.idx_zone == idx_zone)
+        )
         rows = db.db_select_row(1193, statement)
 
     # Return

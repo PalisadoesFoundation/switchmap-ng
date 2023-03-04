@@ -133,6 +133,53 @@ class TestDbTableDevice(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
+    def test_devices(self):
+        """Testing function devices."""
+        # Initialize key variables
+        maximum = 10
+
+        # Create record
+        row = _row()
+
+        # Test before insertion of an initial row
+        result = testimport.exists(row.idx_zone, row.hostname)
+        self.assertFalse(result)
+
+        # Insert the row
+        testimport.insert_row(row)
+        result = testimport.exists(row.idx_zone, row.hostname)
+        self.assertTrue(result)
+
+        # Get existing values
+        inserts = testimport.devices(row.idx_zone)
+        start = len(inserts)
+        stop = start + maximum
+
+        # Insert `maximum` values
+        for _ in range(stop - start):
+            # Initialize loop variable
+            row_loop = _row()
+
+            # Test after insertion of an initial row
+            testimport.insert_row(row_loop)
+            result = testimport.exists(row.idx_zone, row_loop.hostname)
+            self.assertTrue(result)
+
+            # Update list of values inserted
+            inserts.append(result)
+
+        # Test
+        results = testimport.devices(row.idx_zone)
+        results.sort(key=lambda x: (x.name))
+        inserts.sort(key=lambda x: (x.name))
+
+        # Test the length of the results
+        self.assertEqual(len(results), stop)
+        self.assertEqual(len(inserts), stop)
+
+        for key, result in enumerate(results):
+            self.assertEqual(_convert(result), _convert(inserts[key]))
+
     def test_insert_row(self):
         """Testing function insert_row."""
         # Create record

@@ -141,12 +141,13 @@ class TestDbTableMac(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.findmac(row.mac)
+        idx_zone = row.idx_zone
+        result = testimport.findmac(idx_zone, row.mac)
         self.assertFalse(bool(result))
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.findmac(row.mac)
+        result = testimport.findmac(idx_zone, row.mac)
         self.assertTrue(bool(result))
         self.assertTrue(isinstance(result, list))
         self.assertEqual(len(result), 1)

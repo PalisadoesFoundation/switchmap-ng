@@ -66,10 +66,11 @@ def exists(idx_device, idx_mac, ip_):
     return result
 
 
-def findip(ipaddress):
+def findip(idx_device, ipaddress):
     """Find IP address.
 
     Args:
+        idx_device: Device index
         ipaddress: IP address
 
     Returns:
@@ -81,7 +82,9 @@ def findip(ipaddress):
     rows = []
 
     # Get row from dataase
-    statement = select(MacIp).where(MacIp.ip_ == ipaddress.encode())
+    statement = select(MacIp).where(
+        and_(MacIp.ip_ == ipaddress.encode(), MacIp.idx_device == idx_device)
+    )
     rows = db.db_select_row(1186, statement)
 
     # Return

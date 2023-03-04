@@ -115,6 +115,9 @@ class TestSearch(unittest.TestCase):
         # Pollinate db with prerequisites
         _prerequisites()
 
+        # # Pollinate db with prerequisites
+        # db.populate()
+
     @classmethod
     def tearDownClass(cls):
         """Execute these steps after each tests is completed."""

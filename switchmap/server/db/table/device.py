@@ -63,6 +63,30 @@ def exists(idx_zone, hostname):
     return result
 
 
+def devices(idx_zone):
+    """Get all Devices for a zone.
+
+    Args:
+        idx_zone: Zone index
+
+    Returns:
+        result: list of RDevice tuples
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get device from database
+    statement = select(_Device).where(_Device.idx_zone == idx_zone)
+    rows = db.db_select_row(1226, statement)
+
+    # Return
+    for row in rows:
+        result.append(_rows.device(row))
+    return result
+
+
 def insert_row(rows):
     """Create a Device table entry.
 

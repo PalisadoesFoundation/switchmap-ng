@@ -144,6 +144,10 @@ class TestDbTableZone(unittest.TestCase):
         result = testimport.exists(row.idx_event, row.name)
         self.assertFalse(result)
 
+        # Insert the row
+        testimport.insert_row(row)
+        exists = testimport.exists(row.idx_event, row.name)
+
         # Get existing values
         inserts = testimport.zones(row.idx_event)
         start = len(inserts)
@@ -151,16 +155,16 @@ class TestDbTableZone(unittest.TestCase):
 
         # Insert `maximum` values
         for _ in range(stop - start):
-            # Create record
-            row = _row()
-
-            # Test before insertion of an initial row
-            result = testimport.exists(row.idx_event, row.name)
-            self.assertFalse(result)
-
+            # Initialize loop variable
+            row_loop = IZone(
+                idx_event=exists.idx_event,
+                name=data.random_string(),
+                notes=data.random_string(),
+                enabled=1,
+            )
             # Test after insertion of an initial row
-            testimport.insert_row(row)
-            result = testimport.exists(row.idx_event, row.name)
+            testimport.insert_row(row_loop)
+            result = testimport.exists(row.idx_event, row_loop.name)
             self.assertTrue(result)
 
             # Update list of values inserted

@@ -8,23 +8,23 @@ Description:
         3) Hostnames
 
 """
-# PIP3 imports
-from sqlalchemy import select, and_
+from collections import namedtuple
 
 # Switchmap-NG imports
-from switchmap import Found, MacDetail
+from switchmap import Found
 from switchmap.core import general as _general
 from switchmap.server.db.table import mac
-from switchmap.server.db.table import oui
+from switchmap.server.db.table import zone
+from switchmap.server.db.table import device
 from switchmap.server.db.table import macport
 from switchmap.server.db.table import macip
 from switchmap.server.db.table import l1interface
 
-from switchmap.server.db import db
-from switchmap.server.db.models import Mac as _Mac
-from switchmap.server.db.models import Oui as _Oui
-from switchmap.server.db.models import MacPort as _MacPort
-from switchmap.server.db.models import MacIp as _MacIp
+
+# Define useful tuples for search
+SearchEvent = namedtuple(
+    "SearchEvent", "string idx_event idx_devices idx_zones"
+)
 
 
 class Search:
@@ -35,18 +35,31 @@ class Search:
 
     """
 
-    def __init__(self, searchstring):
+    def __init__(self, idx_event, searchstring):
         """Initialize the class.
 
         Args:
+            idx_event: Event index
             searchstring: search string to look for
 
         Returns:
             None
 
         """
-        # Generate various possible strings that could be used for searches
-        self._search = str(searchstring)
+        # Generate prerequisite data for doing a search
+        idx_devices = []
+        idx_zones = [_.idx_zone for _ in zone.zones(idx_event)]
+        for idx_zone in idx_zones:
+            devices = device.devices(idx_zone)
+            idx_devices.extend([_.idx_device for _ in devices])
+
+        # Publish the search metadata
+        self._search = SearchEvent(
+            idx_event=idx_event,
+            idx_devices=idx_devices,
+            idx_zones=idx_zones,
+            string=str(searchstring),
+        )
 
     def find(self):
         """Find search string.
@@ -87,20 +100,22 @@ class Search:
         """
         # Initialize key variables
         result = []
+        founds = []
 
         # Find the MAC
-        _mac = _general.mac(self._search)
-        exists = mac.findmac(_mac)
+        _mac = _general.mac(self._search.string)
+
+        for idx_zone in self._search.idx_zones:
+            exists = mac.findmac(idx_zone, _mac)
+            if bool(exists) is True:
+                founds.extend(exists)
 
         # Find the interface information
-        if bool(exists) is True:
-            for exist in exists:
-                _macport = macport.find_idx_mac(exist.idx_mac)
-                if bool(_macport) is True:
-                    for item in _macport:
-                        result.append(
-                            Found(idx_l1interface=item.idx_l1interface)
-                        )
+        for found in founds:
+            _macport = macport.find_idx_mac(found.idx_mac)
+            if bool(_macport) is True:
+                for item in _macport:
+                    result.append(Found(idx_l1interface=item.idx_l1interface))
 
         # Return
         return result
@@ -118,10 +133,15 @@ class Search:
         """
         # Initialize key variables
         result = []
+        founds = []
 
         # Find MAC for IP address in ARP table
         ip_ = _general.ipaddress(self._search)
-        founds = macip.findip(ip_.address)
+
+        for idx_device in self._search.idx_devices:
+            exists = macip.findip(idx_device, ip_.address)
+            if bool(exists) is True:
+                founds.extend(exists)
 
         # Search for MAC on interfaces
         for found in founds:
@@ -145,10 +165,13 @@ class Search:
         """
         # Initialize key variables
         result = []
-        ifalias = self._search
+        founds = []
 
         # Find Hostname for IP address in ARP table
-        founds = l1interface.findifalias(ifalias)
+        for idx_device in self._search.idx_devices:
+            founds.extend(
+                l1interface.findifalias(idx_device, self._search.string)
+            )
 
         # Search for ifalias on interfaces
         for found in founds:

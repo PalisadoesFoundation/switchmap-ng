@@ -144,7 +144,7 @@ class TestDbTableMacIp(unittest.TestCase):
         self.assertFalse(result)
 
         # Test NotFound
-        results = testimport.findip(row.ip_)
+        results = testimport.findip(row.idx_device, row.ip_)
         self.assertFalse(bool(result))
 
         # Test after insertion of an initial row
@@ -153,7 +153,7 @@ class TestDbTableMacIp(unittest.TestCase):
         self.assertTrue(result)
 
         # Test Found
-        results = testimport.findip(row.ip_)
+        results = testimport.findip(row.idx_device, row.ip_)
         self.assertEqual(len(results), 1)
         for result in results:
             self.assertTrue(bool(result))

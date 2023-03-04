@@ -129,45 +129,6 @@ def findifalias(idx_device, ifalias):
     return result
 
 
-def findifname(idx_device, ifname):
-    """Find ifname.
-
-    Args:
-        idx_device: Device.idx_device
-        ifname: Hostname
-
-    Returns:
-        idx_device: Device.idx_device
-        result: list of L1Interface tuples
-
-    """
-    # Initialize key variables
-    result = []
-    rows = []
-
-    # Get row from database (Contains)
-    statement = select(L1Interface).where(
-        and_(
-            L1Interface.ifname.like(
-                func.concat(func.concat("%", ifname.encode(), "%"))
-            ),
-            L1Interface.idx_device == idx_device,
-        )
-    )
-    rows_contains = db.db_select_row(1188, statement)
-
-    # Merge results and remove duplicates
-    rows.extend(rows_contains)
-
-    # Return
-    for row in rows:
-        result.append(_rows.l1interface(row))
-
-    # Remove duplicates and return
-    result = list(set(result))
-    return result
-
-
 def insert_row(rows):
     """Create a L1Interface table entry.
 

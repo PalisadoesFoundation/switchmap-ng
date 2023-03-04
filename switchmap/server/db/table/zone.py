@@ -66,7 +66,7 @@ def zones(idx_event):
     """Get all Zones for a event.
 
     Args:
-        idx_event: Zone index
+        idx_event: Event index
 
     Returns:
         result: list of RZone tuples
