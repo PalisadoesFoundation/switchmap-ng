@@ -132,6 +132,52 @@ class TestDbTableZone(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
 
+    def test_zones(self):
+        """Testing function zones."""
+        # Initialize key variables
+        maximum = 10
+
+        # Create record
+        row = _row()
+
+        # Test before insertion of an initial row
+        result = testimport.exists(row.idx_event, row.name)
+        self.assertFalse(result)
+
+        # Get existing values
+        inserts = testimport.zones(row.idx_event)
+        start = len(inserts)
+        stop = start + maximum
+
+        # Insert `maximum` values
+        for _ in range(stop - start):
+            # Create record
+            row = _row()
+
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_event, row.name)
+            self.assertFalse(result)
+
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.idx_event, row.name)
+            self.assertTrue(result)
+
+            # Update list of values inserted
+            inserts.append(result)
+
+        # Test
+        results = testimport.zones(row.idx_event)
+        results.sort(key=lambda x: (x.name))
+        inserts.sort(key=lambda x: (x.name))
+
+        # Test the length of the results
+        self.assertEqual(len(results), stop)
+        self.assertEqual(len(inserts), stop)
+
+        for key, result in enumerate(results):
+            self.assertEqual(_convert(result), _convert(inserts[key]))
+
     def test_insert_row(self):
         """Testing function insert_row."""
         # Create record

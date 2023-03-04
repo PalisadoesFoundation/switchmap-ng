@@ -55,10 +55,13 @@ def device(row):
 
 def root(row):
     """Convert table row to tuple.
+
     Args:
         row: Root row
+
     Returns:
         result: RRoot tuple
+
     """
     # Initialize key variables
     result = RRoot(
@@ -74,10 +77,13 @@ def root(row):
 
 def event(row):
     """Convert table row to tuple.
+
     Args:
         row: Event row
+
     Returns:
         result: REvent tuple
+
     """
     # Initialize key variables
     result = REvent(
@@ -112,6 +118,7 @@ def l1interface(row):
         trunk=row.trunk,
         ifspeed=row.ifspeed,
         ifalias=None if row.ifalias is None else row.ifalias.decode(),
+        ifname=None if row.ifname is None else row.ifname.decode(),
         ifdescr=None if row.ifdescr is None else row.ifdescr.decode(),
         ifadminstatus=row.ifadminstatus,
         ifoperstatus=row.ifoperstatus,

@@ -62,6 +62,30 @@ def exists(idx_event, name):
     return result
 
 
+def zones(idx_event):
+    """Get all Zones for a event.
+
+    Args:
+        idx_event: Zone index
+
+    Returns:
+        result: list of RZone tuples
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get zone from database
+    statement = select(Zone).where(Zone.idx_event == idx_event)
+    rows = db.db_select_row(1226, statement)
+
+    # Return
+    for row in rows:
+        result.append(_rows.zone(row))
+    return result
+
+
 def insert_row(rows):
     """Create a Zone table entry.
 

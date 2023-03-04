@@ -203,7 +203,7 @@ def populate():
             )
         else:
             ip_ = ipaddress.ip_address(
-                ":".join(("%x" % random.randint(0, 16 ** 4) for i in range(8)))
+                ":".join(("%x" % random.randint(0, 16**4) for i in range(8)))
             ).exploded
         macips_.append(
             IMacIp(
@@ -229,6 +229,7 @@ def populate():
                 trunk=0,
                 ifspeed=random.randint(0, 1000000),
                 ifalias="IfAlias_{}".format(data.random_string()),
+                ifname="IfName_{}".format(data.random_string()),
                 ifdescr="IfDescr_{}".format(data.random_string()),
                 ifadminstatus=random.randint(0, 1000000),
                 ifoperstatus=random.randint(0, 1000000),

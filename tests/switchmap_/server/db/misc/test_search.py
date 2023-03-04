@@ -274,6 +274,7 @@ def _prerequisites():
                 ifspeed=random.randint(0, 1000000),
                 ifalias=value,
                 ifdescr=data.random_string(),
+                ifname=data.random_string(),
                 ifadminstatus=random.randint(0, 1000000),
                 ifoperstatus=random.randint(0, 1000000),
                 ts_idle=random.randint(0, 1000000),

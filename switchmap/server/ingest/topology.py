@@ -296,8 +296,9 @@ class Topology:
                     ethernet=int(bool(interface.get("l1_ethernet"))),
                     nativevlan=interface.get("l1_nativevlan"),
                     trunk=int(bool(interface.get("l1_trunk"))),
-                    ifspeed=interface.get("ifSpeed"),
+                    ifspeed=_ifspeed(interface),
                     ifalias=interface.get("ifAlias"),
+                    ifname=interface.get("ifName"),
                     ifdescr=interface.get("ifDescr"),
                     ifadminstatus=interface.get("ifAdminStatus"),
                     ifoperstatus=interface.get("ifOperStatus"),
@@ -323,8 +324,9 @@ class Topology:
                         ethernet=int(bool(interface.get("l1_ethernet"))),
                         nativevlan=interface.get("l1_nativevlan"),
                         trunk=int(bool(interface.get("l1_trunk"))),
-                        ifspeed=interface.get("ifSpeed"),
+                        ifspeed=_ifspeed(interface),
                         ifalias=interface.get("ifAlias"),
+                        ifname=interface.get("ifName"),
                         ifdescr=interface.get("ifDescr"),
                         ifadminstatus=interface.get("ifAdminStatus"),
                         ifoperstatus=interface.get("ifOperStatus"),
@@ -805,4 +807,21 @@ def _process_macip(info, dns=True):
 
     # Return
     result = TopologyResult(adds=adds, updates=updates)
+    return result
+
+
+def _ifspeed(interface):
+    """Get the speed of an interface.
+
+    Args:
+        interface: L1Interface dict
+
+    Returns:
+        result
+
+    """
+    result = interface.get("ifHighSpeed")
+    if bool(result) is False:
+        result = interface.get("ifSpeed")
+        result = result / 1000000 if bool(result) else 0
     return result

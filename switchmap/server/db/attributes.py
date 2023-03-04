@@ -19,82 +19,93 @@ import graphene
 
 def resolve_cdpcachedeviceid(obj, _):
     """Convert 'cdpcachedeviceid' from bytes to string."""
-    return obj.cdpcachedeviceid.decode()
+    return obj.cdpcachedeviceid.decode() if bool(obj.cdpcachedeviceid) else ""
 
 
 def resolve_cdpcacheplatform(obj, _):
     """Convert 'cdpcacheplatform' from bytes to string."""
-    return obj.cdpcacheplatform.decode()
+    return obj.cdpcacheplatform.decode() if bool(obj.cdpcacheplatform) else ""
 
 
 def resolve_cdpcachedeviceport(obj, _):
     """Convert 'cdpcachedeviceport' from bytes to string."""
-    return obj.cdpcachedeviceport.decode()
+    return (
+        obj.cdpcachedeviceport.decode() if bool(obj.cdpcachedeviceport) else ""
+    )
 
 
 def resolve_hostname(obj, _):
     """Convert 'hostname' from bytes to string."""
-    return obj.hostname.decode()
+    return obj.hostname.decode() if bool(obj.hostname) else ""
 
 
 def resolve_ifalias(obj, _):
     """Convert 'ifalias' from bytes to string."""
-    return obj.ifalias.decode()
+    return obj.ifalias.decode() if bool(obj.ifalias) else ""
+
+
+def resolve_ifname(obj, _):
+    """Convert 'ifname' from bytes to string."""
+    return obj.ifname.decode() if bool(obj.ifname) else ""
 
 
 def resolve_ifdescr(obj, _):
     """Convert 'ifdescr' from bytes to string."""
-    return obj.ifdescr.decode()
+    return obj.ifdescr.decode() if bool(obj.ifdescr) else ""
 
 
 def resolve_ip_(obj, _):
     """Convert 'ip_' from bytes to string."""
-    return obj.ip_.decode()
+    return obj.ip_.decode() if bool(obj.ip_) else ""
 
 
 def resolve_lldpremportdesc(obj, _):
     """Convert 'lldpremportdesc' from bytes to string."""
-    return obj.lldpremportdesc.decode()
+    return obj.lldpremportdesc.decode() if bool(obj.lldpremportdesc) else ""
 
 
 def resolve_lldpremsyscapenabled(obj, _):
     """Convert 'lldpremsyscapenabled' from bytes to string."""
-    return obj.lldpremsyscapenabled.decode()
+    return (
+        obj.lldpremsyscapenabled.decode()
+        if bool(obj.lldpremsyscapenabled)
+        else ""
+    )
 
 
 def resolve_lldpremsysdesc(obj, _):
     """Convert 'lldpremsysdesc' from bytes to string."""
-    return obj.lldpremsysdesc.decode()
+    return obj.lldpremsysdesc.decode() if bool(obj.lldpremsysdesc) else ""
 
 
 def resolve_lldpremsysname(obj, _):
     """Convert 'lldpremsysname' from bytes to string."""
-    return obj.lldpremsysname.decode()
+    return obj.lldpremsysname.decode() if bool(obj.lldpremsysname) else ""
 
 
 def resolve_mac(obj, _):
     """Convert 'mac' from bytes to string."""
-    return obj.mac.decode()
+    return obj.mac.decode() if bool(obj.mac) else ""
 
 
 def resolve_name(obj, _):
     """Convert 'name' from bytes to string."""
-    return obj.name.decode()
+    return obj.name.decode() if bool(obj.name) else ""
 
 
 def resolve_notes(obj, _):
     """Convert 'notes' from bytes to string."""
-    return obj.notes.decode()
+    return obj.notes.decode() if bool(obj.notes) else ""
 
 
 def resolve_oui(obj, _):
     """Convert 'oui' from bytes to string."""
-    return obj.oui.decode()
+    return obj.oui.decode() if bool(obj.oui) else ""
 
 
 def resolve_sys_description(obj, _):
     """Convert 'sys_description' from bytes to string."""
-    return obj.sys_description.decode()
+    return obj.sys_description.decode() if bool(obj.sys_description) else ""
 
 
 def resolve_sys_uptime(obj, _):
@@ -104,7 +115,7 @@ def resolve_sys_uptime(obj, _):
 
 def resolve_sys_objectid(obj, _):
     """Convert 'sys_objectid' from bytes to string."""
-    return obj.sys_objectid.decode()
+    return obj.sys_objectid.decode() if bool(obj.sys_objectid) else ""
 
 
 ###############################################################################
@@ -229,6 +240,9 @@ class L1InterfaceAttribute:
     ifspeed = graphene.Int(description="Interface speed")
     ifalias = graphene.String(
         resolver=resolve_ifalias, description="Interface alias"
+    )
+    ifname = graphene.String(
+        resolver=resolve_ifname, description="Interface name"
     )
     ifdescr = graphene.String(
         resolver=resolve_ifdescr, description="Interface description"

@@ -190,13 +190,35 @@ class TestDbTableL1interface(unittest.TestCase):
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.findifalias(row.ifalias)
+        result = testimport.findifalias(row.idx_device, row.ifalias)
         self.assertTrue(result)
         self.assertEqual(len(result), 1)
         self.assertEqual(_convert(result[0]), _convert(row))
 
         # Test after insertion of an initial row
-        result = testimport.findifalias(row.ifalias[2:-2])
+        result = testimport.findifalias(row.idx_device, row.ifalias[2:-2])
+        self.assertTrue(result)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(_convert(result[0]), _convert(row))
+
+    def test_findifname(self):
+        """Testing function findifname."""
+        # Create record
+        row = _row()
+
+        # Test before insertion of an initial row
+        result = testimport.exists(row.idx_device, row.ifindex)
+        self.assertFalse(result)
+
+        # Test after insertion of an initial row
+        testimport.insert_row(row)
+        result = testimport.findifname(row.idx_device, row.ifname)
+        self.assertTrue(result)
+        self.assertEqual(len(result), 1)
+        self.assertEqual(_convert(result[0]), _convert(row))
+
+        # Test after insertion of an initial row
+        result = testimport.findifname(row.idx_device, row.ifname[2:-2])
         self.assertTrue(result)
         self.assertEqual(len(result), 1)
         self.assertEqual(_convert(result[0]), _convert(row))
@@ -288,6 +310,7 @@ def _convert(row):
         trunk=row.trunk,
         ifspeed=row.ifspeed,
         ifalias=row.ifalias,
+        ifname=row.ifname,
         ifdescr=row.ifdescr,
         ifadminstatus=row.ifadminstatus,
         ifoperstatus=row.ifoperstatus,
@@ -324,6 +347,7 @@ def _row():
         trunk=1,
         ifspeed=random.randint(0, 1000000),
         ifalias=data.random_string(),
+        ifname=data.random_string(),
         ifdescr=data.random_string(),
         ifadminstatus=random.randint(0, 1000000),
         ifoperstatus=random.randint(0, 1000000),
