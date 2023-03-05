@@ -227,6 +227,7 @@ def populate():
                 ethernet=1,
                 nativevlan=random.randint(0, 1000000),
                 trunk=0,
+                iftype=random.randint(0, 1000000),
                 ifspeed=random.randint(0, 1000000),
                 ifalias="IfAlias_{}".format(data.random_string()),
                 ifname="IfName_{}".format(data.random_string()),

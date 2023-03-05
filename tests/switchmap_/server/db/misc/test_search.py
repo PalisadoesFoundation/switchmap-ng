@@ -311,6 +311,7 @@ def search_populate():
                 nativevlan=random.randint(0, 1000000),
                 trunk=1,
                 ifspeed=random.randint(0, 1000000),
+                iftype=random.randint(0, 1000000),
                 ifalias=ifalias,
                 ifdescr=data.random_string(),
                 ifname=data.random_string(),

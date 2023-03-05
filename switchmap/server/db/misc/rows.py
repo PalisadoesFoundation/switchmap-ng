@@ -116,6 +116,7 @@ def l1interface(row):
         ethernet=row.ethernet,
         nativevlan=row.nativevlan,
         trunk=row.trunk,
+        iftype=row.iftype,
         ifspeed=row.ifspeed,
         ifalias=None if row.ifalias is None else row.ifalias.decode(),
         ifname=None if row.ifname is None else row.ifname.decode(),

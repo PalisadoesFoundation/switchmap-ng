@@ -225,6 +225,7 @@ class L1Interface(BASE):
     nativevlan = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     trunk = Column(BIT(1), default=0)
     ifspeed = Column(BIGINT(unsigned=True), nullable=True, default=Null)
+    iftype = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     ifname = Column(VARBINARY(256), nullable=True, default=Null)
     ifalias = Column(VARBINARY(256), nullable=True, default=Null)
     ifdescr = Column(VARBINARY(256), nullable=True, default=Null)

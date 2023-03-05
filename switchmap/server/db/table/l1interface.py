@@ -158,6 +158,7 @@ def insert_row(rows):
                     null() if row.nativevlan is None else row.nativevlan
                 ),
                 trunk=null() if row.trunk is None else row.trunk,
+                iftype=null() if row.iftype is None else row.iftype,
                 ifspeed=null() if row.ifspeed is None else row.ifspeed,
                 ifalias=(
                     null() if row.ifalias is None else row.ifalias.encode()
@@ -243,6 +244,7 @@ def update_row(idx, row):
                 ),
                 "trunk": null() if row.trunk is None else row.trunk,
                 "ifspeed": null() if row.ifspeed is None else row.ifspeed,
+                "iftype": null() if row.iftype is None else row.iftype,
                 "ifalias": (
                     null() if row.ifalias is None else row.ifalias.encode()
                 ),

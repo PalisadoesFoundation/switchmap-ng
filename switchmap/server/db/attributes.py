@@ -238,6 +238,7 @@ class L1InterfaceAttribute:
     nativevlan = graphene.Int(description="Interface native VLAN")
     trunk = graphene.Int(description="Trunk True/False")
     ifspeed = graphene.Int(description="Interface speed")
+    iftype = graphene.Int(description="Interface type")
     ifalias = graphene.String(
         resolver=resolve_ifalias, description="Interface alias"
     )
