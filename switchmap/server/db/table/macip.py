@@ -93,10 +93,11 @@ def findip(idx_device, ipaddress):
     return result
 
 
-def findhostname(hostname):
+def findhostname(idx_device, hostname):
     """Find hostname.
 
     Args:
+        idx_device: Device index
         hostname: Hostname
 
     Returns:
@@ -109,14 +110,24 @@ def findhostname(hostname):
 
     # Get row from database (Contains)
     statement = select(MacIp).where(
-        MacIp.hostname.like(
-            func.concat(func.concat("%", hostname.encode(), "%"))
+        and_(
+            MacIp.hostname.like(
+                func.concat(func.concat("%", hostname.encode(), "%"))
+            ),
+            MacIp.idx_device == idx_device,
         )
     )
+
+    # statement = select(MacIp).where(
+    #     and_(MacIp.hostname == hostname.encode()),
+    #     MacIp.idx_device == idx_device,
+    # )
+
     rows_contains = db.db_select_row(1191, statement)
 
     # Merge results and remove duplicates
-    rows.extend(rows_contains)
+    if bool(rows_contains) is True:
+        rows.extend(rows_contains)
 
     # Return
     for row in rows:

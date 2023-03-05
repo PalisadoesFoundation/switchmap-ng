@@ -168,7 +168,7 @@ class TestDbTableMacIp(unittest.TestCase):
         self.assertFalse(result)
 
         # Test NotFound
-        results = testimport.findhostname(row.hostname)
+        results = testimport.findhostname(row.idx_device, row.hostname)
         self.assertFalse(bool(result))
 
         # Test after insertion of an initial row
@@ -177,14 +177,14 @@ class TestDbTableMacIp(unittest.TestCase):
         self.assertTrue(result)
 
         # Test Found
-        results = testimport.findhostname(row.hostname)
+        results = testimport.findhostname(row.idx_device, row.hostname)
         self.assertEqual(len(results), 1)
         for result in results:
             self.assertTrue(bool(result))
 
         # Test partial string
         partial = row.hostname[2:-2]
-        results = testimport.findhostname(partial)
+        results = testimport.findhostname(row.idx_device, partial)
         self.assertEqual(len(results), 1)
         for result in results:
             self.assertTrue(bool(result))

@@ -40,7 +40,8 @@ def update_db_oui(filepath, new=False):
             try:
                 inserts.append(file_record)
             except:
-                log_message = """OUI: {} for organization: {} already exists. Ignoring. Don\'t use the \
+                log_message = """OUI: {} for organization: {} already exists. \
+Ignoring. Don\'t use the \
 --new_installation flag for updating the OUI data.""".format(
                     row["oui"], row["organization"]
                 )

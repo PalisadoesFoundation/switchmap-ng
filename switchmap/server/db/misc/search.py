@@ -136,18 +136,21 @@ class Search:
         founds = []
 
         # Find MAC for IP address in ARP table
-        ip_ = _general.ipaddress(self._search)
+        ip_ = _general.ipaddress(self._search.string)
 
-        for idx_device in self._search.idx_devices:
-            exists = macip.findip(idx_device, ip_.address)
-            if bool(exists) is True:
-                founds.extend(exists)
+        if bool(ip_) is True:
+            for idx_device in self._search.idx_devices:
+                exists = macip.findip(idx_device, ip_.address)
+                if bool(exists) is True:
+                    founds.extend(exists)
 
-        # Search for MAC on interfaces
-        for found in founds:
-            macports_ = macport.find_idx_mac(found.idx_mac)
-            for macport_ in macports_:
-                result.append(Found(idx_l1interface=macport_.idx_l1interface))
+            # Search for MAC on interfaces
+            for found in founds:
+                macports_ = macport.find_idx_mac(found.idx_mac)
+                for macport_ in macports_:
+                    result.append(
+                        Found(idx_l1interface=macport_.idx_l1interface)
+                    )
 
         # Return
         return result
@@ -169,9 +172,9 @@ class Search:
 
         # Find Hostname for IP address in ARP table
         for idx_device in self._search.idx_devices:
-            founds.extend(
-                l1interface.findifalias(idx_device, self._search.string)
-            )
+            found = l1interface.findifalias(idx_device, self._search.string)
+            if bool(found) is True:
+                founds.extend(found)
 
         # Search for ifalias on interfaces
         for found in founds:
@@ -193,15 +196,21 @@ class Search:
         """
         # Initialize key variables
         result = []
-        hostname = self._search
+        founds = []
 
         # Find Hostname for IP address in ARP table
-        founds = macip.findhostname(hostname)
+        for idx_device in self._search.idx_devices:
+            found = macip.findhostname(idx_device, self._search.string)
+            if bool(found) is True:
+                founds.extend(found)
+
+        print("\n- FOUND ->", founds, "\n")
 
         # Search for Hostname on interfaces
         for found in founds:
             macports_ = macport.find_idx_mac(found.idx_mac)
             for macport_ in macports_:
+                print("\n- MACPORT ->", macport_, "\n")
                 result.append(Found(idx_l1interface=macport_.idx_l1interface))
 
         # Return
