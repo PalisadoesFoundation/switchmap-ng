@@ -76,7 +76,7 @@ def vlans(idx_device):
 
     # Get vlan from database
     statement = select(Vlan).where(Vlan.idx_device == idx_device)
-    rows = db.db_select_row(1226, statement)
+    rows = db.db_select_row(1019, statement)
 
     # Return
     for row in rows:

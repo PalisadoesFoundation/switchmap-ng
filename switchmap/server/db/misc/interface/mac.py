@@ -4,7 +4,6 @@ from sqlalchemy import select, and_
 
 # Switchmap-NG imports
 from switchmap import MacDetail
-from switchmap.server.db.table import mac
 from switchmap.server.db.table import macport
 
 from switchmap.server.db import db
@@ -12,31 +11,6 @@ from switchmap.server.db.models import Mac as _Mac
 from switchmap.server.db.models import Oui as _Oui
 from switchmap.server.db.models import MacPort as _MacPort
 from switchmap.server.db.models import MacIp as _MacIp
-
-
-def by_mac(_mac):
-    """Search for MAC addresses.
-
-    Args:
-        _mac: MAC address
-
-    Returns:
-        result: List of MacDetail objects
-
-    """
-    # Initialize key variables
-    result = []
-
-    # Get MAC information
-    macs = mac.findmac(_mac)
-
-    # Do lookups
-    for macmeta in macs:
-        details = by_idx_mac(macmeta.idx_mac)
-        result.extend(details)
-
-    # Return
-    return result
 
 
 def by_idx_mac(idx_mac):

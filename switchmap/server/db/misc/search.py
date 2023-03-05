@@ -204,13 +204,10 @@ class Search:
             if bool(found) is True:
                 founds.extend(found)
 
-        print("\n- FOUND ->", founds, "\n")
-
         # Search for Hostname on interfaces
         for found in founds:
             macports_ = macport.find_idx_mac(found.idx_mac)
             for macport_ in macports_:
-                print("\n- MACPORT ->", macport_, "\n")
                 result.append(Found(idx_l1interface=macport_.idx_l1interface))
 
         # Return

@@ -107,25 +107,6 @@ class TestFunctions(unittest.TestCase):
         """Testing function __init__."""
         pass
 
-    def test_by_mac(self):
-        """Testing function by_mac."""
-        # Initialize key variables
-        lookup = {}
-
-        # Prepare data for testing
-        for _, details in self.macips.idx_mac.items():
-            for detail in details:
-                found = lookup.get(detail.mac)
-                if bool(found) is True:
-                    lookup[detail.mac].append(detail)
-                else:
-                    lookup[detail.mac] = [detail]
-
-        # Test
-        for mac_, expected in lookup.items():
-            result = testimport.by_mac(mac_)
-            self.assertEqual(result, expected)
-
     def test_by_idx_mac(self):
         """Testing function by_idx_mac."""
         # Test

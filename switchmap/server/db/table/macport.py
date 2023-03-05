@@ -107,7 +107,6 @@ def insert_row(rows):
 
     # Create objects
     for row in rows:
-        print("- IDXMAC ->", row.idx_mac)
         inserts.append(
             MacPort(
                 idx_l1interface=row.idx_l1interface,

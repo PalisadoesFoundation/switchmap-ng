@@ -79,7 +79,7 @@ def devices(idx_zone):
 
     # Get device from database
     statement = select(_Device).where(_Device.idx_zone == idx_zone)
-    rows = db.db_select_row(1226, statement)
+    rows = db.db_select_row(1027, statement)
 
     # Return
     for row in rows:

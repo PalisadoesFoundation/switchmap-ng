@@ -1,4 +1,4 @@
-"""Module for querying the Device table."""
+"""Module to check the Device table when updating the DB with polled data."""
 
 from sqlalchemy import select, and_
 
