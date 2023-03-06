@@ -4,6 +4,7 @@ import textwrap
 import os
 import time
 from datetime import datetime
+from collections import namedtuple
 
 # PIP3 imports
 from flask_table import Table, Col
@@ -23,14 +24,11 @@ class _RawCol(Col):
 class Device(object):
     """Class that creates the device's various HTML tables."""
 
-    def __init__(self, host, config, lookup, ifindexes=None):
+    def __init__(self, device):
         """Initialize the class.
 
         Args:
-            config: Configuration object
-            lookup: Lookup object
-            host: Hostname to process
-            ifindexes: List of ifindexes to retrieve. If None, then do all.
+            device: Device dictionary
 
         Returns:
             None
@@ -192,6 +190,264 @@ class PortRow(object):
     def enabled(self):
         """Enable ports."""
         return bool(self.state != "Disabled")
+
+
+class InterfaceRow(object):
+    """Declaration of the rows in the Interfaces table."""
+
+    def __init__(self, row):
+        """Initialize the class.
+
+        Args:
+            row: List of row values
+                port: Interface name string
+                vlan: VLAN of port string
+                state: State of port string
+                days_inactive: Number of days the port's inactive string
+                speed: Speed of port string
+                duplex: Duplex of port string
+                label: Label given to the port by the network manager
+                trunk: Whether a trunk or not
+                cdp: CDP data string
+                lldp: LLDP data string
+                mac_address: MAC Address
+                manufacturer: Name of the manufacturer
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        [
+            self.port,
+            self.vlan,
+            self.state,
+            self.days_inactive,
+            self.speed,
+            self.duplex,
+            self.label,
+            self.trunk,
+            self.cdp,
+            self.lldp,
+            self.mac_address,
+            self.manufacturer,
+            self.ip_address,
+            self.hostname,
+        ] = row
+
+    def active(self):
+        """Active ports."""
+        return bool(self.state == "Active")
+
+    def enabled(self):
+        """Enable ports."""
+        return bool(self.state != "Disabled")
+
+
+def interfaces(_interfaces):
+    """Get Interface data from the device
+
+    Args:
+        _interfaces: Interface dict
+
+    Returns:
+        results: list of InterfaceRow objects
+
+    """
+    # Initialize key variables
+    results = []
+
+    # Process each interface
+    for interface in _interfaces:
+        obj = Interface(interface)
+        result = obj.row()
+        if bool(result) is True:
+            results.append(result)
+    return result
+
+
+class Interface:
+    """Class to create an InterfaceRow."""
+
+    def __init__(self, interface):
+        """Instantiate the class.
+
+        Args:
+            interface: Interface dict
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        self._interface = interface
+
+    def row(self):
+        """Get Row data.
+
+        Args:
+            None
+
+        Returns:
+            result
+
+        """
+        # Initialize key variables
+        Row = namedtuple(
+            "Row",
+            "port vlan state days_inactive speed duplex label "
+            "trunk cdp lldp mac_address manufacturer ip_address hostname",
+        )
+
+        ethernet = self._interface.get("iftype")
+        if ethernet == 6:
+            result = Row(
+                port=self._interface.get("ifname", "N/A"),
+                vlan=None,
+                state=self.state().string,
+                days_inactive=None,
+                speed=self.speed(),
+                duplex=self.duplex(),
+                label=self._interface.get("ifalias", "N/A"),
+                trunk=None,
+                cdp=self.cdp(),
+                lldp=self.lldp(),
+                mac_address=None,
+                manufacturer=None,
+                ip_address=None,
+                hostname=None,
+            )
+        else:
+            result = None
+        return result
+
+    def speed(self):
+        """Return port speed.
+
+        Args:
+            None
+
+        Returns:
+            result: Port speed
+
+        """
+        # Assign key variables
+        result = self._interface.get("speed", 0)
+
+        # Process
+        if bool(result) is True:
+            result = "{}G".format(int(int(result) / 1000))
+        return result
+
+    def state(self):
+        """Return port state string.
+
+        Args:
+            None
+
+        Returns:
+            state: State string
+
+        """
+        # Initialize key variables
+        State = namedtuple("State", "up string")
+
+        # Assign key variables
+        enabled = self._interface.get("ifadminstatus", 0) == 1
+
+        # Process
+        if bool(enabled) is True:
+            _up = self._interface.get("ifoperstatus", 0) == 1
+            if bool(_up) is True:
+                result = "Active"
+            else:
+                result = "Inactive"
+        else:
+            result = "Disabled"
+
+        # Return
+        state = State(up=bool(_up), string=result)
+        return state
+
+    def duplex(self):
+        """Return port duplex string.
+
+        Args:
+            None
+
+        Returns:
+            duplex: Duplex string
+
+        """
+        # Assign key variables
+        duplex = "Unknown"
+        options = {
+            0: "Unknown",
+            1: "Half",
+            2: "Full",
+            3: "Half-Auto",
+            4: "Full-Auto",
+        }
+
+        # Assign duplex
+        if bool(self.state().up) is False:
+            duplex = "N/A"
+        else:
+            duplex = options.get(self._interface.get("duplex", 0), 0)
+
+        # Return
+        return duplex
+
+    def cdp(self):
+        """Return port CDP HTML string.
+
+        Args:
+            None
+
+        Returns:
+            value: required string
+
+        """
+        # Assign key variables
+        found = self._interface.get("cdpcachedeviceid")
+
+        # Determine whether CDP is enabled and update string
+        if bool(found) is True:
+            value = "{}<br>{}<br>{}".format(
+                self._interface.get("cdpcachedeviceid", ""),
+                self._interface.get("cdpcacheplatform", ""),
+                self._interface.get("cdpcachedeviceport", ""),
+            )
+        else:
+            value = ""
+
+        # Return
+        return value
+
+    def lldp(self):
+        """Return port LLDP HTML string.
+
+        Args:
+            None
+
+        Returns:
+            value: required string
+
+        """
+        # Assign key variables
+        port_data = self.port_data
+        value = ""
+
+        # Determine whether LLDP is enabled and update string
+        if "lldpremsysdesc" in port_data:
+            value = "{}<br>{}<br>{}".format(
+                port_data["lldpremsysname"],
+                port_data["lldpremportdesc"],
+                port_data["lldpremsysdesc"],
+            )
+
+        # Return
+        return value
 
 
 class Port(object):
