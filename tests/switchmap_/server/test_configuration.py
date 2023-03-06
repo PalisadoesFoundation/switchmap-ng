@@ -76,15 +76,6 @@ class Test_ConfigServer(unittest.TestCase):
         result = self.config.cache_directory()
         self.assertEqual(result, expected)
 
-    def test_api_log_file(self):
-        """Testing function api_log_file."""
-        # Run test
-        expected = "{1}{0}log{0}switchmap-server.log".format(
-            os.sep, self._config.metadata.system_directory
-        )
-        result = self.config.api_log_file()
-        self.assertEqual(result, expected)
-
     def test_db_host(self):
         """Testing function db_host."""
         # Run test
@@ -168,6 +159,18 @@ class Test_ConfigServer(unittest.TestCase):
         # Run test
         expected = "MKG2dst7sh4gPe2X"
         result = self.config.api_listen_address()
+        self.assertEqual(result, expected)
+
+    def test_api_log_file(self):
+        """Testing function api_log_file."""
+        # Initialize key variables
+        daemon = 1234
+
+        # Run test
+        expected = "{1}{0}log{0}switchmap-{2}.log".format(
+            os.sep, self._config.metadata.system_directory, daemon
+        )
+        result = self.config.api_log_file(daemon)
         self.assertEqual(result, expected)
 
     def test_api_https(self):

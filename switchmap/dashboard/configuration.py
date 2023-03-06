@@ -1,8 +1,5 @@
 """switchmap classes that manage various configurations."""
 
-import os.path
-import os
-
 # Import project libraries
 from switchmap.core.configuration import ConfigAPIClient, ConfigAPI
 from switchmap.core import log
@@ -50,24 +47,6 @@ class ConfigDashboard(ConfigAPIClient, ConfigAPI):
         """
         # Get result
         result = self._config_dashboard.get("api_bind_port", 7001)
-        return result
-
-    def api_log_file(self):
-        """Get api_log_file.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get new result
-        result = "{}{}switchmap-dashboard.log".format(
-            self.log_directory(), os.sep
-        )
-
-        # Return
         return result
 
     def username(self):

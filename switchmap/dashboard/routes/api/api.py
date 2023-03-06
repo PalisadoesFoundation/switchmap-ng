@@ -95,10 +95,30 @@ def devices(idx_device):
         l1interfaces {
           edges {
             node {
-              ifdescr
+              ifname
               ifalias
               ifoperstatus
+              ifadminstatus
+              ifspeed
+              iftype
               duplex
+              trunk
+              cdpcachedeviceid
+              cdpcacheplatform
+              cdpcachedeviceport
+              lldpremsysname
+              lldpremportdesc
+              lldpremsysdesc
+              nativevlan
+              vlanports {
+                edges {
+                  node {
+                    vlans {
+                      vlan
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -106,6 +126,7 @@ def devices(idx_device):
     }
   }
 }
+
 """.replace(
         "IDX_DEVICE", str(idx_device)
     )

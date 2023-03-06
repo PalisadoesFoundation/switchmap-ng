@@ -67,6 +67,18 @@ class Test_ConfigCore(unittest.TestCase):
         # Pass, this varies according to the number CPU cores on the system
         pass
 
+    def test_api_log_file(self):
+        """Testing function api_log_file."""
+        # Initialize key variables
+        daemon = 1234
+
+        # Run test
+        expected = "{1}{0}log{0}switchmap-{2}.log".format(
+            os.sep, self._config.metadata.system_directory, daemon
+        )
+        result = self.config.api_log_file(daemon)
+        self.assertEqual(result, expected)
+
     def test_daemon_directory(self):
         """Testing function daemon_directory."""
         # Run test

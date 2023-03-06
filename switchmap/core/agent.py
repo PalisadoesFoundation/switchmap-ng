@@ -312,6 +312,7 @@ class AgentAPI(Agent):
 
         """
         # Initialize key variables
+        self._parent = parent
         if config is None:
             _config = ConfigCore()
         else:
@@ -366,8 +367,8 @@ fix.""".format(
         ######################################################################
         options = {
             "bind": _ip_binding(self._agent_api_variable),
-            "accesslog": self.config.api_log_file(),
-            "errorlog": self.config.api_log_file(),
+            "accesslog": self.config.api_log_file(self._parent),
+            "errorlog": self.config.api_log_file(self._parent),
             "capture_output": True,
             "pidfile": self._pidfile_child,
             "loglevel": self.config.log_level(),
@@ -380,7 +381,7 @@ fix.""".format(
         log_message = "API running on {}:{} and logging to file {}." "".format(
             self._agent_api_variable.ip_listen_address,
             self._agent_api_variable.ip_bind_port,
-            self.config.api_log_file(),
+            self.config.api_log_file(self._parent),
         )
         log.log2info(1088, log_message)
 

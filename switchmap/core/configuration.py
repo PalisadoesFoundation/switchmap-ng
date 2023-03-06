@@ -80,6 +80,24 @@ class ConfigCore(_Config):
         # Return
         return result
 
+    def api_log_file(self, daemon):
+        """Get api_log_file.
+
+        Args:
+            daemon: Name of API daemon
+
+        Returns:
+            result: result
+
+        """
+        # Get new result
+        result = "{0}{1}switchmap-{2}.log".format(
+            self.log_directory(), os.sep, str(daemon).lower()
+        )
+
+        # Return
+        return result
+
     def daemon_directory(self):
         """Determine the daemon_directory.
 

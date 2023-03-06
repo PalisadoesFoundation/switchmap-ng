@@ -190,24 +190,6 @@ class ConfigServer(ConfigAPI):
         # Return
         return result
 
-    def api_log_file(self):
-        """Get api_log_file.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get new result
-        result = "{}{}switchmap-server.log".format(
-            self.log_directory(), os.sep
-        )
-
-        # Return
-        return result
-
     def ingest_directory(self):
         """Determine the ingest_directory.
 

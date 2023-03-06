@@ -70,15 +70,6 @@ class Test_ConfigPoller(unittest.TestCase):
         result = self.config.polling_interval()
         self.assertEqual(result, expected)
 
-    def test_api_log_file(self):
-        """Testing function api_log_file."""
-        # Run test
-        expected = "{1}{0}log{0}switchmap-poller.log".format(
-            os.sep, self._config.metadata.system_directory
-        )
-        result = self.config.api_log_file()
-        self.assertEqual(result, expected)
-
     def test_server_address(self):
         """Testing function server_address."""
         # Run test
@@ -189,6 +180,18 @@ class Test_ConfigPoller(unittest.TestCase):
         """Testing function agent_subprocesses."""
         # Pass, this varies according to the number CPU cores on the system
         pass
+
+    def test_api_log_file(self):
+        """Testing function api_log_file."""
+        # Initialize key variables
+        daemon = 1234
+
+        # Run test
+        expected = "{1}{0}log{0}switchmap-{2}.log".format(
+            os.sep, self._config.metadata.system_directory, daemon
+        )
+        result = self.config.api_log_file(daemon)
+        self.assertEqual(result, expected)
 
     def test_system_directory(self):
         """Testing function system_directory."""

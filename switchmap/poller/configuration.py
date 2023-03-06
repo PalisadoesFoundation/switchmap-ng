@@ -1,8 +1,5 @@
 """switchmap classes that manage various configurations."""
 
-import os.path
-import os
-
 from switchmap.core.configuration import ConfigAPIClient
 from switchmap.core import log
 from switchmap.poller import ZONE, SNMP
@@ -38,24 +35,6 @@ class ConfigPoller(ConfigAPIClient):
                 )
             )
             log.log2die_safe(1007, log_message)
-
-    def api_log_file(self):
-        """Get api_log_file.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get new result
-        result = "{}{}switchmap-poller.log".format(
-            self.log_directory(), os.sep
-        )
-
-        # Return
-        return result
 
     def hostnames(self):
         """Get hostnames.

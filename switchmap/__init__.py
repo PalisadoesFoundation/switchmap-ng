@@ -29,8 +29,8 @@ AGENT_POLLER = "Poller"
 AGENT_INGESTER = "Ingester"
 AGENT_DASHBOARD = "Dashboard"
 AGENT_DASHBOARD_CHILD = "switchmap-dashboard"
-AGENT_API = "API"
-AGENT_API_CHILD = "switchmap-api"
+AGENT_API = "Server"
+AGENT_API_CHILD = "switchmap-{}-child".format(AGENT_API).lower()
 
 # Important tuples
 Found = namedtuple("Found", "idx_l1interface")
