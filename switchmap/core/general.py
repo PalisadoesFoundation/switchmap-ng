@@ -8,6 +8,9 @@ import re
 import ipaddress as ipaddress_
 from copy import deepcopy
 
+# PIP3 libraries
+import more_itertools as mit
+
 # Application libraries
 from switchmap.core import log
 from switchmap import IP
@@ -258,3 +261,35 @@ def _key_to_int(_data):
     else:
         result = _data
     return result
+
+
+def group_consecutive(data):
+    """Group consecutive numbers in a list.
+
+    https://stackoverflow.com/questions/2154249/
+        identify-groups-of-consecutive-numbers-in-a-list
+
+    Args:
+        data: list
+
+    Returns:
+        ranges: List of lists
+
+    """
+    # Initialize key variables
+    if bool(isinstance(data, list)) is False:
+        data = [data]
+
+    # Return
+    ranges = list(_find_ranges(data))
+    return ranges
+
+
+def _find_ranges(iterable):
+    """Yield range of consecutive numbers."""
+    for group in mit.consecutive_groups(sorted(set(iterable))):
+        group = list(group)
+        if len(group) == 1:
+            yield group[0]
+        else:
+            yield group[0], group[-1]

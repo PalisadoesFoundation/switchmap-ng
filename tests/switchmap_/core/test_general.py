@@ -233,6 +233,72 @@ class TestFunctions(unittest.TestCase):
         result = general.consistent_keys(input_dict)
         self.assertEqual(result, expected)
 
+    def test_group_consecutive(self):
+        """Testing function group_consecutive."""
+        # Initializing key variables
+        items = [
+            [
+                1,
+                2,
+                3,
+                4,
+                5,
+                12,
+                13,
+                14,
+                15,
+                20,
+                21,
+                22,
+                23,
+                30,
+                35,
+                36,
+                37,
+                38,
+                39,
+                40,
+            ],
+            [2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 20],
+            [2, 3, 4, 17, 20, 5, 12, 13, 14, 15, 16],
+            [
+                2,
+                3,
+                4,
+                15,
+                16,
+                15,
+                16,
+                15,
+                16,
+                17,
+                20,
+                5,
+                12,
+                13,
+                14,
+                15,
+                16,
+                15,
+                16,
+            ],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [],
+        ]
+        expected = [
+            [(1, 5), (12, 15), (20, 23), 30, (35, 40)],
+            [(2, 5), (12, 17), 20],
+            [(2, 5), (12, 17), 20],
+            [(2, 5), (12, 17), 20],
+            [0],
+            [],
+        ]
+
+        # Test
+        for key, value in enumerate(items):
+            result = general.group_consecutive(value)
+            self.assertEqual(result, expected[key])
+
 
 if __name__ == "__main__":
     # Do the unit test

@@ -25,3 +25,6 @@ graphql_server==3.0.0b5
 
 # Testing
 mock
+
+# Other
+more-itertools

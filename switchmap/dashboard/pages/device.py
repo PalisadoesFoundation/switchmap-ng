@@ -1,8 +1,6 @@
 """Class for creating device web pages."""
 
 import textwrap
-import os
-import time
 from datetime import datetime
 from collections import namedtuple
 
@@ -10,8 +8,9 @@ from collections import namedtuple
 from flask_table import Table, Col
 
 # Import switchmap.libraries
-from switchmap.topology.translator import Translator
-from switchmap.utils import general
+from switchmap.core import general
+from switchmap.dashboard import InterfaceState
+from switchmap.dashboard import VlanState
 
 
 class _RawCol(Col):
@@ -24,7 +23,7 @@ class _RawCol(Col):
 class Device(object):
     """Class that creates the device's various HTML tables."""
 
-    def __init__(self, device):
+    def __init__(self, data):
         """Initialize the class.
 
         Args:
@@ -35,13 +34,9 @@ class Device(object):
 
         """
         # Process YAML file for host
-        self.hostname = host
-        self.translation = Translator(config, self.hostname)
-        self.ifindexes = ifindexes
-        self.lookup = lookup
-        self.config = config
+        self._data = data
 
-    def ports(self):
+    def interfaces(self):
         """Create the ports table for the device.
 
         Args:
@@ -52,50 +47,22 @@ class Device(object):
 
         """
         # Initialize key variables
-        port_data = self.translation.ethernet_data()
-
-        data = Port(
-            port_data,
-            self.hostname,
-            self.config,
-            self.lookup,
-            ifindexes=self.ifindexes,
-        ).data()
+        interfaces = self._data.get("l1interfaces")
 
         # Populate the table
-        table = PortTable(data)
+        if bool(interfaces) is True:
+            table = InterfaceTable(interfaces)
 
-        # Get HTML
-        html = table.__html__()
-
-        # Return
-        return html
-
-    def system(self):
-        """Create summary table for the devie.
-
-        Args:
-            None
-
-        Returns:
-            html: HTML table string
-
-        """
-        # Initialize key variables
-        system_data = self.translation.system_summary()
-        data = System(system_data).data()
-
-        # Populate the table
-        table = SystemTable(data)
-
-        # Get HTML
-        html = table.__html__()
+            # Get HTML
+            html = table.__html__()
+        else:
+            html = ""
 
         # Return
         return html
 
 
-class PortTable(Table):
+class InterfaceTable(Table):
     """Declaration of the columns in the Ports table."""
 
     # Initialize class variables
@@ -138,58 +105,6 @@ class PortTable(Table):
         else:
             # Disabled port
             return {"class": "warning"}
-
-
-class PortRow(object):
-    """Declaration of the rows in the Ports table."""
-
-    def __init__(self, row):
-        """Initialize the class.
-
-        Args:
-            row: List of row values
-                port: Port name string
-                vlan: VLAN of port string
-                state: State of port string
-                days_inactive: Number of days the port's inactive string
-                speed: Speed of port string
-                duplex: Duplex of port string
-                label: Label given to the port by the network manager
-                trunk: Whether a trunk or not
-                cdp: CDP data string
-                lldp: LLDP data string
-                mac_address: MAC Address
-                manufacturer: Name of the manufacturer
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        [
-            self.port,
-            self.vlan,
-            self.state,
-            self.days_inactive,
-            self.speed,
-            self.duplex,
-            self.label,
-            self.trunk,
-            self.cdp,
-            self.lldp,
-            self.mac_address,
-            self.manufacturer,
-            self.ip_address,
-            self.hostname,
-        ] = row
-
-    def active(self):
-        """Active ports."""
-        return bool(self.state == "Active")
-
-    def enabled(self):
-        """Enable ports."""
-        return bool(self.state != "Disabled")
 
 
 class InterfaceRow(object):
@@ -260,10 +175,10 @@ def interfaces(_interfaces):
     # Process each interface
     for interface in _interfaces:
         obj = Interface(interface)
-        result = obj.row()
-        if bool(result) is True:
-            results.append(result)
-    return result
+        ntuple = obj.row()
+        if bool(ntuple) is True:
+            results.append(InterfaceRow(ntuple._asdict()))
+    return results
 
 
 class Interface:
@@ -299,75 +214,56 @@ class Interface:
             "trunk cdp lldp mac_address manufacturer ip_address hostname",
         )
 
+        # Get Vlan Data
+        vlan = self.vlan()
+
         ethernet = self._interface.get("iftype")
         if ethernet == 6:
             result = Row(
                 port=self._interface.get("ifname", "N/A"),
-                vlan=None,
+                vlan=vlan.string,
                 state=self.state().string,
-                days_inactive=None,
+                days_inactive="None",
                 speed=self.speed(),
                 duplex=self.duplex(),
                 label=self._interface.get("ifalias", "N/A"),
-                trunk=None,
+                trunk=bool(len(vlan.group) > 1),
                 cdp=self.cdp(),
                 lldp=self.lldp(),
-                mac_address=None,
-                manufacturer=None,
-                ip_address=None,
-                hostname=None,
+                mac_address="None",
+                manufacturer="None",
+                ip_address="None",
+                hostname="None",
             )
         else:
             result = None
         return result
 
-    def speed(self):
-        """Return port speed.
+    def cdp(self):
+        """Return port CDP HTML string.
 
         Args:
             None
 
         Returns:
-            result: Port speed
+            value: required string
 
         """
         # Assign key variables
-        result = self._interface.get("speed", 0)
+        found = self._interface.get("cdpcachedeviceid")
 
-        # Process
-        if bool(result) is True:
-            result = "{}G".format(int(int(result) / 1000))
-        return result
-
-    def state(self):
-        """Return port state string.
-
-        Args:
-            None
-
-        Returns:
-            state: State string
-
-        """
-        # Initialize key variables
-        State = namedtuple("State", "up string")
-
-        # Assign key variables
-        enabled = self._interface.get("ifadminstatus", 0) == 1
-
-        # Process
-        if bool(enabled) is True:
-            _up = self._interface.get("ifoperstatus", 0) == 1
-            if bool(_up) is True:
-                result = "Active"
-            else:
-                result = "Inactive"
+        # Determine whether CDP is enabled and update string
+        if bool(found) is True:
+            value = "{}<br>{}<br>{}".format(
+                self._interface.get("cdpcachedeviceid", ""),
+                self._interface.get("cdpcacheplatform", ""),
+                self._interface.get("cdpcachedeviceport", ""),
+            )
         else:
-            result = "Disabled"
+            value = ""
 
         # Return
-        state = State(up=bool(_up), string=result)
-        return state
+        return value
 
     def duplex(self):
         """Return port duplex string.
@@ -398,32 +294,6 @@ class Interface:
         # Return
         return duplex
 
-    def cdp(self):
-        """Return port CDP HTML string.
-
-        Args:
-            None
-
-        Returns:
-            value: required string
-
-        """
-        # Assign key variables
-        found = self._interface.get("cdpcachedeviceid")
-
-        # Determine whether CDP is enabled and update string
-        if bool(found) is True:
-            value = "{}<br>{}<br>{}".format(
-                self._interface.get("cdpcachedeviceid", ""),
-                self._interface.get("cdpcacheplatform", ""),
-                self._interface.get("cdpcachedeviceport", ""),
-            )
-        else:
-            value = ""
-
-        # Return
-        return value
-
     def lldp(self):
         """Return port LLDP HTML string.
 
@@ -449,239 +319,6 @@ class Interface:
         # Return
         return value
 
-
-class Port(object):
-    """Class that creates the data to be presented for the device's ports."""
-
-    def __init__(self, device_data, hostname, config, lookup, ifindexes=None):
-        """Instantiate the class.
-
-        Args:
-            device_data: Dictionary of device data
-            hostname: Name of host to which this data belongs
-            config: Config object
-            lookup: _Display object
-            ifindexes: List of ifindexes to retrieve. If None, then do all.
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        self.device_data = device_data
-        self.lookup = lookup
-        self.config = config
-        self.hostname = hostname
-        if bool(ifindexes) is True and isinstance(ifindexes, list) is True:
-            self.ifindexes = ifindexes
-        else:
-            self.ifindexes = []
-
-    def data(self):
-        """Return data for the device's ports.
-
-        Args:
-            None
-
-        Returns:
-            rows: List of Col objects
-
-        """
-        # Initialize key variables
-        rows = []
-        idle_history = {}
-        config = self.config
-
-        # Get idle data for device
-        idle_filepath = "{}/{}.yaml".format(
-            config.idle_directory(), self.hostname
-        )
-        if os.path.isfile(idle_filepath) is True:
-            idle_history = general.read_yaml_file(idle_filepath)
-
-        # Create rows of data
-        for ifindex, port_data in sorted(self.device_data.items()):
-            # Filter results if required
-            if bool(self.ifindexes) is True:
-                if int(port_data["ifIndex"]) not in self.ifindexes:
-                    continue
-
-            # Assign values for Ethernet ports only
-            name = port_data["ifName"]
-            label = port_data["ifAlias"]
-
-            # Get port data
-            port = _Port(port_data)
-            speed = port.speed()
-            inactive = self._inactive(ifindex, idle_history)
-            vlan = port.vlan()
-            state = port.state()
-            duplex = port.duplex()
-            trunk = port.trunk()
-            cdp = port.cdp()
-            lldp = port.lldp()
-            mac_addresses = port.mac_addresses()
-
-            # Get HTML related to the MAC address
-            html = self.lookup.html(mac_addresses)
-            manufacturer = html["manufacturer"]
-            ip_address = html["ip_address"]
-            hostname = html["hostname"]
-            mac_address = html["mac_address"]
-
-            # Adjust non-trunk output depending on packet activity
-            if port.is_trunk() is False:
-                if bool(html["mac_address"]) is False:
-                    if state == "Active":
-                        mac_address = "Active port. No recent packets."
-
-            # Append row of data
-            rows.append(
-                PortRow(
-                    [
-                        name,
-                        vlan,
-                        state,
-                        inactive,
-                        speed,
-                        duplex,
-                        label,
-                        trunk,
-                        cdp,
-                        lldp,
-                        mac_address,
-                        manufacturer,
-                        ip_address,
-                        hostname,
-                    ]
-                )
-            )
-
-        # Return
-        return rows
-
-    def _inactive(self, ifindex, idle_history):
-        """Return days inactive for port.
-
-        Args:
-            ifindex: IfIndex of port (String)
-            idle_history: History of idleness of port
-
-        Returns:
-            inactive: Days the port has been inactive
-
-        """
-        # Initialize key variables
-        inactive = "TBD"
-        s_ifindex = str(ifindex)
-
-        # Return
-        if s_ifindex in idle_history:
-            if bool(idle_history[s_ifindex]) is False:
-                inactive = ""
-            else:
-                seconds = int(time.time()) - idle_history[s_ifindex]
-                inactive = int(round(seconds / 86400, 0))
-
-        return inactive
-
-
-class _Port(object):
-    """Class that creates the data to be presented for the device's ports."""
-
-    def __init__(self, port_data):
-        """Instantiate the class.
-
-        Args:
-            port_data: Dictionary of port data
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        self.port_data = port_data
-        self.max_macs = 4
-
-    def is_trunk(self):
-        """Return trunk status of port.
-
-        Args:
-            None
-
-        Returns:
-            result: True if Trunk
-
-        """
-        # Assign key variables
-        result = False
-        port_data = self.port_data
-
-        # Get trunk string
-        if "l1_trunk" in port_data:
-            if bool(port_data["l1_trunk"]) is True:
-                result = True
-
-        # Return
-        return result
-
-    def trunk(self):
-        """Return string for trunk status of port.
-
-        Args:
-            None
-
-        Returns:
-            trunk: Trunk state
-
-        """
-        # Assign key variables
-        trunk = ""
-        vlans = None
-        max_vlans = 10
-
-        # Get trunk string
-        if bool(self.is_trunk()) is True:
-            trunk = "Trunk"
-
-            # Add the number of VLANs found on the trunk
-            if "l1_vlans" in self.port_data:
-                vlans = self.port_data["l1_vlans"]
-                if isinstance(vlans, list) is True:
-                    if len(vlans) <= max_vlans:
-                        trunk = "<p>{}</p><p>VLANs {}</p>" "".format(
-                            trunk, ", ".join(str(x) for x in vlans[:max_vlans])
-                        )
-                    else:
-                        trunk = "<p>{}</p><p>VLANs &gt; {}</p>" "".format(
-                            trunk, max_vlans
-                        )
-
-        # Return
-        return trunk
-
-    def mac_addresses(self):
-        """Return string for mac_address on port.
-
-        Args:
-            None
-
-        Returns:
-            mac_addresses: mac_address state
-
-        """
-        # Assign key variables
-        mac_addresses = []
-        port_data = self.port_data
-
-        # Don't show manufacturer on trunk ports
-        if bool(self.is_trunk()) is False:
-            if "l1_macs" in port_data:
-                mac_addresses = port_data["l1_macs"][:4]
-
-        # Return
-        return mac_addresses
-
     def speed(self):
         """Return port speed.
 
@@ -689,35 +326,43 @@ class _Port(object):
             None
 
         Returns:
-            speed: Port speed
+            result: Port speed
 
         """
         # Assign key variables
-        port_data = self.port_data
+        result = self._interface.get("speed", 0)
 
-        # Assign speed
-        if _port_up(port_data) is False:
-            speed = "N/A"
+        # Process
+        if bool(result) is True:
+            result = "{}G".format(int(int(result) / 1000))
+        return result
+
+    def state(self):
+        """Return InterfaceState object.
+
+        Args:
+            None
+
+        Returns:
+            state: InterfaceState object
+
+        """
+        # Initialize key variables
+        enabled = self._interface.get("ifadminstatus", 0) == 1
+
+        # Process
+        if bool(enabled) is True:
+            _up = self._interface.get("ifoperstatus", 0) == 1
+            if bool(_up) is True:
+                result = "Active"
+            else:
+                result = "Inactive"
         else:
-            if "ifHighSpeed" in port_data:
-                value = port_data["ifHighSpeed"]
-            elif "ifSpeed" in port_data:
-                value = int(port_data["ifSpeed"]) / 1000000
-            else:
-                value = None
-
-            if bool(value) is True:
-                if value >= 1000:
-                    speed = ("%.0fG") % (value / 1000)
-                elif value > 0 and value < 1000:
-                    speed = ("%.0fM") % (value)
-                else:
-                    speed = "N/A"
-            else:
-                speed = "N/A"
+            result = "Disabled"
 
         # Return
-        return speed
+        state = InterfaceState(up=bool(_up), string=result)
+        return state
 
     def vlan(self):
         """Return VLAN number.
@@ -726,134 +371,41 @@ class _Port(object):
             None
 
         Returns:
-            vlans
+            result: VlanState object
 
         """
         # Assign key variables
-        port_data = self.port_data
-        vlans = "N/A"
+        vlans = []
+        group = []
+        stringy = ""
 
-        # Assign VLAN
-        if "l1_trunk" in port_data:
-            if port_data["l1_trunk"] is False:
-                if "l1_vlans" in port_data:
-                    if port_data["l1_vlans"] is not None:
-                        values = [
-                            str(value) for value in port_data["l1_vlans"]
-                        ]
-                        vlans = " ".join(values)
-            else:
-                if "l1_nativevlan" in port_data:
-                    vlans = str(port_data["l1_nativevlan"])
+        # Get VLANs
+        vlan_ports = bool(self._interface.get("vlanports", 0))
+        nativevlan = bool(self._interface.get("nativevlan", 0))
 
-        # Return
-        return vlans
+        # Process the VLANs
+        if bool(vlan_ports) is True:
+            for _, value in vlan_ports.items():
+                vlan = value.get("vlan")
+                if bool(vlan) is True:
+                    vlans.append(vlan)
 
-    def state(self):
-        """Return port state string.
+        # Add the native VLAN
+        if bool(nativevlan):
+            vlans.append(nativevlan)
 
-        Args:
-            None
-
-        Returns:
-            state: State string
-
-        """
-        # Assign key variables
-        port_data = self.port_data
-
-        # Assign state
-        if _port_enabled(port_data) is False:
-            state = "Disabled"
-        else:
-            if _port_up(port_data) is False:
-                state = "Inactive"
-            else:
-                state = "Active"
+        # Group VLANs
+        group = general.group_consecutive(vlans)
+        stringy = ", ".join(
+            [
+                str(_) if isinstance(_, int) else "{}-{}".format(_[0], _[1])
+                for _ in group
+            ]
+        )
 
         # Return
-        return state
-
-    def duplex(self):
-        """Return port duplex string.
-
-        Args:
-            None
-
-        Returns:
-            duplex: Duplex string
-
-        """
-        # Assign key variables
-        port_data = self.port_data
-        duplex = "Unknown"
-        options = {
-            0: "Unknown",
-            1: "Half",
-            2: "Full",
-            3: "Half-Auto",
-            4: "Full-Auto",
-        }
-
-        # Assign duplex
-        if _port_up(port_data) is False:
-            duplex = "N/A"
-        else:
-            if "l1_duplex" in port_data:
-                duplex = options[port_data["l1_duplex"]]
-
-        # Return
-        return duplex
-
-    def cdp(self):
-        """Return port CDP HTML string.
-
-        Args:
-            None
-
-        Returns:
-            value: required string
-
-        """
-        # Assign key variables
-        port_data = self.port_data
-        value = ""
-
-        # Determine whether CDP is enabled and update string
-        if "cdpCacheDeviceId" in port_data:
-            value = "{}<br>{}<br>{}".format(
-                port_data["cdpCacheDeviceId"],
-                port_data["cdpCachePlatform"],
-                port_data["cdpCacheDevicePort"],
-            )
-
-        # Return
-        return value
-
-    def lldp(self):
-        """Return port LLDP HTML string.
-
-        Args:
-            None
-
-        Returns:
-            value: required string
-
-        """
-        # Assign key variables
-        port_data = self.port_data
-        value = ""
-
-        # Determine whether LLDP is enabled and update string
-        if "lldpRemSysDesc" in port_data:
-            value = "{}<br>{}<br>{}".format(
-                port_data["lldpRemSysName"],
-                port_data["lldpRemPortDesc"],
-                port_data["lldpRemSysDesc"],
-            )
-
-        # Return
-        return value
+        result = VlanState(group=group, string=stringy)
+        return result
 
 
 class SystemTable(Table):

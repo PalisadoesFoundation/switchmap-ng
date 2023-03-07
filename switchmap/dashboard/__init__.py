@@ -12,6 +12,13 @@ from flask import Flask, url_for
 # Used in building HTML tables
 DeviceMeta = namedtuple("DeviceMeta", "hostname idx_device")
 
+# Used in reporting interface state
+InterfaceState = namedtuple("InterfaceState", "up string")
+
+# Used in reporting interface state
+VlanState = namedtuple("VlanState", "group string")
+
+
 # Do remaining switchmap-ng importations
 from switchmap.dashboard.routes.api.api import API
 from switchmap.dashboard.routes.pages.index import INDEX
