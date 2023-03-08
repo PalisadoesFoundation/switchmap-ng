@@ -293,3 +293,31 @@ def _find_ranges(iterable):
             yield group[0]
         else:
             yield group[0], group[-1]
+
+
+def human_readable(num, suffix="B", storage=False):
+    """Convert number to human readable value.
+
+    https://stackoverflow.com/questions/1094841/
+        get-human-readable-version-of-file-size
+
+    Args:
+        num: Number to convert
+
+    Returns:
+        result: Numeric string
+
+    """
+    # Initialize key variables
+    if bool(storage) is True:
+        limit = 1024
+    else:
+        limit = 1000
+
+    # Process
+    for unit in ["", "K", "M", "G", "T", "P", "E", "Z"]:
+        if abs(num) < limit:
+            return f"{num:3.1f}{unit}{suffix}"
+        num /= limit
+    result = f"{num:.1f}Yi{suffix}"
+    return result

@@ -65,12 +65,16 @@ def dashboard():
 
     # Get the zone data list
     data = normalized.get("data")
-    roots = data.get("roots")
-    event = roots[0].get("event")
-    zones = event.get("zones")
+    if bool(data) is True:
+        roots = data.get("roots")
+        event = roots[0].get("event")
+        zones = event.get("zones")
 
-    # Return
-    return jsonify(zones)
+        # Return
+        return jsonify(zones)
+    else:
+        # Return
+        return jsonify({})
 
 
 @API.route("/devices/<int:idx_device>", methods=["GET"])
@@ -92,6 +96,11 @@ def devices(idx_device):
     edges {
       node {
         hostname
+        sysName
+        sysDescription
+        sysObjectid
+        sysUptime
+        lastPolled
         l1interfaces {
           edges {
             node {

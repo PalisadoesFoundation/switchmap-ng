@@ -8,32 +8,38 @@ from flask import Blueprint, render_template
 
 # Switchmap-NG imports
 from switchmap.dashboard.pages.device import Device
-from switchmap.topology.ports import Lookup
-from switchmap.dashboard import CONFIG
+from switchmap.dashboard.configuration import ConfigDashboard
+from switchmap.dashboard import uri
+from switchmap.core import rest
+
 
 # Define the DEVICES global variable
 DEVICES = Blueprint("DEVICES", __name__)
 
 
-@DEVICES.route("/devices/<hostname>")
-def index(hostname):
+@DEVICES.route("/devices/<int:idx_device>")
+def devices(idx_device):
     """Crerate device tables.
 
     Args:
-        None
+        idx_device: Device index
 
     Returns:
         HTML
 
     """
+    # Get data to display
+    config = ConfigDashboard()
+    data = rest.get(uri.devices(idx_device), config, server=False)
+
     # Get device data
-    lookup = Lookup(CONFIG)
-    device_object = Device(hostname, CONFIG, lookup)
-    port_table = device_object.ports()
-    system_table = device_object.system()
+    device_ = Device(data)
+    interfaces = device_.interfaces()
+    system = device_.system()
+    hostname = device_.hostname()
     return render_template(
         "device.html",
         hostname=hostname,
-        port_table=port_table,
-        system_table=system_table,
+        port_table=interfaces,
+        system_table=system,
     )

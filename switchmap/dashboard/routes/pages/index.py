@@ -30,7 +30,6 @@ def index():
     # Get data to display
     config = ConfigDashboard()
     data = rest.get(uri.dashboard(), config, server=False)
-    # return jsonify(data)
 
     # Convert data to HTML and return it to the browser
     homepage = HomePage(data)

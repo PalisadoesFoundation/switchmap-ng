@@ -9,6 +9,7 @@ from flask_table import Table, Col
 
 # Import switchmap.libraries
 from switchmap.core import general
+from switchmap.core import log
 from switchmap.dashboard import InterfaceState
 from switchmap.dashboard import VlanState
 
@@ -36,6 +37,20 @@ class Device(object):
         # Process YAML file for host
         self._data = data
 
+    def hostname(self):
+        """Get the system hostname.
+
+        Args:
+            None
+
+        Returns:
+            result: The system hostname
+
+        """
+        # Return
+        result = self._data.get("hostname", "")
+        return result
+
     def interfaces(self):
         """Create the ports table for the device.
 
@@ -47,16 +62,39 @@ class Device(object):
 
         """
         # Initialize key variables
-        interfaces = self._data.get("l1interfaces")
+        data = self._data.get("l1interfaces")
+        _interfaces = interfaces(data)
 
         # Populate the table
-        if bool(interfaces) is True:
-            table = InterfaceTable(interfaces)
+        if bool(_interfaces) is True:
+            table = InterfaceTable(_interfaces)
 
             # Get HTML
             html = table.__html__()
         else:
             html = ""
+
+        # Return
+        return html
+
+    def system(self):
+        """Create summary table for the devie.
+
+        Args:
+            None
+
+        Returns:
+            html: HTML table string
+
+        """
+        # Initialize key variables
+        data = System(self._data).data()
+
+        # Populate the table
+        table = SystemTable(data)
+
+        # Get HTML
+        html = table.__html__()
 
         # Return
         return html
@@ -166,19 +204,22 @@ def interfaces(_interfaces):
         _interfaces: Interface dict
 
     Returns:
-        results: list of InterfaceRow objects
+        rows: list of InterfaceRow objects
 
     """
     # Initialize key variables
-    results = []
+    rows = []
 
     # Process each interface
     for interface in _interfaces:
         obj = Interface(interface)
-        ntuple = obj.row()
-        if bool(ntuple) is True:
-            results.append(InterfaceRow(ntuple._asdict()))
-    return results
+        row = obj.row()
+        log.log2debug(22222, row)
+        if bool(row) is True:
+            rows.append(row)
+            # results.append(InterfaceRow(ntuple._asdict()))
+            # results.append(ntuple._asdict())
+    return rows
 
 
 class Interface:
@@ -219,7 +260,7 @@ class Interface:
 
         ethernet = self._interface.get("iftype")
         if ethernet == 6:
-            result = Row(
+            row = Row(
                 port=self._interface.get("ifname", "N/A"),
                 vlan=vlan.string,
                 state=self.state().string,
@@ -227,13 +268,33 @@ class Interface:
                 speed=self.speed(),
                 duplex=self.duplex(),
                 label=self._interface.get("ifalias", "N/A"),
-                trunk=bool(len(vlan.group) > 1),
+                trunk=bool(vlan.count > 1),
                 cdp=self.cdp(),
                 lldp=self.lldp(),
                 mac_address="None",
                 manufacturer="None",
                 ip_address="None",
                 hostname="None",
+            )
+
+            # Convert to the ordered list InterfaceRow expects
+            result = InterfaceRow(
+                [
+                    row.port,
+                    row.vlan,
+                    row.state,
+                    row.days_inactive,
+                    row.speed,
+                    row.duplex,
+                    row.label,
+                    row.trunk,
+                    row.cdp,
+                    row.lldp,
+                    row.mac_address,
+                    row.manufacturer,
+                    row.ip_address,
+                    row.hostname,
+                ]
             )
         else:
             result = None
@@ -305,16 +366,17 @@ class Interface:
 
         """
         # Assign key variables
-        port_data = self.port_data
-        value = ""
+        found = self._interface.get("lldpremsysdesc")
 
-        # Determine whether LLDP is enabled and update string
-        if "lldpremsysdesc" in port_data:
+        # Determine whether CDP is enabled and update string
+        if bool(found) is True:
             value = "{}<br>{}<br>{}".format(
-                port_data["lldpremsysname"],
-                port_data["lldpremportdesc"],
-                port_data["lldpremsysdesc"],
+                self._interface.get("lldpremsysname", ""),
+                self._interface.get("lldpremportdesc", ""),
+                self._interface.get("lldpremsysdesc", ""),
             )
+        else:
+            value = ""
 
         # Return
         return value
@@ -330,11 +392,12 @@ class Interface:
 
         """
         # Assign key variables
-        result = self._interface.get("speed", 0)
+        result = self._interface.get("ifspeed", 0) * 1000000
 
         # Process
         if bool(result) is True:
-            result = "{}G".format(int(int(result) / 1000))
+            result = general.human_readable(result, suffix="", storage=False)
+            result = result.replace(".0", "")
         return result
 
     def state(self):
@@ -349,6 +412,7 @@ class Interface:
         """
         # Initialize key variables
         enabled = self._interface.get("ifadminstatus", 0) == 1
+        _up = False
 
         # Process
         if bool(enabled) is True:
@@ -380,18 +444,19 @@ class Interface:
         stringy = ""
 
         # Get VLANs
-        vlan_ports = bool(self._interface.get("vlanports", 0))
-        nativevlan = bool(self._interface.get("nativevlan", 0))
+        vlan_ports = self._interface.get("vlanports", 0)
+        nativevlan = self._interface.get("nativevlan", 0)
 
         # Process the VLANs
         if bool(vlan_ports) is True:
-            for _, value in vlan_ports.items():
-                vlan = value.get("vlan")
-                if bool(vlan) is True:
-                    vlans.append(vlan)
+            for vlan_port in vlan_ports:
+                for _, value in vlan_port.items():
+                    vlan = value.get("vlan")
+                    if bool(vlan) is True:
+                        vlans.append(vlan)
 
         # Add the native VLAN
-        if bool(nativevlan):
+        if bool(nativevlan) and len(vlans) > 1:
             vlans.append(nativevlan)
 
         # Group VLANs
@@ -404,7 +469,7 @@ class Interface:
         )
 
         # Return
-        result = VlanState(group=group, string=stringy)
+        result = VlanState(group=group, string=stringy, count=len(vlans))
         return result
 
 
@@ -453,7 +518,7 @@ class System(object):
 
         """
         # Initialize key variables
-        self.system_data = system_data
+        self._data = system_data
 
     def data(self):
         """Return data for the device's system information.
@@ -469,108 +534,127 @@ class System(object):
         rows = []
 
         # Configured name
-        rows.append(SystemRow("System Name", self.system_data["sysName"]))
+        rows.append(SystemRow("System Name", self.sysname()))
 
         # System IP Address / Hostname
-        rows.append(SystemRow("System Hostname", self.system_data["hostname"]))
+        rows.append(SystemRow("System Hostname", self.hostname()))
 
         # System Description
         rows.append(
             SystemRow(
                 "System Description",
-                textwrap.fill(self.system_data["sysDescr"]).replace(
-                    "\n", "<br>"
-                ),
+                textwrap.fill(self.sysdescription()).replace("\n", "<br>"),
             )
         )
 
         # System Object ID
-        rows.append(
-            SystemRow("System sysObjectID", self.system_data["sysObjectID"])
-        )
+        rows.append(SystemRow("System sysObjectID", self.sysobjectid()))
 
         # System Uptime
-        rows.append(
-            SystemRow("System Uptime", _uptime(self.system_data["sysUpTime"]))
-        )
+        rows.append(SystemRow("System Uptime", self.sysuptime()))
 
         # Last time polled
-        timestamp = int(self.system_data["timestamp"])
-        date_string = datetime.fromtimestamp(timestamp).strftime(
-            "%Y-%m-%d %H:%M:%S"
-        )
-        rows.append(SystemRow("Time Last Polled", date_string))
+        rows.append(SystemRow("Time Last Polled", self.last_polled()))
 
         # Return
         return rows
 
+    def hostname(self):
+        """Return hostname.
 
-def _port_enabled(port_data):
-    """Return whether port is enabled.
+        Args:
+            None
 
-    Args:
-        port_data: Data related to the port
+        Returns:
+            result: hostname
 
-    Returns:
-        active: True if active
+        """
+        # Return
+        result = self._data.get("hostname", "")
+        return result
 
-    """
-    # Initialize key variables
-    enabled = False
+    def last_polled(self):
+        """Return last_polled.
 
-    # Assign state
-    if "ifAdminStatus" in port_data:
-        value = port_data["ifAdminStatus"]
-        if value == 1:
-            enabled = True
+        Args:
+            None
 
-    # Return
-    return enabled
+        Returns:
+            result: last_polled
 
+        """
+        # Return
+        timestamp = self._data.get("lastPolled", 0)
+        result = datetime.fromtimestamp(timestamp).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
+        return result
 
-def _port_up(port_data):
-    """Return whether port is up.
+    def sysdescription(self):
+        """Return sysdescription.
 
-    Args:
-        port_data: Data related to the port
+        Args:
+            None
 
-    Returns:
-        port_up: True if active
+        Returns:
+            result: sysdescription
 
-    """
-    # Initialize key variables
-    port_up = False
+        """
+        # Return
+        result = self._data.get("sysDescription", "")
+        return result
 
-    # Assign state
-    if _port_enabled(port_data) is True:
-        if "ifOperStatus" in port_data:
-            if port_data["ifOperStatus"] == 1:
-                port_up = True
+    def sysname(self):
+        """Return sysname.
 
-    # Return
-    return port_up
+        Args:
+            None
 
+        Returns:
+            result: sysname
 
-def _uptime(seconds):
-    """Return uptime string.
+        """
+        # Return
+        result = self._data.get("sysName", "")
+        return result
 
-    Args:
-        seconds: Seconds of uptime
+    def sysobjectid(self):
+        """Return sysobjectid.
 
-    Returns:
-        result: Uptime string
+        Args:
+            None
 
-    """
-    # Initialize key variables
-    (minutes, remainder_seconds) = divmod(seconds / 100, 60)
-    (hours, remainder_minutes) = divmod(minutes, 60)
-    (days, remainder_hours) = divmod(hours, 24)
+        Returns:
+            result: sysobjectid
 
-    # Return
-    result = ("%.f Days, %d:%02d:%02d") % (
-        days,
-        remainder_hours,
-        remainder_minutes,
-        remainder_seconds,
-    )
-    return result
+        """
+        # Return
+        result = self._data.get("sysObjectid", "")
+        return result
+
+    def sysuptime(self):
+        """Return sysuptime.
+
+        Args:
+            None
+
+        Returns:
+            result: sysuptime
+
+        """
+        # Return
+        seconds = self._data.get("sysUptime", "")
+
+        # Parse the time
+        (minutes, remainder_seconds) = divmod(seconds / 100, 60)
+        (hours, remainder_minutes) = divmod(minutes, 60)
+        (days, remainder_hours) = divmod(hours, 24)
+
+        # Return
+        result = "{:,} Days, {:02d}:{:02d}:{:02d}".format(
+            int(days),
+            int(remainder_hours),
+            int(remainder_minutes),
+            int(remainder_seconds),
+        )
+        return result

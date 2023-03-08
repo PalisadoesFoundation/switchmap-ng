@@ -299,6 +299,60 @@ class TestFunctions(unittest.TestCase):
             result = general.group_consecutive(value)
             self.assertEqual(result, expected[key])
 
+    def test_human_readable(self):
+        """Testing function human_readable."""
+        # Initializing key variables
+        items = [
+            100,
+            1000,
+            10000,
+            100000,
+            1000000000,
+            1000000000000,
+            1000000000000000,
+        ]
+        expecteds = [
+            "100.0",
+            "100.0Z",
+            "100.0Z",
+            "1000.0",
+            "1.0KZ",
+            "1000.0Z",
+            "9.8K",
+            "10.0KZ",
+            "9.8KZ",
+            "97.7K",
+            "100.0KZ",
+            "97.7KZ",
+            "953.7M",
+            "1.0GZ",
+            "953.7MZ",
+            "931.3G",
+            "1.0TZ",
+            "931.3GZ",
+            "909.5T",
+            "1.0PZ",
+            "909.5TZ",
+        ]
+        results = []
+        arguments = [
+            {"storage": True, "suffix": ""},
+            {"storage": False, "suffix": "Z"},
+            {"storage": True, "suffix": "Z"},
+        ]
+        for item in items:
+            for argument in arguments:
+                results.append(
+                    general.human_readable(
+                        item,
+                        storage=argument.get("storage"),
+                        suffix=argument.get("suffix"),
+                    )
+                )
+        # Test
+        for key, expected in enumerate(expecteds):
+            self.assertEqual(results[key], expected)
+
 
 if __name__ == "__main__":
     # Do the unit test

@@ -108,6 +108,11 @@ def resolve_sys_description(obj, _):
     return obj.sys_description.decode() if bool(obj.sys_description) else ""
 
 
+def resolve_sys_name(obj, _):
+    """Convert 'sys_name' from bytes to string."""
+    return obj.sys_name.decode() if bool(obj.sys_name) else ""
+
+
 def resolve_sys_uptime(obj, _):
     """Convert 'sys_uptime' from Null to zero."""
     return float(obj.sys_uptime) if bool(obj.sys_uptime) else 0
@@ -203,7 +208,9 @@ class DeviceAttribute:
 
     idx_device = graphene.Int(description="Primary key index")
     idx_zone = graphene.Int(description="Zone index foreign key")
-    sys_name = graphene.Int(description="System name")
+    sys_name = graphene.String(
+        resolver=resolve_sys_name, description="System name"
+    )
     hostname = graphene.String(
         resolver=resolve_hostname, description="System hostname"
     )

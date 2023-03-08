@@ -16,14 +16,14 @@ DeviceMeta = namedtuple("DeviceMeta", "hostname idx_device")
 InterfaceState = namedtuple("InterfaceState", "up string")
 
 # Used in reporting interface state
-VlanState = namedtuple("VlanState", "group string")
+VlanState = namedtuple("VlanState", "group string count")
 
 
 # Do remaining switchmap-ng importations
 from switchmap.dashboard.routes.api.api import API
 from switchmap.dashboard.routes.pages.index import INDEX
+from switchmap.dashboard.routes.pages.devices import DEVICES
 
-# from switchmap.dashboard.routes.pages.devices import DEVICES
 # from switchmap.dashboard.routes.pages.search import SEARCH
 from switchmap import (
     SITE_PREFIX,
@@ -45,7 +45,7 @@ DASHBOARD = Flask(
 # Register Blueprints
 DASHBOARD.register_blueprint(API, url_prefix=API_PREFIX)
 DASHBOARD.register_blueprint(INDEX, url_prefix=SITE_PREFIX)
-# DASHBOARD.register_blueprint(DEVICES, url_prefix=SITE_PREFIX)
+DASHBOARD.register_blueprint(DEVICES, url_prefix=SITE_PREFIX)
 # DASHBOARD.register_blueprint(SEARCH, url_prefix=SITE_PREFIX)
 
 # Function to easily find your assests

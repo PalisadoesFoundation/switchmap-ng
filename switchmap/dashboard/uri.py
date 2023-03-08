@@ -5,7 +5,7 @@ from switchmap import API_PREFIX
 
 
 def dashboard():
-    """Create the index page URI.
+    """Create the dashboare  page URI.
 
     Args:
         None
@@ -15,5 +15,20 @@ def dashboard():
 
     """
     # Get result
-    result = "/{}/dashboard".format(API_PREFIX)
+    result = "{}/dashboard".format(API_PREFIX)
+    return result
+
+
+def devices(idx_device):
+    """Create the device page URI.
+
+    Args:
+        None
+
+    Returns:
+        result: result
+
+    """
+    # Get result
+    result = "{}/devices/{}".format(API_PREFIX, idx_device)
     return result
