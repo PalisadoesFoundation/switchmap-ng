@@ -202,7 +202,7 @@ class ConfigCore(_Config):
 
         """
         # Get result
-        result = self._config_api_client.get("multiprocessing", True)
+        result = self._config_core.get("multiprocessing", True)
         result = general.make_bool(result)
         return result
 

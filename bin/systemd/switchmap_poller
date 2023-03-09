@@ -84,8 +84,14 @@ class PollingAgent(Agent):
             log_message = "Starting device polling sequence."
             log.log2info(1056, log_message)
 
+            # Create lockfile
+            open(self.lockfile, "a").close()
+
             # Poll after sleeping
             poll.devices()
+
+            # Delete lockfile
+            os.remove(self.lockfile)
 
             # Get the duration
             duration = int(time.time()) - ts_start

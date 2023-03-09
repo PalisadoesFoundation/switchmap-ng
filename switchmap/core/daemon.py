@@ -378,7 +378,17 @@ Lock file {} exists. Process still running.""".format(
                 current_duration = time.time() - timeout_counter - 1
                 time.sleep(1)
 
-                if not self.__daemon_running() is True:
+                # Stop waiting if the lock file does not exit
+                if os.path.isfile(self.lockfile) is False:
+                    log_message = """\
+Lockfile {} deleted. Starting graceful shutdown""".format(
+                        self.lockfile
+                    )
+                    log.log2info(1050, log_message)
+                    break
+
+                # Stop waiting if the pid file does not exit
+                if bool(self.__daemon_running()) is False:
                     log_message = """\
 Process {} no longer processing""".format(
                         self.name

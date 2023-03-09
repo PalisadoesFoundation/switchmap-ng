@@ -130,7 +130,7 @@ class _File:
 
         """
         # Return
-        mkdir(self._directory.die())
+        mkdir(self._directory.lock())
         value = "{}{}{}.die".format(self._directory.die(), os.sep, prefix)
         return value
 
