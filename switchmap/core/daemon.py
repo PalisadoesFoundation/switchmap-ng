@@ -33,6 +33,7 @@ class Daemon:
         self.name = agent.name
         self.pidfile = agent.pidfile
         self.lockfile = agent.lockfile
+        self.skipfile = agent.skipfile
         self._config = agent.config
 
     def _daemonize(self):
@@ -122,8 +123,8 @@ file and directory permissions.""".format(
                 )
                 log.log2warning(1152, log_message)
 
-    def deldie(self):
-        """Delete the die file.
+    def delskip(self):
+        """Delete the skip file.
 
         Args:
             None
@@ -133,12 +134,12 @@ file and directory permissions.""".format(
 
         """
         # Delete file
-        if os.path.exists(self.diefile) is True:
+        if os.path.exists(self.skipfile) is True:
             try:
-                os.remove(self.diefile)
+                os.remove(self.skipfile)
             except:
-                log_message = "Die file {} already deleted".format(
-                    self.diefile
+                log_message = "Skip file {} already deleted".format(
+                    self.skipfile
                 )
                 log.log2warning(1052, log_message)
 
@@ -202,7 +203,7 @@ file and directory permissions.""".format(
         """
         # Delete lock file and stop
         self.dellock()
-        self.deldie()
+        self.delskip()
         self.stop()
 
     def stop(self):
@@ -234,7 +235,7 @@ file and directory permissions.""".format(
             if error.find("No such process") > 0:
                 self.delpid()
                 self.dellock()
-                self.deldie()
+                self.delskip()
             else:
                 log_message = str(err.args)
                 log_message = "{} - PID file: {}".format(
@@ -251,7 +252,7 @@ file and directory permissions.""".format(
         # Log success
         self.delpid()
         self.dellock()
-        self.deldie()
+        self.delskip()
         log_message = "Daemon {} stopped - PID file: {}" "".format(
             self.name, self.pidfile
         )
@@ -365,9 +366,10 @@ Lock file {} exists. Process still running.""".format(
                 )
                 log.log2info(1101, log_message)
 
-                # Create the diefile
-                open(self.diefile, "a").close()
-                log_message = "Die file {} created".format(self.diefile)
+                # Create the skipfile to speed up any currenly
+                # running multiprocessing tasks
+                open(self.skipfile, "a").close()
+                log_message = "Skip file {} created".format(self.skipfile)
                 log.log2info(1059, log_message)
 
             # Continually checks if daemon is still running exits loop once

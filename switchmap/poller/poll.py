@@ -58,10 +58,8 @@ def devices():
             device(argument)
 
     else:
-
         # Create a multiprocessing pool of sub process resources
         with Pool(processes=pool_size) as pool:
-
             # Create sub processes from the pool
             pool.map(device, arguments)
 
@@ -82,13 +80,13 @@ def device(poll, post=True):
     zone = poll.zone
     config = poll.config
 
-    # Do nothing if the die file exists
-    die_file = files.die_file(AGENT_POLLER, config)
-    if os.path.isfile(die_file) is True:
+    # Do nothing if the skip file exists
+    skip_file = files.skip_file(AGENT_POLLER, config)
+    if os.path.isfile(skip_file) is True:
         log_message = """\
-Die file {} found. Aborting poll for {} in zone "{}". A daemon \
+Skip file {} found. Aborting poll for {} in zone "{}". A daemon \
 shutdown request was probably requested""".format(
-            die_file, hostname, zone
+            skip_file, hostname, zone
         )
         log.log2debug(1041, log_message)
         return

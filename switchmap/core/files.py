@@ -119,19 +119,19 @@ class _File:
         value = "{}{}{}.lock".format(self._directory.lock(), os.sep, prefix)
         return value
 
-    def die(self, prefix):
-        """Define the die file.
+    def skip(self, prefix):
+        """Define the skip file.
 
         Args:
             prefix: Prefix of file
 
         Returns:
-            value: die directory
+            value: skip directory
 
         """
         # Return
         mkdir(self._directory.lock())
-        value = "{}{}{}.die".format(self._directory.die(), os.sep, prefix)
+        value = "{}{}{}.skip".format(self._directory.lock(), os.sep, prefix)
         return value
 
     def snmp(self, prefix, create=True):
@@ -356,20 +356,20 @@ def lock_file(agent_name, config):
     return result
 
 
-def die_file(agent_name, config):
-    """Get the diefile for an agent.
+def skip_file(agent_name, config):
+    """Get the skip file for an agent.
 
     Args:
         agent_name: Agent name
         config: Config object
 
     Returns:
-        result: Name of die file
+        result: Name of skip file
 
     """
     # Return
     f_obj = _File(config)
-    result = f_obj.lock(
+    result = f_obj.skip(
         agent_name.lower() if isinstance(agent_name, str) else agent_name
     )
     return result

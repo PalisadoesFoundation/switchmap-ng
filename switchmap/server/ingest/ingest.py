@@ -75,7 +75,6 @@ Ingest lock file {} exists. Is an ingest process already running?\
         with tempfile.TemporaryDirectory(
             dir=self._config.ingest_directory()
         ) as tmpdir:
-
             # Copy files from cache to ingest
             files.move_yaml_files(cache_directory, tmpdir)
 
@@ -107,7 +106,6 @@ Ingest lock file {} exists. Is an ingest process already running?\
 
         # Parallel processing
         if bool(filepaths) is True:
-
             # Create an event
             event = _event.create()
 
@@ -124,7 +122,6 @@ Ingest lock file {} exists. Is an ingest process already running?\
                 )
 
             if bool(self._test) is False:
-
                 if self._config.multiprocessing() is False:
                     ############################
                     # Process files serially
@@ -142,10 +139,10 @@ Ingest lock file {} exists. Is an ingest process already running?\
                         # Create sub processes from the pool
                         pool.map(single, zones)
 
-                # Only update the DB if the die file is absent.
+                # Only update the DB if the skip file is absent.
                 if (
                     os.path.isfile(
-                        files.die_file(AGENT_INGESTER, self._config)
+                        files.skip_file(AGENT_INGESTER, self._config)
                     )
                     is False
                 ):
@@ -192,13 +189,13 @@ def single(item):
         None
 
     """
-    # Do nothing if the die file exists
-    die_file = files.die_file(AGENT_INGESTER, item.config)
-    if os.path.isfile(die_file) is True:
+    # Do nothing if the skip file exists
+    skip_file = files.skip_file(AGENT_INGESTER, item.config)
+    if os.path.isfile(skip_file) is True:
         log_message = """\
-Die file {} found. Aborting ingesting {}. A daemon \
+Skip file {} found. Aborting ingesting {}. A daemon \
 shutdown request was probably requested""".format(
-            die_file, item.filepath
+            skip_file, item.filepath
         )
         log.log2debug(1049, log_message)
         return

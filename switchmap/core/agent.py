@@ -51,7 +51,7 @@ class Agent:
         self.parent = parent
         self.pidfile = files.pid_file(parent, self.config)
         self.lockfile = files.lock_file(parent, self.config)
-        self.diefile = files.die_file(parent, self.config)
+        self.skipfile = files.skip_file(parent, self.config)
 
         # Initialize key variables (Child)
         if bool(child) is None:
