@@ -36,6 +36,7 @@ parameter sets in the ``snmp_group`` section till successful.
     log_level: debug
     log_directory: /path/to/log/directory
     daemon_directory: /path/to/daemon/directory
+    multiprocessing: True
 
   dashboard:
     bind_port: 7001
@@ -123,6 +124,7 @@ Parameter                           Description
                                     2) If you plan to run the ``switchmap-ng`` executables as Linux daemons, then this should be set to ``/var/run/switchmap`` after testing with the default values.
 ``log_level:``                      Defines the logging level. ``debug`` level is the most verbose, followed by ``info``, ``warning`` and ``critical``
 ``agent_subprocesses:``             The maximum number of subprocesses used to process data. Defaults to the number of CPU cores in the system.
+``multiprocessing:``                If set to False, the poller and ingester daemons will run as a single process. This is useful for troubleshooting. Defaults to ``True`` for better performance.
 =================================== ========
 
 The ``dashboard:`` Section

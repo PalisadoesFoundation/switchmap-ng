@@ -80,6 +80,9 @@ class IngesterAgent(Agent):
             # Log the start time
             ts_start = int(time.time())
 
+            # Create lockfile
+            open(self.lockfile, "a").close()
+
             # Log
             log_message = "Starting device ingest sequence."
             log.log2info(1056, log_message)
@@ -87,6 +90,9 @@ class IngesterAgent(Agent):
             # Ingest data
             _ingest = ingest.Ingest(self._config)
             _ingest.process()
+
+            # Delete lockfile
+            os.remove(self.lockfile)
 
             # Log
             log_message = """\
@@ -118,8 +124,8 @@ def main():
     agent_poller = IngesterAgent(AGENT_INGESTER)
 
     # Do control
-    cli = AgentCLI()
-    cli.control(agent_poller)
+    graceful = AgentCLI(graceful=True)
+    graceful.control(agent_poller)
 
 
 if __name__ == "__main__":

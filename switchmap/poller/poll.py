@@ -8,6 +8,7 @@ Updates the database with device SNMP data.
 from multiprocessing import Pool
 from collections import namedtuple
 from pprint import pprint
+import os
 
 # Import app libraries
 from switchmap import API_POLLER_POST_URI
@@ -16,6 +17,8 @@ from switchmap.poller.update import device as udevice
 from switchmap.poller.configuration import ConfigPoller
 from switchmap.core import log
 from switchmap.core import rest
+from switchmap.core import files
+from switchmap import AGENT_POLLER
 
 _META = namedtuple("_META", "zone hostname config")
 
@@ -49,14 +52,18 @@ def devices():
             for _ in zone.hostnames
         )
 
-    for argument in arguments:
-        device(argument)
+    # Process the data
+    if config.multiprocessing() is False:
+        for argument in arguments:
+            device(argument)
 
-    # Create a pool of sub process resources
-    # with Pool(processes=pool_size) as pool:
+    else:
 
-    #     # Create sub processes from the pool
-    #     pool.map(device, arguments)
+        # Create a multiprocessing pool of sub process resources
+        with Pool(processes=pool_size) as pool:
+
+            # Create sub processes from the pool
+            pool.map(device, arguments)
 
 
 def device(poll, post=True):
@@ -74,6 +81,17 @@ def device(poll, post=True):
     hostname = poll.hostname
     zone = poll.zone
     config = poll.config
+
+    # Do nothing if the die file exists
+    die_file = files.die_file(AGENT_POLLER, config)
+    if os.path.isfile(die_file) is True:
+        log_message = """\
+Die file {} found. Aborting poll for {} in zone "{}". A daemon \
+shutdown request was probably requested""".format(
+            die_file, hostname, zone
+        )
+        log.log2debug(1041, log_message)
+        return
 
     # Poll data for obviously valid hostnames (eg. "None" used in installation)
     if bool(hostname) is True:

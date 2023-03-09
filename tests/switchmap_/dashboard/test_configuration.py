@@ -214,6 +214,13 @@ class Test_ConfigDashboard(unittest.TestCase):
         result = self.config.log_level()
         self.assertEqual(result, expected)
 
+    def test_multiprocessing(self):
+        """Testing function multiprocessing."""
+        # Run test
+        expected = False
+        result = self.config.multiprocessing()
+        self.assertEqual(result, expected)
+
 
 if __name__ == "__main__":
     # Do the unit test

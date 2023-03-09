@@ -6,7 +6,7 @@ import requests
 from collections import namedtuple
 
 # Import repository libraries
-from switchmap.poller.configuration import ConfigAPIClient
+# from switchmap.poller.configuration import ConfigAPIClient
 from switchmap.core import log
 from switchmap import API_PREFIX
 from switchmap.core.log import ExceptionWrapper
@@ -29,7 +29,7 @@ def post(uri, data, config):
     response = False
 
     # Create the URL for posting
-    config = ConfigAPIClient()
+    # config = ConfigAPIClient()
     username = config.server_username()
     password = config.server_password()
     url_root = config.server_url_root()

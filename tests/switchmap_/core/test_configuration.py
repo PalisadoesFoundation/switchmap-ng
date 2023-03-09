@@ -113,6 +113,13 @@ class Test_ConfigCore(unittest.TestCase):
         result = self.config.log_level()
         self.assertEqual(result, expected)
 
+    def test_multiprocessing(self):
+        """Testing function multiprocessing."""
+        # Run test
+        expected = False
+        result = self.config.multiprocessing()
+        self.assertEqual(result, expected)
+
     def test_system_directory(self):
         """Testing function system_directory."""
         # Run test

@@ -8,12 +8,13 @@ import tempfile
 from multiprocessing import Pool
 from switchmap.core import log
 from switchmap.core import files
+from switchmap import AGENT_INGESTER
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IRoot
 from switchmap.server.db.table import event as _event
 from switchmap.server.db.table import zone as _zone
 from switchmap.server.db.table import root as _root
-from switchmap.server import ZoneData
+from switchmap.server import ZoneData, ZoneConfigData
 from switchmap.server.ingest import topology
 
 
@@ -112,30 +113,54 @@ Ingest lock file {} exists. Is an ingest process already running?\
 
             # Get the zone data from each file
             for filepath in filepaths:
-                zones.append(_get_zone(event, filepath))
+                zone = _get_zone(event, filepath)
+                zones.append(
+                    ZoneConfigData(
+                        idx_zone=zone.idx_zone,
+                        data=zone.data,
+                        config=self._config,
+                        filepath=filepath,
+                    )
+                )
 
             if bool(self._test) is False:
-                ############################
-                # Process files in parallel
-                ############################
 
-                # Create a pool of sub process resources
-                with Pool(processes=pool_size) as pool:
-                    # Create sub processes from the pool
-                    pool.map(single, zones)
+                if self._config.multiprocessing() is False:
+                    ############################
+                    # Process files serially
+                    ############################
+                    for zone in zones:
+                        single(zone)
 
-                # Update the event pointer in the root table
-                # We don't do this for testing
-                root = _root.idx_exists(1)
-                if bool(root):
-                    _root.update_row(
-                        root.idx_root,
-                        IRoot(
-                            idx_event=event.idx_event,
-                            name=root.name,
-                            enabled=1,
-                        ),
+                else:
+                    ############################
+                    # Process files in parallel
+                    ############################
+
+                    # Create a pool of sub process resources
+                    with Pool(processes=pool_size) as pool:
+                        # Create sub processes from the pool
+                        pool.map(single, zones)
+
+                # Only update the DB if the die file is absent.
+                if (
+                    os.path.isfile(
+                        files.die_file(AGENT_INGESTER, self._config)
                     )
+                    is False
+                ):
+                    # Update the event pointer in the root table
+                    # We don't do this for testing
+                    root = _root.idx_exists(1)
+                    if bool(root):
+                        _root.update_row(
+                            root.idx_root,
+                            IRoot(
+                                idx_event=event.idx_event,
+                                name=root.name,
+                                enabled=1,
+                            ),
+                        )
 
                 # Purge data if requested
                 if bool(self._config.purge_after_ingest()) is True:
@@ -161,12 +186,23 @@ def single(item):
     """Ingest a single file.
 
     Args:
-        item: ZoneData object
+        item: ZoneConfigData object
 
     Returns:
         None
 
     """
+    # Do nothing if the die file exists
+    die_file = files.die_file(AGENT_INGESTER, item.config)
+    if os.path.isfile(die_file) is True:
+        log_message = """\
+Die file {} found. Aborting ingesting {}. A daemon \
+shutdown request was probably requested""".format(
+            die_file, item.filepath
+        )
+        log.log2debug(1049, log_message)
+        return
+
     # Process the ingested data
     topology.process(item.data, item.idx_zone)
 

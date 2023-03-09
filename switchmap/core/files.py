@@ -14,7 +14,7 @@ from switchmap.core import general
 
 
 class _Directory:
-    """A class for creating the names of hidden directories."""
+    """A class for creating the names of system directories."""
 
     def __init__(self, config):
         """Initialize the class.
@@ -31,7 +31,7 @@ class _Directory:
         self._daemon_root = config.daemon_directory()
 
     def pid(self):
-        """Define the hidden pid directory.
+        """Define the system pid directory.
 
         Args:
             None
@@ -45,7 +45,7 @@ class _Directory:
         return value
 
     def lock(self):
-        """Define the hidden lock directory.
+        """Define the system lock directory.
 
         Args:
             None
@@ -59,7 +59,7 @@ class _Directory:
         return value
 
     def snmp(self):
-        """Define the hidden snmp directory.
+        """Define the system snmp directory.
 
         Args:
             None
@@ -74,7 +74,7 @@ class _Directory:
 
 
 class _File:
-    """A class for creating the names of hidden files."""
+    """A class for creating the names of system files."""
 
     def __init__(self, config):
         """Initialize the class.
@@ -90,7 +90,7 @@ class _File:
         self._directory = _Directory(config)
 
     def pid(self, prefix):
-        """Define the hidden pid directory.
+        """Define the pid file.
 
         Args:
             prefix: Prefix of file
@@ -105,7 +105,7 @@ class _File:
         return value
 
     def lock(self, prefix):
-        """Define the hidden lock directory.
+        """Define the lock file.
 
         Args:
             prefix: Prefix of file
@@ -119,8 +119,23 @@ class _File:
         value = "{}{}{}.lock".format(self._directory.lock(), os.sep, prefix)
         return value
 
+    def die(self, prefix):
+        """Define the die file.
+
+        Args:
+            prefix: Prefix of file
+
+        Returns:
+            value: die directory
+
+        """
+        # Return
+        mkdir(self._directory.die())
+        value = "{}{}{}.die".format(self._directory.die(), os.sep, prefix)
+        return value
+
     def snmp(self, prefix, create=True):
-        """Define the hidden snmp directory.
+        """Define the system snmp directory.
 
         Args:
             prefix: Prefix of file
@@ -316,7 +331,9 @@ def pid_file(agent_name, config):
     """
     # Return
     f_obj = _File(config)
-    result = f_obj.pid(agent_name)
+    result = f_obj.pid(
+        agent_name.lower() if isinstance(agent_name, str) else agent_name
+    )
     return result
 
 
@@ -333,7 +350,28 @@ def lock_file(agent_name, config):
     """
     # Return
     f_obj = _File(config)
-    result = f_obj.lock(agent_name)
+    result = f_obj.lock(
+        agent_name.lower() if isinstance(agent_name, str) else agent_name
+    )
+    return result
+
+
+def die_file(agent_name, config):
+    """Get the diefile for an agent.
+
+    Args:
+        agent_name: Agent name
+        config: Config object
+
+    Returns:
+        result: Name of die file
+
+    """
+    # Return
+    f_obj = _File(config)
+    result = f_obj.lock(
+        agent_name.lower() if isinstance(agent_name, str) else agent_name
+    )
     return result
 
 

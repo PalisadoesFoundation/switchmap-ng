@@ -191,6 +191,21 @@ class ConfigCore(_Config):
         # Return
         return result
 
+    def multiprocessing(self):
+        """Get multiprocessing.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_client.get("multiprocessing", True)
+        result = general.make_bool(result)
+        return result
+
     def system_directory(self):
         """Determine the system_directory.
 

@@ -9,7 +9,6 @@ from flask_table import Table, Col
 
 # Import switchmap.libraries
 from switchmap.core import general
-from switchmap.core import log
 from switchmap.dashboard import InterfaceState
 from switchmap.dashboard import VlanState
 
@@ -21,7 +20,7 @@ class _RawCol(Col):
         return content
 
 
-class Device(object):
+class Device:
     """Class that creates the device's various HTML tables."""
 
     def __init__(self, data):
@@ -145,7 +144,7 @@ class InterfaceTable(Table):
             return {"class": "warning"}
 
 
-class InterfaceRow(object):
+class InterfaceRow:
     """Declaration of the rows in the Interfaces table."""
 
     def __init__(self, row):
@@ -214,11 +213,8 @@ def interfaces(_interfaces):
     for interface in _interfaces:
         obj = Interface(interface)
         row = obj.row()
-        log.log2debug(22222, row)
         if bool(row) is True:
             rows.append(row)
-            # results.append(InterfaceRow(ntuple._asdict()))
-            # results.append(ntuple._asdict())
     return rows
 
 
@@ -464,9 +460,11 @@ class Interface:
         stringy = ", ".join(
             [
                 str(_) if isinstance(_, int) else "{}-{}".format(_[0], _[1])
-                for _ in group
+                for _ in group[:10]
             ]
         )
+        if len(group) > 10:
+            stringy = "{} plus more".format(stringy)
 
         # Return
         result = VlanState(group=group, string=stringy, count=len(vlans))
@@ -485,7 +483,7 @@ class SystemTable(Table):
     classes = ["table"]
 
 
-class SystemRow(object):
+class SystemRow:
     """Declaration of the rows in the Systems table."""
 
     def __init__(self, parameter, value):
@@ -504,7 +502,7 @@ class SystemRow(object):
         self.value = value
 
 
-class System(object):
+class System:
     """Class that creates the data to be presented for the device's ports."""
 
     def __init__(self, system_data):

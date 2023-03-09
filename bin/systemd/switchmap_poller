@@ -87,16 +87,19 @@ class PollingAgent(Agent):
             # Poll after sleeping
             poll.devices()
 
+            # Get the duration
+            duration = int(time.time()) - ts_start
+
             # Log
-            log_message = """\
-Completed device polling sequence. {}s duration\
-""".format(
-                int(time.time()) - ts_start
+            log_message = (
+                "Completed device polling sequence. {}s duration".format(
+                    duration
+                )
             )
             log.log2info(1125, log_message)
 
             # Sleep for "delay" seconds
-            time.sleep(delay)
+            time.sleep(abs(delay - duration))
 
 
 def main():
@@ -117,8 +120,8 @@ def main():
     agent_poller = PollingAgent(AGENT_POLLER)
 
     # Do control
-    cli = AgentCLI()
-    cli.control(agent_poller)
+    graceful = AgentCLI(graceful=True)
+    graceful.control(agent_poller)
 
 
 if __name__ == "__main__":

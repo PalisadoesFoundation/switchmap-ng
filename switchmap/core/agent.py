@@ -14,7 +14,6 @@ import sys
 import argparse
 import ipaddress
 import multiprocessing
-import os
 from datetime import datetime
 
 
@@ -50,8 +49,9 @@ class Agent:
         else:
             self.config = config
         self.parent = parent
-        self.pidfile_parent = files.pid_file(parent, self.config)
-        self.lockfile_parent = files.lock_file(parent, self.config)
+        self.pidfile = files.pid_file(parent, self.config)
+        self.lockfile = files.lock_file(parent, self.config)
+        self.diefile = files.die_file(parent, self.config)
 
         # Initialize key variables (Child)
         if bool(child) is None:
@@ -134,7 +134,7 @@ class AgentDaemon(_AgentRun, Daemon):
 class GracefulAgentDaemon(_AgentRun, GracefulDaemon):
     """Class that manages graceful agent daemonization."""
 
-    def __init__(self, agent):
+    def __init__(self, agent, timeout=30):
         """Initialize the class.
 
         Args:
@@ -149,7 +149,7 @@ class GracefulAgentDaemon(_AgentRun, GracefulDaemon):
 
         # Instantiate daemon superclass
         _AgentRun.__init__(self, agent)
-        GracefulDaemon.__init__(self, agent)
+        GracefulDaemon.__init__(self, agent, timeout=timeout)
 
 
 class AgentCLI:
@@ -163,11 +163,11 @@ class AgentCLI:
 
     """
 
-    def __init__(self):
+    def __init__(self, graceful=False):
         """Initialize the class.
 
         Args:
-            None
+            graceful: True if graceful restart is required
 
         Returns:
             None
@@ -175,6 +175,7 @@ class AgentCLI:
         """
         # Initialize key variables
         self.parser = None
+        self._graceful = graceful
 
     def process(self, additional_help=None):
         """Return all the CLI options.
@@ -245,7 +246,7 @@ class AgentCLI:
         # Get the parser value
         self.parser = parser
 
-    def control(self, agent, graceful=False):
+    def control(self, agent, timeout=60):
         """Control the agent from the CLI.
 
         Args:
@@ -261,10 +262,10 @@ class AgentCLI:
         args = parser.parse_args()
 
         # Instantiate agent daemon
-        if graceful is False:
+        if self._graceful is False:
             _daemon = AgentDaemon(agent)
         else:
-            _daemon = GracefulAgentDaemon(agent)
+            _daemon = GracefulAgentDaemon(agent, timeout=timeout)
 
         # Run daemon
         if args.start is True:
@@ -336,25 +337,6 @@ class AgentAPI(Agent):
             None
 
         """
-        # Check for lock and pid files
-        if os.path.exists(self.lockfile_parent) is True:
-            log_message = """\
-Lock file {} exists. Multiple API daemons running API may have died \
-catastrophically in the past, in which case the lockfile should be deleted.\
-""".format(
-                self.lockfile_parent
-            )
-            log.log2see(1142, log_message)
-
-        if os.path.exists(self.pidfile_parent) is True:
-            log_message = """\
-PID file: {} already exists. Daemon already running? If not, it may have died \
-catastrophically in the past in which case you should use --stop --force to \
-fix.""".format(
-                self.pidfile_parent
-            )
-            log.log2see(1123, log_message)
-
         ######################################################################
         #
         # Assign options in format that the Gunicorn WSGI will accept

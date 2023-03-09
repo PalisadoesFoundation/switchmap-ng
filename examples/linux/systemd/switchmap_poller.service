@@ -36,7 +36,7 @@ Environment=SWITCHMAP_CONFIGDIR=
 
 Environment=VIRTUAL_ENV=$CODEROOT/venv/bin
 Environment=PATH=$CODEROOT/venv/bin:$PATH 
-Environment=START=--start "STOP=--stop --force" "RESTART=--restart --force"
+Environment=START=--start "STOP=--stop" "RESTART=--restart"
 ExecStart=
 ExecStart=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_poller $START'
 ExecStop=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_poller $STOP'
