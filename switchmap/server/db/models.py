@@ -534,6 +534,49 @@ class MacPort(BASE):
     )
 
 
+# class Ip(BASE):
+#     """Database table definition."""
+
+#     __tablename__ = "smap_ip"
+#     __table_args__ = (
+#         UniqueConstraint("idx_zone", "ip", "idx_mac"),
+#         {"mysql_engine": "InnoDB"},
+#     )
+
+#     idx_ip = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+#     idx_zone = Column(
+#         ForeignKey(Zone.idx_zone, ondelete="CASCADE"),
+#         nullable=True,
+#         index=True,
+#         default=1,
+#         server_default=text("1"),
+#     )
+#     ip = Column(VARBINARY(256), nullable=True, default=Null)
+#     version = Column(BIGINT(unsigned=True), nullable=True, default=Null)
+#     hostname = Column(VARBINARY(256), nullable=True, default=Null)
+#     enabled = Column(BIT(1), default=1)
+#     ts_modified = Column(
+#         DateTime,
+#         nullable=False,
+#         default=datetime.datetime.utcnow,
+#         onupdate=datetime.datetime.now,
+#     )
+#     ts_created = Column(
+#         DateTime, nullable=False, default=datetime.datetime.utcnow
+#     )
+
+#     # Define relationships from child to parent
+#     # (with backref to plural variable in parent table definition)
+#     zone = relationship(
+#         "Zone",
+#         backref=backref(
+#             "macips",
+#             cascade="all, delete, delete-orphan",
+#             passive_deletes=True,
+#         ),
+#     )
+
+
 def create_all_tables():
     """Ensure all tables are created."""
     # Process transaction
