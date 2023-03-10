@@ -73,7 +73,7 @@ class TestDbTableIp(unittest.TestCase):
     #########################################################################
 
     idx_zone = 1
-    loops = 1
+    loops = 20
 
     @classmethod
     def setUpClass(cls):

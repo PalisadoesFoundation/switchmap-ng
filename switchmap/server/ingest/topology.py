@@ -556,7 +556,7 @@ class Topology:
 
         # Process macs
         for item in sorted(unique_macs):
-            exists = _mac.exists(item)
+            exists = _mac.exists(self._device.idx_zone, item)
             row = IMac(
                 idx_oui=lookup.get(item[:6], 1),
                 idx_zone=self._device.idx_zone,
@@ -613,7 +613,7 @@ class Topology:
             if bool(_macs) is True:
                 for item in sorted(_macs):
                     # Ensure the Mac exists in the database
-                    mac_exists = _mac.exists(item)
+                    mac_exists = _mac.exists(self._device.idx_zone, item)
                     if bool(mac_exists) is True:
                         row = IMacPort(
                             idx_l1interface=l1_exists.idx_l1interface,
@@ -674,6 +674,7 @@ class Topology:
                 result = _process_macip(
                     ProcessMacIP(
                         table=ipv4,
+                        idx_zone=self._device.idx_zone,
                         idx_device=self._device.idx_device,
                         version=4,
                     ),
@@ -687,6 +688,7 @@ class Topology:
                 result = _process_macip(
                     ProcessMacIP(
                         table=ipv6,
+                        idx_zone=self._device.idx_zone,
                         idx_device=self._device.idx_device,
                         version=6,
                     ),
@@ -775,7 +777,7 @@ def _process_macip(info, dns=True):
         next_mac_addr = general.mac(next_mac_addr)
 
         # Update the database
-        mac_exists = _mac.exists(next_mac_addr)
+        mac_exists = _mac.exists(info.idx_zone, next_mac_addr)
         if bool(mac_exists) is True:
             # Does the record exist?
             macip_exists = _macip.exists(

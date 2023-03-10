@@ -72,6 +72,8 @@ class TestDbTableMac(unittest.TestCase):
     # General object setup
     #########################################################################
 
+    idx_zone = 1
+
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
@@ -105,12 +107,12 @@ class TestDbTableMac(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        nonexistent = testimport.exists(row.mac)
+        nonexistent = testimport.exists(self.idx_zone, row.mac)
         self.assertFalse(nonexistent)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        preliminary_result = testimport.exists(row.mac)
+        preliminary_result = testimport.exists(self.idx_zone, row.mac)
         self.assertTrue(preliminary_result)
         self.assertEqual(_convert(preliminary_result), _convert(row))
 
@@ -125,12 +127,12 @@ class TestDbTableMac(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.mac)
+        result = testimport.exists(self.idx_zone, row.mac)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.mac)
+        result = testimport.exists(self.idx_zone, row.mac)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
         self.assertTrue(row.idx_oui != 1)
@@ -160,12 +162,12 @@ class TestDbTableMac(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.mac)
+        result = testimport.exists(self.idx_zone, row.mac)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.mac)
+        result = testimport.exists(self.idx_zone, row.mac)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
         self.assertTrue(row.idx_oui != 1)
@@ -176,12 +178,12 @@ class TestDbTableMac(unittest.TestCase):
         row = _row()
 
         # Test before insertion of an initial row
-        result = testimport.exists(row.mac)
+        result = testimport.exists(self.idx_zone, row.mac)
         self.assertFalse(result)
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        result = testimport.exists(row.mac)
+        result = testimport.exists(self.idx_zone, row.mac)
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(row))
         self.assertTrue(row.idx_oui != 1)
@@ -197,7 +199,7 @@ class TestDbTableMac(unittest.TestCase):
         testimport.update_row(idx, updated_row)
 
         # Test the update
-        result = testimport.exists(updated_row.mac)
+        result = testimport.exists(self.idx_zone, updated_row.mac)
         self.assertTrue(result)
 
         # Everything except the idx_oui should be the same.

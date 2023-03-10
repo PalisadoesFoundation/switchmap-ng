@@ -35,10 +35,11 @@ def idx_exists(idx):
     return result
 
 
-def exists(_mac):
+def exists(idx_zone, _mac):
     """Determine whether MAC exists in the Mac table.
 
     Args:
+        idx_zone: Zone index
         _mac: Mac address
 
     Returns:
@@ -53,7 +54,9 @@ def exists(_mac):
     mac = general.mac(_mac)
 
     # Get row from dataase
-    statement = select(Mac).where(Mac.mac == mac.encode())
+    statement = select(Mac).where(
+        and_(Mac.mac == mac.encode(), Mac.idx_zone == idx_zone)
+    )
     rows = db.db_select_row(1178, statement)
 
     # Return
