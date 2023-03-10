@@ -86,6 +86,14 @@ RMac = namedtuple(
 ts_modified ts_created""",
 )
 IMac = namedtuple("IMac", "idx_oui  idx_zone mac enabled")
+
+RIp = namedtuple(
+    "RIp",
+    """idx_ip idx_zone address version hostname enabled \
+ts_modified ts_created""",
+)
+IIp = namedtuple("IIp", "idx_zone address version hostname enabled")
+
 TopologyMac = namedtuple("TopologyMac", " idx_zone mac enabled")
 
 RMacPort = namedtuple(

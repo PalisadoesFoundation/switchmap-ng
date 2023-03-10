@@ -1,12 +1,11 @@
-"""Module for querying the Mac table."""
+"""Module for querying the Ip table."""
 
 from sqlalchemy import select, update, null, and_
 
 # Import project libraries
 from switchmap.server.db import db
-from switchmap.server.db.models import Mac
+from switchmap.server.db.models import Ip
 from switchmap.server.db.misc import rows as _rows
-from switchmap.server.db.table import oui
 from switchmap.core import general
 
 
@@ -14,10 +13,10 @@ def idx_exists(idx):
     """Determine whether primary key exists.
 
     Args:
-        idx: idx_mac
+        idx: idx_ip
 
     Returns:
-        result: RMac object
+        result: RIp object
 
     """
     # Initialize key variables
@@ -25,24 +24,25 @@ def idx_exists(idx):
     rows = []
 
     # Get data
-    statement = select(Mac).where(Mac.idx_mac == idx)
+    statement = select(Ip).where(Ip.idx_ip == idx)
     rows = db.db_select_row(1097, statement)
 
     # Return
     for row in rows:
-        result = _rows.mac(row)
+        result = _rows.ip(row)
         break
     return result
 
 
-def exists(_mac):
-    """Determine whether MAC exists in the Mac table.
+def exists(idx_zone, _ip):
+    """Determine whether MAC exists in the Ip table.
 
     Args:
-        _mac: Mac address
+        idx_zone: Zone index
+        _ip: Ip address
 
     Returns:
-        result: RMac tuple
+        result: RIp tuple
 
     """
     # Initialize key variables
@@ -50,60 +50,62 @@ def exists(_mac):
     rows = []
 
     # Fix the MAC address
-    mac = general.mac(_mac)
+    ip = general.ipaddress(_ip)
 
     # Get row from dataase
-    statement = select(Mac).where(Mac.mac == mac.encode())
+    statement = select(Ip).where(
+        and_(Ip.address == ip.address.encode(), Ip.idx_zone == idx_zone)
+    )
     rows = db.db_select_row(1178, statement)
 
     # Return
     for row in rows:
-        result = _rows.mac(row)
+        result = _rows.ip(row)
         break
     return result
 
 
-def findmac(idx_zone, macs):
-    """Determine whether MAC exists in the Mac table.
+def findip(idx_zone, ips):
+    """Determine whether MAC exists in the Ip table.
 
     Args:
         idx_zone: Zone index
-        _mac: Mac address
+        _ip: Ip address
 
     Returns:
-        result: list of RMac tuples
+        result: list of RIp tuples
 
     """
     # Initialize key variables
     result = []
     rows = []
-    all_macs = []
+    all_ips = []
 
-    if isinstance(macs, str):
-        macs = [macs]
+    if isinstance(ips, str):
+        ips = [ips]
 
-    if isinstance(macs, list):
+    if isinstance(ips, list):
         # Fix the MAC address
-        for item in macs:
-            all_macs.append(general.mac(item).encode())
+        for item in ips:
+            all_ips.append(general.ipaddress(item).address.encode())
 
         # Get row from dataase
-        statement = select(Mac).where(
-            and_(Mac.mac.in_(all_macs), Mac.idx_zone == idx_zone)
+        statement = select(Ip).where(
+            and_(Ip.address.in_(all_ips), Ip.idx_zone == idx_zone)
         )
         rows = db.db_select_row(1193, statement)
 
     # Return
     for row in rows:
-        result.append(_rows.mac(row))
+        result.append(_rows.ip(row))
     return result
 
 
 def insert_row(rows):
-    """Create a Mac table entry.
+    """Create a Ip table entry.
 
     Args:
-        rows: TopologyMac objects
+        rows: TopologyIp objects
 
     Returns:
         None
@@ -119,17 +121,19 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         # Fix the MAC address
-        mac = general.mac(row.mac)
-
-        # Find the true idx_oui
-        idx_oui = oui.idx_oui(mac)
+        ip = general.ipaddress(row.address)
 
         # Do the insertion
         inserts.append(
-            Mac(
-                idx_oui=idx_oui,
+            Ip(
                 idx_zone=row.idx_zone,
-                mac=(null() if bool(mac) is False else mac.encode()),
+                hostname=(
+                    null()
+                    if bool(row.hostname) is False
+                    else row.hostname.encode()
+                ),
+                version=row.version,
+                address=(null() if bool(ip) is False else ip.address.encode()),
                 enabled=int(bool(row.enabled) is True),
             )
         )
@@ -140,31 +144,35 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a Mac table entry.
+    """Upadate a Ip table entry.
 
     Args:
-        idx: idx_mac value
-        row: IMac object
+        idx: idx_ip value
+        row: IIp object
 
     Returns:
         None
 
     """
     # Fix the MAC address
-    mac = general.mac(row.mac)
-
-    # Find the true idx_oui
-    idx_oui = oui.idx_oui(mac)
+    ip = general.ipaddress(row.address)
 
     # Update
     statement = (
-        update(Mac)
-        .where(Mac.idx_mac == idx)
+        update(Ip)
+        .where(Ip.idx_ip == idx)
         .values(
             {
-                "idx_oui": idx_oui,
                 "idx_zone": row.idx_zone,
-                "mac": (null() if bool(mac) is False else mac.encode()),
+                "address": (
+                    null() if bool(ip) is False else ip.address.encode()
+                ),
+                "version": row.version,
+                "hostname": (
+                    null()
+                    if bool(row.hostname) is False
+                    else row.hostname.encode()
+                ),
                 "enabled": int(bool(row.enabled) is True),
             }
         )

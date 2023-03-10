@@ -5,6 +5,7 @@ from switchmap.server.db.table import RL1Interface
 from switchmap.server.db.table import RDevice
 from switchmap.server.db.table import RMac
 from switchmap.server.db.table import RMacIp
+from switchmap.server.db.table import RIp
 from switchmap.server.db.table import ROui
 from switchmap.server.db.table import RVlan
 from switchmap.server.db.table import RVlanPort
@@ -322,6 +323,32 @@ def zone(row):
         idx_event=row.idx_event,
         name=(None if row.name is None else row.name.decode()),
         notes=(None if row.notes is None else row.notes.decode()),
+        enabled=int(bool(row.enabled) is True),
+        ts_created=row.ts_created,
+        ts_modified=row.ts_modified,
+    )
+    return result
+
+
+def ip(row):
+    """Convert table row to tuple.
+
+    Args:
+        row: Ip row
+
+    Returns:
+        result: RIp tuple
+
+    """
+    # Initialize key variables
+    result = RIp(
+        idx_ip=row.idx_ip,
+        idx_zone=row.idx_zone,
+        address=None if bool(row.address) is False else row.address.decode(),
+        hostname=(
+            None if bool(row.hostname) is False else row.hostname.decode()
+        ),
+        version=row.version,
         enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
