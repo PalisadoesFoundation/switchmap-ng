@@ -99,82 +99,44 @@ class TestDbTableVlanPort(unittest.TestCase):
 
     def test_idx_exists(self):
         """Testing function idx_exists."""
-        # Create record
-        row = _row()
+        # Start testing
+        for _ in range(1, db.TEST_MAXIMUM):
+            # Create record
+            row = _row()
 
-        # Test before insertion of an initial row
-        nonexistent = testimport.exists(row.idx_l1interface, row.idx_vlan)
-        self.assertFalse(nonexistent)
+            # Test before insertion of an initial row
+            nonexistent = testimport.exists(row.idx_l1interface, row.idx_vlan)
+            self.assertFalse(nonexistent)
 
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        preliminary_result = testimport.exists(
-            row.idx_l1interface, row.idx_vlan
-        )
-        self.assertTrue(preliminary_result)
-        self.assertEqual(_convert(preliminary_result), _convert(row))
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            preliminary_result = testimport.exists(
+                row.idx_l1interface, row.idx_vlan
+            )
+            self.assertTrue(preliminary_result)
+            self.assertEqual(_convert(preliminary_result), _convert(row))
 
-        # Test idx_index function
-        result = testimport.idx_exists(preliminary_result.idx_vlanport)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(preliminary_result))
+            # Test idx_index function
+            result = testimport.idx_exists(preliminary_result.idx_vlanport)
+            self.assertTrue(result)
+            self.assertEqual(_convert(result), _convert(preliminary_result))
 
     def test_exists(self):
         """Testing function exists."""
-        # Create record
-        row = _row()
+        # Start testing
+        for _ in range(1, db.TEST_MAXIMUM):
+            # Create record
+            row = _row()
 
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-        self.assertFalse(result)
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_l1interface, row.idx_vlan)
+            self.assertFalse(result)
 
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(row))
-
-    # def test_find_idx_vlan(self):
-    #     """Testing function find_idx_vlan."""
-    #     # Initialize key variables
-    #     finds = []
-
-    #     # Test with known and unknown MACs
-    #     for _ in range(1, db.TEST_MAXIMUM):
-    #         row = _row()
-    #         exists = testimport.exists(row.idx_l1interface, row.idx_vlan)
-    #         if bool(exists) is False:
-    #             # Entry must not be found
-    #             result = testimport.find_idx_vlan(row.idx_vlan)
-    #             if row.idx_vlan not in finds:
-    #                 self.assertFalse(
-    #                     bool(
-    #                         testimport.exists(
-    #                             row.idx_l1interface, row.idx_vlan
-    #                         )
-    #                     )
-    #                 )
-    #                 self.assertFalse(bool(result))
-    #             else:
-    #                 self.assertTrue(bool(result))
-    #                 continue
-
-    #             # Insert entry and then it should be found
-    #             testimport.insert_row(row)
-    #             now_exists = testimport.exists(
-    #                 row.idx_l1interface, row.idx_vlan
-    #             )
-    #             self.assertTrue(bool(now_exists))
-
-    #             post_result = testimport.find_idx_vlan(now_exists.idx_vlan)
-    #             self.assertEqual(now_exists.idx_vlan, row.idx_vlan)
-    #             self.assertTrue(bool(post_result))
-    #             finds.append(now_exists.idx_vlan)
-    #         else:
-    #             result = testimport.find_idx_vlan(row.idx_vlan)
-    #             self.assertTrue(bool(result))
-    #             if exists.idx_vlan not in finds:
-    #                 finds.append(exists.idx_vlan)
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.idx_l1interface, row.idx_vlan)
+            self.assertTrue(result)
+            self.assertEqual(_convert(result), _convert(row))
 
     def test_find_idx_vlan(self):
         """Testing function find_idx_vlan."""
@@ -235,68 +197,62 @@ class TestDbTableVlanPort(unittest.TestCase):
                 if exists.idx_vlan not in finds:
                     finds.append(exists.idx_vlan)
 
-    # def test_insert_row(self):
-    #     """Testing function insert_row."""
-    #     # Create record
-    #     row = _row()
-
-    #     # Test before insertion of an initial row
-    #     result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-    #     self.assertFalse(result)
-
-    #     # Test after insertion of an initial row
-    #     testimport.insert_row(row)
-    #     result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-    #     self.assertTrue(result)
-    #     self.assertEqual(_convert(result), _convert(row))
-
     def test_insert_row(self):
         """Testing function insert_row."""
-        # Find a row combination that does not exist
-        while True:
-            # Create record
-            row = _row()
+        # Start testing
+        for _ in range(1, db.TEST_MAXIMUM):
+            # Find a row combination that does not exist
+            while True:
+                # Create record
+                row = _row()
 
-            # Test before insertion of an initial row
+                # Test before insertion of an initial row
+                result = testimport.exists(row.idx_l1interface, row.idx_vlan)
+                if bool(result) is False:
+                    self.assertFalse(result)
+                    break
+
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
             result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-            if bool(result) is False:
-                self.assertFalse(result)
-                break
-
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(row))
+            self.assertTrue(result)
+            self.assertEqual(_convert(result), _convert(row))
 
     def test_update_row(self):
         """Testing function update_row."""
-        # Find a row combination that does not exist
-        while True:
-            # Create record
-            row = _row()
+        # Start iterative tests
+        for _ in range(1, db.TEST_MAXIMUM):
+            # Find a row combination that does not exist
+            while True:
+                idx_l1interface = random.randint(1, db.TEST_MAXIMUM)
+                idx_vlan = random.randint(1, db.TEST_MAXIMUM)
 
-            # Test before insertion of an initial row
-            result = testimport.exists(row.idx_l1interface, row.idx_vlan)
-            if bool(result) is True:
+                found = testimport.exists(idx_l1interface, idx_vlan)
+                if bool(found) is True:
+                    break
+
+            # Do an update
+            idx = found.idx_vlanport
+            new_idx_l1interface = random.randint(1, db.TEST_MAXIMUM)
+            new_idx_vlan = random.randint(1, db.TEST_MAXIMUM)
+
+            updated_row = VlanPort(
+                idx_l1interface=new_idx_l1interface,
+                idx_vlan=new_idx_vlan,
+                enabled=found.enabled,
+            )
+
+            # Check if the new update alredy exists
+            new_found = testimport.exists(new_idx_l1interface, new_idx_vlan)
+            if bool(new_found) is False:
+                testimport.update_row(idx, updated_row)
+
+                # Test the update
+                result = testimport.exists(
+                    updated_row.idx_l1interface, updated_row.idx_vlan
+                )
                 self.assertTrue(result)
-                break
-
-        # Do an update
-        idx = result.idx_vlanport
-        updated_row = VlanPort(
-            idx_l1interface=random.randint(1, db.TEST_MAXIMUM),
-            idx_vlan=random.randint(1, db.TEST_MAXIMUM),
-            enabled=row.enabled,
-        )
-        testimport.update_row(idx, updated_row)
-
-        # Test the update
-        result = testimport.exists(
-            updated_row.idx_l1interface, updated_row.idx_vlan
-        )
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(updated_row))
+                self.assertEqual(_convert(result), _convert(updated_row))
 
     def test__row(self):
         """Testing function _row."""
@@ -333,12 +289,21 @@ def _row():
         result: IVlanPort object
 
     """
-    # Create result
-    result = IVlanPort(
-        idx_l1interface=random.randint(1, db.TEST_MAXIMUM),
-        idx_vlan=random.randint(1, db.TEST_MAXIMUM),
-        enabled=1,
-    )
+    # Create a reference to a row that is not in the database
+    while True:
+        idx_l1interface = random.randint(1, db.TEST_MAXIMUM)
+        idx_vlan = random.randint(1, db.TEST_MAXIMUM)
+
+        # Create result
+        result = IVlanPort(
+            idx_l1interface=idx_l1interface,
+            idx_vlan=idx_vlan,
+            enabled=1,
+        )
+        found = testimport.exists(idx_l1interface, idx_vlan)
+        if bool(found) is False:
+            break
+
     return result
 
 

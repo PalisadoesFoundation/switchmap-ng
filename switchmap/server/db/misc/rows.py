@@ -9,6 +9,7 @@ from switchmap.server.db.table import RIp
 from switchmap.server.db.table import ROui
 from switchmap.server.db.table import RVlan
 from switchmap.server.db.table import RVlanPort
+from switchmap.server.db.table import RIpPort
 from switchmap.server.db.table import RZone
 from switchmap.server.db.table import REvent
 from switchmap.server.db.table import RRoot
@@ -199,13 +200,8 @@ def macip(row):
     # Initialize key variables
     result = RMacIp(
         idx_macip=row.idx_macip,
-        idx_device=row.idx_device,
+        idx_ip=row.idx_ip,
         idx_mac=row.idx_mac,
-        ip_=None if bool(row.ip_) is False else row.ip_.decode(),
-        hostname=(
-            None if bool(row.hostname) is False else row.hostname.decode()
-        ),
-        version=row.version,
         enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,
@@ -349,6 +345,28 @@ def ip(row):
             None if bool(row.hostname) is False else row.hostname.decode()
         ),
         version=row.version,
+        enabled=int(bool(row.enabled) is True),
+        ts_created=row.ts_created,
+        ts_modified=row.ts_modified,
+    )
+    return result
+
+
+def ipport(row):
+    """Convert table row to tuple.
+
+    Args:
+        row: IpPort row
+
+    Returns:
+        result: RIpPort tuple
+
+    """
+    # Initialize key variables
+    result = RIpPort(
+        idx_ipport=row.idx_ipport,
+        idx_l1interface=row.idx_l1interface,
+        idx_ip=row.idx_ip,
         enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,

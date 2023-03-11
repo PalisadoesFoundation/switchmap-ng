@@ -415,67 +415,6 @@ class Mac(BASE):
     )
 
 
-class MacIp(BASE):
-    """Database table definition."""
-
-    __tablename__ = "smap_macip"
-    __table_args__ = (
-        UniqueConstraint("idx_device", "ip_", "idx_mac"),
-        {"mysql_engine": "InnoDB"},
-    )
-
-    idx_macip = Column(
-        BIGINT(20, unsigned=True), primary_key=True, unique=True
-    )
-    idx_device = Column(
-        ForeignKey(Device.idx_device, ondelete="CASCADE"),
-        nullable=True,
-        index=True,
-        default=1,
-        server_default=text("1"),
-    )
-    idx_mac = Column(
-        ForeignKey(Mac.idx_mac, ondelete="CASCADE"),
-        nullable=True,
-        index=True,
-        default=1,
-        server_default=text("1"),
-    )
-    ip_ = Column(VARBINARY(256), nullable=True, default=Null)
-    version = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    hostname = Column(VARBINARY(256), nullable=True, default=Null)
-    enabled = Column(BIT(1), default=1)
-    ts_modified = Column(
-        DateTime,
-        nullable=False,
-        default=datetime.datetime.utcnow,
-        onupdate=datetime.datetime.now,
-    )
-    ts_created = Column(
-        DateTime, nullable=False, default=datetime.datetime.utcnow
-    )
-
-    # Define relationships from child to parent
-    # (with backref to plural variable in parent table definition)
-    device = relationship(
-        "Device",
-        backref=backref(
-            "macips",
-            cascade="all, delete, delete-orphan",
-            passive_deletes=True,
-        ),
-    )
-
-    macs = relationship(
-        "Mac",
-        backref=backref(
-            "macips",
-            cascade="all, delete, delete-orphan",
-            passive_deletes=True,
-        ),
-    )
-
-
 class MacPort(BASE):
     """Database table definition."""
 
@@ -569,6 +508,122 @@ class Ip(BASE):
     # (with backref to plural variable in parent table definition)
     zone = relationship(
         "Zone",
+        backref=backref(
+            "macips",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
+    )
+
+
+class IpPort(BASE):
+    """Database table definition."""
+
+    __tablename__ = "smap_ipport"
+    __table_args__ = (
+        UniqueConstraint("idx_l1interface", "idx_ip"),
+        {"mysql_engine": "InnoDB"},
+    )
+
+    idx_ipport = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
+    idx_l1interface = Column(
+        ForeignKey(L1Interface.idx_l1interface, ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+        default=1,
+        server_default=text("1"),
+    )
+    idx_ip = Column(
+        ForeignKey(Ip.idx_ip, ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+        default=1,
+        server_default=text("1"),
+    )
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.now,
+    )
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    ips = relationship(
+        "Ip",
+        backref=backref(
+            "ipports",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
+    )
+
+    l1interface = relationship(
+        "L1Interface",
+        backref=backref(
+            "ipports",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
+    )
+
+
+class MacIp(BASE):
+    """Database table definition."""
+
+    __tablename__ = "smap_macip"
+    __table_args__ = (
+        UniqueConstraint("idx_ip", "idx_mac"),
+        {"mysql_engine": "InnoDB"},
+    )
+
+    idx_macip = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
+    idx_ip = Column(
+        ForeignKey(Ip.idx_ip, ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+        default=1,
+        server_default=text("1"),
+    )
+    idx_mac = Column(
+        ForeignKey(Mac.idx_mac, ondelete="CASCADE"),
+        nullable=True,
+        index=True,
+        default=1,
+        server_default=text("1"),
+    )
+    enabled = Column(BIT(1), default=1)
+    ts_modified = Column(
+        DateTime,
+        nullable=False,
+        default=datetime.datetime.utcnow,
+        onupdate=datetime.datetime.now,
+    )
+    ts_created = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
+
+    # Define relationships from child to parent
+    # (with backref to plural variable in parent table definition)
+    ips = relationship(
+        "Ip",
+        backref=backref(
+            "macips",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
+    )
+
+    macs = relationship(
+        "Mac",
         backref=backref(
             "macips",
             cascade="all, delete, delete-orphan",

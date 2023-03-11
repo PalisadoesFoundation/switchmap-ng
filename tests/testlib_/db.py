@@ -19,9 +19,11 @@ from switchmap.server.db.table import macport
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui
 from switchmap.server.db.table import mac
+from switchmap.server.db.table import ip
 from switchmap.server.db.table import macip
 from switchmap.server.db.table import event
 from switchmap.server.db.table import device
+from switchmap.server.db.table import ipport
 from switchmap.server.db.table import root
 from switchmap.server.db.table import l1interface
 from switchmap.server.db.table import IMacPort
@@ -34,6 +36,8 @@ from switchmap.server.db.table import IDevice
 from switchmap.server.db.table import IL1Interface
 from switchmap.server.db.table import IMacIp
 from switchmap.server.db.table import IRoot
+from switchmap.server.db.table import IIp
+from switchmap.server.db.table import IIpPort
 
 from switchmap.server.configuration import ConfigServer
 from switchmap.core import log
@@ -107,6 +111,7 @@ def populate():
     """
     # Initialize key variables
     macips_ = []
+    ips = []
     ip_versions = [4, 6]
     maximum = TEST_MAXIMUM
     _ouis = list(set([data.mac()[:6] for _ in range(maximum * 10)]))[:maximum]
@@ -194,24 +199,57 @@ def populate():
         ]
     )
 
-    # Insert MacIp entries
+    # # Insert MacIp entries
+    # for key, _ in enumerate(_macs):
+    #     ip_version = ip_versions[random.randint(0, 1)]
+    #     if ip_version == 4:
+    #         ip_ = socket.inet_ntoa(
+    #             struct.pack(">I", random.randint(1, 0xFFFFFFFE))
+    #         )
+    #     else:
+    #         ip_ = ipaddress.ip_address(
+    #             ":".join(("%x" % random.randint(0, 16**4) for i in range(8)))
+    #         ).exploded
+    #     macips_.append(
+    #         IMacIp(
+    #             idx_device=device_row.idx_device,
+    #             idx_mac=key + 1,
+    #             ip_=ip_,
+    #             version=ip_version,
+    #             hostname="hostname_{}".format(data.random_string()),
+    #             enabled=1,
+    #         )
+    #     )
+    # macip.insert_row(macips_)
+
+    # Insert Ip entries
     for key, _ in enumerate(_macs):
         ip_version = ip_versions[random.randint(0, 1)]
         if ip_version == 4:
-            ip_ = socket.inet_ntoa(
+            ip_address = socket.inet_ntoa(
                 struct.pack(">I", random.randint(1, 0xFFFFFFFE))
             )
         else:
-            ip_ = ipaddress.ip_address(
+            ip_address = ipaddress.ip_address(
                 ":".join(("%x" % random.randint(0, 16**4) for i in range(8)))
             ).exploded
-        macips_.append(
-            IMacIp(
-                idx_device=device_row.idx_device,
-                idx_mac=key + 1,
-                ip_=ip_,
+        ips.append(
+            IIp(
+                idx_zone=zone_row.idx_zone,
+                address=ip_address,
                 version=ip_version,
                 hostname="hostname_{}".format(data.random_string()),
+                enabled=1,
+            )
+        )
+    ip.insert_row(ips)
+
+    # Insert MacIp entries
+    for key, _ in enumerate(_macs):
+        macips_.append(
+            IMacIp(
+                idx_ip=key + 1,
+                idx_mac=key + 1,
                 enabled=1,
             )
         )
@@ -283,3 +321,14 @@ def populate():
         for key in range(maximum)
     ]
     macport.insert_row(macports_)
+
+    # Insert IpPort entries. Assign a random IP to each interface
+    ipports_ = [
+        IIpPort(
+            idx_l1interface=key + 1,
+            idx_ip=random.randint(1, maximum),
+            enabled=1,
+        )
+        for key in range(maximum)
+    ]
+    ipport.insert_row(ipports_)

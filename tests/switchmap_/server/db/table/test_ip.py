@@ -4,8 +4,6 @@
 import os
 import sys
 import unittest
-from random import randint
-from collections import namedtuple
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -255,15 +253,10 @@ def _row():
     # Initialize key variables
     found = True
     idx_zone = 1
-    IP = namedtuple("IP", "version address")
-    ips = (
-        (IP(version=4, address=data.ipv4())),
-        (IP(version=6, address=data.ipv6())),
-    )
 
     while True:
         # Get an IP address
-        item = ips[randint(0, 1)]
+        item = data.ip_()
 
         # Create result
         result = IIp(

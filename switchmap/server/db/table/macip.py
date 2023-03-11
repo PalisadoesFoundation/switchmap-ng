@@ -1,6 +1,6 @@
 """Module for querying the MacIp table."""
 
-from sqlalchemy import select, update, and_, null, func
+from sqlalchemy import select, update, and_
 
 # Import project libraries
 from switchmap.server.db import db
@@ -33,13 +33,12 @@ def idx_exists(idx):
     return result
 
 
-def exists(idx_device, idx_mac, ip_):
-    """Determine whether hostname exists in the MacIp table.
+def exists(idx_ip, idx_mac):
+    """Determine whether mac exists in the MacIp table.
 
     Args:
-        idx_device: Device.idx_device
+        idx_ip: Ip.idx_ip
         idx_mac: Mac.idx_mac
-        ip_: IP address
 
     Returns:
         result: RMacIp tuple
@@ -52,9 +51,8 @@ def exists(idx_device, idx_mac, ip_):
     # Get row from dataase
     statement = select(MacIp).where(
         and_(
-            MacIp.ip_ == ip_.encode(),
             MacIp.idx_mac == idx_mac,
-            MacIp.idx_device == idx_device,
+            MacIp.idx_ip == idx_ip,
         )
     )
     rows = db.db_select_row(1201, statement)
@@ -66,76 +64,71 @@ def exists(idx_device, idx_mac, ip_):
     return result
 
 
-def findip(idx_device, ipaddress):
-    """Find IP address.
+# def findip(idx_ip, ipaddress):
+#     """Find IP address.
 
-    Args:
-        idx_device: Device index
-        ipaddress: IP address
+#     Args:
+#         idx_ip: Device index
+#         ipaddress: IP address
 
-    Returns:
-        result: RMacIp tuple
+#     Returns:
+#         result: RMacIp tuple
 
-    """
-    # Initialize key variables
-    result = []
-    rows = []
+#     """
+#     # Initialize key variables
+#     result = []
+#     rows = []
 
-    # Get row from dataase
-    statement = select(MacIp).where(
-        and_(MacIp.ip_ == ipaddress.encode(), MacIp.idx_device == idx_device)
-    )
-    rows = db.db_select_row(1186, statement)
+#     # Get row from dataase
+#     statement = select(MacIp).where(
+#         and_(MacIp.ip_ == ipaddress.encode(), MacIp.idx_ip == idx_ip)
+#     )
+#     rows = db.db_select_row(1186, statement)
 
-    # Return
-    for row in rows:
-        result.append(_rows.macip(row))
-    return result
+#     # Return
+#     for row in rows:
+#         result.append(_rows.macip(row))
+#     return result
 
 
-def findhostname(idx_device, hostname):
-    """Find hostname.
+# def findhostname(idx_ip, hostname):
+#     """Find hostname.
 
-    Args:
-        idx_device: Device index
-        hostname: Hostname
+#     Args:
+#         idx_ip: Device index
+#         hostname: Hostname
 
-    Returns:
-        result: MacIp tuple
+#     Returns:
+#         result: MacIp tuple
 
-    """
-    # Initialize key variables
-    result = []
-    rows = []
+#     """
+#     # Initialize key variables
+#     result = []
+#     rows = []
 
-    # Get row from database (Contains)
-    statement = select(MacIp).where(
-        and_(
-            MacIp.hostname.like(
-                func.concat(func.concat("%", hostname.encode(), "%"))
-            ),
-            MacIp.idx_device == idx_device,
-        )
-    )
+#     # Get row from database (Contains)
+#     statement = select(MacIp).where(
+#         and_(
+#             MacIp.hostname.like(
+#                 func.concat(func.concat("%", hostname.encode(), "%"))
+#             ),
+#             MacIp.idx_ip == idx_ip,
+#         )
+#     )
 
-    # statement = select(MacIp).where(
-    #     and_(MacIp.hostname == hostname.encode()),
-    #     MacIp.idx_device == idx_device,
-    # )
+#     rows_contains = db.db_select_row(1191, statement)
 
-    rows_contains = db.db_select_row(1191, statement)
+#     # Merge results and remove duplicates
+#     if bool(rows_contains) is True:
+#         rows.extend(rows_contains)
 
-    # Merge results and remove duplicates
-    if bool(rows_contains) is True:
-        rows.extend(rows_contains)
+#     # Return
+#     for row in rows:
+#         result.append(_rows.macip(row))
 
-    # Return
-    for row in rows:
-        result.append(_rows.macip(row))
-
-    # Remove duplicates and return
-    result = list(set(result))
-    return result
+#     # Remove duplicates and return
+#     result = list(set(result))
+#     return result
 
 
 def insert_row(rows):
@@ -159,15 +152,8 @@ def insert_row(rows):
     for row in rows:
         inserts.append(
             MacIp(
-                idx_device=row.idx_device,
+                idx_ip=row.idx_ip,
                 idx_mac=row.idx_mac,
-                ip_=row.ip_.encode(),
-                hostname=(
-                    null()
-                    if bool(row.hostname) is False
-                    else row.hostname.encode()
-                ),
-                version=row.version,
                 enabled=int(bool(row.enabled) is True),
             )
         )
@@ -194,15 +180,8 @@ def update_row(idx, row):
         .where(MacIp.idx_macip == idx)
         .values(
             {
-                "idx_device": row.idx_device,
+                "idx_ip": row.idx_ip,
                 "idx_mac": row.idx_mac,
-                "ip_": row.ip_.encode(),
-                "version": row.version,
-                "hostname": (
-                    null()
-                    if bool(row.hostname) is False
-                    else row.hostname.encode()
-                ),
                 "enabled": int(bool(row.enabled) is True),
             }
         )

@@ -10,6 +10,7 @@ from switchmap.core import log
 from switchmap.core import general
 from switchmap.server.db.table import device as _device
 from switchmap.server.db.misc import device as _misc_device
+from switchmap.server.db.misc import rows as _rows
 from switchmap.server.db.table import l1interface as _l1interface
 from switchmap.server.db.table import vlan as _vlan
 from switchmap.server.db.table import macip as _macip
@@ -17,17 +18,18 @@ from switchmap.server.db.table import macport as _macport
 from switchmap.server.db.table import vlanport as _vlanport
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import oui as _oui
+from switchmap.server.db.table import oui as _ip
 from switchmap.server.db.table import (
-    IDevice,
-    IL1Interface,
+    IIp,
+    IMac,
     IVlan,
     IMacIp,
-    IMac,
+    IDevice,
     IMacPort,
     IVlanPort,
     ProcessMacIP,
+    IL1Interface,
     TopologyResult,
-    TopologyUpdates,
 )
 
 
@@ -125,6 +127,7 @@ class Status:
         self._vlanport = False
         self._mac = False
         self._macport = False
+        self._ip = False
         self._macip = False
         self._l1interface = False
 
@@ -147,6 +150,16 @@ class Status:
     def macip(self, value):
         """Set the 'macip' property."""
         self._macip = value
+
+    @property
+    def ip(self):
+        """Provide the value of  the 'ip' property."""
+        return self._ip
+
+    @ip.setter
+    def ip(self, value):
+        """Set the 'ip' property."""
+        self._ip = value
 
     @property
     def macport(self):
@@ -638,6 +651,72 @@ class Topology:
         # Everything is completed
         self._status.macport = True
 
+    def ip(self):
+        """Update the Ip DB table.
+
+        Args:
+            data: Ip data
+
+        Returns:
+            None
+
+        """
+        # Test prerequisite
+        if bool(self._status.macport) is False:
+            self.log_invalid("Ip")
+            return
+
+        # Initialize key variables
+        dns = self._dns
+        ipv6 = None
+        ipv4 = None
+        adds = []
+        updates = []
+
+        # Log
+        self.log("Ip")
+
+        # Get Ip data
+        layer3 = self._data.get("layer3")
+        if bool(layer3) is True:
+            ipv4 = layer3.get("ipNetToMediaTable")
+            ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
+
+            # Process IPv4 data
+            if bool(ipv4) is True:
+                result = _process_ip(
+                    self._device.idx_zone,
+                    ipv4,
+                    dns=dns,
+                )
+                adds.extend(result.adds)
+                updates.extend(result.updates)
+
+            # Process IPv6 data
+            if bool(ipv6) is True:
+                result = _process_ip(
+                    _process_ip(
+                        self._device.idx_zone,
+                        ipv6,
+                        dns=dns,
+                    )
+                )
+                adds.extend(result.adds)
+                updates.extend(result.updates)
+
+        # Do the Updates
+        for item in sorted(updates):
+            _ip.update_row(item.idx_ip, item.row)
+
+        # Do the adds
+        _ip.insert_row(sorted(adds))
+
+        # Log
+        self.log("Ip", updated=True)
+
+        # Everything is completed
+        self._status.ip = True
+
     def macip(self):
         """Update the MacIp DB table.
 
@@ -650,7 +729,7 @@ class Topology:
         """
         # Test prerequisite
         if bool(self._status.macport) is False:
-            self.log_invalid("MacIp")
+            self.log_invalid("Ip")
             return
 
         # Initialize key variables
@@ -707,6 +786,9 @@ class Topology:
         # Log
         self.log("MacIp", updated=True)
 
+        # Everything is completed
+        self._status.macip = True
+
     def log(self, table, updated=False):
         """Create standardized log messaging.
 
@@ -750,11 +832,12 @@ after starting".format(
         log.log2debug(1029, log_message)
 
 
-def _process_macip(info, dns=True):
+def _process_ip(idx_zone, table, dns=True):
     """Update the mac DB table.
 
     Args:
-        info: ProcessMacIP object
+        idx_zone: Zone index
+        table: ARP table keyed by ip address
         dns: Do DNS lookup if True
 
     Returns:
@@ -766,48 +849,87 @@ def _process_macip(info, dns=True):
     updates = []
 
     # Process data
-    for next_ip_addr, next_mac_addr in info.table.items():
+    for next_ip, _ in table.items():
         # Create expanded lower case versions of the IP address
-        ipmeta = general.ipaddress(next_ip_addr)
-        if bool(ipmeta) is False:
+        myp = general.ipaddress(next_ip)
+        if bool(myp) is False:
             continue
-        ip_address = ipmeta.address
+
+        # Get the status in the database
+        db_row = _ip.exists(idx_zone, myp.address)
+
+        # Get hostname for DB
+        if bool(dns) is True:
+            try:
+                hostname = socket.gethostbyaddr(myp.address)[0]
+            except:
+                hostname = None
+        else:
+            hostname = None
+
+        # Create a DB record
+        row = IIp(
+            idx_zone=idx_zone,
+            address=myp.address,
+            hostname=hostname,
+            version=myp.version,
+            enabled=1,
+        )
+
+        # Prepare for insert or update
+        if bool(db_row) is True:
+            if row == _rows.ip(row):
+                continue
+            else:
+                updates.append(row)
+        else:
+            adds.append(row)
+
+    # Return
+    result = TopologyResult(adds=adds, updates=updates)
+    return result
+
+
+def _process_macip(idx_zone, table):
+    """Update the mac DB table.
+
+    Args:
+        idx_zone: Zone index
+        table: ARP table keyed by ip address
+
+    Returns:
+        result
+
+    """
+    # Initialize key variables
+    adds = []
+    updates = []
+
+    # Process data
+    for next_ip, next_mac in table.items():
+        # Create expanded lower case versions of the IP address
+        myp = general.ipaddress(next_ip)
+        if bool(myp) is False:
+            continue
 
         # Create lowercase version of mac address
-        next_mac_addr = general.mac(next_mac_addr)
+        next_mac = general.mac(next_mac)
 
         # Update the database
-        mac_exists = _mac.exists(info.idx_zone, next_mac_addr)
-        if bool(mac_exists) is True:
-            # Does the record exist?
-            macip_exists = _macip.exists(
-                info.idx_device, mac_exists.idx_mac, ip_address
-            )
+        mac_exists = _mac.exists(idx_zone, next_mac)
+        ip_exists = _ip.exists(idx_zone, myp.address)
 
-            # Get hostname for DB
-            if bool(dns) is True:
-                try:
-                    hostname = socket.gethostbyaddr(ip_address)[0]
-                except:
-                    hostname = None
-            else:
-                hostname = None
-
-            # Create a DB record
-            row = IMacIp(
-                idx_device=info.idx_device,
-                idx_mac=mac_exists.idx_mac,
-                ip_=ip_address,
-                hostname=hostname,
-                version=info.version,
-                enabled=1,
-            )
-            if bool(macip_exists) is True:
-                updates.append(
-                    TopologyUpdates(idx_macip=macip_exists.idx_macip, row=row)
+        # Insert
+        if bool(mac_exists) and bool(ip_exists):
+            macip_exists = _macip.exists(mac_exists.idx_mac, ip_exists.idx_ip)
+            if bool(macip_exists) is False:
+                # Create a DB record
+                adds.append(
+                    IMacIp(
+                        idx_ip=ip_exists.idx_ip,
+                        idx_mac=mac_exists.idx_mac,
+                    )
                 )
-            else:
-                adds.append(row)
 
     # Return
     result = TopologyResult(adds=adds, updates=updates)

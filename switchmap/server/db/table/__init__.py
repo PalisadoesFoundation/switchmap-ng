@@ -73,12 +73,9 @@ ITrunk = namedtuple("ITrunk", "idx_l1interface idx_vlan enabled")
 
 RMacIp = namedtuple(
     "RMacIp",
-    """idx_macip idx_device idx_mac ip_ hostname version enabled \
-ts_modified ts_created""",
+    """idx_macip idx_ip idx_mac enabled ts_modified ts_created""",
 )
-IMacIp = namedtuple(
-    "IMacIp", "idx_device idx_mac ip_ hostname version enabled"
-)
+IMacIp = namedtuple("IMacIp", "idx_ip idx_mac enabled")
 
 RMac = namedtuple(
     "RMac",
@@ -109,6 +106,13 @@ RVlanPort = namedtuple(
 ts_modified ts_created""",
 )
 IVlanPort = namedtuple("IVlanPort", "idx_l1interface idx_vlan enabled")
+
+RIpPort = namedtuple(
+    "RIpPort",
+    """idx_ipport idx_l1interface idx_ip enabled \
+ts_modified ts_created""",
+)
+IIpPort = namedtuple("IIpPort", "idx_l1interface idx_ip enabled")
 
 ProcessMacIP = namedtuple("ProcessMacIP", "table idx_device idx_zone version")
 

@@ -57,6 +57,10 @@ CONFIG.save()
 from switchmap.server.db.table import macip as testimport
 from switchmap.server.db.models import MacIp
 from switchmap.server.db.table import IMacIp
+from switchmap.server.db.table import IIp
+from switchmap.server.db.table import IMac
+from switchmap.server.db.table import ip
+from switchmap.server.db.table import mac
 from switchmap.server.db import models
 
 from tests.testlib_ import db
@@ -69,6 +73,8 @@ class TestDbTableMacIp(unittest.TestCase):
     #########################################################################
     # General object setup
     #########################################################################
+
+    loops = 20
 
     @classmethod
     def setUpClass(cls):
@@ -99,147 +105,91 @@ class TestDbTableMacIp(unittest.TestCase):
 
     def test_idx_exists(self):
         """Testing function idx_exists."""
-        # Create record
-        row = _row()
 
-        # Test before insertion of an initial row
-        nonexistent = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertFalse(nonexistent)
+        # Loop a lot of times
+        for _ in range(self.loops):
+            # Create record
+            row = _row()
 
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        preliminary_result = testimport.exists(
-            row.idx_device, row.idx_mac, row.ip_
-        )
-        self.assertTrue(preliminary_result)
-        self.assertEqual(_convert(preliminary_result), _convert(row))
+            # Test before insertion of an initial row
+            nonexistent = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertFalse(nonexistent)
 
-        # Test idx_index function
-        result = testimport.idx_exists(preliminary_result.idx_macip)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(preliminary_result))
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            preliminary_result = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertTrue(preliminary_result)
+            self.assertEqual(_convert(preliminary_result), _convert(row))
+
+            # Test idx_index function
+            result = testimport.idx_exists(preliminary_result.idx_macip)
+            self.assertTrue(result)
+            self.assertEqual(_convert(result), _convert(preliminary_result))
 
     def test_exists(self):
         """Testing function exists."""
-        # Create record
-        row = _row()
+        # Loop a lot of times
+        for _ in range(self.loops):
+            # Create record
+            row = _row()
 
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertFalse(result)
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertFalse(result)
 
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(row))
-
-    def test_findip(self):
-        """Testing function findip."""
-        # Create record
-        row = _row()
-
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertFalse(result)
-
-        # Test NotFound
-        results = testimport.findip(row.idx_device, row.ip_)
-        self.assertFalse(bool(result))
-
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertTrue(result)
-
-        # Test Found
-        results = testimport.findip(row.idx_device, row.ip_)
-        self.assertEqual(len(results), 1)
-        for result in results:
-            self.assertTrue(bool(result))
-
-    def test_findhostname(self):
-        """Testing function findhostname."""
-        # Create record
-        row = _row()
-
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_device, row.idx_mac, row.hostname)
-        self.assertFalse(result)
-
-        # Test NotFound
-        results = testimport.findhostname(row.idx_device, row.hostname)
-        self.assertFalse(bool(result))
-
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertTrue(result)
-
-        # Test Found
-        results = testimport.findhostname(row.idx_device, row.hostname)
-        self.assertEqual(len(results), 1)
-        for result in results:
-            self.assertTrue(bool(result))
-
-        # Test partial string
-        partial = row.hostname[2:-2]
-        results = testimport.findhostname(row.idx_device, partial)
-        self.assertEqual(len(results), 1)
-        for result in results:
-            self.assertTrue(bool(result))
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertTrue(result)
+            self.assertEqual(_convert(result), _convert(row))
 
     def test_insert_row(self):
         """Testing function insert_row."""
-        # Create record
-        row = _row()
+        # Loop a lot of times
+        for _ in range(self.loops):
+            # Create record
+            row = _row()
 
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertFalse(result)
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertFalse(result)
 
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(row))
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertTrue(result)
+            self.assertEqual(_convert(result), _convert(row))
 
     def test_update_row(self):
         """Testing function update_row."""
-        # Create record
-        row = _row()
+        # Loop a lot of times
+        for _ in range(self.loops):
+            # Create record
+            row = _row()
 
-        # Test before insertion of an initial row
-        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertFalse(result)
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertFalse(result)
 
-        # Test after insertion of an initial row
-        testimport.insert_row(row)
-        result = testimport.exists(row.idx_device, row.idx_mac, row.ip_)
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(row))
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertTrue(result)
+            self.assertEqual(_convert(result), _convert(row))
 
-        # Get random IP address
-        ip_ = data.ip_()
+            # Do an update
+            idx = result.idx_macip
+            updated_row = MacIp(
+                idx_ip=row.idx_ip,
+                idx_mac=row.idx_mac,
+                enabled=row.enabled,
+            )
+            testimport.update_row(idx, updated_row)
 
-        # Do an update
-        idx = result.idx_macip
-        updated_row = MacIp(
-            idx_device=row.idx_device,
-            idx_mac=row.idx_mac,
-            ip_=ip_.address,
-            hostname=data.random_string(),
-            version=ip_.version,
-            enabled=row.enabled,
-        )
-        testimport.update_row(idx, updated_row)
-
-        # Test the update
-        result = testimport.exists(
-            updated_row.idx_device, updated_row.idx_mac, updated_row.ip_
-        )
-        self.assertTrue(result)
-        self.assertEqual(_convert(result), _convert(updated_row))
+            # Test the update
+            result = testimport.exists(updated_row.idx_ip, updated_row.idx_mac)
+            self.assertTrue(result)
+            self.assertEqual(_convert(result), _convert(updated_row))
 
     def test__row(self):
         """Testing function _row."""
@@ -259,11 +209,8 @@ def _convert(row):
     """
     # Do conversion
     result = IMacIp(
-        idx_device=row.idx_device,
+        idx_ip=row.idx_ip,
         idx_mac=row.idx_mac,
-        ip_=row.ip_,
-        hostname=row.hostname,
-        version=row.version,
         enabled=row.enabled,
     )
     return result
@@ -280,16 +227,49 @@ def _row():
 
     """
     # Initialize key variables
-    ip_ = data.ip_()
+    idx_zone = 1
 
-    # Create result
+    while True:
+        # Get an IP address
+        item = data.ip_()
+
+        # Create IP
+        ip_result = IIp(
+            idx_zone=idx_zone,
+            address=item.address,
+            version=item.version,
+            hostname=data.random_string(),
+            enabled=1,
+        )
+        ip_found = ip.exists(idx_zone, item.address)
+        if bool(ip_found) is False:
+            ip.insert_row(ip_result)
+            ip_found = ip.exists(idx_zone, item.address)
+
+        if bool(ip_found) is True:
+            break
+
+    while True:
+        mac_address = data.mac()
+
+        # Create Mac
+        mac_result = IMac(
+            idx_oui=1,
+            idx_zone=idx_zone,
+            mac=mac_address,
+            enabled=1,
+        )
+        mac_found = mac.exists(idx_zone, mac_address)
+        if bool(mac_found) is False:
+            mac.insert_row(mac_result)
+            mac_found = mac.exists(idx_zone, mac_address)
+
+        if bool(mac_found) is True:
+            break
+
+    # Insert mac
     result = IMacIp(
-        idx_device=1,
-        idx_mac=1,
-        ip_=ip_.address,
-        hostname=data.random_string(),
-        version=ip_.version,
-        enabled=1,
+        idx_ip=ip_found.idx_ip, idx_mac=mac_found.idx_mac, enabled=1
     )
     return result
 

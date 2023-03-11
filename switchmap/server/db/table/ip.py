@@ -25,7 +25,7 @@ def idx_exists(idx):
 
     # Get data
     statement = select(Ip).where(Ip.idx_ip == idx)
-    rows = db.db_select_row(1097, statement)
+    rows = db.db_select_row(1064, statement)
 
     # Return
     for row in rows:
@@ -56,7 +56,7 @@ def exists(idx_zone, _ip):
     statement = select(Ip).where(
         and_(Ip.address == ip.address.encode(), Ip.idx_zone == idx_zone)
     )
-    rows = db.db_select_row(1178, statement)
+    rows = db.db_select_row(1066, statement)
 
     # Return
     for row in rows:
@@ -93,7 +93,7 @@ def findip(idx_zone, ips):
         statement = select(Ip).where(
             and_(Ip.address.in_(all_ips), Ip.idx_zone == idx_zone)
         )
-        rows = db.db_select_row(1193, statement)
+        rows = db.db_select_row(1068, statement)
 
     # Return
     for row in rows:
@@ -130,7 +130,7 @@ def insert_row(rows):
                 hostname=(
                     null()
                     if bool(row.hostname) is False
-                    else row.hostname.encode()
+                    else row.hostname.lower().encode()
                 ),
                 version=row.version,
                 address=(null() if bool(ip) is False else ip.address.encode()),
@@ -140,7 +140,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1087, inserts)
+        db.db_add_all(1065, inserts)
 
 
 def update_row(idx, row):
@@ -171,10 +171,10 @@ def update_row(idx, row):
                 "hostname": (
                     null()
                     if bool(row.hostname) is False
-                    else row.hostname.encode()
+                    else row.hostname.lower().encode()
                 ),
                 "enabled": int(bool(row.enabled) is True),
             }
         )
     )
-    db.db_update(1114, statement)
+    db.db_update(1069, statement)
