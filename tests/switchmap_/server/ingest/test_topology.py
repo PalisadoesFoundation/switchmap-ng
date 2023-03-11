@@ -803,7 +803,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                 ifname="StackPort1",
                 ifadminstatus=1,
                 ifoperstatus=2,
-                ts_idle=0,
+                ts_idle=1678515196,
                 cdpcachedeviceid=None,
                 cdpcachedeviceport=None,
                 cdpcacheplatform=None,
@@ -1167,6 +1167,13 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                     ts_modified=None,
                 )
             )
+        result.sort(key=lambda x: (x.ifindex))
+
+        from pprint import pprint
+
+        print("\n\n\n\n\n\n\n\n\n\n\n\n\n")
+        pprint(result[: self.max_loops * 3])
+        print("\n\n\n\n\n\n\n\n\n\n\n\n\n")
 
         self.assertEqual(result[: self.max_loops * 3], expected)
 

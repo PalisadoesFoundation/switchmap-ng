@@ -10,7 +10,6 @@ from switchmap.core import log
 from switchmap.core import general
 from switchmap.server.db.table import device as _device
 from switchmap.server.db.misc import device as _misc_device
-from switchmap.server.db.misc import rows as _rows
 from switchmap.server.db.table import l1interface as _l1interface
 from switchmap.server.db.table import vlan as _vlan
 from switchmap.server.db.table import macip as _macip
@@ -844,7 +843,13 @@ def _process_ip(idx_zone, table, dns=True):
 
         # Prepare for insert or update
         if bool(db_row) is True:
-            if row == _rows.ip(row):
+            if row == IIp(
+                idx_zone=db_row.idx_zone,
+                address=db_row.address,
+                hostname=db_row.hostname,
+                version=db_row.version,
+                enabled=db_row.enabled,
+            ):
                 continue
             else:
                 updates.append(row)
