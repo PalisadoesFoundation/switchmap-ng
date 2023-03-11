@@ -60,6 +60,7 @@ from switchmap.server.db import db
 from switchmap.server.db import models
 from switchmap.server.db.models import VlanPort
 from switchmap.server.db.models import MacPort
+from switchmap.server.db.models import Ip
 from switchmap.server.db.models import MacIp
 from switchmap.server.db.models import Mac
 from switchmap.server.db.models import Vlan
@@ -68,6 +69,7 @@ from switchmap.server.db.models import Device
 from switchmap.server.db.table import RMacPort
 from switchmap.server.db.table import RVlanPort
 from switchmap.server.db.table import RMacIp
+from switchmap.server.db.table import RIp
 from switchmap.server.db.table import RMac
 from switchmap.server.db.table import RVlan
 from switchmap.server.db.table import RL1Interface
@@ -145,6 +147,7 @@ class TestPollUpdateTopologyFunctions(unittest.TestCase):
     #########################################################################
 
     idx_zone = 1
+    max_loops = 10
 
     @classmethod
     def setUpClass(cls):
@@ -234,7 +237,7 @@ class TestPollUpdateTopologyFunctions(unittest.TestCase):
                     ts_modified=None,
                 )
             )
-        self.assertEqual(result[:10], expected)
+        self.assertEqual(result[: self.max_loops], expected)
 
 
 class TestPollUpdateTopologyClasses(unittest.TestCase):
@@ -245,6 +248,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
     #########################################################################
 
     idx_zone = 1
+    max_loops = 10
 
     @classmethod
     def setUpClass(cls):
@@ -1164,7 +1168,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                 )
             )
 
-        self.assertEqual(result[:30], expected)
+        self.assertEqual(result[: self.max_loops * 3], expected)
 
     def test_vlan(self):
         """Testing function vlan."""
@@ -1724,117 +1728,207 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         result.sort(key=lambda x: (x.mac))
         self.assertEqual(result[:25], expected)
 
-    def test_macip(self):
-        """Testing function macip."""
+    def test_ip(self):
+        """Testing function ip."""
         # Initialize key variables
         result = []
         expected = [
-            RMacIp(
-                idx_macip=1,
-                idx_device=1,
-                idx_mac=1,
-                ip_="192.168.0.94",
-                hostname=None,
+            RIp(
+                idx_ip=1,
+                idx_zone=1,
+                address="192.168.0.1",
                 version=4,
+                hostname=None,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacIp(
-                idx_macip=2,
-                idx_device=1,
-                idx_mac=2,
-                ip_="abcd:1234:0000:0904:0000:0000:0000:0005",
-                hostname=None,
-                version=6,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RMacIp(
-                idx_macip=3,
-                idx_device=1,
-                idx_mac=3,
-                ip_="192.168.11.204",
-                hostname=None,
+            RIp(
+                idx_ip=2,
+                idx_zone=1,
+                address="192.168.0.129",
                 version=4,
+                hostname=None,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacIp(
-                idx_macip=4,
-                idx_device=1,
-                idx_mac=4,
-                ip_="192.168.4.17",
-                hostname=None,
+            RIp(
+                idx_ip=3,
+                idx_zone=1,
+                address="192.168.0.134",
                 version=4,
+                hostname=None,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacIp(
-                idx_macip=5,
-                idx_device=1,
-                idx_mac=4,
-                ip_="abcd:1234:0000:0a03:0216:3eff:fe00:0001",
-                hostname=None,
-                version=6,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RMacIp(
-                idx_macip=6,
-                idx_device=1,
-                idx_mac=4,
-                ip_="fe80:0000:0000:0000:0216:3eff:fe00:0001",
-                hostname=None,
-                version=6,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RMacIp(
-                idx_macip=7,
-                idx_device=1,
-                idx_mac=5,
-                ip_="192.168.24.12",
-                hostname=None,
+            RIp(
+                idx_ip=4,
+                idx_zone=1,
+                address="192.168.0.135",
                 version=4,
+                hostname=None,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacIp(
-                idx_macip=8,
-                idx_device=1,
-                idx_mac=5,
-                ip_="192.168.24.9",
-                hostname=None,
+            RIp(
+                idx_ip=5,
+                idx_zone=1,
+                address="192.168.0.136",
                 version=4,
+                hostname=None,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacIp(
-                idx_macip=9,
-                idx_device=1,
-                idx_mac=5,
-                ip_="abcd:1234:0000:0a06:0000:c001:d00d:0004",
+            RIp(
+                idx_ip=6,
+                idx_zone=1,
+                address="192.168.0.137",
+                version=4,
                 hostname=None,
-                version=6,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacIp(
-                idx_macip=10,
-                idx_device=1,
-                idx_mac=5,
-                ip_="abcd:1234:0000:0a06:0216:3eff:fe00:0002",
+            RIp(
+                idx_ip=7,
+                idx_zone=1,
+                address="192.168.0.138",
+                version=4,
                 hostname=None,
-                version=6,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=8,
+                idx_zone=1,
+                address="192.168.0.139",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=9,
+                idx_zone=1,
+                address="192.168.0.140",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=10,
+                idx_zone=1,
+                address="192.168.0.141",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=11,
+                idx_zone=1,
+                address="192.168.0.142",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=12,
+                idx_zone=1,
+                address="192.168.0.143",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=13,
+                idx_zone=1,
+                address="192.168.0.144",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=14,
+                idx_zone=1,
+                address="192.168.0.145",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=15,
+                idx_zone=1,
+                address="192.168.0.146",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=16,
+                idx_zone=1,
+                address="192.168.0.147",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=17,
+                idx_zone=1,
+                address="192.168.0.148",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=18,
+                idx_zone=1,
+                address="192.168.0.149",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=19,
+                idx_zone=1,
+                address="192.168.0.150",
+                version=4,
+                hostname=None,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIp(
+                idx_ip=20,
+                idx_zone=1,
+                address="192.168.0.151",
+                version=4,
+                hostname=None,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
@@ -1855,6 +1949,292 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         tester.vlanport()
         tester.mac()
         tester.macport()
+        tester.ip()
+
+        # Verify macport data
+        statement = select(Ip)
+        rows = db.db_select_row(1179, statement)
+
+        # Return
+        for row in rows:
+            result.append(
+                RIp(
+                    idx_ip=row.idx_ip,
+                    idx_zone=row.idx_zone,
+                    address=row.address.decode(),
+                    hostname=None,
+                    version=row.version,
+                    enabled=row.enabled,
+                    ts_created=None,
+                    ts_modified=None,
+                )
+            )
+
+        result.sort(key=lambda x: (x.idx_ip))
+        self.assertEqual(result[: self.max_loops * 2], expected)
+
+    def test_macip(self):
+        """Testing function macip."""
+        # Initialize key variables
+        result = []
+        expected = [
+            RMacIp(
+                idx_macip=1,
+                idx_ip=57,
+                idx_mac=97,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=2,
+                idx_ip=58,
+                idx_mac=1,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=3,
+                idx_ip=126,
+                idx_mac=3,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=4,
+                idx_ip=149,
+                idx_mac=23,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=5,
+                idx_ip=150,
+                idx_mac=30,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=6,
+                idx_ip=151,
+                idx_mac=35,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=7,
+                idx_ip=152,
+                idx_mac=45,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=8,
+                idx_ip=153,
+                idx_mac=55,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=9,
+                idx_ip=154,
+                idx_mac=56,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=10,
+                idx_ip=155,
+                idx_mac=57,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=11,
+                idx_ip=156,
+                idx_mac=58,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=12,
+                idx_ip=159,
+                idx_mac=54,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=13,
+                idx_ip=233,
+                idx_mac=46,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=14,
+                idx_ip=234,
+                idx_mac=47,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=15,
+                idx_ip=235,
+                idx_mac=46,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=16,
+                idx_ip=236,
+                idx_mac=7,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=17,
+                idx_ip=237,
+                idx_mac=8,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=18,
+                idx_ip=238,
+                idx_mac=9,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=19,
+                idx_ip=239,
+                idx_mac=10,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=20,
+                idx_ip=240,
+                idx_mac=13,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=21,
+                idx_ip=241,
+                idx_mac=14,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=22,
+                idx_ip=242,
+                idx_mac=15,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=23,
+                idx_ip=243,
+                idx_mac=12,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=24,
+                idx_ip=244,
+                idx_mac=16,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=25,
+                idx_ip=245,
+                idx_mac=17,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=26,
+                idx_ip=246,
+                idx_mac=17,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=27,
+                idx_ip=247,
+                idx_mac=48,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=28,
+                idx_ip=248,
+                idx_mac=49,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=29,
+                idx_ip=249,
+                idx_mac=48,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacIp(
+                idx_macip=30,
+                idx_ip=250,
+                idx_mac=50,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+        ]
+
+        # Process the device
+        _device = device.Device(_polled_data())
+        data = _device.process()
+
+        # Make sure the device exists
+        exists = testimport.device(self.idx_zone, data)
+
+        # Test transaction
+        tester = testimport.Topology(exists, data, dns=False)
+        tester.l1interface()
+        tester.vlan()
+        tester.vlanport()
+        tester.mac()
+        tester.macport()
+        tester.ip()
         tester.macip()
 
         # Verify macport data
@@ -1866,11 +2246,8 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
             result.append(
                 RMacIp(
                     idx_macip=row.idx_macip,
-                    idx_device=row.idx_device,
+                    idx_ip=row.idx_ip,
                     idx_mac=row.idx_mac,
-                    ip_=row.ip_.decode(),
-                    hostname=None,
-                    version=row.version,
                     enabled=row.enabled,
                     ts_created=None,
                     ts_modified=None,
@@ -1878,7 +2255,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
             )
 
         result.sort(key=lambda x: (x.idx_macip))
-        self.assertEqual(result[:10], expected)
+        self.assertEqual(result[: self.max_loops * 3], expected)
 
     def test_macport(self):
         """Testing function macport."""

@@ -16,9 +16,9 @@ from switchmap.server.db.table import vlan as _vlan
 from switchmap.server.db.table import macip as _macip
 from switchmap.server.db.table import macport as _macport
 from switchmap.server.db.table import vlanport as _vlanport
+from switchmap.server.db.table import ip as _ip
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import oui as _oui
-from switchmap.server.db.table import oui as _ip
 from switchmap.server.db.table import (
     IIp,
     IMac,
@@ -27,7 +27,6 @@ from switchmap.server.db.table import (
     IDevice,
     IMacPort,
     IVlanPort,
-    ProcessMacIP,
     IL1Interface,
     TopologyResult,
 )
@@ -132,6 +131,16 @@ class Status:
         self._l1interface = False
 
     @property
+    def ip(self):
+        """Provide the value of  the 'ip' property."""
+        return self._ip
+
+    @ip.setter
+    def ip(self, value):
+        """Set the 'ip' property."""
+        self._ip = value
+
+    @property
     def l1interface(self):
         """Provide the value of  the 'l1interface' property."""
         return self._l1interface
@@ -140,6 +149,16 @@ class Status:
     def l1interface(self, value):
         """Set the 'l1interface' property."""
         self._l1interface = value
+
+    @property
+    def mac(self):
+        """Provide the value of  the 'mac' property."""
+        return self._mac
+
+    @mac.setter
+    def mac(self, value):
+        """Set the 'mac' property."""
+        self._mac = value
 
     @property
     def macip(self):
@@ -152,16 +171,6 @@ class Status:
         self._macip = value
 
     @property
-    def ip(self):
-        """Provide the value of  the 'ip' property."""
-        return self._ip
-
-    @ip.setter
-    def ip(self, value):
-        """Set the 'ip' property."""
-        self._ip = value
-
-    @property
     def macport(self):
         """Provide the value of  the 'macport' property."""
         return self._macport
@@ -170,16 +179,6 @@ class Status:
     def macport(self, value):
         """Set the 'macport' property."""
         self._macport = value
-
-    @property
-    def mac(self):
-        """Provide the value of  the 'mac' property."""
-        return self._mac
-
-    @mac.setter
-    def mac(self, value):
-        """Set the 'mac' property."""
-        self._mac = value
 
     @property
     def vlanport(self):
@@ -243,6 +242,7 @@ class Topology:
         self.vlanport()
         self.mac()
         self.macport()
+        self.ip()
         self.macip()
 
     def l1interface(self):
@@ -682,27 +682,16 @@ class Topology:
             ipv4 = layer3.get("ipNetToMediaTable")
             ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
 
-            # Process IPv4 data
-            if bool(ipv4) is True:
-                result = _process_ip(
-                    self._device.idx_zone,
-                    ipv4,
-                    dns=dns,
-                )
-                adds.extend(result.adds)
-                updates.extend(result.updates)
-
-            # Process IPv6 data
-            if bool(ipv6) is True:
-                result = _process_ip(
-                    _process_ip(
+            # Process arp table data
+            for table in [ipv4, ipv6]:
+                if bool(table) is True:
+                    result = _process_ip(
                         self._device.idx_zone,
-                        ipv6,
+                        table,
                         dns=dns,
                     )
-                )
-                adds.extend(result.adds)
-                updates.extend(result.updates)
+                    adds.extend(result.adds)
+                    updates.extend(result.updates)
 
         # Do the Updates
         for item in sorted(updates):
@@ -729,11 +718,10 @@ class Topology:
         """
         # Test prerequisite
         if bool(self._status.macport) is False:
-            self.log_invalid("Ip")
+            self.log_invalid("MacIp")
             return
 
         # Initialize key variables
-        dns = self._dns
         ipv6 = None
         ipv4 = None
         adds = []
@@ -748,33 +736,11 @@ class Topology:
             ipv4 = layer3.get("ipNetToMediaTable")
             ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
 
-            # Process IPv4 data
-            if bool(ipv4) is True:
-                result = _process_macip(
-                    ProcessMacIP(
-                        table=ipv4,
-                        idx_zone=self._device.idx_zone,
-                        idx_device=self._device.idx_device,
-                        version=4,
-                    ),
-                    dns=dns,
-                )
-                adds.extend(result.adds)
-                updates.extend(result.updates)
-
-            # Process IPv6 data
-            if bool(ipv6) is True:
-                result = _process_macip(
-                    ProcessMacIP(
-                        table=ipv6,
-                        idx_zone=self._device.idx_zone,
-                        idx_device=self._device.idx_device,
-                        version=6,
-                    ),
-                    dns=dns,
-                )
-                adds.extend(result.adds)
-                updates.extend(result.updates)
+            for table in [ipv4, ipv6]:
+                if bool(table):
+                    result = _process_macip(self._device.idx_zone, table)
+                    adds.extend(result.adds)
+                    updates.extend(result.updates)
 
         # Do the Updates
         for item in sorted(updates):
@@ -928,6 +894,7 @@ def _process_macip(idx_zone, table):
                     IMacIp(
                         idx_ip=ip_exists.idx_ip,
                         idx_mac=mac_exists.idx_mac,
+                        enabled=1,
                     )
                 )
 
