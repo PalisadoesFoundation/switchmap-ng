@@ -32,7 +32,7 @@ from switchmap import AGENT_INGESTER
 from switchmap.core.agent import Agent, AgentCLI
 from switchmap.core import general
 from switchmap.server.configuration import ConfigServer
-from switchmap.server.ingest import ingest
+from switchmap.server.db.ingest import ingest
 from switchmap.core import log
 
 # We have to create this named tuple outside the multiprocessing Pool

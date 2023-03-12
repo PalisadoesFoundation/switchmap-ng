@@ -130,7 +130,7 @@ def insert_row(rows):
                 hostname=(
                     null()
                     if bool(row.hostname) is False
-                    else row.hostname.lower().encode()
+                    else row.hostname.encode()
                 ),
                 version=row.version,
                 address=(null() if bool(ip) is False else ip.address.encode()),

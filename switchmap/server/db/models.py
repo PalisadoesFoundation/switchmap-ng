@@ -509,7 +509,7 @@ class Ip(BASE):
     zone = relationship(
         "Zone",
         backref=backref(
-            "macips",
+            "ips",
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),

@@ -2,9 +2,7 @@
 
 from __future__ import print_function
 import random
-import socket
-import struct
-import ipaddress
+from collections import namedtuple
 
 # PIP3 imports
 from sqlalchemy.orm import Session
@@ -22,8 +20,8 @@ from switchmap.server.db.table import mac
 from switchmap.server.db.table import ip
 from switchmap.server.db.table import macip
 from switchmap.server.db.table import event
-from switchmap.server.db.table import device
 from switchmap.server.db.table import ipport
+from switchmap.server.db.table import device
 from switchmap.server.db.table import root
 from switchmap.server.db.table import l1interface
 from switchmap.server.db.table import IMacPort
@@ -38,6 +36,7 @@ from switchmap.server.db.table import IMacIp
 from switchmap.server.db.table import IRoot
 from switchmap.server.db.table import IIp
 from switchmap.server.db.table import IIpPort
+from switchmap import MacDetail
 
 from switchmap.server.configuration import ConfigServer
 from switchmap.core import log
@@ -110,18 +109,35 @@ def populate():
 
     """
     # Initialize key variables
+    macresult = {}
+    vlanresult = {}
+    Result = namedtuple("Result", "idx_mac idx_l1interface")
+
     macips_ = []
-    ips = []
+    ips_ = []
     ip_versions = [4, 6]
     maximum = TEST_MAXIMUM
-    _ouis = list(set([data.mac()[:6] for _ in range(maximum * 10)]))[:maximum]
+
+    # Generate OUIs
+    ouis_ = list(set([data.mac()[:6] for _ in range(maximum * 10)]))[:maximum]
+
+    # Organizations that match the OUIs
+    orgs_ = ["ORG_{0}".format(data.random_string()) for _ in ouis_]
 
     # MACs that match the inserted OUIs
-    _macs = ["{0}{1}".format(_, data.mac()[:6]) for _ in _ouis]
+    macs_ = ["{0}{1}".format(_, data.mac()[:6]) for _ in ouis_]
 
     # Insert the necessary rows
     zone_name = data.random_string()
     device_name = data.random_string()
+
+    #########################################################################
+    #########################################################################
+    #
+    # Insert data into the database
+    #
+    #########################################################################
+    #########################################################################
 
     for _ in list(range(2)):
         # Create Event records
@@ -178,11 +194,11 @@ def populate():
     oui.insert_row(
         [
             IOui(
-                oui=_,
-                organization="ORG_{0}".format(data.random_string()),
+                oui=value,
+                organization=orgs_[key],
                 enabled=1,
             )
-            for _ in _ouis
+            for key, value in enumerate(ouis_)
         ]
     )
 
@@ -192,48 +208,21 @@ def populate():
             IMac(
                 idx_oui=key + 1,
                 idx_zone=zone_row.idx_zone,
-                mac=data.mac(),
+                mac=value,
                 enabled=1,
             )
-            for key, value in enumerate(_macs)
+            for key, value in enumerate(macs_)
         ]
     )
 
-    # # Insert MacIp entries
-    # for key, _ in enumerate(_macs):
-    #     ip_version = ip_versions[random.randint(0, 1)]
-    #     if ip_version == 4:
-    #         ip_ = socket.inet_ntoa(
-    #             struct.pack(">I", random.randint(1, 0xFFFFFFFE))
-    #         )
-    #     else:
-    #         ip_ = ipaddress.ip_address(
-    #             ":".join(("%x" % random.randint(0, 16**4) for i in range(8)))
-    #         ).exploded
-    #     macips_.append(
-    #         IMacIp(
-    #             idx_device=device_row.idx_device,
-    #             idx_mac=key + 1,
-    #             ip_=ip_,
-    #             version=ip_version,
-    #             hostname="hostname_{}".format(data.random_string()),
-    #             enabled=1,
-    #         )
-    #     )
-    # macip.insert_row(macips_)
-
     # Insert Ip entries
-    for key, _ in enumerate(_macs):
+    for _ in macs_:
         ip_version = ip_versions[random.randint(0, 1)]
         if ip_version == 4:
-            ip_address = socket.inet_ntoa(
-                struct.pack(">I", random.randint(1, 0xFFFFFFFE))
-            )
+            ip_address = data.ipv4()
         else:
-            ip_address = ipaddress.ip_address(
-                ":".join(("%x" % random.randint(0, 16**4) for i in range(8)))
-            ).exploded
-        ips.append(
+            ip_address = data.ipv6()
+        ips_.append(
             IIp(
                 idx_zone=zone_row.idx_zone,
                 address=ip_address,
@@ -242,10 +231,10 @@ def populate():
                 enabled=1,
             )
         )
-    ip.insert_row(ips)
+    ip.insert_row(ips_)
 
     # Insert MacIp entries
-    for key, _ in enumerate(_macs):
+    for key, _ in enumerate(macs_):
         macips_.append(
             IMacIp(
                 idx_ip=key + 1,
@@ -332,3 +321,47 @@ def populate():
         for key in range(maximum)
     ]
     ipport.insert_row(ipports_)
+
+    #########################################################################
+    #########################################################################
+    #
+    # Prepare data to retun
+    #
+    #########################################################################
+    #########################################################################
+
+    # Track Vlan assignments
+    for _, value in enumerate(vlanports):
+        idx_l1interface = value.idx_l1interface
+        idx_vlan = value.idx_vlan
+        found = vlanresult.get(idx_l1interface)
+        if bool(found) is True:
+            vlanresult[idx_l1interface].append(idx_vlan)
+        else:
+            vlanresult[idx_l1interface] = [idx_vlan]
+
+    # Iterate through the mac ports
+    for macport_ in macports_:
+        # Iterate through the MAC / IP relationships
+        for key, item in enumerate(macips_):
+            # Find a MAC with an assigned IP
+            if item.idx_mac == macport_.idx_mac:
+                detail = MacDetail(
+                    hostname=ips_[item.idx_ip - 1].hostname,
+                    ip_=ips_[item.idx_ip - 1].address,
+                    idx_mac=item.idx_mac,
+                    organization=orgs_[item.idx_ip - 1],
+                    idx_l1interface=macport_.idx_l1interface,
+                    mac=macs_[item.idx_mac - 1],
+                )
+
+                # Update the list of idx_mac entries
+                found = macresult.get(detail.idx_mac)
+                if bool(found) is True:
+                    macresult[detail.idx_mac].append(detail)
+                else:
+                    macresult[detail.idx_mac] = [detail]
+
+    # Return
+    result = Result(idx_mac=macresult, idx_l1interface=vlanresult)
+    return result

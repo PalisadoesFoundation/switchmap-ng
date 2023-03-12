@@ -33,12 +33,12 @@ def idx_exists(idx):
     return result
 
 
-def exists(idx_ip, idx_mac):
+def exists(idx_mac, idx_ip):
     """Determine whether mac exists in the MacIp table.
 
     Args:
-        idx_ip: Ip.idx_ip
         idx_mac: Mac.idx_mac
+        idx_ip: Ip.idx_ip
 
     Returns:
         result: RMacIp tuple

@@ -74,7 +74,7 @@ class TestDbTableMacIp(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    loops = 20
+    loops = db.TEST_MAXIMUM
 
     @classmethod
     def setUpClass(cls):
