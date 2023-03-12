@@ -54,9 +54,9 @@ def resolve_ifdescr(obj, _):
     return obj.ifdescr.decode() if bool(obj.ifdescr) else ""
 
 
-def resolve_ip_(obj, _):
-    """Convert 'ip_' from bytes to string."""
-    return obj.ip_.decode() if bool(obj.ip_) else ""
+def resolve_address(obj, _):
+    """Convert 'address' from bytes to string."""
+    return obj.address.decode() if bool(obj.address) else ""
 
 
 def resolve_lldpremportdesc(obj, _):
@@ -346,14 +346,8 @@ class MacIpAttribute:
     """
 
     idx_macip = graphene.Int(description="Primary key index")
-    idx_device = graphene.Int(description="Device index foreign key")
+    idx_ip = graphene.Int(description="IP index foreign key")
     idx_mac = graphene.Int(description="MAC address index foreign key")
-    ip_ = graphene.String(resolver=resolve_ip_, description="IP address")
-    mac = graphene.String(resolver=resolve_mac, description="MAC address")
-    version = graphene.Int(description="IPv4 or IPv6")
-    hostname = graphene.String(
-        resolver=resolve_hostname, description="Hostname"
-    )
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
@@ -373,3 +367,22 @@ class MacPortAttribute:
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
+
+
+class IpAttribute:
+    """Descriptive attributes of the MacPort table.
+
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+
+    """
+
+    idx_ip = graphene.Int(description="IP index foreign key")
+    idx_zone = graphene.Int(description="Zone index foreign key")
+    address = graphene.String(
+        resolver=resolve_address, description="IP address"
+    )
+    version = graphene.Int(description="IPv4 or IPv6")
+    hostname = graphene.String(
+        resolver=resolve_hostname, description="Hostname"
+    )
