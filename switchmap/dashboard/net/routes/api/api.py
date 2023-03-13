@@ -124,7 +124,6 @@ def devices(idx_device):
                   node {
                     macs {
                       mac
-                      idxOui
                       oui{
                         manufacturer
                       }

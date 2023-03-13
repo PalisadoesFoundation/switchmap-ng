@@ -9,7 +9,7 @@ import os
 import binascii
 import socket
 import struct
-
+import json
 import yaml
 
 # Import app library
@@ -155,6 +155,28 @@ def config():
     return _dict(_CONFIG_YAML)
 
 
+def dashboard_data():
+    """Read the test data file into a dict.
+
+    The JSON file was created from a live GraphQL query using the
+    dashboard api string.
+
+    Args:
+        None
+
+    Returns:
+        result
+
+    """
+    # Read test data file
+    filepath = "{0}{1}testdata_{1}device-01.json".format(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))), os.sep
+    )
+    with open(filepath, "r") as stream:
+        result = json.load(stream)
+    return result
+
+
 def polled_data(strip=True):
     """Read the test data file into a dict.
 
@@ -271,7 +293,7 @@ def ipv6():
 
     """
     # Return
-    bits = 16 ** 4
+    bits = 16**4
     result = ":".join(
         ("{:02x}".format(random.randint(0, bits)).zfill(4) for i in range(8))
     )

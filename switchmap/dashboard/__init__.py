@@ -14,9 +14,9 @@ DeviceMeta = namedtuple("DeviceMeta", "hostname idx_device")
 
 # Used in reporting interface state
 InterfaceState = namedtuple("InterfaceState", "up string")
-
-# Used in reporting interface state
 VlanState = namedtuple("VlanState", "group string count")
+MacState = namedtuple("MacState", "mac manufacturer")
+IpState = namedtuple("IpState", "hostname address")
 
 
 InterfaceDataRow = namedtuple(

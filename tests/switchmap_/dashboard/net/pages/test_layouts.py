@@ -13,7 +13,14 @@ ROOT_DIR = os.path.abspath(
             os.path.join(
                 os.path.abspath(
                     os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.path.abspath(
+                            os.path.join(
+                                os.path.abspath(
+                                    os.path.join(EXEC_DIR, os.pardir)
+                                ),
+                                os.pardir,
+                            )
+                        ),
                         os.pardir,
                     )
                 ),
@@ -23,8 +30,10 @@ ROOT_DIR = os.path.abspath(
         os.pardir,
     )
 )
-_EXPECTED = "{0}switchmap-ng{0}tests{0}switchmap_{0}dashboard{0}pages".format(
-    os.sep
+_EXPECTED = (
+    "{0}switchmap-ng{0}tests{0}switchmap_{0}dashboard{0}net{0}pages".format(
+        os.sep
+    )
 )
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
@@ -46,7 +55,7 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.dashboard.pages import layouts as testimport
+from switchmap.dashboard.net.pages import layouts as testimport
 
 
 class TestFunctions(unittest.TestCase):
