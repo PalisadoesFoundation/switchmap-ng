@@ -21,8 +21,8 @@ API_POLLER_POST_URI = "/post/poller"
 
 # DASHBOARD related
 DASHBOARD_PREFIX = "{}/dashboard".format(SITE_PREFIX)
-DASHBOARD_STATIC_FOLDER = "static/default"
-DASHBOARD_TEMPLATE_FOLDER = "templates/default"
+DASHBOARD_STATIC_FOLDER = "net/static/default"
+DASHBOARD_TEMPLATE_FOLDER = "net/templates/default"
 
 # Agent related
 AGENT_POLLER = "Poller"

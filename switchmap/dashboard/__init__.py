@@ -19,12 +19,19 @@ InterfaceState = namedtuple("InterfaceState", "up string")
 VlanState = namedtuple("VlanState", "group string count")
 
 
-# Do remaining switchmap-ng importations
-from switchmap.dashboard.routes.api.api import API
-from switchmap.dashboard.routes.pages.index import INDEX
-from switchmap.dashboard.routes.pages.devices import DEVICES
+InterfaceDataRow = namedtuple(
+    "InterfaceDataRow",
+    "port vlan state days_inactive speed duplex label "
+    "trunk cdp lldp mac_address manufacturer ip_address hostname",
+)
+SystemDataRow = namedtuple("SystemDataRow", "parameter value")
 
-# from switchmap.dashboard.routes.pages.search import SEARCH
+# Do remaining switchmap-ng importations
+from switchmap.dashboard.net.routes.api.api import API
+from switchmap.dashboard.net.routes.pages.index import INDEX
+from switchmap.dashboard.net.routes.pages.devices import DEVICES
+
+# from switchmap.dashboard.net.routes.pages.search import SEARCH
 from switchmap import (
     SITE_PREFIX,
     API_PREFIX,
