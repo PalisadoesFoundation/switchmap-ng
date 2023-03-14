@@ -5,6 +5,7 @@ from switchmap.core import general
 from switchmap.dashboard import InterfaceState
 from switchmap.dashboard import VlanState
 from switchmap.dashboard import InterfaceDataRow
+from switchmap.dashboard.data import mac
 
 
 class Interface:
@@ -44,6 +45,14 @@ class Interface:
             # Define other prerequisites
             trunk = bool(vlan.count > 1)
 
+            # Get the mac to IP address mapping
+            if bool(trunk):
+                macips = None
+
+            else:
+                tester = mac.macips(self._interface)
+                macips = tester[0] if bool(tester) else None
+
             result = InterfaceDataRow(
                 port=self._interface.get("ifname", "N/A"),
                 vlan=vlan.string,
@@ -55,10 +64,14 @@ class Interface:
                 trunk=trunk,
                 cdp=self.cdp(),
                 lldp=self.lldp(),
-                mac_address="None",
-                manufacturer="None",
-                ip_address="None",
-                hostname="None",
+                mac_address=macips.mac if bool(macips) else "",
+                manufacturer=macips.manufacturer if bool(macips) else "",
+                ip_address="<p>{}</p>".format("</p><p>".join(macips.addresses))
+                if bool(macips)
+                else "",
+                hostname="<p>{}</p>".format("</p><p>".join(macips.hostnames))
+                if bool(macips)
+                else "",
             )
 
         else:
