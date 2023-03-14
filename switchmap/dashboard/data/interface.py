@@ -93,11 +93,22 @@ class Interface:
 
         # Determine whether CDP is enabled and update string
         if bool(found) is True:
-            value = "{}<br>{}<br>{}".format(
-                self._interface.get("cdpcachedeviceid", ""),
-                self._interface.get("cdpcacheplatform", ""),
-                self._interface.get("cdpcachedeviceport", ""),
+            value = (
+                (
+                    "<p>{}</p>".format(
+                        "</p><p>".join(
+                            [
+                                self._interface.get("cdpcachedeviceid", ""),
+                                self._interface.get("cdpcacheplatform", ""),
+                                self._interface.get("cdpcachedeviceport", ""),
+                            ]
+                        )
+                    )
+                )
+                .strip()
+                .replace("  ", " ")
             )
+
         else:
             value = ""
 
@@ -148,10 +159,18 @@ class Interface:
 
         # Determine whether CDP is enabled and update string
         if bool(found) is True:
-            value = "{}<br>{}<br>{}".format(
-                self._interface.get("lldpremsysname", ""),
-                self._interface.get("lldpremportdesc", ""),
-                self._interface.get("lldpremsysdesc", ""),
+            value = (
+                "<p>{}</p>".format(
+                    "</p><p>".join(
+                        [
+                            self._interface.get("lldpremsysname", ""),
+                            self._interface.get("lldpremportdesc", ""),
+                            self._interface.get("lldpremsysdesc", ""),
+                        ]
+                    )
+                )
+                .strip()
+                .replace("  ", " ")
             )
         else:
             value = ""
@@ -218,8 +237,9 @@ class Interface:
         """
         # Assign key variables
         vlans = []
-        group = []
+        groups = []
         stringy = ""
+        maximum = 10
 
         # Get VLANs
         vlan_ports = self._interface.get("vlanports", 0)
@@ -238,16 +258,20 @@ class Interface:
             vlans.append(nativevlan)
 
         # Group VLANs
-        group = general.group_consecutive(vlans)
+        all_groups = general.group_consecutive(vlans)
+        groups = all_groups[:maximum]
+
         stringy = ", ".join(
             [
                 str(_) if isinstance(_, int) else "{}-{}".format(_[0], _[1])
-                for _ in group[:10]
+                for _ in groups
             ]
         )
-        if len(group) > 10:
-            stringy = "{} plus more".format(stringy)
+
+        if len(all_groups) > maximum:
+            stringy = "{} and more.".format(stringy)
+        stringy = "{} Total {}.".format(stringy, len(vlans))
 
         # Return
-        result = VlanState(group=group, string=stringy, count=len(vlans))
+        result = VlanState(group=groups, string=stringy, count=len(vlans))
         return result
