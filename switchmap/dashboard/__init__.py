@@ -17,6 +17,7 @@ InterfaceState = namedtuple("InterfaceState", "up string")
 VlanState = namedtuple("VlanState", "group string count")
 MacState = namedtuple("MacState", "mac manufacturer")
 IpState = namedtuple("IpState", "hostname address")
+MacIpState = namedtuple("MacIpState", "mac manufacturer hostnames addresses")
 
 
 InterfaceDataRow = namedtuple(

@@ -2,6 +2,7 @@
 
 from switchmap.dashboard import MacState
 from switchmap.dashboard import IpState
+from switchmap.dashboard import MacIpState
 
 
 class Mac:
@@ -25,13 +26,13 @@ class Mac:
         ]
 
     def macs(self):
-        """Return port macs.
+        """Get the MacState of the interface.
 
         Args:
             None
 
         Returns:
-            result: List of macs
+            result: List of MacState objects
 
         """
         # Initialize key variables
@@ -40,25 +41,21 @@ class Mac:
         # Process
         if bool(self._valid) is True:
             for _macport in self._macports:
-                for _, value in sorted(_macport.items()):
-                    mac = value.get("mac")
-                    manufacturer = None
-                    if bool(mac) is True:
-                        oui = value.get("oui")
-                        if bool(oui) is True:
-                            manufacturer = oui.get("manufacturer")
-                    result.append(MacState(mac=mac, manufacturer=manufacturer))
+                for _, data in sorted(_macport.items()):
+                    macstate = _mac_state(data)
+                    if bool(macstate) is True:
+                        result.append(macstate)
         # Return
         return result
 
     def ips(self):
-        """Return port ips.
+        """Get the IpState of the interface.
 
         Args:
             None
 
         Returns:
-            result: List of ips
+            result: List of IpState objects
 
         """
         # Initialize key variables
@@ -67,49 +64,121 @@ class Mac:
         # Process
         if bool(self._valid) is True:
             for _macport in self._macports:
-                for _, value in sorted(_macport.items()):
-                    macips = value.get("macips")
-                    if bool(macips) is True:
-                        for item in macips:
-                            ips = item.get("ips")
-                            if bool(ips) is True:
-                                result.append(
-                                    IpState(
-                                        address=ips.get("address"),
-                                        hostname=ips.get("hostname"),
-                                    )
-                                )
+                for _, data in sorted(_macport.items()):
+                    ipstate = _ip_state(data)
+                    if bool(ipstate) is True:
+                        result.extend(ipstate)
         # Return
         return result
 
-    def manufacturers(self):
-        """Return port manufacturers.
+    def macips(self):
+        """Get the MacIpState of the interface.
 
         Args:
             None
 
         Returns:
-            result: List of manufacturers
+
+            result: List of MacIpState objects
 
         """
         # Initialize key variables
         result = []
 
         # Process
-        # for item in self.macs
-        # if bool(self._valid) is True:
-        #     for _macport in self._macports:
-        #         for _, value in sorted(_macport.items()):
-        #             macips = value.get("macips")
-        #             if bool(macips) is True:
-        #                 for item in macips:
-        #                     ips = item.get("ips")
-        #                     if bool(ips) is True:
-        #                         result.append(
-        #                             IpState(
-        #                                 address=ips.get("address"),
-        #                                 hostname=ips.get("hostname"),
-        #                             )
-        #                         )
+        if bool(self._valid) is True:
+            for _macport in self._macports:
+                for _, data in sorted(_macport.items()):
+                    # Initialize loop variables
+                    hostnames = []
+                    addresses = []
+
+                    # Get the interface state
+                    macstate = _mac_state(data)
+                    ipstate = _ip_state(data)
+
+                    # Process
+                    for item in ipstate:
+                        hostnames.append(item.hostname)
+                        addresses.append(item.address)
+
+                    result.append(
+                        MacIpState(
+                            mac=macstate.mac,
+                            manufacturer=macstate.manufacturer,
+                            hostnames=hostnames,
+                            addresses=addresses,
+                        )
+                    )
         # Return
         return result
+
+
+def _mac_state(data):
+    """Return MacState.
+
+    Args:
+        None
+
+    Returns:
+        result: MacState object
+
+    """
+    # Initialize key variables
+    result = None
+
+    mac = data.get("mac")
+    manufacturer = None
+    if bool(mac) is True:
+        oui = data.get("oui")
+        if bool(oui) is True:
+            manufacturer = oui.get("manufacturer")
+            result = MacState(mac=mac, manufacturer=manufacturer)
+
+    return result
+
+
+def _ip_state(data):
+    """Return port ips.
+
+    Args:
+        None
+
+    Returns:
+        result: List of IpState objects
+
+    """
+    # Initialize key variables
+    result = []
+
+    # Process
+    macips = data.get("macips")
+    if bool(macips) is True:
+        for item in macips:
+            ips = item.get("ips")
+            if bool(ips) is True:
+                result.append(
+                    IpState(
+                        address=ips.get("address"),
+                        hostname=ips.get("hostname"),
+                    )
+                )
+    # Return
+    return result
+
+
+def macips(interface):
+    """Get the MacIpState of the interface.
+
+    Args:
+        None
+
+    Returns:
+
+        result: List of MacIpState objects
+
+    """
+    # Initialize key variables
+    interface_ = Mac(interface)
+    result = interface_.macips()
+    return result
