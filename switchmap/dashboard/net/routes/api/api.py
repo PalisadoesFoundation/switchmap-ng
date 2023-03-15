@@ -25,6 +25,38 @@ def dashboard():
         None
 
     Returns:
+        Webpage HTML
+
+    """
+    # Return content
+    html = _dashboard()
+    return html
+
+
+@API.route("/dashboard/<int:idx_root>", methods=["GET"])
+def historical_dashboard(idx_root):
+    """Get dashboard data.
+
+    Args:
+        None
+
+    Returns:
+        Webpage HTML
+
+    """
+    # Return content
+    html = _dashboard(idx_root)
+    return html
+
+
+@API.route("/events", methods=["GET"])
+def roots():
+    """Get event data.
+
+    Args:
+        None
+
+    Returns:
         JSON of zone data
 
     """
@@ -32,49 +64,28 @@ def dashboard():
     config = ConfigDashboard()
     query = """
 {
-  roots(filter: {idxRoot: {eq: 1}}) {
+  roots {
     edges {
       node {
+        idxRoot
         event {
-          zones {
-            edges {
-              node {
-                name
-                devices {
-                  edges {
-                    node {
-                      hostname
-                      idxDevice
-                    }
-                  }
-                }
-              }
-            }
-          }
+          tsCreated
         }
       }
     }
   }
 }
-
 """
-
     # Get the data
     result = rest.get_graphql(query, config)
     normalized = graphene.normalize(result)
 
     # Get the zone data list
     data = normalized.get("data")
-    if bool(data) is True:
-        roots = data.get("roots")
-        event = roots[0].get("event")
-        zones = event.get("zones")
+    roots = data.get("roots", {})
 
-        # Return
-        return jsonify(zones)
-    else:
-        # Return
-        return jsonify({})
+    # Return
+    return jsonify(roots)
 
 
 @API.route("/devices/<int:idx_device>", methods=["GET"])
@@ -174,3 +185,64 @@ def devices(idx_device):
 
     # Return
     return jsonify(device)
+
+
+def _dashboard(idx_root=1):
+    """Get dashboard data.
+
+    Args:
+        idx_root: Database Root table index
+
+    Returns:
+        JSON of event data
+
+    """
+    # Initialize key variables
+    config = ConfigDashboard()
+    query = """
+{
+  roots(filter: {idxRoot: {eq: ROOT}}) {
+    edges {
+      node {
+        event {
+          tsCreated
+          zones {
+            edges {
+              node {
+                name
+                devices {
+                  edges {
+                    node {
+                      hostname
+                      idxDevice
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+""".replace(
+        "ROOT", str(idx_root)
+    )
+
+    # Get the data
+    result = rest.get_graphql(query, config)
+    normalized = graphene.normalize(result)
+
+    # Get the zone data list
+    data = normalized.get("data")
+    if bool(data) is True:
+        roots = data.get("roots")
+        event = roots[0].get("event")
+
+        # Return
+        return jsonify(event)
+    else:
+        # Return
+        return jsonify({})
