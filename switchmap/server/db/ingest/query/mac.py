@@ -71,8 +71,8 @@ def by_idx_mac(idx_mac):
             )
             ipdetails = db.db_select(1202, statement)
             for row in ipdetails:
-                hostname = row.hostname.decode()
-                ipaddress = row.address.decode()
+                hostname = row.hostname.decode() if row.hostname else ""
+                ipaddress = row.address.decode() if row.address else ""
                 break
 
             # Details found
