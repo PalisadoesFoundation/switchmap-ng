@@ -321,3 +321,25 @@ def human_readable(num, suffix="B", storage=False):
         num /= limit
     result = f"{num:.1f}Yi{suffix}"
     return result
+
+
+def padded_list_of_lists(data, width=4, pad=None):
+    """Create a padded list of list.
+
+    Args:
+        data: List to process
+        width: Width of the list of lists
+        pad: Value to pad the last row of the list of lists with
+
+    Returns:
+        result: list of lists
+
+    """
+    # Create a list of lists of width 'width'
+    result = [data[i : i + width] for i in range(0, len(data), width)]
+
+    # Make sure each row is at lease max_colums wide. Pad with "" values if not
+    for key, value in enumerate(result):
+        result[key] = value + [pad] * (width - len(value))
+
+    return result

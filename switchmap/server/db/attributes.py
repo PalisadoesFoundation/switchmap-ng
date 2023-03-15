@@ -138,9 +138,7 @@ class EventAttribute:
 
     idx_event = graphene.Int(description="Primary key index")
     name = graphene.String(resolver=resolve_name, description="Event name")
-    epoch_utc = graphene.Int(
-        resolver=resolve_name, description="Epoch UTC timestamp"
-    )
+    epoch_utc = graphene.Int(description="Epoch UTC timestamp")
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.String(description="Row Modification Timestamp")
     ts_created = graphene.String(description="Row Creation Timestamp")

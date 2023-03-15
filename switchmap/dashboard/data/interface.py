@@ -268,9 +268,9 @@ class Interface:
             ]
         )
 
+        # Give more information
         if len(all_groups) > maximum:
-            stringy = "{} and more.".format(stringy)
-        stringy = "{} Total {}.".format(stringy, len(vlans))
+            stringy = "{} and more. Total {}.".format(stringy, len(vlans))
 
         # Return
         result = VlanState(group=groups, string=stringy, count=len(vlans))

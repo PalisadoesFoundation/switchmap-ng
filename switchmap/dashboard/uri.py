@@ -5,7 +5,7 @@ from switchmap import API_PREFIX
 
 
 def dashboard():
-    """Create the dashboare  page URI.
+    """Create the dashboard  page URI.
 
     Args:
         None
@@ -16,6 +16,21 @@ def dashboard():
     """
     # Get result
     result = "{}/dashboard".format(API_PREFIX)
+    return result
+
+
+def historical_dashboard(idx_root=1):
+    """Create the dashboard  page URI.
+
+    Args:
+        idx_root: Root index
+
+    Returns:
+        result: result
+
+    """
+    # Get result
+    result = "{}/dashboard/{}".format(API_PREFIX, idx_root)
     return result
 
 

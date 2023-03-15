@@ -17,7 +17,7 @@ INDEX = Blueprint("INDEX", __name__)
 
 
 @INDEX.route("/")
-def index():
+def dashboard():
     """Create the dashboard home page.
 
     Args:
@@ -29,9 +29,41 @@ def index():
     """
     # Get data to display
     config = ConfigDashboard()
-    data = rest.get(uri.dashboard(), config, server=False)
+    event = rest.get(uri.dashboard(), config, server=False)
+    return _dashboard(event)
 
+
+@INDEX.route("/<int:idx_root>")
+def historical_dashboard(idx_root):
+    """Create the dashboard home page for a specific event index.
+
+    Args:
+        idx_root: Event index
+
+    Returns:
+        HTML
+
+    """
+    # Get data to display
+    config = ConfigDashboard()
+    event = rest.get(uri.historical_dashboard(idx_root), config, server=False)
+    return _dashboard(event)
+
+
+def _dashboard(event):
+    """Create the dashboard home page for a specific event index.
+
+    Args:
+        event: Event dict
+
+    Returns:
+        HTML
+
+    """
     # Convert data to HTML and return it to the browser
-    homepage = HomePage(data)
+    zones = event.get("zones")
+    date = event.get("tsCreated", "")
+
+    homepage = HomePage(zones)
     tables = homepage.html()
-    return render_template("index.html", device_table=tables)
+    return render_template("index.html", device_table=tables, date=date)

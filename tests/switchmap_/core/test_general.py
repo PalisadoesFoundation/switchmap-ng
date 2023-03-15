@@ -353,6 +353,57 @@ class TestFunctions(unittest.TestCase):
         for key, expected in enumerate(expecteds):
             self.assertEqual(results[key], expected)
 
+    def test_padded_list_of_lists(self):
+        """Testing function padded_list_of_lists."""
+        # Initializing key variables
+        expecteds = [
+            [
+                [0, 1, 2],
+                [3, 4, 5],
+                [6, 7, 8],
+                [9, 10, 11],
+                [12, 13, 14],
+                [15, 16, 17],
+                [18, 19, None],
+            ],
+            [
+                [0, 1, 2, 3],
+                [4, 5, 6, 7],
+                [8, 9, 10, 11],
+                [12, 13, 14, 15],
+                [16, 17, 18, 19],
+                [20, "", "", ""],
+            ],
+            [
+                [0, 1, 2, 3, 4],
+                [5, 6, 7, 8, 9],
+                [10, 11, 12, 13, 14],
+                [15, 16, 17, 18, 19],
+                [20, 21, 0, 0, 0],
+            ],
+            [
+                [0, 1, 2, 3, 4, 5],
+                [6, 7, 8, 9, 10, 11],
+                [12, 13, 14, 15, 16, 17],
+                [18, 19, 20, 21, 22, [0]],
+            ],
+        ]
+        data = [
+            list(range(20)),
+            list(range(21)),
+            list(range(22)),
+            list(range(23)),
+        ]
+        pads = [None, "", 0, [0]]
+        widths = list(range(3, 7))
+
+        # Test
+        for key, value in enumerate(data):
+            result = general.padded_list_of_lists(
+                data[key], width=widths[key], pad=pads[key]
+            )
+            self.assertEqual(result, expecteds[key])
+
 
 if __name__ == "__main__":
     # Do the unit test

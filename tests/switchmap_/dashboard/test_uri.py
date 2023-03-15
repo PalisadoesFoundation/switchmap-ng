@@ -51,6 +51,16 @@ class TestFunctions(unittest.TestCase):
         # Test
         self.assertEqual(result, expected)
 
+    def test_historical_dashboard(self):
+        """Testing function historical_dashboard."""
+        # Initialize key variables
+        root = 25
+        expected = "/switchmap/api/dashboard/{}".format(root)
+        result = test_module.historical_dashboard(root)
+
+        # Test
+        self.assertEqual(result, expected)
+
     def test_devices(self):
         """Testing function devices."""
         # Initialize key variables
