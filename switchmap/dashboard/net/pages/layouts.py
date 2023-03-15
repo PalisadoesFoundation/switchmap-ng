@@ -34,8 +34,31 @@ def table_wrapper(title, table):
     </div>
 """.format(
         title, table
-    )
-    result = result.replace(
-        "<thead><tr><th></th><th></th><th></th><th></th></tr></thead>", ""
     ).strip()
+    result = remove_thead(result)
+    return result
+
+
+def remove_thead(data):
+    """Remove line in HTML code containing the 'thead'.
+
+    Args:
+        data: HTML code
+
+    Returns:
+        result: HTML
+
+    """
+    # Initialize key variables
+    fixed = []
+
+    # Process
+    lines = data.split("\n")
+    for line in lines:
+        if "thead" in line.lower():
+            continue
+        fixed.append(line)
+
+    # Return
+    result = "\n".join(fixed)
     return result

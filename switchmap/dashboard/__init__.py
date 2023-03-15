@@ -11,6 +11,7 @@ from flask import Flask, url_for
 
 # Used in building HTML tables
 DeviceMeta = namedtuple("DeviceMeta", "hostname idx_device")
+EventMeta = namedtuple("EventMeta", "date idx_root")
 
 # Used in reporting interface state
 InterfaceState = namedtuple("InterfaceState", "up string")
@@ -18,7 +19,6 @@ VlanState = namedtuple("VlanState", "group string count")
 MacState = namedtuple("MacState", "mac manufacturer")
 IpState = namedtuple("IpState", "hostname address")
 MacIpState = namedtuple("MacIpState", "mac manufacturer hostnames addresses")
-
 
 InterfaceDataRow = namedtuple(
     "InterfaceDataRow",
@@ -30,12 +30,13 @@ SystemDataRow = namedtuple("SystemDataRow", "parameter value")
 # Do remaining switchmap-ng importations
 from switchmap.dashboard.net.routes.api.api import API
 from switchmap.dashboard.net.routes.pages.index import INDEX
+from switchmap.dashboard.net.routes.pages.event import EVENT
+from switchmap.dashboard.net.routes.pages.devices import DEVICES
 
 # from switchmap.dashboard.net.routes.pages.search import SEARCH
 from switchmap import (
     SITE_PREFIX,
     API_PREFIX,
-    # DASHBOARD_PREFIX,
     DASHBOARD_STATIC_FOLDER,
     DASHBOARD_TEMPLATE_FOLDER,
 )
@@ -52,7 +53,8 @@ DASHBOARD = Flask(
 # Register Blueprints
 DASHBOARD.register_blueprint(API, url_prefix=API_PREFIX)
 DASHBOARD.register_blueprint(INDEX, url_prefix=SITE_PREFIX)
-# DASHBOARD.register_blueprint(SEARCH, url_prefix=SITE_PREFIX)
+DASHBOARD.register_blueprint(EVENT, url_prefix=SITE_PREFIX)
+DASHBOARD.register_blueprint(DEVICES, url_prefix=SITE_PREFIX)
 
 # Function to easily find your assests
 DASHBOARD.jinja_env.globals["static"] = lambda filename: url_for(

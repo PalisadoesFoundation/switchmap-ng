@@ -77,25 +77,6 @@ class HomePage:
         return html
 
 
-class ZoneRow:
-    """Declaration of the rows in the Zone table."""
-
-    def __init__(self, zone, device_rows):
-        """Initialize the class.
-
-        Args:
-            zone: Name of zone
-            device_rows: List of DeviceRows objects
-
-        Returns:
-            None
-
-        """
-        # Initialize key variables
-        self.zone = zone
-        self.device_rows = device_rows
-
-
 class DeviceTable(Table):
     """Declaration of the columns in the Devices table."""
 
@@ -104,6 +85,8 @@ class DeviceTable(Table):
     col1 = _RawCol("")
     col2 = _RawCol("")
     col3 = _RawCol("")
+    col4 = _RawCol("")
+    col5 = _RawCol("")
 
     # Define the CSS class to use for the header row
     classes = ["table"]
@@ -127,6 +110,8 @@ class DevicesRow:
         self.col1 = row_data[1]
         self.col2 = row_data[2]
         self.col3 = row_data[3]
+        self.col4 = row_data[4]
+        self.col5 = row_data[5]
 
 
 def rows(devices):

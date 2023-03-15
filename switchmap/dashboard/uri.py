@@ -47,3 +47,18 @@ def devices(idx_device):
     # Get result
     result = "{}/devices/{}".format(API_PREFIX, idx_device)
     return result
+
+
+def events():
+    """Create the device page URI.
+
+    Args:
+        None
+
+    Returns:
+        result: result
+
+    """
+    # Get result
+    result = "{}/events".format(API_PREFIX)
+    return result

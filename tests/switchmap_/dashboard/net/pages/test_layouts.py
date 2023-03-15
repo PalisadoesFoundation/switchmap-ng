@@ -85,17 +85,19 @@ class TestFunctions(unittest.TestCase):
     def test_table_wrapper(self):
         """Testing function table_wrapper."""
         # Initialize key variables
+        title = "akjdfsheww"
+        table_html = "ewda233e5"
         expected = """\
     <div class="row">
       <div class="col-lg-12">
           <div class="panel panel-default">
               <div class="panel-heading">
-                  akjdfsheww
+                  {0}
               </div>
               <!-- /.panel-heading -->
               <div class="panel-body">
                   <div class="table-responsive table-bordered">
-                      ewda233e5
+                      {1}
                   </div>
                   <!-- /.table-responsive -->
               </div>
@@ -103,12 +105,28 @@ class TestFunctions(unittest.TestCase):
           </div>
           <!-- /.panel -->
       </div>
-    </div>""".strip()
-        title = "akjdfsheww"
-        table_html = "ewda233e5"
+    </div>""".format(
+            title, table_html
+        ).strip()
 
         # Test
         result = testimport.table_wrapper(title, table_html)
+        self.assertEqual(result, expected)
+
+    def test_remove_thead(self):
+        """Testing function remove_thead."""
+        # Initialize key variables
+        data = """\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+Curabitur thead in porta lorem. Vivamus tortor ligula, consectetur
+dignissim a, malesuada non nisi. Sed vulputate gravida efficitur.\
+"""
+        expected = """\
+Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+dignissim a, malesuada non nisi. Sed vulputate gravida efficitur.\
+"""
+        # Test
+        result = testimport.remove_thead(data)
         self.assertEqual(result, expected)
 
 

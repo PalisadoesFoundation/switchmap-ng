@@ -70,6 +70,15 @@ class TestFunctions(unittest.TestCase):
         # Test
         self.assertEqual(result, expected)
 
+    def test_events(self):
+        """Testing function event."""
+        # Initialize key variables
+        expected = "/switchmap/api/events"
+        result = test_module.events()
+
+        # Test
+        self.assertEqual(result, expected)
+
 
 if __name__ == "__main__":
     # Do the unit test

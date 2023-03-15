@@ -263,25 +263,3 @@ def interfaces(_interfaces):
                 )
             )
     return rows
-
-
-def systems(system):
-    """Get System data from the device
-
-    Args:
-        system: System dict
-
-    Returns:
-        rows: list of SystemRow objects
-
-    """
-    # Initialize key variables
-    rows = []
-
-    # Process each system
-    obj = System(system)
-    systemrows = obj.rows()
-    if bool(systemrows) is True:
-        for row in rows:
-            rows.append(SystemRow([row.parameter, row.value]))
-    return rows
