@@ -111,10 +111,12 @@ def populate():
     # Initialize key variables
     macresult = {}
     vlanresult = {}
-    Result = namedtuple("Result", "idx_mac idx_l1interface")
+    Result = namedtuple(
+        "Result", "idx_mac idx_l1interface interfaces devices macs ips"
+    )
 
     macips_ = []
-    ips_ = []
+    r_ips = []
     ip_versions = [4, 6]
     maximum = TEST_MAXIMUM
 
@@ -162,7 +164,7 @@ def populate():
     zone_row = zone.exists(row.idx_event, zone_name)
 
     # Create Device record
-    device.insert_row(
+    r_devices = [
         IDevice(
             idx_zone=zone_row.idx_zone,
             sys_name=data.random_string(),
@@ -174,7 +176,8 @@ def populate():
             last_polled=random.randint(0, 1000000),
             enabled=1,
         )
-    )
+    ]
+    device.insert_row(r_devices)
     device_row = device.exists(zone_row.idx_zone, device_name)
 
     # Create VLAN records
@@ -203,17 +206,16 @@ def populate():
     )
 
     # Insert MACs
-    mac.insert_row(
-        [
-            IMac(
-                idx_oui=key + 1,
-                idx_zone=zone_row.idx_zone,
-                mac=value,
-                enabled=1,
-            )
-            for key, value in enumerate(macs_)
-        ]
-    )
+    r_macs = [
+        IMac(
+            idx_oui=key + 1,
+            idx_zone=zone_row.idx_zone,
+            mac=value,
+            enabled=1,
+        )
+        for key, value in enumerate(macs_)
+    ]
+    mac.insert_row(r_macs)
 
     # Insert Ip entries
     for _ in macs_:
@@ -222,7 +224,7 @@ def populate():
             ip_address = data.ipv4()
         else:
             ip_address = data.ipv6()
-        ips_.append(
+        r_ips.append(
             IIp(
                 idx_zone=zone_row.idx_zone,
                 address=ip_address,
@@ -231,7 +233,7 @@ def populate():
                 enabled=1,
             )
         )
-    ip.insert_row(ips_)
+    ip.insert_row(r_ips)
 
     # Insert MacIp entries
     for key, _ in enumerate(macs_):
@@ -245,49 +247,42 @@ def populate():
     macip.insert_row(macips_)
 
     # Insert interfaces
-    l1interface.insert_row(
-        [
-            IL1Interface(
-                idx_device=device_row.idx_device,
-                ifindex=random.randint(0, 1000000),
-                duplex=random.randint(0, 1000000),
-                ethernet=1,
-                nativevlan=random.randint(0, 1000000),
-                trunk=0,
-                iftype=random.randint(0, 1000000),
-                ifspeed=random.randint(0, 1000000),
-                ifalias="IfAlias_{}".format(data.random_string()),
-                ifname="IfName_{}".format(data.random_string()),
-                ifdescr="IfDescr_{}".format(data.random_string()),
-                ifadminstatus=random.randint(0, 1000000),
-                ifoperstatus=random.randint(0, 1000000),
-                ts_idle=random.randint(0, 1000000),
-                cdpcachedeviceid="cdpcachedeviceid_{}".format(
-                    data.random_string()
-                ),
-                cdpcachedeviceport="cdpcachedeviceport_{}".format(
-                    data.random_string()
-                ),
-                cdpcacheplatform="cdpcacheplatform_{}".format(
-                    data.random_string()
-                ),
-                lldpremportdesc="lldpremportdesc_{}".format(
-                    data.random_string()
-                ),
-                lldpremsyscapenabled="lldpremsyscapenabled_{}".format(
-                    data.random_string()
-                ),
-                lldpremsysdesc="lldpremsysdesc_{}".format(
-                    data.random_string()
-                ),
-                lldpremsysname="lldpremsysname_{}".format(
-                    data.random_string()
-                ),
-                enabled=1,
-            )
-            for _ in range(maximum)
-        ]
-    )
+    r_interfaces = [
+        IL1Interface(
+            idx_device=device_row.idx_device,
+            ifindex=random.randint(0, 1000000),
+            duplex=random.randint(0, 1000000),
+            ethernet=1,
+            nativevlan=random.randint(0, 1000000),
+            trunk=0,
+            iftype=random.randint(0, 1000000),
+            ifspeed=random.randint(0, 1000000),
+            ifalias="IfAlias_{}".format(data.random_string()),
+            ifname="IfName_{}".format(data.random_string()),
+            ifdescr="IfDescr_{}".format(data.random_string()),
+            ifadminstatus=random.randint(0, 1000000),
+            ifoperstatus=random.randint(0, 1000000),
+            ts_idle=random.randint(0, 1000000),
+            cdpcachedeviceid="cdpcachedeviceid_{}".format(
+                data.random_string()
+            ),
+            cdpcachedeviceport="cdpcachedeviceport_{}".format(
+                data.random_string()
+            ),
+            cdpcacheplatform="cdpcacheplatform_{}".format(
+                data.random_string()
+            ),
+            lldpremportdesc="lldpremportdesc_{}".format(data.random_string()),
+            lldpremsyscapenabled="lldpremsyscapenabled_{}".format(
+                data.random_string()
+            ),
+            lldpremsysdesc="lldpremsysdesc_{}".format(data.random_string()),
+            lldpremsysname="lldpremsysname_{}".format(data.random_string()),
+            enabled=1,
+        )
+        for _ in range(maximum)
+    ]
+    l1interface.insert_row(r_interfaces)
 
     # Insert VlanPort entries. Assign a random VLAN to each interface
     vlanports = [
@@ -347,8 +342,8 @@ def populate():
             # Find a MAC with an assigned IP
             if item.idx_mac == macport_.idx_mac:
                 detail = MacDetail(
-                    hostname=ips_[item.idx_ip - 1].hostname,
-                    ip_=ips_[item.idx_ip - 1].address,
+                    hostname=r_ips[item.idx_ip - 1].hostname,
+                    ip_=r_ips[item.idx_ip - 1].address,
                     idx_mac=item.idx_mac,
                     organization=orgs_[item.idx_ip - 1],
                     idx_l1interface=macport_.idx_l1interface,
@@ -363,5 +358,12 @@ def populate():
                     macresult[detail.idx_mac] = [detail]
 
     # Return
-    result = Result(idx_mac=macresult, idx_l1interface=vlanresult)
+    result = Result(
+        idx_mac=macresult,
+        idx_l1interface=vlanresult,
+        interfaces=r_interfaces,
+        devices=r_devices,
+        macs=r_macs,
+        ips=r_ips,
+    )
     return result

@@ -108,10 +108,7 @@ class TestSearch(unittest.TestCase):
         models.create_all_tables()
 
         # Pollinate db with prerequisites
-        db.populate()
-
-        # Search specific pollination
-        cls.search = search_populate()
+        cls.search_terms = db.populate()
 
     @classmethod
     def tearDownClass(cls):
@@ -123,9 +120,10 @@ class TestSearch(unittest.TestCase):
         # Cleanup the
         CONFIG.cleanup()
 
-    # def test___init__(self):
-    #     """Testing function __init__."""
-    #     pass
+    def test___init__(self):
+        """Testing function __init__."""
+        print(self.search_terms)
+        pass
 
     # def test_find(self):
     #     """Testing function find."""
@@ -233,128 +231,6 @@ class TestSearch(unittest.TestCase):
     #         self.assertTrue(
     #             result[0].idx_l1interface, expected[0].idx_l1interface
     #         )
-
-
-def search_populate():
-    """Create prerequisite rows.
-
-    Args:
-        None
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    idx_zone = 1
-    idx_device = 1
-    maximum = 100
-
-    # Search parameters
-    ouis = list(set([data.mac()[:6] for _ in range(maximum * 10)]))[:maximum]
-    macs = ["{0}{1}".format(_, data.mac()[:6]) for _ in ouis]
-    ifaliases = [
-        "ALIAS_{0}_{1}".format(int(time.time()), data.random_string())
-        for _ in range(maximum)
-    ]
-    ips = list(set([data.ip_() for _ in range(maximum * 10)]))[:maximum]
-    hostnames = list(
-        set(
-            [
-                "HOST_{0}_{1}".format(int(time.time()), data.random_string())
-                for _ in range(maximum * 10)
-            ]
-        )
-    )[:maximum]
-    random_ifindexes = [random.randint(1, maximum) for _ in range(maximum)]
-
-    # Initialize key variables
-    search = SearchTerms(
-        ouis=ouis, macs=macs, ifaliases=ifaliases, ips=ips, hostnames=hostnames
-    )
-
-    # Insert OUIs
-    oui.insert_row(
-        [
-            IOui(
-                oui=_oui,
-                organization=data.random_string(),
-                enabled=1,
-            )
-            for _oui in search.ouis
-        ]
-    )
-
-    # Insert MACs
-    for _mac in search.macs:
-        _oui = _mac[:6]
-        exists = oui.exists(_oui)
-        if bool(exists):
-            mac.insert_row(
-                IMac(
-                    idx_oui=exists.idx_oui,
-                    idx_zone=idx_zone,
-                    mac=_mac,
-                    enabled=1,
-                )
-            )
-
-    # Insert interfaces
-    max_ifindex = max([_.ifindex for _ in l1interface.ifindexes(idx_device)])
-    l1interface.insert_row(
-        [
-            IL1Interface(
-                idx_device=idx_device,
-                ifindex=ifindex + max_ifindex + 1,
-                duplex=random.randint(0, 1000000),
-                ethernet=1,
-                nativevlan=random.randint(0, 1000000),
-                trunk=1,
-                ifspeed=random.randint(0, 1000000),
-                iftype=random.randint(0, 1000000),
-                ifalias=ifalias,
-                ifdescr=data.random_string(),
-                ifname=data.random_string(),
-                ifadminstatus=random.randint(0, 1000000),
-                ifoperstatus=random.randint(0, 1000000),
-                ts_idle=random.randint(0, 1000000),
-                cdpcachedeviceid=data.random_string(),
-                cdpcachedeviceport=data.random_string(),
-                cdpcacheplatform=data.random_string(),
-                lldpremportdesc=data.random_string(),
-                lldpremsyscapenabled=data.random_string(),
-                lldpremsysdesc=data.random_string(),
-                lldpremsysname=data.random_string(),
-                enabled=1,
-            )
-            for ifindex, ifalias in enumerate(search.ifaliases)
-        ]
-    )
-
-    # Insert random MacPorts
-    rows = []
-    for key, ifindex in enumerate(random_ifindexes):
-        rows.append(
-            IMacPort(idx_l1interface=ifindex, idx_mac=key + 1, enabled=1)
-        )
-    macport.insert_row(rows)
-
-    # Insert random MacIPs
-    rows = []
-    for key, value in enumerate(search.ips):
-        rows.append(
-            IMacIp(
-                idx_device=1,
-                idx_mac=key + 1,
-                ip_=value.address,
-                version=value.version,
-                hostname=search.hostnames[key],
-                enabled=1,
-            )
-        )
-    macip.insert_row(rows)
-
-    return search
 
 
 if __name__ == "__main__":
