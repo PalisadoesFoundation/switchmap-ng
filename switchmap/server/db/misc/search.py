@@ -19,6 +19,7 @@ from switchmap.core import general as _general
 from switchmap.server.db.table import mac
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import device
+from switchmap.server.db.table import root
 from switchmap.server.db.table import macport
 from switchmap.server.db.table import ip
 from switchmap.server.db.table import l1interface
@@ -252,4 +253,28 @@ def find_ip_interface(idx_ip):
     # Return
     for row in rows:
         result.append(_rows.ipport(row))
+    return result
+
+
+def search(idx_root, searchstring):
+    """Search based on idx_root values.
+
+    Args:
+        idx_root: Root index
+        searchstring: search string to look for
+
+    Returns:
+        result
+
+    """
+    # Initialize key variables
+    result = []
+
+    # Search
+    found = root.idx_exists(idx_root)
+    if bool(found):
+        _search = Search(found.idx_event, searchstring)
+        result = _search.find()
+
+    # Return
     return result

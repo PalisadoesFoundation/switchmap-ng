@@ -59,21 +59,7 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-# from switchmap.server.db.table import macport
-# from switchmap.server.db.table import oui
-# from switchmap.server.db.table import mac
-# from switchmap.server.db.table import zone
-# from switchmap.server.db.table import event
-# from switchmap.server.db.table import macip
-# from switchmap.server.db.table import l1interface
-# from switchmap.server.db.table import IMacPort
-# from switchmap.server.db.table import IMac
-# from switchmap.server.db.table import IOui
-# from switchmap.server.db.table import IL1Interface
-# from switchmap.server.db.table import IMacIp
 from switchmap.server.db import models
-
-# from switchmap.core import general
 
 from tests.testlib_ import db
 from tests.testlib_ import data
