@@ -1,6 +1,6 @@
 """Module for querying the Ip table."""
 
-from sqlalchemy import select, update, null, and_
+from sqlalchemy import select, update, null, and_, func
 
 # Import project libraries
 from switchmap.server.db import db
@@ -65,6 +65,38 @@ def exists(idx_zone, _ip):
     return result
 
 
+def findhostname(idx_zone, hostname):
+    """Determine whether hostname exists in the Ip table.
+
+    Args:
+        idx_zone: Zone index
+        hostname: hostname
+
+    Returns:
+        results: RIp list
+
+    """
+    # Initialize key variables
+    results = []
+    rows = []
+
+    # Get row from dataase
+    statement = select(Ip).where(
+        and_(
+            Ip.hostname.like(
+                func.concat(func.concat("%", hostname.encode(), "%"))
+            ),
+            Ip.idx_zone == idx_zone,
+        )
+    )
+    rows = db.db_select_row(1066, statement)
+
+    # Return
+    for row in rows:
+        results.append(_rows.ip(row))
+    return results
+
+
 def findip(idx_zone, ips):
     """Determine whether MAC exists in the Ip table.
 
@@ -87,13 +119,16 @@ def findip(idx_zone, ips):
     if isinstance(ips, list):
         # Fix the MAC address
         for item in ips:
-            all_ips.append(general.ipaddress(item).address.encode())
+            ip_ = general.ipaddress(item)
+            if bool(ip_):
+                all_ips.append(general.ipaddress(item).address.encode())
 
         # Get row from dataase
-        statement = select(Ip).where(
-            and_(Ip.address.in_(all_ips), Ip.idx_zone == idx_zone)
-        )
-        rows = db.db_select_row(1068, statement)
+        if bool(all_ips):
+            statement = select(Ip).where(
+                and_(Ip.address.in_(all_ips), Ip.idx_zone == idx_zone)
+            )
+            rows = db.db_select_row(1068, statement)
 
     # Return
     for row in rows:

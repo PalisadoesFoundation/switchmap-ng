@@ -10,6 +10,9 @@ Description:
 """
 from collections import namedtuple
 
+# PIP imports
+from sqlalchemy import select, and_
+
 # Switchmap-NG imports
 from switchmap import Found
 from switchmap.core import general as _general
@@ -17,8 +20,15 @@ from switchmap.server.db.table import mac
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import device
 from switchmap.server.db.table import macport
-from switchmap.server.db.table import macip
+from switchmap.server.db.table import ip
 from switchmap.server.db.table import l1interface
+from switchmap.server.db.models import L1Interface
+from switchmap.server.db.models import Device
+from switchmap.server.db.models import Zone
+from switchmap.server.db.models import Ip
+from switchmap.server.db.models import IpPort
+from switchmap.server.db.misc import rows as _rows
+from switchmap.server.db import db
 
 
 # Define useful tuples for search
@@ -139,18 +149,16 @@ class Search:
         ip_ = _general.ipaddress(self._search.string)
 
         if bool(ip_) is True:
-            for idx_device in self._search.idx_devices:
-                exists = macip.findip(idx_device, ip_.address)
+            for idx_zone in self._search.idx_zones:
+                exists = ip.findip(idx_zone, ip_.address)
                 if bool(exists) is True:
                     founds.extend(exists)
 
-            # Search for MAC on interfaces
+            # Search for IP on interfaces
             for found in founds:
-                macports_ = macport.find_idx_mac(found.idx_mac)
-                for macport_ in macports_:
-                    result.append(
-                        Found(idx_l1interface=macport_.idx_l1interface)
-                    )
+                items = find_ip_interface(found.idx_ip)
+                for item in items:
+                    result.append(Found(idx_l1interface=item.idx_l1interface))
 
         # Return
         return result
@@ -198,17 +206,50 @@ class Search:
         result = []
         founds = []
 
-        # Find Hostname for IP address in ARP table
-        for idx_device in self._search.idx_devices:
-            found = macip.findhostname(idx_device, self._search.string)
-            if bool(found) is True:
-                founds.extend(found)
+        # Find search phrase
+        for idx_zone in self._search.idx_zones:
+            exists = ip.findhostname(idx_zone, self._search.string)
+            if bool(exists) is True:
+                founds.extend(exists)
 
-        # Search for Hostname on interfaces
+        # Search for IP on interfaces
         for found in founds:
-            macports_ = macport.find_idx_mac(found.idx_mac)
-            for macport_ in macports_:
-                result.append(Found(idx_l1interface=macport_.idx_l1interface))
+            items = find_ip_interface(found.idx_ip)
+            for item in items:
+                result.append(Found(idx_l1interface=item.idx_l1interface))
 
         # Return
         return result
+
+
+def find_ip_interface(idx_ip):
+    """Find all ports on which an specfic IP address has been found.
+
+    Args:
+        idx_ip: Ip.idx_ip
+
+    Returns:
+        result: RIpPort tuple
+
+    """
+    # Initialize key variables
+    result = []
+    rows = []
+
+    # Get row from dataase
+    statement = select(IpPort).where(
+        and_(
+            IpPort.idx_ip == idx_ip,
+            Ip.idx_ip == IpPort.idx_ip,
+            Ip.idx_zone == Zone.idx_zone,
+            Device.idx_zone == Zone.idx_zone,
+            Device.idx_device == L1Interface.idx_device,
+            L1Interface.idx_l1interface == IpPort.idx_l1interface,
+        )
+    )
+    rows = db.db_select_row(1062, statement)
+
+    # Return
+    for row in rows:
+        result.append(_rows.ipport(row))
+    return result

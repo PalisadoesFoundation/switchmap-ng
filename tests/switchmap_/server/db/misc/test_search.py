@@ -4,8 +4,10 @@
 import os
 import sys
 import unittest
-import random
-import time
+from operator import attrgetter
+
+# import random
+# import time
 from collections import namedtuple
 
 # Try to create a working PYTHONPATH
@@ -57,23 +59,26 @@ from tests.testlib_ import setup
 CONFIG = setup.config()
 CONFIG.save()
 
-from switchmap.server.db.table import macport
-from switchmap.server.db.table import oui
-from switchmap.server.db.table import mac
-from switchmap.server.db.table import zone
-from switchmap.server.db.table import event
-from switchmap.server.db.table import macip
-from switchmap.server.db.table import l1interface
-from switchmap.server.db.table import IMacPort
-from switchmap.server.db.table import IMac
-from switchmap.server.db.table import IOui
-from switchmap.server.db.table import IL1Interface
-from switchmap.server.db.table import IMacIp
+# from switchmap.server.db.table import macport
+# from switchmap.server.db.table import oui
+# from switchmap.server.db.table import mac
+# from switchmap.server.db.table import zone
+# from switchmap.server.db.table import event
+# from switchmap.server.db.table import macip
+# from switchmap.server.db.table import l1interface
+# from switchmap.server.db.table import IMacPort
+# from switchmap.server.db.table import IMac
+# from switchmap.server.db.table import IOui
+# from switchmap.server.db.table import IL1Interface
+# from switchmap.server.db.table import IMacIp
 from switchmap.server.db import models
-from switchmap.core import general
+
+# from switchmap.core import general
 
 from tests.testlib_ import db
 from tests.testlib_ import data
+
+# from tests.testlib_ import data
 
 from switchmap.server.db.misc import search as testimport
 
@@ -88,6 +93,8 @@ class TestSearch(unittest.TestCase):
     #########################################################################
     # General object setup
     #########################################################################
+
+    iterations = 20
 
     @classmethod
     def setUpClass(cls):
@@ -122,115 +129,206 @@ class TestSearch(unittest.TestCase):
 
     def test___init__(self):
         """Testing function __init__."""
-        print(self.search_terms)
         pass
 
-    # def test_find(self):
-    #     """Testing function find."""
-    #     pass
+    def test_find(self):
+        """Testing function find."""
+        # Initialize key variables
+        terms = self.search_terms
+        expecteds = [
+            sorted(terms.ipports, key=attrgetter("idx_l1interface")),
+            sorted(terms.ipports, key=attrgetter("idx_l1interface")),
+            sorted(terms.ipports, key=attrgetter("idx_l1interface")),
+            sorted(terms.ipports, key=attrgetter("idx_l1interface")),
+        ]
+        all_inputs = [
+            [_.mac for _ in terms.macs],
+            [_.address for _ in terms.ips],
+            [_.ifalias for _ in terms.interfaces],
+            [_.address for _ in terms.ips],
+        ]
 
-    # def test_macaddress(self):
-    #     """Testing function macaddress."""
-    #     # Initialize key variables
-    #     idx_event = max([_.idx_event for _ in event.events()])
-    #     idx_zone = max([_.idx_zone for _ in zone.zones(idx_event)])
+        for key_expected, inputs in enumerate(all_inputs):
+            # Initialize loop variables
+            results = []
+            controls = []
+            expected = expecteds[key_expected]
 
-    #     # Test
-    #     for _mac in self.search.macs[:LOOP_MAX]:
-    #         search_ = testimport.Search(idx_event, _mac)
-    #         result = search_.macaddress()
-    #         self.assertTrue(result)
-    #         self.assertEqual(len(result), 1)
+            # Get results
+            for value in inputs:
+                search_ = testimport.Search(terms.idx_event, value)
+                found = search_.find()
+                results.extend(found)
 
-    #         # Get the interface of the MAC
-    #         exists = mac.findmac(idx_zone, _mac)
-    #         self.assertTrue(exists)
-    #         self.assertTrue(isinstance(exists, list))
-    #         self.assertEqual(len(exists), 1)
+            # Test
+            for key, result in enumerate(
+                sorted(results, key=attrgetter("idx_l1interface"))
+            ):
+                self.assertEqual(
+                    result.idx_l1interface, expected[key].idx_l1interface
+                )
+            self.assertEqual(len(results), len(expected))
 
-    #         # Tie the MAC to a port
-    #         _macport = macport.find_idx_mac(exists[0].idx_mac)
-    #         self.assertTrue(_macport)
-    #         self.assertTrue(isinstance(_macport, list))
-    #         self.assertEqual(len(_macport), 1)
+            # Create control values
+            for value in range(self.iterations * 10):
+                new = "TEST_FIND_{}".format(data.random_string())
+                if new not in inputs:
+                    controls.append(new)
+                if len(controls) >= self.iterations:
+                    break
 
-    #         # Test
-    #         self.assertEqual(
-    #             result[0].idx_l1interface, _macport[0].idx_l1interface
-    #         )
+            # Test
+            for control in controls:
+                search_ = testimport.Search(terms.idx_event, control)
+                self.assertFalse(search_.find())
 
-    # def test_ipaddress(self):
-    #     """Testing function ipaddress."""
-    #     # Initialize key variables
-    #     idx_event = max([_.idx_event for _ in event.events()])
-    #     idx_zone = max([_.idx_zone for _ in zone.zones(idx_event)])
+    def test_macaddress(self):
+        """Testing function macaddress."""
+        # Initialize key variables
+        terms = self.search_terms
+        expected = sorted(terms.ipports, key=attrgetter("idx_l1interface"))
+        inputs = [_.mac for _ in terms.macs]
+        results = []
+        controls = []
 
-    #     # Test
-    #     # count = 0
-    #     for value in self.search.ips[:LOOP_MAX]:
-    #         # count += 1
-    #         ip_ = general.ipaddress(value.address)
-    #         search_ = testimport.Search(idx_event, ip_.address)
-    #         result = search_.ipaddress()
-    #         # print(result, count)
-    #         self.assertTrue(result)
-    #         self.assertEqual(len(result), 1)
+        # Get results
+        for value in inputs:
+            search_ = testimport.Search(terms.idx_event, value)
+            found = search_.macaddress()
+            results.extend(found)
 
-    #         # Get the interface of the ipaddress
-    #         found = macip.findip(idx_zone, value.address)
-    #         self.assertTrue(found)
-    #         self.assertEqual(len(found), 1)
+        # Test
+        for key, result in enumerate(
+            sorted(results, key=attrgetter("idx_l1interface"))
+        ):
+            self.assertEqual(
+                result.idx_l1interface, expected[key].idx_l1interface
+            )
+        self.assertEqual(len(results), len(expected))
 
-    #         expected = macport.find_idx_mac(found[0].idx_mac)
-    #         self.assertTrue(expected)
-    #         self.assertEqual(len(expected), 1)
-    #         self.assertTrue(
-    #             result[0].idx_l1interface, expected[0].idx_l1interface
-    #         )
+        # Create control values
+        for value in range(self.iterations * 10):
+            new = "TEST_MAC_{}".format(data.random_string())
+            if new not in inputs:
+                controls.append(new)
+            if len(controls) >= self.iterations:
+                break
 
-    # def test_ifalias(self):
-    #     """Testing function ifalias."""
-    #     # Initialize key variables
-    #     return
-    #     idx_event = max([_.idx_event for _ in event.events()])
+        # Test
+        for control in controls:
+            search_ = testimport.Search(terms.idx_event, control)
+            self.assertFalse(search_.macaddress())
 
-    #     # Test
-    #     for key, value in enumerate(self.search.ifaliases[:LOOP_MAX]):
-    #         search_ = testimport.Search(idx_event, value)
-    #         result = search_.ifalias()
-    #         self.assertTrue(result)
-    #         self.assertEqual(len(result), 1)
+    def test_ipaddress(self):
+        """Testing function ipaddress."""
+        # Initialize key variables
+        terms = self.search_terms
+        expected = sorted(terms.ipports, key=attrgetter("idx_l1interface"))
+        inputs = [_.address for _ in terms.ips]
+        results = []
+        controls = []
 
-    #         # Test
-    #         self.assertEqual(result[0].idx_l1interface, key + 1)
+        # Get results
+        for value in inputs:
+            search_ = testimport.Search(terms.idx_event, value)
+            found = search_.ipaddress()
+            results.extend(found)
 
-    # def test_hostname(self):
-    #     """Testing function hostname."""
-    #     # Initialize key variables
-    #     idx_event = max([_.idx_event for _ in event.events()])
-    #     idx_zone = max([_.idx_zone for _ in zone.zones(idx_event)])
+        # Test
+        for key, result in enumerate(
+            sorted(results, key=attrgetter("idx_l1interface"))
+        ):
+            self.assertEqual(
+                result.idx_l1interface, expected[key].idx_l1interface
+            )
+        self.assertEqual(len(results), len(expected))
 
-    #     # Test
-    #     count = 1
-    #     for value in self.search.hostnames[:LOOP_MAX]:
-    #         count += 1
-    #         search_ = testimport.Search(idx_event, value)
-    #         result = search_.hostname()
-    #         print("\n", result, count, value)
-    #         self.assertTrue(result)
-    #         self.assertEqual(len(result), 1)
+        # Create control values
+        for value in range(self.iterations * 10):
+            new = data.ip_().address
+            if new not in inputs:
+                controls.append(new)
+            if len(controls) >= self.iterations:
+                break
 
-    #         # Get the interface of the hostname
-    #         found = macip.findhostname(idx_zone, value)
-    #         self.assertTrue(found)
-    #         self.assertEqual(len(found), 1)
+        # Test
+        for control in controls:
+            search_ = testimport.Search(terms.idx_event, control)
+            self.assertFalse(search_.ipaddress())
 
-    #         expected = macport.find_idx_mac(found[0].idx_mac)
-    #         self.assertTrue(expected)
-    #         self.assertEqual(len(expected), 1)
-    #         self.assertTrue(
-    #             result[0].idx_l1interface, expected[0].idx_l1interface
-    #         )
+    def test_ifalias(self):
+        """Testing function ifalias."""
+        # Initialize key variables
+        terms = self.search_terms
+        expected = sorted(terms.ipports, key=attrgetter("idx_l1interface"))
+        inputs = [_.ifalias for _ in terms.interfaces]
+        results = []
+        controls = []
+
+        # Get results
+        for value in inputs:
+            search_ = testimport.Search(terms.idx_event, value)
+            found = search_.ifalias()
+            results.extend(found)
+
+        # Test
+        for key, result in enumerate(
+            sorted(results, key=attrgetter("idx_l1interface"))
+        ):
+            self.assertEqual(
+                result.idx_l1interface, expected[key].idx_l1interface
+            )
+        self.assertEqual(len(results), len(expected))
+
+        # Create control values
+        for value in range(self.iterations * 10):
+            new = data.random_string()
+            if new not in inputs:
+                controls.append(new)
+            if len(controls) >= self.iterations:
+                break
+
+        # Test
+        for control in controls:
+            search_ = testimport.Search(terms.idx_event, control)
+            self.assertFalse(search_.ifalias())
+
+    def test_hostname(self):
+        """Testing function hostname."""
+        # Initialize key variables
+        terms = self.search_terms
+        expected = sorted(terms.ipports, key=attrgetter("idx_l1interface"))
+        inputs = [_.hostname for _ in terms.ips]
+        results = []
+        controls = []
+
+        # Get results
+        for value in inputs:
+            search_ = testimport.Search(terms.idx_event, value)
+            found = search_.hostname()
+            results.extend(found)
+
+        # Test
+        for key, result in enumerate(
+            sorted(results, key=attrgetter("idx_l1interface"))
+        ):
+            self.assertEqual(
+                result.idx_l1interface, expected[key].idx_l1interface
+            )
+        self.assertEqual(len(results), len(expected))
+
+        # Create control values
+        for value in range(self.iterations * 10):
+            new = "TEST_HOST_{}".format(data.random_string())
+            if new not in inputs:
+                controls.append(new)
+            if len(controls) >= self.iterations:
+                break
+
+        # Test
+        for control in controls:
+            search_ = testimport.Search(terms.idx_event, control)
+            self.assertFalse(search_.hostname())
 
 
 if __name__ == "__main__":

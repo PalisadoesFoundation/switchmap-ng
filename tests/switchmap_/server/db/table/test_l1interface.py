@@ -201,6 +201,12 @@ class TestDbTableL1interface(unittest.TestCase):
         self.assertEqual(len(result), 1)
         self.assertEqual(_convert(result[0]), _convert(row))
 
+        # Test control
+        for _ in range(20):
+            item = "TEST_IFALIAS_{}".format(data.random_string())
+            result = testimport.findifalias(row.idx_device, item)
+            self.assertFalse(result)
+
     def test_insert_row(self):
         """Testing function insert_row."""
         # Create record

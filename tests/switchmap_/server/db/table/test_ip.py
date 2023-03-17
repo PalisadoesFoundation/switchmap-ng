@@ -159,6 +159,40 @@ class TestDbTableIp(unittest.TestCase):
             self.assertEqual(len(result), 1)
             self.assertEqual(_convert(result[0]), _convert(row))
 
+            # Test not found
+            control = "TEST_IP_{}".format(data.random_string())
+            result = testimport.findip(idx_zone, control)
+            self.assertFalse(bool(result))
+            self.assertTrue(isinstance(result, list))
+            self.assertEqual(len(result), 0)
+
+    def test_findhostname(self):
+        """Testing function findhostname."""
+        # Repeat test
+        for _ in range(self.loops):
+            # Create record
+            row = _row()
+
+            # Test before insertion of an initial row
+            idx_zone = row.idx_zone
+            result = testimport.findhostname(idx_zone, row.hostname)
+            self.assertFalse(bool(result))
+
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.findhostname(idx_zone, row.hostname)
+            self.assertTrue(bool(result))
+            self.assertTrue(isinstance(result, list))
+            self.assertEqual(len(result), 1)
+            self.assertEqual(_convert(result[0]), _convert(row))
+
+            # Test not found
+            control = "TEST_HOST_{}".format(data.random_string())
+            result = testimport.findhostname(idx_zone, control)
+            self.assertFalse(bool(result))
+            self.assertTrue(isinstance(result, list))
+            self.assertEqual(len(result), 0)
+
     def test_insert_row(self):
         """Testing function insert_row."""
         # Repeat test

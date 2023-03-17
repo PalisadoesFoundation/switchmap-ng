@@ -112,7 +112,8 @@ def populate():
     macresult = {}
     vlanresult = {}
     Result = namedtuple(
-        "Result", "idx_mac idx_l1interface interfaces devices macs ips"
+        "Result",
+        "idx_mac idx_l1interface interfaces devices macs ips idx_event ipports",
     )
 
     macips_ = []
@@ -153,14 +154,13 @@ def populate():
         )
 
     # Create Zone record
-    zone.insert_row(
-        IZone(
-            idx_event=row.idx_event,
-            name=zone_name,
-            notes=data.random_string(),
-            enabled=1,
-        )
+    r_zone = IZone(
+        idx_event=row.idx_event,
+        name=zone_name,
+        notes=data.random_string(),
+        enabled=1,
     )
+    zone.insert_row(r_zone)
     zone_row = zone.exists(row.idx_event, zone_name)
 
     # Create Device record
@@ -307,7 +307,7 @@ def populate():
     macport.insert_row(macports_)
 
     # Insert IpPort entries. Assign a random IP to each interface
-    ipports_ = [
+    r_ipports = [
         IIpPort(
             idx_l1interface=key + 1,
             idx_ip=random.randint(1, maximum),
@@ -315,7 +315,7 @@ def populate():
         )
         for key in range(maximum)
     ]
-    ipport.insert_row(ipports_)
+    ipport.insert_row(r_ipports)
 
     #########################################################################
     #########################################################################
@@ -365,5 +365,7 @@ def populate():
         devices=r_devices,
         macs=r_macs,
         ips=r_ips,
+        idx_event=r_zone.idx_event,
+        ipports=r_ipports,
     )
     return result
