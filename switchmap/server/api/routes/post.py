@@ -73,7 +73,7 @@ def post_device_data():
 
 
 @API_POST.route(API_POLLER_SEARCH_URI, methods=["POST"])
-def post_searchstring():
+def post_searchterm():
     """Accept posts searches.
 
     Args:
@@ -83,16 +83,21 @@ def post_searchstring():
         _response: OK message when successful
 
     """
+    # Initialize key variables
+    result = []
 
     # Get data
     data = request.json
     try:
-        searchstring = data.get("searchstring", "")
-        idx_root = data.get("idx_root", "")
+        searchterm = data.get("searchterm", "")
+        idx_root = data.get("idx_root", 1)
 
     except:
-        searchstring = ""
+        searchterm = ""
+        idx_root = 1
 
-    if bool(searchstring):
-        result = search.search(int(idx_root), searchstring)
+    if bool(searchterm):
+        result = search.search(int(idx_root), searchterm)
+        return jsonify(result)
+    else:
         return jsonify(result)

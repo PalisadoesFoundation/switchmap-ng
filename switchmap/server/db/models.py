@@ -198,6 +198,14 @@ class Device(BASE):
             passive_deletes=True,
         ),
     )
+    zone = relationship(
+        "Zone",
+        backref=backref(
+            "zone",
+            cascade="all, delete, delete-orphan",
+            passive_deletes=True,
+        ),
+    )
 
 
 class L1Interface(BASE):

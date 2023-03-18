@@ -39,7 +39,6 @@ def search():
     for key, value in items.items():
         # 'search_term' comes from the search form HTML
         if key == "search_term":
-
             # Post the data to the API server
             seach_dict = {"idx_root": 1, "searchterm": value.strip()}
             post_response = rest.post(uri.search_post(), seach_dict, config)
@@ -47,7 +46,7 @@ def search():
             # Process a successful response
             if bool(post_response.success) is True:
                 # Get data from the API server using GraphQL
-                idx_l1interfaces = post_response.json()
+                idx_l1interfaces = post_response.response.json()
 
                 # Process data if found
                 if bool(idx_l1interfaces) is True:

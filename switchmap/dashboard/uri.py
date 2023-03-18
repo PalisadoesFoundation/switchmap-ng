@@ -96,5 +96,5 @@ def search_post():
 
     """
     # Get result
-    result = "{}/search".format(API_PREFIX)
+    result = "/post/search"
     return result

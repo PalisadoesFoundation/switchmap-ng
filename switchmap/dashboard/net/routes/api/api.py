@@ -12,6 +12,7 @@ from flask import Blueprint, jsonify, request
 from switchmap.core import rest
 from switchmap.core import graphene
 from switchmap.dashboard.configuration import ConfigDashboard
+from switchmap.dashboard import graphql_filters
 
 # Define the API global variable
 API = Blueprint("API", __name__)
@@ -200,16 +201,12 @@ def search():
     """
     # Initialize key variables
     config = ConfigDashboard()
+    result = []
 
     # Create the filter string
     idx_l1interfaces = request.args.getlist("idx")
-    filter_string = "{{or: [{{or: {0}}}]}}".format(
-        ", ".join(
-            [
-                "{{idxL1interface: {{eq: {0}}}}}".format(_)
-                for _ in idx_l1interfaces
-            ]
-        )
+    filter_string = graphql_filters.or_operator(
+        "idxL1interface", idx_l1interfaces
     )
     query = """
 {
@@ -221,6 +218,9 @@ def search():
           sysName
           hostname
         }
+        zone{
+          name
+        }        
         ifname
         ifalias
         ifoperstatus
@@ -280,11 +280,13 @@ def search():
 
     # Get the data
     data = rest.get_graphql(query, config)
-    normalized = graphene.normalize(data)
 
-    # Get the zone data list
-    data = normalized.get("data")
-    result = data.get("l1interfaces")[0]
+    if bool(data) is True:
+        normalized = graphene.normalize(data)
+
+        # Get the zone data list
+        data = normalized.get("data")
+        result = data.get("l1interfaces")[0]
 
     # Return
     return jsonify(result)

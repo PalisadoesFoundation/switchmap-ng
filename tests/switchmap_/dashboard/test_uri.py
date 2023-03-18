@@ -82,7 +82,7 @@ class TestFunctions(unittest.TestCase):
     def test_search_post(self):
         """Testing function search_post."""
         # Initialize key variables
-        expected = "/switchmap/api/search"
+        expected = "/post/search"
         result = test_module.search_post()
 
         # Test
