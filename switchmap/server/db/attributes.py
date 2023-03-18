@@ -209,6 +209,7 @@ class DeviceAttribute:
     sys_name = graphene.String(
         resolver=resolve_sys_name, description="System name"
     )
+    name = graphene.String(resolver=resolve_name, description="System name")
     hostname = graphene.String(
         resolver=resolve_hostname, description="System hostname"
     )
