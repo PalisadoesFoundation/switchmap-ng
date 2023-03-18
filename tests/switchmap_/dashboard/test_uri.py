@@ -79,6 +79,29 @@ class TestFunctions(unittest.TestCase):
         # Test
         self.assertEqual(result, expected)
 
+    def test_search_post(self):
+        """Testing function search_post."""
+        # Initialize key variables
+        expected = "/switchmap/api/search"
+        result = test_module.search_post()
+
+        # Test
+        self.assertEqual(result, expected)
+
+    def test_search(self):
+        """Testing function search."""
+        # Initialize key variables
+        idx_l1interfaces = list(range(10))
+        expected = (
+            "/switchmap/api/search?"
+            "idx=0&idx=1&idx=2&idx=3&idx=4&idx=5&idx=6&idx=7&idx=8&idx=9"
+        )
+
+        # Test
+        result = test_module.search(idx_l1interfaces)
+        print(result)
+        self.assertEqual(result, expected)
+
 
 if __name__ == "__main__":
     # Do the unit test

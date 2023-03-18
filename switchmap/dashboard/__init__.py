@@ -30,8 +30,9 @@ SystemDataRow = namedtuple("SystemDataRow", "parameter value")
 # Do remaining switchmap-ng importations
 from switchmap.dashboard.net.routes.api.api import API
 from switchmap.dashboard.net.routes.pages.index import INDEX
-from switchmap.dashboard.net.routes.pages.event import EVENT
+from switchmap.dashboard.net.routes.pages.events import EVENT
 from switchmap.dashboard.net.routes.pages.devices import DEVICES
+from switchmap.dashboard.net.routes.pages.search import SEARCH
 
 # from switchmap.dashboard.net.routes.pages.search import SEARCH
 from switchmap import (
@@ -55,6 +56,7 @@ DASHBOARD.register_blueprint(API, url_prefix=API_PREFIX)
 DASHBOARD.register_blueprint(INDEX, url_prefix=SITE_PREFIX)
 DASHBOARD.register_blueprint(EVENT, url_prefix=SITE_PREFIX)
 DASHBOARD.register_blueprint(DEVICES, url_prefix=SITE_PREFIX)
+DASHBOARD.register_blueprint(SEARCH, url_prefix=SITE_PREFIX)
 
 # Function to easily find your assests
 DASHBOARD.jinja_env.globals["static"] = lambda filename: url_for(

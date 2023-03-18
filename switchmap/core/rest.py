@@ -21,12 +21,13 @@ def post(uri, data, config):
         config: ConfitAPIClient object
 
     Returns:
-        success: True if successful
+        data: Post named tuple
 
     """
     # Initialize key variables
     success = False
     response = False
+    Post = namedtuple("Post", "success response")
 
     # Create the URL for posting
     # config = ConfigAPIClient()
@@ -74,7 +75,8 @@ def post(uri, data, config):
             log.log2info(1039, log_message)
 
     # Return
-    return success
+    data = Post(success=success, response=result)
+    return data
 
 
 def get(uri, config, server=True, die=True):
@@ -83,7 +85,7 @@ def get(uri, config, server=True, die=True):
     Args:
         uri: URI for posting
         config: ConfigAPIClient object
-        server: True if getting data from a server
+        server: True if getting data from an database API server
         die: Die if the connection fails if True
 
     Returns:

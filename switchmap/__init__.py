@@ -18,6 +18,7 @@ SITE_PREFIX = "/switchmap"
 # API URIs
 API_PREFIX = "{}/api".format(SITE_PREFIX)
 API_POLLER_POST_URI = "/post/poller"
+API_POLLER_SEARCH_URI = "/post/search"
 
 # DASHBOARD related
 DASHBOARD_PREFIX = "{}/dashboard".format(SITE_PREFIX)

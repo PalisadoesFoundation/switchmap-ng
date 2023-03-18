@@ -30,6 +30,7 @@ from switchmap.server.db.models import (
     MacPort as MacPortModel,
     VlanPort as VlanPortModel,
     Ip as IpModel,
+    IpPort as IpPortModel,
 )
 
 # Import attributes
@@ -46,6 +47,7 @@ from switchmap.server.db.attributes import (
     VlanPortAttribute,
     ZoneAttribute,
     IpAttribute,
+    IpPortAttribute,
 )
 
 ###############################################################################
@@ -90,6 +92,16 @@ class Ip(SQLAlchemyObjectType, IpAttribute):
         """Define the metadata."""
 
         model = IpModel
+        interfaces = (graphene.relay.Node,)
+
+
+class IpPort(SQLAlchemyObjectType, IpPortAttribute):
+    """IpPort node."""
+
+    class Meta:
+        """Define the metadata."""
+
+        model = IpPortModel
         interfaces = (graphene.relay.Node,)
 
 
@@ -201,6 +213,10 @@ class Query(graphene.ObjectType):
     # Results as a single entry filtered by 'id' and as a list
     ip = graphene.relay.Node.Field(Ip)
     ips = SQLAlchemyConnectionField(Ip.connection, sort=None)
+
+    # Results as a single entry filtered by 'id' and as a list
+    ipport = graphene.relay.Node.Field(IpPort)
+    ipports = SQLAlchemyConnectionField(IpPort.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     mac = graphene.relay.Node.Field(Mac)

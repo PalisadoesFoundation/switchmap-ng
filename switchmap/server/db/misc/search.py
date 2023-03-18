@@ -274,7 +274,8 @@ def search(idx_root, searchstring):
     found = root.idx_exists(idx_root)
     if bool(found):
         _search = Search(found.idx_event, searchstring)
-        result = _search.find()
+        _result = _search.find()
+        result = sorted([_.idx_l1interface for _ in _result])
 
     # Return
     return result

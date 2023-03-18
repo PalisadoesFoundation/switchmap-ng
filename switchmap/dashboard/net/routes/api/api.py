@@ -5,7 +5,7 @@ Contains all routes that switchmap.s Flask webserver uses
 """
 
 # Flask imports
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 
 # Application imports
@@ -185,6 +185,109 @@ def devices(idx_device):
 
     # Return
     return jsonify(device)
+
+
+@API.route("/search", methods=["GET"])
+def search():
+    """Get device data.
+
+    Args:
+        None
+
+    Returns:
+        JSON of zone data
+
+    """
+    # Initialize key variables
+    config = ConfigDashboard()
+
+    # Create the filter string
+    idx_l1interfaces = request.args.getlist("idx")
+    filter_string = "{{or: [{{or: {0}}}]}}".format(
+        ", ".join(
+            [
+                "{{idxL1interface: {{eq: {0}}}}}".format(_)
+                for _ in idx_l1interfaces
+            ]
+        )
+    )
+    query = """
+{
+  l1interfaces(filter: FILTER) {
+    edges {
+      node {
+        device {
+          name
+          sysName
+          hostname
+        }
+        ifname
+        ifalias
+        ifoperstatus
+        ifadminstatus
+        ifspeed
+        iftype
+        duplex
+        trunk
+        cdpcachedeviceid
+        cdpcacheplatform
+        cdpcachedeviceport
+        lldpremsysname
+        lldpremportdesc
+        lldpremsysdesc
+        nativevlan
+        macports {
+          edges {
+            node {
+              macs {
+                mac
+                oui {
+                  manufacturer
+                }
+                macips {
+                  edges {
+                    node {
+                      ips {
+                        address
+                        version
+                        hostname
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        vlanports {
+          edges {
+            node {
+              vlans {
+                vlan
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+
+""".replace(
+        "FILTER", filter_string
+    )
+
+    # Get the data
+    data = rest.get_graphql(query, config)
+    normalized = graphene.normalize(data)
+
+    # Get the zone data list
+    data = normalized.get("data")
+    result = data.get("l1interfaces")[0]
+
+    # Return
+    return jsonify(result)
 
 
 def _dashboard(idx_root=1):

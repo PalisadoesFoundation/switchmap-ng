@@ -80,7 +80,7 @@ def find_idx_ip(idx_ip):
 
     # Get row from dataase
     statement = select(IpPort).where(IpPort.idx_ip == idx_ip)
-    rows = db.db_select_row(1062, statement)
+    rows = db.db_select_row(1072, statement)
 
     # Return
     for row in rows:
