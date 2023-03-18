@@ -60,7 +60,7 @@ DASHBOARD.register_blueprint(SEARCH, url_prefix=SITE_PREFIX)
 
 # Function to easily find your assests
 DASHBOARD.jinja_env.globals["static"] = lambda filename: url_for(
-    "static", filename=filename
+    "static", filename="html/{}".format(filename)
 )
 
 
@@ -75,12 +75,8 @@ def inject():
         HTML
 
     """
-    # Get a list of hostnames
-    # hosts = general.get_hosts()
-
     # Return
     return dict(
-        # hosts=hosts,
         url_home=SITE_PREFIX,
         url_static="{}/static".format(SITE_PREFIX),
     )

@@ -116,53 +116,7 @@ def devices(idx_device):
         l1interfaces {
           edges {
             node {
-              ifname
-              ifalias
-              ifoperstatus
-              ifadminstatus
-              ifspeed
-              iftype
-              duplex
-              trunk
-              cdpcachedeviceid
-              cdpcacheplatform
-              cdpcachedeviceport
-              lldpremsysname
-              lldpremportdesc
-              lldpremsysdesc
-              nativevlan
-              macports {
-                edges {
-                  node {
-                    macs {
-                      mac
-                      oui{
-                        manufacturer
-                      }
-                      macips {
-                        edges {
-                          node {
-                            ips {
-                              address
-                              version
-                              hostname
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-              vlanports {
-                edges {
-                  node {
-                    vlans {
-                      vlan
-                    }
-                  }
-                }
-              }
+              INTERFACE
             }
           }
         }
@@ -170,14 +124,15 @@ def devices(idx_device):
     }
   }
 }
-
-
 """.replace(
         "IDX_DEVICE", str(idx_device)
     )
 
+    # Insert the interface snippet
+    updated_query = _insert_interface_snippet(query)
+
     # Get the data
-    result = rest.get_graphql(query, config)
+    result = rest.get_graphql(updated_query, config)
     normalized = graphene.normalize(result)
 
     # Get the zone data list
@@ -217,69 +172,24 @@ def search():
           name
           sysName
           hostname
-        }
-        zone{
-          name
-        }        
-        ifname
-        ifalias
-        ifoperstatus
-        ifadminstatus
-        ifspeed
-        iftype
-        duplex
-        trunk
-        cdpcachedeviceid
-        cdpcacheplatform
-        cdpcachedeviceport
-        lldpremsysname
-        lldpremportdesc
-        lldpremsysdesc
-        nativevlan
-        macports {
-          edges {
-            node {
-              macs {
-                mac
-                oui {
-                  manufacturer
-                }
-                macips {
-                  edges {
-                    node {
-                      ips {
-                        address
-                        version
-                        hostname
-                      }
-                    }
-                  }
-                }
-              }
-            }
+          zone{
+            name
           }
         }
-        vlanports {
-          edges {
-            node {
-              vlans {
-                vlan
-              }
-            }
-          }
-        }
+        INTERFACE
       }
     }
   }
 }
-
-
 """.replace(
         "FILTER", filter_string
     )
 
+    # Insert the interface snippet
+    updated_query = _insert_interface_snippet(query)
+
     # Get the data
-    data = rest.get_graphql(query, config)
+    data = rest.get_graphql(updated_query, config)
 
     if bool(data) is True:
         normalized = graphene.normalize(data)
@@ -351,3 +261,68 @@ def _dashboard(idx_root=1):
     else:
         # Return
         return jsonify({})
+
+
+def _insert_interface_snippet(query):
+    """Insert the standard interface query string snippet.
+
+    Args:
+        query: original query with the INTERFACE keyword inserted
+
+    Returns:
+        result: data with the INTERFACE keyword replaced by the snippet
+
+    """
+    # Initialize key variables
+    snippet = """
+        ifname
+        ifalias
+        ifoperstatus
+        ifadminstatus
+        ifspeed
+        iftype
+        duplex
+        trunk
+        cdpcachedeviceid
+        cdpcacheplatform
+        cdpcachedeviceport
+        lldpremsysname
+        lldpremportdesc
+        lldpremsysdesc
+        nativevlan
+        macports {
+          edges {
+            node {
+              macs {
+                mac
+                oui {
+                  manufacturer
+                }
+                macips {
+                  edges {
+                    node {
+                      ips {
+                        address
+                        version
+                        hostname
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        vlanports {
+          edges {
+            node {
+              vlans {
+                vlan
+              }
+            }
+          }
+        }
+"""
+    # Return
+    result = query.replace("INTERFACE", snippet)
+    return result

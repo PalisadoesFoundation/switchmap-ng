@@ -7,7 +7,7 @@ Contains all routes that switchmap.s Flask webserver uses
 from flask import Blueprint, render_template
 
 # Application imports
-from switchmap.dashboard.net.pages.index import HomePage
+from switchmap.dashboard.net.html.pages.index import HomePage
 from switchmap.dashboard import uri
 from switchmap.core import rest
 from switchmap.dashboard.configuration import ConfigDashboard

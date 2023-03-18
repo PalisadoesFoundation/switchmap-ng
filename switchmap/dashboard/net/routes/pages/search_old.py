@@ -8,7 +8,7 @@ from flask import Blueprint, render_template, request
 
 # Switchmap-NG imports
 from switchmap.main.search import Search
-from switchmap.dashboard.net.pages.device import Device
+from switchmap.dashboard.net.html.pages.device import Device
 from switchmap.dashboard import CONFIG
 from switchmap.topology.ports import Lookup
 

@@ -7,6 +7,7 @@ Manages parameters required by all classes in the module.
 
 # Standard imports
 from collections import namedtuple
+import os
 
 # Do library imports
 from .core import log
@@ -22,8 +23,8 @@ API_POLLER_SEARCH_URI = "/post/search"
 
 # DASHBOARD related
 DASHBOARD_PREFIX = "{}/dashboard".format(SITE_PREFIX)
-DASHBOARD_STATIC_FOLDER = "net/static/default"
-DASHBOARD_TEMPLATE_FOLDER = "net/templates/default"
+DASHBOARD_STATIC_FOLDER = "net{0}html{0}static{0}default".format(os.sep)
+DASHBOARD_TEMPLATE_FOLDER = "net{0}html{0}templates{0}default".format(os.sep)
 
 # Agent related
 AGENT_POLLER = "Poller"
