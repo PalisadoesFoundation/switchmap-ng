@@ -209,7 +209,7 @@ class DeviceAttribute:
     sys_name = graphene.String(
         resolver=resolve_sys_name, description="System name"
     )
-    name = graphene.String(resolver=resolve_name, description="System name")
+    name = graphene.String(resolver=resolve_name, description="Device name")
     hostname = graphene.String(
         resolver=resolve_hostname, description="System hostname"
     )
@@ -385,3 +385,16 @@ class IpAttribute:
     hostname = graphene.String(
         resolver=resolve_hostname, description="Hostname"
     )
+
+
+class IpPortAttribute:
+    """Descriptive attributes of the MacPort table.
+
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+
+    """
+
+    idx_ipport = graphene.Int(description="IpPort index foreign key")
+    idx_ip = graphene.Int(description="Ip index foreign key")
+    idx_l1interface = graphene.Int(description="L1interface index foreign key")

@@ -3,23 +3,22 @@
 Contains all routes that switchmap.s Flask webserver uses
 
 """
+
 # Flask imports
-from flask import Blueprint, render_template, request
+from flask import Blueprint, request, jsonify
 
-# Switchmap-NG imports
-from switchmap.main.search import Search
-from switchmap.dashboard.net.pages.device import Device
-from switchmap.dashboard import CONFIG
-from switchmap.topology.ports import Lookup
-
+# Application imports
+from switchmap.dashboard import uri
+from switchmap.core import rest
+from switchmap.dashboard.configuration import ConfigDashboard
 
 # Define the SEARCH global variable
 SEARCH = Blueprint("SEARCH", __name__)
 
 
 @SEARCH.route("/search", methods=["POST"])
-def index():
-    """Function for creating search results.
+def search():
+    """Create the search page.
 
     Args:
         None
@@ -29,46 +28,35 @@ def index():
 
     """
     # Initialize key variables
-    devices_tables = {"Not Found": "<h3>&nbsp;Please try again ...</h3>"}
-    devices = {}
-    lookup = None
-    devices_tables = {}
+    result = []
+
+    # Get data to display
+    config = ConfigDashboard()
 
     # Get search form data
     items = request.form
 
     for key, value in items.items():
-        # (key, value) = item
+        # 'search_term' comes from the search form HTML
         if key == "search_term":
-            search_term = value.strip()
 
-            # Create the search list
-            search = Search(search_term)
-            result = search.find()
+            # Post the data to the API server
+            seach_dict = {"idx_root": 1, "searchterm": value.strip()}
+            post_response = rest.post(uri.search_post(), seach_dict, config)
 
-            # Create result dict
-            for item in result:
-                # Create a list of devices for port table generation
-                for hostname, ifindex in item.items():
-                    if hostname in devices:
-                        devices[hostname].append(ifindex)
-                    else:
-                        devices[hostname] = [ifindex]
+            # Process a successful response
+            if bool(post_response.success) is True:
+                # Get data from the API server using GraphQL
+                idx_l1interfaces = post_response.json()
 
-            if bool(devices) is True:
-                # Create a lookup object for creating HTML for port
-                # MAC, IP, hostname and MAC manufacturer information
-                lookup = Lookup(CONFIG)
-
-                for hostname, ifindexes in sorted(devices.items()):
-                    # Create data table dict
-                    device_object = Device(
-                        hostname, CONFIG, lookup, ifindexes=ifindexes
+                # Process data if found
+                if bool(idx_l1interfaces) is True:
+                    result = rest.get(
+                        uri.search(idx_l1interfaces), config, server=False
                     )
-                    port_table = device_object.ports()
-                    devices_tables[hostname] = port_table
-            else:
-                devices_tables[""] = "<h3>&nbsp;Not Found</h3>"
 
-    # Present results
-    return render_template("search.html", results_dict=devices_tables)
+    # Convert data to HTML and return it to the browser
+    # eventpage = EventPage(search_)
+    # tables = eventpage.html()
+    # return render_template("event.html", event_table=tables)
+    return jsonify(result)

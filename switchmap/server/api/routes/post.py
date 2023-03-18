@@ -4,13 +4,15 @@
 import os
 
 # PIP3 imports
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 import yaml
 
 # Repository imports
 from switchmap.core import log
 from switchmap import API_POLLER_POST_URI
+from switchmap import API_POLLER_SEARCH_URI
 from switchmap.server.configuration import ConfigServer
+from switchmap.server.db.misc import search
 
 
 # Define the API_POST global variable
@@ -68,3 +70,29 @@ def post_device_data():
 
     # Return
     return "OK"
+
+
+@API_POST.route(API_POLLER_SEARCH_URI, methods=["POST"])
+def post_searchstring():
+    """Accept posts searches.
+
+    Args:
+        None
+
+    Returns:
+        _response: OK message when successful
+
+    """
+
+    # Get data
+    data = request.json
+    try:
+        searchstring = data.get("searchstring", "")
+        idx_root = data.get("idx_root", "")
+
+    except:
+        searchstring = ""
+
+    if bool(searchstring):
+        result = search.search(int(idx_root), searchstring)
+        return jsonify(result)

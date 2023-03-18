@@ -20872,7 +20872,7 @@ layer1:
     ifInBroadcastPkts: 40
     ifInMulticastPkts: 24255829
     ifInOctets: 3158976465
-    ifIndex: 192.168
+    ifIndex: 10
     ifLastChange: 9776
     ifName: Gi1/0/32
     ifOperStatus: 1
@@ -29880,7 +29880,7 @@ layer1:
     ifAdminStatus: 1
     ifAlias: Link to device-04.example.org Gig 0/1
     ifDescr: GigabitEthernet1/1/2
-    ifInBroadcastPkts: 192.1682723
+    ifInBroadcastPkts: 101682723
     ifInMulticastPkts: 226811710
     ifInOctets: 3195135818
     ifIndex: 10302

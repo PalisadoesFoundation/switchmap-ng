@@ -70,6 +70,7 @@ from switchmap.server.db import models
 from switchmap.server.db.models import VlanPort
 from switchmap.server.db.models import MacPort
 from switchmap.server.db.models import Ip
+from switchmap.server.db.models import IpPort
 from switchmap.server.db.models import MacIp
 from switchmap.server.db.models import Mac
 from switchmap.server.db.models import Vlan
@@ -79,6 +80,7 @@ from switchmap.server.db.table import RMacPort
 from switchmap.server.db.table import RVlanPort
 from switchmap.server.db.table import RMacIp
 from switchmap.server.db.table import RIp
+from switchmap.server.db.table import RIpPort
 from switchmap.server.db.table import RMac
 from switchmap.server.db.table import RVlan
 from switchmap.server.db.table import RL1Interface
@@ -1477,6 +1479,247 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         result.sort(key=lambda x: (x.vlan, x.idx_vlan, x.idx_device))
         self.assertEqual(result[:25], expected)
 
+    def test_vlanport(self):
+        """Testing function vlanport."""
+        # Initialize key variables
+        result = []
+        expected = [
+            RVlanPort(
+                idx_vlanport=1,
+                idx_l1interface=21,
+                idx_vlan=5,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=2,
+                idx_l1interface=22,
+                idx_vlan=1,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=3,
+                idx_l1interface=22,
+                idx_vlan=2,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=4,
+                idx_l1interface=22,
+                idx_vlan=3,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=5,
+                idx_l1interface=22,
+                idx_vlan=4,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=6,
+                idx_l1interface=22,
+                idx_vlan=5,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=7,
+                idx_l1interface=22,
+                idx_vlan=6,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=8,
+                idx_l1interface=22,
+                idx_vlan=7,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=9,
+                idx_l1interface=22,
+                idx_vlan=8,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=10,
+                idx_l1interface=22,
+                idx_vlan=9,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=11,
+                idx_l1interface=22,
+                idx_vlan=10,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=12,
+                idx_l1interface=22,
+                idx_vlan=11,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=13,
+                idx_l1interface=22,
+                idx_vlan=12,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=14,
+                idx_l1interface=22,
+                idx_vlan=13,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=15,
+                idx_l1interface=22,
+                idx_vlan=14,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=16,
+                idx_l1interface=22,
+                idx_vlan=15,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=17,
+                idx_l1interface=22,
+                idx_vlan=16,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=18,
+                idx_l1interface=22,
+                idx_vlan=17,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=19,
+                idx_l1interface=22,
+                idx_vlan=18,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=20,
+                idx_l1interface=22,
+                idx_vlan=19,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=21,
+                idx_l1interface=22,
+                idx_vlan=20,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=22,
+                idx_l1interface=22,
+                idx_vlan=21,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=23,
+                idx_l1interface=22,
+                idx_vlan=22,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=24,
+                idx_l1interface=22,
+                idx_vlan=23,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RVlanPort(
+                idx_vlanport=25,
+                idx_l1interface=22,
+                idx_vlan=24,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+        ]
+
+        # Process the device
+        _device = device.Device(_polled_data())
+        data = _device.process()
+
+        # Make sure the device exists
+        exists = testimport.device(self.idx_zone, data)
+
+        # Test transaction
+        tester = testimport.Topology(exists, data)
+        tester.l1interface()
+        tester.vlan()
+        tester.vlanport()
+
+        # Verify vlanport data
+        statement = select(VlanPort)
+        rows = db.db_select_row(1196, statement)
+
+        # Return
+        for row in rows:
+            result.append(
+                RVlanPort(
+                    idx_vlanport=row.idx_vlanport,
+                    idx_l1interface=row.idx_l1interface,
+                    idx_vlan=row.idx_vlan,
+                    enabled=row.enabled,
+                    ts_created=None,
+                    ts_modified=None,
+                )
+            )
+
+        # Sort by idx_vlanport
+        result.sort(key=lambda x: (x.idx_vlanport))
+        self.assertEqual(result[:25], expected)
+
     def test_mac(self):
         """Testing function mac."""
         # Initialize key variables
@@ -1741,6 +1984,248 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                 )
             )
         result.sort(key=lambda x: (x.mac))
+        self.assertEqual(result[:25], expected)
+
+    def test_macport(self):
+        """Testing function macport."""
+        # Initialize key variables
+        result = []
+        expected = [
+            RMacPort(
+                idx_macport=1,
+                idx_l1interface=21,
+                idx_mac=1,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=2,
+                idx_l1interface=21,
+                idx_mac=2,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=3,
+                idx_l1interface=21,
+                idx_mac=97,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=4,
+                idx_l1interface=22,
+                idx_mac=59,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=5,
+                idx_l1interface=43,
+                idx_mac=4,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=6,
+                idx_l1interface=43,
+                idx_mac=25,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=7,
+                idx_l1interface=43,
+                idx_mac=29,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=8,
+                idx_l1interface=43,
+                idx_mac=36,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=9,
+                idx_l1interface=43,
+                idx_mac=37,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=10,
+                idx_l1interface=43,
+                idx_mac=38,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=11,
+                idx_l1interface=43,
+                idx_mac=39,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=12,
+                idx_l1interface=43,
+                idx_mac=44,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=13,
+                idx_l1interface=43,
+                idx_mac=51,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=14,
+                idx_l1interface=43,
+                idx_mac=52,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=15,
+                idx_l1interface=43,
+                idx_mac=64,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=16,
+                idx_l1interface=43,
+                idx_mac=65,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=17,
+                idx_l1interface=43,
+                idx_mac=73,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=18,
+                idx_l1interface=43,
+                idx_mac=95,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=19,
+                idx_l1interface=43,
+                idx_mac=96,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=20,
+                idx_l1interface=43,
+                idx_mac=104,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=21,
+                idx_l1interface=43,
+                idx_mac=115,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=22,
+                idx_l1interface=43,
+                idx_mac=129,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=23,
+                idx_l1interface=43,
+                idx_mac=132,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=24,
+                idx_l1interface=44,
+                idx_mac=5,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RMacPort(
+                idx_macport=25,
+                idx_l1interface=44,
+                idx_mac=6,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+        ]
+
+        # Process the device
+        _device = device.Device(_polled_data())
+        data = _device.process()
+
+        # Make sure the device exists
+        exists = testimport.device(self.idx_zone, data)
+
+        # Test transaction
+        tester = testimport.Topology(exists, data)
+        tester.l1interface()
+        tester.vlan()
+        tester.vlanport()
+        tester.mac()
+        tester.macport()
+
+        # Verify macport data
+        statement = select(MacPort)
+        rows = db.db_select_row(1176, statement)
+
+        # Return
+        for row in rows:
+            result.append(
+                RMacPort(
+                    idx_macport=row.idx_macport,
+                    idx_l1interface=row.idx_l1interface,
+                    idx_mac=row.idx_mac,
+                    enabled=row.enabled,
+                    ts_created=None,
+                    ts_modified=None,
+                )
+            )
+        # Sort by idx_vlanport
+        result.sort(key=lambda x: (x.idx_macport))
         self.assertEqual(result[:25], expected)
 
     def test_ip(self):
@@ -2272,207 +2757,247 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         result.sort(key=lambda x: (x.idx_macip))
         self.assertEqual(result[: self.max_loops * 3], expected)
 
-    def test_macport(self):
-        """Testing function macport."""
+    def test_ipport(self):
+        """Testing function ipport."""
         # Initialize key variables
         result = []
         expected = [
-            RMacPort(
-                idx_macport=1,
+            RIpPort(
+                idx_ipport=1,
                 idx_l1interface=21,
-                idx_mac=1,
+                idx_ip=57,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=2,
+            RIpPort(
+                idx_ipport=2,
                 idx_l1interface=21,
-                idx_mac=2,
+                idx_ip=58,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=3,
+            RIpPort(
+                idx_ipport=3,
                 idx_l1interface=21,
-                idx_mac=97,
+                idx_ip=436,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=4,
-                idx_l1interface=22,
-                idx_mac=59,
+            RIpPort(
+                idx_ipport=4,
+                idx_l1interface=21,
+                idx_ip=437,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=5,
+            RIpPort(
+                idx_ipport=5,
+                idx_l1interface=21,
+                idx_ip=760,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=6,
                 idx_l1interface=43,
-                idx_mac=4,
+                idx_ip=284,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=6,
+            RIpPort(
+                idx_ipport=7,
                 idx_l1interface=43,
-                idx_mac=25,
+                idx_ip=286,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=7,
+            RIpPort(
+                idx_ipport=8,
                 idx_l1interface=43,
-                idx_mac=29,
+                idx_ip=302,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=8,
+            RIpPort(
+                idx_ipport=9,
                 idx_l1interface=43,
-                idx_mac=36,
+                idx_ip=304,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=9,
+            RIpPort(
+                idx_ipport=10,
                 idx_l1interface=43,
-                idx_mac=37,
+                idx_ip=308,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=10,
+            RIpPort(
+                idx_ipport=11,
                 idx_l1interface=43,
-                idx_mac=38,
+                idx_ip=319,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=11,
+            RIpPort(
+                idx_ipport=12,
                 idx_l1interface=43,
-                idx_mac=39,
+                idx_ip=323,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=12,
+            RIpPort(
+                idx_ipport=13,
                 idx_l1interface=43,
-                idx_mac=44,
+                idx_ip=329,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=13,
+            RIpPort(
+                idx_ipport=14,
                 idx_l1interface=43,
-                idx_mac=51,
+                idx_ip=330,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=14,
+            RIpPort(
+                idx_ipport=15,
                 idx_l1interface=43,
-                idx_mac=52,
+                idx_ip=331,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=15,
+            RIpPort(
+                idx_ipport=16,
                 idx_l1interface=43,
-                idx_mac=64,
+                idx_ip=334,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=16,
+            RIpPort(
+                idx_ipport=17,
                 idx_l1interface=43,
-                idx_mac=65,
+                idx_ip=336,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=17,
+            RIpPort(
+                idx_ipport=18,
                 idx_l1interface=43,
-                idx_mac=73,
+                idx_ip=337,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=18,
+            RIpPort(
+                idx_ipport=19,
                 idx_l1interface=43,
-                idx_mac=95,
+                idx_ip=341,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=19,
+            RIpPort(
+                idx_ipport=20,
                 idx_l1interface=43,
-                idx_mac=96,
+                idx_ip=352,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=20,
+            RIpPort(
+                idx_ipport=21,
                 idx_l1interface=43,
-                idx_mac=104,
+                idx_ip=355,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=21,
+            RIpPort(
+                idx_ipport=22,
                 idx_l1interface=43,
-                idx_mac=115,
+                idx_ip=356,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=22,
+            RIpPort(
+                idx_ipport=23,
                 idx_l1interface=43,
-                idx_mac=129,
+                idx_ip=453,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=23,
+            RIpPort(
+                idx_ipport=24,
                 idx_l1interface=43,
-                idx_mac=132,
+                idx_ip=457,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=24,
-                idx_l1interface=44,
-                idx_mac=5,
+            RIpPort(
+                idx_ipport=25,
+                idx_l1interface=43,
+                idx_ip=458,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
-            RMacPort(
-                idx_macport=25,
-                idx_l1interface=44,
-                idx_mac=6,
+            RIpPort(
+                idx_ipport=26,
+                idx_l1interface=43,
+                idx_ip=470,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=27,
+                idx_l1interface=43,
+                idx_ip=486,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=28,
+                idx_l1interface=43,
+                idx_ip=491,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=29,
+                idx_l1interface=43,
+                idx_ip=492,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=30,
+                idx_l1interface=43,
+                idx_ip=493,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
@@ -2487,273 +3012,35 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         exists = testimport.device(self.idx_zone, data)
 
         # Test transaction
-        tester = testimport.Topology(exists, data)
+        tester = testimport.Topology(exists, data, dns=False)
         tester.l1interface()
         tester.vlan()
         tester.vlanport()
         tester.mac()
         tester.macport()
+        tester.ip()
+        tester.macip()
+        tester.ipport()
 
         # Verify macport data
-        statement = select(MacPort)
-        rows = db.db_select_row(1176, statement)
+        statement = select(IpPort)
+        rows = db.db_select_row(1074, statement)
 
         # Return
         for row in rows:
             result.append(
-                RMacPort(
-                    idx_macport=row.idx_macport,
+                RIpPort(
+                    idx_ipport=row.idx_ipport,
                     idx_l1interface=row.idx_l1interface,
-                    idx_mac=row.idx_mac,
-                    enabled=row.enabled,
-                    ts_created=None,
-                    ts_modified=None,
-                )
-            )
-        # Sort by idx_vlanport
-        result.sort(key=lambda x: (x.idx_macport))
-        self.assertEqual(result[:25], expected)
-
-    def test_vlanport(self):
-        """Testing function vlanport."""
-        # Initialize key variables
-        result = []
-        expected = [
-            RVlanPort(
-                idx_vlanport=1,
-                idx_l1interface=21,
-                idx_vlan=5,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=2,
-                idx_l1interface=22,
-                idx_vlan=1,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=3,
-                idx_l1interface=22,
-                idx_vlan=2,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=4,
-                idx_l1interface=22,
-                idx_vlan=3,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=5,
-                idx_l1interface=22,
-                idx_vlan=4,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=6,
-                idx_l1interface=22,
-                idx_vlan=5,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=7,
-                idx_l1interface=22,
-                idx_vlan=6,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=8,
-                idx_l1interface=22,
-                idx_vlan=7,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=9,
-                idx_l1interface=22,
-                idx_vlan=8,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=10,
-                idx_l1interface=22,
-                idx_vlan=9,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=11,
-                idx_l1interface=22,
-                idx_vlan=10,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=12,
-                idx_l1interface=22,
-                idx_vlan=11,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=13,
-                idx_l1interface=22,
-                idx_vlan=12,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=14,
-                idx_l1interface=22,
-                idx_vlan=13,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=15,
-                idx_l1interface=22,
-                idx_vlan=14,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=16,
-                idx_l1interface=22,
-                idx_vlan=15,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=17,
-                idx_l1interface=22,
-                idx_vlan=16,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=18,
-                idx_l1interface=22,
-                idx_vlan=17,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=19,
-                idx_l1interface=22,
-                idx_vlan=18,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=20,
-                idx_l1interface=22,
-                idx_vlan=19,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=21,
-                idx_l1interface=22,
-                idx_vlan=20,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=22,
-                idx_l1interface=22,
-                idx_vlan=21,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=23,
-                idx_l1interface=22,
-                idx_vlan=22,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=24,
-                idx_l1interface=22,
-                idx_vlan=23,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-            RVlanPort(
-                idx_vlanport=25,
-                idx_l1interface=22,
-                idx_vlan=24,
-                enabled=1,
-                ts_modified=None,
-                ts_created=None,
-            ),
-        ]
-
-        # Process the device
-        _device = device.Device(_polled_data())
-        data = _device.process()
-
-        # Make sure the device exists
-        exists = testimport.device(self.idx_zone, data)
-
-        # Test transaction
-        tester = testimport.Topology(exists, data)
-        tester.l1interface()
-        tester.vlan()
-        tester.vlanport()
-
-        # Verify vlanport data
-        statement = select(VlanPort)
-        rows = db.db_select_row(1196, statement)
-
-        # Return
-        for row in rows:
-            result.append(
-                RVlanPort(
-                    idx_vlanport=row.idx_vlanport,
-                    idx_l1interface=row.idx_l1interface,
-                    idx_vlan=row.idx_vlan,
-                    enabled=row.enabled,
+                    idx_ip=row.idx_ip,
+                    enabled=1,
                     ts_created=None,
                     ts_modified=None,
                 )
             )
 
-        # Sort by idx_vlanport
-        result.sort(key=lambda x: (x.idx_vlanport))
-        self.assertEqual(result[:25], expected)
+        result.sort(key=lambda x: (x.idx_ipport))
+        self.assertEqual(result[: self.max_loops * 3], expected)
 
     def test__process_macip(self):
         """Testing function _process_macip."""

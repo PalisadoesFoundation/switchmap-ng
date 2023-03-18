@@ -56,7 +56,7 @@ def exists(idx_zone, _ip):
     statement = select(Ip).where(
         and_(Ip.address == ip.address.encode(), Ip.idx_zone == idx_zone)
     )
-    rows = db.db_select_row(1066, statement)
+    rows = db.db_select_row(1073, statement)
 
     # Return
     for row in rows:

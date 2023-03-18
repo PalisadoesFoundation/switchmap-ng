@@ -4,6 +4,7 @@ import time
 import socket
 from collections import namedtuple
 from copy import deepcopy
+from operator import attrgetter
 
 # Application imports
 from switchmap.core import log
@@ -16,10 +17,12 @@ from switchmap.server.db.table import macip as _macip
 from switchmap.server.db.table import macport as _macport
 from switchmap.server.db.table import vlanport as _vlanport
 from switchmap.server.db.table import ip as _ip
+from switchmap.server.db.table import ipport as _ipport
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import oui as _oui
 from switchmap.server.db.table import (
     IIp,
+    IIpPort,
     IMac,
     IVlan,
     IMacIp,
@@ -127,6 +130,7 @@ class Status:
         self._macport = False
         self._ip = False
         self._macip = False
+        self._ipport = False
         self._l1interface = False
 
     @property
@@ -138,6 +142,16 @@ class Status:
     def ip(self, value):
         """Set the 'ip' property."""
         self._ip = value
+
+    @property
+    def ipport(self):
+        """Provide the value of  the 'ipport' property."""
+        return self._ipport
+
+    @ipport.setter
+    def ipport(self, value):
+        """Set the 'ipport' property."""
+        self._ipport = value
 
     @property
     def l1interface(self):
@@ -754,6 +768,55 @@ class Topology:
         # Everything is completed
         self._status.macip = True
 
+    def ipport(self):
+        """Update the IpPort DB table.
+
+        Args:
+            data: IpPort data
+
+        Returns:
+            None
+
+        """
+        # Test prerequisite
+        if bool(self._status.macip) is False:
+            self.log_invalid("IpPort")
+            return
+
+        # Initialize key variables
+        ipv6 = None
+        ipv4 = None
+        adds = []
+        updates = []
+
+        # Log
+        self.log("IpPort")
+
+        # Get IpPort data
+        layer3 = self._data.get("layer3")
+        if bool(layer3) is True:
+            ipv4 = layer3.get("ipNetToMediaTable")
+            ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
+
+            for table in [ipv4, ipv6]:
+                if bool(table):
+                    result = _process_ipport(self._device.idx_zone, table)
+                    adds.extend(result.adds)
+                    updates.extend(result.updates)
+
+        # Do the Updates
+        for item in sorted(updates):
+            _ipport.update_row(item.idx_ipport, item.row)
+
+        # Do the adds
+        _ipport.insert_row(sorted(adds))
+
+        # Log
+        self.log("IpPort", updated=True)
+
+        # Everything is completed
+        self._status.ipport = True
+
     def log(self, table, updated=False):
         """Create standardized log messaging.
 
@@ -902,6 +965,63 @@ def _process_macip(idx_zone, table):
                         enabled=1,
                     )
                 )
+
+    # Return
+    result = TopologyResult(adds=adds, updates=updates)
+    return result
+
+
+def _process_ipport(idx_zone, table):
+    """Update the mac DB table.
+
+    Args:
+        idx_zone: Zone index
+        table: ARP table keyed by ip address
+
+    Returns:
+        result
+
+    """
+    # Initialize key variables
+    adds = []
+    updates = []
+
+    # Process data
+    for next_ip, next_mac in table.items():
+        # Create expanded lower case versions of the IP address
+        myp = general.ipaddress(next_ip)
+        if bool(myp) is False:
+            continue
+
+        # Create lowercase version of mac address
+        next_mac = general.mac(next_mac)
+
+        # Verify prerequisites
+        mac_exists = _mac.exists(idx_zone, next_mac)
+        ip_exists = _ip.exists(idx_zone, myp.address)
+
+        # Skip if the IP doesn't exist, or else the following logic will crash
+        if bool(ip_exists) is False:
+            continue
+
+        # Iterate over existing MAC entries
+        if bool(mac_exists) is True:
+            # Get the ports on which the MAC address resides
+            macports = _macport.find_idx_mac(mac_exists.idx_mac)
+
+            # Iterate over the MAC assignments to interfaces
+            for macport in macports:
+                # Assign the IP to this port
+                adds.append(
+                    IIpPort(
+                        idx_l1interface=macport.idx_l1interface,
+                        idx_ip=ip_exists.idx_ip,
+                        enabled=1,
+                    )
+                )
+
+    # Sort the results for better testing
+    adds = sorted(adds, key=attrgetter("idx_l1interface", "idx_ip"))
 
     # Return
     result = TopologyResult(adds=adds, updates=updates)
