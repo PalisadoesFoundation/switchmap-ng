@@ -11,7 +11,7 @@ from flask import Blueprint, render_template
 from switchmap.dashboard import uri
 from switchmap.core import rest
 from switchmap.dashboard.configuration import ConfigDashboard
-from switchmap.dashboard.net.html.pages.event import EventPage
+from switchmap.dashboard.net.html.pages.events import EventPage
 
 # Define the EVENT global variable
 EVENT = Blueprint("EVENT", __name__)
