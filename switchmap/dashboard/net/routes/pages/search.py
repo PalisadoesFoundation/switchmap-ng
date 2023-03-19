@@ -3,14 +3,17 @@
 Contains all routes that switchmap.s Flask webserver uses
 
 """
+# Standard imports
+from collections import defaultdict
 
 # Flask imports
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, render_template
 
 # Application imports
 from switchmap.dashboard import uri
 from switchmap.core import rest
 from switchmap.dashboard.configuration import ConfigDashboard
+from switchmap.dashboard.net.html.pages.search import SearchPage
 
 # Define the SEARCH global variable
 SEARCH = Blueprint("SEARCH", __name__)
@@ -28,7 +31,7 @@ def search():
 
     """
     # Initialize key variables
-    result = []
+    tables = {}
 
     # Get data to display
     config = ConfigDashboard()
@@ -50,12 +53,63 @@ def search():
 
                 # Process data if found
                 if bool(idx_l1interfaces) is True:
-                    result = rest.get(
+                    interfaces = rest.get(
                         uri.search(idx_l1interfaces), config, server=False
                     )
+                    tables = get_tables(interfaces)
+
+        break
 
     # Convert data to HTML and return it to the browser
-    # eventpage = EventPage(search_)
-    # tables = eventpage.html()
-    # return render_template("event.html", event_table=tables)
-    return jsonify(result)
+    return render_template("search.html", results_dict=tables)
+    # return jsonify(result)
+
+
+def get_tables(_interfaces):
+    """Convert interface information to HTML.
+
+    Args:
+        interfaces: List of interface data dicts
+
+    Returns:
+        HTML
+
+    """
+    # Initialize key variables
+    device_key = "device"
+    result = {}
+    default = "<h3>&nbsp;Not Found</h3>"
+    zones = defaultdict(lambda: defaultdict(lambda: []))
+
+    if bool(_interfaces) is True:
+        # Populate the device dictionary
+        for next_interface in _interfaces:
+            # Create a list of devices for port table generation
+            next_device = next_interface.get(device_key)
+            if bool(next_device) is True:
+                # Remove non interface data for the interface dict
+                del next_interface[device_key]
+
+                # Extract device information
+                next_hostname = next_device.get("hostname", "")
+                zone_dict = next_device.get("zone", "")
+                next_zone = (
+                    zone_dict.get("name", "") if bool(zone_dict) else ""
+                )
+
+                # Populate the zones dict
+                zones[next_zone][next_hostname].append(next_interface)
+
+        # Create the HTML dictionary for tables
+        if bool(zones) is True:
+            for zone, device in sorted(zones.items()):
+                for hostname, interfaces in sorted(device.items()):
+                    # Create data table dict
+                    search = SearchPage(interfaces, hostname=hostname)
+                    result[zone] = search.html()
+        else:
+            result[""] = default
+    else:
+        result[""] = default
+
+    return result

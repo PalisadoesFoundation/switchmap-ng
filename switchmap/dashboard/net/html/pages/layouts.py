@@ -1,31 +1,30 @@
 """Module of page layout functions."""
 
 
-def table_wrapper(title, table):
+def table_wrapper(title, table, strip=True):
     """Wrap the data in HTML stuff.
 
     Args:
         title: title
         table: Table HTML
+        strip: Strip the thead if True
 
     Returns:
         result: HTML
 
     """
     # Initialize key variables
+    #
     result = """
     <div class="row">
       <div class="col-lg-12">
           <div class="panel panel-default">
               <div class="panel-heading">
-                  {}
+                {}
               </div>
               <!-- /.panel-heading -->
               <div class="panel-body">
-                  <div class="table-responsive table-bordered">
-                      {}
-                  </div>
-                  <!-- /.table-responsive -->
+                {}
               </div>
               <!-- /.panel-body -->
           </div>
@@ -35,7 +34,9 @@ def table_wrapper(title, table):
 """.format(
         title, table
     ).strip()
-    result = remove_thead(result)
+
+    if bool(strip) is True:
+        result = remove_thead(result)
     return result
 
 

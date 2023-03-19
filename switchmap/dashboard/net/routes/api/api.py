@@ -9,6 +9,7 @@ from flask import Blueprint, jsonify, request
 
 
 # Application imports
+from switchmap.core import log
 from switchmap.core import rest
 from switchmap.core import graphene
 from switchmap.dashboard.configuration import ConfigDashboard
@@ -188,15 +189,21 @@ def search():
     # Insert the interface snippet
     updated_query = _insert_interface_snippet(query)
 
+    log.log2info(1111111111111, updated_query)
+
     # Get the data
     data = rest.get_graphql(updated_query, config)
+
+    log.log2info(2222222222222, data)
 
     if bool(data) is True:
         normalized = graphene.normalize(data)
 
         # Get the zone data list
         data = normalized.get("data")
-        result = data.get("l1interfaces")[0]
+        result = data.get("l1interfaces")
+
+    log.log2info(3333333333333, result)
 
     # Return
     return jsonify(result)
