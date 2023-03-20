@@ -67,7 +67,22 @@ def events():
     return result
 
 
-def search(idx_l1interfaces):
+def search():
+    """Create the device page URI.
+
+    Args:
+        None
+
+    Returns:
+        result: result
+
+    """
+    # Get result
+    result = "/search"
+    return result
+
+
+def search_old(idx_l1interfaces):
     """Create the device page URI.
 
     Args:

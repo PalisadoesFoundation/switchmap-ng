@@ -12,6 +12,7 @@ from flask import Blueprint, request, render_template
 # Application imports
 from switchmap.dashboard import uri
 from switchmap.core import rest
+from switchmap.core import log
 from switchmap.dashboard.configuration import ConfigDashboard
 from switchmap.dashboard.net.html.pages.search import SearchPage
 
@@ -44,12 +45,66 @@ def search():
         if key == "search_term":
             # Post the data to the API server
             seach_dict = {"idx_root": 1, "searchterm": value.strip()}
-            post_response = rest.post(uri.search_post(), seach_dict, config)
+            idx_post_response = rest.post(
+                uri.search_post(), seach_dict, config
+            )
 
             # Process a successful response
-            if bool(post_response.success) is True:
+            if bool(idx_post_response.success) is True:
                 # Get data from the API server using GraphQL
-                idx_l1interfaces = post_response.response.json()
+                idx_l1interfaces = idx_post_response.response.json()
+
+                # Process data if found
+                if bool(idx_l1interfaces) is True:
+                    interfaces_post_response = rest.post(
+                        uri.search(), idx_l1interfaces, config, server=False
+                    )
+                    if bool(interfaces_post_response.success) is True:
+                        interfaces = interfaces_post_response.response.json()
+                        log.log2info(777777777777777, interfaces)
+
+                        tables = get_tables(interfaces)
+
+        break
+
+    # Convert data to HTML and return it to the browser
+    return render_template("search.html", results_dict=tables)
+    # return jsonify(result)
+
+
+@SEARCH.route("/search-old", methods=["POST"])
+def search_old():
+    """Create the search page.
+
+    Args:
+        None
+
+    Returns:
+        HTML
+
+    """
+    # Initialize key variables
+    tables = {}
+
+    # Get data to display
+    config = ConfigDashboard()
+
+    # Get search form data
+    items = request.form
+
+    for key, value in items.items():
+        # 'search_term' comes from the search form HTML
+        if key == "search_term":
+            # Post the data to the API server
+            seach_dict = {"idx_root": 1, "searchterm": value.strip()}
+            idx_post_response = rest.post(
+                uri.search_post(), seach_dict, config
+            )
+
+            # Process a successful response
+            if bool(idx_post_response.success) is True:
+                # Get data from the API server using GraphQL
+                idx_l1interfaces = idx_post_response.response.json()
 
                 # Process data if found
                 if bool(idx_l1interfaces) is True:

@@ -9,7 +9,6 @@ from flask import Blueprint, jsonify, request
 
 
 # Application imports
-from switchmap.core import log
 from switchmap.core import rest
 from switchmap.core import graphene
 from switchmap.dashboard.configuration import ConfigDashboard
@@ -144,8 +143,76 @@ def devices(idx_device):
     return jsonify(device)
 
 
-@API.route("/search", methods=["GET"])
+@API.route("/search", methods=["POST"])
 def search():
+    """Get device data.
+
+    Args:
+        None
+
+    Returns:
+        JSON of zone data
+
+    """
+    # Initialize key variables
+    config = ConfigDashboard()
+    result = []
+    idx_l1interfaces = []
+
+    # Extract the interface list form the POST request
+    idx_l1interfaces = request.json
+
+    # idx_l1interfaces =
+    # for _, value in data.items():
+    #     idx_l1interface = value.get("idx")
+    #     if bool(idx_l1interface) is True:
+    #         idx_l1interfaces.append(idx_l1interface)
+
+    # Create the filter string
+    filter_string = graphql_filters.or_operator(
+        "idxL1interface", idx_l1interfaces
+    )
+    query = """
+{
+  l1interfaces(filter: FILTER) {
+    edges {
+      node {
+        device {
+          name
+          sysName
+          hostname
+          zone{
+            name
+          }
+        }
+        INTERFACE
+      }
+    }
+  }
+}
+""".replace(
+        "FILTER", filter_string
+    )
+
+    # Insert the interface snippet
+    updated_query = _insert_interface_snippet(query)
+
+    # Get the data
+    data = rest.get_graphql(updated_query, config)
+
+    if bool(data) is True:
+        normalized = graphene.normalize(data)
+
+        # Get the zone data list
+        data = normalized.get("data")
+        result = data.get("l1interfaces")
+
+    # Return
+    return jsonify(result)
+
+
+@API.route("/search-old", methods=["GET"])
+def search_old():
     """Get device data.
 
     Args:
@@ -189,12 +256,8 @@ def search():
     # Insert the interface snippet
     updated_query = _insert_interface_snippet(query)
 
-    log.log2info(1111111111111, updated_query)
-
     # Get the data
     data = rest.get_graphql(updated_query, config)
-
-    log.log2info(2222222222222, data)
 
     if bool(data) is True:
         normalized = graphene.normalize(data)
@@ -202,8 +265,6 @@ def search():
         # Get the zone data list
         data = normalized.get("data")
         result = data.get("l1interfaces")
-
-    log.log2info(3333333333333, result)
 
     # Return
     return jsonify(result)
@@ -221,6 +282,7 @@ def _dashboard(idx_root=1):
     """
     # Initialize key variables
     config = ConfigDashboard()
+    default = {}
     query = """
 {
   roots(filter: {idxRoot: {eq: ROOT}}) {
@@ -261,7 +323,10 @@ def _dashboard(idx_root=1):
     data = normalized.get("data")
     if bool(data) is True:
         roots = data.get("roots")
-        event = roots[0].get("event")
+        if bool(roots) is True:
+            event = roots[0].get("event")
+        else:
+            event = default
 
         # Return
         return jsonify(event)

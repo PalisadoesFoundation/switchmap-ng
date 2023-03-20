@@ -12,7 +12,7 @@ from switchmap import API_PREFIX
 from switchmap.core.log import ExceptionWrapper
 
 
-def post(uri, data, config):
+def post(uri, data, config, server=True):
     """Create URI for datacenter RRD and oid_id data.
 
     Args:
@@ -33,7 +33,12 @@ def post(uri, data, config):
     # config = ConfigAPIClient()
     username = config.server_username()
     password = config.server_password()
-    url_root = config.server_url_root()
+
+    # Create the URL for posting
+    if bool(server) is True:
+        url_root = config.server_url_root()
+    else:
+        url_root = config.api_url_root()
     url = _clean_url("{}/{}/{}".format(url_root, API_PREFIX, uri))
 
     # Log
