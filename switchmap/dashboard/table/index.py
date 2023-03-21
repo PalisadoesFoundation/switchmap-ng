@@ -1,5 +1,8 @@
 """Class for creating home web pages."""
 
+# Standard imports
+from operator import attrgetter
+
 # PIP3 imports
 from flask_table import Table, Col
 
@@ -42,7 +45,7 @@ def tables(zones):
                     idx_device=dev_item.get("idxDevice"),
                 )
             )
-        device_rows = rows(devices)
+        device_rows = rows(sorted(devices, key=attrgetter("hostname")))
 
         # Append the result to create a table object
         results.append(ZoneTable(device_rows))
