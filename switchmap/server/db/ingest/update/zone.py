@@ -9,6 +9,7 @@ from switchmap.core import log
 from switchmap.core import general
 from switchmap.server.db.table import oui as _oui
 from switchmap.server import ZoneObjects
+from switchmap.server import PairMacIp
 from switchmap.server.db.table import (
     IIp,
     IMac,
@@ -61,6 +62,16 @@ class Status:
         """Set the 'mac' property."""
         self._mac = value
 
+    @property
+    def macip(self):
+        """Provide the value of  the 'macip' property."""
+        return self._macip
+
+    @macip.setter
+    def macip(self, value):
+        """Set the 'macip' property."""
+        self._macip = value
+
 
 class Topology:
     """Update Device data in the database."""
@@ -86,6 +97,7 @@ class Topology:
         ]
         self._status = Status()
         self._start = int(time.time())
+        self._hostname = str(self._data["misc"]["host"]).lower()
 
     def process(self):
         """Process data received from a device.
@@ -100,7 +112,8 @@ class Topology:
         # Process zone data
         macs = self.mac()
         ips = self.ip()
-        result = ZoneObjects(ips=ips, macs=macs)
+        pairmacips = self.macip()
+        result = ZoneObjects(ips=ips, macs=macs, pairmacips=pairmacips)
         return result
 
     def mac(self):
@@ -123,10 +136,10 @@ class Topology:
         # Test validity
         if bool(self._valid) is False:
             # Log
-            log_message = "No interfaces detected for for host {}".format(
-                self._device.hostname
+            log_message = "No MAC addresses detected for for host {}".format(
+                self._hostname
             )
-            log.log2debug(1021, log_message)
+            log.log2debug(1083, log_message)
             return rows
 
         # Get interfaces
@@ -189,7 +202,7 @@ class Topology:
         rows = []
 
         # Test prerequisite
-        if bool(self._status.macport) is False:
+        if bool(self._status.mac) is False:
             self.log_invalid("Ip")
             return rows
 
@@ -242,6 +255,49 @@ class Topology:
         rows = list(set(rows))
         return rows
 
+    def macip(self):
+        """Update the MacIp DB table.
+
+        Args:
+            data: MacIp data
+
+        Returns:
+            rows: List of PairMacIp objects
+
+        """
+        # Initialize key variables
+        ipv6 = None
+        ipv4 = None
+        rows = []
+
+        # Test prerequisite
+        if bool(self._status.ip) is False:
+            self.log_invalid("MacIp")
+            return rows
+
+        # Log
+        self.log("MacIp")
+
+        # Get MacIp data
+        layer3 = self._data.get("layer3")
+        if bool(layer3) is True:
+            ipv4 = layer3.get("ipNetToMediaTable")
+            ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
+
+            for table in [ipv4, ipv6]:
+                if bool(table):
+                    rows.extend(_process_pairmacips(self._idx_zone, table))
+
+        # Log
+        self.log("MacIp", updated=True)
+
+        # Everything is completed
+        self._status.macip = True
+
+        # Return
+        rows = list(set(rows))
+        return rows
+
     def log(self, table, updated=False):
         """Create standardized log messaging.
 
@@ -258,10 +314,10 @@ class Topology:
 {} table update "{}" for host {}, {} seconds after starting'.format(
             "Completed" if bool(updated) else "Starting",
             table,
-            self._device.hostname,
+            self._hostname,
             int(time.time()) - self._start,
         )
-        log.log2debug(1028, log_message)
+        log.log2debug(1082, log_message)
 
     def log_invalid(self, table):
         """Create standardized log messaging for invalid states.
@@ -279,7 +335,37 @@ class Topology:
 Invalid update sequence for table {} when processing host {}, {} seconds\
 after starting".format(
             table,
-            self._device.hostname,
+            self._hostname,
             int(time.time()) - self._start,
         )
-        log.log2debug(1029, log_message)
+        log.log2debug(1079, log_message)
+
+
+def _process_pairmacips(idx_zone, table):
+    """Update the mac DB table.
+
+    Args:
+        table: ARP table keyed by ip address
+
+    Returns:
+        results: List of PairMacIp objects
+
+    """
+    # Initialize key variables
+    results = []
+
+    # Process data
+    for next_ip, next_mac in table.items():
+        # Create expanded lower case versions of the IP address
+        myp = general.ipaddress(next_ip)
+        if bool(myp) is False:
+            continue
+
+        # Create lowercase version of mac address
+        mac = general.mac(next_mac)
+
+        # Update the results
+        results.append(PairMacIp(mac=mac, ip=myp.address, idx_zone=idx_zone))
+
+    # Return
+    return results

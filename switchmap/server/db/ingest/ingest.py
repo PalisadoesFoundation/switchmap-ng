@@ -8,17 +8,23 @@ import tempfile
 from multiprocessing import get_context
 from switchmap.core import log
 from switchmap.core import files
+from switchmap.core import general
 from switchmap import AGENT_INGESTER, AGENT_POLLER
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IRoot
+from switchmap.server.db.table import IMacIp
+from switchmap.server.db.table import IIpPort
 from switchmap.server.db.table import event as _event
 from switchmap.server.db.table import zone as _zone
 from switchmap.server.db.table import root as _root
 from switchmap.server.db.table import ip as _ip
+from switchmap.server.db.table import ipport as _ipport
 from switchmap.server.db.table import mac as _mac
+from switchmap.server.db.table import macip as _macip
+from switchmap.server.db.table import macport as _macport
 from switchmap.server import ZoneData, ZoneDevice, EventObjects
-from switchmap.server.db.ingest import update_device
-from switchmap.server.db.zone import update_zone
+from switchmap.server.db.ingest.update import device as update_device
+from switchmap.server.db.ingest.update import zone as update_zone
 
 
 class Ingest:
@@ -47,7 +53,6 @@ class Ingest:
         self._config = config
         self._test = test
         self._test_cache_directory = test_cache_directory
-        self._name = "ingest"
         self._multiprocessing = bool(multiprocessing)
 
     def process(self):
@@ -68,20 +73,6 @@ class Ingest:
         )
         poller_lock_file = files.lock_file(AGENT_POLLER, self._config)
         arguments = []
-
-        # Test for the lock file
-        lock_file = files.lock_file(self._name, self._config)
-        if os.path.isfile(lock_file) is True:
-            log_message = """\
-Ingest lock file {} exists. Is an ingest process already running?\
-""".format(
-                lock_file
-            )
-            log.log2debug(1054, log_message)
-            return
-
-        # Create lock file
-        open(lock_file, "a").close()
 
         # Process files
         with tempfile.TemporaryDirectory(
@@ -108,11 +99,14 @@ Ingest lock file {} exists. Is an ingest process already running?\
                     # Process the device independent zone data in the
                     # database first
                     if bool(arguments) is True:
-                        success = self.zone(arguments)
+                        pairmacips = self.zone(arguments)
 
                     # Process the device dependent in the database second
-                    if bool(success):
-                        success = self.device(arguments)
+                    if bool(pairmacips):
+                        self.device(arguments)
+
+                    # Update the IpPort table
+                    _process_ipport(pairmacips)
 
                     # Cleanup
                     self.cleanup(setup_success.event)
@@ -121,10 +115,7 @@ Ingest lock file {} exists. Is an ingest process already running?\
                     "Poller lock file {} exists. Skipping processing of cache "
                     "files. Is the poller running or did it crash unexpectedly?"
                 )
-                log.log2info(1038, log_message)
-
-        # Delete lock file
-        os.remove(lock_file)
+                log.log2info(1077, log_message)
 
     def zone(self, arguments):
         """Ingest the files' zone data.
@@ -174,15 +165,18 @@ Ingest lock file {} exists. Is an ingest process already running?\
             for argument in arguments:
                 rows.append(process_zone(*argument))
 
-        # Process rows for insertion into the database
-        macs = list(set([_.macs for _ in rows]))
-        ips = list(set([_.ips for _ in rows]))
+        # List of lists comprehension to get a list, then remove
+        # duplicates with set, then recreate a list
+        macs = list(set([_ for row in rows for _ in row.macs]))
+        ips = list(set([_ for row in rows for _ in row.ips]))
+        pairmacips = list(set([_ for row in rows for _ in row.pairmacips]))
         _mac.insert_row(macs)
         _ip.insert_row(ips)
+        _process_macip(pairmacips)
 
         # Return
         success = True
-        return success
+        return pairmacips
 
     def device(self, arguments):
         """Ingest the files' device data.
@@ -300,7 +294,7 @@ Skip file {} found. Aborting ingesting {}. A daemon \
 shutdown request was probably requested""".format(
             skip_file, filepath
         )
-        log.log2debug(1049, log_message)
+        log.log2debug(1075, log_message)
         return
 
     # Process the ingested data
@@ -388,6 +382,10 @@ def _filepaths(src):
     # Initialize key variables
     filepaths = []
 
+    # Log progress
+    log_message = "Reading ingest YAML files."
+    log.log2info(1234, log_message)
+
     # Process files
     src_files = os.listdir(src)
     for filename in src_files:
@@ -414,7 +412,16 @@ def _get_zone(event, filepath):
     # Get the zone information
     name = data["misc"]["zone"]
     exists = _zone.exists(event.idx_event, name)
+
     if bool(exists) is False:
+        # Log progress
+        log_message = (
+            "Creating database zone '{}' in preparation "
+            "for database ingest".format(name)
+        )
+        log.log2info(1054, log_message)
+
+        # Insert
         _zone.insert_row(
             IZone(
                 idx_event=event.idx_event,
@@ -428,3 +435,96 @@ def _get_zone(event, filepath):
     # Return
     result = ZoneData(idx_zone=exists.idx_zone, data=data)
     return result
+
+
+def _process_macip(items):
+    """Update the mac DB table.
+
+    Args:
+        idx_zone: Zone index
+        items: List of PairMacIp objects
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    rows = []
+
+    # Process data
+    for item in items:
+        # Update the database
+        mac_exists = _mac.exists(item.idx_zone, item.mac)
+        ip_exists = _ip.exists(item.idx_zone, item.ip)
+
+        # Insert
+        if bool(mac_exists) and bool(ip_exists):
+            macip_exists = _macip.exists(mac_exists.idx_mac, ip_exists.idx_ip)
+            if bool(macip_exists) is False:
+                # Create a DB record
+                rows.append(
+                    IMacIp(
+                        idx_ip=ip_exists.idx_ip,
+                        idx_mac=mac_exists.idx_mac,
+                        enabled=1,
+                    )
+                )
+
+    # Insert the values
+    _macip.insert_row(rows)
+
+
+def _process_ipport(items):
+    """Update the mac DB table.
+
+    Args:
+        items: PairMacIp objects list
+
+    Returns:
+        none
+
+    """
+    # Initialize key variables
+    rows = []
+
+    # Process data
+    for item in items:
+        # Create expanded lower case versions of the IP address
+        myp = general.ipaddress(item.ip)
+        if bool(myp) is False:
+            continue
+
+        # Create lowercase version of mac address
+        next_mac = general.mac(item.mac)
+
+        # Verify prerequisites
+        mac_exists = _mac.exists(item.idx_zone, next_mac)
+        ip_exists = _ip.exists(item.idx_zone, myp.address)
+
+        # Skip if the IP doesn't exist, or else the following logic will crash
+        if bool(ip_exists) is False:
+            continue
+
+        # Iterate over existing MAC entries
+        if bool(mac_exists) is True:
+            # Get the ports on which the MAC address resides
+            macports = _macport.find_idx_mac(mac_exists.idx_mac)
+
+            # Iterate over the MAC assignments to interfaces
+            for macport in macports:
+                ipport_exists = _ipport.exists(
+                    macport.idx_l1interface, ip_exists.idx_ip
+                )
+
+                # Assign the IP to this port
+                if bool(ipport_exists) is False:
+                    rows.append(
+                        IIpPort(
+                            idx_l1interface=macport.idx_l1interface,
+                            idx_ip=ip_exists.idx_ip,
+                            enabled=1,
+                        )
+                    )
+
+    # Do the inserts
+    _ipport.insert_row(rows)

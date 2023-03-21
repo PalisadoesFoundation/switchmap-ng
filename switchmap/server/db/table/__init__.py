@@ -115,5 +115,3 @@ ts_modified ts_created""",
 IIpPort = namedtuple("IIpPort", "idx_l1interface idx_ip enabled")
 
 ProcessMacIP = namedtuple("ProcessMacIP", "table idx_device idx_zone version")
-
-TopologyResult = namedtuple("Result", "updates adds")

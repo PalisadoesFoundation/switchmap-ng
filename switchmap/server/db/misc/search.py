@@ -131,6 +131,34 @@ class Search:
         # Return
         return result
 
+    def ifalias(self):
+        """Search for string in ifalias names.
+
+        Args:
+            None
+
+        Returns:
+            result: List of Found objects of interfaces that have data matching
+                the search string
+
+        """
+        # Initialize key variables
+        result = []
+        founds = []
+
+        # Find Hostname for IP address in ARP table
+        for idx_device in self._search.idx_devices:
+            found = l1interface.findifalias(idx_device, self._search.string)
+            if bool(found) is True:
+                founds.extend(found)
+
+        # Search for ifalias on interfaces
+        for found in founds:
+            result.append(Found(idx_l1interface=found.idx_l1interface))
+
+        # Return
+        return result
+
     def ipaddress(self):
         """Search for ipaddress.
 
@@ -157,37 +185,10 @@ class Search:
 
             # Search for IP on interfaces
             for found in founds:
+                print(found.idx_ip)
                 items = find_ip_interface(found.idx_ip)
                 for item in items:
                     result.append(Found(idx_l1interface=item.idx_l1interface))
-
-        # Return
-        return result
-
-    def ifalias(self):
-        """Search for string in ifalias names.
-
-        Args:
-            None
-
-        Returns:
-            result: List of Found objects of interfaces that have data matching
-                the search string
-
-        """
-        # Initialize key variables
-        result = []
-        founds = []
-
-        # Find Hostname for IP address in ARP table
-        for idx_device in self._search.idx_devices:
-            found = l1interface.findifalias(idx_device, self._search.string)
-            if bool(found) is True:
-                founds.extend(found)
-
-        # Search for ifalias on interfaces
-        for found in founds:
-            result.append(Found(idx_l1interface=found.idx_l1interface))
 
         # Return
         return result
@@ -245,10 +246,17 @@ def find_ip_interface(idx_ip):
             Ip.idx_zone == Zone.idx_zone,
             Device.idx_zone == Zone.idx_zone,
             Device.idx_device == L1Interface.idx_device,
-            L1Interface.idx_l1interface == IpPort.idx_l1interface,
+            # L1Interface.idx_l1interface == IpPort.idx_l1interface,
         )
     )
     rows = db.db_select_row(1062, statement)
+
+    from sqlalchemy.dialects import mysql
+
+    query = statement.compile(
+        dialect=mysql.dialect(), compile_kwargs={"literal_binds": True}
+    )
+    print(query)
 
     # Return
     for row in rows:

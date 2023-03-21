@@ -80,6 +80,17 @@ class IngesterAgent(Agent):
             # Log the start time
             ts_start = int(time.time())
 
+            # Test for the lock file
+            if os.path.isfile(self.lockfile) is True:
+                log_message = (
+                    "Ingest lock file {} exists. "
+                    "Is an ingest process already running?".format(
+                        self.lockfile
+                    )
+                )
+                log.log2debug(1054, log_message)
+                break
+
             # Create lockfile
             open(self.lockfile, "a").close()
 

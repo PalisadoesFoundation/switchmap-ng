@@ -2,6 +2,7 @@
 
 # Standard imports
 import os
+import hashlib
 
 # PIP3 imports
 from flask import Blueprint, request, jsonify
@@ -39,13 +40,20 @@ def post_device_data():
         hostname = data["misc"]["host"]
     except:
         hostname = None
+    try:
+        zone = data["misc"]["zone"]
+    except:
+        zone = None
 
     if bool(hostname):
         # Only write data if file doesn't exist. This reduces the risk of
         # duplicate data if data from a previously existing file is still
         # being ingested.
-        filepath = "{}{}{}.yaml".format(
-            config.cache_directory(), os.sep, hostname
+        filepath = "{}{}{}-{}.yaml".format(
+            config.cache_directory(),
+            os.sep,
+            hostname,
+            hashlib.md5(zone.encode("utf-8")).hexdigest()[:5],
         )
         if os.path.exists(filepath) is False:
             # Write data to file

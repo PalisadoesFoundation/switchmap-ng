@@ -1,36 +1,24 @@
 """Module for updating the database with topology data."""
 
 import time
-import socket
 from collections import namedtuple
 from copy import deepcopy
-from operator import attrgetter
 
 # Application imports
 from switchmap.core import log
-from switchmap.core import general
 from switchmap.server.db.ingest.query import device as _misc_device
 from switchmap.server.db.table import device as _device
 from switchmap.server.db.table import l1interface as _l1interface
 from switchmap.server.db.table import vlan as _vlan
-from switchmap.server.db.table import macip as _macip
 from switchmap.server.db.table import macport as _macport
 from switchmap.server.db.table import vlanport as _vlanport
-from switchmap.server.db.table import ip as _ip
-from switchmap.server.db.table import ipport as _ipport
 from switchmap.server.db.table import mac as _mac
-from switchmap.server.db.table import oui as _oui
 from switchmap.server.db.table import (
-    IIp,
-    IIpPort,
-    IMac,
     IVlan,
-    IMacIp,
     IDevice,
     IMacPort,
     IVlanPort,
     IL1Interface,
-    TopologyResult,
 )
 
 
@@ -126,32 +114,8 @@ class Status:
         """Instantiate the class."""
         self._vlan = False
         self._vlanport = False
-        self._mac = False
         self._macport = False
-        self._ip = False
-        self._macip = False
-        self._ipport = False
         self._l1interface = False
-
-    @property
-    def ip(self):
-        """Provide the value of  the 'ip' property."""
-        return self._ip
-
-    @ip.setter
-    def ip(self, value):
-        """Set the 'ip' property."""
-        self._ip = value
-
-    @property
-    def ipport(self):
-        """Provide the value of  the 'ipport' property."""
-        return self._ipport
-
-    @ipport.setter
-    def ipport(self, value):
-        """Set the 'ipport' property."""
-        self._ipport = value
 
     @property
     def l1interface(self):
@@ -162,26 +126,6 @@ class Status:
     def l1interface(self, value):
         """Set the 'l1interface' property."""
         self._l1interface = value
-
-    @property
-    def mac(self):
-        """Provide the value of  the 'mac' property."""
-        return self._mac
-
-    @mac.setter
-    def mac(self, value):
-        """Set the 'mac' property."""
-        self._mac = value
-
-    @property
-    def macip(self):
-        """Provide the value of  the 'macip' property."""
-        return self._macip
-
-    @macip.setter
-    def macip(self, value):
-        """Set the 'macip' property."""
-        self._macip = value
 
     @property
     def macport(self):
@@ -253,10 +197,7 @@ class Topology:
         self.l1interface()
         self.vlan()
         self.vlanport()
-        self.mac()
         self.macport()
-        self.ip()
-        self.macip()
 
     def l1interface(self):
         """Update the L1interface DB table.
@@ -530,81 +471,6 @@ class Topology:
         # Everything is completed
         self._status.vlanport = True
 
-    def mac(self):
-        """Update the Mac DB table.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
-        # Test prerequisite
-        if bool(self._status.vlanport) is False:
-            self.log_invalid("Mac")
-            return
-
-        # Initialize key variables
-        exists = False
-        interfaces = self._data.get("layer1")
-        all_macs = []
-        unique_macs = []
-        unique_ouis = []
-        inserts = []
-        lookup = {}
-        db_lookup = _lookup(self._device.idx_device)
-
-        # Log
-        self.log("Mac")
-
-        # Get all the existing ifindexes
-        all_ifindexes = [_.ifindex for _ in db_lookup.ifindexes]
-
-        # Process each interface
-        for ifindex, interface in interfaces.items():
-            exists = ifindex in all_ifindexes
-
-            # Process each Mac
-            if bool(exists) is True:
-                these_macs = interface.get("l1_macs")
-                if bool(these_macs) is True:
-                    all_macs.extend(these_macs)
-
-        # Get macs and ouis
-        unique_macs = list(set(_.lower() for _ in all_macs))
-        unique_ouis = list(set([_[:6].lower() for _ in unique_macs]))
-
-        # Process ouis
-        for item in sorted(unique_ouis):
-            exists = _oui.exists(item)
-            lookup[item] = exists.idx_oui if bool(exists) is True else 1
-
-        # Process macs
-        for item in sorted(unique_macs):
-            exists = _mac.exists(self._device.idx_zone, item)
-            row = IMac(
-                idx_oui=lookup.get(item[:6], 1),
-                idx_zone=self._device.idx_zone,
-                mac=item,
-                enabled=1,
-            )
-            if bool(exists) is False:
-                # _mac.insert_row(row)
-                inserts.append(row)
-            else:
-                _mac.update_row(exists.idx_mac, row)
-
-        # Insert if required
-        if bool(inserts) is True:
-            _mac.insert_row(inserts)
-
-        # Log
-        self.log("Mac", updated=True)
-
-        # Everything is completed
-        self._status.mac = True
-
     def macport(self):
         """Update the MacPort DB table.
 
@@ -616,7 +482,7 @@ class Topology:
 
         """
         # Test prerequisite
-        if bool(self._status.mac) is False:
+        if bool(self._status.vlanport) is False:
             self.log_invalid("MacPort")
             return
 
@@ -664,159 +530,6 @@ class Topology:
         # Everything is completed
         self._status.macport = True
 
-    def ip(self):
-        """Update the Ip DB table.
-
-        Args:
-            data: Ip data
-
-        Returns:
-            None
-
-        """
-        # Test prerequisite
-        if bool(self._status.macport) is False:
-            self.log_invalid("Ip")
-            return
-
-        # Initialize key variables
-        dns = self._dns
-        ipv6 = None
-        ipv4 = None
-        adds = []
-        updates = []
-
-        # Log
-        self.log("Ip")
-
-        # Get Ip data
-        layer3 = self._data.get("layer3")
-        if bool(layer3) is True:
-            ipv4 = layer3.get("ipNetToMediaTable")
-            ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
-
-            # Process arp table data
-            for table in [ipv4, ipv6]:
-                if bool(table) is True:
-                    result = _process_ip(
-                        self._device.idx_zone,
-                        table,
-                        dns=dns,
-                    )
-                    adds.extend(result.adds)
-                    updates.extend(result.updates)
-
-        # Do the Updates
-        for item in sorted(updates):
-            _ip.update_row(item.idx_ip, item.row)
-
-        # Do the adds
-        _ip.insert_row(sorted(adds))
-
-        # Log
-        self.log("Ip", updated=True)
-
-        # Everything is completed
-        self._status.ip = True
-
-    def macip(self):
-        """Update the MacIp DB table.
-
-        Args:
-            data: MacIp data
-
-        Returns:
-            None
-
-        """
-        # Test prerequisite
-        if bool(self._status.macport) is False:
-            self.log_invalid("MacIp")
-            return
-
-        # Initialize key variables
-        ipv6 = None
-        ipv4 = None
-        adds = []
-        updates = []
-
-        # Log
-        self.log("MacIp")
-
-        # Get MacIp data
-        layer3 = self._data.get("layer3")
-        if bool(layer3) is True:
-            ipv4 = layer3.get("ipNetToMediaTable")
-            ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
-
-            for table in [ipv4, ipv6]:
-                if bool(table):
-                    result = _process_macip(self._device.idx_zone, table)
-                    adds.extend(result.adds)
-                    updates.extend(result.updates)
-
-        # Do the Updates
-        for item in sorted(updates):
-            _macip.update_row(item.idx_macip, item.row)
-
-        # Do the adds
-        _macip.insert_row(sorted(adds))
-
-        # Log
-        self.log("MacIp", updated=True)
-
-        # Everything is completed
-        self._status.macip = True
-
-    def ipport(self):
-        """Update the IpPort DB table.
-
-        Args:
-            data: IpPort data
-
-        Returns:
-            None
-
-        """
-        # Test prerequisite
-        if bool(self._status.macip) is False:
-            self.log_invalid("IpPort")
-            return
-
-        # Initialize key variables
-        ipv6 = None
-        ipv4 = None
-        adds = []
-        updates = []
-
-        # Log
-        self.log("IpPort")
-
-        # Get IpPort data
-        layer3 = self._data.get("layer3")
-        if bool(layer3) is True:
-            ipv4 = layer3.get("ipNetToMediaTable")
-            ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
-
-            for table in [ipv4, ipv6]:
-                if bool(table):
-                    result = _process_ipport(self._device.idx_zone, table)
-                    adds.extend(result.adds)
-                    updates.extend(result.updates)
-
-        # Do the Updates
-        for item in sorted(updates):
-            _ipport.update_row(item.idx_ipport, item.row)
-
-        # Do the adds
-        _ipport.insert_row(sorted(adds))
-
-        # Log
-        self.log("IpPort", updated=True)
-
-        # Everything is completed
-        self._status.ipport = True
-
     def log(self, table, updated=False):
         """Create standardized log messaging.
 
@@ -858,174 +571,6 @@ after starting".format(
             int(time.time()) - self._start,
         )
         log.log2debug(1029, log_message)
-
-
-def _process_ip(idx_zone, table, dns=True):
-    """Update the mac DB table.
-
-    Args:
-        idx_zone: Zone index
-        table: ARP table keyed by ip address
-        dns: Do DNS lookup if True
-
-    Returns:
-        result
-
-    """
-    # Initialize key variables
-    adds = []
-    updates = []
-
-    # Process data
-    for next_ip, _ in table.items():
-        # Create expanded lower case versions of the IP address
-        myp = general.ipaddress(next_ip)
-        if bool(myp) is False:
-            continue
-
-        # Get the status in the database
-        db_row = _ip.exists(idx_zone, myp.address)
-
-        # Get hostname for DB
-        if bool(dns) is True:
-            try:
-                hostname = socket.gethostbyaddr(myp.address)[0]
-            except:
-                hostname = None
-        else:
-            hostname = None
-
-        # Create a DB record
-        row = IIp(
-            idx_zone=idx_zone,
-            address=myp.address,
-            hostname=hostname,
-            version=myp.version,
-            enabled=1,
-        )
-
-        # Prepare for insert or update
-        if bool(db_row) is True:
-            if row == IIp(
-                idx_zone=db_row.idx_zone,
-                address=db_row.address,
-                hostname=db_row.hostname,
-                version=db_row.version,
-                enabled=db_row.enabled,
-            ):
-                continue
-            else:
-                updates.append(row)
-        else:
-            adds.append(row)
-
-    # Return
-    result = TopologyResult(adds=adds, updates=updates)
-    return result
-
-
-def _process_macip(idx_zone, table):
-    """Update the mac DB table.
-
-    Args:
-        idx_zone: Zone index
-        table: ARP table keyed by ip address
-
-    Returns:
-        result
-
-    """
-    # Initialize key variables
-    adds = []
-    updates = []
-
-    # Process data
-    for next_ip, next_mac in table.items():
-        # Create expanded lower case versions of the IP address
-        myp = general.ipaddress(next_ip)
-        if bool(myp) is False:
-            continue
-
-        # Create lowercase version of mac address
-        next_mac = general.mac(next_mac)
-
-        # Update the database
-        mac_exists = _mac.exists(idx_zone, next_mac)
-        ip_exists = _ip.exists(idx_zone, myp.address)
-
-        # Insert
-        if bool(mac_exists) and bool(ip_exists):
-            macip_exists = _macip.exists(mac_exists.idx_mac, ip_exists.idx_ip)
-            if bool(macip_exists) is False:
-                # Create a DB record
-                adds.append(
-                    IMacIp(
-                        idx_ip=ip_exists.idx_ip,
-                        idx_mac=mac_exists.idx_mac,
-                        enabled=1,
-                    )
-                )
-
-    # Return
-    result = TopologyResult(adds=adds, updates=updates)
-    return result
-
-
-def _process_ipport(idx_zone, table):
-    """Update the mac DB table.
-
-    Args:
-        idx_zone: Zone index
-        table: ARP table keyed by ip address
-
-    Returns:
-        result
-
-    """
-    # Initialize key variables
-    adds = []
-    updates = []
-
-    # Process data
-    for next_ip, next_mac in table.items():
-        # Create expanded lower case versions of the IP address
-        myp = general.ipaddress(next_ip)
-        if bool(myp) is False:
-            continue
-
-        # Create lowercase version of mac address
-        next_mac = general.mac(next_mac)
-
-        # Verify prerequisites
-        mac_exists = _mac.exists(idx_zone, next_mac)
-        ip_exists = _ip.exists(idx_zone, myp.address)
-
-        # Skip if the IP doesn't exist, or else the following logic will crash
-        if bool(ip_exists) is False:
-            continue
-
-        # Iterate over existing MAC entries
-        if bool(mac_exists) is True:
-            # Get the ports on which the MAC address resides
-            macports = _macport.find_idx_mac(mac_exists.idx_mac)
-
-            # Iterate over the MAC assignments to interfaces
-            for macport in macports:
-                # Assign the IP to this port
-                adds.append(
-                    IIpPort(
-                        idx_l1interface=macport.idx_l1interface,
-                        idx_ip=ip_exists.idx_ip,
-                        enabled=1,
-                    )
-                )
-
-    # Sort the results for better testing
-    adds = sorted(adds, key=attrgetter("idx_l1interface", "idx_ip"))
-
-    # Return
-    result = TopologyResult(adds=adds, updates=updates)
-    return result
 
 
 def _ifspeed(interface):

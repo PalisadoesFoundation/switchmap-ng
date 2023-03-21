@@ -181,7 +181,7 @@ def search():
           name
           sysName
           hostname
-          zone{
+          device{
             name
           }
         }

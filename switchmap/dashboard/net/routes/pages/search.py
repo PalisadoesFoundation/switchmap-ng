@@ -144,7 +144,7 @@ def get_tables(_interfaces):
 
                 # Extract device information
                 next_hostname = next_device.get("hostname", "")
-                zone_dict = next_device.get("zone", "")
+                zone_dict = next_device.get("device", "")
                 next_zone = (
                     zone_dict.get("name", "") if bool(zone_dict) else ""
                 )

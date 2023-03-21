@@ -84,6 +84,9 @@ def insert_row(rows):
     if isinstance(rows, list) is False:
         rows = [rows]
 
+    # Remove any duplicates
+    rows = list(set(rows))
+
     # Create objects
     for row in rows:
         inserts.append(
