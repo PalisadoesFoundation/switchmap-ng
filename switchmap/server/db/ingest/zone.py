@@ -24,12 +24,13 @@ def process(data, idx_zone, dns=True):
         dns: Do DNS lookups if True
 
     Returns:
-        None
+        results: ZoneObjects object
 
     """
     # Process the device
     _topology = Topology(data, idx_zone, dns=dns)
-    _topology.process()
+    result = _topology.process()
+    return result
 
 
 class Status:
@@ -204,7 +205,6 @@ class Topology:
             # Process arp table data
             for table in [ipv4, ipv6]:
                 if bool(table) is True:
-
                     # Process data
                     for next_ip, _ in table.items():
                         # Create expanded lower case versions of the IP address
