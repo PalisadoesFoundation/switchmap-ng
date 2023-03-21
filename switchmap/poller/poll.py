@@ -23,11 +23,11 @@ from switchmap import AGENT_POLLER
 _META = namedtuple("_META", "zone hostname config")
 
 
-def devices():
+def devices(multiprocessing=False):
     """Poll all devices for data using subprocesses and create YAML files.
 
     Args:
-        None
+        multiprocessing: Run multiprocessing when True
 
     Returns:
         None
@@ -53,7 +53,7 @@ def devices():
         )
 
     # Process the data
-    if config.multiprocessing() is False:
+    if bool(multiprocessing) is False:
         for argument in arguments:
             device(argument)
 

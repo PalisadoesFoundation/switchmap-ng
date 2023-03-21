@@ -168,7 +168,7 @@ def move_yaml_files(src, dst):
     for filename in src_files:
         filepath = os.path.join(src, filename)
         if os.path.isfile(filepath) and filepath.lower().endswith(".yaml"):
-            shutil.copy(filepath, dst)
+            shutil.move(filepath, dst)
 
 
 def read_yaml_files(directories):

@@ -46,23 +46,33 @@ def post(uri, data, config, server=True):
     log.log2info(1583, log_message)
 
     # Post data save to cache if this fails
-    try:
-        with requests.Session() as session:
-            if bool(username) is False or bool(password) is False:
-                result = session.post(url, json=data)
-            else:
-                result = session.post(
-                    url, json=data, auth=(username, password)
-                )
-            response = True
-    except Exception as error:
-        log_message = "Error posting to {}".format(url)
-        log.log2warning(1537, log_message)
-        log.log2exception(1641, sys.exc_info())
-        return ExceptionWrapper(error)
-    except:
-        log_message = "Failed to post data to API server URL {}.".format(url)
-        log.log2info(1038, log_message)
+    with requests.Session() as session:
+
+        # if bool(username) is False or bool(password) is False:
+        #     result = session.post(url, json=data)
+        # else:
+        #     result = session.post(url, json=data, auth=(username, password))
+        # response = True
+
+        try:
+            with requests.Session() as session:
+                if bool(username) is False or bool(password) is False:
+                    result = session.post(url, json=data)
+                else:
+                    result = session.post(
+                        url, json=data, auth=(username, password)
+                    )
+                response = True
+        except Exception as error:
+            log_message = "Error posting to {}".format(url)
+            log.log2warning(1537, log_message)
+            log.log2exception(1641, sys.exc_info())
+            return ExceptionWrapper(error)
+        except:
+            log_message = "Failed to post data to API server URL {}.".format(
+                url
+            )
+            log.log2info(1038, log_message)
 
     # Define success
     if response is True:

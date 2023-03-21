@@ -12,7 +12,6 @@ from flask import Blueprint, request, render_template
 # Application imports
 from switchmap.dashboard import uri
 from switchmap.core import rest
-from switchmap.core import log
 from switchmap.dashboard.configuration import ConfigDashboard
 from switchmap.dashboard.net.html.pages.search import SearchPage
 
@@ -61,8 +60,6 @@ def search():
                     )
                     if bool(interfaces_post_response.success) is True:
                         interfaces = interfaces_post_response.response.json()
-                        log.log2info(777777777777777, interfaces)
-
                         tables = get_tables(interfaces)
 
         break

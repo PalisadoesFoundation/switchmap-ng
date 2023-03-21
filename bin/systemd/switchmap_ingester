@@ -88,11 +88,15 @@ class IngesterAgent(Agent):
             log.log2info(1056, log_message)
 
             # Ingest data
-            _ingest = ingest.Ingest(self._config)
+            multiprocessing = self._config.multiprocessing()
+            _ingest = ingest.Ingest(
+                self._config, multiprocessing=multiprocessing
+            )
             _ingest.process()
 
             # Delete lockfile
-            os.remove(self.lockfile)
+            if os.path.isfile(self.lockfile):
+                os.remove(self.lockfile)
 
             # Log
             duration = int(time.time() - ts_start)
