@@ -92,7 +92,7 @@ Ingest lock file {} exists. Is an ingest process already running?\
                 files.move_yaml_files(cache_directory, tmpdir)
 
                 # Parallel process the files
-                self.parallel(tmpdir)
+                self.device(tmpdir)
             else:
                 log_message = (
                     "Poller lock file {} exists. Skipping processing of cache "
@@ -103,7 +103,7 @@ Ingest lock file {} exists. Is an ingest process already running?\
         # Delete lock file
         os.remove(lock_file)
 
-    def parallel(self, src):
+    def zone(self, src):
         """Ingest the files in parallel.
 
         Args:
@@ -115,7 +115,6 @@ Ingest lock file {} exists. Is an ingest process already running?\
         """
         # Initialize key variables
         zones = []
-        # src = self._config.ingest_directory()
 
         # Get the number of threads to use in the pool
         pool_size = self._config.agent_subprocesses()
@@ -141,7 +140,7 @@ Ingest lock file {} exists. Is an ingest process already running?\
                     # Process files serially
                     ############################
                     for zone in zones:
-                        single(zone[0], zone[1], zone[2], zone[3])
+                        device(zone[0], zone[1], zone[2], zone[3])
 
                 else:
                     ############################
@@ -153,7 +152,7 @@ Ingest lock file {} exists. Is an ingest process already running?\
                         processes=pool_size
                     ) as pool:
                         # Create sub processes from the pool
-                        pool.starmap(single, zones)
+                        pool.starmap(device, zones)
 
                 # Only update the DB if the skip file is absent.
                 if (
@@ -188,15 +187,105 @@ Ingest lock file {} exists. Is an ingest process already running?\
                 # Process files sequentially
                 ############################
                 for zone in zones:
-                    single(zone[0], zone[1], zone[2], zone[3])
+                    device(zone[0], zone[1], zone[2], zone[3])
+
+                # Delete all DB records related to the event.
+                # This is only done for testing
+                _event.delete(event.idx_event)
+
+    def device(self, src):
+        """Ingest the files in parallel.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        zones = []
+
+        # Get the number of threads to use in the pool
+        pool_size = self._config.agent_subprocesses()
+
+        # Create a list of files to process
+        filepaths = _filepaths(src)
+
+        # Parallel processing
+        if bool(filepaths) is True:
+            # Create an event
+            event = _event.create()
+
+            # Get the zone data from each file
+            for filepath in filepaths:
+                zone = _get_zone(event, filepath)
+                zones.append(
+                    (zone.idx_zone, zone.data, filepath, self._config)
+                )
+
+            if bool(self._test) is False:
+                if bool(self._multiprocessing) is False:
+                    ############################
+                    # Process files serially
+                    ############################
+                    for zone in zones:
+                        device(zone[0], zone[1], zone[2], zone[3])
+
+                else:
+                    ############################
+                    # Process files in parallel
+                    ############################
+
+                    # Create a pool of sub process resources
+                    with get_context("spawn").Pool(
+                        processes=pool_size
+                    ) as pool:
+                        # Create sub processes from the pool
+                        pool.starmap(device, zones)
+
+                # Only update the DB if the skip file is absent.
+                if (
+                    os.path.isfile(
+                        files.skip_file(AGENT_INGESTER, self._config)
+                    )
+                    is False
+                ):
+                    # Update the event pointer in the root table
+                    # We don't do this for testing
+                    root = _root.idx_exists(1)
+                    if bool(root):
+                        _root.update_row(
+                            root.idx_root,
+                            IRoot(
+                                idx_event=event.idx_event,
+                                name=root.name,
+                                enabled=1,
+                            ),
+                        )
+
+                # Purge data if requested
+                if bool(self._config.purge_after_ingest()) is True:
+                    log_message = (
+                        "Purging database based on configuration parameters."
+                    )
+                    log.log2debug(1058, log_message)
+                    _event.purge()
+
+            else:
+                ############################
+                # Process files sequentially
+                ############################
+                for zone in zones:
+                    device(zone[0], zone[1], zone[2], zone[3])
 
                 # Delete all DB records related to the event.
                 # This is only done for testing
                 _event.delete(event.idx_event)
 
 
-def single(idx_zone, data, filepath, config):
-    """Ingest a single file.
+def device(idx_zone, data, filepath, config):
+    """Ingest a single file for device updates.
 
     Args:
         idx_zone: Zone index to be used for the data
