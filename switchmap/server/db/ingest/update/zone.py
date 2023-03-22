@@ -98,6 +98,7 @@ class Topology:
         self._status = Status()
         self._start = int(time.time())
         self._hostname = str(self._data["misc"]["host"]).lower()
+        self._arp_table = _arp_table(idx_zone, self._data)
 
     def process(self):
         """Process data received from a device.
@@ -154,6 +155,10 @@ class Topology:
             if bool(these_macs) is True:
                 all_macs.extend(these_macs)
 
+        # Process ARP table
+        for item in self._arp_table:
+            all_macs.append(item.mac)
+
         # Get macs and ouis
         unique_macs = list(set(_.lower() for _ in all_macs))
         unique_ouis = list(set([_[:6].lower() for _ in unique_macs]))
@@ -197,8 +202,6 @@ class Topology:
         """
         # Initialize key variables
         dns = self._dns
-        ipv6 = None
-        ipv4 = None
         rows = []
 
         # Test prerequisite
@@ -209,41 +212,27 @@ class Topology:
         # Log
         self.log("Ip")
 
-        # Get Ip data
-        layer3 = self._data.get("layer3")
-        if bool(layer3) is True:
-            ipv4 = layer3.get("ipNetToMediaTable")
-            ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
+        # Process the ARP Table
+        for item in self._arp_table:
+            # Get hostname for DB
+            if bool(dns) is True:
+                try:
+                    hostname = socket.gethostbyaddr(item.ip)[0]
+                except:
+                    hostname = None
+            else:
+                hostname = None
 
-            # Process arp table data
-            for table in [ipv4, ipv6]:
-                if bool(table) is True:
-                    # Process data
-                    for next_ip, _ in table.items():
-                        # Create expanded lower case versions of the IP address
-                        myp = general.ipaddress(next_ip)
-                        if bool(myp) is False:
-                            continue
-
-                        # Get hostname for DB
-                        if bool(dns) is True:
-                            try:
-                                hostname = socket.gethostbyaddr(myp.address)[0]
-                            except:
-                                hostname = None
-                        else:
-                            hostname = None
-
-                        # Create a DB record
-                        rows.append(
-                            IIp(
-                                idx_zone=self._idx_zone,
-                                address=myp.address,
-                                hostname=hostname,
-                                version=myp.version,
-                                enabled=1,
-                            )
-                        )
+            # Create a DB record
+            rows.append(
+                IIp(
+                    idx_zone=self._idx_zone,
+                    address=item.ip,
+                    hostname=hostname,
+                    version=item.ip_version,
+                    enabled=1,
+                )
+            )
 
         # Log
         self.log("Ip", updated=True)
@@ -266,8 +255,6 @@ class Topology:
 
         """
         # Initialize key variables
-        ipv6 = None
-        ipv4 = None
         rows = []
 
         # Test prerequisite
@@ -279,14 +266,7 @@ class Topology:
         self.log("MacIp")
 
         # Get MacIp data
-        layer3 = self._data.get("layer3")
-        if bool(layer3) is True:
-            ipv4 = layer3.get("ipNetToMediaTable")
-            ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
-
-            for table in [ipv4, ipv6]:
-                if bool(table):
-                    rows.extend(_process_pairmacips(self._idx_zone, table))
+        rows = self._arp_table
 
         # Log
         self.log("MacIp", updated=True)
@@ -368,4 +348,48 @@ def _process_pairmacips(idx_zone, table):
         results.append(PairMacIp(mac=mac, ip=myp.address, idx_zone=idx_zone))
 
     # Return
+    return results
+
+
+def _arp_table(idx_zone, data):
+    """Update the Ip DB table.
+
+    Args:
+        idx_zone: Zone table index
+        data: YAML data
+
+    Returns:
+        results: List of PairMacIp objects
+
+    """
+    # Get Ip data
+    layer3 = data.get("layer3")
+    results = []
+
+    if bool(layer3) is True:
+        ipv4 = layer3.get("ipNetToMediaTable")
+        ipv6 = layer3.get("ipNetToPhysicalPhysAddress")
+
+        # Process arp table data
+        for table in [ipv4, ipv6]:
+            if bool(table) is True:
+                # Process data
+                for next_ip, next_mac in table.items():
+                    # Create expanded lower case versions of the IP address
+                    myp = general.ipaddress(next_ip)
+                    if bool(myp) is False:
+                        continue
+
+                    # Create lowercase version of mac address
+                    mac = general.mac(next_mac)
+
+                    # Update the results
+                    results.append(
+                        PairMacIp(
+                            mac=mac,
+                            ip=myp.address,
+                            ip_version=myp.version,
+                            idx_zone=idx_zone,
+                        )
+                    )
     return results

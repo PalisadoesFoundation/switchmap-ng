@@ -67,7 +67,7 @@ def events():
     return result
 
 
-def search():
+def search_dashboard_server():
     """Create the device page URI.
 
     Args:
@@ -100,7 +100,7 @@ def search_old(idx_l1interfaces):
     return result
 
 
-def search_post():
+def search_api_server():
     """Create the device page URI.
 
     Args:

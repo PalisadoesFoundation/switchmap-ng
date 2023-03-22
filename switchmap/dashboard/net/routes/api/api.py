@@ -162,12 +162,6 @@ def search():
     # Extract the interface list form the POST request
     idx_l1interfaces = request.json
 
-    # idx_l1interfaces =
-    # for _, value in data.items():
-    #     idx_l1interface = value.get("idx")
-    #     if bool(idx_l1interface) is True:
-    #         idx_l1interfaces.append(idx_l1interface)
-
     # Create the filter string
     filter_string = graphql_filters.or_operator(
         "idxL1interface", idx_l1interfaces

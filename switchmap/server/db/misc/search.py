@@ -246,7 +246,7 @@ def find_ip_interface(idx_ip):
             Ip.idx_zone == Zone.idx_zone,
             Device.idx_zone == Zone.idx_zone,
             Device.idx_device == L1Interface.idx_device,
-            # L1Interface.idx_l1interface == IpPort.idx_l1interface,
+            L1Interface.idx_l1interface == IpPort.idx_l1interface,
         )
     )
     rows = db.db_select_row(1062, statement)

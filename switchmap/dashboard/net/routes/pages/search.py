@@ -40,81 +40,92 @@ def search():
     items = request.form
 
     for key, value in items.items():
+
         # 'search_term' comes from the search form HTML
         if key == "search_term":
-            # Post the data to the API server
+
+            # Post the search term to to the remote API server. The response
+            # will be list of idx_l1interfaces that are associated with the
+            # search term.
             seach_dict = {"idx_root": 1, "searchterm": value.strip()}
             idx_post_response = rest.post(
-                uri.search_post(), seach_dict, config
+                uri.search_api_server(), seach_dict, config, server=True
             )
 
-            # Process a successful response
+            # Process the list of idx_l1interfaces if there is
+            # a successful response
             if bool(idx_post_response.success) is True:
-                # Get data from the API server using GraphQL
-                idx_l1interfaces = idx_post_response.response.json()
 
                 # Process data if found
+                idx_l1interfaces = idx_post_response.response.json()
                 if bool(idx_l1interfaces) is True:
+
+                    # Get data from the API server using GraphQL.
+                    # This is the standardized way we get GraphQL data.
+                    # This may need to be streamlined later.
                     interfaces_post_response = rest.post(
-                        uri.search(), idx_l1interfaces, config, server=False
+                        uri.search_dashboard_server(),
+                        idx_l1interfaces,
+                        config,
+                        server=False,
                     )
+
+                    # Get the table HTML by parsing the GraphQL output
                     if bool(interfaces_post_response.success) is True:
                         interfaces = interfaces_post_response.response.json()
                         tables = get_tables(interfaces)
 
-        break
-
     # Convert data to HTML and return it to the browser
     return render_template("search.html", results_dict=tables)
     # return jsonify(result)
 
 
-@SEARCH.route("/search-old", methods=["POST"])
-def search_old():
-    """Create the search page.
+# @SEARCH.route("/search-old", methods=["POST"])
+# def search_old():
+#     """Create the search page.
 
-    Args:
-        None
+#     Args:
+#         None
 
-    Returns:
-        HTML
+#     Returns:
+#         HTML
 
-    """
-    # Initialize key variables
-    tables = {}
+#     """
+#     # Initialize key variables
+#     tables = {}
 
-    # Get data to display
-    config = ConfigDashboard()
+#     # Get data to display
+#     config = ConfigDashboard()
 
-    # Get search form data
-    items = request.form
+#     # Get search form data
+#     items = request.form
 
-    for key, value in items.items():
-        # 'search_term' comes from the search form HTML
-        if key == "search_term":
-            # Post the data to the API server
-            seach_dict = {"idx_root": 1, "searchterm": value.strip()}
-            idx_post_response = rest.post(
-                uri.search_post(), seach_dict, config
-            )
+#     for key, value in items.items():
+#         # 'search_term' comes from the search form HTML
+#         if key == "search_term":
+#             # Post the data to the API server
+#             seach_dict = {"idx_root": 1, "searchterm": value.strip()}
+#             idx_post_response = rest.post(
+#                 uri.search_api_server(), seach_dict, config
+#             )
 
-            # Process a successful response
-            if bool(idx_post_response.success) is True:
-                # Get data from the API server using GraphQL
-                idx_l1interfaces = idx_post_response.response.json()
+#             # Process a successful response
+#             if bool(idx_post_response.success) is True:
+#                 # Get data from the API server using GraphQL
+#                 idx_l1interfaces = idx_post_response.response.json()
 
-                # Process data if found
-                if bool(idx_l1interfaces) is True:
-                    interfaces = rest.get(
-                        uri.search(idx_l1interfaces), config, server=False
-                    )
-                    tables = get_tables(interfaces)
+#                 # Process data if found
+#                 if bool(idx_l1interfaces) is True:
+#                     interfaces = rest.get(
+#                         uri.search(idx_l1interfaces), config, server=False
+#                     )
+#                     tables = get_tables(interfaces)
 
-        break
+#         break
 
-    # Convert data to HTML and return it to the browser
-    return render_template("search.html", results_dict=tables)
-    # return jsonify(result)
+#     # Convert data to HTML and return it to the browser
+#     return render_template("search.html", results_dict=tables)
+#     # return jsonify(result)
 
 
 def get_tables(_interfaces):
@@ -132,6 +143,7 @@ def get_tables(_interfaces):
     result = {}
     default = "<h3>&nbsp;Not Found</h3>"
     zones = defaultdict(lambda: defaultdict(lambda: []))
+    result = defaultdict(lambda: "")
 
     if bool(_interfaces) is True:
         # Populate the device dictionary
@@ -154,11 +166,18 @@ def get_tables(_interfaces):
 
         # Create the HTML dictionary for tables
         if bool(zones) is True:
+
+            # Iterate over the devices in the zone
             for zone, device in sorted(zones.items()):
+
+                # Iterate over the interfaces on the device
                 for hostname, interfaces in sorted(device.items()):
-                    # Create data table dict
+
+                    # Create a search object for each device in the zone
                     search = SearchPage(interfaces, hostname=hostname)
-                    result[zone] = search.html()
+
+                    # Append the results for the zone together
+                    result[zone] = "{}\n{}".format(result[zone], search.html())
         else:
             result[""] = default
     else:

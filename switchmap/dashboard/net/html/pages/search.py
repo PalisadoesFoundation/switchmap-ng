@@ -42,6 +42,7 @@ class SearchPage:
             html = table.__html__()
             if bool(self._hostname) is True:
                 html = layouts.table_wrapper(self._hostname, html, strip=False)
+
         else:
             html = ""
 
