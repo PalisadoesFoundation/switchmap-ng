@@ -519,29 +519,12 @@ class Topology:
 
                     # If True update the port to MAC address mapping
                     if bool(mac_exists) is True:
-                        log.log2debug(
-                            222777777222,
-                            "{} {}".format(item, self._device.hostname),
-                        )
-
                         row = IMacPort(
                             idx_l1interface=l1_exists.idx_l1interface,
                             idx_mac=mac_exists.idx_mac,
                             enabled=1,
                         )
                         _macport.insert_row(row)
-
-                        # # Update the MacPort database table
-                        # macport_exists = _macport.exists(
-                        #     l1_exists.idx_l1interface,
-                        #     mac_exists.idx_mac,
-                        # )
-                        # if bool(macport_exists) is True:
-                        #     _macport.update_row(
-                        #         macport_exists.idx_macport, row
-                        #     )
-                        # else:
-                        #     _macport.insert_row(row)
 
         # Log
         self.log("MacPort", updated=True)
