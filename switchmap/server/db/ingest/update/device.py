@@ -503,26 +503,45 @@ class Topology:
             # Process each Mac
             _macs = interface.get("l1_macs")
             if bool(_macs) is True:
+                # Update MAC addresses for all zones
+                log_message = (
+                    "Updating MAC addresses in the DB for device {}"
+                    "based on SNMP MIB-BRIDGE entries".format(
+                        self._device.hostname
+                    )
+                )
+                log.log2debug(1094, log_message)
+
+                # Iterate over the MACs found
                 for item in sorted(_macs):
-                    # Ensure the Mac exists in the database
+                    # Ensure the MAC exists in the database
                     mac_exists = _mac.exists(self._device.idx_zone, item)
+
+                    # If True update the port to MAC address mapping
                     if bool(mac_exists) is True:
+                        log.log2debug(
+                            222777777222,
+                            "{} {}".format(item, self._device.hostname),
+                        )
+
                         row = IMacPort(
                             idx_l1interface=l1_exists.idx_l1interface,
                             idx_mac=mac_exists.idx_mac,
                             enabled=1,
                         )
-                        # Update the MacPort database table
-                        macport_exists = _macport.exists(
-                            l1_exists.idx_l1interface,
-                            mac_exists.idx_mac,
-                        )
-                        if bool(macport_exists) is True:
-                            _macport.update_row(
-                                macport_exists.idx_macport, row
-                            )
-                        else:
-                            _macport.insert_row(row)
+                        _macport.insert_row(row)
+
+                        # # Update the MacPort database table
+                        # macport_exists = _macport.exists(
+                        #     l1_exists.idx_l1interface,
+                        #     mac_exists.idx_mac,
+                        # )
+                        # if bool(macport_exists) is True:
+                        #     _macport.update_row(
+                        #         macport_exists.idx_macport, row
+                        #     )
+                        # else:
+                        #     _macport.insert_row(row)
 
         # Log
         self.log("MacPort", updated=True)

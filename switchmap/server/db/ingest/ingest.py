@@ -170,8 +170,24 @@ class Ingest:
         macs = list(set([_ for row in rows for _ in row.macs]))
         ips = list(set([_ for row in rows for _ in row.ips]))
         pairmacips = list(set([_ for row in rows for _ in row.pairmacips]))
+
+        # Update MAC addresses for all zones
+        log_message = (
+            "Updating MAC addresses in the DB for all "
+            "zones from ARP and NDP ables."
+        )
+        log.log2debug(1084, log_message)
         _mac.insert_row(macs)
+
+        log_message = (
+            "Updating IP addresses in the DB for all "
+            "zones from ARP and NDP tables."
+        )
+        log.log2debug(1085, log_message)
         _ip.insert_row(ips)
+
+        log_message = "Updating MAC to IP address mapping in the database."
+        log.log2debug(1089, log_message)
         _process_macip(pairmacips)
 
         # Return
