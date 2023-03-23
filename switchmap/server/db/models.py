@@ -40,7 +40,7 @@ class Oui(BASE):
     __table_args__ = {"mysql_engine": "InnoDB"}
 
     idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
-    oui = Column(VARBINARY(256), unique=True, nullable=True)
+    oui = Column(VARBINARY(256), unique=True, nullable=True, index=True)
     organization = Column(VARBINARY(256), nullable=True, default=Null)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
@@ -227,7 +227,7 @@ class L1Interface(BASE):
     ifspeed = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     iftype = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     ifname = Column(VARBINARY(256), nullable=True, default=Null)
-    ifalias = Column(VARBINARY(256), nullable=True, default=Null)
+    ifalias = Column(VARBINARY(256), nullable=True, default=Null, index=True)
     ifdescr = Column(VARBINARY(256), nullable=True, default=Null)
     ifadminstatus = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     ifoperstatus = Column(BIGINT(unsigned=True), nullable=True, default=Null)
@@ -387,7 +387,7 @@ class Mac(BASE):
         default=1,
         server_default=text("1"),
     )
-    mac = Column(VARBINARY(256), nullable=True, default=Null)
+    mac = Column(VARBINARY(256), nullable=True, default=Null, index=True)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,
@@ -490,9 +490,9 @@ class Ip(BASE):
         default=1,
         server_default=text("1"),
     )
-    address = Column(VARBINARY(256), nullable=True, default=Null)
+    address = Column(VARBINARY(256), nullable=True, default=Null, index=True)
     version = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    hostname = Column(VARBINARY(256), nullable=True, default=Null)
+    hostname = Column(VARBINARY(256), nullable=True, default=Null, index=True)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,

@@ -5,17 +5,17 @@
 import pandas
 
 # Module imports
-from switchmap.core import log
 from switchmap.server.db.table import IOui
 from switchmap.server.db.table import oui as _oui
+from switchmap.server.db import SCOPED_SESSION
+from switchmap.server.db.models import Oui
 
 
-def update_db_oui(filepath, new=False):
+def update_db_oui(filepath):
     """Update the database with Oui data.
 
     Args:
         df_: pd.Dataframe
-        new: True if newly created DB. Existing records are not checked.
 
     Returns:
         None
@@ -23,34 +23,38 @@ def update_db_oui(filepath, new=False):
     """
     # Initialize key variables
     inserts = []
+    rows = []
+
+    # Get the row count
+    row_count = SCOPED_SESSION.query(Oui).count()
 
     # Read OUI file
     df_ = pandas.read_csv(filepath, delimiter=":")
     df_.columns = ["oui", "organization"]
 
-    # Process DataFrame (Enables)
+    # Process DataFrame
     for _, row in df_.iterrows():
-        db_record = _oui.exists(row["oui"]) if bool(new) else False
-        file_record = IOui(
-            oui=row["oui"], organization=row["organization"], enabled=1
+        rows.append(
+            IOui(oui=row["oui"], organization=row["organization"], enabled=1)
         )
 
-        # Process insertions and updates
-        if bool(db_record) is False:
-            try:
-                inserts.append(file_record)
-            except:
-                log_message = """OUI: {} for organization: {} already exists. \
-Ignoring. Don\'t use the \
---new_installation flag for updating the OUI data.""".format(
-                    row["oui"], row["organization"]
-                )
+    # Insert rows into the database if it is empty
+    if row_count <= 1:
+        _oui.insert_row(rows)
 
-                log.log2see(1116, log_message)
-        else:
-            if db_record.organization != file_record.organization:
-                _oui.update_row(db_record.idx_oui, file_record)
+    # Selectively update rows if the database is not empty
+    else:
+        for row in rows:
+            # Determine whether the record already exists
+            exists = _oui.exists(row.oui)
 
-    # Do insertions
-    if bool(inserts):
-        _oui.insert_row(inserts)
+            # Process insertions and updates
+            if bool(exists) is False:
+                inserts.add(row)
+            else:
+                if exists.organization != row.organization:
+                    _oui.update_row(exists.idx_oui, row)
+
+        # Do insertions
+        if bool(inserts):
+            _oui.insert_row(inserts)

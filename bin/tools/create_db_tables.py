@@ -70,8 +70,8 @@ def main():
             )
         )
 
-        # Populate the OUI data
-        _oui.update_db_oui(oui_filepath, new=True)
+    # Populate the OUI data
+    _oui.update_db_oui(oui_filepath)
 
 
 if __name__ == "__main__":
