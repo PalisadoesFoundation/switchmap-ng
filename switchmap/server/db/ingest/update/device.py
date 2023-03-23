@@ -3,6 +3,7 @@
 import time
 from collections import namedtuple
 from copy import deepcopy
+from operator import attrgetter
 
 # Application imports
 from switchmap.core import log
@@ -199,11 +200,12 @@ class Topology:
         self.vlanport()
         self.macport()
 
-    def l1interface(self):
+    def l1interface(self, test=False):
         """Update the L1interface DB table.
 
         Args:
-            None
+            test: Sequentially insert values into the database if True.
+                Bulk inserts don't insert data with predictable primary keys.
 
         Returns:
             None
@@ -221,42 +223,28 @@ class Topology:
         # Initialize more key variables
         data = self._data
         interfaces = data.get("layer1")
-        inserts = []
+        rows = []
 
         # Log
         self.log("L1Interface")
 
-        # Get all the existing ifindexes
-        all_ifindexes = {
-            _.ifindex: _ for _ in _lookup(self._device.idx_device).ifindexes
-        }
-
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
-            exists = all_ifindexes.get(ifindex)
+            # Calculate the ts_idle time
+            ifadminstatus = interface.get("ifAdminStatus")
+            ifoperstatus = interface.get("ifOperStatus")
+            if ifadminstatus == 1 and ifoperstatus == 1:
+                # Port enabled with link
+                ts_idle = 0
+            elif ifadminstatus == 2:
+                # Port disabled
+                ts_idle = 0
+            else:
+                ts_idle = 1
 
-            # Update the database
-            if bool(exists) is True:
-                # Calculate the ts_idle time
-                ifadminstatus = interface.get("ifAdminStatus")
-                ifoperstatus = interface.get("ifOperStatus")
-                if ifadminstatus == 1 and ifoperstatus == 1:
-                    # Port enabled with link
-                    ts_idle = 0
-                elif ifadminstatus == 2:
-                    # Port disabled
-                    ts_idle = 0
-                else:
-                    # Port enabled no link
-                    if bool(exists.ts_idle) is True:
-                        # Do nothing if already idle
-                        ts_idle = exists.ts_idle
-                    else:
-                        # Otherwise create an idle time entry
-                        ts_idle = int(time.time())
-
-                # Add new row to the database table
-                row = IL1Interface(
+            # Add new row to the database table
+            rows.append(
+                IL1Interface(
                     idx_device=self._device.idx_device,
                     ifindex=ifindex,
                     duplex=interface.get("l1_duplex"),
@@ -278,44 +266,17 @@ class Topology:
                     lldpremsysdesc=interface.get("lldpRemSysDesc"),
                     lldpremsysname=interface.get("lldpRemSysName"),
                     ts_idle=ts_idle,
-                    enabled=int(bool(exists.enabled)),
+                    enabled=1,
                 )
+            )
 
-                _l1interface.update_row(exists.idx_l1interface, row)
+        # Insert rows
+        if bool(rows):
+            if bool(test) is False:
+                _l1interface.insert_row(rows)
             else:
-                # Add new row to the database table
-                inserts.append(
-                    IL1Interface(
-                        idx_device=self._device.idx_device,
-                        ifindex=ifindex,
-                        duplex=interface.get("l1_duplex"),
-                        ethernet=int(bool(interface.get("l1_ethernet"))),
-                        nativevlan=interface.get("l1_nativevlan"),
-                        trunk=int(bool(interface.get("l1_trunk"))),
-                        ifspeed=_ifspeed(interface),
-                        iftype=interface.get("ifType"),
-                        ifalias=interface.get("ifAlias"),
-                        ifname=interface.get("ifName"),
-                        ifdescr=interface.get("ifDescr"),
-                        ifadminstatus=interface.get("ifAdminStatus"),
-                        ifoperstatus=interface.get("ifOperStatus"),
-                        cdpcachedeviceid=interface.get("cdpCacheDeviceId"),
-                        cdpcachedeviceport=interface.get("cdpCacheDevicePort"),
-                        cdpcacheplatform=interface.get("cdpCachePlatform"),
-                        lldpremportdesc=interface.get("lldpRemPortDesc"),
-                        lldpremsyscapenabled=interface.get(
-                            "lldpRemSysCapEnabled"
-                        ),
-                        lldpremsysdesc=interface.get("lldpRemSysDesc"),
-                        lldpremsysname=interface.get("lldpRemSysName"),
-                        ts_idle=0,
-                        enabled=1,
-                    )
-                )
-
-        # Insert if necessary
-        if bool(inserts):
-            _l1interface.insert_row(inserts)
+                for row in sorted(rows, key=attrgetter("ifindex")):
+                    _l1interface.insert_row(row)
 
         # Log
         self.log("L1Interface", updated=True)
@@ -323,11 +284,12 @@ class Topology:
         # Everything is completed
         self._status.l1interface = True
 
-    def vlan(self):
+    def vlan(self, test=False):
         """Update the Vlan DB table.
 
         Args:
-            None
+            test: Sequentially insert values into the database if True.
+                Bulk inserts don't insert data with predictable primary keys.
 
         Returns:
             None
@@ -341,22 +303,17 @@ class Topology:
         # Initialize key variables
         interfaces = self._data.get("layer1")
         rows = []
-        unique_vlans = []
         inserts = []
-        lookup = _lookup(self._device.idx_device)
 
         # Log
         self.log("Vlan")
-
-        # Get all the existing ifindexes and VLANs.
-        all_vlans = {_.vlan: _ for _ in lookup.vlans}
 
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
             # Process the VLANs on the interface
             vlans = interface.get("l1_vlans")
             if isinstance(vlans, list) is True:
-                for next_vlan in vlans:
+                for next_vlan in sorted(vlans):
                     rows.append(
                         IVlan(
                             idx_device=self._device.idx_device,
@@ -367,24 +324,18 @@ class Topology:
                         )
                     )
 
-        # Do VLAN insertions
-        unique_vlans = list(set(rows))
-
-        # Sort by VLAN number and idx_device
-        unique_vlans.sort(key=lambda x: (x.vlan, x.idx_device))
-
-        for item in unique_vlans:
-            # vlan_exists = _vlan.exists(item.idx_device, item.vlan)
-            vlan_exists = all_vlans.get(item.vlan)
-
-            if bool(vlan_exists) is False:
-                inserts.append(item)
-            else:
-                _vlan.update_row(vlan_exists, item)
+        # Remove duplicates
+        inserts = list(set(rows))
 
         # Insert if required
         if bool(inserts) is True:
-            _vlan.insert_row(inserts)
+            if bool(test) is False:
+                _vlan.insert_row(inserts)
+            else:
+                for insert in sorted(
+                    inserts, key=attrgetter("vlan", "idx_device")
+                ):
+                    _vlan.insert_row(insert)
 
         # Log
         self.log("Vlan", updated=True)
@@ -392,11 +343,12 @@ class Topology:
         # Everything is completed
         self._status.vlan = True
 
-    def vlanport(self):
+    def vlanport(self, test=False):
         """Update the VlanPort DB table.
 
         Args:
-            None
+            test: Sequentially insert values into the database if True.
+                Bulk inserts don't insert data with predictable primary keys.
 
         Returns:
             None
@@ -417,9 +369,9 @@ class Topology:
         self.log("VlanPort")
 
         # Get all the existing ifindexes, VLANs and VlanPorts
-        all_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
-        all_vlans = {_.vlan: _ for _ in lookup.vlans}
-        all_vlan_ports = {
+        db_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
+        db_vlans = {_.vlan: _ for _ in lookup.vlans}
+        db_vlanports = {
             VlanInterface(
                 idx_l1interface=_.idx_l1interface, idx_vlan=_.idx_vlan
             ): _
@@ -427,43 +379,47 @@ class Topology:
         }
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
-            l1_exists = all_ifindexes.get(ifindex)
+            if_exists = db_ifindexes.get(ifindex)
 
             # Check for VLANs on the interface
-            if bool(l1_exists) is True:
+            if bool(if_exists) is True:
+                # Get the vlans
                 _vlans = interface.get("l1_vlans")
 
                 # Process found VLANs
                 if bool(_vlans) is True:
                     for item in sorted(_vlans):
                         # Ensure the Vlan exists in the database
-                        vlan_exists = all_vlans.get(item)
+                        vlan_exists = db_vlans.get(item)
+
                         if bool(vlan_exists) is True:
                             row = IVlanPort(
-                                idx_l1interface=l1_exists.idx_l1interface,
+                                idx_l1interface=if_exists.idx_l1interface,
                                 idx_vlan=vlan_exists.idx_vlan,
                                 enabled=1,
                             )
 
                             # Verify that a VLAN / Port mapping exists
-                            vlanport_exists = all_vlan_ports.get(
+                            vlanport_exists = db_vlanports.get(
                                 VlanInterface(
-                                    idx_l1interface=l1_exists.idx_l1interface,
+                                    idx_l1interface=if_exists.idx_l1interface,
                                     idx_vlan=vlan_exists.idx_vlan,
                                 )
                             )
 
                             # Update the VLAN / Port mapping
-                            if bool(vlanport_exists) is True:
-                                _vlanport.update_row(
-                                    vlanport_exists.idx_vlanport, row
-                                )
-                            else:
+                            if bool(vlanport_exists) is False:
                                 inserts.append(row)
 
-        # Insert if required
+        # Insert rows
         if bool(inserts) is True:
-            _vlanport.insert_row(inserts)
+            if bool(test) is False:
+                _vlanport.insert_row(inserts)
+            else:
+                for insert in sorted(
+                    inserts, key=attrgetter("idx_vlan", "idx_l1interface")
+                ):
+                    _vlanport.insert_row(insert)
 
         # Log
         self.log("VlanPort", updated=True)
@@ -471,11 +427,12 @@ class Topology:
         # Everything is completed
         self._status.vlanport = True
 
-    def macport(self):
+    def macport(self, test=False):
         """Update the MacPort DB table.
 
         Args:
-        None
+            test: Sequentially insert values into the database if True.
+                Bulk inserts don't insert data with predictable primary keys.
 
         Returns:
             None
@@ -489,16 +446,17 @@ class Topology:
         # Initialize key variables
         interfaces = self._data.get("layer1")
         lookup = _lookup(self._device.idx_device)
+        inserts = []
 
         # Log
         self.log("MacPort")
 
         # Get all the existing ifindexes
-        all_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
+        db_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
 
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
-            l1_exists = all_ifindexes.get(ifindex)
+            if_exists = db_ifindexes.get(ifindex)
 
             # Process each Mac
             _macs = interface.get("l1_macs")
@@ -519,12 +477,23 @@ class Topology:
 
                     # If True update the port to MAC address mapping
                     if bool(mac_exists) is True:
-                        row = IMacPort(
-                            idx_l1interface=l1_exists.idx_l1interface,
-                            idx_mac=mac_exists.idx_mac,
-                            enabled=1,
+                        inserts.append(
+                            IMacPort(
+                                idx_l1interface=if_exists.idx_l1interface,
+                                idx_mac=mac_exists.idx_mac,
+                                enabled=1,
+                            )
                         )
-                        _macport.insert_row(row)
+
+        # Insert rows
+        if bool(inserts) is True:
+            if bool(test) is False:
+                _macport.insert_row(inserts)
+            else:
+                for insert in sorted(
+                    inserts, key=attrgetter("idx_mac", "idx_l1interface")
+                ):
+                    _macport.insert_row(insert)
 
         # Log
         self.log("MacPort", updated=True)

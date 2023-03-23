@@ -3,6 +3,7 @@
 import os.path
 import os
 import tempfile
+from operator import attrgetter
 
 # Import project libraries
 from multiprocessing import get_context
@@ -106,7 +107,7 @@ class Ingest:
                         self.device(arguments)
 
                     # Update the IpPort table
-                    _process_ipport(pairmacips)
+                    insert_ipports(pairmacips)
 
                     # Cleanup
                     self.cleanup(setup_success.event)
@@ -165,30 +166,8 @@ class Ingest:
             for argument in arguments:
                 rows.append(process_zone(*argument))
 
-        # List of lists comprehension to get a list, then remove
-        # duplicates with set, then recreate a list
-        macs = list(set([_ for row in rows for _ in row.macs]))
-        ips = list(set([_ for row in rows for _ in row.ips]))
-        pairmacips = list(set([_ for row in rows for _ in row.pairmacips]))
-
-        # Update MAC addresses for all zones
-        log_message = (
-            "Updating MAC addresses in the DB for all "
-            "zones from ARP and NDP ables."
-        )
-        log.log2debug(1084, log_message)
-        _mac.insert_row(macs)
-
-        log_message = (
-            "Updating IP addresses in the DB for all "
-            "zones from ARP and NDP tables."
-        )
-        log.log2debug(1085, log_message)
-        _ip.insert_row(ips)
-
-        log_message = "Updating MAC to IP address mapping in the database."
-        log.log2debug(1089, log_message)
-        _process_macip(pairmacips)
+        # Insert ARP table
+        pairmacips = insert_arptable(rows)
 
         # Return
         success = True
@@ -453,12 +432,75 @@ def _get_zone(event, filepath):
     return result
 
 
-def _process_macip(items):
+def insert_arptable(data, test=False):
+    """Insert values from ARP tables.
+
+    Args:
+        data: List of lists of ZoneObjects, one per device
+            OR a single ZoneObjects from testing
+        test: Sequentially insert values into the database if True.
+            Bulk inserts don't insert data with predictable primary keys.
+
+    Returns:
+        pairmacips: List of PairMacIp objects
+
+    """
+    # List of lists comprehension to get a list, then remove
+    # duplicates with set, then recreate a list
+    if general.list_of_lists(data):
+        macs = list(set([_ for row in data for _ in row.macs]))
+        ips = list(set([_ for row in data for _ in row.ips]))
+        pairmacips = list(set([_ for row in data for _ in row.pairmacips]))
+    else:
+        macs = data.macs
+        ips = data.ips
+        pairmacips = data.pairmacips
+
+    # Remove any duplicates
+    macs = list(set(macs))
+    ips = list(set(ips))
+    pairmacips = list(set(pairmacips))
+
+    # Insert MAC addresses for all zones
+    log_message = (
+        "Updating MAC addresses in the DB for all "
+        "zones from ARP and NDP ables."
+    )
+    log.log2debug(1084, log_message)
+    if bool(test) is False:
+        _mac.insert_row(macs)
+    else:
+        for row in sorted(macs, key=attrgetter("mac")):
+            _mac.insert_row(row)
+
+    # Insert IP addresses for all zones
+    log_message = (
+        "Updating IP addresses in the DB for all "
+        "zones from ARP and NDP tables."
+    )
+    log.log2debug(1085, log_message)
+    if bool(test) is False:
+        _ip.insert_row(ips)
+    else:
+        for row in sorted(ips, key=attrgetter("address")):
+            _ip.insert_row(row)
+
+    # Insert ARP entries for all zones
+    log_message = "Updating MAC to IP address mapping in the database."
+    log.log2debug(1089, log_message)
+    insert_macips(pairmacips, test=test)
+
+    # Return
+    return pairmacips
+
+
+def insert_macips(items, test=False):
     """Update the mac DB table.
 
     Args:
-        idx_zone: Zone index
         items: List of PairMacIp objects
+        test: Sequentially insert values into the database if True.
+            Bulk inserts don't insert data with predictable primary keys.
 
     Returns:
         None
@@ -466,6 +508,10 @@ def _process_macip(items):
     """
     # Initialize key variables
     rows = []
+
+    # Insert shit
+    if isinstance(items, list) is False:
+        items = [items]
 
     # Process data
     for item in items:
@@ -487,14 +533,20 @@ def _process_macip(items):
                 )
 
     # Insert the values
-    _macip.insert_row(rows)
+    if bool(test) is False:
+        _macip.insert_row(rows)
+    else:
+        for row in sorted(rows, key=attrgetter("idx_mac", "idx_ip")):
+            _macip.insert_row(row)
 
 
-def _process_ipport(items):
+def insert_ipports(items, test=False):
     """Update the mac DB table.
 
     Args:
         items: PairMacIp objects list
+        test: Sequentially insert values into the database if True.
+            Bulk inserts don't insert data with predictable primary keys.
 
     Returns:
         none
@@ -543,4 +595,8 @@ def _process_ipport(items):
                     )
 
     # Do the inserts
-    _ipport.insert_row(rows)
+    if bool(test) is False:
+        _ipport.insert_row(rows)
+    else:
+        for row in sorted(rows, key=attrgetter("idx_ip", "idx_l1interface")):
+            _ipport.insert_row(row)
