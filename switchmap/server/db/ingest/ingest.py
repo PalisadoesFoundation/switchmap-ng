@@ -114,7 +114,8 @@ class Ingest:
             else:
                 log_message = (
                     "Poller lock file {} exists. Skipping processing of cache "
-                    "files. Is the poller running or did it crash unexpectedly?"
+                    "files. Is the poller running or did it crash "
+                    "unexpectedly?".format(poller_lock_file)
                 )
                 log.log2info(1077, log_message)
 
