@@ -404,39 +404,6 @@ class TestFunctions(unittest.TestCase):
             )
             self.assertEqual(result, expecteds[key])
 
-    def test_list_of_lists(self):
-        """Testing function padded_list_of_lists."""
-        # Initializing key variables
-        items = [
-            [[_, _] for _ in range(10)],
-            list(range(10)),
-            {2: 3},
-            False,
-            None,
-            True,
-            "Test",
-            "",
-            range(10),
-            [range(_) for _ in range(3, 13)],
-        ]
-        expecteds = [
-            True,
-            False,
-            False,
-            False,
-            False,
-            False,
-            False,
-            False,
-            False,
-            False,
-        ]
-
-        # Test
-        for key, item in enumerate(items):
-            result = general.list_of_lists(item)
-            self.assertEqual(result, expecteds[key])
-
 
 if __name__ == "__main__":
     # Do the unit test

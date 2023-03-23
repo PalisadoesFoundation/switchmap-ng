@@ -447,7 +447,7 @@ def insert_arptable(data, test=False):
     """
     # List of lists comprehension to get a list, then remove
     # duplicates with set, then recreate a list
-    if general.list_of_lists(data):
+    if isinstance(data, list):
         macs = list(set([_ for row in data for _ in row.macs]))
         ips = list(set([_ for row in data for _ in row.ips]))
         pairmacips = list(set([_ for row in data for _ in row.pairmacips]))

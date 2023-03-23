@@ -343,21 +343,3 @@ def padded_list_of_lists(data, width=4, pad=None):
         result[key] = value + [pad] * (width - len(value))
 
     return result
-
-
-def list_of_lists(data):
-    """Check if list of lists.
-
-    Args:
-        data: List to process
-
-    Returns:
-        result: True if list of lists
-
-    """
-    # Return
-    if isinstance(data, list):
-        result = any(isinstance(el, list) for el in data)
-    else:
-        result = False
-    return result
