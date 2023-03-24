@@ -113,8 +113,12 @@ class Search:
         result = []
         founds = []
 
-        # Find the MAC
-        _mac = _general.mac(self._search.string)
+        # Find the MAC, return if invalid
+        mactest = _general.mac(self._search.string)
+        if bool(mactest.valid) is False:
+            return result
+        else:
+            _mac = mactest.mac
 
         for idx_zone in self._search.idx_zones:
             exists = mac.findmac(idx_zone, _mac)
@@ -188,7 +192,10 @@ class Search:
                 print(found.idx_ip)
                 items = find_ip_interface(found.idx_ip)
                 for item in items:
-                    result.append(Found(idx_l1interface=item.idx_l1interface))
+                    if bool(item.trunk) is False:
+                        result.append(
+                            Found(idx_l1interface=item.idx_l1interface)
+                        )
 
         # Return
         return result
@@ -218,7 +225,8 @@ class Search:
         for found in founds:
             items = find_ip_interface(found.idx_ip)
             for item in items:
-                result.append(Found(idx_l1interface=item.idx_l1interface))
+                if bool(item.trunk) is False:
+                    result.append(Found(idx_l1interface=item.idx_l1interface))
 
         # Return
         return result
@@ -250,13 +258,6 @@ def find_ip_interface(idx_ip):
         )
     )
     rows = db.db_select_row(1062, statement)
-
-    from sqlalchemy.dialects import mysql
-
-    query = statement.compile(
-        dialect=mysql.dialect(), compile_kwargs={"literal_binds": True}
-    )
-    print(query)
 
     # Return
     for row in rows:

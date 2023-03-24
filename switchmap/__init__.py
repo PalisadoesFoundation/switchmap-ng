@@ -44,6 +44,7 @@ InterfaceDetail = namedtuple(
     "InterfaceDetail", "RL1Interface MacDetails RVlans"
 )
 DeviceDetail = namedtuple("DeviceDetail", "RDevice InterfaceDetails")
+MacAddress = namedtuple("MacAddress", "valid mac")
 
 
 def main():

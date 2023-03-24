@@ -14,6 +14,7 @@ import more_itertools as mit
 # Application libraries
 from switchmap.core import log
 from switchmap import IP
+from switchmap import MacAddress
 
 
 def check_user(config):
@@ -123,15 +124,30 @@ def mac(_mac):
         _mac: MAC address
 
     Returns:
-        result: Fixed mac address
+        result: MacAddress object
 
     """
     # Initialize key variables
-    result = ""
+    result = MacAddress(mac=_mac, valid=False)
 
     if isinstance(_mac, str):
         regex = re.compile("[^a-fA-F0-9]")
-        result = regex.sub("", _mac)[:12].lower()
+        mac_check = regex.sub("", _mac).lower()
+
+        # Test validity
+        try:
+            # Test if Hex
+            valid = bool(int(mac_check, 16))
+        except:
+            valid = False
+
+        # Make sure the result is 12 characters
+        if len(mac_check) != 12:
+            valid = False
+
+        if bool(valid) is True:
+            result = MacAddress(mac=mac_check, valid=valid)
+
     return result
 
 

@@ -51,7 +51,11 @@ def exists(idx_zone, _mac):
     rows = []
 
     # Fix the MAC address
-    mac = general.mac(_mac)
+    mactest = general.mac(_mac)
+    if bool(mactest.valid) is False:
+        return result
+    else:
+        mac = mactest.mac
 
     # Get row from dataase
     statement = select(Mac).where(
@@ -86,9 +90,14 @@ def findmac(idx_zone, macs):
         macs = [macs]
 
     if isinstance(macs, list):
-        # Fix the MAC address
         for item in macs:
-            all_macs.append(general.mac(item).encode())
+            # Append if the MAC is valid
+            mactest = general.mac(item)
+            if bool(mactest.valid) is False:
+                continue
+            else:
+                _mac_ = mactest.mac
+            all_macs.append(_mac_.encode())
 
         # Get row from dataase
         statement = select(Mac).where(
@@ -125,7 +134,13 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         # Fix the MAC address
-        mac = general.mac(row.mac)
+        mactest = general.mac(row.mac)
+
+        # Check the validity
+        if bool(mactest.valid) is False:
+            continue
+        else:
+            mac = mactest.mac
 
         # Find the true idx_oui
         idx_oui = oui.idx_oui(mac)
@@ -157,7 +172,8 @@ def update_row(idx, row):
 
     """
     # Fix the MAC address
-    mac = general.mac(row.mac)
+    mactest = general.mac(row.mac)
+    mac = mactest.mac
 
     # Find the true idx_oui
     idx_oui = oui.idx_oui(mac)

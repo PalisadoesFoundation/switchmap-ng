@@ -341,8 +341,12 @@ def _process_pairmacips(idx_zone, table):
         if bool(myp) is False:
             continue
 
-        # Create lowercase version of mac address
-        mac = general.mac(next_mac)
+        # Create lowercase version of mac address. Skip if invalid
+        mactest = general.mac(next_mac)
+        if bool(mactest.valid) is False:
+            continue
+        else:
+            mac = mactest.mac
 
         # Update the results
         results.append(PairMacIp(mac=mac, ip=myp.address, idx_zone=idx_zone))
@@ -380,8 +384,12 @@ def _arp_table(idx_zone, data):
                     if bool(myp) is False:
                         continue
 
-                    # Create lowercase version of mac address
-                    mac = general.mac(next_mac)
+                    # Create lowercase version of mac address. Skip if invalid.
+                    mactest = general.mac(next_mac)
+                    if bool(mactest.valid) is False:
+                        continue
+                    else:
+                        mac = mactest.mac
 
                     # Update the results
                     results.append(

@@ -564,7 +564,11 @@ def insert_ipports(items, test=False):
             continue
 
         # Create lowercase version of mac address
-        next_mac = general.mac(item.mac)
+        mactest = general.mac(item.mac)
+        if bool(mactest.valid) is False:
+            continue
+        else:
+            next_mac = mactest.mac
 
         # Verify prerequisites
         mac_exists = _mac.exists(item.idx_zone, next_mac)
