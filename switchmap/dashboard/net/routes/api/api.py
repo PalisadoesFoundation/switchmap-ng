@@ -205,65 +205,6 @@ def search():
     return jsonify(result)
 
 
-@API.route("/search-old", methods=["GET"])
-def search_old():
-    """Get device data.
-
-    Args:
-        None
-
-    Returns:
-        JSON of zone data
-
-    """
-    # Initialize key variables
-    config = ConfigDashboard()
-    result = []
-
-    # Create the filter string
-    idx_l1interfaces = request.args.getlist("idx")
-    filter_string = graphql_filters.or_operator(
-        "idxL1interface", idx_l1interfaces
-    )
-    query = """
-{
-  l1interfaces(filter: FILTER) {
-    edges {
-      node {
-        device {
-          name
-          sysName
-          hostname
-          zone{
-            name
-          }
-        }
-        INTERFACE
-      }
-    }
-  }
-}
-""".replace(
-        "FILTER", filter_string
-    )
-
-    # Insert the interface snippet
-    updated_query = _insert_interface_snippet(query)
-
-    # Get the data
-    data = rest.get_graphql(updated_query, config)
-
-    if bool(data) is True:
-        normalized = graphene.normalize(data)
-
-        # Get the zone data list
-        data = normalized.get("data")
-        result = data.get("l1interfaces")
-
-    # Return
-    return jsonify(result)
-
-
 def _dashboard(idx_root=1):
     """Get dashboard data.
 
@@ -362,7 +303,7 @@ def _insert_interface_snippet(query):
               macs {
                 mac
                 oui {
-                  manufacturer
+                  organization
                 }
                 macips {
                   edges {

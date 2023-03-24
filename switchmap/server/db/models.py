@@ -41,7 +41,9 @@ class Oui(BASE):
 
     idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     oui = Column(VARBINARY(256), unique=True, nullable=True, index=True)
-    organization = Column(VARBINARY(256), nullable=True, default=Null)
+    organization = Column(
+        VARBINARY(256), nullable=True, default=Null, index=True
+    )
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,
@@ -129,7 +131,7 @@ class Zone(BASE):
         default=1,
         server_default=text("1"),
     )
-    name = Column(VARBINARY(256))
+    name = Column(VARBINARY(256), index=True)
     notes = Column(VARBINARY(2048), nullable=True, default=Null)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
@@ -171,7 +173,7 @@ class Device(BASE):
         server_default=text("1"),
     )
     sys_name = Column(VARBINARY(256), nullable=True, default=Null)
-    hostname = Column(VARBINARY(256), nullable=True, default=Null)
+    hostname = Column(VARBINARY(256), nullable=True, default=Null, index=True)
     name = Column(VARBINARY(256), nullable=True, default=Null)
     sys_description = Column(VARBINARY(1024), nullable=True, default=Null)
     sys_objectid = Column(VARBINARY(256), nullable=True, default=Null)
@@ -279,7 +281,9 @@ class Vlan(BASE):
         default=1,
         server_default=text("1"),
     )
-    vlan = Column(BIGINT(unsigned=True), nullable=True, default=Null)
+    vlan = Column(
+        BIGINT(unsigned=True), nullable=True, default=Null, index=True
+    )
     name = Column(VARBINARY(256), nullable=True, default=Null)
     state = Column(BIGINT(unsigned=True), nullable=True, default=Null)
     enabled = Column(BIT(1), default=1)
