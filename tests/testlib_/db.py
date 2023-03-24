@@ -191,7 +191,9 @@ def populate():
         )
         for idx in range(maximum)
     ]
-    vlan.insert_row(vlans)
+    # Loop to make sure we have predictable primary key values
+    for item in vlans:
+        vlan.insert_row(item)
 
     # Insert OUIs
     oui.insert_row(
@@ -215,7 +217,9 @@ def populate():
         )
         for key, value in enumerate(macs_)
     ]
-    mac.insert_row(r_macs)
+    # Loop to make sure we have predictable primary key values
+    for item in r_macs:
+        mac.insert_row(item)
 
     # Insert Ip entries
     for _ in macs_:
@@ -233,7 +237,9 @@ def populate():
                 enabled=1,
             )
         )
-    ip.insert_row(r_ips)
+    # Loop to make sure we have predictable primary key values
+    for item in r_ips:
+        ip.insert_row(item)
 
     # Insert MacIp entries
     for key, _ in enumerate(macs_):
@@ -244,7 +250,9 @@ def populate():
                 enabled=1,
             )
         )
-    macip.insert_row(macips_)
+    # Loop to make sure we have predictable primary key values
+    for item in macips_:
+        macip.insert_row(item)
 
     # Insert interfaces
     r_interfaces = [
@@ -282,7 +290,9 @@ def populate():
         )
         for _ in range(maximum)
     ]
-    l1interface.insert_row(r_interfaces)
+    # Loop to make sure we have predictable primary key values
+    for item in r_interfaces:
+        l1interface.insert_row(item)
 
     # Insert VlanPort entries. Assign a random VLAN to each interface
     vlanports = [
@@ -293,7 +303,9 @@ def populate():
         )
         for key in range(maximum)
     ]
-    vlanport.insert_row(vlanports)
+    # Loop to make sure we have predictable primary key values
+    for item in vlanports:
+        vlanport.insert_row(item)
 
     # Insert MacPort entries. Assign a random mac to each interface
     macports_ = [
@@ -304,7 +316,9 @@ def populate():
         )
         for key in range(maximum)
     ]
-    macport.insert_row(macports_)
+    # Loop to make sure we have predictable primary key values
+    for item in macports_:
+        macport.insert_row(item)
 
     # Insert IpPort entries. Assign a random IP to each interface
     r_ipports = [
@@ -315,7 +329,9 @@ def populate():
         )
         for key in range(maximum)
     ]
-    ipport.insert_row(r_ipports)
+    # Loop to make sure we have predictable primary key values
+    for item in r_ipports:
+        ipport.insert_row(item)
 
     #########################################################################
     #########################################################################

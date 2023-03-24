@@ -75,7 +75,7 @@ class TestFunctions(unittest.TestCase):
     macips = None
 
     @classmethod
-    def setUpClass(cls):
+    def setUp(cls):
         """Execute these steps before starting each test."""
         # Load the configuration in case it's been deleted after loading the
         # configuration above. Sometimes this happens when running
@@ -92,7 +92,7 @@ class TestFunctions(unittest.TestCase):
         cls.macips = db.populate()
 
     @classmethod
-    def tearDownClass(cls):
+    def tearDown(cls):
         """Execute these steps after each tests is completed."""
         # Drop tables
         database = db.Database()

@@ -283,55 +283,6 @@ class TestSystemRow(unittest.TestCase):
         pass
 
 
-class TestFunctions(unittest.TestCase):
-    """Checks all functions and methods."""
-
-    device = device_data()
-
-    #########################################################################
-    # General object setup
-    #########################################################################
-
-    @classmethod
-    def setUpClass(cls):
-        """Execute these steps before starting tests."""
-        # Load the configuration in case it's been deleted after loading the
-        # configuration above. Sometimes this happens when running
-        # `python3 -m unittest discover` where another the tearDownClass of
-        # another test module prematurely deletes the configuration required
-        # for this module
-        config = setup.config()
-        config.save()
-
-    @classmethod
-    def tearDownClass(cls):
-        """Execute these steps when all tests are completed."""
-        # Cleanup the
-        CONFIG.cleanup()
-
-    def test_interfaces(self):
-        """Testing function interfaces."""
-        # Initialize key variables
-        interfaces = self.device.get("l1interfaces")
-
-        # Test
-        result = testimport.interfaces(interfaces)[0]
-        self.assertEqual(result.cdp, "")
-        self.assertEqual(result.days_inactive, "None")
-        self.assertEqual(result.duplex, "Full")
-        self.assertEqual(result.hostname, "<p></p>")
-        self.assertEqual(result.ip_address, "<p></p>")
-        self.assertEqual(result.label, "Alias F12")
-        self.assertEqual(result.lldp, "")
-        self.assertEqual(result.mac_address, "d05099dad28b")
-        self.assertEqual(result.manufacturer, None)
-        self.assertEqual(result.port, "Gi1/0/1")
-        self.assertEqual(result.speed, "1G")
-        self.assertEqual(result.state, "Active")
-        self.assertEqual(result.trunk, False)
-        self.assertEqual(result.vlan, "21")
-
-
 if __name__ == "__main__":
     # Do the unit test
     unittest.main()

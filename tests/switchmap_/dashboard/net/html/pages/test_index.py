@@ -60,7 +60,6 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.dashboard.net.html.pages import index as testimport
-from switchmap.dashboard import DeviceMeta
 
 
 class Test_RawCol(unittest.TestCase):
@@ -92,7 +91,7 @@ class Test_RawCol(unittest.TestCase):
         pass
 
 
-class TestHomePage(unittest.TestCase):
+class TestIndexPage(unittest.TestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -127,39 +126,34 @@ class TestHomePage(unittest.TestCase):
       <div class="col-lg-12">
           <div class="panel panel-default">
               <div class="panel-heading">
-                  TEST
+                TEST
               </div>
               <!-- /.panel-heading -->
               <div class="panel-body">
-                  <div class="table-responsive table-bordered">
-                      <table class="table">
+                <table class="table">
 <tbody>
 <tr><td><a href="/switchmap/devices/95">device01.site01.example.org</a></td><td><a href="/switchmap/devices/96">device02.site01.example.org</a></td><td></td><td></td><td></td><td></td></tr>
 </tbody>
 </table>
-                  </div>
-                  <!-- /.table-responsive -->
               </div>
               <!-- /.panel-body -->
           </div>
           <!-- /.panel -->
       </div>
-    </div><div class="row">
+    </div>
+<div class="row">
       <div class="col-lg-12">
           <div class="panel panel-default">
               <div class="panel-heading">
-                  SJC02
+                SJC02
               </div>
               <!-- /.panel-heading -->
               <div class="panel-body">
-                  <div class="table-responsive table-bordered">
-                      <table class="table">
+                <table class="table">
 <tbody>
-<tr><td><a href="/switchmap/devices/97">device02.site02.example.net</a></td><td><a href="/switchmap/devices/98">device01.site02.example.net</a></td><td></td><td></td><td></td><td></td></tr>
+<tr><td><a href="/switchmap/devices/98">device01.site02.example.net</a></td><td><a href="/switchmap/devices/97">device02.site02.example.net</a></td><td></td><td></td><td></td><td></td></tr>
 </tbody>
 </table>
-                  </div>
-                  <!-- /.table-responsive -->
               </div>
               <!-- /.panel-body -->
           </div>
@@ -196,7 +190,7 @@ class TestHomePage(unittest.TestCase):
                 "name": "SJC02",
             },
         ]
-        class_obj = testimport.HomePage(zones)
+        class_obj = testimport.IndexPage(zones)
 
         # Test
         result = class_obj.html()
@@ -259,68 +253,6 @@ class TestDevicesRow(unittest.TestCase):
     def test___init__(self):
         """Testing function __init__."""
         pass
-
-
-class TestFunctions(unittest.TestCase):
-    """Checks all functions and methods."""
-
-    #########################################################################
-    # General object setup
-    #########################################################################
-
-    @classmethod
-    def setUpClass(cls):
-        """Execute these steps before starting tests."""
-        # Load the configuration in case it's been deleted after loading the
-        # configuration above. Sometimes this happens when running
-        # `python3 -m unittest discover` where another the tearDownClass of
-        # another test module prematurely deletes the configuration required
-        # for this module
-        config = setup.config()
-        config.save()
-
-    @classmethod
-    def tearDownClass(cls):
-        """Execute these steps when all tests are completed."""
-        # Cleanup the
-        CONFIG.cleanup()
-
-    def test___init__(self):
-        """Testing function __init__."""
-        pass
-
-    def test_rows(self):
-        """Testing function rows."""
-        # Initialize key variables
-        original_rows = [
-            {
-                "hostname": "device02.site02.example.net",
-                "idxDevice": 97,
-            },
-            {
-                "hostname": "device01.site02.example.net",
-                "idxDevice": 98,
-            },
-        ]
-        rows = [
-            DeviceMeta(
-                hostname=_.get("hostname"), idx_device=_.get("idxDevice")
-            )
-            for _ in original_rows
-        ]
-
-        # Test
-        result = testimport.rows(rows)[0]
-        self.assertEqual(
-            result.col0,
-            '<a href="/switchmap/devices/97">device02.site02.example.net'
-            "</a>",
-        )
-        self.assertEqual(
-            result.col1,
-            '<a href="/switchmap/devices/98">device01.site02.example.net'
-            "</a>",
-        )
 
 
 if __name__ == "__main__":

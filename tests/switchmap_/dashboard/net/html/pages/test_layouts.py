@@ -92,18 +92,15 @@ class TestFunctions(unittest.TestCase):
         title = "akjdfsheww"
         table_html = "ewda233e5"
         expected = """\
-    <div class="row">
+<div class="row">
       <div class="col-lg-12">
           <div class="panel panel-default">
               <div class="panel-heading">
-                  {0}
+                {0}
               </div>
               <!-- /.panel-heading -->
               <div class="panel-body">
-                  <div class="table-responsive table-bordered">
-                      {1}
-                  </div>
-                  <!-- /.table-responsive -->
+                {1}
               </div>
               <!-- /.panel-body -->
           </div>
