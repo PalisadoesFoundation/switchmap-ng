@@ -316,11 +316,11 @@ class TestDbTableEvent(unittest.TestCase):
         after = testimport.events()
 
         # Test
-        self.assertTrue(len(after) == 2)
+        self.assertTrue(len(after) == 3)
         indexes_before = [_.idx_event for _ in before]
         indexes_after = [_.idx_event for _ in before]
-        self.assertEqual(min(indexes_before), min(indexes_after))
-        self.assertEqual(max(indexes_before), max(indexes_after))
+        for index in [0, -1, -2]:
+            self.assertEqual(indexes_before[index], indexes_after[index])
 
     def test__row(self):
         """Testing function _row."""

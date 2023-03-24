@@ -1,6 +1,7 @@
 """Module for querying the Event table."""
 # Standard imports
 from datetime import datetime, timezone
+from operator import attrgetter
 
 # PIP imports
 from sqlalchemy import select, update, delete as _delete
@@ -214,7 +215,7 @@ def create(name=None):
 
 
 def purge():
-    """Purge all events except the first and last.
+    """Purge all events except the most recent two.
 
     Args:
         None
@@ -226,13 +227,15 @@ def purge():
     # Get all the event data
     _events = events()
 
-    # Get the first and last event
-    indexes = [_.idx_event for _ in _events]
-    first = min(indexes)
-    last = max(indexes)
+    # Get the first, last event
+    indexes = [
+        _.idx_event for _ in sorted(_events, key=attrgetter("idx_event"))
+    ]
+    last = indexes[-1]
+    penultimate = indexes[-2] if len(indexes) > 1 else 1
 
     for item in _events:
-        if item.idx_event == 1:
+        if item.idx_event in [1, last, penultimate]:
             continue
-        elif (item.idx_event != first) and (item.idx_event != last):
+        else:
             delete(item.idx_event)
