@@ -8,6 +8,7 @@ from operator import attrgetter
 # Application imports
 from switchmap.core import log
 from switchmap.server.db.ingest.query import device as _misc_device
+from switchmap.server.db.misc import interface as _historical
 from switchmap.server.db.table import device as _device
 from switchmap.server.db.table import l1interface as _l1interface
 from switchmap.server.db.table import vlan as _vlan
@@ -223,6 +224,9 @@ class Topology:
         # Initialize more key variables
         data = self._data
         interfaces = data.get("layer1")
+        historical = {
+            _.ifname: _ for _ in _historical.interfaces(self._device)
+        }
         rows = []
 
         # Log
@@ -230,9 +234,13 @@ class Topology:
 
         # Process each interface
         for ifindex, interface in sorted(interfaces.items()):
-            # Calculate the ts_idle time
+            # Get important interface characteristics
             ifadminstatus = interface.get("ifAdminStatus")
             ifoperstatus = interface.get("ifOperStatus")
+            ifname = interface.get("ifName")
+            previous = historical.get(ifname)
+
+            # Calculate the ts_idle time
             if ifadminstatus == 1 and ifoperstatus == 1:
                 # Port enabled with link
                 ts_idle = 0
@@ -240,7 +248,9 @@ class Topology:
                 # Port disabled
                 ts_idle = 0
             else:
-                ts_idle = 1
+                # Port enabled without link. Eet ts_idle to the timestamp
+                # when the interface was first detected as being idle.
+                ts_idle = previous if bool(previous) else int(time.time())
 
             # Add new row to the database table
             rows.append(
@@ -254,7 +264,7 @@ class Topology:
                     ifspeed=_ifspeed(interface),
                     iftype=interface.get("ifType"),
                     ifalias=interface.get("ifAlias"),
-                    ifname=interface.get("ifName"),
+                    ifname=ifname,
                     ifdescr=interface.get("ifDescr"),
                     ifadminstatus=interface.get("ifAdminStatus"),
                     ifoperstatus=interface.get("ifOperStatus"),
