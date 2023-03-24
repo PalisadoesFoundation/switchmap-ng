@@ -135,11 +135,14 @@ def mac(_mac):
         mac_check = regex.sub("", _mac).lower()
 
         # Test validity
-        try:
-            # Test if Hex
-            valid = bool(int(mac_check, 16))
-        except:
-            valid = False
+        if mac_check == "000000000000":
+            valid = True
+        else:
+            try:
+                # Test if Hex
+                valid = bool(int(mac_check, 16))
+            except:
+                valid = False
 
         # Make sure the result is 12 characters
         if len(mac_check) != 12:

@@ -189,10 +189,9 @@ class Search:
 
             # Search for IP on interfaces
             for found in founds:
-                print(found.idx_ip)
                 items = find_ip_interface(found.idx_ip)
                 for item in items:
-                    if bool(item.trunk) is False:
+                    if bool(trunk(item.idx_l1interface)) is False:
                         result.append(
                             Found(idx_l1interface=item.idx_l1interface)
                         )
@@ -225,7 +224,7 @@ class Search:
         for found in founds:
             items = find_ip_interface(found.idx_ip)
             for item in items:
-                if bool(item.trunk) is False:
+                if bool(trunk(item.idx_l1interface)) is False:
                     result.append(Found(idx_l1interface=item.idx_l1interface))
 
         # Return
@@ -287,4 +286,23 @@ def search(idx_root, searchstring):
         result = sorted([_.idx_l1interface for _ in _result])
 
     # Return
+    return result
+
+
+def trunk(idx_l1interface):
+    """Determine whether te.
+
+    Args:
+        idx_l1interface: L1interface table primary key
+
+    Returns:
+        result
+
+    """
+    # Initialize key variables
+    result = False
+
+    exists = l1interface.idx_exists(idx_l1interface)
+    if bool(exists) is True:
+        result = bool(exists.trunk)
     return result
