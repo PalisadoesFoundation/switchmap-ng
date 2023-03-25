@@ -17,6 +17,11 @@ import graphene
 ###############################################################################
 
 
+def resolve_address(obj, _):
+    """Convert 'address' from bytes to string."""
+    return obj.address.decode() if bool(obj.address) else ""
+
+
 def resolve_cdpcachedeviceid(obj, _):
     """Convert 'cdpcachedeviceid' from bytes to string."""
     return obj.cdpcachedeviceid.decode() if bool(obj.cdpcachedeviceid) else ""
@@ -54,11 +59,6 @@ def resolve_ifdescr(obj, _):
     return obj.ifdescr.decode() if bool(obj.ifdescr) else ""
 
 
-def resolve_address(obj, _):
-    """Convert 'address' from bytes to string."""
-    return obj.address.decode() if bool(obj.address) else ""
-
-
 def resolve_lldpremportdesc(obj, _):
     """Convert 'lldpremportdesc' from bytes to string."""
     return obj.lldpremportdesc.decode() if bool(obj.lldpremportdesc) else ""
@@ -86,6 +86,11 @@ def resolve_lldpremsysname(obj, _):
 def resolve_mac(obj, _):
     """Convert 'mac' from bytes to string."""
     return obj.mac.decode() if bool(obj.mac) else ""
+
+
+def resolve_organization(obj, _):
+    """Convert 'organization' from bytes to string."""
+    return obj.organization.decode() if bool(obj.organization) else ""
 
 
 def resolve_name(obj, _):
@@ -190,7 +195,9 @@ class OuiAttribute:
         resolver=resolve_oui,
         description="Organizationally unique identifier",
     )
-    manufacturer = graphene.Int(description="Organization")
+    organization = graphene.String(
+        resolver=resolve_organization, description="Manufacturing organization"
+    )
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")

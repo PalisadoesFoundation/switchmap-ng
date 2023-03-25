@@ -96,7 +96,7 @@
           "macs": {
             "mac": "d05099dad28b",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -237,7 +237,7 @@
           "macs": {
             "mac": "d45d6451fb2d",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -264,7 +264,7 @@
           "macs": {
             "mac": "0004f24dabe0",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -291,7 +291,7 @@
           "macs": {
             "mac": "98fdb49aa239",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -356,7 +356,7 @@
           "macs": {
             "mac": "50579c4d53e8",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -440,7 +440,7 @@
           "macs": {
             "mac": "3cfb96171e4c",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -505,7 +505,7 @@
           "macs": {
             "mac": "0004f24dd71f",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -551,7 +551,7 @@
           "macs": {
             "mac": "2c9efc6197c9",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -635,7 +635,7 @@
           "macs": {
             "mac": "001d00024dce",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -681,7 +681,7 @@
           "macs": {
             "mac": "0004f24dac16",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -803,7 +803,7 @@
           "macs": {
             "mac": "001c27160b03",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -830,7 +830,7 @@
           "macs": {
             "mac": "001c27160b0c",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -857,7 +857,7 @@
           "macs": {
             "mac": "001c27160b09",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -884,7 +884,7 @@
           "macs": {
             "mac": "b8a44f10902b",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -911,7 +911,7 @@
           "macs": {
             "mac": "001c27160b0a",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -938,7 +938,7 @@
           "macs": {
             "mac": "001c27160b0d",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -965,7 +965,7 @@
           "macs": {
             "mac": "0017fc700dc0",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -992,7 +992,7 @@
           "macs": {
             "mac": "001c27160b07",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -1019,7 +1019,7 @@
           "macs": {
             "mac": "001c27160b06",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -1046,7 +1046,7 @@
           "macs": {
             "mac": "001c27160b0b",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -1073,7 +1073,7 @@
           "macs": {
             "mac": "b8a44f108437",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -1100,7 +1100,7 @@
           "macs": {
             "mac": "2c4d54b003d0",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -1127,7 +1127,7 @@
           "macs": {
             "mac": "04a1519a958f",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],
@@ -1162,7 +1162,7 @@
                 }
               }
             ],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
@@ -1184,560 +1184,560 @@
                 }
               }
             ],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "00163e000044",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c27160b04",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c27160b05",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c27160b08",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c27160b0e",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c27160e95",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c27160e98",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c27160e9d",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c2716ef15",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c2716ef16",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c2716ef1d",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001c2716ef1f",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001f9edf1a69",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "001f9edf1a7f",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "06b7ed05f507",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "086ac586f0f1",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "0e46e6ad05f3",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "18568073d78c",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "1c9957d78bba",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "26833e4f5e4c",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "38f9d3b082df",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "3e462a54f1b2",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "42c843ad3c77",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "468b65c22b2c",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "48701e3c6535",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "50579cdf0547",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "5a07e5c1fceb",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "5ce91e86b8fa",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "64167f05640c",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "6e7a47aeecc9",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "6e8ec145dcdc",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "74867ae400a2",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "8843e18db83f",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "88665a155204",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "8c8590bca7b0",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "8e5f1069b02e",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "8ead3d4403b8",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "a07817acfc95",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "a2a1e55b4e31",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "a483e7d1aaf9",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "aabb538be783",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "aacd36263b62",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "accc8e09db51",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "accc8e09db52",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "accc8e09db53",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "accc8e09db54",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "accc8e0a18b7",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "accc8e0a18b8",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "accc8e0a18b9",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "accc8e0a18ba",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "accc8efe904c",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "ae724c975cda",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b03cdc0a9484",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b083fed679aa",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b46bfc6c4c65",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b634a2f041d5",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b8a44f03f1ba",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b8a44f03f1e6",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b8a44f03f201",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b8a44f0856f6",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b8a44f143d9a",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b8a44f15af9f",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "b8a44f16f19e",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "baa350428471",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "bc305bf57ac4",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "c61a2b13c3f9",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "c69ba2fdf973",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "c6acee1745ef",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "c6eae3fd2417",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "c8e26556778c",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "c8f3197192e9",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "ccf9e497f45a",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "d05099dca4ff",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "e24e6c7ca216",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "e454e8cd1bf1",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "e45f01672013",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "e8eecc33a5d1",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "f02f4b0abba5",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         },
         {
           "macs": {
             "mac": "f84d89913c00",
             "macips": [],
-            "oui": { "manufacturer": null }
+            "oui": { "organization": null }
           }
         }
       ],

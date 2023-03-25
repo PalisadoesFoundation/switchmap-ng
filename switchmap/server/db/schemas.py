@@ -12,9 +12,7 @@ Based on the pages at:
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
-
-# from graphene_sqlalchemy.fields import BxatchSQLAlchemyConnectionField
-from graphene_sqlalchemy import SQLAlchemyConnectionField
+from graphene_sqlalchemy.fields import BatchSQLAlchemyConnectionField
 
 # Import models
 from switchmap.server.db.models import (
@@ -192,55 +190,57 @@ class Query(graphene.ObjectType):
 
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
-    devices = SQLAlchemyConnectionField(Device.connection, sort=None)
+    devices = BatchSQLAlchemyConnectionField(Device.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     l1interface = graphene.relay.Node.Field(L1Interface)
-    l1interfaces = SQLAlchemyConnectionField(L1Interface.connection)
+    l1interfaces = BatchSQLAlchemyConnectionField(L1Interface.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     zone = graphene.relay.Node.Field(Zone)
-    zones = SQLAlchemyConnectionField(Zone.connection, sort=None)
+    zones = BatchSQLAlchemyConnectionField(Zone.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     root = graphene.relay.Node.Field(Root)
-    roots = SQLAlchemyConnectionField(Root.connection, sort=None)
+    roots = BatchSQLAlchemyConnectionField(Root.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     event = graphene.relay.Node.Field(Event)
-    events = SQLAlchemyConnectionField(Event.connection, sort=None)
+    events = BatchSQLAlchemyConnectionField(Event.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     ip = graphene.relay.Node.Field(Ip)
-    ips = SQLAlchemyConnectionField(Ip.connection, sort=None)
+    ips = BatchSQLAlchemyConnectionField(Ip.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     ipport = graphene.relay.Node.Field(IpPort)
-    ipports = SQLAlchemyConnectionField(IpPort.connection, sort=None)
+    ipports = BatchSQLAlchemyConnectionField(IpPort.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     mac = graphene.relay.Node.Field(Mac)
-    macs = SQLAlchemyConnectionField(Mac.connection, sort=None)
+    macs = BatchSQLAlchemyConnectionField(Mac.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     macip = graphene.relay.Node.Field(MacIp)
-    macips = SQLAlchemyConnectionField(MacIp.connection, sort=None)
+    macips = BatchSQLAlchemyConnectionField(MacIp.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     macport = graphene.relay.Node.Field(MacPort)
-    macports = SQLAlchemyConnectionField(MacPort.connection, sort=None)
+    macports = BatchSQLAlchemyConnectionField(MacPort.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     oui = graphene.relay.Node.Field(Oui)
-    ouis = SQLAlchemyConnectionField(Oui.connection, sort=None)
+    ouis = BatchSQLAlchemyConnectionField(Oui.connection, sort=None)
 
     # Results as a single entry filtered by 'id' and as a list
     vlan = graphene.relay.Node.Field(Vlan)
-    vlans = SQLAlchemyConnectionField(Vlan.connection, sort=None)
+    vlans = BatchSQLAlchemyConnectionField(
+        Vlan.connection, sort=Vlan.sort_argument()
+    )
 
     # Results as a single entry filtered by 'id' and as a list
     vlanport = graphene.relay.Node.Field(VlanPort)
-    vlanports = SQLAlchemyConnectionField(VlanPort.connection, sort=None)
+    vlanports = BatchSQLAlchemyConnectionField(VlanPort.connection, sort=None)
 
 
 # Make the schema global

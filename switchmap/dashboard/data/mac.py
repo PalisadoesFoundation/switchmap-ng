@@ -105,7 +105,7 @@ class Mac:
                     result.append(
                         MacIpState(
                             mac=macstate.mac,
-                            manufacturer=macstate.manufacturer,
+                            organization=macstate.organization,
                             hostnames=hostnames,
                             addresses=addresses,
                         )
@@ -128,12 +128,12 @@ def _mac_state(data):
     result = None
 
     mac = data.get("mac")
-    manufacturer = None
+    organization = None
     if bool(mac) is True:
         oui = data.get("oui")
         if bool(oui) is True:
-            manufacturer = oui.get("manufacturer")
-            result = MacState(mac=mac, manufacturer=manufacturer)
+            organization = oui.get("organization")
+            result = MacState(mac=mac, organization=organization)
 
     return result
 

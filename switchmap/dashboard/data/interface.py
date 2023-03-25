@@ -68,7 +68,7 @@ class Interface:
                 cdp=self.cdp(),
                 lldp=self.lldp(),
                 mac_address=macips.mac if bool(macips) else "",
-                manufacturer=macips.manufacturer if bool(macips) else "",
+                organization=macips.organization if bool(macips) else "",
                 ip_address="<p>{}</p>".format("</p><p>".join(macips.addresses))
                 if bool(macips)
                 else "",

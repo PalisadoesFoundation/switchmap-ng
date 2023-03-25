@@ -131,7 +131,7 @@ class TestInterface(unittest.TestCase):
                 "http://www.cisco.com/techsupport Copyright (c) 1986-2011 by "
                 "Cisco Systems, Inc. Compiled Thu 27-Jan-11 11:39 by</p>",
                 mac_address="",
-                manufacturer="",
+                organization="",
                 ip_address="",
                 hostname="",
             ),

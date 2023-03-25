@@ -79,7 +79,9 @@ def search():
                         tables = get_tables(interfaces)
 
     # Convert data to HTML and return it to the browser
-    return render_template("search.html", results_dict=tables)
+    return render_template(
+        "search.html", results_dict=tables, idx_root=idx_root
+    )
     # return jsonify(result)
 
 

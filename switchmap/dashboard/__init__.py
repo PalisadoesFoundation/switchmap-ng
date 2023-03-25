@@ -16,14 +16,14 @@ EventMeta = namedtuple("EventMeta", "date idx_root")
 # Used in reporting interface state
 InterfaceState = namedtuple("InterfaceState", "up string")
 VlanState = namedtuple("VlanState", "group string count")
-MacState = namedtuple("MacState", "mac manufacturer")
+MacState = namedtuple("MacState", "mac organization")
 IpState = namedtuple("IpState", "hostname address")
-MacIpState = namedtuple("MacIpState", "mac manufacturer hostnames addresses")
+MacIpState = namedtuple("MacIpState", "mac organization hostnames addresses")
 
 InterfaceDataRow = namedtuple(
     "InterfaceDataRow",
     "port vlan state days_inactive speed duplex label "
-    "trunk cdp lldp mac_address manufacturer ip_address hostname",
+    "trunk cdp lldp mac_address organization ip_address hostname",
 )
 SystemDataRow = namedtuple("SystemDataRow", "parameter value")
 

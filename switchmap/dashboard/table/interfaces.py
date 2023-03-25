@@ -29,7 +29,7 @@ class InterfaceTable(Table):
     cdp = _RawCol("CDP")
     lldp = _RawCol("LLDP")
     mac_address = _RawCol("Mac Address")
-    manufacturer = _RawCol("Manufacturer")
+    organization = _RawCol("Manufacturer")
     ip_address = _RawCol("IP Address")
     hostname = _RawCol("DNS Name")
 
@@ -78,7 +78,7 @@ class InterfaceRow:
                 cdp: CDP data string
                 lldp: LLDP data string
                 mac_address: MAC Address
-                manufacturer: Name of the manufacturer
+                organization: Name of the organization
 
         Returns:
             None
@@ -97,7 +97,7 @@ class InterfaceRow:
             self.cdp,
             self.lldp,
             self.mac_address,
-            self.manufacturer,
+            self.organization,
             self.ip_address,
             self.hostname,
         ] = row
@@ -144,7 +144,7 @@ def table(_interfaces):
                         row.cdp,
                         row.lldp,
                         row.mac_address,
-                        row.manufacturer,
+                        row.organization,
                         row.ip_address,
                         row.hostname,
                     ]
