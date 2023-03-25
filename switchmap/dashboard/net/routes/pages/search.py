@@ -33,6 +33,7 @@ def search():
     # Initialize key variables
     tables = {}
     idx_root = 1
+    date = ""
 
     # Get data to display
     config = ConfigDashboard()
@@ -46,15 +47,25 @@ def search():
             idx_root = int(str(value.strip()))
             break
 
+    # Get the event create date
+    event_get_response = rest.get(
+        uri.events_by_idx_root(idx_root),
+        config,
+        server=False,
+    )
+    if bool(event_get_response) is True:
+        # event_data = event_get_response.response.json()
+        date = event_get_response[0]["event"]["tsCreated"]
+
     for key, value in items.items():
         # 'search_term' comes from the search form HTML
         if key == "search_term":
             # Post the search term to to the remote API server. The response
             # will be list of idx_l1interfaces that are associated with the
             # search term.
-            seach_dict = {"idx_root": idx_root, "searchterm": value.strip()}
+            search_dict = {"idx_root": idx_root, "searchterm": value.strip()}
             idx_post_response = rest.post(
-                uri.search_api_server(), seach_dict, config, server=True
+                uri.search_api_server(), search_dict, config, server=True
             )
 
             # Process the list of idx_l1interfaces if there is
@@ -80,7 +91,7 @@ def search():
 
     # Convert data to HTML and return it to the browser
     return render_template(
-        "search.html", results_dict=tables, idx_root=idx_root
+        "search.html", results_dict=tables, idx_root=idx_root, date=date
     )
     # return jsonify(result)
 
@@ -109,9 +120,9 @@ def search():
 #         # 'search_term' comes from the search form HTML
 #         if key == "search_term":
 #             # Post the data to the API server
-#             seach_dict = {"idx_root": 1, "searchterm": value.strip()}
+#             search_dict = {"idx_root": 1, "searchterm": value.strip()}
 #             idx_post_response = rest.post(
-#                 uri.search_api_server(), seach_dict, config
+#                 uri.search_api_server(), search_dict, config
 #             )
 
 #             # Process a successful response

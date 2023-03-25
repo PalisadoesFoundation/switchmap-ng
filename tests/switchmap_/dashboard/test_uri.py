@@ -71,10 +71,20 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(result, expected)
 
     def test_events(self):
-        """Testing function event."""
+        """Testing function events."""
         # Initialize key variables
         expected = "/switchmap/api/events"
         result = test_module.events()
+
+        # Test
+        self.assertEqual(result, expected)
+
+    def test_events_by_idx_root(self):
+        """Testing function events_by_idx_root."""
+        # Initialize key variables
+        idx_root = 1234
+        expected = "/switchmap/api/events/1234"
+        result = test_module.events_by_idx_root(idx_root)
 
         # Test
         self.assertEqual(result, expected)

@@ -35,6 +35,7 @@ def devices(idx_device):
     # Get the idx_root for the device
     idx_roots = data["device"]["event"]["roots"]
     idx_root = min([_.get("idxRoot") for _ in idx_roots])
+    date = data["device"]["event"]["tsCreated"]
 
     # Get device data
     device_ = Device(data)
@@ -47,4 +48,5 @@ def devices(idx_device):
         port_table=interfaces,
         system_table=system,
         idx_root=idx_root,
+        date=date,
     )

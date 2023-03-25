@@ -50,8 +50,8 @@ def historical_dashboard(idx_root):
     return html
 
 
-@API.route("/events", methods=["GET"])
-def roots():
+@API.route("/events/<int:idx_root>", methods=["GET"])
+def event_by_idx_root(idx_root):
     """Get event data.
 
     Args:
@@ -61,32 +61,23 @@ def roots():
         JSON of zone data
 
     """
-    # Initialize key variables
-    config = ConfigDashboard()
-    query = """
-{
-  roots {
-    edges {
-      node {
-        idxRoot
-        event {
-          tsCreated
-        }
-      }
-    }
-  }
-}
-"""
-    # Get the data
-    result = rest.get_graphql(query, config)
-    normalized = graphene.normalize(result)
+    # return
+    return roots_filter(idx_root)
 
-    # Get the zone data list
-    data = normalized.get("data")
-    roots = data.get("roots", {})
 
-    # Return
-    return jsonify(roots)
+@API.route("/events", methods=["GET"])
+def events():
+    """Get event data.
+
+    Args:
+        None
+
+    Returns:
+        JSON of zone data
+
+    """
+    # return
+    return roots_filter()
 
 
 @API.route("/devices/<int:idx_device>", methods=["GET"])
@@ -115,6 +106,7 @@ def devices(idx_device):
         lastPolled
         device {
           event {
+            tsCreated
             roots {
               edges {
                 node {
@@ -345,3 +337,52 @@ def _insert_interface_snippet(query):
     # Return
     result = query.replace("INTERFACE", snippet)
     return result
+
+
+def roots_filter(idx_root=False):
+    """Get event data.
+
+    Args:
+        None
+
+    Returns:
+        JSON of zone data
+
+    """
+    # Initialize key variables
+    config = ConfigDashboard()
+    filtration = (
+        "(filter: {idxRoot: {eq: IDX_ROOT}}) ".replace(
+            "IDX_ROOT", str(idx_root)
+        )
+        if bool(idx_root) is True
+        else ""
+    )
+
+    query = """
+{
+  roots FILTER{
+    edges {
+      node {
+        idxRoot
+        event {
+          tsCreated
+        }
+      }
+    }
+  }
+}
+""".replace(
+        "FILTER", filtration
+    )
+
+    # Get the data
+    result = rest.get_graphql(query, config)
+    normalized = graphene.normalize(result)
+
+    # Get the zone data list
+    data = normalized.get("data")
+    roots = data.get("roots", {})
+
+    # Return
+    return jsonify(roots)

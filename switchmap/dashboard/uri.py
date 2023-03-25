@@ -51,7 +51,7 @@ def devices(idx_device):
 
 
 def events():
-    """Create the device page URI.
+    """Create the event page URI.
 
     Args:
         None
@@ -62,6 +62,21 @@ def events():
     """
     # Get result
     result = "{}/events".format(API_PREFIX)
+    return result
+
+
+def events_by_idx_root(idx_root=1):
+    """Create the filtered event page URI.
+
+    Args:
+        None
+
+    Returns:
+        result: result
+
+    """
+    # Get result
+    result = "{}/events/{}".format(API_PREFIX, idx_root)
     return result
 
 
