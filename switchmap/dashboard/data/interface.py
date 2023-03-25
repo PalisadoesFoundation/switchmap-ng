@@ -1,5 +1,8 @@
 """Module for parsing interface data from GraphQL JSON."""
 
+# Standard imports
+import time
+
 # Import switchmap.libraries
 from switchmap.core import general
 from switchmap.dashboard import InterfaceState
@@ -57,7 +60,7 @@ class Interface:
                 port=self._interface.get("ifname", "N/A"),
                 vlan=vlan.string,
                 state=self.state().string,
-                days_inactive="None",
+                days_inactive=self.ts_idle(),
                 speed=self.speed(),
                 duplex=self.duplex(),
                 label=self._interface.get("ifalias", "N/A"),
@@ -224,6 +227,28 @@ class Interface:
         # Return
         state = InterfaceState(up=bool(_up), string=result)
         return state
+
+    def ts_idle(self):
+        """Return idle time.
+
+        Args:
+            None
+
+        Returns:
+            result: idle time
+
+        """
+        # Assign key variables
+        idle = self._interface.get("tsIdle", 0)
+
+        # Process
+        if bool(idle) is True:
+            result = "{} days".format(int((time.time() - idle) / 86400))
+
+        else:
+            result = ""
+
+        return result
 
     def vlan(self):
         """Return VLAN number.

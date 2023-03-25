@@ -308,6 +308,7 @@ def _insert_interface_snippet(query):
         lldpremportdesc
         lldpremsysdesc
         nativevlan
+        tsIdle
         macports {
           edges {
             node {
