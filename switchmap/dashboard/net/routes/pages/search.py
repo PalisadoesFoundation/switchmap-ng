@@ -32,6 +32,7 @@ def search():
     """
     # Initialize key variables
     tables = {}
+    idx_root = 1
 
     # Get data to display
     config = ConfigDashboard()
@@ -39,15 +40,19 @@ def search():
     # Get search form data
     items = request.form
 
+    # Get the idx_root value for the search
     for key, value in items.items():
+        if key == "idx_root":
+            idx_root = int(str(value.strip()))
+            break
 
+    for key, value in items.items():
         # 'search_term' comes from the search form HTML
         if key == "search_term":
-
             # Post the search term to to the remote API server. The response
             # will be list of idx_l1interfaces that are associated with the
             # search term.
-            seach_dict = {"idx_root": 1, "searchterm": value.strip()}
+            seach_dict = {"idx_root": idx_root, "searchterm": value.strip()}
             idx_post_response = rest.post(
                 uri.search_api_server(), seach_dict, config, server=True
             )
@@ -55,11 +60,9 @@ def search():
             # Process the list of idx_l1interfaces if there is
             # a successful response
             if bool(idx_post_response.success) is True:
-
                 # Process data if found
                 idx_l1interfaces = idx_post_response.response.json()
                 if bool(idx_l1interfaces) is True:
-
                     # Get data from the API server using GraphQL.
                     # This is the standardized way we get GraphQL data.
                     # This may need to be streamlined later.
@@ -166,13 +169,10 @@ def get_tables(_interfaces):
 
         # Create the HTML dictionary for tables
         if bool(zones) is True:
-
             # Iterate over the devices in the zone
             for zone, device in sorted(zones.items()):
-
                 # Iterate over the interfaces on the device
                 for hostname, interfaces in sorted(device.items()):
-
                     # Create a search object for each device in the zone
                     search = SearchPage(interfaces, hostname=hostname)
 

@@ -32,6 +32,10 @@ def devices(idx_device):
     config = ConfigDashboard()
     data = rest.get(uri.devices(idx_device), config, server=False)
 
+    # Get the idx_root for the device
+    idx_roots = data["device"]["event"]["roots"]
+    idx_root = min([_.get("idxRoot") for _ in idx_roots])
+
     # Get device data
     device_ = Device(data)
     interfaces = device_.interfaces()
@@ -42,4 +46,5 @@ def devices(idx_device):
         hostname=hostname,
         port_table=interfaces,
         system_table=system,
+        idx_root=idx_root,
     )

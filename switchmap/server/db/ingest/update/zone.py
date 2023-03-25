@@ -290,12 +290,19 @@ class Topology:
 
         """
         # Initialize key variables
+        suffix = (
+            ""
+            if bool(updated) is False
+            else ", {} seconds after starting.".format(
+                int(time.time()) - self._start
+            )
+        )
         log_message = '\
-{} table update "{}" for host {}, {} seconds after starting'.format(
+{} "{}" data retrieval for host {}{}'.format(
             "Completed" if bool(updated) else "Starting",
             table,
             self._hostname,
-            int(time.time()) - self._start,
+            suffix,
         )
         log.log2debug(1082, log_message)
 

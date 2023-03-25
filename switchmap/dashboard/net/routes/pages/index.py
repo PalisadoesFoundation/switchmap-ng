@@ -47,14 +47,15 @@ def historical_dashboard(idx_root):
     # Get data to display
     config = ConfigDashboard()
     event = rest.get(uri.historical_dashboard(idx_root), config, server=False)
-    return _dashboard(event)
+    return _dashboard(event, idx_root=idx_root)
 
 
-def _dashboard(event):
+def _dashboard(event, idx_root=1):
     """Create the dashboard home page for a specific event index.
 
     Args:
         event: Event dict
+        idx_root: Root db table primary key
 
     Returns:
         HTML
@@ -66,4 +67,6 @@ def _dashboard(event):
 
     homepage = IndexPage(zones)
     tables = homepage.html()
-    return render_template("index.html", device_table=tables, date=date)
+    return render_template(
+        "index.html", device_table=tables, date=date, idx_root=idx_root
+    )

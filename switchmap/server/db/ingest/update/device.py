@@ -250,7 +250,9 @@ class Topology:
             else:
                 # Port enabled without link. Eet ts_idle to the timestamp
                 # when the interface was first detected as being idle.
-                ts_idle = previous if bool(previous) else int(time.time())
+                ts_idle = (
+                    previous.ts_idle if bool(previous) else int(time.time())
+                )
 
             # Add new row to the database table
             rows.append(

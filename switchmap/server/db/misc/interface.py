@@ -4,14 +4,17 @@
 # Module imports
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import event
+from switchmap.server.db.table import device
+
+# from switchmap.server.db.table import device
 from switchmap.server.db.table import l1interface
 
 
-def interfaces(device):
+def interfaces(rdevice):
     """Get an Rl1interface list for the device during the previous event.
 
     Args:
-        device: RDevice object
+        rdevice: RDevice object
 
     Returns:
         result: List of matching Rl1interface objects
@@ -21,7 +24,7 @@ def interfaces(device):
     result = []
 
     # Determine whether the zone exists
-    zone_exists = zone.idx_exists(device.idx_zone)
+    zone_exists = zone.idx_exists(rdevice.idx_zone)
 
     if bool(zone_exists) is True:
         # Determine whether there was a previous event
@@ -32,7 +35,7 @@ def interfaces(device):
         if bool(event_exists) is True:
             zones = zone.zones(idx_event)
             for item in zones:
-                device_exists = device.exists(item.idx_zone, device.hostname)
+                device_exists = device.exists(item.idx_zone, rdevice.hostname)
 
                 # Device found. Now get the interfaces
                 if bool(device_exists) is True:

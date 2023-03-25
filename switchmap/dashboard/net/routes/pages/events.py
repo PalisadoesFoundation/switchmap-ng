@@ -35,4 +35,4 @@ def events():
     # Convert data to HTML and return it to the browser
     eventpage = EventPage(events_)
     tables = eventpage.html()
-    return render_template("event.html", event_table=tables)
+    return render_template("event.html", event_table=tables, idx_root=1)

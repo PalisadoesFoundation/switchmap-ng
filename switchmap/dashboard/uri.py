@@ -1,7 +1,5 @@
 """switchmap dashboard URIs."""
 
-# Standard import
-import urllib.parse
 
 # Import project libraries
 from switchmap import API_PREFIX
@@ -79,24 +77,6 @@ def search_dashboard_server():
     """
     # Get result
     result = "/search"
-    return result
-
-
-def search_old(idx_l1interfaces):
-    """Create the device page URI.
-
-    Args:
-        idx_l1interfaces: List of idx_l1interfaces values
-
-    Returns:
-        result: result
-
-    """
-    # Create args list
-    args_list = urllib.parse.urlencode([("idx", _) for _ in idx_l1interfaces])
-
-    # Get result
-    result = "{}/search?{}".format(API_PREFIX, args_list)
     return result
 
 

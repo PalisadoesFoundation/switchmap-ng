@@ -113,6 +113,17 @@ def devices(idx_device):
         sysObjectid
         sysUptime
         lastPolled
+        device {
+          event {
+            roots {
+              edges {
+                node {
+                  idxRoot
+                }
+              }
+            }
+          }
+        }
         l1interfaces {
           edges {
             node {
