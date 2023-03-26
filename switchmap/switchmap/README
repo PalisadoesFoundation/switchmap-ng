@@ -1,6 +1,0 @@
-Do not delete this directory. It is imported to determine
-the absolute path to the root directory by many modules.
-
-It is used by:
--   the daemon that makes sure all agents are running.
--   the setup process to insert new oids in the database

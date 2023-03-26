@@ -13,7 +13,7 @@ Read our [Documentation and guidelines](http://switchmap-ng.readthedocs.io/en/la
 
 Use our [issues page](https://github.com/PalisadoesFoundation/switchmap-ng/issues) to report any bugs or make feature requests.
 
-Download the latest code from GitHub at:
+Download  the latest code from GitHub at:
 
 
 1) [Zipfile](https://github.com/PalisadoesFoundation/switchmap-ng/archive/master.zip)

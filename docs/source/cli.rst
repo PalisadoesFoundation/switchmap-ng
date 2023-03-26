@@ -6,134 +6,145 @@ This page outlines how to use the ``switchmap-ng`` command line interface (CLI)
 Viewing ``switchmap-ng`` status
 -------------------------------
 
-There are two important ``switchmap-ng`` daemons. 
+There are a few important ``switchmap-ng`` daemons. 
 
-1) **poller:** Gets data from devices
-2) **API:** Displays device data on web pages
+1) **Dashboard** Displays device data on web pages
+2) **poller:** Gets data from devices
+3) **server:** An API server that interacts with a backend database. It accepts data from the poller and stores it in a cache. It also provides data to the dashboard.
+4) **ingester:** Updates the database with data from the cache.
 
-You can get the status of  each daemon using the following CLI commands:
+You can get the status of each daemon using the following CLI commands:
+
+**NOTE:** Remember before running any of these commands to first activate ``venv``
+
+.. code-block:: bash
+
+    $ source venv/bin/activate
 
 Poller status
 ~~~~~~~~~~~~~
 
 You can get the status of the poller using this command:
 
-::
+.. code-block:: bash
 
-    $ bin/switchmap-ng-cli show poller status
+    $ bin/systemd/switchmap_poller --status
 
 
-API status
-~~~~~~~~~~
+API server status
+~~~~~~~~~~~~~~~~~
 
-You can get the status of the API using this command:
+You can get the status of the API server using this command:
 
-::
+.. code-block:: bash
 
-    $ bin/switchmap-ng-cli show api status
+    $ bin/systemd/switchmap_server --status
     
+Ingester status
+~~~~~~~~~~~~~~~
+
+You can get the status of the ingester using this command:
+
+.. code-block:: bash
+
+    $ bin/systemd/switchmap_ingester --status
+
+Dashboard status
+~~~~~~~~~~~~~~~~
+
+You can get the status of the dashboard using this command:
+
+.. code-block:: bash
+
+    $ bin/systemd/switchmap_dashboard --status
 
 Managing the ``switchmap-ng`` Daemons
 -------------------------------------
 
-You can manage the daemons using the CLI. Here's how:
+**Note:** You will need to do a restart whenever you modify a configuration parameter.
+
 
 Poller Management
 ~~~~~~~~~~~~~~~~~
 
 The poller can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung. 
 
-::
+.. code-block:: bash
 
-    $ bin/switchmap-ng-cli poller start
+    $ bin/systemd/switchmap_poller --start
     
-    $ bin/switchmap-ng-cli poller stop
-    $ bin/switchmap-ng-cli poller stop --force
+    $ bin/systemd/switchmap_poller --stop
+    $ bin/systemd/switchmap_poller --stop --force
     
-    $ bin/switchmap-ng-cli poller restart
-    $ bin/switchmap-ng-cli poller restart --force
+    $ bin/systemd/switchmap_poller --restart
+    $ bin/systemd/switchmap_poller --restart --force
 
-**Note:** You will need to do a restart whenever you modify a configuration parameter.
 
-API Management
-~~~~~~~~~~~~~~
+API Server Management
+~~~~~~~~~~~~~~~~~~~~~
 
-The API can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung. 
+The server can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung. 
 
-::
+.. code-block:: bash
 
-    $ bin/switchmap-ng-cli api start
+    $ bin/systemd/switchmap_server --start
     
-    $ bin/switchmap-ng-cli api stop
-    $ bin/switchmap-ng-cli api stop --force
+    $ bin/systemd/switchmap_server --stop
+    $ bin/systemd/switchmap_server --stop --force
     
-    $ bin/switchmap-ng-cli api restart
-    $ bin/switchmap-ng-cli api restart --force
+    $ bin/systemd/switchmap_server --restart
+    $ bin/systemd/switchmap_server --restart --force
 
-**Note:** You will need to do a restart whenever you modify a configuration parameter.
+Ingester Management
+~~~~~~~~~~~~~~~~~~~
+
+The ingester can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung. 
+
+.. code-block:: bash
+
+    $ bin/systemd/switchmap_ingester --start
+    
+    $ bin/systemd/switchmap_ingester --stop
+    $ bin/systemd/switchmap_ingester --stop --force
+    
+    $ bin/systemd/switchmap_ingester --restart
+    $ bin/systemd/switchmap_ingester --restart --force
+
+Dashboard Management
+~~~~~~~~~~~~~~~~~~~~
+
+The dashboard can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung. 
+
+.. code-block:: bash
+
+    $ bin/systemd/switchmap_dashboard --start
+    
+    $ bin/systemd/switchmap_dashboard --stop
+    $ bin/systemd/switchmap_dashboard --stop --force
+    
+    $ bin/systemd/switchmap_dashboard --restart
+    $ bin/systemd/switchmap_dashboard --restart --force
+
 
 Testing The Ability to Poll Devices
 -----------------------------------
 
-You will need to verify that the poller can access the hosts in the configuration.
+You may want to verify that the poller can access the hosts in the configuration. This can be done using the ``switchmap_poller_test.py`` command.
 
+.. code-block:: bash
 
-Viewing Configured Hosts
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can view the configured hosts using this command.
-
-::
-
-    $ bin/switchmap-ng-cli show hostnames
-
-
-Testing Host Pollability
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-You can test a host using this command.
-
-::
-
-    $ bin/switchmap-ng-cli test poller --hostname HOSTNAME
-
-
-You can test all hosts using this command.
-
-::
-
-    $ bin/switchmap-ng-cli test poller --all
-    
+    $ switchmap_poller_test.py --hostname HOSTNAME
 
 Viewing ``switchmap-ng`` logs
 -----------------------------
 
-When troubleshooting it is a good practice to view the ``switchmap-ng`` log files.
+When troubleshooting it is a good practice to view the ``switchmap-ng`` log files. 
 
-Poller logs
-~~~~~~~~~~~
+These can be found in the directory configured with the ``log_directory`` in the configuration. The default is in the ``logs/`` directory.
 
-You can view the poller logs using this command:
+1) ``switchmap.log``: The general log file
+2) ``switchmap-server.log``: The log file used by the API server
+3) ``switchmap-poller.log``: The log file used by the poller
+4) ``switchmap-ingester.log``: The log file used by the ingester
+5) ``switchmap-dashboard.log``: The log file used by the dashboard
 
-::
-
-    $ bin/switchmap-ng-cli show poller logs
-
-
-API logs
-~~~~~~~~
-
-You can view the API logs using this command:
-
-::
-
-    $ bin/switchmap-ng-cli show api logs
-
-Viewing the ``switchmap-ng`` Configuration
-------------------------------------------
-
-You can view the configuration using this command:
-
-::
-
-    $ bin/switchmap-ng-cli show configuration
