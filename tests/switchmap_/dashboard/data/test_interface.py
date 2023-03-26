@@ -117,7 +117,7 @@ class TestInterface(unittest.TestCase):
                 vlan="1-8, 13-15, 17-24, 29-31, 33-40, 45-47, 49-56, 61-63, "
                 "65-72, 77-79 and more. Total 1404.",
                 state="Active",
-                days_inactive="None",
+                days_inactive="",
                 speed="1G",
                 duplex="Full",
                 label="Link to dbrt02.example.org  Gig 1/45",

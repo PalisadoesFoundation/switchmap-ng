@@ -164,7 +164,7 @@ class TestDevice(unittest.TestCase):
         expected = """<table class="table">
 <thead><tr><th>Port</th><th>VLAN</th><th>State</th><th>Days Inactive</th><th>Speed</th><th>Duplex</th><th>Port Label</th><th>Trunk</th><th>CDP</th><th>LLDP</th><th>Mac Address</th><th>Manufacturer</th><th>IP Address</th><th>DNS Name</th></tr></thead>
 <tbody>
-<tr class="success"><td>Gi1/0/1</td><td>21</td><td>Active</td><td>None</td><td>1G</td><td>Full</td><td>Alias F12</td><td>False</td><td></td><td></td><td>d05099dad28b</td><td></td><td><p></p></td><td><p></p></td></tr>
+<tr class="success"><td>Gi1/0/1</td><td>21</td><td>Active</td><td></td><td>1G</td><td>Full</td><td>Alias F12</td><td>False</td><td></td><td></td><td>d05099dad28b</td><td></td><td><p></p></td><td><p></p></td></tr>
 </tbody>
 </table>"""
         result = self.device.interfaces()
