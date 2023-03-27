@@ -190,7 +190,7 @@ class Query(graphene.ObjectType):
 
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
-    devices = BatchSQLAlchemyConnectionField(Device.connection, sort=None)
+    devices = BatchSQLAlchemyConnectionField(Device.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     l1interface = graphene.relay.Node.Field(L1Interface)
@@ -198,49 +198,47 @@ class Query(graphene.ObjectType):
 
     # Results as a single entry filtered by 'id' and as a list
     zone = graphene.relay.Node.Field(Zone)
-    zones = BatchSQLAlchemyConnectionField(Zone.connection, sort=None)
+    zones = BatchSQLAlchemyConnectionField(Zone.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     root = graphene.relay.Node.Field(Root)
-    roots = BatchSQLAlchemyConnectionField(Root.connection, sort=None)
+    roots = BatchSQLAlchemyConnectionField(Root.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     event = graphene.relay.Node.Field(Event)
-    events = BatchSQLAlchemyConnectionField(Event.connection, sort=None)
+    events = BatchSQLAlchemyConnectionField(Event.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     ip = graphene.relay.Node.Field(Ip)
-    ips = BatchSQLAlchemyConnectionField(Ip.connection, sort=None)
+    ips = BatchSQLAlchemyConnectionField(Ip.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     ipport = graphene.relay.Node.Field(IpPort)
-    ipports = BatchSQLAlchemyConnectionField(IpPort.connection, sort=None)
+    ipports = BatchSQLAlchemyConnectionField(IpPort.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     mac = graphene.relay.Node.Field(Mac)
-    macs = BatchSQLAlchemyConnectionField(Mac.connection, sort=None)
+    macs = BatchSQLAlchemyConnectionField(Mac.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     macip = graphene.relay.Node.Field(MacIp)
-    macips = BatchSQLAlchemyConnectionField(MacIp.connection, sort=None)
+    macips = BatchSQLAlchemyConnectionField(MacIp.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     macport = graphene.relay.Node.Field(MacPort)
-    macports = BatchSQLAlchemyConnectionField(MacPort.connection, sort=None)
+    macports = BatchSQLAlchemyConnectionField(MacPort.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     oui = graphene.relay.Node.Field(Oui)
-    ouis = BatchSQLAlchemyConnectionField(Oui.connection, sort=None)
+    ouis = BatchSQLAlchemyConnectionField(Oui.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     vlan = graphene.relay.Node.Field(Vlan)
-    vlans = BatchSQLAlchemyConnectionField(
-        Vlan.connection, sort=Vlan.sort_argument()
-    )
+    vlans = BatchSQLAlchemyConnectionField(Vlan.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     vlanport = graphene.relay.Node.Field(VlanPort)
-    vlanports = BatchSQLAlchemyConnectionField(VlanPort.connection, sort=None)
+    vlanports = BatchSQLAlchemyConnectionField(VlanPort.connection)
 
 
 # Make the schema global
