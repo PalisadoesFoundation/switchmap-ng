@@ -18,6 +18,8 @@ jobs:
     name: Pull Request Target
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo to get root directory variable
+        uses: actions/checkout@v3
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
