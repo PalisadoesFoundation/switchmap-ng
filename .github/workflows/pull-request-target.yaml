@@ -21,6 +21,7 @@ jobs:
       - name: Add the PR Review Policy as a comment
         uses: thollander/actions-comment-pull-request@v2
         with:
+          mode: recreate
           message: |
             Please read: Our Pull Request Approval Process
 
