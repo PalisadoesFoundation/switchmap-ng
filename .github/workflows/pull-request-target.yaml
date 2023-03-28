@@ -18,6 +18,10 @@ jobs:
     name: Pull Request Target
     runs-on: ubuntu-latest
     steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: echo "$GITHUB_CONTEXT"
       - name: Add the PR Review Policy as a comment
         uses: thollander/actions-comment-pull-request@v2
         with:
