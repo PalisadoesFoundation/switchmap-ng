@@ -22,6 +22,7 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           mode: recreate
+          comment_tag: pr_review_policy
           message: |
             ## Our Pull Request Approval Process
 
