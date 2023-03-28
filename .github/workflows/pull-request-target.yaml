@@ -22,4 +22,4 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           comment_tag: pr_review_policy
-          filePath: ${{ env.GITHUB_WORKSPACE }}/.github/PR_REVIEW_PROCESS.md
+          filePath: ${{ github.workspace }}/.github/PR_REVIEW_PROCESS.md
