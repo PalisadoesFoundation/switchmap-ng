@@ -23,7 +23,9 @@ jobs:
         with:
           mode: recreate
           message: |
-            Please read: Our Pull Request Approval Process
+            ## Our Pull Request Approval Process
+
+            We have these basic policies to make the approval process smoother for our volunteer team.
 
             ### Testing Your Code
 
