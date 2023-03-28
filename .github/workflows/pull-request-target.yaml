@@ -22,34 +22,35 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           comment_tag: pr_review_policy
-          message: |
-            ## Our Pull Request Approval Process.
+          filePath: ${{ GITHUB_WORKSPACE }}/.github/PR_REVIEW_PROCESS.md
+          # message: |
+          #   ## Our Pull Request Approval Process.
 
-            We have these basic policies to make the approval process smoother for our volunteer team.
+          #   We have these basic policies to make the approval process smoother for our volunteer team.
 
-            ### Testing Your Code
+          #   ### Testing Your Code
 
-            Please make sure your code passes all tests. Our test code coverage system will fail if either of these two conditions occur:
+          #   Please make sure your code passes all tests. Our test code coverage system will fail if either of these two conditions occur:
 
-            1.  The overall code coverage drops below the target threshold of the repository
-            2.  Any file in the pull request has code coverage levels below the repository threshold
+          #   1.  The overall code coverage drops below the target threshold of the repository
+          #   2.  Any file in the pull request has code coverage levels below the repository threshold
 
-            The process helps maintain the overall reliability of the code base and is a prerequisite for getting your PR approved. Assigned reviewers regularly review the PR queue and tend to focus on PRs that are passing.
+          #   The process helps maintain the overall reliability of the code base and is a prerequisite for getting your PR approved. Assigned reviewers regularly review the PR queue and tend to focus on PRs that are passing.
 
-            ### Reviewers
+          #   ### Reviewers
 
-            When your PR has been assigned reviewers contact them to get your code reviewed and approved via:
+          #   When your PR has been assigned reviewers contact them to get your code reviewed and approved via:
 
-            1. comments in this PR or
-            1. our slack channel
+          #   1. comments in this PR or
+          #   1. our slack channel
 
-            #### Reviewing Your Code
+          #   #### Reviewing Your Code
 
-            Your reviewer(s) will have the following roles:
+          #   Your reviewer(s) will have the following roles:
 
-            1.  arbitrators of future discussions with other contributors about the validity of your changes
-            2.  point of contact for evaluating the validity of your work
-            3.  person who verifies matching issues by others that should be closed.
-            4.  person who gives general guidance in fixing your tests
+          #   1.  arbitrators of future discussions with other contributors about the validity of your changes
+          #   2.  point of contact for evaluating the validity of your work
+          #   3.  person who verifies matching issues by others that should be closed.
+          #   4.  person who gives general guidance in fixing your tests
 
-            :dart: Contacting the person who assigned the mentors is not advised unless they make a request. Do not @ the person who did the assignment otherwise.
+          #   :dart: Contacting the person who assigned the mentors is not advised unless they make a request. Do not @ the person who did the assignment otherwise.
