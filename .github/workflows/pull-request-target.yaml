@@ -1,0 +1,21 @@
+##############################################################################
+##############################################################################
+#
+# NOTE!
+#
+# Please read the README.md file in this directory that defines what should
+# be placed in this file
+#
+##############################################################################
+##############################################################################
+
+name: PR target workflow
+on:
+  pull_request_target:
+
+jobs:
+  PR-Policy:
+    - name: Add PR policy as a comment
+      uses: thollander/actions-comment-pull-request@v2
+      with:
+        filePath: .github/PR_REVIEW_POLICY.md
