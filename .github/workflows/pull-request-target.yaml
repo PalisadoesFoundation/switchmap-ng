@@ -23,7 +23,7 @@ jobs:
         with:
           comment_tag: pr_review_policy
           message: |
-            ## Our Pull Request Approval Process.
+            ## Our Pull Request Approval Process
 
             We have these basic policies to make the approval process smoother for our volunteer team.
 
