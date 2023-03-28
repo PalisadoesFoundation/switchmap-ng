@@ -23,7 +23,9 @@ jobs:
         with:
           mode: recreate
           message: |
-            Please read: Our Pull Request Approval Process
+            ## Our Pull Request Approval Process
+
+            We have these basic policies to make the approval process smoother for our volunteer team.
 
             ### Testing Your Code
 
@@ -34,7 +36,7 @@ jobs:
 
             We do this to ensure the overall reliability of the code base is maintained. This is a prerequisite for getting your PR approved. Assigned reviewers regularly review the PR queue and tend to focus on PRs that are passing.
 
-            ## Reviewers
+            ### Reviewers
 
             When your PR has been assigned reviewers contact them to get your code reviewed and approved via:
 
