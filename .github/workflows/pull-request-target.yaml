@@ -23,4 +23,4 @@ jobs:
       - name: Add the PR Review Policy as a comment
         uses: thollander/actions-comment-pull-request@v2
         with:
-          filePath: ${{$GITHUB_WORKSPACE}}/.github/PR_REVIEW_POLICY.md
+          filePath: ${{GITHUB_WORKSPACE}}/.github/PR_REVIEW_POLICY.md
