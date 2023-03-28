@@ -18,10 +18,6 @@ jobs:
     name: Pull Request Target
     runs-on: ubuntu-latest
     steps:
-      - name: Test
-        run: echo $GITHUB_WORKSPACE
-      - name: Test 2
-        run: echo `ls ${{GITHUB_WORKSPACE}}`
       - name: Add the PR Review Policy as a comment
         uses: thollander/actions-comment-pull-request@v2
         with:
