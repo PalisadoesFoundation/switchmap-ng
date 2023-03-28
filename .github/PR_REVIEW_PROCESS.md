@@ -1,6 +1,6 @@
 ## Our Pull Request Approval Process.
 
-We have these basic policies to make the approval process smoother for our volunteer team.
+We have these basic policies to make the approval process smoother for our volunteer team
 
 ### Testing Your Code
 
