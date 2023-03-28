@@ -22,7 +22,9 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            ## Tests
+            Please read: Our Pull Request Approval Process
+
+            ### Testing Your Code
 
             Please make sure your code passes all tests. Our test code coverage system will fail if either of these two conditions occur:
 
@@ -33,18 +35,18 @@ jobs:
 
             ## Reviewers
 
-            When your PR has been assigned reviewers contact to get your code reviewed and approved:
+            When your PR has been assigned reviewers contact them to get your code reviewed and approved via:
 
-            1. in this PR or
-            1. via slack
+            1. comments in this PR or
+            1. our slack channel
 
-            ### Reviewer Roles
+            #### Reviewing Your Code
 
             Your reviewer(s) will have the following roles:
 
             1.  arbitrators of future discussions with other contributors about the validity of your changes
             2.  point of contact for evaluating the validity of your work
             3.  person who verifies matching issues by others that should be closed.
-            4.  person who assists in fixing your tests
+            4.  person who gives general guidance in fixing your tests
 
             Contacting the person who assigned the mentors is not advised unless they make a request. Do not @ the person who did the assignment otherwise.
