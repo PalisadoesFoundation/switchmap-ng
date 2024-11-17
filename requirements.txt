@@ -1,27 +1,28 @@
-# Miscellaneous
-PyYAML==6.0
+# PyYAML to read configuration and data files
+PyYAML
 
 # Flask Web Server
-Flask==2.0.3
+Flask==3.1.0
 Flask-Table==0.5.0
 Flask-Testing==0.8.1
-Werkzeug==2.2.2
-gunicorn==20.0.4
+Werkzeug==3.1.3
+gunicorn==23.0.0
 
 # Posting
 requests
 
 # Polling
-easysnmp==0.2.5
+easysnmp==0.2.6
 
 # Data and Database
-pymysql==1.0.2
-SQLAlchemy==1.4.31
-pandas==1.5.3
+pymysql==1.1.1
+SQLAlchemy==2.0.36
+pandas==2.2.3
 
 # GraphQL interface for Flask
-git+https://github.com/graphql-python/graphene-sqlalchemy.git@refs/pull/378/merge
-graphql_server==3.0.0b5
+graphene-sqlalchemy==3.0.0rc1
+# git+https://github.com/graphql-python/graphene-sqlalchemy.git@refs/pull/378/merge
+graphql_server==3.0.0b7
 
 # Testing
 mock
