@@ -50,7 +50,7 @@ Testing the API is easy. Just visit the following URL:
 
 ::
 
-    http://hostname/switchmap-ng
+    http://hostname/switchmap
 
 
 A sample system startup script can be found in the
