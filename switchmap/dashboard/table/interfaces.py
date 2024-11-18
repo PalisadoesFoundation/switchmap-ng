@@ -11,6 +11,7 @@ class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
+        """Fix the column formatting."""
         return content
 
 
@@ -123,7 +124,7 @@ def table(_interfaces):
     """
     # Initialize key variables
     rows = []
-    table = None
+    result = None
 
     # Process each interface
     for interface in _interfaces:
@@ -151,9 +152,9 @@ def table(_interfaces):
                 )
             )
 
-    # Populate the table
+    # Populate the result
     if bool(rows) is True:
-        table = InterfaceTable(rows)
+        result = InterfaceTable(rows)
 
     # Return
-    return table
+    return result

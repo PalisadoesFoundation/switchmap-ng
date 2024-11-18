@@ -3,6 +3,7 @@
 Contains all routes that switchmap.s Flask webserver uses
 
 """
+
 # Standard imports
 from collections import defaultdict
 
@@ -93,55 +94,6 @@ def search():
     return render_template(
         "search.html", results_dict=tables, idx_root=idx_root, date=date
     )
-    # return jsonify(result)
-
-
-# @SEARCH.route("/search-old", methods=["POST"])
-# def search_old():
-#     """Create the search page.
-
-#     Args:
-#         None
-
-#     Returns:
-#         HTML
-
-#     """
-#     # Initialize key variables
-#     tables = {}
-
-#     # Get data to display
-#     config = ConfigDashboard()
-
-#     # Get search form data
-#     items = request.form
-
-#     for key, value in items.items():
-#         # 'search_term' comes from the search form HTML
-#         if key == "search_term":
-#             # Post the data to the API server
-#             search_dict = {"idx_root": 1, "searchterm": value.strip()}
-#             idx_post_response = rest.post(
-#                 uri.search_api_server(), search_dict, config
-#             )
-
-#             # Process a successful response
-#             if bool(idx_post_response.success) is True:
-#                 # Get data from the API server using GraphQL
-#                 idx_l1interfaces = idx_post_response.response.json()
-
-#                 # Process data if found
-#                 if bool(idx_l1interfaces) is True:
-#                     interfaces = rest.get(
-#                         uri.search(idx_l1interfaces), config, server=False
-#                     )
-#                     tables = get_tables(interfaces)
-
-#         break
-
-#     # Convert data to HTML and return it to the browser
-#     return render_template("search.html", results_dict=tables)
-#     # return jsonify(result)
 
 
 def get_tables(_interfaces):
@@ -190,7 +142,7 @@ def get_tables(_interfaces):
                     search = SearchPage(interfaces, hostname=hostname)
 
                     # Append the results for the zone together
-                    result[zone] = "{}\n{}".format(result[zone], search.html())
+                    result[zone] = f"{result[zone]}\n{search.html()}"
         else:
             result[""] = default
     else:

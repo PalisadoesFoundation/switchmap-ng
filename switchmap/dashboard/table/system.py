@@ -11,6 +11,7 @@ class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
+        """Fix the column formatting."""
         return content
 
 
@@ -54,15 +55,15 @@ def table(data):
 
     """
     # Initialize key variables
-    table = None
+    result = None
 
     # Process the data
     system = System(data)
     rows = system.rows()
 
-    # Populate the table
+    # Populate the result
     if bool(rows) is True:
-        table = SystemTable(rows)
+        result = SystemTable(rows)
 
     # Return
-    return table
+    return result

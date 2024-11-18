@@ -21,7 +21,7 @@ Create the database, and grant privileges to a switchmap user. In this case both
 ::
    
      $ sudo mysql
-     >>> CREATE DATABASE SWITCHMAP;
+     >>> CREATE DATABASE switchmap;
      >>> GRANT ALL PRIVILEGES ON switchmap.* TO 'switchmap'@'localhost' IDENTIFIED BY 'CHANGE_ME_NOW';
      >>> FLUSH PRIVILEGES;
      >>> EXIT;
@@ -117,8 +117,8 @@ Now you can install the extra python packages using ``pip3`` referencing the pac
 Remember to always be in ``venv`` mode when running ``switchmap-ng`` by running the source command first. You only need to run the command once per terminal session.
 
 
-Edit Configuration File
-~~~~~~~~~~~~~~~~~~~~~~~
+Edit The Configuration File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Please read the :doc:`configuration` file beforehand before proceeding.
 
@@ -152,17 +152,51 @@ You can test your SNMP configuration and connectivity to your devices using the 
 
 ..  code-block:: bash
 
-    $ bin/tools/switchmap_poller_test.py --hostname HOSTNAME
+    (venv) $ bin/tools/switchmap_poller_test.py --hostname HOSTNAME
 
 If successful it will print the entire contents of the polled data on the screen.
 
-Testing the Web Interface
-~~~~~~~~~~~~~~~~~~~~~~~~~
-You can test whether the API is working by visiting this url. (You will need to make adjustments if you installed the application on a remote server):
+Testing the API Server
+~~~~~~~~~~~~~~~~~~~~~~
+You can test whether the API is working by starting it on the device designated to receiving polling information and storing it in the database.
+
+..  code-block:: bash
+
+    (venv) $ bin/systemd/switchmap_server --start
+    (venv) $ bin/systemd/switchmap_server --status
+
+The result of the status check should look like this:
 
 ::
 
-   http://localhost:7000/switchmap-ng/
+   Daemon is running - <bound method Agent.name of <switchmap.core.agent.AgentAPI object at>>
+   Daemon is running - <bound method Agent.name of <switchmap.core.agent.Agent object at>>
+
+Testing the Web Dashboard
+~~~~~~~~~~~~~~~~~~~~~~~~~
+You can test whether the web dashboard API is working by
+
+1) Correctly configuring and starting the API server as shown above
+2) Starting the web dashboard as shown below. 
+
+
+..  code-block:: bash
+
+    (venv) $ bin/systemd/switchmap_dashboard --start
+    (venv) $ bin/systemd/switchmap_dashboard --status
+
+The result of the status check should look like this:
+
+::
+
+   Daemon is running - <bound method Agent.name of <switchmap.core.agent.AgentAPI object at>>
+   Daemon is running - <bound method Agent.name of <switchmap.core.agent.Agent object at>>
+
+You can then visit the dashboard URL. (You will need to make adjustments if you installed the application on a remote server):
+
+::
+
+   http://localhost:7001/switchmap/
 
 The Webserver help page provides the necessary steps to view switchmap on port 80 using Apache or Nginx
 

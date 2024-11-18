@@ -28,7 +28,7 @@ You can get the status of the poller using this command:
 
 .. code-block:: bash
 
-    $ bin/systemd/switchmap_poller --status
+    (venv) $ bin/systemd/switchmap_poller --status
 
 
 API server status
@@ -38,7 +38,7 @@ You can get the status of the API server using this command:
 
 .. code-block:: bash
 
-    $ bin/systemd/switchmap_server --status
+    (venv) $ bin/systemd/switchmap_server --status
     
 Ingester status
 ~~~~~~~~~~~~~~~
@@ -47,7 +47,7 @@ You can get the status of the ingester using this command:
 
 .. code-block:: bash
 
-    $ bin/systemd/switchmap_ingester --status
+    (venv) $ bin/systemd/switchmap_ingester --status
 
 Dashboard status
 ~~~~~~~~~~~~~~~~
@@ -56,7 +56,7 @@ You can get the status of the dashboard using this command:
 
 .. code-block:: bash
 
-    $ bin/systemd/switchmap_dashboard --status
+    (venv) $ bin/systemd/switchmap_dashboard --status
 
 Managing the ``switchmap-ng`` Daemons
 -------------------------------------
@@ -71,13 +71,13 @@ The poller can be started, stopped and restarted using the following commands. U
 
 .. code-block:: bash
 
-    $ bin/systemd/switchmap_poller --start
+    (venv) $ bin/systemd/switchmap_poller --start
     
-    $ bin/systemd/switchmap_poller --stop
-    $ bin/systemd/switchmap_poller --stop --force
+    (venv) $ bin/systemd/switchmap_poller --stop
+    (venv) $ bin/systemd/switchmap_poller --stop --force
     
-    $ bin/systemd/switchmap_poller --restart
-    $ bin/systemd/switchmap_poller --restart --force
+    (venv) $ bin/systemd/switchmap_poller --restart
+    (venv) $ bin/systemd/switchmap_poller --restart --force
 
 
 API Server Management
@@ -87,13 +87,13 @@ The server can be started, stopped and restarted using the following commands. U
 
 .. code-block:: bash
 
-    $ bin/systemd/switchmap_server --start
+    (venv) $ bin/systemd/switchmap_server --start
     
-    $ bin/systemd/switchmap_server --stop
-    $ bin/systemd/switchmap_server --stop --force
+    (venv) $ bin/systemd/switchmap_server --stop
+    (venv) $ bin/systemd/switchmap_server --stop --force
     
-    $ bin/systemd/switchmap_server --restart
-    $ bin/systemd/switchmap_server --restart --force
+    (venv) $ bin/systemd/switchmap_server --restart
+    (venv) $ bin/systemd/switchmap_server --restart --force
 
 Ingester Management
 ~~~~~~~~~~~~~~~~~~~
@@ -102,13 +102,13 @@ The ingester can be started, stopped and restarted using the following commands.
 
 .. code-block:: bash
 
-    $ bin/systemd/switchmap_ingester --start
+    (venv) $ bin/systemd/switchmap_ingester --start
     
-    $ bin/systemd/switchmap_ingester --stop
-    $ bin/systemd/switchmap_ingester --stop --force
+    (venv) $ bin/systemd/switchmap_ingester --stop
+    (venv) $ bin/systemd/switchmap_ingester --stop --force
     
-    $ bin/systemd/switchmap_ingester --restart
-    $ bin/systemd/switchmap_ingester --restart --force
+    (venv) $ bin/systemd/switchmap_ingester --restart
+    (venv) $ bin/systemd/switchmap_ingester --restart --force
 
 Dashboard Management
 ~~~~~~~~~~~~~~~~~~~~
@@ -117,13 +117,13 @@ The dashboard can be started, stopped and restarted using the following commands
 
 .. code-block:: bash
 
-    $ bin/systemd/switchmap_dashboard --start
+    (venv) $ bin/systemd/switchmap_dashboard --start
     
-    $ bin/systemd/switchmap_dashboard --stop
-    $ bin/systemd/switchmap_dashboard --stop --force
+    (venv) $ bin/systemd/switchmap_dashboard --stop
+    (venv) $ bin/systemd/switchmap_dashboard --stop --force
     
-    $ bin/systemd/switchmap_dashboard --restart
-    $ bin/systemd/switchmap_dashboard --restart --force
+    (venv) $ bin/systemd/switchmap_dashboard --restart
+    (venv) $ bin/systemd/switchmap_dashboard --restart --force
 
 
 Testing The Ability to Poll Devices
@@ -133,7 +133,7 @@ You may want to verify that the poller can access the hosts in the configuration
 
 .. code-block:: bash
 
-    $ switchmap_poller_test.py --hostname HOSTNAME
+    (venv) $ bin/tools/switchmap_poller_test.py --hostname HOSTNAME
 
 Viewing ``switchmap-ng`` logs
 -----------------------------

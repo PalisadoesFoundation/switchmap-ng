@@ -1,5 +1,5 @@
 # Miscellaneous
-PyYAML==6.0
+PyYAML
 
 # Flask Web Server
 Flask==2.0.3
@@ -17,10 +17,11 @@ easysnmp==0.2.5
 # Data and Database
 pymysql==1.0.2
 SQLAlchemy==1.4.31
-pandas==1.5.3
+pandas
 
 # GraphQL interface for Flask
-git+https://github.com/graphql-python/graphene-sqlalchemy.git@refs/pull/378/merge
+graphene-sqlalchemy==3.0.0rc1
+#git+https://github.com/graphql-python/graphene-sqlalchemy.git@refs/pull/378/merge
 graphql_server==3.0.0b5
 
 # Testing

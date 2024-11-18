@@ -16,6 +16,7 @@ class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
+        """Fix the column formatting."""
         return content
 
 
@@ -109,8 +110,8 @@ def rows(devices):
     # Create list of links for table
     for device in devices:
         # Get URL link for device page
-        url = "{}/devices/{}".format(SITE_PREFIX, device.idx_device)
-        link = '<a href="{}">{}</a>'.format(url, device.hostname)
+        url = f"{SITE_PREFIX}/devices/{device.idx_device}"
+        link = f'<a href="{url}">{device.hostname}</a>'
         links.append(link)
 
     # Convert the rows to table rows
