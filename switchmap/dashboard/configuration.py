@@ -29,9 +29,7 @@ class ConfigDashboard(ConfigAPIClient, ConfigAPI):
         # Error if incorrectly configured
         if bool(self._config_dashboard) is False:
             log_message = (
-                'No "{}:" section found in the configuration file(s)'.format(
-                    section
-                )
+                f'No "{section}:" section found in the configuration file(s)'
             )
             log.log2die_safe(1016, log_message)
 

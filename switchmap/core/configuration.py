@@ -51,9 +51,7 @@ class ConfigCore(_Config):
         # Error if incorrectly configured
         if bool(self._config_core) is False:
             log_message = (
-                'No "{}:" section found in the configuration file(s)'.format(
-                    section
-                )
+                f'No "{section}:" section found in the configuration file(s)'
             )
             log.log2die_safe(1006, log_message)
 
@@ -91,9 +89,8 @@ class ConfigCore(_Config):
 
         """
         # Get new result
-        result = "{0}{1}switchmap-{2}.log".format(
-            self.log_directory(), os.sep, str(daemon).lower()
-        )
+        result = f"\
+{self.log_directory()}{os.sep}switchmap-{str(daemon).lower()}.log"
 
         # Return
         return result
@@ -110,8 +107,7 @@ class ConfigCore(_Config):
         """
         # Get result
         result = self._config_core.get(
-            "daemon_directory",
-            "{}{}daemon".format(self.system_directory(), os.sep),
+            "daemon_directory", f"{self.system_directory()}{os.sep}daemon"
         )
 
         # Create the directory if not found
@@ -121,9 +117,9 @@ class ConfigCore(_Config):
         # Check if value exists
         if os.path.isdir(result) is False:
             log_message = (
-                'daemon_directory: "{}" '
+                f'daemon_directory: "{result}" '
                 "in the configuration file(s) doesn't exist!"
-            ).format(result)
+            )
             log.log2die_safe(1012, log_message)
 
         # Return
@@ -141,7 +137,7 @@ class ConfigCore(_Config):
         """
         # Get result
         result = self._config_core.get(
-            "log_directory", "{}{}log".format(self.system_directory(), os.sep)
+            "log_directory", f"{self.system_directory()}{os.sep}log"
         )
 
         # Create the directory if not found
@@ -151,9 +147,9 @@ class ConfigCore(_Config):
         # Check if value exists
         if os.path.isdir(result) is False:
             log_message = (
-                'log_directory: "{}" '
+                f'log_directory: "{result}" '
                 "in the configuration file(s) doesn't exist!"
-            ).format(result)
+            )
             log.log2die_safe(1090, log_message)
 
         # Return
@@ -170,7 +166,7 @@ class ConfigCore(_Config):
 
         """
         # Get new result
-        result = "{}{}switchmap.log".format(self.log_directory(), os.sep)
+        result = f"{self.log_directory()}{os.sep}switchmap.log"
 
         # Return
         return result
@@ -219,17 +215,15 @@ class ConfigCore(_Config):
         # Get result
         result = self._config_core.get("system_directory")
         if bool(result) is False:
-            result = "{}{}var".format(
-                os.sep.join(os.path.split(__file__)[0].split(os.sep)[:-2]),
-                os.sep,
-            )
+            result = f"\
+{os.sep.join(os.path.split(__file__)[0].split(os.sep)[:-2])}{os.sep}var"
 
         # Check if value exists
         if os.path.isdir(result) is False:
             api_message = (
-                'system_directory: "{}" '
+                f'system_directory: "{result}" '
                 "in the configuration file(s) doesn't exist!"
-            ).format(result)
+            )
             log.log2die_safe(1011, api_message)
 
         # Return
@@ -258,9 +252,7 @@ class ConfigAPIClient(ConfigCore):
         # Error if incorrectly configured
         if bool(self._config_api_client) is False:
             log_message = (
-                'No "{}:" section found in the configuration file(s)'.format(
-                    section
-                )
+                f'No "{section}:" section found in the configuration file(s)'
             )
             log.log2die_safe(1013, log_message)
 
@@ -365,12 +357,12 @@ class ConfigAPIClient(ConfigCore):
         """
         # Get parameter
         if self.server_https() is True:
-            result = "https://{}:{}".format(
-                self.server_address(), self.server_bind_port()
+            result = (
+                f"https://{self.server_address()}:{self.server_bind_port()}"
             )
         else:
-            result = "http://{}:{}".format(
-                self.server_address(), self.server_bind_port()
+            result = (
+                f"http://{self.server_address()}:{self.server_bind_port()}"
             )
 
         # Return
@@ -399,11 +391,23 @@ class ConfigAPI(ConfigCore):
         # Error if incorrectly configured
         if bool(self._config_api_server) is False:
             log_message = (
-                'No "{}:" section found in the configuration file(s)'.format(
-                    section
-                )
+                f'No "{section}:" section found in the configuration file(s)'
             )
             log.log2die_safe(1015, log_message)
+
+    def api_bind_port(self):
+        """Get api_bind_port.
+
+        Args:
+            None
+
+        Returns:
+            result: result
+
+        """
+        # Get result
+        result = self._config_api_server.get("api_bind_port", 7000)
+        return result
 
     def api_listen_address(self):
         """Get api_listen_address.
@@ -492,13 +496,13 @@ class ConfigAPI(ConfigCore):
         """
         # Get parameter
         if self.api_https() is True:
-            result = "https://{}:{}".format(
-                self.api_listen_address(), self.api_bind_port()
-            )
-        else:
-            result = "http://{}:{}".format(
-                self.api_listen_address(), self.api_bind_port()
+            result = (
+                f"https://{self.api_listen_address()}:{self.api_bind_port()}"
             )
 
+        else:
+            result = (
+                f"http://{self.api_listen_address()}:{self.api_bind_port()}"
+            )
         # Return
         return result
