@@ -1,6 +1,5 @@
 """switchmap dashboard URIs."""
 
-
 # Import project libraries
 from switchmap import API_PREFIX
 
@@ -16,7 +15,7 @@ def dashboard():
 
     """
     # Get result
-    result = "{}/dashboard".format(API_PREFIX)
+    result = f"{API_PREFIX}/dashboard"
     return result
 
 
@@ -31,7 +30,7 @@ def historical_dashboard(idx_root=1):
 
     """
     # Get result
-    result = "{}/dashboard/{}".format(API_PREFIX, idx_root)
+    result = f"{API_PREFIX}/dashboard/{idx_root}"
     return result
 
 
@@ -46,7 +45,7 @@ def devices(idx_device):
 
     """
     # Get result
-    result = "{}/devices/{}".format(API_PREFIX, idx_device)
+    result = f"{API_PREFIX}/devices/{idx_device}"
     return result
 
 
@@ -61,7 +60,7 @@ def events():
 
     """
     # Get result
-    result = "{}/events".format(API_PREFIX)
+    result = f"{API_PREFIX}/events"
     return result
 
 
@@ -76,7 +75,7 @@ def events_by_idx_root(idx_root=1):
 
     """
     # Get result
-    result = "{}/events/{}".format(API_PREFIX, idx_root)
+    result = f"{API_PREFIX}/events/{idx_root}"
     return result
 
 

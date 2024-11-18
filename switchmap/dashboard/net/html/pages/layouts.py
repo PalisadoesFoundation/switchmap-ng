@@ -15,25 +15,23 @@ def table_wrapper(title, table, strip=True):
     """
     # Initialize key variables
     #
-    result = """
+    result = f"""
     <div class="row">
       <div class="col-lg-12">
           <div class="panel panel-default">
               <div class="panel-heading">
-                {}
+                {title}
               </div>
               <!-- /.panel-heading -->
               <div class="panel-body">
-                {}
+                {table}
               </div>
               <!-- /.panel-body -->
           </div>
           <!-- /.panel -->
       </div>
     </div>
-""".format(
-        title, table
-    ).strip()
+""".strip()
 
     if bool(strip) is True:
         result = remove_thead(result)

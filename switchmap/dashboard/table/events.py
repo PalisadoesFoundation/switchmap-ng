@@ -1,4 +1,5 @@
 """Class for creating home web pages."""
+
 # Standard imports
 from operator import attrgetter
 
@@ -14,6 +15,7 @@ class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
+        """Fix the column formatting."""
         return content
 
 
@@ -78,8 +80,8 @@ def table(events):
     # Create list of links for table
     for event in sorted(events, key=attrgetter("date"), reverse=True):
         # Get URL link for event page
-        url = "{}/{}".format(SITE_PREFIX, event.idx_root)
-        link = '<a href="{}">{}</a>'.format(url, event.date)
+        url = f"{SITE_PREFIX}/{event.idx_root}"
+        link = f'<a href="{url}">{event.date}</a>'
         links.append(link)
 
     # Convert the rows to table rows
