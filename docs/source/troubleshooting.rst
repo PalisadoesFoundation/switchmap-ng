@@ -27,24 +27,8 @@ The poller will need to be running prior to testing.
     $ bin/switchmap_poller --start
 
 
-Test Poller Functionality - All Hosts
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Now that both the API and poller are running, it's time to test functionality by running the ``bin/tools/test_installation.py`` script
-
-Here is an example of a successful test:
-
-::
-
-    $ bin/tools/test_installation.py --all_hosts
-    Valid credentials found: hostname1
-    Valid credentials found: hostname2
-    $
-
-You will see errors if none of the configured SNMP groups can be used to contact a host, or the host is not contactable. If this happens, check your configuration and the network access from your server to the remote host.
-
-Testing Polling - Single Host
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Testing Polling
+~~~~~~~~~~~~~~~
 You can test your SNMP configuration and connectivity to your devices using the ``switchmap_poller_test.py`` utility like this:
 
 ..  code-block:: bash
