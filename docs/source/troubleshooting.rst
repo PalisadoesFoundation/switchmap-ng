@@ -27,8 +27,8 @@ The poller will need to be running prior to testing.
     $ bin/switchmap_poller --start
 
 
-Test Poller Functionality
-~~~~~~~~~~~~~~~~~~~~~~~~~
+Test Poller Functionality - All Hosts
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Now that both the API and poller are running, it's time to test functionality by running the ``bin/tools/test_installation.py`` script
 
@@ -42,6 +42,22 @@ Here is an example of a successful test:
     $
 
 You will see errors if none of the configured SNMP groups can be used to contact a host, or the host is not contactable. If this happens, check your configuration and the network access from your server to the remote host.
+
+Testing Polling - Single Host
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can test your SNMP configuration and connectivity to your devices using the ``switchmap_poller_test.py`` utility like this:
+
+..  code-block:: bash
+
+    (venv) $ bin/tools/switchmap_poller_test.py --hostname HOSTNAME
+
+If you have setup switchmap-ng as a system daemon with a ``daemon_directory:`` value ``/var/run`` you will need to specify the ``venv`` path to ``python3`` first.
+
+..  code-block:: bash
+
+    (venv) $ sudo venv/bin/python3 bin/tools/switchmap_poller_test.py --hostname HOSTNAME
+
+If successful it will print the entire contents of the polled data on the screen.
 
 Test API Functionality
 ~~~~~~~~~~~~~~~~~~~~~~
