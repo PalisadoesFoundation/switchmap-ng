@@ -13,18 +13,18 @@ Start the API Interactively
 
 Start the ``switchmap-ng`` API interactively.
 
-::
+..  code-block:: bash
 
-    $ bin/switchmap_dashboard --start
+    (venv) $ bin/switchmap_dashboard --start
 
 
 Start the Poller Interactively
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 The poller will need to be running prior to testing.
 
-::
+..  code-block:: bash
 
-    $ bin/switchmap_poller --start
+    (venv) $ bin/switchmap_poller --start
 
 
 Testing Polling
