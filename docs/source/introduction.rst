@@ -38,14 +38,14 @@ Dashboard
 
 The dashboard shows a list of devices being polled for data.
 
-.. image:: docs/images/switchmap-ng-dashboard.jpg
+.. image:: ../images/switchmap-ng-dashboard.jpg
 
 Switch Table
 ============
 
 Clicking on any of the links will give interface information.
 
-.. image:: docs/images/switchmap-ng-table.jpg
+.. image:: ../images/switchmap-ng-table.jpg
 
 Inspiration
 -----------
