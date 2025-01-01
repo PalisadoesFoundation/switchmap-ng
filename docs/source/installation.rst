@@ -43,7 +43,7 @@ The commands for installing the dependencies are:
 
 .. code-block:: bash
 
-    $ sudo apt-get -y install python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev python3-venv
+    $ sudo apt-get -y install python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev-is-python3 python3-venv
 
 
 Centos / Fedora
