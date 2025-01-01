@@ -125,8 +125,8 @@ Edit your configuration file with the appropriate configuration options. Here ar
 
 .. code-block:: bash
 
-    $ cp examples/etc/config.yaml etc/config.yaml
-    $ vim etc/config.yaml
+    (venv) $ cp examples/etc/config.yaml etc/config.yaml
+    (venv)  $ vim etc/config.yaml
 
 Make the required changes.
 
