@@ -1,4 +1,5 @@
 """Module for querying the Event table."""
+
 # Standard imports
 from datetime import datetime, timezone
 from operator import attrgetter

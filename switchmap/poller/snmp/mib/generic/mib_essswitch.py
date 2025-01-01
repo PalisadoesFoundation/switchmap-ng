@@ -1,6 +1,5 @@
 """Module for MIB-ESSWITCH."""
 
-
 from collections import defaultdict
 
 from switchmap.poller.snmp.base_query import Query

@@ -1,6 +1,5 @@
 """Module for JUNIPER-VLAN-MIB."""
 
-
 from collections import defaultdict
 
 # Import project libraries

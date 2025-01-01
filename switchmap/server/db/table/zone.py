@@ -1,6 +1,5 @@
 """Module for querying the Zone table."""
 
-
 from sqlalchemy import select, update, null, and_
 
 # Import project libraries
