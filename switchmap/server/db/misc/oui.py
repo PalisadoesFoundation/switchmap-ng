@@ -1,6 +1,5 @@
 """Switchmap OUI library."""
 
-
 # PIP imports
 import pandas
 

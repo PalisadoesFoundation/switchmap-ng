@@ -3,6 +3,7 @@
 Contains all routes that switchmap.s Flask webserver uses
 
 """
+
 # Flask imports
 from flask import Blueprint, render_template
 

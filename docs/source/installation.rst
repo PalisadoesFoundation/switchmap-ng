@@ -43,7 +43,7 @@ The commands for installing the dependencies are:
 
 .. code-block:: bash
 
-    $ sudo apt-get -y install python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev python3-venv
+    $ sudo apt-get -y install python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev-is-python3 python3-venv
 
 
 Centos / Fedora
@@ -91,8 +91,7 @@ Here are the commands:
 
 .. code-block:: bash
 
-    $ cd /path/to/switchmap
-    $ python3 -m pip install --user virtualenv
+    $ cd /path/to/switchmap-ng
     $ python3 -m venv venv
 
 You will now need to activate the use of these copied python files by ``switchmap-ng``. 
@@ -153,6 +152,12 @@ You can test your SNMP configuration and connectivity to your devices using the 
 ..  code-block:: bash
 
     (venv) $ bin/tools/switchmap_poller_test.py --hostname HOSTNAME
+
+If you have setup switchmap-ng as a system daemon with a ``daemon_directory:`` value ``/var/run`` you will need to specify the ``venv`` path to ``python3`` first.
+
+..  code-block:: bash
+
+    (venv) $ sudo venv/bin/python3 bin/tools/switchmap_poller_test.py --hostname HOSTNAME
 
 If successful it will print the entire contents of the polled data on the screen.
 

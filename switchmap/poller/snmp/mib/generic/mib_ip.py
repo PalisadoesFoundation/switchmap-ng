@@ -1,6 +1,5 @@
 """Class interacts with devices supporting IP-MIB."""
 
-
 from collections import defaultdict
 
 from switchmap.poller.snmp.base_query import Query

@@ -3,6 +3,7 @@
 Contains all routes that switchmap.s Flask webserver uses
 
 """
+
 # Standard imports
 from collections import namedtuple
 

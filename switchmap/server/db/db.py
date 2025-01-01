@@ -1,4 +1,5 @@
 """Class to process connection."""
+
 import sys
 
 from sqlalchemy.sql import Select, Update, Delete

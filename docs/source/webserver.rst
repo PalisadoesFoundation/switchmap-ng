@@ -27,7 +27,7 @@ You should now be able to access your ``switchmap-ng`` web pages using the follo
 
 ::
 
-   http://SERVER_NAME/switchmap-ng/
+   http://SERVER_NAME/switchmap/
 
 
 Nginx setup for ``switchmap-ng``

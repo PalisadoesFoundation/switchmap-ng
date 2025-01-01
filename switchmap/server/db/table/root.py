@@ -1,6 +1,5 @@
 """Module for querying the Root table."""
 
-
 from sqlalchemy import select, update
 
 # Import project libraries

@@ -8,6 +8,7 @@ Based on the pages at:
     https://docs.graphene-python.org/projects/sqlalchemy/en/latest/tutorial/
 
 """
+
 # PIP3 imports
 import graphene
 

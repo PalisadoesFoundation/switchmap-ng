@@ -1,4 +1,5 @@
 """Module for getting interface specific mac data."""
+
 # PIP3 imports
 from sqlalchemy import select, and_
 
