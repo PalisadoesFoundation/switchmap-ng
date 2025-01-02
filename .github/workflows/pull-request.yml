@@ -144,10 +144,10 @@ jobs:
           pip install pytest-cov
           tests/bin/error_code_report.py
           sudo systemctl start mysql.service
-          ${{ MYSQL_PREFIX }} CREATE DATABASE \`${{ env.DATABASE_NAME }}\`;
-          ${{ MYSQL_PREFIX }} CREATE USER '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY '${{ env.DATABASE_PASSWORD }}';
-          ${{ MYSQL_PREFIX }} GRANT ALL PRIVILEGES ON \`${{ env.DATABASE_NAME }}\`.* TO '${{ env.DATABASE_USERNAME }}'@'localhost';
-          ${{ MYSQL_PREFIX }} FLUSH PRIVILEGES;
+          "${{ MYSQL_PREFIX }} CREATE DATABASE \`${{ env.DATABASE_NAME }}\`;"
+          "${{ MYSQL_PREFIX }} CREATE USER '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY '${{ env.DATABASE_PASSWORD }}';"
+          "${{ MYSQL_PREFIX }} GRANT ALL PRIVILEGES ON \`${{ env.DATABASE_NAME }}\`.* TO '${{ env.DATABASE_USERNAME }}'@'localhost';"
+          "${{ MYSQL_PREFIX }} FLUSH PRIVILEGES;"
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
