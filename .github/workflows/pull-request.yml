@@ -23,23 +23,6 @@ jobs:
   Code-Quality-Checks:
     name: Performs linting, formatting, type-checking, checking for different source and target branch
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:5.7
-        ports:
-          - 3306:3306
-        env:
-          MYSQL_DATABASE: ${{ env.DATABASE_NAME }}
-          MYSQL_USER: ${{ env.DATABASE_USERNAME }}
-          MYSQL_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-          MYSQL_ROOT_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-        options: >-
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
     steps:
       - name: Checkout the Repository
         uses: actions/checkout@v4
@@ -115,6 +98,21 @@ jobs:
     name: Test Application
     needs: [Code-Quality-Checks]
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: ${{ env.DATABASE_NAME }}
+          MYSQL_USER: ${{ env.DATABASE_USERNAME }}
+          MYSQL_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -141,8 +139,7 @@ jobs:
           pip3 install -r requirements.txt
           pip install pytest-cov
           tests/bin/error_code_report.py
-          mysql -e 'CREATE DATABASE ${{ env.DATABASE_NAME }};' -u${{ env.DATABASE_USER }} -p${{ env.DATABASE_PASS }}
-          `
+          mysql -e 'CREATE DATABASE ${{ env.DATABASE_NAME }};' -u${{ env.DATABASE_USERNAME }} -p${{ env.DATABASE_PASSWORD }}
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
