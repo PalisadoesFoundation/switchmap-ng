@@ -1,5 +1,5 @@
-Testing & Troubleshooting
-=========================
+Troubleshooting
+===============
 
 Here's how you can test your installation of ``switchmap-ng``.
 
