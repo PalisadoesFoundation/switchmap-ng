@@ -109,13 +109,11 @@ jobs:
           python-version: 3.11
       - name: Install Ubuntu packages
         run: sudo apt-get install -y python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev-is-python3 python3-venv python3-pytest
-      - name: Install dependencies
+      - name: Install dependencies and test
         run: |
           python3 -m venv venv
           source venv/bin/activate
           pip3 install -r requirements.txt
-      - name: Test with pytest
-        run: |
           pip install pytest-cov
           pytest --cov --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
