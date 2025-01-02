@@ -15,7 +15,8 @@ requests
 easysnmp==0.2.5
 
 # Data and Database
-pymysql==1.0.2
+PyMySQL==1.0.2
+PyMySQL[rsa]
 SQLAlchemy==1.4.31
 pandas
 
