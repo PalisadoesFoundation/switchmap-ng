@@ -125,7 +125,7 @@ jobs:
       - name: Install Ubuntu packages
         run: sudo apt-get install -y python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev-is-python3 python3-venv
       - name: Cache pip packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
@@ -140,7 +140,8 @@ jobs:
           pip install pytest-cov
           tests/bin/error_code_report.py
           sudo systemctl start mysql
-          mysql -e 'CREATE DATABASE ${{ env.DATABASE_NAME }};' -u${{ env.DATABASE_USERNAME }} -p${{ env.DATABASE_PASSWORD }}
+          mysql -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} -e 'CREATE DATABASE ${{ env.DATABASE_NAME }};' 
+          mysql -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} -e 'GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY '${{ env.DATABASE_PASSWORD }}';'
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
