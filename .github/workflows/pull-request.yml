@@ -20,7 +20,6 @@ env:
   DATABASE_PASSWORD: switchmap_unittest
   MYSQL_ROOT_USERNAME: root
   MYSQL_ROOT_PASSWORD: root
-  # MYSQL_PREFIX: 'sudo mysql -u"${{ env.MYSQL_ROOT_USERNAME }}" -p"${{ env.MYSQL_ROOT_PASSWORD }}" -e '
 
 jobs:
   Code-Quality-Checks:
@@ -144,9 +143,9 @@ jobs:
           pip install pytest-cov
           tests/bin/error_code_report.py
           sudo systemctl start mysql.service
-          sudo mysql -u"${{ env.MYSQL_ROOT_USERNAME }}" -p"${{ env.MYSQL_ROOT_PASSWORD }}" -e CREATE DATABASE \`${{ env.DATABASE_NAME }}\`;"
+          sudo mysql -u"${{ env.MYSQL_ROOT_USERNAME }}" -p"${{ env.MYSQL_ROOT_PASSWORD }}" -e CREATE DATABASE ${{ env.DATABASE_NAME }};"
           sudo mysql -u"${{ env.MYSQL_ROOT_USERNAME }}" -p"${{ env.MYSQL_ROOT_PASSWORD }}" -e CREATE USER '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY '${{ env.DATABASE_PASSWORD }}';"
-          sudo mysql -u"${{ env.MYSQL_ROOT_USERNAME }}" -p"${{ env.MYSQL_ROOT_PASSWORD }}" -e GRANT ALL PRIVILEGES ON \`${{ env.DATABASE_NAME }}\`.* TO '${{ env.DATABASE_USERNAME }}'@'localhost';"
+          sudo mysql -u"${{ env.MYSQL_ROOT_USERNAME }}" -p"${{ env.MYSQL_ROOT_PASSWORD }}" -e GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost';"
           sudo mysql -u"${{ env.MYSQL_ROOT_USERNAME }}" -p"${{ env.MYSQL_ROOT_PASSWORD }}" -e FLUSH PRIVILEGES;"
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
