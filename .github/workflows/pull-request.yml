@@ -151,9 +151,7 @@ jobs:
             CREATE DATABASE \`${{ env.DATABASE_NAME }}\`;
             CREATE USER '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY '${{ env.DATABASE_PASSWORD }}';
             GRANT ALL PRIVILEGES ON \`${{ env.DATABASE_NAME }}\`.* TO '${{ env.DATABASE_USERNAME }}'@'localhost';
-            FLUSH PRIVILEGES;
-            EOF
-
+            FLUSH PRIVILEGES;EOF
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
