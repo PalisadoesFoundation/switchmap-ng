@@ -160,8 +160,10 @@ def travis_config():
     """
     # Return result
     _config = deepcopy(data.config())
-    _config["db_pass"] = ""
-    _config["db_user"] = "travis"
+    _config["db_host"] = "localhost"
+    _config["db_user"] = "switchmap_ng_test"
+    _config["db_pass"] = "switchmap_ng_test"
+    _config["db_name"] = "switchmap_ng_test"
     result = Config(_config)
     return result
 

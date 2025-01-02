@@ -27,8 +27,8 @@ server:
   api_listen_address: localhost
   db_host: localhost
   db_name: switchmap_unittest
-  db_user: travis
-  db_pass: 7F4Gj7HJIDT5xJPs
+  db_user: switchmap_unittest
+  db_pass: switchmap_unittest
 poller:
   api_bind_port: 9001
   api_listen_address: localhost
