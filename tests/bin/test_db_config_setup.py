@@ -31,8 +31,8 @@ from tests.testlib_ import setup
 
 def main():
     """Create test configurations."""
-    # Check environment
-    config = setup.travis_config()
+    # Save the config
+    config = setup.config()
     config.save()
 
 

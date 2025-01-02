@@ -3,7 +3,7 @@
 NOTE!! This script CANNOT import any switchmap libraries. Doing so risks
 libraries trying to access a configuration or configuration directory that
 doesn't yet exist. This is especially important when running cloud based
-automated tests such as 'Travis CI'
+automated tests such as 'GitHub Actions'
 
 """
 
@@ -146,24 +146,6 @@ def setenv(directory=None):
         metadata = _directories(randomizer=False)
         os.makedirs(metadata.config_directory, mode=0o750, exist_ok=True)
         os.environ["SWITCHMAP_CONFIGDIR"] = metadata.config_directory
-
-
-def travis_config():
-    """Create the CI/CD configuration.
-
-    Args:
-        None
-
-    Returns:
-        result: Config object
-
-    """
-    # Return result
-    _config = deepcopy(data.config())
-    _config["db_pass"] = ""
-    _config["db_user"] = "travis"
-    result = Config(_config)
-    return result
 
 
 def config():
