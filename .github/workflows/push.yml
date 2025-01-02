@@ -71,3 +71,33 @@ jobs:
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  Linting and Formatting:
+    name: Linting and Formatting Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.9
+
+      - name: Install Linting and Formatting Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black pydocstyle
+
+      - name: Run Flake8 Linter
+        run: |
+          flake8 . --ignore E402,E722
+
+      - name: Run Black Formatter Check
+        run: |
+          python -m black --check .
+
+      - name: Run Pydocstyle for Docstring Style
+        run: |
+          python -m pydocstyle .

@@ -11,7 +11,7 @@ name: PR Workflow
 on:
   pull_request:
     branches:
-      - "*"
+      - "**"
 
 env:
   CODECOV_UNIQUE_NAME: CODECOV_UNIQUE_NAME-${{ github.run_id }}-${{ github.run_number }}
@@ -51,7 +51,7 @@ jobs:
       - name: Run Black Formatter Check
         run: |
           black --check .      
-
+            
       - name: Run Flake8 Linter
         run: |
           flake8 .\
