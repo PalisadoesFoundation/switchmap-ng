@@ -128,7 +128,12 @@ jobs:
         uses: codecov/test-results-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-
+      # - name: Test acceptable level of code coverage
+      #   uses: VeryGoodOpenSource/very_good_coverage@v3
+      #   with:
+      #     path: "./coverage/lcov.info"
+      #     min_coverage: 0.0
+          
   Validate-CodeRabbit:
     name: Validate CodeRabbit Approval
     runs-on: ubuntu-latest
