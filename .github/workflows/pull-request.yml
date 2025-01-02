@@ -47,15 +47,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8 black pydocstyle
-        
+
+      - name: Run Black Formatter Check
+        run: |
+          black --check .      
+            
       - name: Run Flake8 Linter
         run: |
           flake8 .\
           --ignore E402,E722
-
-      - name: Run Black Formatter Check
-        run: |
-          black --check .
         
       - name: Run pydocstyle
         run: |
