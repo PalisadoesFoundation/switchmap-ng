@@ -72,7 +72,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-  Linting and Formatting:
+  Linting-and-Formatting:
     name: Linting and Formatting Checks
     runs-on: ubuntu-latest
 
