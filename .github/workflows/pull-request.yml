@@ -107,10 +107,13 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: 3.11
+      - name: Install Ubuntu packages
+        run: sudo apt-get install -y python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev-is-python3 python3-venv
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          python3 -m venv venv
+          source venv/bin/activate
+          pip3 install -r requirements.txt
       - name: Test with pytest
         run: |
           pytest --cov --junitxml=junit.xml
