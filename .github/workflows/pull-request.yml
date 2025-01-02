@@ -19,21 +19,21 @@ env:
   DATABASE_USERNAME: switchmap_unittest
   DATABASE_PASSWORD: switchmap_unittest
 
-services:
-  mysql:
-    image: mysql:5.7
-    ports:
-      - 3306:3306
-    env:
-      MYSQL_DATABASE: ${{ env.DATABASE_NAME }}
-      MYSQL_USER: ${{ env.DATABASE_USERNAME }}
-      MYSQL_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-      MYSQL_ROOT_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-    options: >-
-      --health-cmd="mysqladmin ping"
-      --health-interval=10s
-      --health-timeout=5s
-      --health-retries=3
+# services:
+#   mysql:
+#     image: mysql:5.7
+#     ports:
+#       - 3306:3306
+#     env:
+#       MYSQL_DATABASE: ${{ env.DATABASE_NAME }}
+#       MYSQL_USER: ${{ env.DATABASE_USERNAME }}
+#       MYSQL_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+#       MYSQL_ROOT_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+#     options: >-
+#       --health-cmd="mysqladmin ping"
+#       --health-interval=10s
+#       --health-timeout=5s
+#       --health-retries=3
 
 jobs:
   Code-Quality-Checks:
@@ -141,7 +141,7 @@ jobs:
           pip install pytest-cov
           tests/bin/error_code_report.py
           mysql -e 'CREATE DATABASE ${{ env.DATABASE_NAME }};' -u${{ env.DATABASE_USER }} -p${{ env.DATABASE_PASS }}
-          tests/bin/test_db_config_setup.py
+          `
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
