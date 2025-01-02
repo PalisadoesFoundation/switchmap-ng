@@ -19,26 +19,27 @@ env:
   DATABASE_USERNAME: switchmap_unittest
   DATABASE_PASSWORD: switchmap_unittest
 
-services:
-  mysql:
-    image: mysql:5.7
-    ports:
-      - 3306:3306
-    env:
-      MYSQL_DATABASE: ${{ env.DATABASE_NAME }}
-      MYSQL_USER: ${{ env.DATABASE_USERNAME }}
-      MYSQL_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-      MYSQL_ROOT_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-    # options: >-
-    #   --health-cmd="mysqladmin ping"
-    #   --health-interval=10s
-    #   --health-timeout=5s
-    #   --health-retries=3
-
 jobs:
   Code-Quality-Checks:
     name: Performs linting, formatting, type-checking, checking for different source and target branch
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_DATABASE: ${{ env.DATABASE_NAME }}
+          MYSQL_USER: ${{ env.DATABASE_USERNAME }}
+          MYSQL_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - name: Checkout the Repository
         uses: actions/checkout@v4
