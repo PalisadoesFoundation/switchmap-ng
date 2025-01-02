@@ -108,7 +108,7 @@ jobs:
           MYSQL_USER: ${{ env.DATABASE_USERNAME }}
           MYSQL_PASSWORD: ${{ env.DATABASE_PASSWORD }}
           MYSQL_ROOT_PASSWORD: ${{ env.DATABASE_PASSWORD }}
-          MYSQL_ALLOW_EMPTY_PASSWORD: no
+          MYSQL_ALLOW_EMPTY_PASSWORD: false
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=10s
@@ -124,7 +124,7 @@ jobs:
         with:
           python-version: 3.11
       - name: Install Ubuntu packages
-        run: sudo apt-get install -y python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev-is-python3 python3-venv
+        run: sudo apt-get install -y python3 python3-pip snmp libsnmp-dev gcc python-dev-is-python3 python3-venv
       - name: Cache pip packages
         uses: actions/cache@v4
         with:
@@ -141,6 +141,7 @@ jobs:
           pip install pytest-cov
           tests/bin/error_code_report.py
           # sudo systemctl start mysql
+          sudo /etc/init.d/mysql start
           mysql -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} -e 'CREATE DATABASE ${{ env.DATABASE_NAME }};' 
           mysql -uroot -p${{ env.MYSQL_ROOT_PASSWORD }} -e 'GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY '${{ env.DATABASE_PASSWORD }}';'
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
