@@ -18,8 +18,8 @@ env:
   DATABASE_NAME: switchmap_unittest
   DATABASE_USERNAME: switchmap_unittest
   DATABASE_PASSWORD: switchmap_unittest
-  DATABASE_ROOT_USERNAME: root
-  DATABASE_ROOT_PASSWORD: root
+  MYSQL_ROOT_USERNAME: root
+  MYSQL_ROOT_PASSWORD: root
 
 jobs:
   Code-Quality-Checks:
@@ -143,8 +143,10 @@ jobs:
           pip install pytest-cov
           tests/bin/error_code_report.py
           sudo systemctl start mysql.service
-          sudo mysql -u${{ env.DATABASE_ROOT_USERNAME}} -p${{ env.DATABASE_ROOT_PASSWORD }} -e "CREATE DATABASE ${{ env.DATABASE_NAME }};"
-          sudo mysql -u${{ env.DATABASE_ROOT_USERNAME}} -p${{ env.DATABASE_ROOT_PASSWORD }}  -e "GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY ${{ env.DATABASE_PASSWORD }};"
+          sudo mysql -u${{ env.MYSQL_ROOT_USERNAME}} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "CREATE DATABASE ${{ env.DATABASE_NAME }};"
+          echo "CREATE DATABASE ${{ env.DATABASE_NAME }};"
+          echo "GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY ${{ env.DATABASE_PASSWORD }};"
+          sudo mysql -u${{ env.MYSQL_ROOT_USERNAME}} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY ${{ env.DATABASE_PASSWORD }};"
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
