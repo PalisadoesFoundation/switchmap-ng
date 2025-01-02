@@ -142,7 +142,6 @@ jobs:
           tests/bin/error_code_report.py
           mysql -e 'CREATE DATABASE ${{ env.DATABASE_NAME }};' -u${{ env.DATABASE_USER }} -p${{ env.DATABASE_PASS }}
           tests/bin/test_db_config_setup.py
-          bin/tools/create_db_tables.py
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
