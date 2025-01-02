@@ -205,3 +205,53 @@ You can then visit the dashboard URL. (You will need to make adjustments if you 
 
 The Webserver help page provides the necessary steps to view switchmap on port 80 using Apache or Nginx
 
+
+Testing Setup for Developers
+----------------------------
+
+Follow the installation steps above to have the application ready, then add these steps for developing code.
+
+
+Database Configuration
+~~~~~~~~~~~~~~~~~~~~~~
+
+Create the ``switchmap_unittest`` database, and grant privileges to a ``switchmap_unittest`` user with the password ``switchmap_unittest``.
+
+::
+   
+     $ sudo mysql
+     >>> CREATE DATABASE switchmap_unittest;
+     >>> GRANT ALL PRIVILEGES ON switchmap_unittest.* TO 'switchmap_unittest'@'localhost' IDENTIFIED BY 'switchmap_unittest';
+     >>> FLUSH PRIVILEGES;
+     >>> EXIT;
+
+Setup the Test Config File
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create the testing configuration file which will be stored in a hidden directory in ``$HOME``
+
+::
+   
+   (venv) $ tests/bin/test_db_config_setup.py
+
+Run the Test Suite
+~~~~~~~~~~~~~~~~~~
+
+You can run all the tests with this command.
+
+::
+   
+   (venv) $ tests/bin/_do_all_tests.py
+
+An alternative method is to use pytest.
+
+::
+   
+   (venv) $ pytest tests/switchmap_
+
+
+You can run individual tests with this command.
+
+::
+   
+   (venv) $ tests/switchmap_/path/to/test.py
