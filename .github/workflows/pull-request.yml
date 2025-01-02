@@ -139,7 +139,7 @@ jobs:
           pip3 install -r requirements.txt
           pip install pytest-cov
           tests/bin/error_code_report.py
-          sudo systemctl start mysqld
+          sudo systemctl start mysql
           mysql -e 'CREATE DATABASE ${{ env.DATABASE_NAME }};' -u${{ env.DATABASE_USERNAME }} -p${{ env.DATABASE_PASSWORD }}
           pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
