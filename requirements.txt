@@ -22,7 +22,6 @@ pandas
 
 # GraphQL interface for Flask
 graphene-sqlalchemy==3.0.0rc1
-#git+https://github.com/graphql-python/graphene-sqlalchemy.git@refs/pull/378/merge
 graphql_server==3.0.0b5
 
 # Testing

@@ -243,6 +243,13 @@ You can run all the tests with this command.
    
    (venv) $ tests/bin/_do_all_tests.py
 
+An alternative method is to use pytest.
+
+::
+   
+   (venv) $ pytest tests/switchmap_
+
+
 You can run individual tests with this command.
 
 ::
