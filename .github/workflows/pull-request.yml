@@ -53,6 +53,7 @@ jobs:
           files: |
             ./*md
             .gitignore
+            requirements.txt
             CODEOWNERS
             LICENSE
 
