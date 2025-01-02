@@ -4,10 +4,9 @@
 
 In order to give everyone a chance to submit a issues reports and contribute to the repository, we have put restrictions in place. This section outlines the guidelines that should be imposed upon issue reports in the repository.
 
-___
 ## Table of Contents
 
-<!-- toc -->
+<!-- TOC -->
 
 - [Issue Report Guidelines](#issue-report-guidelines)
   - [Table of Contents](#table-of-contents)
@@ -18,9 +17,8 @@ ___
     - [Monitoring the Creation of New Issues](#monitoring-the-creation-of-new-issues)
   - [General Guidelines](#general-guidelines)
 
-<!-- tocstop -->
+<!-- /TOC -->
 
-___
 ## Issue Management
 
 In all cases please use the [GitHub open issue search](https://github.com/PalisadoesFoundation/switchmap-ng/issues) to check whether the issue has already been reported.

@@ -6,7 +6,7 @@ If you are new to contributing to open source, please read the Open Source Guide
 
 ## Table of Contents
 
-<!-- toc -->
+<!-- TOC -->
 
 - [Contributing](#contributing)
   - [Table of Contents](#table-of-contents)
@@ -22,7 +22,7 @@ If you are new to contributing to open source, please read the Open Source Guide
   - [Internships](#internships)
   - [Community](#community)
 
-<!-- tocstop -->
+<!-- /TOC -->
 
 ## Code of Conduct
 

@@ -3,7 +3,7 @@ Welcome to our documentation guide. Here are some useful tips you need to know!
 
 # Table of Contents
 
-<!-- toc -->
+<!-- TOC -->
 
 - [Documentation](#documentation)
 - [Table of Contents](#table-of-contents)
@@ -11,7 +11,7 @@ Welcome to our documentation guide. Here are some useful tips you need to know!
   - [How to use Docusaurus](#how-to-use-docusaurus)
   - [Other information](#other-information)
 
-<!-- tocstop -->
+<!-- /TOC -->
 
 ## Where to find our documentation
 

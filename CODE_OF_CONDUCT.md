@@ -1,22 +1,26 @@
 # Contributor Covenant Code of Conduct
 
-# Table of Contents
+n order to give everyone a chance to submit a issues reports and contribute to the repository, we have put restrictions in place. This section outlines the guidelines that should be imposed upon issue reports in the repository.
 
-<!-- toc -->
+## Table of Contents
 
-- [Our Pledge](#our-pledge)
-- [Our Standards](#our-standards)
-- [Enforcement Responsibilities](#enforcement-responsibilities)
-- [Scope](#scope)
-- [Enforcement](#enforcement)
-- [Enforcement Guidelines](#enforcement-guidelines)
-  - [1. Correction](#1-correction)
-  - [2. Warning](#2-warning)
-  - [3. Temporary Ban](#3-temporary-ban)
-  - [4. Permanent Ban](#4-permanent-ban)
-- [Attribution](#attribution)
+<!-- TOC -->
 
-<!-- tocstop -->
+- [Contributor Covenant Code of Conduct](#contributor-covenant-code-of-conduct)
+  - [Table of Contents](#table-of-contents)
+  - [Our Pledge](#our-pledge)
+  - [Our Standards](#our-standards)
+  - [Enforcement Responsibilities](#enforcement-responsibilities)
+  - [Scope](#scope)
+  - [Enforcement](#enforcement)
+  - [Enforcement Guidelines](#enforcement-guidelines)
+    - [1. Correction](#1-correction)
+    - [2. Warning](#2-warning)
+    - [3. Temporary Ban](#3-temporary-ban)
+    - [4. Permanent Ban](#4-permanent-ban)
+  - [Attribution](#attribution)
+
+<!-- /TOC -->
 
 ## Our Pledge
 
@@ -29,6 +33,7 @@ and orientation.
 
 We pledge to act and interact in ways that contribute to an open, welcoming,
 diverse, inclusive, and healthy community.
+
 
 ## Our Standards
 
@@ -84,6 +89,8 @@ All complaints will be reviewed and investigated promptly and fairly.
 All community leaders are obligated to respect the privacy and security of the
 reporter of any incident.
 
+
+
 ## Enforcement Guidelines
 
 Community leaders will follow these Community Impact Guidelines in determining
@@ -132,19 +139,11 @@ the community.
 
 ## Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage],
-version 2.0, available at
-[https://www.contributor-covenant.org/version/2/0/code_of_conduct.html][v2.0].
+This Code of Conduct is adapted from the [Contributor Covenant](www.contributor-covenant.org),
+version 2.0, available at [v2.0](https://www.contributor-covenant.org/version/2/0/code_of_conduct.html).
 
-Community Impact Guidelines were inspired by
-[Mozilla's code of conduct enforcement ladder][mozilla coc].
+Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcement ladder.](https://github.com/mozilla/diversity)
 
 For answers to common questions about this code of conduct, see the FAQ at
-[https://www.contributor-covenant.org/faq][faq]. Translations are available
-at [https://www.contributor-covenant.org/translations][translations].
-
-[homepage]: https://www.contributor-covenant.org
-[v2.0]: https://www.contributor-covenant.org/version/2/0/code_of_conduct.html
-[mozilla coc]: https://github.com/mozilla/diversity
-[faq]: https://www.contributor-covenant.org/faq
-[translations]: https://www.contributor-covenant.org/translations
+[faq](https://www.contributor-covenant.org/faq). Translations are available
+at [translations](https://www.contributor-covenant.org/translations).
