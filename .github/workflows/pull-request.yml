@@ -116,6 +116,7 @@ jobs:
           pip3 install -r requirements.txt
       - name: Test with pytest
         run: |
+          pip install pytest-cov
           pytest --cov --junitxml=junit.xml tests
       # Copy and paste the codecov/test-results-action here
       - name: Upload coverage to Codecov
