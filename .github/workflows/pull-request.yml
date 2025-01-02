@@ -20,7 +20,7 @@ env:
   DATABASE_PASSWORD: switchmap_unittest
   MYSQL_ROOT_USERNAME: root
   MYSQL_ROOT_PASSWORD: root
-  MYSQL_PREFIX: 'sudo mysql -u"${{ env.MYSQL_ROOT_USERNAME }}" -p"${{ env.MYSQL_ROOT_PASSWORD }}" -e '
+  # MYSQL_PREFIX: 'sudo mysql -u"${{ env.MYSQL_ROOT_USERNAME }}" -p"${{ env.MYSQL_ROOT_PASSWORD }}" -e '
 
 jobs:
   Code-Quality-Checks:
