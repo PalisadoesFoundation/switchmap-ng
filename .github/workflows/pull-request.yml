@@ -150,7 +150,7 @@ jobs:
     name: Validate CodeRabbit Approval
     runs-on: ubuntu-latest
     if: github.actor != 'dependabot[bot]'
-    needs: [Code-Quality-Checks]
+    needs: [Code-Quality-Checks, Test-Application]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
