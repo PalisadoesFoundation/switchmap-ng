@@ -108,6 +108,7 @@ jobs:
           MYSQL_USER: ${{ env.DATABASE_USERNAME }}
           MYSQL_PASSWORD: ${{ env.DATABASE_PASSWORD }}
           MYSQL_ROOT_PASSWORD: ${{ env.DATABASE_PASSWORD }}
+          MYSQL_ALLOW_EMPTY_PASSWORD: no
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=10s
