@@ -24,7 +24,6 @@ env:
 jobs:
   Test-Application-Code-Coverage:
     name: Test Application
-    needs: [Code-Quality-Checks]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
