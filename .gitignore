@@ -30,6 +30,12 @@ etc/**
 Other filetypes to ignore follow
 
 #############################################################################
+# Docusaurus
+#############################################################################
+
+yarn.lock
+
+#############################################################################
 # Ignore VS Code files
 #############################################################################
 
@@ -103,6 +109,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+docs-rtd/build/
 develop-eggs/
 dist/
 downloads/
@@ -163,7 +170,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+docs-rtd/_build/
 
 # PyBuilder
 .pybuilder/
