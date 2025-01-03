@@ -72,6 +72,9 @@ jobs:
             LICENSE
             requirements.txt
             CNAME
+            yaml.lock
+            package.json     
+            package-lock.json
       - name: List all changed unauthorized files
         if: steps.changed-unauth-files.outputs.any_changed == 'true' || steps.changed-unauth-files.outputs.any_deleted == 'true'
         env:
