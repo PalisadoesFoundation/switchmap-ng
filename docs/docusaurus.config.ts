@@ -5,7 +5,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'SwitchMap-NG Documentation',
+  title: 'Legacy SwitchMap-NG Documentation',
   tagline: 'Start your open source journey here',
   favicon: 'img/favicon.ico',
 
