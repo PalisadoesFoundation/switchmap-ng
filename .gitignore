@@ -109,6 +109,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+docs-rtd/build/
 develop-eggs/
 dist/
 downloads/
