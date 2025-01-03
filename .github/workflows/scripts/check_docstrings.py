@@ -16,7 +16,7 @@ def validate_docstring(file_path):
     violations = []
     with open(file_path, 'r') as f:
         lines = f.readlines()
-        
+
     for i, line in enumerate(lines):
         if re.match(r'^\\s*def ', line):
             func_name = line.strip()
@@ -34,38 +34,46 @@ def validate_docstring(file_path):
                     parsed = parse(docstring)
                     # Check for Raises section
                     if not parsed.raises:
-                        violations.append((
-                            i + 1,
-                            func_name,
-                            "Missing 'Raises' section",
-                            "Add a 'Raises' section detailing the exceptions this function may raise."
-                        ))
+                        violations.append({
+                            "line": i + 1,
+                            "function": func_name,
+                            "issue": "Missing 'Raises' section",
+                            "action": "Add a 'Raises' section detailing the exceptions this function may raise."
+                        })
+                    # Check for Args section
                     if not parsed.params:
-                        violations.append((
-                            i + 1,
-                            func_name,
-                            "Missing 'Args' section",
-                            "Add an 'Args' section listing the arguments this function accepts, their types, and descriptions."
-                        ))
+                        violations.append({
+                            "line": i + 1,
+                            "function": func_name,
+                            "issue": "Missing 'Args' section",
+                            "action": "Add an 'Args' section listing the arguments this function accepts, their types, and descriptions."
+                        })
                 except Exception as e:
-                    violations.append((
-                        i + 1,
-                        func_name,
-                        "Docstring parsing error",
-                        f"Ensure the docstring is properly formatted: {e}"
-                    ))
+                    violations.append({
+                        "line": i + 1,
+                        "function": func_name,
+                        "issue": "Docstring parsing error",
+                        "action": f"Ensure the docstring is properly formatted: {e}"
+                    })
             else:
-                violations.append((
-                    i + 1,
-                    func_name,
-                    "Missing docstring",
-                    "Add a Google-style docstring to describe this function."
-                ))
+                violations.append({
+                    "line": i + 1,
+                    "function": func_name,
+                    "issue": "Missing docstring",
+                    "action": "Add a Google-style docstring to describe this function."
+                })
     return violations
 
-
 def check_directory(directory):
-    """Check all Python files in a directory for docstring compliance."""
+    """
+    Check all Python files in a directory for docstring compliance.
+    
+    Args:
+        directory (str): Directory to scan.
+
+    Returns:
+        dict: Dictionary of file violations.
+    """
     all_violations = {}
     for root, _, files in os.walk(directory):
         for file in files:
@@ -82,8 +90,9 @@ def main():
     if violations:
         print("Docstring violations found:")
         for file, issues in violations.items():
-            for line, func, issue in issues:
-                print(f"{file}:{line}: {func}: {issue}")
+            for issue in issues:
+                print(f"{file}:{issue['line']}: {issue['function']}: {issue['issue']}")
+                print(f"  Corrective Action: {issue['action']}")
         sys.exit(1)
     else:
         print("All docstrings are compliant.")
