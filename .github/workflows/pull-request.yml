@@ -51,17 +51,20 @@ jobs:
         uses: tj-actions/changed-files@v45
         with:
           files: |
-            ./*md
+            CODE_OF_CONDUCT.md
+            CONTRIBUTING.md
+            DOCUMENTATION.md
+            INSTALLATION.md
+            ISSUE_GUIDELINES.md
+            PR_GUIDELINES.md
+            README.md
             .gitignore
-<<<<<<< HEAD
             CODEOWNERS
             LICENSE
             requirements.txt
-=======
-            requirements.txt
-            CODEOWNERS
-            LICENSE
->>>>>>> upstream/main
+            docs/docusaurus.config.ts
+            CNAME
+            docs/sidebar*js
 
       - name: List all changed unauthorized files
         if: steps.changed-unauth-files.outputs.any_changed == 'true' || steps.changed-unauth-files.outputs.any_deleted == 'true'
@@ -159,13 +162,11 @@ jobs:
       #     path: "./coverage/lcov.info"
       #     min_coverage: 0.0
 
-<<<<<<< HEAD
-
   Test-Docusaurus-Deployment:
     name: Test Deployment to https://docs-legacy.switchmap-ng.io
     runs-on: ubuntu-latest
     needs: [Code-Quality-Checks]
-    # Run only if the develop branch and not dependabot    
+    # Run only if the develop branch and not dependabot
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.base.ref == 'develop' }}
     steps:
       - uses: actions/checkout@v4
@@ -173,7 +174,7 @@ jobs:
         with:
           node-version: 22
           cache: yarn
-          cache-dependency-path: 'docs/'
+          cache-dependency-path: "docs/"
       # Run Docusaurus in the ./docs directory
       - name: Install dependencies
         working-directory: ./docs
@@ -182,8 +183,6 @@ jobs:
         working-directory: ./docs
         run: yarn build
 
-=======
->>>>>>> upstream/main
   Check-Target-Branch:
     if: ${{ github.actor != 'dependabot[bot]' }}
     name: Check Target Branch
@@ -196,10 +195,6 @@ jobs:
           echo "Error: Close this PR and try again."
           exit 1
 
-<<<<<<< HEAD
-
-=======
->>>>>>> upstream/main
   Validate-CodeRabbit:
     name: Validate CodeRabbit Approval
     runs-on: ubuntu-latest
