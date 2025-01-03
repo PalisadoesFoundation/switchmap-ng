@@ -53,9 +53,15 @@ jobs:
           files: |
             ./*md
             .gitignore
+<<<<<<< HEAD
             CODEOWNERS
             LICENSE
             requirements.txt
+=======
+            requirements.txt
+            CODEOWNERS
+            LICENSE
+>>>>>>> upstream/main
 
       - name: List all changed unauthorized files
         if: steps.changed-unauth-files.outputs.any_changed == 'true' || steps.changed-unauth-files.outputs.any_deleted == 'true'
@@ -153,6 +159,7 @@ jobs:
       #     path: "./coverage/lcov.info"
       #     min_coverage: 0.0
 
+<<<<<<< HEAD
 
   Test-Docusaurus-Deployment:
     name: Test Deployment to https://docs-legacy.switchmap-ng.io
@@ -175,6 +182,8 @@ jobs:
         working-directory: ./docs
         run: yarn build
 
+=======
+>>>>>>> upstream/main
   Check-Target-Branch:
     if: ${{ github.actor != 'dependabot[bot]' }}
     name: Check Target Branch
@@ -187,7 +196,10 @@ jobs:
           echo "Error: Close this PR and try again."
           exit 1
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> upstream/main
   Validate-CodeRabbit:
     name: Validate CodeRabbit Approval
     runs-on: ubuntu-latest
