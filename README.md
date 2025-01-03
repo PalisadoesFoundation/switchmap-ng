@@ -2,7 +2,7 @@
 
 [💬 Join the community on Slack](https://github.com/PalisadoesFoundation/)
 
-[![N|Solid](docs/images/logo.png)](https://github.com/PalisadoesFoundation/switchmap-ng)
+[![N|Solid](docs/static/img/markdown/misc/logo.png)](https://github.com/PalisadoesFoundation/switchmap-ng)
 
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -27,10 +27,11 @@ Here are some sample screenshots:
 
 The dashboard shows a list of devices being polled for data.
 
-![Dashboard](docs/images/switchmap-ng-dashboard.jpg)
+![Dashboard](docs/static/img/markdown/misc/switchmap-ng-dashboard.jpg)
 
 ### Switch Table
 
 Clicking on any of the links will give interface information.
 
-![Switch Table](docs/images/switchmap-ng-table.jpg)
+![Switch Table](docs/static/img/markdown/misc/switchmap-ng-table.jpg)
+
