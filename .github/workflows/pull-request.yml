@@ -227,7 +227,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -238,4 +238,4 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Run docstring compliance check
-        run: python .github/workflows/scripts/check_docstrings.py 
+        run: python .github/workflows/scripts/check_docstrings.py
