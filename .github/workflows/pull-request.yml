@@ -149,6 +149,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: PalisadoesFoundation/switchmap-ng
           verbose: true
+          gcov_ignore: "docs/"
           fail_ci_if_error: false
           name: "${{env.CODECOV_UNIQUE_NAME}}"
       - name: Upload test results to Codecov
