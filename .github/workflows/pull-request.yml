@@ -54,7 +54,7 @@ jobs:
             
       - name: Run Flake8 Linter
         run: |
-          flake8 . --ignore E402,E722,E203 switchmap bin setup
+          flake8 switchmap bin setup --ignore E402,E722,E203 
         
       - name: Run pydocstyle
         run: |
