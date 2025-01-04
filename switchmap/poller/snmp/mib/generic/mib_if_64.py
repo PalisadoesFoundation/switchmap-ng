@@ -232,7 +232,8 @@ class If64Query(Query):
         return data_dict
 
     def ifhcoutmulticastpkts(self, oidonly=False):
-        """Return dict of IFMIB ifHCOutMulticastPkts for each ifIndex for device.
+        """Return dict of IFMIB ifHCOutMulticastPkts for each ifIndex for
+        device.
 
         Args:
             oidonly: Return OID's value, not results, if True
@@ -290,7 +291,8 @@ class If64Query(Query):
         return data_dict
 
     def ifhcoutbroadcastpkts(self, oidonly=False):
-        """Return dict of IFMIB ifHCOutBroadcastPkts for each ifIndex for device.
+        """Return dict of IFMIB ifHCOutBroadcastPkts for each ifIndex for
+        device.
 
         Args:
             oidonly: Return OID's value, not results, if True

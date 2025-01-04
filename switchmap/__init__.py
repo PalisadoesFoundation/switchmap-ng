@@ -11,7 +11,6 @@ import os
 
 # Do library imports
 from .core import log
-from .poller.update import TrunkInterface
 
 # Create global variables for the various daemons
 SITE_PREFIX = "/switchmap"

@@ -5,7 +5,6 @@ from .mib.generic.mib_entity import EntityQuery
 from .mib.generic.mib_essswitch import EssSwitchQuery
 from .mib.generic.mib_etherlike import EtherlikeQuery
 from .mib.generic.mib_if import IfQuery
-from .mib.generic.mib_if_64 import If64Query
 from .mib.generic.mib_ip import IpQuery
 from .mib.generic.mib_ipv6 import Ipv6Query
 from .mib.generic.mib_lldp import LldpQuery
