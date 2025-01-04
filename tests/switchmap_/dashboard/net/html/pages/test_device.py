@@ -4,6 +4,7 @@
 import os
 import sys
 import unittest
+from datetime import datetime, timedelta
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -173,6 +174,9 @@ class TestDevice(unittest.TestCase):
     def test_system(self):
         """Testing function system."""
         # Initialize key variables
+        current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        expected_time = (datetime.utcnow() - timedelta(hours=8)).strftime("%Y-%m-%d %H:%M:%S")
+
         expected = """<table class="table">
 <thead class="tblHead"><tr><th>Parameter</th><th>Value</th></tr></thead>
 <tbody>
@@ -181,7 +185,7 @@ class TestDevice(unittest.TestCase):
 <tr><td>System Description</td><td>Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version<br>15.0(2)SE11, RELEASE SOFTWARE (fc3) Technical Support:<br>http://www.cisco.com/techsupport Copyright (c) 1986-2017 by Cisco<br>Systems, Inc. Compiled Sat 19-Aug-17 08:39 by prod_rel_team</td></tr>
 <tr><td>System sysObjectID</td><td>.1.3.6.1.4.1.9.1.516</td></tr>
 <tr><td>System Uptime</td><td>94 Days, 18:39:06</td></tr>
-<tr><td>Time Last Polled</td><td>2023-02-23 15:13:37</td></tr>
+<tr><td>Time Last Polled</td><td>{expected_time}</td></tr>
 </tbody>
 </table>"""
         result = self.device.system()
