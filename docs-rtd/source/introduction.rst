@@ -10,6 +10,11 @@ status of network connected devices. The information reported includes:
 4. Layer 3 information (ARP information)
 5. System status
 
+Download
+--------
+
+You can download the latest code from our `GitHub Repository <https://github.com/PalisadoesFoundation/switchmap-ng>`_
+
 Features
 --------
 
