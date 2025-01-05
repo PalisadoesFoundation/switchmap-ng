@@ -1,5 +1,4 @@
 Testing
-=======
 
 This section outlines how to test and contribute to ``switchmap-ng``.
 
