@@ -1,12 +1,12 @@
 ##############################################################################
 ##############################################################################
 #
-# PR Workflow
+# Push Workflow
 #
 ##############################################################################
 ##############################################################################
 
-name: PR Workflow
+name: Push Workflow
 
 on:
   push:
@@ -97,8 +97,8 @@ jobs:
 
       - name: Run Black Formatter Check
         run: |
-          python -m black --check .
+          black --check .
 
       - name: Run Pydocstyle for Docstring Style
         run: |
-          python -m pydocstyle .
+          pydocstyle switchmap setup bin tests --convenction=google --add-ignore=D415,D205

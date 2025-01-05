@@ -30,3 +30,8 @@ pytest
 
 # Other
 more-itertools
+
+#Linting and formatting
+flake8
+pydocstyle
+black

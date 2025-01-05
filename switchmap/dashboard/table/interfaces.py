@@ -113,7 +113,7 @@ class InterfaceRow:
 
 
 def table(_interfaces):
-    """Get Interface data from the device
+    """Get Interface data from the device.
 
     Args:
         _interfaces: Interface dict
