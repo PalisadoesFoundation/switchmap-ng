@@ -1,7 +1,15 @@
-Testing
-=======
+Contributing & Testing
+======================
 
-This section outlines how to test ``switchmap-ng``.
+This section outlines how to test and contribute to ``switchmap-ng``.
+
+Join our Community
+------------------
+
+Visit the `Palisadoes Foundation GitHub site <https://github.com/PalisadoesFoundation>`_
+
+1) You'll find links to join our Slack Community
+2) There are links to the repository and how to report issues you find
 
 Testing Setup for Developers
 ----------------------------
@@ -31,8 +39,62 @@ Create the testing configuration file which will be stored in a hidden directory
    
    (venv) $ tests/bin/test_db_config_setup.py
 
+API Interactive GraphQL Interaction
+-----------------------------------
+
+This is useful for:
+
+1) Developing queries for API clients.
+2) Troubleshooting your code.
+3) Creating new features.
+
+On the API server you'll be able to make GraphQL queries in an easy to use interactive web page. 
+
+1) Enter your query in the left hand panel
+2) Press the ``Play`` button
+3) Observe the results
+
+Interactive GraphQL URL
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The URL on a running on your local server is:
+
+http://localhost:7000/switchmap/api/igraphql
+
+Interactive GraphQL Screenshot
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Here is a sample of what to you can do with interactive queries.
+
+.. image:: ../images/igraphql-screenshot.png
+
+
+Important File Locations
+------------------------
+
+These locations are important for developers:
+
+Module Library Layout
+~~~~~~~~~~~~~~~~~~~~~
+
+Modules are arranged like this:
+
+1) The API modules are located in ``switchmap/server``
+2) The Poller modules are located in ``switchmap/poller``
+3) The Web UI modules are located in ``switchmap/dashboard``
+4) Modules that are shared with all three are located in ``switchmap/core``
+
+Database and GraphQL
+~~~~~~~~~~~~~~~~~~~~
+
+Reviewing these files will be important.
+
+1) The Database SQLAlchemy ORM definitions can be found in the ``switchmap/server/db/models.py`` file.
+2) The GraphQL schema are located in the ``switchmap/server/db/schema.py`` file.
+3) The GraphQL schema attributes are located in the ``switchmap/server/db/attributes.py`` file.
+
 Run the Test Suite
-~~~~~~~~~~~~~~~~~~
+------------------
 
 **NOTE:** The test cases are written to be run only from the root directory of the repository this to ensure no errors in importing both the required test and code modules.
 
