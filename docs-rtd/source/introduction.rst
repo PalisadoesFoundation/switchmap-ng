@@ -13,7 +13,7 @@ status of network connected devices. The information reported includes:
 Download
 --------
 
-You can download the latest code from our GitHub Repository https://github.com/PalisadoesFoundation/switchmap-ng
+You can download the latest code from our `GitHub Repository <https://github.com/PalisadoesFoundation/switchmap-ng>`_
 
 Features
 --------
