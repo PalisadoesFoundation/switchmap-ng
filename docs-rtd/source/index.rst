@@ -18,6 +18,7 @@ Switchmap-NG Documentation
    webserver
    testing
    troubleshooting
+   architecture
    community
    
 
