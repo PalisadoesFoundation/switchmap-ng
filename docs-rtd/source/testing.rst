@@ -1,15 +1,6 @@
-Code Testing
-============
+Testing
 
 This section outlines how to test and contribute to ``switchmap-ng``.
-
-Join our Community
-------------------
-
-Visit the `Palisadoes Foundation GitHub site <https://github.com/PalisadoesFoundation>`_
-
-1) You'll find links to join our Slack Community
-2) There are links to the repository and how to report issues you find
 
 Testing Setup for Developers
 ----------------------------
