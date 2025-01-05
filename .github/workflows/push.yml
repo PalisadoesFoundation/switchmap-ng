@@ -101,4 +101,4 @@ jobs:
 
       - name: Run Pydocstyle for Docstring Style
         run: |
-          pydocstyle switchmap setup bin tests --convenction=google --add-ignore=D415,D205
+          pydocstyle switchmap setup bin tests --convention=google --add-ignore=D415,D205

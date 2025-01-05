@@ -58,7 +58,7 @@ jobs:
         
       - name: Run pydocstyle
         run: |
-          pydocstyle switchmap setup bin tests --convenction=google --add-ignore=D415,D205
+          pydocstyle switchmap setup bin tests --convention=google --add-ignore=D415,D205
 
   Check-Sensitive-Files:
     if: ${{ github.actor != 'dependabot[bot]' && !contains(github.event.pull_request.labels.*.name, 'ignore-sensitive-files-pr') }}
