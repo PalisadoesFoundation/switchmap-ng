@@ -34,16 +34,20 @@ Create the testing configuration file which will be stored in a hidden directory
 Run the Test Suite
 ~~~~~~~~~~~~~~~~~~
 
+**NOTE:** The test cases are written to be run only from the root directory of the repository this to ensure no errors in importing both the required test and code modules.
+
 You can run all the tests with this command.
 
 ::
    
+   (venv) $ cd /path/to/switchmap
    (venv) $ tests/bin/_do_all_tests.py
 
 An alternative method is to use pytest.
 
 ::
    
+   (venv) $ cd /path/to/switchmap
    (venv) $ pytest tests/switchmap_
 
 
@@ -51,6 +55,7 @@ You can run individual tests with this command.
 
 ::
    
+   (venv) $ cd /path/to/switchmap
    (venv) $ tests/switchmap_/path/to/test.py
 
 
