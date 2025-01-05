@@ -225,7 +225,7 @@ jobs:
   Docstring-Compliance:
     name: Check Docstring Compliance
     runs-on: ubuntu-latest
-    needs: [Code-Quality-Checks, Test-Application]
+    needs: [Code-Quality-Checks]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
