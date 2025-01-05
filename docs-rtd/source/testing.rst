@@ -1,12 +1,11 @@
 Testing
 
-This section outlines how to test and contribute to ``switchmap-ng``.
+Follow the installation steps above to have the application ready, then add these steps for developing code.
 
 Testing Setup for Developers
 ----------------------------
 
 Follow the installation steps above to have the application ready, then add these steps for developing code.
-
 
 Database Configuration
 ~~~~~~~~~~~~~~~~~~~~~~
