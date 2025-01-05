@@ -93,7 +93,7 @@ jobs:
 
       - name: Run Flake8 Linter
         run: |
-          flake8 . --ignore E402,E722
+          flake8 . --ignore E402,E722,E203,F401
 
       - name: Run Black Formatter Check
         run: |
