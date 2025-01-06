@@ -149,11 +149,11 @@ def check_directory(directory, exclude_dirs=None):
 
 def main():
     directory = sys.argv[1] if len(sys.argv) > 1 else "."
-    # Define excluded directories (e.g., virtual environment or library folders)
     exclude_dirs = [
         os.path.join(directory, "venv"),
         os.path.join(directory, "lib"),
         os.path.join(directory, "venv/lib/python3.11/site-packages"),
+        os.path.join(directory, "tests"),
     ]
     violations = check_directory(directory, exclude_dirs=exclude_dirs)
     if violations:
