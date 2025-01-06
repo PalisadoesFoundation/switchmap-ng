@@ -91,20 +91,25 @@ def validate_docstring(file_path):
     print(f"Found {len(violations)} violations in file: {file_path}")
     return violations
 
-def check_directory(directory):
+def check_directory(directory, exclude_dirs=None):
     """
-    Check all Python files in a directory for docstring compliance.
-
+    Check all Python files in a directory for docstring compliance, excluding specified directories.
+    
     Args:
         directory (str): Directory to scan.
+        exclude_dirs (list): List of directories to exclude.
+
     Returns:
         dict: Dictionary of file violations.
     """
-    print(f"Checking directory: {directory}")
-    all_violations = {}
+    if exclude_dirs is None:
+        exclude_dirs = []
 
-    for root, _, files in os.walk(directory):
-        print(f"Scanning directory: {root}")
+    all_violations = {}
+    for root, dirs, files in os.walk(directory):
+        # Skip excluded directories
+        dirs[:] = [d for d in dirs if os.path.join(root, d) not in exclude_dirs]
+
         for file in files:
             if file.endswith('.py'):
                 file_path = os.path.join(root, file)
@@ -118,9 +123,13 @@ def check_directory(directory):
 
 def main():
     directory = sys.argv[1] if len(sys.argv) > 1 else '.'
-    print(f"Starting docstring validation for directory: {directory}")
-    violations = check_directory(directory)
-
+    # Define excluded directories (e.g., virtual environment or library folders)
+    exclude_dirs = [
+        os.path.join(directory, 'venv'), 
+        os.path.join(directory, 'lib'), 
+        os.path.join(directory, 'venv/lib/python3.11/site-packages')
+    ]
+    violations = check_directory(directory, exclude_dirs=exclude_dirs)
     if violations:
         print("Docstring violations found:")
         for file, issues in violations.items():
@@ -130,6 +139,7 @@ def main():
         sys.exit(1)
     else:
         print("All docstrings are compliant.")
+
 
 if __name__ == "__main__":
     main()
