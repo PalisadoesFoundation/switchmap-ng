@@ -9,6 +9,15 @@ class ConfigDashboard(ConfigAPIClient, ConfigAPI):
     """Class gathers all configuration information."""
 
     def __init__(self):
+        """Intialize the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
         # Initialize key variables
         section = "dashboard"
 
