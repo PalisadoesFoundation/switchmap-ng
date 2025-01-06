@@ -383,7 +383,6 @@ class _StandaloneApplication(BaseApplication):
         """Initialize the class.
 
         Args:
-
             app: Flask application object of type Flask(__name__)
             parent: Name of parent process that is invoking the API
             options: Gunicorn CLI options

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Switchmap-NG ingest test script"""
+"""Switchmap-NG ingest test script."""
 
 # Standard libraries
 import sys

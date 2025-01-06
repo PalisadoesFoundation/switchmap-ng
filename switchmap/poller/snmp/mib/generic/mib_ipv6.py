@@ -1,7 +1,6 @@
 """Class interacts with CISCO-IETF-IP-MIB."""
 
 from collections import defaultdict
-import binascii
 
 from switchmap.poller.snmp.base_query import Query
 from switchmap.core import general

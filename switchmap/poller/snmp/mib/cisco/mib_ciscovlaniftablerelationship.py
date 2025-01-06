@@ -75,8 +75,8 @@ class CiscoVlanIftableRelationshipQuery(Query):
         return final
 
     def cviroutedvlanifindex(self, oidonly=False):
-        """Return dict of CISCO-VLAN-IFTABLE-RELATIONSHIP-MIB
-            cviRoutedVlanIfIndex for each VLAN.
+        """Return dictionary of CISCO-VLAN-IFTABLE-RELATIONSHIP-MIB
+        cviRoutedVlanIfIndex for each VLAN.
 
         Args:
             oidonly: Return OID's value, not results, if True

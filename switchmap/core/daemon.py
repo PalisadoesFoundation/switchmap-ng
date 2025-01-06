@@ -302,7 +302,7 @@ file and directory permissions.""".format(
 
 
 class GracefulDaemon(Daemon):
-    """Daemon that allows for graceful shutdown
+    """Daemon that allows for graceful shutdown.
 
     This daemon should allow for stop/restart commands to perform graceful
     shutdown of a given process. A graceful shutdown involves checking that
@@ -327,7 +327,7 @@ class GracefulDaemon(Daemon):
         Daemon.__init__(self, agent)
 
     def __daemon_running(self):
-        """Determines if daemon is processing data
+        """Determines if daemon is processing data.
 
         Daemon is running based on whether it has an associated lockfile
 
@@ -346,8 +346,7 @@ class GracefulDaemon(Daemon):
         return running
 
     def graceful_shutdown(self, callback):
-        """Wrapper class that handles graceful_shutdown prior to using
-        callaback function `fn`
+        """Initializes the wrapper with the callback function `fn`.
 
         Args:
             callback: callback method
@@ -358,7 +357,7 @@ class GracefulDaemon(Daemon):
         """
 
         def wrapper():
-            """Wrapper function"""
+            """Wrapper function."""
             if self.__daemon_running():
                 log_message = """\
 Lock file {} exists. Process still running.""".format(
