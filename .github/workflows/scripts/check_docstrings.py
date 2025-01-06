@@ -44,16 +44,6 @@ def validate_docstring(file_path):
                         parsed = parse(docstring)
                         print("Parsed docstring successfully")
 
-                        # Check for Raises section
-                        if not parsed.raises:
-                            print("Missing 'Raises' section")
-                            violations.append({
-                                "line": i + 1,
-                                "function": func_name,
-                                "issue": "Missing 'Raises' section",
-                                "action": "Add a 'Raises' section detailing the exceptions this function may raise."
-                            })
-
                         # Check for Args section
                         if not parsed.params:
                             print("Missing 'Args' section")
@@ -62,6 +52,16 @@ def validate_docstring(file_path):
                                 "function": func_name,
                                 "issue": "Missing 'Args' section",
                                 "action": "Add an 'Args' section listing the arguments this function accepts, their types, and descriptions."
+                            })
+
+                        # Check for Returns section
+                        if not parsed.returns:
+                            print("Missing 'Returns' section")
+                            violations.append({
+                                "line": i + 1,
+                                "function": func_name,
+                                "issue": "Missing 'Returns' section",
+                                "action": "Add a 'Returns' section describing the return value, its type, and meaning."
                             })
                     except Exception as e:
                         print(f"Error parsing docstring: {e}")
