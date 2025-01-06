@@ -90,13 +90,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8 black pydocstyle
+          
+      - name: Run Black Formatter Check
+        run: |
+          black --check .
 
       - name: Run Flake8 Linter
         run: |
           flake8 switchmap bin setup --ignore E402,E722,E203,F401
-      - name: Run Black Formatter Check
-        run: |
-          black --check .
 
       - name: Run Pydocstyle for Docstring Style
         run: |
