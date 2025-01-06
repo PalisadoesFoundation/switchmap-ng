@@ -1,9 +1,6 @@
-"""Define the tests.switchmap_.poller.snmp.mib.cisco package.
+"""Test suite for Cisco-specific SNMP MIB polling functionality.
 
-Args:
-    None
-
-Returns:
-    None
+This package contains test cases that verify the correct polling and
+interpretation of SNMP MIB data from Cisco network devices.
 
 """

@@ -1,9 +1,5 @@
-"""Define the tests.switchmap_.server.db.ingest.query package.
+"""Test suite for database query and ingestion functionality.
 
-Args:
-    None
-
-Returns:
-    None
-
+This package contains test cases that verify the correct operation
+of database queries used during the data ingestion process.
 """

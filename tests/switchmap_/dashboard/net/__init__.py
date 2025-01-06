@@ -1,9 +1,5 @@
-"""Define the tests.switchmap_.dashboard.net package.
+"""Network functionality for the switchmap dashboard.
 
-Args:
-    None
-
-Returns:
-    None
-
+This package provides networking components and utilities
+for handling HTTP routes and generating HTML content.
 """

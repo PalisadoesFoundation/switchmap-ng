@@ -1,9 +1,5 @@
-"""Define the tests.switchmap_.server.db.ingest package.
+"""Define the switchmap.server.db.ingest package.
 
-Args:
-    None
-
-Returns:
-    None
-
+This package handles the ingestion of data into the switchmap database,
+providing functionality for processing and storing network device information.
 """

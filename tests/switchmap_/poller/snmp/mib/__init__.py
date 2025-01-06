@@ -1,9 +1,6 @@
-"""Define the tests.switchmap_.poller.snmp.mib package.
+"""Test suite for the switchmap_.poller.snmp.mib package.
 
-Args:
-    None
-
-Returns:
-    None
+This package contains test cases for SNMP MIB parsing,
+interpretation, and data extraction functionality.
 
 """

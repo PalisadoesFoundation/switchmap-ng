@@ -1,9 +1,6 @@
-"""Define the tests.switchmap_.poller.snmp package.
+"""Test suite for the SNMP polling functionality.
 
-Args:
-    None
-
-Returns:
-    None
+This package contains test cases that verify the SNMP polling operations,
+including device discovery, data collection, and MIB handling.
 
 """
