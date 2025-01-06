@@ -57,50 +57,28 @@ def validate_docstring(file_path):
                         print("Parsed docstring successfully")
 
                         # Check for Args section
-                        if not parsed.params and "Args:" not in docstring:
+                        if "Args:" not in docstring:
                             print("Missing 'Args' section")
                             violations.append(
                                 {
                                     "line": i + 1,
                                     "function": func_name,
                                     "issue": "Missing 'Args' section",
-                                    "action": "Add an 'Args' section listing the arguments this function accepts, their types, and descriptions.",
+                                    "action": "Add an 'Args' section listing the arguments this function accepts.",
                                 }
                             )
 
                         # Check for Returns section
-                        if not parsed.returns and "Returns:" not in docstring:
+                        if "Returns:" not in docstring:
                             print("Missing 'Returns' section")
                             violations.append(
                                 {
                                     "line": i + 1,
                                     "function": func_name,
                                     "issue": "Missing 'Returns' section",
-                                    "action": "Add a 'Returns' section describing the return value, its type, and meaning.",
+                                    "action": "Add a 'Returns' section describing the return value.",
                                 }
                             )
-
-                        # Treat explicit None as compliant
-                        if (
-                            parsed.returns
-                            and parsed.returns.type == "None"
-                            and parsed.returns.description == "None"
-                        ):
-                            violations = [
-                                v
-                                for v in violations
-                                if v.get("issue")
-                                != "Missing 'Returns' section"
-                            ]
-                        if all(
-                            p.type == "None" and p.description == "None"
-                            for p in parsed.params
-                        ):
-                            violations = [
-                                v
-                                for v in violations
-                                if v.get("issue") != "Missing 'Args' section"
-                            ]
 
                     except Exception as e:
                         print(f"Error parsing docstring: {e}")
