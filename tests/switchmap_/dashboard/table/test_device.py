@@ -6,7 +6,9 @@ import sys
 from unittest.mock import patch
 
 # Add the project root directory to sys.path
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../"))
+ROOT_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../../../")
+)
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
@@ -36,14 +38,16 @@ class TestDevice(unittest.TestCase):
         """Execute these steps when all tests are completed."""
         pass  # No special teardown needed for this class
 
-    @patch('switchmap.dashboard.table.interfaces.table')
+    @patch("switchmap.dashboard.table.interfaces.table")
     def test_interfaces_with_valid_data(self, mock_table):
         """Test the interfaces method with valid data."""
         # Mock return value
         mock_table.return_value = "Mocked Interface Table"
 
         # Test input
-        test_data = {"l1interfaces": {"interface1": "data1", "interface2": "data2"}}
+        test_data = {
+            "l1interfaces": {"interface1": "data1", "interface2": "data2"}
+        }
 
         # Create an instance of Device
         device_instance = device.Device(test_data)
@@ -55,7 +59,7 @@ class TestDevice(unittest.TestCase):
         mock_table.assert_called_once_with(test_data["l1interfaces"])
         self.assertEqual(result, "Mocked Interface Table")
 
-    @patch('switchmap.dashboard.table.interfaces.table')
+    @patch("switchmap.dashboard.table.interfaces.table")
     def test_interfaces_with_empty_data(self, mock_table):
         """Test the interfaces method with empty data."""
         # Test input
@@ -71,7 +75,7 @@ class TestDevice(unittest.TestCase):
         mock_table.assert_not_called()
         self.assertIsNone(result)
 
-    @patch('switchmap.dashboard.table.interfaces.table')
+    @patch("switchmap.dashboard.table.interfaces.table")
     def test_interfaces_with_none_data(self, mock_table):
         """Test the interfaces method with None as data."""
         # Test input
@@ -87,7 +91,7 @@ class TestDevice(unittest.TestCase):
         mock_table.assert_not_called()
         self.assertIsNone(result)
 
-    @patch('switchmap.dashboard.table.system.table')
+    @patch("switchmap.dashboard.table.system.table")
     def test_system_with_valid_data(self, mock_table):
         """Test the system method with valid data."""
         # Mock return value
@@ -106,7 +110,7 @@ class TestDevice(unittest.TestCase):
         mock_table.assert_called_once_with(test_data)
         self.assertEqual(result, "Mocked System Table")
 
-    @patch('switchmap.dashboard.table.system.table')
+    @patch("switchmap.dashboard.table.system.table")
     def test_system_with_empty_data(self, mock_table):
         """Test the system method with empty data."""
         # Test input
@@ -122,7 +126,7 @@ class TestDevice(unittest.TestCase):
         mock_table.assert_not_called()
         self.assertIsNone(result)
 
-    @patch('switchmap.dashboard.table.system.table')
+    @patch("switchmap.dashboard.table.system.table")
     def test_system_with_none_data(self, mock_table):
         """Test the system method with None as data."""
         # Test input
