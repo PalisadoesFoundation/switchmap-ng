@@ -28,12 +28,13 @@ def process(data, idx_zone, dns=True):
     """Process data received from a device.
 
     Args:
-        data: Dict containing device data and configuration
-        idx_zone: Integer index of the zone to which the data belongs
-        dns: Boolean indicating whether to perform DNS lookups
+        data: Device data (dict)
+        idx_zone: Zone index to which the data belongs
+        dns: Do DNS lookups if True
 
     Returns:
         None
+
     """
     # Process the device
     meta = device(idx_zone, data)
@@ -42,14 +43,15 @@ def process(data, idx_zone, dns=True):
 
 
 def device(idx_zone, data):
-    """Update the Device DB table with device information.
+    """Update the Device DB table.
 
     Args:
-        idx_zone: Integer index of the zone to which the data belongs
-        data: Dict containing device data including system info and hostname
+        idx_zone: Zone index to which the data belongs
+        data: Device data (dict)
 
     Returns:
-        exists: RDevice object representing the device record
+        None
+
     """
     # Initialize key variables
     exists = False
@@ -90,10 +92,11 @@ def _lookup(idx_device):
     """Create in memory lookup data for the device.
 
     Args:
-        idx_device: Integer index of the device to lookup
+        idx_device: device index
 
     Returns:
-        result: Named tuple containing ifindexes and vlans lookup data
+        result: Lookup object
+
     """
     # Initialize key variables
     Lookup = namedtuple("Lookup", "ifindexes vlans")
@@ -110,13 +113,14 @@ class Status:
     """Tracks the status of various Topology methods."""
 
     def __init__(self):
-        """Initialize the Status class.
+        """Instantiate the class.
 
         Args:
             None
 
         Returns:
             None
+
         """
         self._vlan = False
         self._vlanport = False
@@ -125,13 +129,14 @@ class Status:
 
     @property
     def l1interface(self):
-        """Get the value of the 'l1interface' property.
+        """Provide the value of  the 'l1interface' property.
 
         Args:
             None
 
         Returns:
-            bool: Current l1interface status
+            bool: True if the L1Interface table has been updated, False otherwise
+
         """
         return self._l1interface
 
@@ -140,41 +145,90 @@ class Status:
         """Set the 'l1interface' property.
 
         Args:
-            value: Boolean value to set
+            value: Boolean indicating if the L1Interface table has been updated
 
         Returns:
             None
+
         """
         self._l1interface = value
 
     @property
     def macport(self):
-        """Provide the value of  the 'macport' property."""
+        """Provide the value of  the 'macport' property.
+
+        Args:
+            None
+
+        Returns:
+            bool: True if the MacPort table has been updated, False otherwise
+
+        """
         return self._macport
 
     @macport.setter
     def macport(self, value):
-        """Set the 'macport' property."""
+        """Set the 'macport' property.
+
+        Args:
+            value: Boolean indicating if the MacPort table has been updated
+
+        Returns:
+            None
+
+        """
         self._macport = value
 
     @property
     def vlanport(self):
-        """Provide the value of  the 'vlanport' property."""
+        """Provide the value of  the 'vlanport' property.
+
+        Args:
+            None
+
+        Returns:
+            bool: True if the VlanPort table has been updated, False otherwise
+
+        """
         return self._vlanport
 
     @vlanport.setter
     def vlanport(self, value):
-        """Set the 'vlanport' property."""
+        """Set the 'vlanport' property.
+
+        Args:
+            value: Boolean indicating if the VlanPort table has been updated
+
+        Returns:
+            None
+
+        """
         self._vlanport = value
 
     @property
     def vlan(self):
-        """Provide the value of  the 'vlan' property."""
+        """Provide the value of  the 'vlan' property.
+
+        Args:
+            None
+
+        Returns:
+            bool: True if the Vlan table has been updated, False otherwise
+
+        """
         return self._vlan
 
     @vlan.setter
     def vlan(self, value):
-        """Set the 'vlan' property."""
+        """Set the 'vlan' property.
+
+        Args:
+            value: Boolean indicating if the Vlan table has been updated
+
+        Returns:
+            None
+
+        """
         self._vlan = value
 
 
@@ -182,15 +236,15 @@ class Topology:
     """Update Device data in the database."""
 
     def __init__(self, exists, data, dns=True):
-        """Initialize the Topology class.
+        """Initialize class.
 
         Args:
-            exists: RDevice object containing device record
-            data: Dict containing device data and configuration
-            dns: Boolean indicating whether to perform DNS lookups
+            exists: RDevice object
+            data: Dict of device data
 
         Returns:
             None
+
         """
         # Initialize key variables
         self._data = deepcopy(data)
@@ -205,13 +259,14 @@ class Topology:
         self._start = int(time.time())
 
     def process(self):
-        """Process device data and update database tables.
+        """Process data received from a device.
 
         Args:
             None
 
         Returns:
             None
+
         """
         self.l1interface()
         self.vlan()
@@ -222,10 +277,12 @@ class Topology:
         """Update the L1interface DB table.
 
         Args:
-            test: Boolean indicating whether to use sequential inserts for testing
+            test: Sequentially insert values into the database if True.
+                Bulk inserts don't insert data with predictable primary keys.
 
         Returns:
             None
+
         """
         # Test validity
         if bool(self._valid) is False:
@@ -532,11 +589,12 @@ class Topology:
         """Create standardized log messaging.
 
         Args:
-            table: String name of table being updated
-            updated: Boolean indicating if table has been updated
+            table: Name of table being updated
+            updated: True if the table has been updated
 
         Returns:
             None
+
         """
         # Initialize key variables
         log_message = '\
@@ -552,10 +610,12 @@ class Topology:
         """Create standardized log messaging for invalid states.
 
         Args:
-            table: String name of table with invalid update sequence
+            table: Name of table being updated
+            updated: True if the table has been updated
 
         Returns:
             None
+
         """
         # Initialize key variables
         log_message = "\
@@ -572,13 +632,14 @@ def _ifspeed(interface):
     """Get the speed of an interface.
 
     Args:
-        interface: Dict containing L1Interface data
+        interface: L1Interface dict
 
     Returns:
-        float: Interface speed in Mbps
+        result
+
     """
     result = interface.get("ifHighSpeed")
     if bool(result) is False:
         result = interface.get("ifSpeed")
-        result = (result / 1000000) if bool(result) else 0
+        result = result / 1000000 if bool(result) else 0
     return result
