@@ -113,15 +113,7 @@ class Status:
     """Tracks the status of various Topology methods."""
 
     def __init__(self):
-        """Instantiate the class.
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        """
+        """Instantiate the class."""
         self._vlan = False
         self._vlanport = False
         self._macport = False
@@ -129,106 +121,42 @@ class Status:
 
     @property
     def l1interface(self):
-        """Provide the value of  the 'l1interface' property.
-
-        Args:
-            None
-
-        Returns:
-            bool: True if the L1Interface table has been updated, False otherwise
-
-        """
+        """Provide the value of  the 'l1interface' property."""
         return self._l1interface
 
     @l1interface.setter
     def l1interface(self, value):
-        """Set the 'l1interface' property.
-
-        Args:
-            value: Boolean indicating if the L1Interface table has been updated
-
-        Returns:
-            None
-
-        """
+        """Set the 'l1interface' property."""
         self._l1interface = value
 
     @property
     def macport(self):
-        """Provide the value of  the 'macport' property.
-
-        Args:
-            None
-
-        Returns:
-            bool: True if the MacPort table has been updated, False otherwise
-
-        """
+        """Provide the value of  the 'macport' property."""
         return self._macport
 
     @macport.setter
     def macport(self, value):
-        """Set the 'macport' property.
-
-        Args:
-            value: Boolean indicating if the MacPort table has been updated
-
-        Returns:
-            None
-
-        """
+        """Set the 'macport' property."""
         self._macport = value
 
     @property
     def vlanport(self):
-        """Provide the value of  the 'vlanport' property.
-
-        Args:
-            None
-
-        Returns:
-            bool: True if the VlanPort table has been updated, False otherwise
-
-        """
+        """Provide the value of  the 'vlanport' property."""
         return self._vlanport
 
     @vlanport.setter
     def vlanport(self, value):
-        """Set the 'vlanport' property.
-
-        Args:
-            value: Boolean indicating if the VlanPort table has been updated
-
-        Returns:
-            None
-
-        """
+        """Set the 'vlanport' property."""
         self._vlanport = value
 
     @property
     def vlan(self):
-        """Provide the value of  the 'vlan' property.
-
-        Args:
-            None
-
-        Returns:
-            bool: True if the Vlan table has been updated, False otherwise
-
-        """
+        """Provide the value of  the 'vlan' property."""
         return self._vlan
 
     @vlan.setter
     def vlan(self, value):
-        """Set the 'vlan' property.
-
-        Args:
-            value: Boolean indicating if the Vlan table has been updated
-
-        Returns:
-            None
-
-        """
+        """Set the 'vlan' property."""
         self._vlan = value
 
 
