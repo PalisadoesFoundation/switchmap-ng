@@ -11,7 +11,13 @@ class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
-        """Fix the column formatting."""
+        """
+        Fix the column formatting.
+        Args:
+            content
+        Returns:
+            content
+        """
         return content
 
 
@@ -104,11 +110,23 @@ class InterfaceRow:
         ] = row
 
     def active(self):
-        """Active ports."""
+        """
+        Active ports.
+        Args:
+            None
+        Returns:
+            boolean value of state if its active.
+        """
         return bool(self.state == "Active")
 
     def enabled(self):
-        """Enable ports."""
+        """
+        Enable ports.
+        Args:
+            None
+        Returns:
+            boolean value of state if is not Disabled.
+        """
         return bool(self.state != "Disabled")
 
 

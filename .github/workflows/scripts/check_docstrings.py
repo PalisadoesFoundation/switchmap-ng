@@ -149,6 +149,12 @@ def check_directory(directory, exclude_dirs=None):
 
 
 def main():
+    """
+    Args:
+        None
+    Returns:
+        None
+    """
     directory = sys.argv[1] if len(sys.argv) > 1 else "."
     # Define excluded directories (e.g., virtual environment or library folders)
     exclude_dirs = [

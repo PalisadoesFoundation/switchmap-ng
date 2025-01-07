@@ -296,6 +296,10 @@ file and directory permissions.""".format(
 
         It will be called after the process has been daemonized by
         start() or restart().
+        Args:
+            None
+        Returns:
+            None
         """
         # Simple comment to pass linter
         pass
@@ -334,7 +338,7 @@ class GracefulDaemon(Daemon):
         Args:
             None
 
-        Return:
+        Returns:
             running: True if daemon is currently running or conducing a process
 
         """
@@ -352,7 +356,7 @@ class GracefulDaemon(Daemon):
         Args:
             callback: callback method
 
-        Return:
+        Returns:
             wrapper
 
         """

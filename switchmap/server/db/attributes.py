@@ -19,54 +19,104 @@ import graphene
 
 
 def resolve_address(obj, _):
-    """Convert 'address' from bytes to string."""
+    """
+    Args:
+        obj
+    Returns:
+        Convert 'address' from bytes to string.
+    """
     return obj.address.decode() if bool(obj.address) else ""
 
 
 def resolve_cdpcachedeviceid(obj, _):
-    """Convert 'cdpcachedeviceid' from bytes to string."""
+    """
+    Args:
+        obj
+    Returns:
+        Convert 'cdpcachedeviceid' from bytes to string.
+    """
     return obj.cdpcachedeviceid.decode() if bool(obj.cdpcachedeviceid) else ""
 
 
 def resolve_cdpcacheplatform(obj, _):
-    """Convert 'cdpcacheplatform' from bytes to string."""
+    """
+    Args:
+        obj
+    Returns:
+        Convert 'cdpcacheplatform' from bytes to string.
+    """
     return obj.cdpcacheplatform.decode() if bool(obj.cdpcacheplatform) else ""
 
 
 def resolve_cdpcachedeviceport(obj, _):
-    """Convert 'cdpcachedeviceport' from bytes to string."""
+    """
+    Args:
+        obj
+    Returns:
+        Convert 'cdpcachedeviceport' from bytes to string.   
+    """
     return (
         obj.cdpcachedeviceport.decode() if bool(obj.cdpcachedeviceport) else ""
     )
 
 
 def resolve_hostname(obj, _):
-    """Convert 'hostname' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'hostname' from bytes to string.
+    """
     return obj.hostname.decode() if bool(obj.hostname) else ""
 
 
 def resolve_ifalias(obj, _):
-    """Convert 'ifalias' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'ifalias' from bytes to string.
+    """
     return obj.ifalias.decode() if bool(obj.ifalias) else ""
 
 
 def resolve_ifname(obj, _):
-    """Convert 'ifname' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'ifname' from bytes to string.
+    """
     return obj.ifname.decode() if bool(obj.ifname) else ""
 
 
 def resolve_ifdescr(obj, _):
-    """Convert 'ifdescr' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'ifdescr' from bytes to string.
+    """
     return obj.ifdescr.decode() if bool(obj.ifdescr) else ""
 
 
 def resolve_lldpremportdesc(obj, _):
-    """Convert 'lldpremportdesc' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'lldpremportdesc' from bytes to string.
+    """
     return obj.lldpremportdesc.decode() if bool(obj.lldpremportdesc) else ""
 
 
 def resolve_lldpremsyscapenabled(obj, _):
-    """Convert 'lldpremsyscapenabled' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'lldpremsyscapenabled' from bytes to string.
+    """
     return (
         obj.lldpremsyscapenabled.decode()
         if bool(obj.lldpremsyscapenabled)
@@ -75,57 +125,112 @@ def resolve_lldpremsyscapenabled(obj, _):
 
 
 def resolve_lldpremsysdesc(obj, _):
-    """Convert 'lldpremsysdesc' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'lldpremsysdesc' from bytes to string.
+    """
     return obj.lldpremsysdesc.decode() if bool(obj.lldpremsysdesc) else ""
 
 
 def resolve_lldpremsysname(obj, _):
-    """Convert 'lldpremsysname' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'lldpremsysname' from bytes to string.
+    """
     return obj.lldpremsysname.decode() if bool(obj.lldpremsysname) else ""
 
 
 def resolve_mac(obj, _):
-    """Convert 'mac' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'mac' from bytes to string.
+    """
     return obj.mac.decode() if bool(obj.mac) else ""
 
 
 def resolve_organization(obj, _):
-    """Convert 'organization' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'organization' from bytes to string.
+    """
     return obj.organization.decode() if bool(obj.organization) else ""
 
 
 def resolve_name(obj, _):
-    """Convert 'name' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'name' from bytes to string.
+    """
     return obj.name.decode() if bool(obj.name) else ""
 
 
 def resolve_notes(obj, _):
-    """Convert 'notes' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'notes' from bytes to string.
+    """
     return obj.notes.decode() if bool(obj.notes) else ""
 
 
 def resolve_oui(obj, _):
-    """Convert 'oui' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'oui' from bytes to string.
+    """
     return obj.oui.decode() if bool(obj.oui) else ""
 
 
 def resolve_sys_description(obj, _):
-    """Convert 'sys_description' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'sys_description' from bytes to string.
+    """
     return obj.sys_description.decode() if bool(obj.sys_description) else ""
 
 
 def resolve_sys_name(obj, _):
-    """Convert 'sys_name' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'sys_name' from bytes to string.
+    """
     return obj.sys_name.decode() if bool(obj.sys_name) else ""
 
 
 def resolve_sys_uptime(obj, _):
-    """Convert 'sys_uptime' from Null to zero."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'sys_uptime' from Null to zero.
+    """
     return float(obj.sys_uptime) if bool(obj.sys_uptime) else 0
 
 
 def resolve_sys_objectid(obj, _):
-    """Convert 'sys_objectid' from bytes to string."""
+    """
+    Args:
+        None
+    Returns:
+        Convert 'sys_objectid' from bytes to string.
+    """
     return obj.sys_objectid.decode() if bool(obj.sys_objectid) else ""
 
 
