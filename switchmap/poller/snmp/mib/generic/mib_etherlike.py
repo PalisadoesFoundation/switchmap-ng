@@ -11,7 +11,15 @@ def get_query():
 
 
 def init_query(snmp_object):
-    """Return initialize and return this module's Query class."""
+    """
+    Return initialize and return this module's Query class.
+    
+    Args:
+        snmp_object: SNMP Interact class object from snmp_manager.py
+
+    Returns:
+        EtherlikeQuery: Query class object
+    """
     return EtherlikeQuery(snmp_object)
 
 

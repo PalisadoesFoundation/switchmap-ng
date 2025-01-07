@@ -6,12 +6,28 @@ from switchmap.poller.snmp.base_query import Query
 
 
 def get_query():
-    """Return this module's Query class."""
+    """
+    Return this module's Query class.
+    
+    Args:
+        None
+
+    Returns:
+        CiscoC2900Query: Query class object
+    """
     return CiscoC2900Query
 
 
 def init_query(snmp_object):
-    """Return initialize and return this module's Query class."""
+    """
+    Return initialize and return this module's Query class.
+    
+    Args:
+        snmp_object: SNMP Interact class object from snmp_manager.py
+
+    Returns:
+        CiscoC2900Query: Query class object
+    """
     return CiscoC2900Query(snmp_object)
 
 

@@ -38,38 +38,94 @@ class Status:
     """Tracks the status of various Topology methods."""
 
     def __init__(self):
-        """Instantiate the class."""
+        """
+        Instantiate the class.
+        
+        Args:
+            None
+
+        Returns:
+            None
+        """
         self._mac = False
         self._ip = False
 
     @property
     def ip(self):
-        """Provide the value of  the 'ip' property."""
+        """
+        Provide the value of  the 'ip' property.
+        
+        Args:
+            None
+
+        Returns:
+            None
+        """
         return self._ip
 
     @ip.setter
     def ip(self, value):
-        """Set the 'ip' property."""
+        """
+        Set the 'ip' property.
+        
+        Args:
+            value: Value to set
+
+        Returns:
+            None
+        """
         self._ip = value
 
     @property
     def mac(self):
-        """Provide the value of  the 'mac' property."""
+        """
+        Provide the value of  the 'mac' property.
+        
+        Args:
+            None
+
+        Returns:
+            None
+        """
         return self._mac
 
     @mac.setter
     def mac(self, value):
-        """Set the 'mac' property."""
+        """
+        Set the 'mac' property.
+        
+        Args:
+            value: Value to set
+
+        Returns:
+            None
+        """
         self._mac = value
 
     @property
     def macip(self):
-        """Provide the value of  the 'macip' property."""
+        """
+        Provide the value of  the 'macip' property.
+        
+        Args:
+            None
+
+        Returns:
+            None
+        """
         return self._macip
 
     @macip.setter
     def macip(self, value):
-        """Set the 'macip' property."""
+        """
+        Set the 'macip' property.
+        
+        Args:
+            value: Value to set
+
+        Returns:
+            None
+        """
         self._macip = value
 
 
