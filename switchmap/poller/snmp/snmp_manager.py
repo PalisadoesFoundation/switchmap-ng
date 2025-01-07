@@ -36,7 +36,7 @@ class Validate:
             None
 
         Returns:
-            authentication: SNMP authorization object containing valid 
+            authentication: SNMP authorization object containing valid
                 credentials, or None if no valid credentials found
         """
         # Initialize key variables
