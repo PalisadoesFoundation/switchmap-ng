@@ -12,21 +12,28 @@ from switchmap.core import general
 
 
 class _RawCol(Col):
-    """Class outputs whatever it is given and will not escape it."""
+    """Class outputs whatever it is given and will not escape it.
+    
+    Extends the Col class to provide raw HTML output without escaping.
+    """
 
     def td_format(self, content):
-        """
-        Fix the column formatting.
+        """Format the column content without escaping.
+        
         Args:
-            content
+            content: The content to be displayed in the column
+            
         Returns:
-            content
+            content: The unmodified content
         """
         return content
 
 
 class EventTable(Table):
-    """Declaration of the columns in the Events table."""
+    """Declaration of the columns in the Events table.
+    
+    Defines the structure and styling of the events display table.
+    """
 
     # Initialize class variables
     col0 = _RawCol("")
@@ -41,17 +48,19 @@ class EventTable(Table):
 
 
 class EventsRow:
-    """Declaration of the rows in the Events table."""
+    """Declaration of the rows in the Events table.
+    
+    Handles individual row data storage and formatting.
+    """
 
     def __init__(self, row_data):
         """Initialize the class.
 
         Args:
-            row_data: Row data
+            row_data: List containing the data for each column in the row
 
         Returns:
             None
-
         """
         # Initialize key variables
         self.col0 = row_data[0]
@@ -65,12 +74,13 @@ class EventsRow:
 def table(events):
     """Return data for the event's information.
 
+    Creates a formatted table object from a list of events.
+
     Args:
         events: List of EventMeta objects
 
     Returns:
-        result: EventTable object
-
+        result: EventTable object or False if no valid rows
     """
     # Initialize key variables
     rows = []

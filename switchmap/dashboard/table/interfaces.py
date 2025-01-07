@@ -11,18 +11,22 @@ class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
-        """
-        Fix the column formatting.
+        """Format the column content without escaping.
+
         Args:
-            content
+            content: The content to be displayed in the column
+
         Returns:
-            content
+            content: The unmodified content
         """
         return content
 
 
 class InterfaceTable(Table):
-    """Declaration of the columns in the Ports table."""
+    """Declaration of the columns in the Interfaces table.
+    
+    Defines the structure and styling of the network interface display table.
+    """
 
     # Initialize class variables
     port = Col("Port")
@@ -47,51 +51,49 @@ class InterfaceTable(Table):
         """Apply CSS class attributes to regular table row.
 
         Args:
-            item: Row of data
+            item: Row data object containing interface information
 
         Returns:
-            class of active stuff
-
+            dict: CSS class mapping based on interface state
         """
-        # Special treatment for rows of enabled ports
         if item.enabled() is True:
             if item.active() is True:
-                # Port with link
-                return {"class": "success"}
+                return {"class": "success"}  # Port with link
             else:
-                # Port without link
-                return {"class": "info"}
+                return {"class": "info"}     # Port without link
         else:
-            # Disabled port
-            return {"class": "warning"}
+            return {"class": "warning"}      # Disabled port
 
 
 class InterfaceRow:
-    """Declaration of the rows in the Interfaces table."""
+    """Declaration of the rows in the Interfaces table.
+    
+    Handles individual row data storage and formatting for interface information.
+    """
 
     def __init__(self, row):
         """Initialize the class.
 
         Args:
-            row: List of row values
-                port: Interface name string
-                vlan: VLAN of port string
-                state: State of port string
-                days_inactive: Number of days the port's inactive string
-                speed: Speed of port string
-                duplex: Duplex of port string
-                label: Label given to the port by the network manager
-                trunk: Whether a trunk or not
-                cdp: CDP data string
-                lldp: LLDP data string
-                mac_address: MAC Address
-                organization: Name of the organization
+            row: List of interface attributes containing:
+                - port: Interface name string
+                - vlan: VLAN of port string
+                - state: State of port string
+                - days_inactive: Number of days the port's inactive string
+                - speed: Speed of port string
+                - duplex: Duplex of port string
+                - label: Label given to the port by the network manager
+                - trunk: Whether a trunk or not
+                - cdp: CDP data string
+                - lldp: LLDP data string
+                - mac_address: MAC Address
+                - organization: Name of the organization
+                - ip_address: IP address of the interface
+                - hostname: DNS hostname
 
         Returns:
             None
-
         """
-        # Initialize key variables
         [
             self.port,
             self.vlan,
@@ -110,21 +112,24 @@ class InterfaceRow:
         ] = row
 
     def active(self):
-        """
-        Active ports.
+        """Determine if the interface is active.
+
         Args:
             None
+
         Returns:
-            boolean value of state if its active.
+            bool: True if interface state is 'Active', False otherwise
         """
         return bool(self.state == "Active")
 
     def enabled(self):
-        """
-        Enable ports.
+        """Determine if the interface is enabled.
+
         Args:
             None
+
         Returns:
+            bool: True if interface state is not 'Disabled', False otherwise
             boolean value of state if is not Disabled.
         """
         return bool(self.state != "Disabled")

@@ -75,8 +75,7 @@ class Agent:
         return value
 
     def query(self):
-        """
-        Create placeholder method. Do not delete.
+        """Create placeholder method. Do not delete.
         Args:
             None
         Returns:
@@ -404,8 +403,7 @@ class _StandaloneApplication(BaseApplication):
         super(_StandaloneApplication, self).__init__()
 
     def load_config(self):
-        """
-        Load the configuration.
+        """Load the configuration.
         Args:
             None
         Returns:
