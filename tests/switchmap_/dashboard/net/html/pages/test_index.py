@@ -122,7 +122,8 @@ class TestIndexPage(unittest.TestCase):
     def test_html(self):
         """Testing function html."""
         # Initialize key variables
-        expected = """<div class="row">
+        expected = """\
+<div class="row">
       <div class="col-lg-12">
           <div class="panel panel-default">
               <div class="panel-heading">
@@ -133,8 +134,9 @@ class TestIndexPage(unittest.TestCase):
                 <table class="table">
 <tbody>
 <tr><td><a href="/switchmap/devices/95">device01.site01.example.org</a></td>\
-<td><a href="/switchmap/devices/96">device02.site01.example.org</a></td><td>\
-</td><td></td><td></td><td></td></tr>
+<td><a href="/switchmap/devices/96">device02.site01.example.org</a></td>\
+<td></td>\
+<td></td><td></td><td></td></tr>
 </tbody>
 </table>
               </div>
@@ -155,7 +157,7 @@ class TestIndexPage(unittest.TestCase):
 <tbody>
 <tr><td><a href="/switchmap/devices/98">device01.site02.example.net</a></td>\
 <td><a href="/switchmap/devices/97">device02.site02.example.net</a></td>\
-td></td><td></td><td></td><td></td></tr>
+<td></td><td></td><td></td><td></td></tr>
 </tbody>
 </table>
               </div>
@@ -163,7 +165,8 @@ td></td><td></td><td></td><td></td></tr>
           </div>
           <!-- /.panel -->
       </div>
-    </div>"""
+    </div>\
+"""
 
         # Get arguments
         zones = [
