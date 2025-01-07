@@ -26,7 +26,6 @@ def process(data, idx_zone, dns=True):
 
     Returns:
         results: ZoneObjects object
-
     """
     # Process the device
     _topology = Topology(data, idx_zone, dns=dns)
@@ -38,8 +37,7 @@ class Status:
     """Tracks the status of various Topology methods."""
 
     def __init__(self):
-        """
-        Instantiate the class.
+        """Instantiate the class.
         
         Args:
             None
@@ -52,8 +50,7 @@ class Status:
 
     @property
     def ip(self):
-        """
-        Provide the value of  the 'ip' property.
+        """Provide the value of the 'ip' property.
         
         Args:
             None
@@ -65,8 +62,7 @@ class Status:
 
     @ip.setter
     def ip(self, value):
-        """
-        Set the 'ip' property.
+        """Set the 'ip' property.
         
         Args:
             value: Value to set
@@ -78,8 +74,7 @@ class Status:
 
     @property
     def mac(self):
-        """
-        Provide the value of  the 'mac' property.
+        """Provide the value of the 'mac' property.
         
         Args:
             None
@@ -91,8 +86,7 @@ class Status:
 
     @mac.setter
     def mac(self, value):
-        """
-        Set the 'mac' property.
+        """Set the 'mac' property.
         
         Args:
             value: Value to set
@@ -104,8 +98,7 @@ class Status:
 
     @property
     def macip(self):
-        """
-        Provide the value of  the 'macip' property.
+        """Provide the value of the 'macip' property.
         
         Args:
             None
@@ -117,8 +110,7 @@ class Status:
 
     @macip.setter
     def macip(self, value):
-        """
-        Set the 'macip' property.
+        """Set the 'macip' property.
         
         Args:
             value: Value to set
@@ -141,7 +133,6 @@ class Topology:
 
         Returns:
             None
-
         """
         # Initialize key variables
         self._data = deepcopy(data)
@@ -164,7 +155,6 @@ class Topology:
 
         Returns:
             None
-
         """
         # Process zone data
         macs = self.mac()
@@ -181,7 +171,6 @@ class Topology:
 
         Returns:
             rows: List of unique IMac objects
-
         """
         # Initialize key variables
         all_macs = []
@@ -254,7 +243,6 @@ class Topology:
 
         Returns:
             None
-
         """
         # Initialize key variables
         dns = self._dns
@@ -308,7 +296,6 @@ class Topology:
 
         Returns:
             rows: List of PairMacIp objects
-
         """
         # Initialize key variables
         rows = []
@@ -343,7 +330,6 @@ class Topology:
 
         Returns:
             None
-
         """
         # Initialize key variables
         suffix = (
@@ -371,7 +357,6 @@ class Topology:
 
         Returns:
             None
-
         """
         # Initialize key variables
         log_message = "\
@@ -392,7 +377,6 @@ def _process_pairmacips(idx_zone, table):
 
     Returns:
         results: List of PairMacIp objects
-
     """
     # Initialize key variables
     results = []
@@ -427,7 +411,6 @@ def _arp_table(idx_zone, data):
 
     Returns:
         results: List of PairMacIp objects
-
     """
     # Get Ip data
     layer3 = data.get("layer3")

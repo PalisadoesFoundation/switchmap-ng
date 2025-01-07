@@ -8,8 +8,7 @@ from switchmap.poller.snmp import BridgeQuery
 
 
 def get_query():
-    """
-    Return this module's Query class.
+    """Return this module's Query class.
     
     Args:
         None
@@ -21,8 +20,7 @@ def get_query():
 
 
 def init_query(snmp_object):
-    """
-    Return initialize and return this module's Query class.
+    """Return initialize and return this module's Query class.
     
     Args:
         snmp_object: SNMP Interact class object from snmp_manager.py
