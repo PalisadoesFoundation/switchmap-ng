@@ -76,24 +76,23 @@ class InterfaceRow:
         """Initialize the class.
 
         Args:
-            row: List of interface attributes containing:
-                - port: Interface name string
-                - vlan: VLAN of port string
-                - state: State of port string
-                - days_inactive: Number of days the port's inactive string
-                - speed: Speed of port string
-                - duplex: Duplex of port string
-                - label: Label given to the port by the network manager
-                - trunk: Whether a trunk or not
-                - cdp: CDP data string
-                - lldp: LLDP data string
-                - mac_address: MAC Address
-                - organization: Name of the organization
-                - ip_address: IP address of the interface
-                - hostname: DNS hostname
+            row: List of row values
+                port: Interface name string
+                vlan: VLAN of port string
+                state: State of port string
+                days_inactive: Number of days the port's inactive string
+                speed: Speed of port string
+                duplex: Duplex of port string
+                label: Label given to the port by the network manager
+                trunk: Whether a trunk or not
+                cdp: CDP data string
+                lldp: LLDP data string
+                mac_address: MAC Address
+                organization: Name of the organization
 
         Returns:
             None
+
         """
         [
             self.port,
