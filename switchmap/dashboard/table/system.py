@@ -14,7 +14,7 @@ from switchmap.dashboard.data.system import System
 
 class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it.
-    
+
     Extends the Col class to provide raw HTML output without escaping.
     """
 
@@ -32,7 +32,7 @@ class _RawCol(Col):
 
 class SystemTable(Table):
     """Declaration of the columns in the Systems table.
-    
+
     Defines the structure and styling of the system information display table.
     """
 
@@ -47,7 +47,7 @@ class SystemTable(Table):
 
 class SystemRow:
     """Declaration of the rows in the Systems table.
-    
+
     Handles individual row data storage and formatting for system information.
     """
 

@@ -20,11 +20,11 @@ import graphene
 
 def resolve_address(obj, _):
     """Convert 'address' from bytes to string.
-    
+
     Args:
         obj: Object containing address attribute
         _: Unused parameter
-        
+
     Returns:
         str: Decoded address string or empty string
     """
@@ -220,7 +220,7 @@ def resolve_sys_name(obj, _):
 def resolve_sys_uptime(obj, _):
     """
     Convert 'sys_uptime' from Null to zero.
-    
+
     Args:
         None
     Returns:
@@ -232,7 +232,7 @@ def resolve_sys_uptime(obj, _):
 def resolve_sys_objectid(obj, _):
     """
     Convert 'sys_objectid' from bytes to string.
-    
+
     Args:
         None
     Returns:
@@ -248,7 +248,7 @@ def resolve_sys_objectid(obj, _):
 
 class EventAttribute:
     """Descriptive attributes of the Event table.
-    
+
     A generic class to mutualize description of attributes for both queries
     and mutations.
     """

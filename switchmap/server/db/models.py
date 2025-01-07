@@ -638,7 +638,7 @@ class MacIp(BASE):
 
 def create_all_tables():
     """Ensure all tables are created.
-    
+
     Args:
         None
     Returns:

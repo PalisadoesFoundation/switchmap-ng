@@ -24,7 +24,7 @@ class _RawCol(Col):
 
 class InterfaceTable(Table):
     """Declaration of the columns in the Interfaces table.
-    
+
     Defines the structure and styling of the network interface display table.
     """
 
@@ -60,14 +60,14 @@ class InterfaceTable(Table):
             if item.active() is True:
                 return {"class": "success"}  # Port with link
             else:
-                return {"class": "info"}     # Port without link
+                return {"class": "info"}  # Port without link
         else:
-            return {"class": "warning"}      # Disabled port
+            return {"class": "warning"}  # Disabled port
 
 
 class InterfaceRow:
     """Declaration of the rows in the Interfaces table.
-    
+
     Handles individual row data storage and formatting for interface information.
     """
 
