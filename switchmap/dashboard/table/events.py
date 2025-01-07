@@ -13,7 +13,7 @@ from switchmap.core import general
 
 class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it.
-    
+
     Extends the Col class to provide raw HTML output without escaping.
     """
 
@@ -22,7 +22,7 @@ class _RawCol(Col):
 
         Args:
             content: The content to be displayed in the column
-            
+
         Returns:
             content: The unmodified content
         """
