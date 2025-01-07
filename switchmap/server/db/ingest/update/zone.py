@@ -40,7 +40,7 @@ class Status:
     def __init__(self):
         """
         Instantiate the class.
-        
+
         Args:
             None
 
@@ -54,7 +54,7 @@ class Status:
     def ip(self):
         """
         Provide the value of  the 'ip' property.
-        
+
         Args:
             None
 
@@ -67,7 +67,7 @@ class Status:
     def ip(self, value):
         """
         Set the 'ip' property.
-        
+
         Args:
             value: Value to set
 
@@ -80,7 +80,7 @@ class Status:
     def mac(self):
         """
         Provide the value of  the 'mac' property.
-        
+
         Args:
             None
 
@@ -93,7 +93,7 @@ class Status:
     def mac(self, value):
         """
         Set the 'mac' property.
-        
+
         Args:
             value: Value to set
 
@@ -106,7 +106,7 @@ class Status:
     def macip(self):
         """
         Provide the value of  the 'macip' property.
-        
+
         Args:
             None
 
@@ -119,7 +119,7 @@ class Status:
     def macip(self, value):
         """
         Set the 'macip' property.
-        
+
         Args:
             value: Value to set
 
