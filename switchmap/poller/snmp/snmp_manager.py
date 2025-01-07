@@ -80,11 +80,11 @@ class Validate:
         """Determine valid SNMP authorization for a host.
 
         Args:
-            group: String containing SNMP group name to try, or None to try all 
+            group: String containing SNMP group name to try, or None to try all
                 groups
 
         Returns:
-            result: SNMP authorization object if valid credentials found, 
+            result: SNMP authorization object if valid credentials found,
                 None otherwise
         """
         # Initialize key variables
