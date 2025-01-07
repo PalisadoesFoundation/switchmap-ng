@@ -18,27 +18,26 @@ class Validate:
     """Class Verify SNMP data."""
 
     def __init__(self, options):
-        """Intialize the class.
+        """Initialize the Validate class.
 
         Args:
-            options: POLLING_OPTIONS object
+            options: POLLING_OPTIONS object containing SNMP configuration
 
         Returns:
             None
-
         """
         # Initialize key variables
         self._options = options
 
     def credentials(self):
-        """Determine the valid SNMP credentials for a host.
+        """Determine valid SNMP credentials for a host.
 
         Args:
             None
 
         Returns:
-            authentication: SNMP object
-
+            authentication: SNMP authorization object containing valid credentials,
+                or None if no valid credentials found
         """
         # Initialize key variables
         cache_exists = False
@@ -78,14 +77,13 @@ class Validate:
         return authentication
 
     def validation(self, group=None):
-        """Determine the valid SNMP authorization for a host.
+        """Determine valid SNMP authorization for a host.
 
         Args:
-            group: SNMP group name to try
+            group: String containing SNMP group name to try, or None to try all groups
 
         Returns:
-            result: SNMP object
-
+            result: SNMP authorization object if valid credentials found, None otherwise
         """
         # Initialize key variables
         result = None
@@ -124,14 +122,13 @@ class Interact:
     """Class Gets SNMP data."""
 
     def __init__(self, _poll):
-        """Intialize the class.
+        """Initialize the Interact class.
 
         Args:
-            _poll: POLL object
+            _poll: POLL object containing SNMP configuration and target info
 
         Returns:
             None
-
         """
         # Initialize key variables
         self._poll = _poll
@@ -144,14 +141,13 @@ class Interact:
             log.log2die(1045, log_message)
 
     def enterprise_number(self):
-        """Return SNMP enterprise number for the device.
+        """Get SNMP enterprise number for the device.
 
         Args:
             None
 
         Returns:
-            enterprise: SNMP enterprise number
-
+            int: SNMP enterprise number identifying the device vendor
         """
         # Get the sysObjectID.0 value of the device
         sysid = self.sysobjectid()
@@ -164,14 +160,13 @@ class Interact:
         return enterprise
 
     def hostname(self):
-        """Return SNMP hostname for the interaction.
+        """Get SNMP hostname for the interaction.
 
         Args:
             None
 
         Returns:
-            hostname: SNMP hostname
-
+            str: Hostname of the target device
         """
         # Initialize key variables
         hostname = self._poll.hostname
@@ -180,14 +175,13 @@ class Interact:
         return hostname
 
     def contactable(self):
-        """Check if device is contactable.
+        """Check if device is reachable via SNMP.
 
         Args:
-            device_id: Device ID
+            None
 
         Returns:
-            contactable: True if a contactable
-
+            bool: True if device responds to SNMP queries, False otherwise
         """
         # Define key variables
         contactable = False
@@ -219,13 +213,11 @@ class Interact:
         """Get the sysObjectID of the device.
 
         Args:
-            check_reachability:
-                Set if testing for connectivity. Some session
-                errors are ignored so that a null result is returned
+            check_reachability: Boolean indicating whether to test connectivity.
+                Some session errors are ignored to return null result.
 
         Returns:
-            object_id: sysObjectID value
-
+            str: sysObjectID value as string, or None if not available
         """
         # Initialize key variables
         oid = ".1.3.6.1.2.1.1.2.0"
@@ -240,17 +232,15 @@ class Interact:
         return object_id
 
     def oid_exists(self, oid_to_get, context_name=""):
-        """Determine existence of OID on device.
+        """Determine if an OID exists on the device.
 
         Args:
-            oid_to_get: OID to get
-            context_name: Set the contextName used for SNMPv3 messages.
-                The default contextName is the empty string "".  Overrides the
-                defContext token in the snmp.conf file.
+            oid_to_get: String containing OID to check
+            context_name: String containing SNMPv3 context name.
+                Default is empty string.
 
         Returns:
-            validity: True if exists
-
+            bool: True if OID exists, False otherwise
         """
         # Initialize key variables
         validity = False
@@ -340,7 +330,7 @@ class Interact:
         return validity
 
     def swalk(self, oid_to_get, normalized=False, context_name=""):
-        """Do a failsafe SNMPwalk.
+        """Perform a safe SNMPwalk that handles errors gracefully.
 
         Args:
             oid_to_get: OID to get
@@ -357,8 +347,7 @@ class Interact:
                 blank values.
 
         Returns:
-            results: Results
-
+            dict: Results of SNMP walk as OID-value pairs
         """
         # Process data
         results = self.walk(
@@ -594,11 +583,12 @@ class _Session:
     """Class to create an SNMP session with a device."""
 
     def __init__(self, _poll, context_name=""):
-        """Initialize the class.
+        """Initialize the _Session class.
 
         Args:
-            _poll: POLL object
-            context_name: Name of context
+            _poll: POLL object containing SNMP configuration
+            context_name: String containing SNMPv3 context name.
+                Default is empty string.
 
         Returns:
             session: SNMP session
@@ -659,14 +649,13 @@ class _Session:
         return session
 
     def _security_level(self):
-        """Create string for security level.
+        """Determine SNMPv3 security level string.
 
         Args:
             None
 
         Returns:
-            result: security level
-
+            str: Security level string ('noAuthNoPriv', 'authNoPriv', or 'authPriv')
         """
         # Determine the security level
         if bool(self._poll.authorization.authprotocol) is True:
@@ -681,14 +670,13 @@ class _Session:
         return result
 
     def _auth_protocol(self):
-        """Get AuthProtocol to use.
+        """Get SNMPv3 authentication protocol.
 
         Args:
             None
 
         Returns:
-            result: Protocol to be used in session
-
+            str: Authentication protocol string ('MD5', 'SHA', or 'DEFAULT')
         """
         # Initialize key variables
         protocol = self._poll.authorization.authprotocol
@@ -706,14 +694,13 @@ class _Session:
         return result
 
     def _priv_protocol(self):
-        """Get privProtocol to use.
+        """Get SNMPv3 privacy protocol.
 
         Args:
             None
 
         Returns:
-            result: Protocol to be used in session
-
+            str: Privacy protocol string ('DES', 'AES', or 'DEFAULT')
         """
         # Initialize key variables
         protocol = self._poll.authorization.privprotocol
@@ -732,7 +719,7 @@ class _Session:
 
 
 def _exception_message(hostname, oid, context, exc_info):
-    """Create a standardized exception message.
+    """Create standardized exception message for SNMP errors.
 
     Args:
         hostname: Hostname
@@ -741,8 +728,7 @@ def _exception_message(hostname, oid, context, exc_info):
         exc_info: Exception information
 
     Returns:
-        result: Exception message
-
+        str: Formatted error message
     """
     # Create failure log message
     try_log_message = (
@@ -843,7 +829,7 @@ def _process_error(
 
 
 def _format_results(results, mock_filter, normalized=False):
-    """Normalize the results of an walk.
+    """Normalize and format SNMP walk results.
 
     Args:
         results: List of lists of results
@@ -857,8 +843,7 @@ def _format_results(results, mock_filter, normalized=False):
             or BRIDGE-MIB::dot1dBasePort
 
     Returns:
-        return_results: Dict of results
-
+        dict: Formatted results as OID-value pairs
     """
     # Initialize key variables
     return_results = {}
@@ -882,14 +867,14 @@ def _format_results(results, mock_filter, normalized=False):
 
 
 def _convert(result):
-    """Convert value from pysnmp object to standard python types.
+    """Convert SNMP value from pysnmp object to Python type.
 
     Args:
-        result: Named tuple result
+        result: Named tuple containing SNMP result
 
     Returns:
-        converted: converted value. Only returns BYTES and INTEGERS
-
+        Value converted to appropriate Python type (bytes or int),
+        or None for null/empty values
     """
     # Initialieze key values
     converted = None
@@ -938,14 +923,13 @@ def _convert(result):
 
 
 def _oid_valid_format(oid):
-    """Determine whether the format of the oid is correct.
+    """Validate OID string format.
 
     Args:
-        oid: OID string
+        oid: String containing OID to validate
 
     Returns:
-        True if valid
-
+        bool: True if OID format is valid, False otherwise
     """
     # oid cannot be numeric
     if isinstance(oid, str) is False:
@@ -980,15 +964,14 @@ def _oid_valid_format(oid):
 
 
 def _update_cache(filename, group):
-    """Update the SNMP credentials cache file with successful group.
+    """Update SNMP credentials cache file.
 
     Args:
-        filename: Cache filename
-        group: SNMP group that successfully authenticated
+        filename: String containing path to cache file
+        group: String containing SNMP group name to cache
 
     Returns:
         None
-
     """
     # Do update
     with open(filename, "w+") as env:

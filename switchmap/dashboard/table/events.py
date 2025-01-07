@@ -13,7 +13,7 @@ from switchmap.core import general
 
 class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it.
-
+    
     Extends the Col class to provide raw HTML output without escaping.
     """
 
@@ -22,7 +22,7 @@ class _RawCol(Col):
 
         Args:
             content: The content to be displayed in the column
-
+            
         Returns:
             content: The unmodified content
         """
@@ -30,10 +30,7 @@ class _RawCol(Col):
 
 
 class EventTable(Table):
-    """Declaration of the columns in the Events table.
-
-    Defines the structure and styling of the events display table.
-    """
+    """Declaration of the columns in the Events table."""
 
     # Initialize class variables
     col0 = _RawCol("")
@@ -48,10 +45,7 @@ class EventTable(Table):
 
 
 class EventsRow:
-    """Declaration of the rows in the Events table.
-
-    Handles individual row data storage and formatting.
-    """
+    """Declaration of the rows in the Events table."""
 
     def __init__(self, row_data):
         """Initialize the class.

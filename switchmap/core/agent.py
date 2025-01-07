@@ -436,7 +436,15 @@ class _StandaloneApplication(BaseApplication):
             print("  {} = {}".format(name, value.get()))
 
     def load(self):
-        """Run the Flask application throught the Gunicorn WSGI."""
+        """Run the Flask application throught the Gunicorn WSGI.
+
+        Args:
+            None
+
+        Returns:
+            self.application: Flask application object
+
+        """
         return self.application
 
 

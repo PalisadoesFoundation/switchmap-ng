@@ -1,9 +1,4 @@
-"""Class for creating device system information table web pages.
-
-Provides table formatting and data organization for displaying system-related
-information in the web interface. Includes classes for column formatting,
-table structure, and row data management.
-"""
+"""Class for creating device web pages."""
 
 # PIP3 imports
 from flask_table import Table, Col
@@ -13,10 +8,7 @@ from switchmap.dashboard.data.system import System
 
 
 class _RawCol(Col):
-    """Class outputs whatever it is given and will not escape it.
-
-    Extends the Col class to provide raw HTML output without escaping.
-    """
+    """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
         """Format the column content without escaping.
@@ -31,10 +23,7 @@ class _RawCol(Col):
 
 
 class SystemTable(Table):
-    """Declaration of the columns in the Systems table.
-
-    Defines the structure and styling of the system information display table.
-    """
+    """Declaration of the columns in the Systems table."""
 
     # Initialize class variables
     parameter = Col("Parameter")
@@ -46,10 +35,7 @@ class SystemTable(Table):
 
 
 class SystemRow:
-    """Declaration of the rows in the Systems table.
-
-    Handles individual row data storage and formatting for system information.
-    """
+    """Declaration of the rows in the Systems table."""
 
     def __init__(self, row):
         """Initialize the class.
@@ -65,7 +51,7 @@ class SystemRow:
 
 
 def table(data):
-    """Create summary table for the device system information.
+    """Create summary table for the devie.
 
     Args:
         data: Dictionary containing system information data
