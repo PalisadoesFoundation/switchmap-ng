@@ -293,8 +293,8 @@ file and directory permissions.""".format(
 
     def run(self):
         """Override this method when you subclass Daemon.
-        
-        This method will be called after the process has been daemonized by 
+
+        This method will be called after the process has been daemonized by
         start() or restart(). The base implementation does nothing and should
         be overridden in derived classes to add actual daemon functionality.
 
