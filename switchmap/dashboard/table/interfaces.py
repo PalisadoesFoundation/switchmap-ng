@@ -67,10 +67,7 @@ class InterfaceTable(Table):
 
 
 class InterfaceRow:
-    """Declaration of the rows in the Interfaces table.
-
-    Handles individual row data storage and formatting for interface information.
-    """
+    """Declaration of the rows in the Interfaces table."""
 
     def __init__(self, row):
         """Initialize the class.
