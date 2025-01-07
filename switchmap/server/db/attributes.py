@@ -288,7 +288,7 @@ def resolve_sys_objectid(obj, _):
     """Convert 'sys_objectid' from bytes to string.
 
     Args:
-        obj: Object containing sys_objectid attribute 
+        obj: Object containing sys_objectid attribute
         _: Unused GraphQL parameter
 
     Returns:
