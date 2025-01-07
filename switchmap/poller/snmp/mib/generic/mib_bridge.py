@@ -9,7 +9,7 @@ from . import mib_if
 
 def get_query():
     """Return this module's Query class.
-    
+
     Args:
         None
 
