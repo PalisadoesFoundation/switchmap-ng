@@ -292,12 +292,18 @@ file and directory permissions.""".format(
         return bool(pid)
 
     def run(self):
-        """You should override this method when you subclass Daemon.
+        """Override this method when you subclass Daemon.
 
-        It will be called after the process has been daemonized by
-        start() or restart().
+        This method will be called after the process has been daemonized by
+        start() or restart(). The base implementation does nothing and should
+        be overridden in derived classes to add actual daemon functionality.
+
+        Args:
+            None
+
+        Returns:
+            None
         """
-        # Simple comment to pass linter
         pass
 
 
@@ -334,7 +340,7 @@ class GracefulDaemon(Daemon):
         Args:
             None
 
-        Return:
+        Returns:
             running: True if daemon is currently running or conducing a process
 
         """
@@ -351,7 +357,7 @@ class GracefulDaemon(Daemon):
         Args:
             callback: callback method
 
-        Return:
+        Returns:
             wrapper
 
         """
