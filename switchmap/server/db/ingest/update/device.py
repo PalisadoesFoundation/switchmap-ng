@@ -580,5 +580,5 @@ def _ifspeed(interface):
     result = interface.get("ifHighSpeed")
     if bool(result) is False:
         result = interface.get("ifSpeed")
-        result = result / 1000000 if bool(result) else 0
+        result = (result / 1000000) if bool(result) else 0
     return result

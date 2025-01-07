@@ -36,8 +36,8 @@ class Validate:
             None
 
         Returns:
-            authentication: SNMP authorization object containing valid credentials,
-                or None if no valid credentials found
+            authentication: SNMP authorization object containing valid 
+                credentials, or None if no valid credentials found
         """
         # Initialize key variables
         cache_exists = False
@@ -657,7 +657,7 @@ class _Session:
             None
 
         Returns:
-            str: Security level string ('noAuthNoPriv', 'authNoPriv', or 'authPriv')
+            result
         """
         # Determine the security level
         if bool(self._poll.authorization.authprotocol) is True:
