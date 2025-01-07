@@ -80,10 +80,12 @@ class Validate:
         """Determine valid SNMP authorization for a host.
 
         Args:
-            group: String containing SNMP group name to try, or None to try all groups
+            group: String containing SNMP group name to try, or None to try all 
+                groups
 
         Returns:
-            result: SNMP authorization object if valid credentials found, None otherwise
+            result: SNMP authorization object if valid credentials found, 
+                None otherwise
         """
         # Initialize key variables
         result = None
@@ -874,7 +876,7 @@ def _convert(result):
 
     Returns:
         Value converted to appropriate Python type (bytes or int),
-        or None for null/empty values
+            or None for null/empty values
     """
     # Initialieze key values
     converted = None
