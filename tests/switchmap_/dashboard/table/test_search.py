@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Test the Search class."""
 
-import unittest
 import os
 import sys
+import unittest
 from unittest.mock import patch
 
 # Add the project root directory to sys.path
@@ -20,11 +20,7 @@ from switchmap.dashboard.table import search
 class TestSearch(unittest.TestCase):
     """Unit tests for the Search class."""
 
-    #########################################################################
     # General object setup
-    #########################################################################
-
-    # Required
     maxDiff = None
 
     @classmethod
@@ -37,7 +33,7 @@ class TestSearch(unittest.TestCase):
         """Execute these steps when all tests are completed."""
         pass  # No special teardown needed for this class
 
-    @patch('switchmap.dashboard.table.interfaces.table')
+    @patch("switchmap.dashboard.table.interfaces.table")
     def test_interfaces_with_valid_data(self, mock_table):
         """Test the interfaces method with valid data."""
         # Mock return value
@@ -56,7 +52,7 @@ class TestSearch(unittest.TestCase):
         mock_table.assert_called_once_with(test_data)
         self.assertEqual(result, "Mocked Table")
 
-    @patch('switchmap.dashboard.table.interfaces.table')
+    @patch("switchmap.dashboard.table.interfaces.table")
     def test_interfaces_with_empty_data(self, mock_table):
         """Test the interfaces method with empty data."""
         # Test input
@@ -72,7 +68,7 @@ class TestSearch(unittest.TestCase):
         mock_table.assert_not_called()
         self.assertIsNone(result)
 
-    @patch('switchmap.dashboard.table.interfaces.table')
+    @patch("switchmap.dashboard.table.interfaces.table")
     def test_interfaces_with_none_data(self, mock_table):
         """Test the interfaces method with None as data."""
         # Test input
