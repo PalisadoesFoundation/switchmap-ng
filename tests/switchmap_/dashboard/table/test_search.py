@@ -7,7 +7,9 @@ import unittest
 from unittest.mock import patch
 
 # Add the project root directory to sys.path
-ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../"))
+ROOT_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "../../../../")
+)
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
