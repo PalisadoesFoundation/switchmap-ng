@@ -53,7 +53,7 @@ def resolve_cdpcachedeviceport(obj, _):
     Args:
         obj
     Returns:
-        Convert 'cdpcachedeviceport' from bytes to string.   
+        Convert 'cdpcachedeviceport' from bytes to string.
     """
     return (
         obj.cdpcachedeviceport.decode() if bool(obj.cdpcachedeviceport) else ""
