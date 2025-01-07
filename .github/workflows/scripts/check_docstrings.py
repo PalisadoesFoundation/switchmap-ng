@@ -162,8 +162,9 @@ def main():
         os.path.join(directory, "lib"),
         os.path.join(directory, "venv/lib/python3.11/site-packages"),
         os.path.join(directory, "tests"),
-        os.path.join(directory, "switchmap/poller/snmp/snmp_manager.py"),
-        os.path.join(directory, "switchmap/server/db/ingest/update/device.py"),
+        os.path.join(directory, "switchmap/poller/snmp"),
+        os.path.join(directory, "switchmap/server/db/ingest"),
+        os.path.join(directory, "switchmap/server/db/ingest/update"),
     ]
     violations = check_directory(directory, exclude_dirs=exclude_dirs)
     if violations:
