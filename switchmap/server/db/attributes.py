@@ -23,7 +23,7 @@ def resolve_address(obj, _):
 
     Args:
         obj: Object containing address attribute
-        _: Unused parameter
+        _: Unused GraphQL parameter
 
     Returns:
         str: Decoded address string or empty string
@@ -32,31 +32,40 @@ def resolve_address(obj, _):
 
 
 def resolve_cdpcachedeviceid(obj, _):
-    """
+    """Convert 'cdpcachedeviceid' from bytes to string.
+
     Args:
-        obj
+        obj: Object containing cdpcachedeviceid attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'cdpcachedeviceid' from bytes to string.
+        str: Decoded cdpcachedeviceid string or empty string
     """
     return obj.cdpcachedeviceid.decode() if bool(obj.cdpcachedeviceid) else ""
 
 
 def resolve_cdpcacheplatform(obj, _):
-    """
+    """Convert 'cdpcacheplatform' from bytes to string.
+
     Args:
-        obj
+        obj: Object containing cdpcacheplatform attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'cdpcacheplatform' from bytes to string.
+        str: Decoded cdpcacheplatform string or empty string
     """
     return obj.cdpcacheplatform.decode() if bool(obj.cdpcacheplatform) else ""
 
 
 def resolve_cdpcachedeviceport(obj, _):
-    """
+    """Convert 'cdpcachedeviceport' from bytes to string.
+
     Args:
-        obj
+        obj: Object containing cdpcachedeviceport attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'cdpcachedeviceport' from bytes to string.
+        str: Decoded cdpcachedeviceport string or empty string
     """
     return (
         obj.cdpcachedeviceport.decode() if bool(obj.cdpcachedeviceport) else ""
@@ -64,61 +73,79 @@ def resolve_cdpcachedeviceport(obj, _):
 
 
 def resolve_hostname(obj, _):
-    """
+    """Convert 'hostname' from bytes to string.
+
     Args:
-        None
+        obj: Object containing hostname attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'hostname' from bytes to string.
+        str: Decoded hostname string or empty string
     """
     return obj.hostname.decode() if bool(obj.hostname) else ""
 
 
 def resolve_ifalias(obj, _):
-    """
+    """Convert 'ifalias' from bytes to string.
+
     Args:
-        None
+        obj: Object containing ifalias attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'ifalias' from bytes to string.
+        str: Decoded ifalias string or empty string
     """
     return obj.ifalias.decode() if bool(obj.ifalias) else ""
 
 
 def resolve_ifname(obj, _):
-    """
+    """Convert 'ifname' from bytes to string.
+
     Args:
-        None
+        obj: Object containing ifname attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'ifname' from bytes to string.
+        str: Decoded ifname string or empty string
     """
     return obj.ifname.decode() if bool(obj.ifname) else ""
 
 
 def resolve_ifdescr(obj, _):
-    """
+    """Convert 'ifdescr' from bytes to string.
+
     Args:
-        None
+        obj: Object containing ifdescr attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'ifdescr' from bytes to string.
+        str: Decoded ifdescr string or empty string
     """
     return obj.ifdescr.decode() if bool(obj.ifdescr) else ""
 
 
 def resolve_lldpremportdesc(obj, _):
-    """
+    """Convert 'lldpremportdesc' from bytes to string.
+
     Args:
-        None
+        obj: Object containing lldpremportdesc attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'lldpremportdesc' from bytes to string.
+        str: Decoded lldpremportdesc string or empty string
     """
     return obj.lldpremportdesc.decode() if bool(obj.lldpremportdesc) else ""
 
 
 def resolve_lldpremsyscapenabled(obj, _):
-    """
+    """Convert 'lldpremsyscapenabled' from bytes to string.
+
     Args:
-        None
+        obj: Object containing lldpremsyscapenabled attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'lldpremsyscapenabled' from bytes to string.
+        str: Decoded lldpremsyscapenabled string or empty string
     """
     return (
         obj.lldpremsyscapenabled.decode()
@@ -128,115 +155,144 @@ def resolve_lldpremsyscapenabled(obj, _):
 
 
 def resolve_lldpremsysdesc(obj, _):
-    """
+    """Convert 'lldpremsysdesc' from bytes to string.
+
     Args:
-        None
+        obj: Object containing lldpremsysdesc attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'lldpremsysdesc' from bytes to string.
+        str: Decoded lldpremsysdesc string or empty string
     """
     return obj.lldpremsysdesc.decode() if bool(obj.lldpremsysdesc) else ""
 
 
 def resolve_lldpremsysname(obj, _):
-    """
+    """Convert 'lldpremsysname' from bytes to string.
+
     Args:
-        None
+        obj: Object containing lldpremsysname attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'lldpremsysname' from bytes to string.
+        str: Decoded lldpremsysname string or empty string
     """
     return obj.lldpremsysname.decode() if bool(obj.lldpremsysname) else ""
 
 
 def resolve_mac(obj, _):
-    """
+    """Convert 'mac' from bytes to string.
+
     Args:
-        None
+        obj: Object containing mac attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'mac' from bytes to string.
+        str: Decoded mac string or empty string
     """
     return obj.mac.decode() if bool(obj.mac) else ""
 
 
 def resolve_organization(obj, _):
-    """
+    """Convert 'organization' from bytes to string.
+
     Args:
-        None
+        obj: Object containing organization attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'organization' from bytes to string.
+        str: Decoded organization string or empty string
     """
     return obj.organization.decode() if bool(obj.organization) else ""
 
 
 def resolve_name(obj, _):
-    """
+    """Convert 'name' from bytes to string.
+
     Args:
-        None
+        obj: Object containing name attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'name' from bytes to string.
+        str: Decoded name string or empty string
     """
     return obj.name.decode() if bool(obj.name) else ""
 
 
 def resolve_notes(obj, _):
-    """
+    """Convert 'notes' from bytes to string.
+
     Args:
-        None
+        obj: Object containing notes attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'notes' from bytes to string.
+        str: Decoded notes string or empty string
     """
     return obj.notes.decode() if bool(obj.notes) else ""
 
 
 def resolve_oui(obj, _):
-    """
+    """Convert 'oui' from bytes to string.
+
     Args:
-        None
+        obj: Object containing oui attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'oui' from bytes to string.
+        str: Decoded oui string or empty string
     """
     return obj.oui.decode() if bool(obj.oui) else ""
 
 
 def resolve_sys_description(obj, _):
-    """
+    """Convert 'sys_description' from bytes to string.
+
     Args:
-        None
+        obj: Object containing sys_description attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'sys_description' from bytes to string.
+        str: Decoded sys_description string or empty string
     """
     return obj.sys_description.decode() if bool(obj.sys_description) else ""
 
 
 def resolve_sys_name(obj, _):
-    """
+    """Convert 'sys_name' from bytes to string.
+
     Args:
-        None
+        obj: Object containing sys_name attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'sys_name' from bytes to string.
+        str: Decoded sys_name string or empty string
     """
     return obj.sys_name.decode() if bool(obj.sys_name) else ""
 
 
 def resolve_sys_uptime(obj, _):
-    """
-    Convert 'sys_uptime' from Null to zero.
+    """Convert 'sys_uptime' from Null to zero.
 
     Args:
-        None
+        obj: Object containing sys_uptime attribute
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'sys_uptime' from Null to zero.
+        float: System uptime value or 0 if null
     """
     return float(obj.sys_uptime) if bool(obj.sys_uptime) else 0
 
 
 def resolve_sys_objectid(obj, _):
-    """
-    Convert 'sys_objectid' from bytes to string.
+    """Convert 'sys_objectid' from bytes to string.
 
     Args:
-        None
+        obj: Object containing sys_objectid attribute 
+        _: Unused GraphQL parameter
+
     Returns:
-        Convert 'sys_objectid' from bytes to string.
+        str: Decoded sys_objectid string or empty string
     """
     return obj.sys_objectid.decode() if bool(obj.sys_objectid) else ""
 
