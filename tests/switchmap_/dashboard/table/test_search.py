@@ -63,7 +63,7 @@ class TestSearch(unittest.TestCase):
         """
         Test the interfaces method with valid data.
 
-        Verify that the method calls the `table` function correctly 
+        Verify that the method calls the `table` function correctly
         and returns the expected value.
         """
         mock_table.return_value = "Mocked Table"
@@ -80,7 +80,7 @@ class TestSearch(unittest.TestCase):
         """
         Test the interfaces method with empty data.
 
-        Verify that the method does not call the `table` function 
+        Verify that the method does not call the `table` function
         and returns None.
         """
         test_data = {}
@@ -95,7 +95,7 @@ class TestSearch(unittest.TestCase):
         """
         Test the interfaces method with None as data.
 
-        Verify that the method does not call the `table` function 
+        Verify that the method does not call the `table` function
         and returns None.
         """
         test_data = None
