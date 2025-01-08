@@ -178,8 +178,16 @@ def extract_docstring(func_name, line_number, lines):
 
         # Extract lines within the docstring area
         if docstring_end < len(lines):
+            # Swap "None" arguments with "None:" that can be parsed
+            fixed_lines = lines[docstring_start : docstring_end + 1]
+            for key, item in enumerate(fixed_lines):
+                if item.strip == "None":
+                    fixed_lines[key].replace("None", "None:")
+
             # Convert the docstring lines to a string
-            docstring = "\n".join(lines[docstring_start : docstring_end + 1])
+            docstring = "\n".join(
+                fixed_lines[docstring_start : docstring_end + 1]
+            )
 
             # Parse the docstring
             try:
