@@ -1,123 +1,284 @@
+#!/usr/bin/env python3
+"""Script to check for docstrings."""
+
 import os
 import re
 import sys
+import argparse
+from collections import namedtuple
 from docstring_parser import parse
+
+Violation = namedtuple("Violation", ["line", "function", "issue", "action"])
 
 
 def validate_docstring(file_path):
-    """
-    Validate docstrings in a file for compliance with the Google style guide.
+    """Validate docstrings in a file for compliance with the Google style guide.
+
     Args:
         file_path (str): Path to the Python file to validate.
+
     Returns:
-        list: List of violations found in the file, with details about the issue and corrective action.
+        list: List of violations found in the file, with details about
+            the issue and corrective action.
+
     """
-    print(f"Validating file: {file_path}")
+    # Initialize key variables
     violations = []
 
+    # Read the file for processing
     try:
-        with open(file_path, "r") as f:
-            lines = f.readlines()
-    except Exception as e:
-        print(f"Failed to read file {file_path}: {e}")
+        with open(file_path, "r", encoding="utf-8") as fh_:
+            lines = fh_.readlines()
+
+    except Exception as _:
         return violations
 
-    for i, line in enumerate(lines):
+    # Evaluate each line
+    for line_number, line in enumerate(lines):
+
+        # Identify sections of the file that are functions or methods
         if re.match(r"^\s*def ", line):
-            func_name = line.strip()
-            print(f"Found function definition at line {i + 1}: {func_name}")
+            # Get arguments
+            function = extract_arguments(line_number, lines)
 
-            docstring_start = i + 1
-            while (
-                docstring_start < len(lines)
-                and lines[docstring_start].strip() == ""
-            ):
-                docstring_start += 1
+            # Get the docstring
+            docstring = extract_docstring(function.name, line_number, lines)
 
-            if docstring_start < len(lines) and lines[
-                docstring_start
-            ].strip().startswith('"""'):
-                print(f"Docstring starts at line {docstring_start + 1}")
-                docstring_end = docstring_start + 1
-                while docstring_end < len(lines) and not lines[
-                    docstring_end
-                ].strip().endswith('"""'):
-                    docstring_end += 1
+            # Evaluate the
+            if bool(docstring.violations) is False:
+                # Check arguments arguments that are not None
+                for argument in function.arguments:
+                    # Track whether the argument is defined
+                    # in the docstring parameters
+                    found_in_params = False
 
-                if docstring_end < len(lines):
-                    docstring = "\n".join(
-                        lines[docstring_start : docstring_end + 1]
-                    )
-                    print(
-                        f"Extracted docstring from lines {docstring_start + 1} to {docstring_end + 1}"
-                    )
+                    if bool(argument) is True:
+                        found_in_arguments = False
+                        for parameter in docstring.parser.params:
+                            if argument in parameter.arg_name:
+                                found_in_params = True
+                            if parameter.arg_name in function.arguments:
+                                found_in_arguments = True
 
-                    try:
-                        parsed = parse(docstring)
-                        print("Parsed docstring successfully")
-
-                        # Check for Args section
-                        if "Args:" not in docstring:
-                            print("Missing 'Args' section")
+                        # Error if the parameter is not found
+                        if bool(found_in_arguments) is False:
                             violations.append(
-                                {
-                                    "line": i + 1,
-                                    "function": func_name,
-                                    "issue": "Missing 'Args' section",
-                                    "action": "Add an 'Args' section listing the arguments this function accepts.",
-                                }
+                                Violation(
+                                    line=line_number + 1,
+                                    function=function.name,
+                                    issue=f"""\
+Argument '{argument}' defined in the docstring is not an argument""",
+                                    action=f"""\
+Remove argument '{argument}' from the docstring""",
+                                )
                             )
 
-                        # Check for Returns section
-                        if "Returns:" not in docstring:
-                            print("Missing 'Returns' section")
+                        # Error if the argument is not found
+                        if bool(found_in_params) is False:
                             violations.append(
-                                {
-                                    "line": i + 1,
-                                    "function": func_name,
-                                    "issue": "Missing 'Returns' section",
-                                    "action": "Add a 'Returns' section describing the return value.",
-                                }
+                                Violation(
+                                    line=line_number + 1,
+                                    function=function.name,
+                                    issue=f"""\
+Argument '{argument}' not defined in docstring""",
+                                    action=f"""\
+Add argument '{argument}' to the docstring""",
+                                )
                             )
+                    else:
+                        print(function.name)
 
-                    except Exception as e:
-                        print(f"Error parsing docstring: {e}")
-                        violations.append(
-                            {
-                                "line": i + 1,
-                                "function": func_name,
-                                "issue": "Docstring parsing error",
-                                "action": f"Ensure the docstring is properly formatted: {e}",
-                            }
-                        )
-                else:
-                    print("Docstring does not close properly")
-                    violations.append(
-                        {
-                            "line": i + 1,
-                            "function": func_name,
-                            "issue": "Unclosed docstring",
-                            "action": "Ensure the docstring is properly closed with triple quotes.",
-                        }
-                    )
             else:
-                print("Missing docstring for function")
-                violations.append(
-                    {
-                        "line": i + 1,
-                        "function": func_name,
-                        "issue": "Missing docstring",
-                        "action": "Add a Google-style docstring to describe this function.",
-                    }
-                )
+                # Add the violation to the list
+                violations.extend(docstring.violations)
 
-    print(f"Found {len(violations)} violations in file: {file_path}")
+    # Return
     return violations
 
 
-def check_directory(directory, exclude_dirs=None):
+def extract_arguments(start, lines):
+    """Extract the docstring from a list of lines read from a file.
+
+    Args:
+        start: Starting line to process
+        stop: Ending line to process
+        lines: The file as a list of strings split by a new line separator
+
+    Returns:
+        result: Function object
+
     """
-    Check all Python files in a directory for docstring compliance, excluding specified directories.
+    # Initialize key variables
+    func = ""
+    possibles = lines[start:]
+    arguments = []
+    Function = namedtuple("Function", "name arguments")
+
+    # Process the function
+    for line in possibles:
+        if bool(line) is False:
+            continue
+        elif ("'''" not in line) and ('"""' not in line):
+            func = f"{func}{line.strip()}"
+        else:
+            break
+
+    # Get the arguments
+    items = func.split("(")[1].split(",")
+    name = func.split()[1].split("(")[0].strip()
+    for item in items:
+        result = item.split(")")[0].split("=")[0].strip()
+        arguments.append(result if bool(result) else None)
+
+    # Fix arguments
+    if bool(arguments) and ("self" in arguments):
+        arguments.remove("self")
+
+    # Return
+    result = Function(name=name, arguments=arguments)
+    return result
+
+
+def extract_docstring(func_name, line_number, lines):
+    """Extract the docstring from a list of lines read from a file.
+
+    Args:
+        line_number: Line where the docstring starts
+        lines: The file as a list of strings split by a new line separator
+        func_name: Name of the function for the docstring
+
+    Returns:
+        result: namedtuple containing the docstring, and status
+
+    """
+    # Initialize key variables
+    violations = []
+    parser = None
+    Docstring = namedtuple("Docstring", "violations docstring parser")
+    docstring = ""
+
+    # Process Docstring
+    docstring_start = line_number + 1
+    while (
+        docstring_start < len(lines) and lines[docstring_start].strip() == ""
+    ):
+        docstring_start += 1
+
+    # Identify the start of the Docstring
+    if docstring_start < len(lines) and lines[
+        docstring_start
+    ].strip().startswith('"""'):
+
+        # Identify the end of the docstring
+        docstring_end = docstring_start + 1
+        while docstring_end < len(lines) and not lines[
+            docstring_end
+        ].strip().endswith('"""'):
+            docstring_end += 1
+
+        # Extract lines within the docstring area
+        if docstring_end < len(lines):
+            # Convert the docstring lines to a string
+            docstring = "\n".join(lines[docstring_start : docstring_end + 1])
+
+            # Parse the docstring
+            try:
+                parser = parse(docstring)
+
+            except Exception as e:
+                violations.append(
+                    Violation(
+                        line=line_number + 1,
+                        function=func_name,
+                        issue="Docstring parsing error",
+                        action=f"""\
+Ensure the docstring is properly formatted: {e}""",
+                    )
+                )
+
+            # Check for Args section
+            if "Args:" not in docstring:
+                violations.append(
+                    Violation(
+                        line=line_number + 1,
+                        function=func_name,
+                        issue="Missing 'Args' section",
+                        action="""\
+Add an 'Args' section listing the arguments this function accepts.""",
+                    )
+                )
+
+            # Check for Returns section
+            if "Returns:" not in docstring:
+                violations.append(
+                    Violation(
+                        line=line_number + 1,
+                        function=func_name,
+                        issue="Missing 'Returns' section",
+                        action="""\
+Add a 'Returns' section describing the return value.""",
+                    )
+                )
+
+            # Ensure there is an Args section
+            if bool(parser.params) is False:
+                violations.append(
+                    Violation(
+                        line=line_number + 1,
+                        function=func_name,
+                        issue="Docstring has no 'Args:' section",
+                        action="""\
+Add an 'Args:' section to the function docstring""",
+                    )
+                )
+
+            # Ensure there is an Returns section
+            if bool(parser.returns) is False:
+                violations.append(
+                    Violation(
+                        line=line_number + 1,
+                        function=func_name,
+                        issue="Docstring has no 'Returns:' section",
+                        action="""\
+Add an 'Returns:' section to the function docstring""",
+                    )
+                )
+
+        else:
+            violations.append(
+                Violation(
+                    line=line_number + 1,
+                    function=func_name,
+                    issue="Unclosed docstring",
+                    action="""\
+Ensure the docstring is properly closed with triple quotes.""",
+                )
+            )
+
+    else:
+        violations.append(
+            Violation(
+                line=line_number + 1,
+                function=func_name,
+                issue="Missing docstring",
+                action="""\
+Add a Google-style docstring to describe this function.""",
+            )
+        )
+
+    # Return result
+    result = Docstring(
+        docstring=docstring,
+        violations=violations if bool(violations) else None,
+        parser=parser,
+    )
+    return result
+
+
+def check_directory(directory, exclude_dirs=None):
+    """Check all Python files in a directory for docstring compliance.
+
+    Specified directories are excluded.
 
     Args:
         directory (str): Directory to scan.
@@ -126,58 +287,97 @@ def check_directory(directory, exclude_dirs=None):
     Returns:
         dict: Dictionary of file violations.
     """
-    if exclude_dirs is None:
-        exclude_dirs = []
-
+    # Initialize key variables
     all_violations = {}
+    _exclude_dirs = exclude_dirs if bool(exclude_dirs) else []
+
+    # Recursive directory search for files
     for root, dirs, files in os.walk(directory):
         # Skip excluded directories
         dirs[:] = [
-            d for d in dirs if os.path.join(root, d) not in exclude_dirs
+            d for d in dirs if os.path.join(root, d) not in _exclude_dirs
         ]
 
+        # Process files in each directory
         for file in files:
             if file.endswith(".py"):
+                # Print start of processing
                 file_path = os.path.join(root, file)
-                print(f"Processing file: {file_path}")
+
+                # Identify violations in the file
                 violations = validate_docstring(file_path)
+
+                # Add any found violations
                 if violations:
                     all_violations[file_path] = violations
 
-    print(f"Completed scanning directory: {directory}")
+    # Return
     return all_violations
 
 
 def main():
-    """
+    """Start checking the docstrings.
+
     Args:
         None
+
     Returns:
         None
     """
-    directory = sys.argv[1] if len(sys.argv) > 1 else "."
-    # Define excluded directories (e.g., virtual environment or library folders)
-    exclude_dirs = [
-        os.path.join(directory, "venv"),
-        os.path.join(directory, "lib"),
-        os.path.join(directory, "venv/lib/python3.11/site-packages"),
-        os.path.join(directory, "tests"),
-        os.path.join(directory, "switchmap/poller/snmp"),
-        os.path.join(directory, "switchmap/server/db/ingest"),
-        os.path.join(directory, "switchmap/server/db/ingest/update"),
-    ]
-    violations = check_directory(directory, exclude_dirs=exclude_dirs)
-    if violations:
-        print("Docstring violations found:")
-        for file, issues in violations.items():
-            for issue in issues:
-                print(
-                    f"{file}:{issue['line']}: {issue['function']}: {issue['issue']}"
-                )
-                print(f"  Corrective Action: {issue['action']}")
-        sys.exit(1)
-    else:
-        print("All docstrings are compliant.")
+    # Header for the help menu of the application
+    parser = argparse.ArgumentParser(
+        description="""\
+This script checks specified directories for compliance with the \
+Google Docstring 'Args' and 'Returns' sections.""",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+
+    # CLI argument for starting
+    parser.add_argument(
+        "--directories",
+        required=False,
+        default=".",
+        nargs="+",
+        type=str,
+        help="Directory where the cache files are located.",
+    )
+    args = parser.parse_args()
+
+    # Process the directories
+    for directory in args.directories:
+        # Define excluded directories
+        # (e.g., virtual environment or library folders)
+        exclude_dirs = [
+            os.path.join(directory, "venv"),
+            os.path.join(directory, "lib"),
+            os.path.join(directory, "venv/lib/python3.11/site-packages"),
+            os.path.join(directory, "tests"),
+            os.path.join(directory, "switchmap/poller/snmp"),
+            os.path.join(directory, "switchmap/server/db/ingest"),
+            os.path.join(directory, "switchmap/server/db/ingest/update"),
+        ]
+
+        # Identify violations
+        violations = check_directory(directory, exclude_dirs=exclude_dirs)
+
+        # Create a message for the violation
+        if violations:
+            for file, issues in violations.items():
+                for issue in issues:
+                    print(
+                        f"""\
+Error: {file}
+Line : {issue.line}
+Function: {issue.function}
+Issue: {issue.issue}
+Corrective Action: {issue.action}
+"""
+                    )
+                    pass
+
+            sys.exit(1)
+        else:
+            print(f"OK: Directory {directory}")
 
 
 if __name__ == "__main__":

@@ -89,7 +89,7 @@ jobs:
       - name: Install Linting and Formatting Tools
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 black pydocstyle
+          pip install flake8 black pydocstyle flake8-docstrings
           
       - name: Run Black Formatter Check
         run: |
@@ -97,7 +97,7 @@ jobs:
 
       - name: Run Flake8 Linter
         run: |
-          flake8 switchmap bin setup tests --ignore E402,E722,E203,F401,W503
+          flake8 --docstring-convention google switchmap bin setup tests .github --ignore E402,E722,E203,F401,W503
 
       - name: Run Pydocstyle for Docstring Style
         run: |
