@@ -24,7 +24,7 @@ env:
 jobs:
   Test-Application:
     name: Test Application
-    needs: [Code-Quality-Checks]
+    needs: [Linting-and-Formatting]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -70,7 +70,7 @@ jobs:
           gcov_ignore: "docs/"
           fail_ci_if_error: false
           name: "${{env.CODECOV_UNIQUE_NAME}}"
-          
+
       - name: Test acceptable level of code coverage
         uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
