@@ -16,7 +16,9 @@ Switchmap-NG Documentation
    cli
    operation
    webserver
+   testing
    troubleshooting
+   architecture
    community
    
 

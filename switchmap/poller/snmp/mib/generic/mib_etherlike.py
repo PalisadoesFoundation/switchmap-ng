@@ -1,6 +1,5 @@
 """Module for ETHERLIKE-MIB."""
 
-
 from collections import defaultdict
 
 from switchmap.poller.snmp.base_query import Query

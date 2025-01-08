@@ -8,6 +8,7 @@ Description:
         3) Hostnames
 
 """
+
 from collections import namedtuple
 
 # PIP imports

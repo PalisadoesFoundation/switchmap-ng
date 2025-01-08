@@ -1,6 +1,5 @@
 """Class interacts with CISCO-IETF-IP-MIB."""
 
-
 from collections import defaultdict
 import binascii
 

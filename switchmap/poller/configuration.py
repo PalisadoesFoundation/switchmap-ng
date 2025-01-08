@@ -163,9 +163,11 @@ class ConfigPoller(ConfigAPIClient):
             result.append(
                 ZONE(
                     name=_zone.get("zone"),
-                    hostnames=_zone.get("hostnames")
-                    if isinstance(_zone.get("hostnames"), list)
-                    else None,
+                    hostnames=(
+                        _zone.get("hostnames")
+                        if isinstance(_zone.get("hostnames"), list)
+                        else None
+                    ),
                 )
             )
 

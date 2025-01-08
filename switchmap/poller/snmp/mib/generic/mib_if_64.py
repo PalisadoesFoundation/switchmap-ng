@@ -1,6 +1,5 @@
 """Class interacts with devices supporting IfMIB. (64 Bit Counters)."""
 
-
 from collections import defaultdict
 
 from switchmap.poller.snmp.base_query import Query

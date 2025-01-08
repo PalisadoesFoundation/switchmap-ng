@@ -10,6 +10,11 @@ status of network connected devices. The information reported includes:
 4. Layer 3 information (ARP information)
 5. System status
 
+Download
+--------
+
+You can download the latest code from our `GitHub Repository <https://github.com/PalisadoesFoundation/switchmap-ng>`_
+
 Features
 --------
 
@@ -27,6 +32,25 @@ Features
     3. **API Server**: The system that interacts with the Poller, Dashboard and a backend MySQL compatible RDBMS database.
 
 We are always looking for more contributors!
+
+Screenshots
+-----------
+
+Here are some sample screenshots:
+
+Dashboard
+^^^^^^^^^
+
+The dashboard shows a list of devices being polled for data.
+
+.. image:: ../images/switchmap-ng-dashboard.jpg
+
+Switch Table
+^^^^^^^^^^^^
+
+Clicking on any of the links will give interface information.
+
+.. image:: ../images/switchmap-ng-table.jpg
 
 Inspiration
 -----------

@@ -43,7 +43,7 @@ The commands for installing the dependencies are:
 
 .. code-block:: bash
 
-    $ sudo apt-get -y install python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev python3-venv
+    $ sudo apt-get -y install python3 python3-pip snmp libsnmp-dev snmp-mibs-downloader gcc python-dev-is-python3 python3-venv
 
 
 Centos / Fedora
@@ -91,8 +91,7 @@ Here are the commands:
 
 .. code-block:: bash
 
-    $ cd /path/to/switchmap
-    $ python3 -m pip install --user virtualenv
+    $ cd /path/to/switchmap-ng
     $ python3 -m venv venv
 
 You will now need to activate the use of these copied python files by ``switchmap-ng``. 
@@ -126,8 +125,8 @@ Edit your configuration file with the appropriate configuration options. Here ar
 
 .. code-block:: bash
 
-    $ cp examples/etc/config.yaml etc/config.yaml
-    $ vim etc/config.yaml
+    (venv) $ cp examples/etc/config.yaml etc/config.yaml
+    (venv) $ vim etc/config.yaml
 
 Make the required changes.
 
@@ -153,6 +152,12 @@ You can test your SNMP configuration and connectivity to your devices using the 
 ..  code-block:: bash
 
     (venv) $ bin/tools/switchmap_poller_test.py --hostname HOSTNAME
+
+If you have setup switchmap-ng as a system daemon with a ``daemon_directory:`` value ``/var/run`` you will need to specify the ``venv`` path to ``python3`` first.
+
+..  code-block:: bash
+
+    (venv) $ sudo venv/bin/python3 bin/tools/switchmap_poller_test.py --hostname HOSTNAME
 
 If successful it will print the entire contents of the polled data on the screen.
 
@@ -200,3 +205,53 @@ You can then visit the dashboard URL. (You will need to make adjustments if you 
 
 The Webserver help page provides the necessary steps to view switchmap on port 80 using Apache or Nginx
 
+
+Testing Setup for Developers
+----------------------------
+
+Follow the installation steps above to have the application ready, then add these steps for developing code.
+
+
+Database Configuration
+~~~~~~~~~~~~~~~~~~~~~~
+
+Create the ``switchmap_unittest`` database, and grant privileges to a ``switchmap_unittest`` user with the password ``switchmap_unittest``.
+
+::
+   
+     $ sudo mysql
+     >>> CREATE DATABASE switchmap_unittest;
+     >>> GRANT ALL PRIVILEGES ON switchmap_unittest.* TO 'switchmap_unittest'@'localhost' IDENTIFIED BY 'switchmap_unittest';
+     >>> FLUSH PRIVILEGES;
+     >>> EXIT;
+
+Setup the Test Config File
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create the testing configuration file which will be stored in a hidden directory in ``$HOME``
+
+::
+   
+   (venv) $ tests/bin/test_db_config_setup.py
+
+Run the Test Suite
+~~~~~~~~~~~~~~~~~~
+
+You can run all the tests with this command.
+
+::
+   
+   (venv) $ tests/bin/_do_all_tests.py
+
+An alternative method is to use pytest.
+
+::
+   
+   (venv) $ pytest tests/switchmap_
+
+
+You can run individual tests with this command.
+
+::
+   
+   (venv) $ tests/switchmap_/path/to/test.py

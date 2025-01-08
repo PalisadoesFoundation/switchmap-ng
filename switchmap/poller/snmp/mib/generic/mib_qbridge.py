@@ -1,6 +1,5 @@
 """Module for Q-BRIDGE-MIB."""
 
-
 from collections import defaultdict
 
 # Import project libraries

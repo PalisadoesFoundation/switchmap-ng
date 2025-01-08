@@ -1,6 +1,5 @@
 """Switchmap Interface library."""
 
-
 # Module imports
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import event
