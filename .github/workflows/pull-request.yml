@@ -37,6 +37,28 @@ jobs:
           echo "Error: Source and Target Branches are the same. Please ensure they are different."
           echo "Error: Close this PR and try again."
           exit 1
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with: 
+          python-version: 3.9
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 black pydocstyle
+
+      - name: Run Black Formatter Check
+        run: |
+          black --check .      
+            
+      - name: Run Flake8 Linter
+        run: |
+          flake8 switchmap bin setup tests --ignore E402,E722,E203,F401,W503
+        
+      - name: Run pydocstyle
+        run: |
+          pydocstyle switchmap setup bin tests --convention=google --add-ignore=D415,D205
 
   Check-Sensitive-Files:
     if: ${{ github.actor != 'dependabot[bot]' && !contains(github.event.pull_request.labels.*.name, 'ignore-sensitive-files-pr') }}
@@ -70,11 +92,15 @@ jobs:
             .gitignore
             CODEOWNERS
             LICENSE
+            .pydocstyle
+            pyproject.toml
+            .flake8
             requirements.txt
             CNAME
             yaml.lock
             package.json     
             package-lock.json
+            
       - name: List all changed unauthorized files
         if: steps.changed-unauth-files.outputs.any_changed == 'true' || steps.changed-unauth-files.outputs.any_deleted == 'true'
         env:
@@ -221,3 +247,38 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
+  
+  Docstring-Compliance:
+    name: Check Docstring Compliance
+    runs-on: ubuntu-latest
+    needs: [Code-Quality-Checks]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install dependencies
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run docstring compliance check
+        run: |
+          source venv/bin/activate
+          python .github/workflows/scripts/check_docstrings.py
