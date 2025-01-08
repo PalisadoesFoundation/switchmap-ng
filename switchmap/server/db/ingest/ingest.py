@@ -44,7 +44,7 @@ class Ingest:
             config: ConfigServer object
             test: True if testing
             test_cache_directory: Ingest directory. Only used when testing.
-            purge: Purge events if True
+            multiprocessing: True if multiprocessing is enabled
 
         Returns:
             None

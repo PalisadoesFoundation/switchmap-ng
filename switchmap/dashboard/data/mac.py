@@ -78,7 +78,6 @@ class Mac:
             None
 
         Returns:
-
             result: List of MacIpState objects
 
         """
@@ -174,7 +173,6 @@ def macips(interface):
         None
 
     Returns:
-
         result: List of MacIpState objects
 
     """

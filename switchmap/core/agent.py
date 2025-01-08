@@ -75,7 +75,13 @@ class Agent:
         return value
 
     def query(self):
-        """Create placeholder method. Do not delete."""
+        """Create placeholder method. Do not delete.
+
+        Args:
+            None
+        Returns:
+            None
+        """
         # Do nothing
         pass
 
@@ -102,7 +108,7 @@ class _AgentRun:
         Args:
             None
 
-        Return:
+        Returns:
             None
 
         """
@@ -383,10 +389,11 @@ class _StandaloneApplication(BaseApplication):
         """Initialize the class.
 
         Args:
-
             app: Flask application object of type Flask(__name__)
             parent: Name of parent process that is invoking the API
             options: Gunicorn CLI options
+        Returns:
+            None
 
         """
         # Initialize key variables
@@ -396,7 +403,13 @@ class _StandaloneApplication(BaseApplication):
         super(_StandaloneApplication, self).__init__()
 
     def load_config(self):
-        """Load the configuration."""
+        """Load the configuration.
+
+        Args:
+            None
+        Returns:
+            None
+        """
         # Initialize key variables
         now = datetime.now()
         config = dict(
@@ -422,7 +435,15 @@ class _StandaloneApplication(BaseApplication):
             print("  {} = {}".format(name, value.get()))
 
     def load(self):
-        """Run the Flask application throught the Gunicorn WSGI."""
+        """Run the Flask application throught the Gunicorn WSGI.
+
+        Args:
+            None
+
+        Returns:
+            self.application: Flask application object
+
+        """
         return self.application
 
 

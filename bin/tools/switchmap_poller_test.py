@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Switchmap-NG polling test script"""
+"""Switchmap-NG polling test script."""
 
 # Standard libraries
 import sys
