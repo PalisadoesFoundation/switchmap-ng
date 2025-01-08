@@ -64,7 +64,7 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          slug: im-vedant/switchmap-ng
+          slug: PalisadoesFoundation/switchmap-ng
           verbose: true
           files: ./coverage.lcov
           gcov_ignore: "docs/"
