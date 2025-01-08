@@ -14,11 +14,24 @@ from unittest.mock import patch
 # Set up paths for correct module imports
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
 ROOT_DIR = os.path.abspath(
-    os.path.join(EXEC_DIR, os.pardir, os.pardir, os.pardir, os.pardir)
+    os.path.join(
+        os.path.abspath(
+            os.path.join(
+                os.path.abspath(
+                    os.path.join(
+                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                        os.pardir,
+                    )
+                ),
+                os.pardir,
+            )
+        ),
+        os.pardir,
+    )
 )
 _EXPECTED = (
-    f"{os.sep}switchmap-ng{os.sep}tests{os.sep}switchmap_{os.sep}"
-    f"dashboard{os.sep}table"
+    "{0}switchmap-ng{0}tests{0}switchmap_{0}"
+    "dashboard{0}table".format(os.sep)
 )
 
 print(f"EXEC_DIR: {EXEC_DIR}")
