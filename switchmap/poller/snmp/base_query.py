@@ -28,6 +28,8 @@ class Query:
 
         Args:
             snmp_object: SNMP Interact class object from snmp_manager.py
+            test_oid: Oid that is used to check if the mib is supported
+            tags: List of the layers for which this query gathers information
 
         Returns:
             None
@@ -39,9 +41,8 @@ class Query:
         # Oid that is used to check if the mib is supported
         self.test_oid = test_oid
 
-        # list of the layers for which this query gathers information
+        # List of the layers for which this query gathers information
         self.tags = tags
-        # self.tags = ['layer1','layer2','layer3','system']
 
     def supported(self):
         """Return device's support for the MIB.

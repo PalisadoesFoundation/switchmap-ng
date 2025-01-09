@@ -146,6 +146,7 @@ class GracefulAgentDaemon(_AgentRun, GracefulDaemon):
 
         Args:
             agent: agent object
+            timeout: agent timeout
 
         Returns:
             None
@@ -188,7 +189,7 @@ class AgentCLI:
         """Return all the CLI options.
 
         Args:
-            None
+            additional_help: CLI additional help string for argparse
 
         Returns:
             args: Namespace() containing all of our CLI arguments as objects
@@ -258,6 +259,7 @@ class AgentCLI:
 
         Args:
             agent: Agent object
+            timeout: Agent timeout
 
         Returns:
             None
@@ -448,7 +450,15 @@ class _StandaloneApplication(BaseApplication):
 
 
 def _number_of_workers():
-    """Get the number of CPU cores on this server."""
+    """Get the number of CPU cores on this server.
+
+    Args:
+        None
+
+    Returns:
+        result: Number of workers
+
+    """
     return (multiprocessing.cpu_count() * 2) + 1
 
 

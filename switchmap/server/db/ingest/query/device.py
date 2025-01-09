@@ -127,7 +127,7 @@ def vlanports(idx_device):
     """Get all the VlanPorts for a device.
 
     Args:
-        idx_device:
+        idx_device: Idx_device of the device being processed
 
     Returns:
         result: List of RVlanPort tuple

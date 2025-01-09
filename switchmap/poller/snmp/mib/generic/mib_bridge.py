@@ -249,7 +249,7 @@ class BridgeQuery(Query):
         """Return dict of BRIDGE-MIB dot1dTpFdbPort data.
 
         Args:
-            None
+            context_names: List of context names
 
         Returns:
             data_dict: Dict of dot1dTpFdbPort using the OID nodes
@@ -318,7 +318,7 @@ class BridgeQuery(Query):
         """Return dict of BRIDGE-MIB dot1dTpFdbAddress data.
 
         Args:
-            None
+            context_names: List of context names
 
         Returns:
             data_dict: Dict of dot1dTpFdbAddress using the OID nodes
@@ -348,7 +348,7 @@ class BridgeQuery(Query):
         """Return dict of BRIDGE-MIB dot1dBasePortIfIndex data.
 
         Args:
-            None
+            context_names: List of context names
 
         Returns:
             data_dict: Dict of dot1dBasePortIfIndex with dot1dBasePort as key.

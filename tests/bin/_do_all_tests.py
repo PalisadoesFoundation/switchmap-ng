@@ -96,7 +96,7 @@ def run_script(cli_string):
     """Run the cli_string UNIX CLI command and record output.
 
     Args:
-        None
+        cli_string: Command to run from the CLI
 
     Returns:
         None

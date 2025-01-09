@@ -13,7 +13,7 @@ class EventPage:
         """Initialize the class.
 
         Args:
-            host: Hostname to process
+            _events: Events to process
 
         Returns:
             None

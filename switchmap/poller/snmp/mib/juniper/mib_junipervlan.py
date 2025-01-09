@@ -218,7 +218,7 @@ class JuniperVlanQuery(Query):
         """Return dict of JUNIPER-VLAN-MIB jnxExVlanTag w/ dot1dbaseport key.
 
         Args:
-            None:
+            None
 
         Returns:
             data_dict: Dict of mapping
