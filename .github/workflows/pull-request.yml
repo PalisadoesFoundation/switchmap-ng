@@ -281,7 +281,7 @@ jobs:
       - name: Run docstring compliance check
         run: |
           source venv/bin/activate
-          python .github/workflows/scripts/check_docstrings.py
+          python .github/workflows/scripts/check_docstrings.py --directories switchmap setup bin tests .github
 
   Generate-Documentation:
     name: Generate Documentation
@@ -321,4 +321,3 @@ jobs:
           git commit -m "Auto-update documentation"
           git push
         continue-on-error: true
-
