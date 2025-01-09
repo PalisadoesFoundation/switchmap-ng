@@ -281,4 +281,4 @@ jobs:
       - name: Run docstring compliance check
         run: |
           source venv/bin/activate
-          python .github/workflows/scripts/check_docstrings.py --directory switchmap setup bin tests .github
+          python .github/workflows/scripts/check_docstrings.py --directories switchmap setup bin tests .github
