@@ -1,3 +1,10 @@
+"""Script to generate and manage API documentation for the switchmap project.
+
+This module handles the generation of API documentation using mkgendocs,
+including cleaning up previous documentation, managing temporary files,
+and preparing the documentation for Docusaurus integration.
+"""
+
 import os
 import shutil
 import subprocess
