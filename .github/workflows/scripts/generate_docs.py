@@ -77,7 +77,6 @@ def generate_docs():
 
     subprocess.run(
         [
-            "mkgendocs",
             "-i",
             input_dir,
             "-o",
