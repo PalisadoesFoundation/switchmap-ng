@@ -75,7 +75,7 @@ def findmac(idx_zone, macs):
 
     Args:
         idx_zone: Zone index
-        _mac: Mac address
+        macs: List or single MAC address
 
     Returns:
         result: list of RMac tuples

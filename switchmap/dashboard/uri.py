@@ -38,7 +38,7 @@ def devices(idx_device):
     """Create the device page URI.
 
     Args:
-        None
+        idx_device: IDX of the device in the database
 
     Returns:
         result: result
@@ -68,7 +68,7 @@ def events_by_idx_root(idx_root=1):
     """Create the filtered event page URI.
 
     Args:
-        None
+        idx_root: Index of the root in the DB
 
     Returns:
         result: result

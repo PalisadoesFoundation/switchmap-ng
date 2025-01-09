@@ -128,8 +128,9 @@ class Topology:
         """Initialize class.
 
         Args:
-            exists: RDevice object
             data: Dict of device data
+            idx_zone: idx_zone of the Zone being processed
+            dns: Do DNS lookups if True
 
         Returns:
             None
@@ -239,7 +240,7 @@ class Topology:
         """Update the Ip DB table.
 
         Args:
-            data: Ip data
+            None
 
         Returns:
             None
@@ -292,7 +293,7 @@ class Topology:
         """Update the MacIp DB table.
 
         Args:
-            data: MacIp data
+            None
 
         Returns:
             rows: List of PairMacIp objects
@@ -353,7 +354,6 @@ class Topology:
 
         Args:
             table: Name of table being updated
-            updated: True if the table has been updated
 
         Returns:
             None
@@ -373,6 +373,7 @@ def _process_pairmacips(idx_zone, table):
     """Update the mac DB table.
 
     Args:
+        idx_zone: idx_zone value in the DB
         table: ARP table keyed by ip address
 
     Returns:

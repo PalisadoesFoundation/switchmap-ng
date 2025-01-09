@@ -6,7 +6,7 @@ def or_operator(key, items):
 
     Args:
         key: GraphQL key to run the OR operation against
-        items:
+        items: List of iitems for filtering
 
     Returns:
         result: result

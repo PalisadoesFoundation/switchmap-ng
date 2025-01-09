@@ -71,19 +71,47 @@ class Query:
     """
 
     def query(self):
-        """Do an SNMP query."""
+        """Do an SNMP query.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         pass
 
     def oid_exists(self):
-        """Determine existence of OID on device."""
+        """Determine existence of OID on device.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         pass
 
     def swalk(self):
-        """Do a failsafe SNMPwalk."""
+        """Do a failsafe SNMPwalk.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         pass
 
     def walk(self):
-        """Do a SNMPwalk."""
+        """Do a SNMPwalk.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         pass
 
 

@@ -277,7 +277,7 @@ file and directory permissions.""".format(
         """Get daemon status.
 
         Args:
-            verbose: Print message if True
+            None
 
         Returns:
             result: True if the PID and PID file exists
@@ -322,6 +322,7 @@ class GracefulDaemon(Daemon):
 
         Args:
             agent: Agent object
+            timeout: Timeout for graceful shutdown
 
         Returns:
             None
@@ -358,12 +359,19 @@ class GracefulDaemon(Daemon):
             callback: callback method
 
         Returns:
-            wrapper
+            wrapper: Wrapper function
 
         """
 
         def wrapper():
-            """Wrapper function."""
+            """Wrapper function.
+
+            Args:
+                None
+
+            Returns:
+                None
+            """
             if self.__daemon_running():
                 log_message = """\
 Lock file {} exists. Process still running.""".format(

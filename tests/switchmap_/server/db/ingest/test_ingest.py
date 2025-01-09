@@ -175,9 +175,9 @@ class TestFunctions(unittest.TestCase):
         CONFIG.cleanup()
 
     def test_ipport(self):
-        return
         """Testing function ipport."""
         # Initialize key variables
+        return
         result = []
         expected = []
 

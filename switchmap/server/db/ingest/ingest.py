@@ -229,7 +229,7 @@ class Ingest:
         """Ingest the files' device data.
 
         Args:
-            zones: List of ZoneDevice objects
+            event: Name of event
 
         Returns:
             None
@@ -331,6 +331,7 @@ def setup(src, config):
 
     Args:
         src: Directory where device YAML files are located
+        config: Configuration object
 
     Returns:
         result: EventObjects object
@@ -550,7 +551,7 @@ def insert_ipports(items, test=False):
             Bulk inserts don't insert data with predictable primary keys.
 
     Returns:
-        none
+        None
 
     """
     # Initialize key variables

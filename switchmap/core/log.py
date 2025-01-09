@@ -59,7 +59,15 @@ class _GetLog:
     """Class to manage the logging without duplicates."""
 
     def __init__(self):
-        """Initialize the class."""
+        """Initialize the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
         # Application libraries
         from switchmap.core.configuration import ConfigCore
 
@@ -268,6 +276,7 @@ def log2exception(code, sys_exc_info, message=None, die=False):
     Args:
         code: Message code
         sys_exc_info: Tuple from exception from sys.exc_info
+        message: Message to log
         die: Die if True
 
     Returns:

@@ -26,7 +26,7 @@ def events():
         None
 
     Returns:
-        HTML
+        render_template: HTML
 
     """
     # Get data to display
