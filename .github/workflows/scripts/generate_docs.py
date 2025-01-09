@@ -68,6 +68,15 @@ def generate_docs():
     Returns:
         None
     """
+    try:
+        subprocess.run(
+            ["pip", "install", "mkgendocs"],
+            check=True,
+        )
+    except subprocess.CalledProcessError as e:
+        print("Failed to install mkgendocs:", e)
+        return
+
     input_dir = "switchmap"
     temp_dir = "docs-temp"
     output_dir = "docs/auto-docs"
@@ -77,6 +86,7 @@ def generate_docs():
 
     subprocess.run(
         [
+            "mkgendocs",
             "-i",
             input_dir,
             "-o",
