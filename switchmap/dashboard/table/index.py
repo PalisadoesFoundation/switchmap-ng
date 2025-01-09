@@ -16,7 +16,15 @@ class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
-        """Fix the column formatting."""
+        """Fix the column formatting.
+
+        Args:
+            content: Content to parse
+
+        Returns:
+            content: Content to parse
+
+        """
         return content
 
 

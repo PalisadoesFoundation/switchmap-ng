@@ -305,7 +305,14 @@ def group_consecutive(data):
 
 
 def _find_ranges(iterable):
-    """Yield range of consecutive numbers."""
+    """Yield range of consecutive numbers.
+
+    Args:
+        iterable: The list to iterate over
+
+    Returns:
+        result: Yield value
+    """
     for group in mit.consecutive_groups(sorted(set(iterable))):
         group = list(group)
         if len(group) == 1:
@@ -322,6 +329,9 @@ def human_readable(num, suffix="B", storage=False):
 
     Args:
         num: Number to convert
+        suffix: The suffix for the human readable output
+        storage: Use binary 1024 for evaluating storage
+            otherwise use regular decimal.
 
     Returns:
         result: Numeric string

@@ -28,7 +28,7 @@ def search():
         None
 
     Returns:
-        HTML
+        render_template: HTML
 
     """
     # Initialize key variables
@@ -100,10 +100,10 @@ def get_tables(_interfaces):
     """Convert interface information to HTML.
 
     Args:
-        interfaces: List of interface data dicts
+        _interfaces: List of interface data dicts
 
     Returns:
-        HTML
+        result: HTML
 
     """
     # Initialize key variables

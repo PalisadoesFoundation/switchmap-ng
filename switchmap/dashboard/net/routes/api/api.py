@@ -26,7 +26,7 @@ def dashboard():
         None
 
     Returns:
-        Webpage HTML
+        html: Webpage HTML
 
     """
     # Return content
@@ -39,10 +39,10 @@ def historical_dashboard(idx_root):
     """Get dashboard data.
 
     Args:
-        None
+        idx_root: IDX of the root in the DB
 
     Returns:
-        Webpage HTML
+        html: Webpage HTML
 
     """
     # Return content
@@ -55,10 +55,10 @@ def event_by_idx_root(idx_root):
     """Get event data.
 
     Args:
-        None
+        idx_root: IDX of the root in the DB
 
     Returns:
-        JSON of zone data
+        result: JSON of zone data
 
     """
     # return
@@ -73,7 +73,7 @@ def events():
         None
 
     Returns:
-        JSON of zone data
+        result: JSON of zone data
 
     """
     # return
@@ -85,10 +85,10 @@ def devices(idx_device):
     """Get device data.
 
     Args:
-        None
+        idx_device: IDX of the DB device table
 
     Returns:
-        JSON of zone data
+        result: JSON of zone data
 
     """
     # Initialize key variables
@@ -154,7 +154,7 @@ def search():
         None
 
     Returns:
-        JSON of zone data
+        result: JSON of zone data
 
     """
     # Initialize key variables
@@ -215,7 +215,7 @@ def _dashboard(idx_root=1):
         idx_root: Database Root table index
 
     Returns:
-        JSON of event data
+        result: JSON of event data
 
     """
     # Initialize key variables
@@ -343,10 +343,10 @@ def roots_filter(idx_root=False):
     """Get event data.
 
     Args:
-        None
+        idx_root: IDX of the DB root
 
     Returns:
-        JSON of zone data
+        roots: JSON of zone data
 
     """
     # Initialize key variables
