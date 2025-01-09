@@ -273,7 +273,7 @@ def search(idx_root, searchstring):
         searchstring: search string to look for
 
     Returns:
-        result
+        result: List of idx_l1interface values
 
     """
     # Initialize key variables
@@ -291,13 +291,13 @@ def search(idx_root, searchstring):
 
 
 def trunk(idx_l1interface):
-    """Determine whether te.
+    """Determine whether the interface is a trunk.
 
     Args:
         idx_l1interface: L1interface table primary key
 
     Returns:
-        result
+        result: True / False status
 
     """
     # Initialize key variables

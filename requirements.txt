@@ -39,5 +39,7 @@ more-itertools
 
 #Linting and formatting
 flake8
+flake8-docstrings
 pydocstyle
 black
+docstring_parser

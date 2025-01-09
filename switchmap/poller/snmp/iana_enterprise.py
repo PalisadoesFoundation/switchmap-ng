@@ -21,7 +21,8 @@ class Query:
         """Instantiate the class.
 
         Args:
-            snmp_object: Dict of SNMP parameters to use in querying device
+            enterprise: The enterprise number of the manufacturer
+            sysobjectid: The sysobjectid of the device
 
         Returns:
             None

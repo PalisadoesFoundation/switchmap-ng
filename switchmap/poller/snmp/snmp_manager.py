@@ -345,8 +345,6 @@ class Interact:
             context_name: Set the contextName used for SNMPv3 messages.
                 The default contextName is the empty string "".  Overrides the
                 defContext token in the snmp.conf file.
-            safe: Safe query if true. If there is an exception, then return \
-                blank values.
 
         Returns:
             dict: Results of SNMP walk as OID-value pairs
@@ -421,11 +419,9 @@ class Interact:
 
         Args:
             oid_to_get: OID to get
-            check_reachability:
-                Set if testing for connectivity. Some session
+            check_reachability: Set if testing for connectivity. Some session
                 errors are ignored so that a null result is returned
-            check_existence:
-                Set if checking for the existence of the OID
+            check_existence: Set if checking for the existence of the OID
             normalized: If True, then return results as a dict keyed by
                 only the last node of an OID, otherwise return results
                 keyed by the entire OID string. Normalization is useful
@@ -437,7 +433,7 @@ class Interact:
                 defContext token in the snmp.conf file.
 
         Returns:
-            Dictionary of tuples (OID, value)
+           result: Dictionary of tuples (OID, value)
 
         """
         (_, _, result) = self.query(
@@ -465,11 +461,9 @@ class Interact:
         Args:
             oid_to_get: OID to walk
             get: Flag determining whether to do a GET or WALK
-            check_reachability:
-                Set if testing for connectivity. Some session
+            check_reachability: Set if testing for connectivity. Some session
                 errors are ignored so that a null result is returned
-            check_existence:
-                Set if checking for the existence of the OID
+            check_existence: Set if checking for the existence of the OID
             normalized: If True, then return results as a dict keyed by
                 only the last node of an OID, otherwise return results
                 keyed by the entire OID string. Normalization is useful
@@ -483,7 +477,7 @@ class Interact:
                 blank values.
 
         Returns:
-            Dictionary of tuples (OID, value)
+            return_value: List of tuples (_contactable, exists, values)
 
         """
         # Initialize variables
@@ -578,7 +572,8 @@ class Interact:
         values = _format_results(results, oid_to_get, normalized=normalized)
 
         # Return
-        return (_contactable, exists, values)
+        return_value = (_contactable, exists, values)
+        return return_value
 
 
 class _Session:
@@ -657,7 +652,7 @@ class _Session:
             None
 
         Returns:
-            result
+            result: Security level
         """
         # Determine the security level
         if bool(self._poll.authorization.authprotocol) is True:
@@ -762,7 +757,11 @@ def _process_error(
     """Process the SNMP error.
 
     Args:
-        params_dict: Dict of SNMP parameters to try
+        log_message: Log message
+        exception_error: Exception error object
+        check_reachability: Attempt to contact the device if True
+        check_existence: Check existence of the device if True
+        system_error: True if a System error
 
     Returns:
         alive: True if contactable
@@ -875,7 +874,7 @@ def _convert(result):
         result: Named tuple containing SNMP result
 
     Returns:
-        Value converted to appropriate Python type (bytes or int),
+        converted: Value converted to appropriate Python type (bytes or int),
             or None for null/empty values
     """
     # Initialieze key values

@@ -73,7 +73,7 @@ def inject():
         None
 
     Returns:
-        HTML
+        result: Dict of url_home and url_static values for Flask to porcess
 
     """
     # Return
