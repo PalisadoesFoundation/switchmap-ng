@@ -87,7 +87,7 @@ def generate_docs():
 
     subprocess.run(
         [
-            "mkgendocs",
+            "switchmap",
             "-i",
             input_dir,
             "-o",
