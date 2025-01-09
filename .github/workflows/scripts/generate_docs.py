@@ -9,7 +9,7 @@ import os
 import shutil
 import subprocess
 import glob
-
+import sys
 
 def clean_previous_docs():
     """Remove old documentation from the output directory.
