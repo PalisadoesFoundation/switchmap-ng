@@ -37,12 +37,12 @@ jobs:
           echo "Error: Source and Target Branches are the same. Please ensure they are different."
           echo "Error: Close this PR and try again."
           exit 1
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
-        with: 
+        with:
           python-version: 3.9
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -50,12 +50,12 @@ jobs:
 
       - name: Run Black Formatter Check
         run: |
-          black --check .      
-            
+          black --check .
+
       - name: Run Flake8 Linter
         run: |
           flake8 --docstring-convention google switchmap bin setup tests .github --ignore E402,E722,E203,F401,W503
-        
+
       - name: Run pydocstyle
         run: |
           pydocstyle switchmap setup bin tests --convention=google --add-ignore=D415,D205
@@ -100,7 +100,7 @@ jobs:
             yaml.lock
             package.json     
             package-lock.json
-            
+
       - name: List all changed unauthorized files
         if: steps.changed-unauth-files.outputs.any_changed == 'true' || steps.changed-unauth-files.outputs.any_deleted == 'true'
         env:
@@ -247,7 +247,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-  
+
   Docstring-Compliance:
     name: Check Docstring Compliance
     runs-on: ubuntu-latest
@@ -281,4 +281,4 @@ jobs:
       - name: Run docstring compliance check
         run: |
           source venv/bin/activate
-          python .github/workflows/scripts/check_docstrings.py
+          python .github/workflows/scripts/check_docstrings.py --directory switchmap setup bin tests .github
