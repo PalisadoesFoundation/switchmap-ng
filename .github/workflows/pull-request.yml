@@ -282,3 +282,42 @@ jobs:
         run: |
           source venv/bin/activate
           python .github/workflows/scripts/check_docstrings.py
+
+  Generate-Documentation:
+    name: Generate Documentation
+    runs-on: ubuntu-latest
+    needs: [Code-Quality-Checks]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install Dependencies
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate Documentation
+        run: |
+          source venv/bin/activate
+          python .github/workflows/scripts/generate_docs.py
+
+      - name: Commit Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          rm -rf docs/auto-docs/*
+          mv docs-temp/* docs/auto-docs/
+          rm -rf docs-temp/
+          git add docs/auto-docs
+          git commit -m "Auto-update documentation"
+          git push
+        continue-on-error: true
