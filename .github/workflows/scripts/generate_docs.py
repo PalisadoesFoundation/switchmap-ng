@@ -87,7 +87,7 @@ def generate_docs():
 
     subprocess.run(
         [
-            "switchmap",
+            "switchmap-ng",
             "-i",
             input_dir,
             "-o",
