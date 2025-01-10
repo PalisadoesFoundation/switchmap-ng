@@ -58,7 +58,7 @@ jobs:
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "CREATE USER '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY '${{ env.DATABASE_PASSWORD }}';"
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost';"
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "FLUSH PRIVILEGES;"
-          pytest --cov=switchmap --cov-report=lcov:coverage/ --cov-report=term-missing tests/switchmap_
+          pytest --cov=switchmap --cov-report=lcov:coverage/coverage.lcov --cov-report=term-missing tests/switchmap_
           
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
