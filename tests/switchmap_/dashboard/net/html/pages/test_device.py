@@ -167,7 +167,7 @@ class TestDevice(unittest.TestCase):
         <tbody>
         <tr class="success"><td>Gi1/0/1</td><td>21</td><td>Active</td><td></td><td>1G</td><td>Full</td><td>Alias F12</td><td>False</td><td></td><td></td><td>d05099dad28b</td><td></td><td><p></p></td><td><p></p></td></tr>
         </tbody>
-        </table>""" # noqa: E501
+        </table>"""  # noqa: E501
         result = self.device.interfaces()
         self.assertEqual(result, expected)
 
