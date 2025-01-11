@@ -41,34 +41,22 @@ CONFIG.save()
 
 from switchmap.core import graphene as testimport
 
-
 class TestFunctions(unittest.TestCase):
     """Checks all functions and methods."""
-
-    #########################################################################
-    # General object setup
-    #########################################################################
 
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        # Load the configuration in case it's been deleted after loading the
-        # configuration above. Sometimes this happens when running
-        # `python3 -m unittest discover` where another the tearDownClass of
-        # another test module prematurely deletes the configuration required
-        # for this module
         config = setup.config()
         config.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        # Cleanup the
         CONFIG.cleanup()
 
     def test_normalize(self):
-        """Testing function normalize."""
-        # Initialize key variables
+        """Testing function normalize with standard input."""
         expected = {
             "roots": [
                 {
@@ -94,56 +82,63 @@ class TestFunctions(unittest.TestCase):
         }
 
         data_string = """
-{
-  "data": {
-    "roots": {
-      "edges": [
         {
-          "node": {
-            "event": {
-              "zones": {
-                "edges": [
-                  {
-                    "node": {
-                      "name": "TEST",
-                      "devices": {
+          "data": {
+            "roots": {
+              "edges": [
+                {
+                  "node": {
+                    "event": {
+                      "zones": {
                         "edges": [
                           {
                             "node": {
-                              "hostname": "device01.example.org",
-                              "idxDevice": 27
-                            }
-                          },
-                          {
-                            "node": {
-                              "hostname": "device02.example.org",
-                              "idxDevice": 28
+                              "name": "TEST",
+                              "devices": {
+                                "edges": [
+                                  {
+                                    "node": {
+                                      "hostname": "device01.example.org",
+                                      "idxDevice": 27
+                                    }
+                                  },
+                                  {
+                                    "node": {
+                                      "hostname": "device02.example.org",
+                                      "idxDevice": 28
+                                    }
+                                  }
+                                ]
+                              }
                             }
                           }
                         ]
                       }
                     }
                   }
-                ]
-              }
+                }
+              ]
             }
           }
         }
-      ]
-    }
-  }
-}
-"""
-        # Convert data to dict
+        """
         data = json.loads(data_string).get("data")
-
-        # Test
         result = testimport.normalize(data)
         self.assertEqual(result, expected)
 
+    def test_normalize_empty(self):
+        """Test normalize with empty input."""
+        self.assertEqual(testimport.normalize({}), {})
+        self.assertEqual(testimport.normalize(None), None)
+
+    def test_normalize_no_edges(self):
+        """Test normalize with no 'edges' key in the input."""
+        data = {"roots": {"event": {"zones": {"devices": [{"hostname": "device01"}]}}}}
+        expected = data
+        self.assertEqual(testimport.normalize(data), expected)
+
     def test_nodes(self):
-        """Testing function nodes."""
-        # Initialize key variables
+        """Testing function nodes with standard input."""
         expected = [
             {
                 "name": "TEST",
@@ -155,41 +150,70 @@ class TestFunctions(unittest.TestCase):
         ]
 
         data_string = """
-{
-
-                "edges": [
-                  {
-                    "node": {
-                      "name": "TEST",
-                      "devices": {
-                        "edges": [
-                          {
-                            "node": {
-                              "hostname": "device01.example.org",
-                              "idxDevice": 27
-                            }
-                          },
-                          {
-                            "node": {
-                              "hostname": "device02.example.org",
-                              "idxDevice": 28
-                            }
-                          }
-                        ]
+        {
+          "edges": [
+            {
+              "node": {
+                "name": "TEST",
+                "devices": {
+                  "edges": [
+                    {
+                      "node": {
+                        "hostname": "device01.example.org",
+                        "idxDevice": 27
+                      }
+                    },
+                    {
+                      "node": {
+                        "hostname": "device02.example.org",
+                        "idxDevice": 28
                       }
                     }
-                  }
-                ]
-}
-"""
-        # Convert data to dict
+                  ]
+                }
+              }
+            }
+          ]
+        }
+        """
         data = json.loads(data_string).get("edges")
-
-        # Test
         result = testimport.nodes(data)
         self.assertEqual(result, expected)
 
+    def test_nodes_empty(self):
+        """Test nodes with empty input."""
+        self.assertEqual(testimport.nodes([]), [])
+
+    def test_nodes_no_node_key(self):
+        """Test nodes with missing 'node' key."""
+        data = [{"no_node": {"name": "TEST"}}]
+        self.assertEqual(testimport.nodes(data), [None])
+
+    def test_normalize_deeply_nested(self):
+        """Test normalize with deeply nested input."""
+        data = {
+            "outer": {
+                "edges": [
+                    {"node": {"inner": {"edges": [{"node": {"value": 1}}]}}},
+                    {"node": {"inner": {"edges": [{"node": {"value": 2}}]}}},
+                ]
+            }
+        }
+        expected = {"outer": [{"inner": [{"value": 1}]}, {"inner": [{"value": 2}]}]}
+        self.assertEqual(testimport.normalize(data), expected)
+
+    def test_nodes_deeply_nested(self):
+        """Test nodes with deeply nested input."""
+        data = [
+            {
+                "node": {
+                    "inner": {"edges": [{"node": {"value": 1}}, {"node": {"value": 2}}]}
+                }
+            }
+        ]
+        expected = [{"inner": [{"value": 1}, {"value": 2}]}]
+        self.assertEqual(testimport.nodes(data), expected)
+
 
 if __name__ == "__main__":
-    # Do the unit test
     unittest.main()
