@@ -41,6 +41,7 @@ CONFIG.save()
 
 from switchmap.core import graphene as testimport
 
+
 class TestFunctions(unittest.TestCase):
     """Checks all functions and methods."""
 
@@ -133,7 +134,11 @@ class TestFunctions(unittest.TestCase):
 
     def test_normalize_no_edges(self):
         """Test normalize with no 'edges' key in the input."""
-        data = {"roots": {"event": {"zones": {"devices": [{"hostname": "device01"}]}}}}
+        data = {
+            "roots": {
+                "event": {"zones": {"devices": [{"hostname": "device01"}]}}
+            }
+        }
         expected = data
         self.assertEqual(testimport.normalize(data), expected)
 
@@ -199,7 +204,9 @@ class TestFunctions(unittest.TestCase):
                 ]
             }
         }
-        expected = {"outer": [{"inner": [{"value": 1}]}, {"inner": [{"value": 2}]}]}
+        expected = {
+            "outer": [{"inner": [{"value": 1}]}, {"inner": [{"value": 2}]}]
+        }
         self.assertEqual(testimport.normalize(data), expected)
 
     def test_nodes_deeply_nested(self):
@@ -207,7 +214,12 @@ class TestFunctions(unittest.TestCase):
         data = [
             {
                 "node": {
-                    "inner": {"edges": [{"node": {"value": 1}}, {"node": {"value": 2}}]}
+                    "inner": {
+                        "edges": [
+                            {"node": {"value": 1}},
+                            {"node": {"value": 2}},
+                        ]
+                    }
                 }
             }
         ]

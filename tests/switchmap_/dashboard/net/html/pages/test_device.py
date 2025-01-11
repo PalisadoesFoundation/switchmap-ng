@@ -185,7 +185,7 @@ class TestDevice(unittest.TestCase):
     #     <tr><td>Time Last Polled</td><td>2023-02-23 15:13:37</td></tr>
     #     </tbody>
     #     </table>"""
-        
+
     #     expected = """<table class="table">
     #     <thead class="tblHead"><tr><th>Parameter</th><th>Value</th></tr></thead>
     #     <tbody>
@@ -197,13 +197,15 @@ class TestDevice(unittest.TestCase):
     #     <tr><td>Time Last Polled</td><td>2023-02-23 15:13:37</td></tr>
     #     </tbody>
     #     </table>"""
-        
+
     #     # Normalize both expected and actual outputs
     #     expected_cleaned = expected.replace("\n", "").replace(" ", "")
     #     result_cleaned = mock_system().replace("\n", "").replace(" ", "")
-        
+
     #     # Assert both strings are equal
     #     self.assertEqual(result_cleaned, expected_cleaned)
+
+
 class TestInterfaceTable(unittest.TestCase):
     """Checks all functions and methods."""
 
