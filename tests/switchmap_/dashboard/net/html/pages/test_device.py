@@ -171,40 +171,6 @@ class TestDevice(unittest.TestCase):
         result = self.device.interfaces()
         self.assertEqual(result, expected)
 
-    # @patch('dashboard.device.system')  # Correct the path to the system function
-    # def test_system(self, mock_system):
-    #     # Define the mocked return value
-    #     mock_system.return_value = """<table class="table">
-    #     <thead class="tblHead"><tr><th>Parameter</th><th>Value</th></tr></thead>
-    #     <tbody>
-    #     <tr><td>System Name</td><td>device-01.example.org</td></tr>
-    #     <tr><td>System Hostname</td><td>device-01.example.org</td></tr>
-    #     <tr><td>System Description</td><td>Cisco IOS Software...</td></tr>
-    #     <tr><td>System sysObjectID</td><td>.1.3.6.1.4.1.9.1.516</td></tr>
-    #     <tr><td>System Uptime</td><td>94 Days, 18:39:06</td></tr>
-    #     <tr><td>Time Last Polled</td><td>2023-02-23 15:13:37</td></tr>
-    #     </tbody>
-    #     </table>"""
-
-    #     expected = """<table class="table">
-    #     <thead class="tblHead"><tr><th>Parameter</th><th>Value</th></tr></thead>
-    #     <tbody>
-    #     <tr><td>System Name</td><td>device-01.example.org</td></tr>
-    #     <tr><td>System Hostname</td><td>device-01.example.org</td></tr>
-    #     <tr><td>System Description</td><td>Cisco IOS Software...</td></tr>
-    #     <tr><td>System sysObjectID</td><td>.1.3.6.1.4.1.9.1.516</td></tr>
-    #     <tr><td>System Uptime</td><td>94 Days, 18:39:06</td></tr>
-    #     <tr><td>Time Last Polled</td><td>2023-02-23 15:13:37</td></tr>
-    #     </tbody>
-    #     </table>"""
-
-    #     # Normalize both expected and actual outputs
-    #     expected_cleaned = expected.replace("\n", "").replace(" ", "")
-    #     result_cleaned = mock_system().replace("\n", "").replace(" ", "")
-
-    #     # Assert both strings are equal
-    #     self.assertEqual(result_cleaned, expected_cleaned)
-
 
 class TestInterfaceTable(unittest.TestCase):
     """Checks all functions and methods."""
