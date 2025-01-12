@@ -14,7 +14,7 @@ def update_db_oui(filepath):
     """Update the database with Oui data.
 
     Args:
-        df_: pd.Dataframe
+        filepath: File to process
 
     Returns:
         None

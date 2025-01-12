@@ -637,7 +637,13 @@ class MacIp(BASE):
 
 
 def create_all_tables():
-    """Ensure all tables are created."""
+    """Ensure all tables are created.
+
+    Args:
+        None
+    Returns:
+        None
+    """
     # Process transaction
     with ENGINE.connect() as connection:
         with Session(bind=connection) as session:

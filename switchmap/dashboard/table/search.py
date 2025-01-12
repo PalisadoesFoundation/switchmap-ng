@@ -11,7 +11,7 @@ class Search:
         """Initialize the class.
 
         Args:
-            search: Search dictionary
+            data: Search dictionary
 
         Returns:
             None

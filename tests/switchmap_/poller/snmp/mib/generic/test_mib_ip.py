@@ -73,19 +73,47 @@ class Query:
     """
 
     def query(self):
-        """Do an SNMP query."""
+        """Do an SNMP query.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         pass
 
     def oid_exists(self):
-        """Determine existence of OID on device."""
+        """Determine existence of OID on device.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         pass
 
     def swalk(self):
-        """Do a failsafe SNMPwalk."""
+        """Do a failsafe SNMPwalk.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         pass
 
     def walk(self):
-        """Do a failable SNMPwalk."""
+        """Do a failable SNMPwalk.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         pass
 
 
@@ -137,15 +165,18 @@ class TestMibIp(unittest.TestCase):
     # Normalized walk returning binary data
     walk_results_ipv4_binary = {
         ".1.3.6.1.2.1.4.22.1.2.0.10.10.10.10": b"\x00\x16\xc2\x9c\x15P\x00",
-        ".1.3.6.1.2.1.4.22.1.2.0.200.200.200.200": b"\xc2\x98\xc3\xae\xc3\x8bV%\xc2\xb6",
+        ".1.3.6.1.2.1.4.22.1.2.0"
+        ".200.200.200.200": b"\xc2\x98\xc3\xae\xc3\x8bV%\xc2\xb6",
     }
 
     # OID with IPv6 appended in decimal format
     walk_results_ipv6_binary = {
         ".1.3.6.1.2.1.4.35.1.4.3.2.16.254.128.0.0.0.0.0.0"
-        ".53.111.109.168.125.42.84.88": b"\xc3\x94\xc2\x85d\xc2\x9f\xc3\x9c\x7f",
+        ".53.111.109.168.125."
+        "42.84.88": b"\xc3\x94\xc2\x85d\xc2\x9f\xc3\x9c\x7f",
         ".1.3.6.1.2.1.4.35.1.4.3.2.16.254.128.0.0.0.0.0.0"
-        ".2.30.201.255.254.172.62.123": b"\xc3\x80|\xc3\x91\xc2\xa0\xc3\x82\xc2\x85",
+        ".2.30.201.255.254.172."
+        "62.123": b"\xc3\x80|\xc3\x91\xc2\xa0\xc3\x82\xc2\x85",
     }
 
     # Set the stage for SNMPwalk for binary results

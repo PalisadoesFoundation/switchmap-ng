@@ -123,7 +123,7 @@ def roots():
     """Get list of Roots.
 
     Args:
-        idx: idx_root
+        None
 
     Returns:
         result: RRoot object
