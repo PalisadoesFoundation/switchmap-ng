@@ -19,6 +19,7 @@ def post(uri, data, config, server=True):
         uri: URI for posting
         data: Data to post
         config: ConfitAPIClient object
+        server: Posting to a server if True, API if False
 
     Returns:
         data: Post named tuple

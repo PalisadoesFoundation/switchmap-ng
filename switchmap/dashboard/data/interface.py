@@ -34,7 +34,7 @@ class Interface:
             None
 
         Returns:
-            result
+            result: InterfaceDataRow object
 
         """
         # Initialize key variables

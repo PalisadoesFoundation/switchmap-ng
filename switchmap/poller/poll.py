@@ -123,7 +123,7 @@ def cli_device(hostname):
     """Poll single device for data and create YAML files.
 
     Args:
-        Hostname: Host to poll
+        hostname: Host to poll
 
     Returns:
         None

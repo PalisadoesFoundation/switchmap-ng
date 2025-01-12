@@ -102,7 +102,7 @@ def findip(idx_zone, ips):
 
     Args:
         idx_zone: Zone index
-        _ip: Ip address
+        ips: one or more IP addresses
 
     Returns:
         result: list of RIp tuples

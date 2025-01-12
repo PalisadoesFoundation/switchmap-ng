@@ -10,7 +10,7 @@ def hashstring(string, sha=256, utf8=False):
 
     Args:
         string: String to hash
-        length: Length of SHA hash
+        sha: Length of SHA hash
         utf8: Return utf8 encoded string if true
 
     Returns:

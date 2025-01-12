@@ -9,7 +9,7 @@ class AgentAPIVariable:
 
         Args:
             ip_bind_port: ip_bind_port
-            listen_address: TCP/IP address on which the API is listening.
+            ip_listen_address: TCP/IP address on which the API is listening.
 
         Returns:
             None

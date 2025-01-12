@@ -199,7 +199,6 @@ def db_delete(error_code, statement):
     Args:
         error_code: Error code to use in messages
         statement: SqlALchemy statement to execute
-        die: Die if True
 
     Returns:
         result: Number of affected rows
