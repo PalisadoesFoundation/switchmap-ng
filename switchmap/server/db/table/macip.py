@@ -165,6 +165,7 @@ def insert_row(rows):
     if bool(inserts):
         db.db_add_all(1091, inserts)
 
+
 def bulk_insert_rows(rows):
     """Create a MacIp table entry.
 

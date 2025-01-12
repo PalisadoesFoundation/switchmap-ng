@@ -287,6 +287,7 @@ def db_add_all(error_code, instances, die=True):
     # Return
     return result
 
+
 def db_bulk_insert(error_code, mappings, die=True):
     """Perform bulk insert for ORM objects.
 
@@ -311,7 +312,7 @@ def db_bulk_insert(error_code, mappings, die=True):
                 session.rollback()
                 log.log2info(error_code, 'DB "bulk_insert" error.')
                 log.log2exception(error_code, sys.exc_info())
-                if bool (die):
+                if bool(die):
                     raise
                 log.log2debug(error_code, "Continuing processing.")
 
@@ -323,7 +324,7 @@ def db_bulk_insert(error_code, mappings, die=True):
                 session.rollback()
                 log.log2info(error_code, 'DB "bulk_insert" commit error.')
                 log.log2exception(error_code, sys.exc_info())
-                if bool (die):
+                if bool(die):
                     raise
                 log.log2debug(error_code, "Continuing processing.")
             else:

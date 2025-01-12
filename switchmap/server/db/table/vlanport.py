@@ -122,6 +122,7 @@ def insert_row(rows):
     if bool(inserts):
         db.db_add_all(1185, inserts)
 
+
 def bulk_insert_rows(rows):
     """Perform bulk insert for the VlanPort table.
 
@@ -154,6 +155,7 @@ def bulk_insert_rows(rows):
     # Bulk insert
     if bool(inserts):
         db.db_bulk_insert(1201, inserts)
+
 
 def update_row(idx, row):
     """Upadate a VlanPort table entry.

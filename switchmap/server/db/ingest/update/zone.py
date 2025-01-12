@@ -225,15 +225,15 @@ class Topology:
 
         # Create a DB record
         rows = [
-        IIp(
-            idx_zone=self._idx_zone,
-            address=item.ip,
-            hostname=hostname_map.get(item.ip) if not test else None,
-            version=item.ip_version,
-            enabled=1,
-        )
-        for item in self._arp_table
-    ]
+            IIp(
+                idx_zone=self._idx_zone,
+                address=item.ip,
+                hostname=hostname_map.get(item.ip) if not test else None,
+                version=item.ip_version,
+                enabled=1,
+            )
+            for item in self._arp_table
+        ]
         # Log
         self.log("Ip", updated=True)
 

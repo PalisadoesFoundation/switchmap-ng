@@ -159,6 +159,7 @@ def _reset_db():
     _zone = zone_update.Topology(device_data, idx_zone)
     ingest.insert_arptable(_zone.process(test=True), test=True)
 
+
 class TestPollUpdateTopologyFunctions(unittest.TestCase):
     """Checks all functions and methods."""
 

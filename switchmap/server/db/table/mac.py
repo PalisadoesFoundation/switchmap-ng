@@ -159,6 +159,7 @@ def insert_row(rows):
     if bool(inserts):
         db.db_add_all(1087, inserts)
 
+
 def bulk_insert_rows(rows):
     """Perform bulk insert for the Mac table.
 
@@ -182,7 +183,7 @@ def bulk_insert_rows(rows):
     for row in rows:
         # Fix the MAC address
         mactest = general.mac(row.mac)
-        
+
         # Check validity
         if bool(mactest.valid) is False:
             continue
@@ -205,6 +206,7 @@ def bulk_insert_rows(rows):
     # Perform bulk insert
     if bool(inserts):
         db.db_bulk_insert(1202, inserts)
+
 
 def update_row(idx, row):
     """Upadate a Mac table entry.
