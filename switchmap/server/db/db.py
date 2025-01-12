@@ -297,6 +297,9 @@ def db_bulk_insert(error_code, mappings, die=True):
 
     Returns:
         result: True if the transaction is successful
+
+    Note:
+       Transactions are automatically rolled back on failure.
     """
     # Initialize key variables
     result = False
