@@ -287,6 +287,7 @@ def db_add_all(error_code, instances, die=True):
     # Return
     return result
 
+
 def db_bulk_insert(error_code, mappings, die=True):
     """Perform bulk insert for ORM objects.
 

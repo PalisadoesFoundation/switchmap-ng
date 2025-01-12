@@ -223,7 +223,9 @@ class Topology:
                 try:
                     hostname_map[ip] = socket.gethostbyaddr(ip)[0]
                 except (socket.herror, socket.gaierror) as e:
-                    log.log2debug(1084, f"DNS lookup failed for {ip}: {str(e)}")
+                    log.log2debug(
+                        1084, f"DNS lookup failed for {ip}: {str(e)}"
+                    )
                     hostname_map[ip] = None
 
         # Create a DB record
