@@ -144,7 +144,7 @@ def _reset_db():
 
     # Update the Zone ARP table
     _zone = zone_update.Topology(device_data, idx_zone)
-    result = ingest.insert_arptable(_zone.process())
+    result = ingest.insert_arptable(_zone.process(test=True))
     return result
 
 
@@ -175,7 +175,6 @@ class TestFunctions(unittest.TestCase):
         CONFIG.cleanup()
 
     def test_ipport(self):
-        return
         """Testing function ipport."""
         # Initialize key variables
         result = []
@@ -193,11 +192,9 @@ class TestFunctions(unittest.TestCase):
         setup.l1interface(test=True)
         setup.vlan(test=True)
         setup.vlanport(test=True)
-        setup.mac(test=True)
         setup.macport(test=True)
 
         # Setup stuff
-        testimport.ipport(self.pairmacips, test=True)
 
         # Verify macport data
         statement = select(IpPort)

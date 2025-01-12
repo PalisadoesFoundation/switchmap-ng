@@ -165,6 +165,40 @@ def insert_row(rows):
     if bool(inserts):
         db.db_add_all(1091, inserts)
 
+def bulk_insert_rows(rows):
+    """Create a MacIp table entry.
+
+    Args:
+        rows: IMacIp objects
+
+    Returns:
+        None
+
+    """
+    # Initialize key variables
+    inserts = []
+
+    # Create list
+    if isinstance(rows, list) is False:
+        rows = [rows]
+
+    # Remove any duplicates
+    rows = list(set(rows))
+
+    # Create objects
+    for row in rows:
+        inserts.append(
+            MacIp(
+                idx_ip=row.idx_ip,
+                idx_mac=row.idx_mac,
+                enabled=int(bool(row.enabled) is True),
+            )
+        )
+
+    # Insert
+    if bool(inserts):
+        db.db_bulk_insert(1091, inserts)
+
 
 def update_row(idx, row):
     """Upadate a MacIp table entry.

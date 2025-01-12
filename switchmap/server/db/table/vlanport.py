@@ -122,6 +122,38 @@ def insert_row(rows):
     if bool(inserts):
         db.db_add_all(1185, inserts)
 
+def bulk_insert_rows(rows):
+    """Perform bulk insert for the VlanPort table.
+
+    Args:
+        rows: List of IVlanPort objects
+
+    Returns:
+        None
+    """
+    # Initialize key variables
+    inserts = []
+
+    # Ensure rows is a list
+    if isinstance(rows, list) is False:
+        rows = [rows]
+
+    # Remove duplicates
+    rows = list(set(rows))
+
+    # Create ORM objects
+    for row in rows:
+        inserts.append(
+            VlanPort(
+                idx_l1interface=row.idx_l1interface,
+                idx_vlan=row.idx_vlan,
+                enabled=int(bool(row.enabled) is True),
+            )
+        )
+
+    # Bulk insert
+    if bool(inserts):
+        db.db_bulk_insert(1201, inserts)
 
 def update_row(idx, row):
     """Upadate a VlanPort table entry.

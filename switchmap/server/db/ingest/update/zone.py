@@ -16,7 +16,7 @@ from switchmap.server.db.table import (
 )
 
 
-def process(data, idx_zone, dns=True):
+def process(data, idx_zone, dns=True, test=False):
     """Process data received from a device.
 
     Args:
@@ -30,7 +30,7 @@ def process(data, idx_zone, dns=True):
     """
     # Process the device
     _topology = Topology(data, idx_zone, dns=dns)
-    result = _topology.process()
+    result = _topology.process(test)
     return result
 
 
@@ -100,7 +100,7 @@ class Topology:
         self._hostname = str(self._data["misc"]["host"]).lower()
         self._arp_table = _arp_table(idx_zone, self._data)
 
-    def process(self):
+    def process(self, test=False):
         """Process data received from a device.
 
         Args:
@@ -112,7 +112,7 @@ class Topology:
         """
         # Process zone data
         macs = self.mac()
-        ips = self.ip()
+        ips = self.ip(test)
         pairmacips = self.macip()
         result = ZoneObjects(ips=ips, macs=macs, pairmacips=pairmacips)
         return result
@@ -190,7 +190,7 @@ class Topology:
         rows = list(set(rows))
         return rows
 
-    def ip(self):
+    def ip(self, test=False):
         """Update the Ip DB table.
 
         Args:
@@ -201,7 +201,6 @@ class Topology:
 
         """
         # Initialize key variables
-        dns = self._dns
         rows = []
 
         # Test prerequisite
@@ -213,27 +212,28 @@ class Topology:
         self.log("Ip")
 
         # Process the ARP Table
-        for item in self._arp_table:
-            # Get hostname for DB
-            if bool(dns) is True:
+        ips = [item.ip for item in self._arp_table]
+
+        unique_ips = set(ips)
+        hostname_map = {}
+        if not test:
+            for ip in unique_ips:
                 try:
-                    hostname = socket.gethostbyaddr(item.ip)[0]
+                    hostname_map[ip] = socket.gethostbyaddr(ip)[0]
                 except:
-                    hostname = None
-            else:
-                hostname = None
+                    hostname_map[ip] = None
 
-            # Create a DB record
-            rows.append(
-                IIp(
-                    idx_zone=self._idx_zone,
-                    address=item.ip,
-                    hostname=hostname,
-                    version=item.ip_version,
-                    enabled=1,
-                )
-            )
-
+        # Create a DB record
+        rows = [
+        IIp(
+            idx_zone=self._idx_zone,
+            address=item.ip,
+            hostname=hostname_map.get(item.ip) if not test else None,
+            version=item.ip_version,
+            enabled=1,
+        )
+        for item in self._arp_table
+    ]
         # Log
         self.log("Ip", updated=True)
 

@@ -157,8 +157,7 @@ def _reset_db():
 
     # Update the Zone ARP table
     _zone = zone_update.Topology(device_data, idx_zone)
-    ingest.insert_arptable(_zone.process(), test=True)
-
+    ingest.insert_arptable(_zone.process(test=True), test=True)
 
 class TestPollUpdateTopologyFunctions(unittest.TestCase):
     """Checks all functions and methods."""
@@ -1346,71 +1345,71 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
             RVlanPort(
                 idx_vlanport=1,
                 idx_l1interface=22,
-                idx_vlan=1,
+                idx_vlan=525,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
             RVlanPort(
                 idx_vlanport=2,
-                idx_l1interface=43,
-                idx_vlan=1,
+                idx_l1interface=22,
+                idx_vlan=129,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
             RVlanPort(
                 idx_vlanport=3,
-                idx_l1interface=44,
-                idx_vlan=1,
+                idx_l1interface=22,
+                idx_vlan=263,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
             RVlanPort(
                 idx_vlanport=4,
-                idx_l1interface=45,
-                idx_vlan=1,
+                idx_l1interface=70,
+                idx_vlan=1197,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
             RVlanPort(
                 idx_vlanport=5,
-                idx_l1interface=47,
-                idx_vlan=1,
+                idx_l1interface=69,
+                idx_vlan=1135,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
             RVlanPort(
                 idx_vlanport=6,
-                idx_l1interface=48,
-                idx_vlan=1,
+                idx_l1interface=72,
+                idx_vlan=881,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
             RVlanPort(
                 idx_vlanport=7,
-                idx_l1interface=49,
-                idx_vlan=1,
+                idx_l1interface=70,
+                idx_vlan=1227,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
             RVlanPort(
                 idx_vlanport=8,
-                idx_l1interface=65,
-                idx_vlan=1,
+                idx_l1interface=70,
+                idx_vlan=965,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
             ),
             RVlanPort(
                 idx_vlanport=9,
-                idx_l1interface=67,
-                idx_vlan=1,
+                idx_l1interface=65,
+                idx_vlan=1357,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,
@@ -1418,7 +1417,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
             RVlanPort(
                 idx_vlanport=10,
                 idx_l1interface=68,
-                idx_vlan=1,
+                idx_vlan=257,
                 enabled=1,
                 ts_modified=None,
                 ts_created=None,

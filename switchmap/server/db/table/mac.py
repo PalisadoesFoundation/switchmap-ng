@@ -159,6 +159,52 @@ def insert_row(rows):
     if bool(inserts):
         db.db_add_all(1087, inserts)
 
+def bulk_insert_rows(rows):
+    """Perform bulk insert for the Mac table.
+
+    Args:
+        rows: List of IMac objects
+
+    Returns:
+        None
+    """
+    # Initialize key variables
+    inserts = []
+
+    # Ensure rows is a list
+    if isinstance(rows, list) is False:
+        rows = [rows]
+
+    # Remove duplicates
+    rows = list(set(rows))
+
+    # Create ORM objects
+    for row in rows:
+        # Fix the MAC address
+        mactest = general.mac(row.mac)
+        
+        # Check validity
+        if bool(mactest.valid) is False:
+            continue
+        else:
+            mac = mactest.mac
+
+        # Find the true idx_oui
+        idx_oui = oui.idx_oui(mac)
+
+        # Add ORM object for insertion
+        inserts.append(
+            Mac(
+                idx_oui=idx_oui,
+                idx_zone=row.idx_zone,
+                mac=(null() if bool(mac) is False else mac.encode()),
+                enabled=int(bool(row.enabled) is True),
+            )
+        )
+
+    # Perform bulk insert
+    if bool(inserts):
+        db.db_bulk_insert(1202, inserts)
 
 def update_row(idx, row):
     """Upadate a Mac table entry.

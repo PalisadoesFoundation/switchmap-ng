@@ -180,6 +180,45 @@ def insert_row(rows):
     if bool(inserts):
         db.db_add_all(1065, inserts)
 
+def bulk_insert_rows(rows):
+    """Bulk insert multiple entries into the Ip table.
+
+    Args:
+        rows: List of TopologyIp objects
+
+    Returns:
+        None
+    """
+    # Initialize key variables
+    inserts = []
+
+    # Ensure input is a list
+    if isinstance(rows, list) is False:
+        rows = [rows]
+
+    # Remove duplicates
+    rows = list(set(rows))
+
+    # Create objects for insertion
+    for row in rows:
+        ip = general.ipaddress(row.address)
+        inserts.append(
+            Ip(
+                idx_zone=row.idx_zone,
+                hostname=(
+                    null()
+                    if bool(row.hostname) is False
+                    else row.hostname.encode()
+                ),
+                version=row.version,
+                address=(null() if bool(ip) is False else ip.address.encode()),
+                enabled=int(bool(row.enabled))
+            )
+        )
+        
+    # Perform bulk insert
+    if inserts:
+        db.db_bulk_insert(1070, inserts)
 
 def update_row(idx, row):
     """Upadate a Ip table entry.

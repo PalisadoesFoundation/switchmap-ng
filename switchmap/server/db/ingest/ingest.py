@@ -469,11 +469,10 @@ def insert_arptable(data, test=False):
     )
     log.log2debug(1084, log_message)
     if bool(test) is False:
-        _mac.insert_row(macs)
+        _mac.bulk_insert_rows(macs)
     else:
         for row in sorted(macs, key=attrgetter("mac")):
             _mac.insert_row(row)
-
     # Insert IP addresses for all zones
     log_message = (
         "Updating IP addresses in the DB for all "
@@ -535,10 +534,10 @@ def insert_macips(items, test=False):
 
     # Insert the values
     if bool(test) is False:
-        _macip.insert_row(rows)
+        _macip.bulk_insert_rows(rows)
     else:
-        for row in sorted(rows, key=attrgetter("idx_mac", "idx_ip")):
-            _macip.insert_row(row)
+        row = sorted(rows, key=attrgetter("idx_mac", "idx_ip"))
+        _macip.bulk_insert_rows(row)
 
 
 def insert_ipports(items, test=False):
