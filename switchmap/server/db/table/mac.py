@@ -185,7 +185,7 @@ def bulk_insert_rows(rows):
         mactest = general.mac(row.mac)
 
         # Check validity
-        if bool(mactest.valid) is False:
+        if not mactest.valid:
             continue
         else:
             mac = mactest.mac
@@ -198,8 +198,8 @@ def bulk_insert_rows(rows):
             Mac(
                 idx_oui=idx_oui,
                 idx_zone=row.idx_zone,
-                mac=(null() if bool(mac) is False else mac.encode()),
-                enabled=int(bool(row.enabled) is True),
+                mac=(null() if not mac else mac.encode()),
+                enabled=int(bool(row.enabled)),
             )
         )
 

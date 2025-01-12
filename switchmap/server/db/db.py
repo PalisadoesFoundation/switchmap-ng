@@ -287,13 +287,12 @@ def db_add_all(error_code, instances, die=True):
     # Return
     return result
 
-
 def db_bulk_insert(error_code, mappings, die=True):
     """Perform bulk insert for ORM objects.
 
     Args:
         error_code: Error code to use in messages
-        instances: List of instances
+        mappings: List of instances to bulk insert
         die: Whether to raise an exception on failure
 
     Returns:
@@ -307,11 +306,11 @@ def db_bulk_insert(error_code, mappings, die=True):
             try:
                 # Perform bulk save
                 session.bulk_save_objects(mappings)
-            except:
+            except Exception as e:
                 # Recover and log error
                 session.rollback()
                 log.log2info(error_code, 'DB "bulk_insert" error.')
-                log.log2exception(error_code, sys.exc_info())
+                log.log2exception(error_code, e)
                 if bool(die):
                     raise
                 log.log2debug(error_code, "Continuing processing.")
@@ -319,11 +318,11 @@ def db_bulk_insert(error_code, mappings, die=True):
             # Commit the transaction
             try:
                 session.commit()
-            except:
+            except Exception as e:
                 # Recover and log error
                 session.rollback()
                 log.log2info(error_code, 'DB "bulk_insert" commit error.')
-                log.log2exception(error_code, sys.exc_info())
+                log.log2exception(error_code, e)
                 if bool(die):
                     raise
                 log.log2debug(error_code, "Continuing processing.")

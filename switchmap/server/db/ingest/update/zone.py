@@ -23,6 +23,7 @@ def process(data, idx_zone, dns=True, test=False):
         data: Device data (dict)
         idx_zone: Zone index to which the data belongs
         dns: Do DNS lookups if True
+        test: Whether to run in test mode. Defaults to False.
 
     Returns:
         results: ZoneObjects object
@@ -104,7 +105,7 @@ class Topology:
         """Process data received from a device.
 
         Args:
-            None
+            test: Whether to run in test mode. Defaults to False.
 
         Returns:
             None
@@ -195,6 +196,7 @@ class Topology:
 
         Args:
             data: Ip data
+            test: Whether to run in test mode. Defaults to False.
 
         Returns:
             None
@@ -220,7 +222,8 @@ class Topology:
             for ip in unique_ips:
                 try:
                     hostname_map[ip] = socket.gethostbyaddr(ip)[0]
-                except:
+                except (socket.herror, socket.gaierror) as e:
+                    log.log2debug(1084, f"DNS lookup failed for {ip}: {str(e)}")
                     hostname_map[ip] = None
 
         # Create a DB record
