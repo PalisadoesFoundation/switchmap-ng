@@ -5,7 +5,7 @@ classes from the `switchmap.dashboard.table.events` module.
 """
 
 import unittest
-from switchmap.dashboard.table.events import table, EventTable, EventsRow
+from switchmap.dashboard.table.events import table, EventTable
 from switchmap.dashboard import EventMeta
 from switchmap import SITE_PREFIX
 
@@ -17,10 +17,10 @@ class TestEventTable(unittest.TestCase):
         """Test the table function with a list of EventMeta objects."""
         # Arrange: Create a list of EventMeta objects
         events = [
-            EventMeta(date="2025-01-01", idx_root="event1"),
-            EventMeta(date="2025-01-02", idx_root="event2"),
-            EventMeta(date="2025-01-03", idx_root="event3"),
-            EventMeta(date="2025-01-04", idx_root="event4"),
+            EventMeta(date="2025-01-01", idx_root=1),
+            EventMeta(date="2025-01-02", idx_root=2),
+            EventMeta(date="2025-01-03", idx_root=3),
+            EventMeta(date="2025-01-04", idx_root=4),
         ]
         # Act: Call the table function
         result = table(events)
@@ -32,13 +32,13 @@ class TestEventTable(unittest.TestCase):
         # Verify specific values in the first row
         first_row = result.items[0]
         self.assertEqual(
-            first_row.col0, f'<a href="{SITE_PREFIX}/event4">2025-01-04</a>'
+            first_row.col0, f'<a href="{SITE_PREFIX}/4">2025-01-04</a>'
         )
         self.assertEqual(
-            first_row.col1, f'<a href="{SITE_PREFIX}/event3">2025-01-03</a>'
+            first_row.col1, f'<a href="{SITE_PREFIX}/3">2025-01-03</a>'
         )
         self.assertEqual(
-            first_row.col2, f'<a href="{SITE_PREFIX}/event2">2025-01-02</a>'
+            first_row.col2, f'<a href="{SITE_PREFIX}/2">2025-01-02</a>'
         )
         self.assertEqual(first_row.col3, "")
         self.assertEqual(first_row.col4, "")
@@ -55,7 +55,7 @@ class TestEventTable(unittest.TestCase):
 
     def test_table_with_single_event(self):
         """Test the table function with a single event."""
-        events = [EventMeta(date="2025-01-01", idx_root="event1")]
+        events = [EventMeta(date="2025-01-01", idx_root=1)]
         result = table(events)
 
         # Update expectation to verify the EventTable behavior
@@ -66,7 +66,7 @@ class TestEventTable(unittest.TestCase):
 
         first_row = result.items[0]
         self.assertEqual(
-            first_row.col0, f'<a href="{SITE_PREFIX}/event1">2025-01-01</a>'
+            first_row.col0, f'<a href="{SITE_PREFIX}/1">2025-01-01</a>'
         )
 
 
