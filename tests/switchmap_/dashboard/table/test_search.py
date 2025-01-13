@@ -50,7 +50,14 @@ class TestSearch(unittest.TestCase):
         original_table_function = interfaces_.table
 
         def mock_table(data):
-            """Mock the table generation function."""
+            """Mock the table generation function.
+
+            Args:
+                data (dict): The data containing interface details.
+
+            Returns:
+                str: A string containing the generated HTML table.
+            """
             rows = "".join(
                 f"<tr><td>{iface['name']}</td><td>{iface['status']}</td></tr>"
                 for iface in data["interfaces"]
