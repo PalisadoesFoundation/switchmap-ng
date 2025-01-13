@@ -1,9 +1,16 @@
+"""Unit tests for the event table functionalities.
+
+This module contains tests for the `table`, `EventTable`, and `EventsRow`
+classes from the `switchmap.dashboard.table.events` module.
+"""
+
 import unittest
 from switchmap.dashboard.table.events import table, EventTable, EventsRow
 from switchmap.dashboard.routes import EventMeta
 
-
 class TestEventTable(unittest.TestCase):
+    """Test cases for the event table functionalities."""
+
     def test_table_with_valid_events(self):
         """Test the table function with a list of EventMeta objects."""
         # Arrange: Create a list of EventMeta objects
@@ -16,7 +23,7 @@ class TestEventTable(unittest.TestCase):
         result = table(events)
         # Assert: Verify the EventTable output
         self.assertIsInstance(result, EventTable)
-        self.assertEqual(len(result.items), 1)
+        self.assertEqual(len(result.items), 1)  # Should have one row (6 columns per row)
         # Verify specific values in the first row
         first_row = result.items[0]
         self.assertEqual(first_row.col0, '<a href="/event3">2025-01-03</a>')
@@ -43,7 +50,6 @@ class TestEventTable(unittest.TestCase):
         result = table(events)
         # Assert: Verify the result is False (only one event is removed)
         self.assertFalse(result)
-
 
 if __name__ == "__main__":
     unittest.main()
