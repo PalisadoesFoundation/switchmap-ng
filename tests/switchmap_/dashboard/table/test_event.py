@@ -29,9 +29,15 @@ class TestEventTable(unittest.TestCase):
         )  # Should have one row (6 columns per row)
         # Verify specific values in the first row
         first_row = result.items[0]
-        self.assertEqual(first_row.col0, f'<a href="{SITE_PREFIX}/event3">2025-01-03</a>')
-        self.assertEqual(first_row.col1, f'<a href="{SITE_PREFIX}/event2">2025-01-02</a>')
-        self.assertEqual(first_row.col2, f'<a href="{SITE_PREFIX}/event1">2025-01-01</a>')
+        self.assertEqual(
+            first_row.col0, f'<a href="{SITE_PREFIX}/event3">2025-01-03</a>'
+        )
+        self.assertEqual(
+            first_row.col1, f'<a href="{SITE_PREFIX}/event2">2025-01-02</a>'
+        )
+        self.assertEqual(
+            first_row.col2, f'<a href="{SITE_PREFIX}/event1">2025-01-01</a>'
+        )
         self.assertEqual(first_row.col3, "")
         self.assertEqual(first_row.col4, "")
         self.assertEqual(first_row.col5, "")
