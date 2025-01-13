@@ -7,7 +7,7 @@ classes from the `switchmap.dashboard.table.events` module.
 import unittest
 from switchmap.dashboard.table.events import table, EventTable, EventsRow
 from switchmap.dashboard import EventMeta
-
+from switchmap import SITE_PREFIX
 
 class TestEventTable(unittest.TestCase):
     """Test cases for the event table functionalities."""
