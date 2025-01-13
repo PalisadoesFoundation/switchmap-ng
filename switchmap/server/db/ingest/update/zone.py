@@ -16,21 +16,20 @@ from switchmap.server.db.table import (
 )
 
 
-def process(data, idx_zone, dns=True, test=False):
+def process(data, idx_zone, dns=True):
     """Process data received from a device.
 
     Args:
         data: Device data (dict)
         idx_zone: Zone index to which the data belongs
         dns: Do DNS lookups if True
-        test: Whether to run in test mode. Defaults to False.
 
     Returns:
         results: ZoneObjects object
     """
     # Process the device
     _topology = Topology(data, idx_zone, dns=dns)
-    result = _topology.process(test)
+    result = _topology.process()
     return result
 
 
@@ -149,18 +148,19 @@ class Topology:
         self._hostname = str(self._data["misc"]["host"]).lower()
         self._arp_table = _arp_table(idx_zone, self._data)
 
-    def process(self, test=False):
+    def process(self, dns):
         """Process data received from a device.
 
         Args:
-            test: Whether to run in test mode. Defaults to False.
+            None
 
         Returns:
             None
         """
         # Process zone data
+        self._dns = dns
         macs = self.mac()
-        ips = self.ip(test)
+        ips = self.ip()
         pairmacips = self.macip()
         result = ZoneObjects(ips=ips, macs=macs, pairmacips=pairmacips)
         return result
@@ -237,11 +237,11 @@ class Topology:
         rows = list(set(rows))
         return rows
 
-    def ip(self, test=False):
+    def ip(self):
         """Update the Ip DB table.
 
         Args:
-            test: Whether to run in test mode. Defaults to False.
+            None
 
         Returns:
             None
@@ -262,7 +262,7 @@ class Topology:
 
         unique_ips = set(ips)
         hostname_map = {}
-        if not test:
+        if self._dns:
             for ip in unique_ips:
                 try:
                     hostname_map[ip] = socket.gethostbyaddr(ip)[0]
@@ -277,7 +277,7 @@ class Topology:
             IIp(
                 idx_zone=self._idx_zone,
                 address=item.ip,
-                hostname=hostname_map.get(item.ip) if not test else None,
+                hostname=hostname_map.get(item.ip) if self._dns else None,
                 version=item.ip_version,
                 enabled=1,
             )

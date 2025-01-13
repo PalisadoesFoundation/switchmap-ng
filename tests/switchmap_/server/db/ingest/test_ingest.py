@@ -144,7 +144,7 @@ def _reset_db():
 
     # Update the Zone ARP table
     _zone = zone_update.Topology(device_data, idx_zone)
-    result = ingest.insert_arptable(_zone.process(test=True))
+    result = ingest.insert_arptable(_zone.process(dns=False))
     return result
 
 
