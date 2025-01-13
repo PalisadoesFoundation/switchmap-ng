@@ -4,7 +4,7 @@
 import os
 import sys
 import unittest
-from flask_table import Table
+import json
 from unittest.mock import patch
 
 # Add the project root directory to sys.path
@@ -24,12 +24,21 @@ class TestSearch(unittest.TestCase):
 
     def setUp(self):
         """Set up test data for each test case."""
-        self.valid_data = {
-            "interfaces": [
-                {"id": 1, "name": "eth0", "status": "up"},
-                {"id": 2, "name": "eth1", "status": "down"},
-            ]
-        }
+        # Load realistic interface data from the JSON file
+        test_data_path = os.path.join(
+            ROOT_DIR, "tests/testdata_/device-01.json"
+        )
+        with open(test_data_path) as file:
+            self.valid_data = json.load(file)
+
+        # Extract l1interfaces data for testing
+        self.valid_data["interfaces"] = [
+            {
+                "ifname": iface["ifname"],
+                "status": "up" if iface["ifoperstatus"] == 1 else "down",
+            }
+            for iface in self.valid_data.get("l1interfaces", [])
+        ]
         self.empty_data = {}
         self.none_data = None
 
@@ -59,7 +68,7 @@ class TestSearch(unittest.TestCase):
                 str: A string containing the generated HTML table.
             """
             rows = "".join(
-                f"<tr><td>{iface['name']}</td><td>{iface['status']}</td></tr>"
+                f"<tr><td>{iface['ifname']}</td><td>{iface['status']}</td></tr>"
                 for iface in data["interfaces"]
             )
             return f"<table>{rows}</table>"
@@ -69,12 +78,13 @@ class TestSearch(unittest.TestCase):
         result = search_instance.interfaces()
         interfaces_.table = original_table_function
 
-        expected_html = (
-            "<table>"
-            "<tr><td>eth0</td><td>up</td></tr>"
-            "<tr><td>eth1</td><td>down</td></tr>"
-            "</table>"
+        # Build the expected HTML dynamically
+        expected_rows = "".join(
+            f"<tr><td>{iface['ifname']}</td><td>{iface['status']}</td></tr>"
+            for iface in self.valid_data["interfaces"]
         )
+        expected_html = f"<table>{expected_rows}</table>"
+
         self.assertEqual(
             result,
             expected_html,
