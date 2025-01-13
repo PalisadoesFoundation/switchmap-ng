@@ -163,13 +163,14 @@ jobs:
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+
       - name: Install dependencies and test
         run: |
           python3 -m venv venv
           source venv/bin/activate
           python -m pip install --upgrade pip
           pip3 install -r requirements.txt
-          pip install pytest-cov
+          pip install pytest-cov coverage
           tests/bin/error_code_report.py
           tests/bin/test_db_config_setup.py
           sudo systemctl start mysql.service
@@ -177,26 +178,24 @@ jobs:
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "CREATE USER '${{ env.DATABASE_USERNAME }}'@'localhost' IDENTIFIED BY '${{ env.DATABASE_PASSWORD }}';"
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost';"
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "FLUSH PRIVILEGES;"
-          pytest --cov=. --cov-report=xml --cov-report=term-missing --junitxml=junit.xml tests/switchmap_
+          pytest --cov=switchmap --cov-report=lcov:coverage/coverage.lcov --cov-report=term-missing tests/switchmap_
+          
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           slug: PalisadoesFoundation/switchmap-ng
           verbose: true
+          files: ./coverage/coverage.lcov
           gcov_ignore: "docs/"
           fail_ci_if_error: false
           name: "${{env.CODECOV_UNIQUE_NAME}}"
-      - name: Upload test results to Codecov
-        if: ${{ !cancelled() }}
-        uses: codecov/test-results-action@v1
+
+      - name: Test acceptable level of code coverage
+        uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-      # - name: Test acceptable level of code coverage
-      #   uses: VeryGoodOpenSource/very_good_coverage@v3
-      #   with:
-      #     path: "./coverage/lcov.info"
-      #     min_coverage: 0.0
+          path: ./coverage/coverage.lcov
+          min_coverage: 0.0
 
   Test-Docusaurus-Deployment:
     name: Test Deployment to https://docs-legacy.switchmap-ng.io
