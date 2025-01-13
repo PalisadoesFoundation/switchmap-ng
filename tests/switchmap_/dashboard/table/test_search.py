@@ -51,7 +51,11 @@ class TestSearch(unittest.TestCase):
 
         def mock_table(data):
             """Mock the table generation function."""
-            return f"<table>{''.join(f'<tr><td>{iface['name']}</td><td>{iface['status']}</td></tr>' for iface in data['interfaces'])}</table>"
+            rows = "".join(
+                f"<tr><td>{iface['name']}</td><td>{iface['status']}</td></tr>"
+                for iface in data["interfaces"]
+            )
+            return f"<table>{rows}</table>"
 
         interfaces_.table = mock_table
         search_instance = search.Search(self.valid_data)
