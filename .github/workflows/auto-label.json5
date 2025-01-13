@@ -1,0 +1,7 @@
+{
+  "labelsSynonyms": {
+    "dependencies": ["dependabot", "dependency", "dependencies"],
+    "security": ["security"],
+  },
+  "defaultLabels": ["unapproved"],
+}
