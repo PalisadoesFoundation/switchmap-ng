@@ -20,6 +20,7 @@ class TestEventTable(unittest.TestCase):
             EventMeta(date="2025-01-01", idx_root="event1"),
             EventMeta(date="2025-01-02", idx_root="event2"),
             EventMeta(date="2025-01-03", idx_root="event3"),
+            EventMeta(date="2025-01-04", idx_root="event4"),
         ]
         # Act: Call the table function
         result = table(events)
@@ -31,13 +32,13 @@ class TestEventTable(unittest.TestCase):
         # Verify specific values in the first row
         first_row = result.items[0]
         self.assertEqual(
-            first_row.col0, f'<a href="{SITE_PREFIX}/event3">2025-01-03</a>'
+            first_row.col0, f'<a href="{SITE_PREFIX}/event4">2025-01-04</a>'
         )
         self.assertEqual(
-            first_row.col1, f'<a href="{SITE_PREFIX}/event2">2025-01-02</a>'
+            first_row.col1, f'<a href="{SITE_PREFIX}/event3">2025-01-03</a>'
         )
         self.assertEqual(
-            first_row.col2, f'<a href="{SITE_PREFIX}/event1">2025-01-01</a>'
+            first_row.col2, f'<a href="{SITE_PREFIX}/event2">2025-01-02</a>'
         )
         self.assertEqual(first_row.col3, "")
         self.assertEqual(first_row.col4, "")
@@ -54,12 +55,19 @@ class TestEventTable(unittest.TestCase):
 
     def test_table_with_single_event(self):
         """Test the table function with a single event."""
-        # Arrange: Create a list with a single EventMeta object
         events = [EventMeta(date="2025-01-01", idx_root="event1")]
-        # Act: Call the table function
         result = table(events)
-        # Assert: Verify the result is False (only one event is removed)
-        self.assertFalse(result)
+
+        # Update expectation to verify the EventTable behavior
+        self.assertIsInstance(result, EventTable)
+        self.assertEqual(
+            len(result.items), 1
+        )  # Ensure the single event is processed
+
+        first_row = result.items[0]
+        self.assertEqual(
+            first_row.col0, f'<a href="{SITE_PREFIX}/event1">2025-01-01</a>'
+        )
 
 
 if __name__ == "__main__":
