@@ -56,7 +56,7 @@ class TestSearch(unittest.TestCase):
                 for iface in data["interfaces"]
             )
             return f"<table>{rows}</table>"
-            
+
         interfaces_.table = mock_table
         search_instance = search.Search(self.valid_data)
         result = search_instance.interfaces()
