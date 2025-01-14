@@ -1,14 +1,20 @@
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 # Mocking read_yaml_file and ConfigServer globally to prevent configuration initialization issues
-yaml_patcher = patch("switchmap.core.files.read_yaml_file", return_value={"config_key": "value"})
+yaml_patcher = patch(
+    "switchmap.core.files.read_yaml_file", return_value={"config_key": "value"}
+)
 yaml_patcher.start()
 
-config_patcher = patch("switchmap.server.configuration.ConfigServer", autospec=True)
+config_patcher = patch(
+    "switchmap.server.configuration.ConfigServer", autospec=True
+)
 config_patcher.start()
 
-from switchmap.server.db.misc.interface import interfaces  # Import after mocking
+from switchmap.server.db.misc.interface import \
+    interfaces  # Import after mocking
+
 
 class TestInterfaces(unittest.TestCase):
     @classmethod
@@ -23,7 +29,9 @@ class TestInterfaces(unittest.TestCase):
     @patch("switchmap.server.db.misc.interface.event")
     @patch("switchmap.server.db.misc.interface.device")
     @patch("switchmap.server.db.misc.interface.l1interface")
-    def test_interfaces_success(self, mock_l1interface, mock_device, mock_event, mock_zone):
+    def test_interfaces_success(
+        self, mock_l1interface, mock_device, mock_event, mock_zone
+    ):
         """
         Test successful retrieval of interfaces when all conditions pass.
         """
@@ -84,7 +92,9 @@ class TestInterfaces(unittest.TestCase):
     @patch("switchmap.server.db.misc.interface.event")
     @patch("switchmap.server.db.misc.interface.device")
     @patch("switchmap.server.db.misc.interface.l1interface")
-    def test_interfaces_no_interfaces(self, mock_l1interface, mock_device, mock_event, mock_zone):
+    def test_interfaces_no_interfaces(
+        self, mock_l1interface, mock_device, mock_event, mock_zone
+    ):
         """
         Test when no interfaces are returned.
         """
