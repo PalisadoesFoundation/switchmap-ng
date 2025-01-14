@@ -6,12 +6,26 @@ from switchmap.poller.snmp.base_query import Query
 
 
 def get_query():
-    """Return this module's Query class."""
+    """Return this module's Query class.
+
+    Args:
+        None
+
+    Returns:
+        CiscoVlanIftableRelationshipQuery: Query class object
+    """
     return CiscoVlanIftableRelationshipQuery
 
 
 def init_query(snmp_object):
-    """Return initialize and return this module's Query class."""
+    """Return initialize and return this module's Query class.
+
+    Args:
+        snmp_object: SNMP Interact class object from snmp_manager.py
+
+    Returns:
+        CiscoVlanIftableRelationshipQuery: Query class object
+    """
     return CiscoVlanIftableRelationshipQuery(snmp_object)
 
 
@@ -75,8 +89,9 @@ class CiscoVlanIftableRelationshipQuery(Query):
         return final
 
     def cviroutedvlanifindex(self, oidonly=False):
-        """Return dict of CISCO-VLAN-IFTABLE-RELATIONSHIP-MIB
-            cviRoutedVlanIfIndex for each VLAN.
+        """Return dictionary of CISCO-VLAN-IFTABLE-RELATIONSHIP-MIB.
+
+        Keyed by OID cviRoutedVlanIfIndex for each VLAN.
 
         Args:
             oidonly: Return OID's value, not results, if True

@@ -78,7 +78,6 @@ class Mac:
             None
 
         Returns:
-
             result: List of MacIpState objects
 
         """
@@ -118,7 +117,7 @@ def _mac_state(data):
     """Return MacState.
 
     Args:
-        None
+        data: Dict of device data to process
 
     Returns:
         result: MacState object
@@ -142,7 +141,7 @@ def _ip_state(data):
     """Return port ips.
 
     Args:
-        None
+        data: Dict of data being processed
 
     Returns:
         result: List of IpState objects
@@ -171,10 +170,9 @@ def macips(interface):
     """Get the MacIpState of the interface.
 
     Args:
-        None
+        interface: IDX of the interface in the DB
 
     Returns:
-
         result: List of MacIpState objects
 
     """

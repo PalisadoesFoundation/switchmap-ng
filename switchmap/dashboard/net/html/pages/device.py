@@ -11,7 +11,7 @@ class Device:
         """Initialize the class.
 
         Args:
-            device: Device dictionary
+            data: Device dictionary
 
         Returns:
             None
