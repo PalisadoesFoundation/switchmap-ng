@@ -19,15 +19,15 @@ Here are some links to get you started:
 
 1. Windows 11:
     1. SNMP Server: 
-        - Setting up the Server: https://blog.paessler.com/how-to-enable-snmp-on-your-operating-system
+        - Setting up the Server: [Enable SNMP on Windows](https://blog.paessler.com/how-to-enable-snmp-on-your-operating-system)
     1. SNMP Client:
-        - Software: http://www.net-snmp.org/download.html
-        - Tutorial: Testing using the SNMP walk command: https://www.itprc.com/snmpwalk-examples-for-windows/
+        - Software: [Net-SNMP Download](http://www.net-snmp.org/download.html)
+        - Tutorial: [SNMP Walk Examples for Windows](https://www.itprc.com/snmpwalk-examples-for-windows/)
 1. Ubuntu: 
     - This page includes both server and client setup.
-    - https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring-the-snmp-agent-server
+    - [Ubuntu SNMP Setup Guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring-the-snmp-agent-server)
 
-## Testing SwiitchMap-NG Setup for Developers
+## SwitchMap-NG Setup for Developers
 
 Follow the installation steps above to have the application ready, then
 add these steps for developing code.
