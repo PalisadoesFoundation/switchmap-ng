@@ -27,12 +27,9 @@ graphql_server==3.0.0b5
 # Testing
 mock
 pytest
-<<<<<<< HEAD
-=======
 
 # Docstring Parser
 docstring_parser
->>>>>>> develop
 
 # Other
 more-itertools
