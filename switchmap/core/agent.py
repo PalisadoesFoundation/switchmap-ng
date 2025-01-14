@@ -75,7 +75,13 @@ class Agent:
         return value
 
     def query(self):
-        """Create placeholder method. Do not delete."""
+        """Create placeholder method. Do not delete.
+
+        Args:
+            None
+        Returns:
+            None
+        """
         # Do nothing
         pass
 
@@ -102,7 +108,7 @@ class _AgentRun:
         Args:
             None
 
-        Return:
+        Returns:
             None
 
         """
@@ -140,6 +146,7 @@ class GracefulAgentDaemon(_AgentRun, GracefulDaemon):
 
         Args:
             agent: agent object
+            timeout: agent timeout
 
         Returns:
             None
@@ -182,7 +189,7 @@ class AgentCLI:
         """Return all the CLI options.
 
         Args:
-            None
+            additional_help: CLI additional help string for argparse
 
         Returns:
             args: Namespace() containing all of our CLI arguments as objects
@@ -252,6 +259,7 @@ class AgentCLI:
 
         Args:
             agent: Agent object
+            timeout: Agent timeout
 
         Returns:
             None
@@ -383,10 +391,11 @@ class _StandaloneApplication(BaseApplication):
         """Initialize the class.
 
         Args:
-
             app: Flask application object of type Flask(__name__)
             parent: Name of parent process that is invoking the API
             options: Gunicorn CLI options
+        Returns:
+            None
 
         """
         # Initialize key variables
@@ -396,7 +405,13 @@ class _StandaloneApplication(BaseApplication):
         super(_StandaloneApplication, self).__init__()
 
     def load_config(self):
-        """Load the configuration."""
+        """Load the configuration.
+
+        Args:
+            None
+        Returns:
+            None
+        """
         # Initialize key variables
         now = datetime.now()
         config = dict(
@@ -422,12 +437,28 @@ class _StandaloneApplication(BaseApplication):
             print("  {} = {}".format(name, value.get()))
 
     def load(self):
-        """Run the Flask application throught the Gunicorn WSGI."""
+        """Run the Flask application throught the Gunicorn WSGI.
+
+        Args:
+            None
+
+        Returns:
+            self.application: Flask application object
+
+        """
         return self.application
 
 
 def _number_of_workers():
-    """Get the number of CPU cores on this server."""
+    """Get the number of CPU cores on this server.
+
+    Args:
+        None
+
+    Returns:
+        result: Number of workers
+
+    """
     return (multiprocessing.cpu_count() * 2) + 1
 
 

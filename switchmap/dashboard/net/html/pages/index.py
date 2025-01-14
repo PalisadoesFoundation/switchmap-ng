@@ -12,7 +12,7 @@ class IndexPage:
         """Initialize the class.
 
         Args:
-            host: Hostname to process
+            zones: List of zones
 
         Returns:
             None

@@ -105,7 +105,6 @@ class TestDbTableMacIp(unittest.TestCase):
 
     def test_idx_exists(self):
         """Testing function idx_exists."""
-
         # Loop a lot of times
         for _ in range(self.loops):
             # Create record

@@ -11,7 +11,14 @@ class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
-        """Fix the column formatting."""
+        """Format the column content without escaping.
+
+        Args:
+            content: The content to be displayed in the column
+
+        Returns:
+            content: The unmodified content
+        """
         return content
 
 
@@ -41,11 +48,10 @@ class InterfaceTable(Table):
         """Apply CSS class attributes to regular table row.
 
         Args:
-            item: Row of data
+            item: Row data object containing interface information
 
         Returns:
-            class of active stuff
-
+            dict: CSS class mapping based on interface state
         """
         # Special treatment for rows of enabled ports
         if item.enabled() is True:
@@ -85,7 +91,6 @@ class InterfaceRow:
             None
 
         """
-        # Initialize key variables
         [
             self.port,
             self.vlan,
@@ -104,16 +109,31 @@ class InterfaceRow:
         ] = row
 
     def active(self):
-        """Active ports."""
+        """Determine if the interface is active.
+
+        Args:
+            None
+
+        Returns:
+            bool: True if interface state is 'Active', False otherwise
+        """
         return bool(self.state == "Active")
 
     def enabled(self):
-        """Enable ports."""
+        """Determine if the interface is enabled.
+
+        Args:
+            None
+
+        Returns:
+            bool: True if interface state is not 'Disabled', False otherwise
+            boolean value of state if is not Disabled.
+        """
         return bool(self.state != "Disabled")
 
 
 def table(_interfaces):
-    """Get Interface data from the device
+    """Get Interface data from the device.
 
     Args:
         _interfaces: Interface dict

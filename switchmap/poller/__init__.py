@@ -1,3 +1,13 @@
+"""Define the switchmap.poller package.
+
+Args:
+    None
+
+Returns:
+    None
+
+"""
+
 from collections import namedtuple
 
 SNMP = namedtuple(

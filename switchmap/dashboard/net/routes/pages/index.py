@@ -25,7 +25,7 @@ def dashboard():
         None
 
     Returns:
-        HTML
+        _dashboard: HTML via function
 
     """
     # Get data to display
@@ -42,7 +42,7 @@ def historical_dashboard(idx_root):
         idx_root: Event index
 
     Returns:
-        HTML
+        _dashboard: HTML via function
 
     """
     # Get data to display
@@ -59,7 +59,7 @@ def _dashboard(event, idx_root=1):
         idx_root: Root db table primary key
 
     Returns:
-        HTML
+        render_template: HTML
 
     """
     # Convert data to HTML and return it to the browser

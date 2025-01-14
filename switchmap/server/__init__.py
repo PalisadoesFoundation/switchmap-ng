@@ -1,3 +1,13 @@
+"""Define the switchmap.server package.
+
+Args:
+    None
+
+Returns:
+    None
+
+"""
+
 from collections import namedtuple
 
 # Important tuples

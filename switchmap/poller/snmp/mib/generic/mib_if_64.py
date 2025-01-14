@@ -6,12 +6,26 @@ from switchmap.poller.snmp.base_query import Query
 
 
 def get_query():
-    """Return this module's Query class."""
+    """Return this module's Query class.
+
+    Args:
+        None
+
+    Returns:
+        If64Query: Query class object
+    """
     return If64Query
 
 
 def init_query(snmp_object):
-    """Return initialize and return this module's Query class."""
+    """Return initialize and return this module's Query class.
+
+    Args:
+        snmp_object: SNMP Interact class object from snmp_manager.py
+
+    Returns:
+        If64Query: Query class object
+    """
     return If64Query(snmp_object)
 
 
@@ -232,7 +246,9 @@ class If64Query(Query):
         return data_dict
 
     def ifhcoutmulticastpkts(self, oidonly=False):
-        """Return dict of IFMIB ifHCOutMulticastPkts for each ifIndex for device.
+        """Return dict of IFMIB ifHCOutMulticastPkts.
+
+        Keyed by ifIndex for the device.
 
         Args:
             oidonly: Return OID's value, not results, if True
@@ -290,7 +306,9 @@ class If64Query(Query):
         return data_dict
 
     def ifhcoutbroadcastpkts(self, oidonly=False):
-        """Return dict of IFMIB ifHCOutBroadcastPkts for each ifIndex for device.
+        """Return dict of IFMIB ifHCOutBroadcastPkts.
+
+        Keyed by ifIndex for the device.
 
         Args:
             oidonly: Return OID's value, not results, if True

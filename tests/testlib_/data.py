@@ -134,7 +134,7 @@ def configtester():
         None
 
     Returns:
-        result
+        result: Dict of test config YAML
 
     """
     # Return
@@ -148,7 +148,7 @@ def config():
         None
 
     Returns:
-        result
+        result: Dict of configuration file
 
     """
     # Return
@@ -165,7 +165,7 @@ def dashboard_data():
         None
 
     Returns:
-        result
+        result: Data for dashboard
 
     """
     # Read test data file
@@ -188,7 +188,7 @@ def polled_data(strip=True):
         strip: Strip l1 keys if True
 
     Returns:
-        result
+        result: Simulated polled data
 
     """
     # Read test data file
