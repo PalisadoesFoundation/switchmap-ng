@@ -16,8 +16,6 @@ class Query:
     Returns:
         None
 
-    Methods:
-
     """
 
     def __init__(self, snmp_object):

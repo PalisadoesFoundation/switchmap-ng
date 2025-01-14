@@ -375,7 +375,6 @@ def _nativevlan(port_data):
 
     Args:
         port_data: Data dict related to the port
-        ifindex: ifindex in question
 
     Returns:
         vlan: VLAN number
@@ -423,7 +422,7 @@ def _duplex(port_data):
 
         Args:
             status: The status of the port
-            value: The value of the port status
+            val: The value of the port status
 
         Returns:
             value: Duplex value

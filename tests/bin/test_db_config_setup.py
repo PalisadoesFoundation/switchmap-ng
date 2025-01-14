@@ -30,7 +30,7 @@ from tests.testlib_ import setup
 
 
 def main():
-    """Create test configurations."""
+
     # Save the config
     config = setup.config()
     config.save()

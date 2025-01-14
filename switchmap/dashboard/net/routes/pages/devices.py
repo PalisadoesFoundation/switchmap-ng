@@ -26,7 +26,7 @@ def devices(idx_device):
         idx_device: Device index
 
     Returns:
-        HTML
+        render_template: HTML
 
     """
     # Get data to display

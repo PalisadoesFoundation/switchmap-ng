@@ -28,5 +28,13 @@ graphql_server==3.0.0b5
 mock
 pytest
 
+
 # Other
 more-itertools
+
+#Linting and formatting
+flake8
+flake8-docstrings
+pydocstyle
+black
+docstring_parser

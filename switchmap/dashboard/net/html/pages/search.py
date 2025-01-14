@@ -12,7 +12,7 @@ class SearchPage:
         """Initialize the class.
 
         Args:
-            search: Search dictionary
+            data: Search dictionary
             hostname: The name of the Device
 
         Returns:

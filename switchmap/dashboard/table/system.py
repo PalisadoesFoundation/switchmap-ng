@@ -11,7 +11,14 @@ class _RawCol(Col):
     """Class outputs whatever it is given and will not escape it."""
 
     def td_format(self, content):
-        """Fix the column formatting."""
+        """Format the column content without escaping.
+
+        Args:
+            content: The content to be displayed in the column
+
+        Returns:
+            content: The unmodified content
+        """
         return content
 
 
@@ -34,11 +41,10 @@ class SystemRow:
         """Initialize the class.
 
         Args:
-            row: SystemDataRow object
+            row: SystemDataRow object containing parameter and value
 
         Returns:
             None
-
         """
         # Initialize key variables
         [row.parameter, row.value] = row
@@ -48,11 +54,10 @@ def table(data):
     """Create summary table for the devie.
 
     Args:
-        None
+        data: Dictionary containing system information data
 
     Returns:
-        html: HTML table string
-
+        html: HTML table string or None if no rows are present
     """
     # Initialize key variables
     result = None
