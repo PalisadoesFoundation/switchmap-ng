@@ -17,19 +17,20 @@ Here are some links to get you started:
 
    #. SNMP Server: 
 
-      #. Setting up the Server: https://blog.paessler.com/how-to-enable-snmp-on-your-operating-system
+      #. `Enable SNMP on Windows <https://blog.paessler.com/how-to-enable-snmp-on-your-operating-system>`_
     
    #. SNMP Client:
             
-      #. Software: http://www.net-snmp.org/download.html
+      #. Software: `Net-SNMP Download <http://www.net-snmp.org/download.html>`_
       
-      #. Tutorial: Testing using the SNMP walk command: https://www.itprc.com/snmpwalk-examples-for-windows/
+      #. Tutorial: `SNMP Walk Examples for Windows <https://www.itprc.com/snmpwalk-examples-for-windows/>`_
 
 #. Ubuntu: 
    
    #. This page includes both server and client setup.
    
-   #. https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring-
+   #. `Ubuntu SNMP Setup Guide <https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring->`_
+
 
 Testing Setup for Developers
 ----------------------------
