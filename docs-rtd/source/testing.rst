@@ -21,9 +21,9 @@ Here are some links to get you started:
     
    #. SNMP Client:
             
-      * Software: http://www.net-snmp.org/download.html
+      #. Software: http://www.net-snmp.org/download.html
       
-      * Tutorial: Testing using the SNMP walk command: https://www.itprc.com/snmpwalk-examples-for-windows/
+      #. Tutorial: Testing using the SNMP walk command: https://www.itprc.com/snmpwalk-examples-for-windows/
 
 #. Ubuntu: 
    
