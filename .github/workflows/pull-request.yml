@@ -143,7 +143,7 @@ jobs:
 
   Test-Application:
     name: Test Application
-    needs: [Code-Quality-Checks]
+    needs: [Code-Quality-Checks, Docstring-Compliance]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -189,6 +189,7 @@ jobs:
           files: ./coverage/coverage.lcov
           gcov_ignore: "docs/"
           fail_ci_if_error: false
+          # This is added to make troubleshooting easier in the CodeCov SAAS site
           name: "${{env.CODECOV_UNIQUE_NAME}}"
 
       - name: Test acceptable level of code coverage
@@ -200,7 +201,7 @@ jobs:
   Test-Docusaurus-Deployment:
     name: Test Deployment to https://docs-legacy.switchmap-ng.io
     runs-on: ubuntu-latest
-    needs: [Code-Quality-Checks]
+    needs: [Test-Application]
     # Run only if the develop branch and not dependabot
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.base.ref == 'develop' }}
     steps:
