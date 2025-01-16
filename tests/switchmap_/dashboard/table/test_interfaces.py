@@ -221,8 +221,11 @@ class TestTable(unittest.TestCase):
             def row(self):
                 """Create interface data row.
 
+                Args:
+                    None
+
                 Returns:
-                    namedtuple: Row of interface data or None if no data exists
+                    namedtuple: Row of interface or None if no data available
                 """
                 if not self._interface:
                     return None
