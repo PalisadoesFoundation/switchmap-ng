@@ -46,19 +46,20 @@ class TestDevice(unittest.TestCase):
     def test_interfaces_with_empty_data(self):
         """Test the interfaces method with empty data."""
         device_instance = device.Device(self.empty_data)
-        with patch.object(interfaces_, 'table', return_value=None):
+        with patch.object(interfaces_, "table", return_value=None):
             result = device_instance.interfaces()
             self.assertIsNone(result, "Expected None for empty data")
 
     def test_interfaces_with_none_data(self):
         """Test the interfaces method with None as data."""
         device_instance = device.Device({"l1interfaces": None})
-        with patch.object(interfaces_, 'table', return_value=None):
+        with patch.object(interfaces_, "table", return_value=None):
             result = device_instance.interfaces()
             self.assertIsNone(result, "Expected None for None data")
 
     def test_interfaces_with_valid_data(self):
         """Test the interfaces method with valid data."""
+
         def mock_table(data):
             """Mock the interface table generation function.
 
@@ -74,31 +75,32 @@ class TestDevice(unittest.TestCase):
             return mock_response.table()
 
         # Patch the table function
-        with patch.object(interfaces_, 'table', side_effect=mock_table):
+        with patch.object(interfaces_, "table", side_effect=mock_table):
             device_instance = device.Device(self.valid_data)
             result = device_instance.interfaces()
             self.assertEqual(
                 result,
                 "<table></table>",
-                "Generated HTML does not match expected output"
+                "Generated HTML does not match expected output",
             )
 
     def test_system_with_empty_data(self):
         """Test the system method with empty data."""
         device_instance = device.Device(self.empty_data)
-        with patch.object(system_, 'table', return_value=None):
+        with patch.object(system_, "table", return_value=None):
             result = device_instance.system()
             self.assertIsNone(result, "Expected None for empty data")
 
     def test_system_with_none_data(self):
         """Test the system method with None as data."""
         device_instance = device.Device(None)
-        with patch.object(system_, 'table', return_value=None):
+        with patch.object(system_, "table", return_value=None):
             result = device_instance.system()
             self.assertIsNone(result, "Expected None for None data")
 
     def test_system_with_valid_data(self):
         """Test the system method with valid data."""
+
         def mock_table(data):
             """Mock the system table generation function.
 
@@ -114,13 +116,13 @@ class TestDevice(unittest.TestCase):
             return mock_response.table()
 
         # Patch the table function
-        with patch.object(system_, 'table', side_effect=mock_table):
+        with patch.object(system_, "table", side_effect=mock_table):
             device_instance = device.Device(self.valid_data)
             result = device_instance.system()
             self.assertEqual(
                 result,
                 "<table></table>",
-                "Generated HTML does not match expected output"
+                "Generated HTML does not match expected output",
             )
 
 
