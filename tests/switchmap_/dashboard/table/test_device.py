@@ -57,45 +57,40 @@ class TestDevice(unittest.TestCase):
 
     def test_interfaces_with_valid_data(self):
         """Test the interfaces method with valid data."""
-        original_table_function = interfaces_.table
 
         def mock_table(data):
-            """Mock the table generation function.
-
-            Args:
-                data (dict): The data containing interface details.
-
-            Returns:
-                str: A string containing the generated HTML table.
-            """
+            """Mock the table generation function."""
             rows = "".join(
-                f"<tr><td>{iface['ifname']}</td>"
+                f"<tr>"
+                f"<td>{iface['ifname']}</td>"
                 f"<td>{iface['status']}</td>"
-                f"<td>{iface['admin']}</td></tr>"
+                f"<td>{iface['admin']}</td>"
+                f"</tr>"
                 for iface in data
             )
             return f"<table>{rows}</table>"
 
-        interfaces_.table = mock_table
-        device_instance = device.Device(self.valid_data)
-        result = device_instance.interfaces()
-        interfaces_.table = original_table_function
+        # Patch the table function
+        with patch.object(interfaces_, "table", side_effect=mock_table):
+            device_instance = device.Device(self.valid_data)
+            result = device_instance.interfaces()
 
-        # Build the expected HTML dynamically
-        expected_rows = "".join(
-            f"<tr><td>{iface['ifname']}</td>"
-            f"<td>{iface['status']}</td>"
-            f"<td>{iface['admin']}</td></tr>"
-            for iface in self.valid_data["l1interfaces"]
-        )
-        expected_html = "<table>"
-        expected_html += f"{expected_rows}</table>"
+            # Build the expected HTML dynamically
+            expected_rows = "".join(
+                f"<tr>"
+                f"<td>{iface['ifname']}</td>"
+                f"<td>{iface['status']}</td>"
+                f"<td>{iface['admin']}</td>"
+                f"</tr>"
+                for iface in self.valid_data["l1interfaces"]
+            )
+            expected_html = f"<table>{expected_rows}</table>"
 
-        self.assertEqual(
-            result,
-            expected_html,
-            "Generated HTML does not match expected output",
-        )
+            self.assertEqual(
+                result,
+                expected_html,
+                "Generated HTML does not match expected output",
+            )
 
     def test_system_with_empty_data(self):
         """Test the system method with empty data."""
@@ -109,51 +104,31 @@ class TestDevice(unittest.TestCase):
         result = device_instance.system()
         self.assertIsNone(result, "Expected None for None data")
 
+    def test_system_with_valid_data(self):
+        """Test the system method with valid data."""
 
-def test_interfaces_with_valid_data(self):
-    """Test the interfaces method with valid data."""
-    original_table_function = interfaces_.table
+        def mock_table(data):
+            """Mock the table generation function."""
+            return (
+                f"<table><tr><td>Hostname</td>"
+                f"<td>{data['hostname']}</td></tr></table>"
+            )
 
-    def mock_table(data):
-        """Mock the table generation function.
+        # Patch the table function
+        with patch.object(system_, "table", side_effect=mock_table):
+            device_instance = device.Device(self.valid_data)
+            result = device_instance.system()
 
-        Args:
-            data (dict): The data containing interface details.
+            expected_html = (
+                f"<table><tr><td>Hostname</td>"
+                f"<td>{self.valid_data['hostname']}</td></tr></table>"
+            )
 
-        Returns:
-            str: A string containing the generated HTML table.
-        """
-        rows = "".join(
-            f"<tr>"
-            f"<td>{iface['ifname']}</td>"
-            f"<td>{iface['status']}</td>"
-            f"<td>{iface['admin']}</td>"
-            f"</tr>"
-            for iface in data
-        )
-        return f"<table>{rows}</table>"
-
-    interfaces_.table = mock_table
-    device_instance = device.Device(self.valid_data)
-    result = device_instance.interfaces()
-    interfaces_.table = original_table_function
-
-    # Build the expected HTML dynamically
-    expected_rows = "".join(
-        f"<tr>"
-        f"<td>{iface['ifname']}</td>"
-        f"<td>{iface['status']}</td>"
-        f"<td>{iface['admin']}</td>"
-        f"</tr>"
-        for iface in self.valid_data["l1interfaces"]
-    )
-    expected_html = f"<table>{expected_rows}</table>"
-
-    self.assertEqual(
-        result,
-        expected_html,
-        "Generated HTML does not match expected output",
-    )
+            self.assertEqual(
+                result,
+                expected_html,
+                "Generated HTML does not match expected output",
+            )
 
 
 if __name__ == "__main__":
