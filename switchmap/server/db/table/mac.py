@@ -198,7 +198,7 @@ def bulk_insert_rows(model, rows):
             {
                 "idx_oui": idx_oui,
                 "idx_zone": row.idx_zone,
-                "mac": bytes(mac, 'utf-8'),
+                "mac": bytes(mac, "utf-8"),
                 "enabled": int(bool(row.enabled)),
             }
         )

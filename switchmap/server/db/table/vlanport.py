@@ -154,7 +154,7 @@ def bulk_insert_rows(model, rows):
 
     # Bulk insert
     if bool(inserts):
-        db.db_bulk_insert(1201,model,inserts)
+        db.db_bulk_insert(1201, model, inserts)
 
 
 def update_row(idx, row):

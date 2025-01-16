@@ -219,7 +219,7 @@ def bulk_insert_rows(model, rows):
 
     # Perform bulk insert
     if inserts:
-        db.db_bulk_insert(1070, model,inserts)
+        db.db_bulk_insert(1070, model, inserts)
 
 
 def update_row(idx, row):
