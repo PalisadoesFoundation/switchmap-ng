@@ -61,8 +61,10 @@ class TestDevice(unittest.TestCase):
 
         def mock_table(data):
             """Mock the table generation function.
+
             Args:
                 data (dict): The data containing interface details.
+
             Returns:
                 str: A string containing the generated HTML table.
             """
@@ -86,7 +88,8 @@ class TestDevice(unittest.TestCase):
             f"<td>{iface['admin']}</td></tr>"
             for iface in self.valid_data["l1interfaces"]
         )
-        expected_html = f"<table>{expected_rows}</table>"
+        expected_html = "<table>"
+        expected_html += f"{expected_rows}</table>"
 
         self.assertEqual(
             result,
@@ -112,8 +115,10 @@ class TestDevice(unittest.TestCase):
 
         def mock_table(data):
             """Mock the table generation function.
+
             Args:
                 data (dict): The data containing system details.
+
             Returns:
                 str: A string containing the generated HTML table.
             """
