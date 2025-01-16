@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  switchmap-ng-web: 
+    build: 
+      context: ./docs
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
