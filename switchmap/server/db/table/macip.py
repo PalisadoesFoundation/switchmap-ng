@@ -166,7 +166,7 @@ def insert_row(rows):
         db.db_add_all(1091, inserts)
 
 
-def bulk_insert_rows(rows):
+def bulk_insert_rows(model, rows):
     """Create a MacIp table entry.
 
     Args:
@@ -198,7 +198,7 @@ def bulk_insert_rows(rows):
 
     # Insert
     if bool(inserts):
-        db.db_bulk_insert(1091, inserts)
+        db.db_bulk_insert(1091,model, inserts)
 
 
 def update_row(idx, row):

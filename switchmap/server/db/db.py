@@ -4,6 +4,9 @@ import sys
 
 from sqlalchemy.sql import Select, Update, Delete
 from sqlalchemy.orm import Session
+from sqlalchemy import insert
+from sqlalchemy.inspection import inspect
+
 
 # Import project libraries
 from switchmap.core import log
@@ -287,33 +290,31 @@ def db_add_all(error_code, instances, die=True):
     return result
 
 
-def db_bulk_insert(error_code, mappings, die=True):
-    """Perform bulk insert for ORM objects.
+def db_bulk_insert(error_code, model, mappings, die=True):
+    """Perform bulk insert for ORM objects with enhanced logging.
 
     Args:
         error_code: Error code to use in messages
-        mappings: List of instances to bulk insert
-        die: Whether to raise an exception on failure
+        model: SQLAlchemy model to insert into
+        mappings: List of dictionaries with data to insert
+        die: Die if True
 
     Returns:
-        result: True if the transaction is successful
-
-    Note:
-       Transactions are automatically rolled back on failure.
+        result: True if successful
     """
-    # Initialize key variables
+
     result = False
 
     with ENGINE.connect() as connection:
         with Session(bind=connection, future=True) as session:
             try:
-                # Perform bulk save
-                session.bulk_save_objects(mappings)
-            except Exception as e:
+                # Perform the insert
+                session.execute(insert(model), mappings)
+            except Exception:
                 # Recover and log error
                 session.rollback()
                 log.log2info(error_code, 'DB "bulk_insert" error.')
-                log.log2exception(error_code, e)
+                log.log2exception(error_code, sys.exc_info())
                 if bool(die):
                     raise
                 log.log2debug(error_code, "Continuing processing.")
@@ -321,16 +322,15 @@ def db_bulk_insert(error_code, mappings, die=True):
             # Commit the transaction
             try:
                 session.commit()
-            except Exception as e:
+            except Exception:
                 # Recover and log error
                 session.rollback()
                 log.log2info(error_code, 'DB "bulk_insert" commit error.')
-                log.log2exception(error_code, e)
+                log.log2exception(error_code, sys.exc_info())
                 if bool(die):
                     raise
                 log.log2debug(error_code, "Continuing processing.")
             else:
                 result = True
 
-    # Return
     return result

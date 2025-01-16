@@ -17,7 +17,7 @@ easysnmp==0.2.5
 # Data and Database
 PyMySQL==1.0.2
 PyMySQL[rsa]
-SQLAlchemy==1.4.31
+SQLAlchemy==2.0.0
 pandas
 
 # GraphQL interface for Flask

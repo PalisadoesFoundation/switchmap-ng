@@ -160,7 +160,7 @@ def insert_row(rows):
         db.db_add_all(1087, inserts)
 
 
-def bulk_insert_rows(rows):
+def bulk_insert_rows(model, rows):
     """Perform bulk insert for the Mac table.
 
     Args:
@@ -195,17 +195,17 @@ def bulk_insert_rows(rows):
 
         # Add ORM object for insertion
         inserts.append(
-            Mac(
-                idx_oui=idx_oui,
-                idx_zone=row.idx_zone,
-                mac=(null() if not mac else mac.encode()),
-                enabled=int(bool(row.enabled)),
-            )
+            {
+                "idx_oui": idx_oui,
+                "idx_zone": row.idx_zone,
+                "mac": bytes(mac, 'utf-8'),
+                "enabled": int(bool(row.enabled)),
+            }
         )
 
     # Perform bulk insert
     if bool(inserts):
-        db.db_bulk_insert(1202, inserts)
+        db.db_bulk_insert(1202, model, inserts)
 
 
 def update_row(idx, row):

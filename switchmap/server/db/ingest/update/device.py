@@ -22,6 +22,7 @@ from switchmap.server.db.table import (
     IVlanPort,
     IL1Interface,
 )
+from switchmap.server.db.models import VlanPort
 
 
 def process(data, idx_zone, dns=True):
@@ -435,10 +436,10 @@ class Topology:
         # Insert rows
         if bool(inserts) is True:
             if bool(test) is False:
-                _vlanport.bulk_insert_rows(inserts)
+                _vlanport.bulk_insert_rows(VlanPort, inserts)
             else:
                 inserts = sorted(inserts)
-                _vlanport.bulk_insert_rows(inserts)
+                _vlanport.bulk_insert_rows(VlanPort, inserts)
 
         # Log
         self.log("VlanPort", updated=True)

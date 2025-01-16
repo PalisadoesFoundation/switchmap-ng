@@ -26,6 +26,7 @@ from switchmap.server.db.table import macport as _macport
 from switchmap.server import ZoneData, ZoneDevice, EventObjects
 from switchmap.server.db.ingest.update import device as update_device
 from switchmap.server.db.ingest.update import zone as update_zone
+from switchmap.server.db.models import Mac
 
 
 class Ingest:
@@ -470,7 +471,7 @@ def insert_arptable(data, test=False):
     )
     log.log2debug(1084, log_message)
     if bool(test) is False:
-        _mac.bulk_insert_rows(macs)
+        _mac.bulk_insert_rows(Mac, macs)
     else:
         for row in sorted(macs, key=attrgetter("mac")):
             _mac.insert_row(row)

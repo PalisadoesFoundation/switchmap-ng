@@ -177,7 +177,6 @@ class TestFunctions(unittest.TestCase):
     def test_ipport(self):
         """Testing function ipport."""
         # Initialize key variables
-        return
         result = []
         expected = []
 
@@ -200,7 +199,6 @@ class TestFunctions(unittest.TestCase):
         # Verify macport data
         statement = select(IpPort)
         rows = db.db_select_row(1074, statement)
-
         # Return
         for row in rows:
             result.append(
@@ -213,13 +211,7 @@ class TestFunctions(unittest.TestCase):
                     ts_modified=None,
                 )
             )
-
         result.sort(key=lambda x: (x.idx_ipport))
-
-        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-        print(result[: self.max_loops])
-        print("\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
-
         self.assertEqual(result[: self.max_loops * 3], expected)
 
 

@@ -181,7 +181,7 @@ def insert_row(rows):
         db.db_add_all(1065, inserts)
 
 
-def bulk_insert_rows(rows):
+def bulk_insert_rows(model, rows):
     """Bulk insert multiple entries into the Ip table.
 
     Args:
@@ -219,7 +219,7 @@ def bulk_insert_rows(rows):
 
     # Perform bulk insert
     if inserts:
-        db.db_bulk_insert(1070, inserts)
+        db.db_bulk_insert(1070, model,inserts)
 
 
 def update_row(idx, row):
