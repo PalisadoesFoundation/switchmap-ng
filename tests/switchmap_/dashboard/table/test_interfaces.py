@@ -45,7 +45,11 @@ class TestInterfaceTable(unittest.TestCase):
         self.table = InterfaceTable([])
 
     def test___init__(self):
-        """Testing function __init__."""
+        """Testing function __init__.
+
+        Returns:
+            None
+        """
         # Test column types
         self.assertIsInstance(self.table.port, Col)
         self.assertIsInstance(self.table.vlan, Col)
@@ -74,12 +78,18 @@ class TestInterfaceTable(unittest.TestCase):
                 Args:
                     is_enabled (bool): The enabled state of the interface
                     is_active (bool): The active state of the interface
+
+                Returns:
+                    None
                 """
                 self._enabled = is_enabled
                 self._active = is_active
 
             def enabled(self):
                 """Return enabled status.
+
+                Args:
+                    None
 
                 Returns:
                     bool: True if interface is enabled
@@ -88,6 +98,9 @@ class TestInterfaceTable(unittest.TestCase):
 
             def active(self):
                 """Return active status.
+
+                Args:
+                    None
 
                 Returns:
                     bool: True if interface is active
@@ -187,6 +200,9 @@ class TestTable(unittest.TestCase):
 
                 Args:
                     data (dict, optional): Interface data. Defaults to None.
+
+                Returns:
+                    None
                 """
                 self._interface = data or {}
 
@@ -198,15 +214,18 @@ class TestTable(unittest.TestCase):
                     default: Default value if key not found
 
                 Returns:
-                    Value of key or default
+                    Any: Value of key if found, otherwise default value
                 """
                 return self._interface.get(key, default)
 
             def row(self):
                 """Create interface data row.
 
+                Args:
+                    None
+
                 Returns:
-                    namedtuple: Row of interface data or None
+                    namedtuple: Row of interface data or None if no data is available
                 """
                 if not self._interface:
                     return None
