@@ -57,6 +57,7 @@ class TestDevice(unittest.TestCase):
 
     def test_interfaces_with_valid_data(self):
         """Test the interfaces method with valid data."""
+
         def mock_table(data):
             """Mock the interface table generation function.
 
@@ -78,7 +79,7 @@ class TestDevice(unittest.TestCase):
             return f"<table>{rows}</table>"
 
         # Patch the table function
-        with patch.object(interfaces_, 'table', side_effect=mock_table):
+        with patch.object(interfaces_, "table", side_effect=mock_table):
             device_instance = device.Device(self.valid_data)
             result = device_instance.interfaces()
 
@@ -96,7 +97,7 @@ class TestDevice(unittest.TestCase):
             self.assertEqual(
                 result,
                 expected_html,
-                "Generated HTML does not match expected output"
+                "Generated HTML does not match expected output",
             )
 
     def test_system_with_empty_data(self):
@@ -113,6 +114,7 @@ class TestDevice(unittest.TestCase):
 
     def test_system_with_valid_data(self):
         """Test the system method with valid data."""
+
         def mock_table(data):
             """Mock the system table generation function.
 
@@ -129,19 +131,19 @@ class TestDevice(unittest.TestCase):
             )
 
         # Patch the table function
-        with patch.object(system_, 'table', side_effect=mock_table):
+        with patch.object(system_, "table", side_effect=mock_table):
             device_instance = device.Device(self.valid_data)
             result = device_instance.system()
-            
+
             expected_html = (
                 f"<table><tr><td>Hostname</td>"
                 f"<td>{self.valid_data['hostname']}</td></tr></table>"
             )
-            
+
             self.assertEqual(
                 result,
                 expected_html,
-                "Generated HTML does not match expected output"
+                "Generated HTML does not match expected output",
             )
 
 
