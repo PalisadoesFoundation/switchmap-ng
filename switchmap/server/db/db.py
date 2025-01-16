@@ -303,7 +303,6 @@ def db_bulk_insert(error_code, model, mappings, die=True):
         result: True if successful
 
     """
-
     result = False
 
     with ENGINE.connect() as connection:
