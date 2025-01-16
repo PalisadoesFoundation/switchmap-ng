@@ -183,7 +183,7 @@ def insert_row(rows):
 
 def bulk_insert_rows(model, rows):
     """Perform bulk insert for the Mac table.
-
+    
     Args:
         model: SQLAlchemy model representing the target database table.
         rows: List of IMac objects to be inserted into the database.
@@ -191,7 +191,6 @@ def bulk_insert_rows(model, rows):
     Returns:
         None: This function does not return any value.
     """
-
     # Initialize key variables
     inserts = []
 
