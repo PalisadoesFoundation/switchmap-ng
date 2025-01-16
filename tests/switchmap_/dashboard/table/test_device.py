@@ -64,7 +64,7 @@ class TestDevice(unittest.TestCase):
 
             Args:
                 data (dict): The data containing interface details.
-            
+
             Returns:
                 str: A string containing the generated HTML table.
             """
@@ -118,7 +118,7 @@ class TestDevice(unittest.TestCase):
 
             Args:
                 data (dict): The data containing system details.
-            
+
             Returns:
                 str: A string containing the generated HTML table.
             """
@@ -129,9 +129,7 @@ class TestDevice(unittest.TestCase):
         result = device_instance.system()
         system_.table = original_table_function
 
-        expected_html = (
-            f"<table><tr><td>Hostname</td><td>{self.valid_data['hostname']}</td></tr></table>"
-        )
+        expected_html = f"<table><tr><td>Hostname</td><td>{self.valid_data['hostname']}</td></tr></table>"
 
         self.assertEqual(
             result,
