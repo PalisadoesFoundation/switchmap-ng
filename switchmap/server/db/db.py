@@ -301,6 +301,7 @@ def db_bulk_insert(error_code, model, mappings, die=True):
 
     Returns:
         result: True if successful
+        
     """
 
     result = False
