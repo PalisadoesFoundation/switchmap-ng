@@ -152,7 +152,7 @@ class Topology:
         """Process data received from a device.
 
         Args:
-            None
+            dns: Data received from a device to be processed.
 
         Returns:
             None

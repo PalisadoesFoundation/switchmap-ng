@@ -167,14 +167,14 @@ def insert_row(rows):
 
 
 def bulk_insert_rows(model, rows):
-    """Create a MacIp table entry.
+    """Perform bulk insert for the Mac table.
 
     Args:
-        rows: IMacIp objects
+        model: SQLAlchemy model representing the target database table.
+        rows: List of IMac objects to be inserted into the database.
 
     Returns:
         None
-
     """
     # Initialize key variables
     inserts = []

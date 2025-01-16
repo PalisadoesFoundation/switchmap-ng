@@ -124,10 +124,11 @@ def insert_row(rows):
 
 
 def bulk_insert_rows(model, rows):
-    """Perform bulk insert for the VlanPort table.
+    """Perform bulk insert for the Mac table.
 
     Args:
-        rows: List of IVlanPort objects
+        model: SQLAlchemy model representing the target database table.
+        rows: List of IMac objects to be inserted into the database.
 
     Returns:
         None

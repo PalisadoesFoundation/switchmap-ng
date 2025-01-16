@@ -182,14 +182,16 @@ def insert_row(rows):
 
 
 def bulk_insert_rows(model, rows):
-    """Bulk insert multiple entries into the Ip table.
+    """Perform bulk insert for the Mac table.
 
     Args:
-        rows: List of TopologyIp objects
+        model: SQLAlchemy model representing the target database table.
+        rows: List of IMac objects to be inserted into the database.
 
     Returns:
-        None
+        None: This function does not return any value.
     """
+
     # Initialize key variables
     inserts = []
 
