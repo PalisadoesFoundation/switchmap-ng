@@ -57,9 +57,16 @@ class TestDevice(unittest.TestCase):
 
     def test_interfaces_with_valid_data(self):
         """Test the interfaces method with valid data."""
-
         def mock_table(data):
-            """Mock the table generation function."""
+            """Mock the interface table generation function.
+
+            Args:
+                data (list): List of interface dictionaries containing interface
+                    details like name, status, and admin state.
+
+            Returns:
+                str: HTML table containing the interface information.
+            """
             rows = "".join(
                 f"<tr>"
                 f"<td>{iface['ifname']}</td>"
@@ -71,7 +78,7 @@ class TestDevice(unittest.TestCase):
             return f"<table>{rows}</table>"
 
         # Patch the table function
-        with patch.object(interfaces_, "table", side_effect=mock_table):
+        with patch.object(interfaces_, 'table', side_effect=mock_table):
             device_instance = device.Device(self.valid_data)
             result = device_instance.interfaces()
 
@@ -89,7 +96,7 @@ class TestDevice(unittest.TestCase):
             self.assertEqual(
                 result,
                 expected_html,
-                "Generated HTML does not match expected output",
+                "Generated HTML does not match expected output"
             )
 
     def test_system_with_empty_data(self):
@@ -106,28 +113,35 @@ class TestDevice(unittest.TestCase):
 
     def test_system_with_valid_data(self):
         """Test the system method with valid data."""
-
         def mock_table(data):
-            """Mock the table generation function."""
+            """Mock the system table generation function.
+
+            Args:
+                data (dict): Dictionary containing system information including
+                    the hostname.
+
+            Returns:
+                str: HTML table containing the system information.
+            """
             return (
                 f"<table><tr><td>Hostname</td>"
                 f"<td>{data['hostname']}</td></tr></table>"
             )
 
         # Patch the table function
-        with patch.object(system_, "table", side_effect=mock_table):
+        with patch.object(system_, 'table', side_effect=mock_table):
             device_instance = device.Device(self.valid_data)
             result = device_instance.system()
-
+            
             expected_html = (
                 f"<table><tr><td>Hostname</td>"
                 f"<td>{self.valid_data['hostname']}</td></tr></table>"
             )
-
+            
             self.assertEqual(
                 result,
                 expected_html,
-                "Generated HTML does not match expected output",
+                "Generated HTML does not match expected output"
             )
 
 
