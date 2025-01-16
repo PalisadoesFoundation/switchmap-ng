@@ -66,11 +66,7 @@ class TestInterfaceTable(unittest.TestCase):
         """Testing method get_tr_attrs."""
 
         class MockItem:
-            """Mock item class for testing interface table row attributes.
-
-            This class simulates interface items with enabled and active states
-            for testing the get_tr_attrs method of InterfaceTable.
-            """
+            """Mock item class for testing interface table row attributes."""
 
             def __init__(self, is_enabled, is_active):
                 """Initialize the mock item with enabled and active states.
@@ -86,7 +82,7 @@ class TestInterfaceTable(unittest.TestCase):
                 """Return enabled status.
 
                 Returns:
-                    bool: True if interface is enabled, False otherwise
+                    bool: True if interface is enabled
                 """
                 return self._enabled
 
@@ -94,7 +90,7 @@ class TestInterfaceTable(unittest.TestCase):
                 """Return active status.
 
                 Returns:
-                    bool: True if interface is active, False otherwise
+                    bool: True if interface is active
                 """
                 return self._active
 
@@ -184,39 +180,33 @@ class TestTable(unittest.TestCase):
         """Setup the environment prior to testing."""
 
         class MockInterface:
-            """Mock interface class for testing.
-
-            This class simulates the Interface class behavior for testing purposes,
-            providing mock implementations of get() and row() methods.
-            """
+            """Mock interface class for testing."""
 
             def __init__(self, data=None):
-                """Initialize the mock interface with optional data.
+                """Initialize mock interface.
 
                 Args:
-                    data (dict, optional): Dictionary containing interface data.
-                        Defaults to None.
+                    data (dict, optional): Interface data. Defaults to None.
                 """
                 self._interface = data or {}
 
             def get(self, key, default=None):
-                """Mock the get method to match the interface behavior.
+                """Get interface attribute.
 
                 Args:
-                    key (str): Dictionary key to retrieve
-                    default (Any, optional): Default value if key not found.
-                        Defaults to None.
+                    key (str): Attribute key
+                    default: Default value if key not found
 
                 Returns:
-                    Any: Value associated with key or default if not found
+                    Value of key or default
                 """
                 return self._interface.get(key, default)
 
             def row(self):
-                """Return a row of interface data.
+                """Create interface data row.
 
                 Returns:
-                    namedtuple: Row containing interface data, or None if no data
+                    namedtuple: Row of interface data or None
                 """
                 if not self._interface:
                     return None
@@ -262,7 +252,7 @@ class TestTable(unittest.TestCase):
     @patch("switchmap.dashboard.table.interfaces.Interface")
     def test_table_valid(self, mock_interface_class):
         """Testing function table with valid data."""
-        interface_data = {
+        test_data = {
             "port": "Gi1/0/1",
             "vlan": "10",
             "state": "Active",
@@ -279,11 +269,10 @@ class TestTable(unittest.TestCase):
             "hostname": "switch1.example.com",
         }
 
-        # Setup the mock to return our MockInterface instance
-        mock_interface = self.MockInterface(interface_data)
+        mock_interface = self.MockInterface(test_data)
         mock_interface_class.return_value = mock_interface
 
-        result = table([interface_data])
+        result = table([test_data])
         self.assertIsInstance(result, InterfaceTable)
         self.assertEqual(len(result.items), 1)
 
@@ -306,7 +295,7 @@ class TestTable(unittest.TestCase):
     @patch("switchmap.dashboard.table.interfaces.Interface")
     def test_table_multiple_interfaces(self, mock_interface_class):
         """Testing function table with multiple interfaces."""
-        interface_data1 = {
+        test_data_1 = {
             "port": "Gi1/0/1",
             "vlan": "10",
             "state": "Active",
@@ -323,7 +312,7 @@ class TestTable(unittest.TestCase):
             "hostname": "switch1.example.com",
         }
 
-        interface_data2 = {
+        test_data_2 = {
             "port": "Gi1/0/2",
             "vlan": "20",
             "state": "Inactive",
@@ -341,13 +330,12 @@ class TestTable(unittest.TestCase):
         }
 
         # Create mock interfaces
-        mock_interface1 = self.MockInterface(interface_data1)
-        mock_interface2 = self.MockInterface(interface_data2)
+        mock_interface1 = self.MockInterface(test_data_1)
+        mock_interface2 = self.MockInterface(test_data_2)
 
-        # Setup the mock to return our MockInterface instances in sequence
         mock_interface_class.side_effect = [mock_interface1, mock_interface2]
 
-        result = table([interface_data1, interface_data2])
+        result = table([test_data_1, test_data_2])
         self.assertIsInstance(result, InterfaceTable)
         self.assertEqual(len(result.items), 2)
 
