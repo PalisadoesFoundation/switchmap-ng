@@ -1,118 +1,136 @@
 #!/usr/bin/env python3
 """Test the Device class."""
-
 import os
 import sys
 import unittest
+import json
 from unittest.mock import patch
 
-# Try to create a working PYTHONPATH
-EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
+# Add the project root directory to sys.path
 ROOT_DIR = os.path.abspath(
     os.path.join(
-        os.path.abspath(
-            os.path.join(
-                os.path.abspath(
-                    os.path.join(
-                        os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
-                        os.pardir,
-                    )
-                ),
-                os.pardir,
-            )
-        ),
-        os.pardir,
+        os.path.dirname(__file__), os.pardir, os.pardir, os.pardir, os.pardir
     )
 )
-_EXPECTED = (
-    "{0}switchmap-ng{0}tests{0}switchmap_{0}"
-    "dashboard{0}table".format(os.sep)
-)
-if EXEC_DIR.endswith(_EXPECTED):
+if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
-else:
-    print(
-        f'This script is not installed in the "{_EXPECTED}" directory. '
-        "Please fix."
-    )
-    sys.exit(2)
 
 # Import the module to test
 from switchmap.dashboard.table import device
+from switchmap.dashboard.table import interfaces as interfaces_
+from switchmap.dashboard.table import system as system_
 
 
 class TestDevice(unittest.TestCase):
     """Unit tests for the Device class."""
 
-    maxDiff = None
+    def setUp(self):
+        """Set up test data for each test case."""
+        # Load realistic interface data from the JSON file
+        test_data_path = os.path.join(
+            ROOT_DIR, "tests/testdata_/device-01.json"
+        )
+        with open(test_data_path) as file:
+            self.valid_data = json.load(file)
 
-    @classmethod
-    def setUpClass(cls):
-        """Set up the test environment."""
-        pass
+        # Process interface data for testing
+        for iface in self.valid_data.get("l1interfaces", []):
+            iface["status"] = "up" if iface["ifoperstatus"] == 1 else "down"
+            iface["admin"] = (
+                "enabled" if iface["ifadminstatus"] == 1 else "disabled"
+            )
 
-    @classmethod
-    def tearDownClass(cls):
-        """Clean up the test environment."""
-        pass
+        self.empty_data = {}
+        self.none_data = None
 
-    @patch("switchmap.dashboard.table.interfaces.table")
-    def test_interfaces_with_valid_data(self, mock_table):
-        """Test the interfaces method with valid data."""
-        mock_table.return_value = "Mocked Interface Table"
-        test_data = {
-            "l1interfaces": {"interface1": "data1", "interface2": "data2"}
-        }
-        device_instance = device.Device(test_data)
-        result = device_instance.interfaces()
-        mock_table.assert_called_once_with(test_data["l1interfaces"])
-        self.assertEqual(result, "Mocked Interface Table")
-
-    @patch("switchmap.dashboard.table.interfaces.table")
-    def test_interfaces_with_empty_data(self, mock_table):
+    def test_interfaces_with_empty_data(self):
         """Test the interfaces method with empty data."""
-        test_data = {"l1interfaces": {}}
-        device_instance = device.Device(test_data)
+        device_instance = device.Device(self.empty_data)
         result = device_instance.interfaces()
-        mock_table.assert_not_called()
-        self.assertIsNone(result)
+        self.assertIsNone(result, "Expected None for empty data")
 
-    @patch("switchmap.dashboard.table.interfaces.table")
-    def test_interfaces_with_none_data(self, mock_table):
+    def test_interfaces_with_none_data(self):
         """Test the interfaces method with None as data."""
-        test_data = {"l1interfaces": None}
-        device_instance = device.Device(test_data)
+        device_instance = device.Device({"l1interfaces": None})
         result = device_instance.interfaces()
-        mock_table.assert_not_called()
-        self.assertIsNone(result)
+        self.assertIsNone(result, "Expected None for None data")
 
-    @patch("switchmap.dashboard.table.system.table")
-    def test_system_with_valid_data(self, mock_table):
-        """Test the system method with valid data."""
-        mock_table.return_value = "Mocked System Table"
-        test_data = {"key1": "value1", "key2": "value2"}
-        device_instance = device.Device(test_data)
-        result = device_instance.system()
-        mock_table.assert_called_once_with(test_data)
-        self.assertEqual(result, "Mocked System Table")
+    def test_interfaces_with_valid_data(self):
+        """Test the interfaces method with valid data."""
+        original_table_function = interfaces_.table
 
-    @patch("switchmap.dashboard.table.system.table")
-    def test_system_with_empty_data(self, mock_table):
+        def mock_table(data):
+            """Mock the table generation function.
+            Args:
+                data (dict): The data containing interface details.
+            Returns:
+                str: A string containing the generated HTML table.
+            """
+            rows = "".join(
+                f"<tr><td>{iface['ifname']}</td>"
+                f"<td>{iface['status']}</td>"
+                f"<td>{iface['admin']}</td></tr>"
+                for iface in data
+            )
+            return f"<table>{rows}</table>"
+
+        interfaces_.table = mock_table
+        device_instance = device.Device(self.valid_data)
+        result = device_instance.interfaces()
+        interfaces_.table = original_table_function
+
+        # Build the expected HTML dynamically
+        expected_rows = "".join(
+            f"<tr><td>{iface['ifname']}</td>"
+            f"<td>{iface['status']}</td>"
+            f"<td>{iface['admin']}</td></tr>"
+            for iface in self.valid_data["l1interfaces"]
+        )
+        expected_html = f"<table>{expected_rows}</table>"
+
+        self.assertEqual(
+            result,
+            expected_html,
+            "Generated HTML does not match expected output",
+        )
+
+    def test_system_with_empty_data(self):
         """Test the system method with empty data."""
-        test_data = {}
-        device_instance = device.Device(test_data)
+        device_instance = device.Device(self.empty_data)
         result = device_instance.system()
-        mock_table.assert_not_called()
-        self.assertIsNone(result)
+        self.assertIsNone(result, "Expected None for empty data")
 
-    @patch("switchmap.dashboard.table.system.table")
-    def test_system_with_none_data(self, mock_table):
+    def test_system_with_none_data(self):
         """Test the system method with None as data."""
-        test_data = None
-        device_instance = device.Device(test_data)
+        device_instance = device.Device(None)
         result = device_instance.system()
-        mock_table.assert_not_called()
-        self.assertIsNone(result)
+        self.assertIsNone(result, "Expected None for None data")
+
+    def test_system_with_valid_data(self):
+        """Test the system method with valid data."""
+        original_table_function = system_.table
+
+        def mock_table(data):
+            """Mock the table generation function.
+            Args:
+                data (dict): The data containing system details.
+            Returns:
+                str: A string containing the generated HTML table.
+            """
+            return f"<table><tr><td>Hostname</td><td>{data['hostname']}</td></tr></table>"
+
+        system_.table = mock_table
+        device_instance = device.Device(self.valid_data)
+        result = device_instance.system()
+        system_.table = original_table_function
+
+        expected_html = f"<table><tr><td>Hostname</td><td>{self.valid_data['hostname']}</td></tr></table>"
+
+        self.assertEqual(
+            result,
+            expected_html,
+            "Generated HTML does not match expected output",
+        )
 
 
 if __name__ == "__main__":
