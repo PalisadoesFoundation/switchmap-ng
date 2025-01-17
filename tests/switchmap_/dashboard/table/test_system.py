@@ -27,7 +27,8 @@ class TestSystemTable(unittest.TestCase):
 
     def test_initialization(self):
         """Test table initialization."""
-        table = SystemTable()
+        items = []  # Provide mock or empty items for initialization
+        table = SystemTable(items)
         self.assertEqual(table.parameter.name, "Parameter")
         self.assertEqual(table.value.name, "Value")
         self.assertIn("tblHead", table.thead_classes)
@@ -39,10 +40,45 @@ class TestSystemRow(unittest.TestCase):
 
     def test_initialization(self):
         """Test row initialization."""
-        row_data = ["Test Parameter", "Test Value"]
+        row_data = {
+            "parameter": "Test Parameter",
+            "value": "Test Value",
+        }  # Adjust structure
         row = SystemRow(row_data)
         self.assertEqual(row.parameter, "Test Parameter")
         self.assertEqual(row.value, "Test Value")
+
+    def test_invalid_row_data_length(self):
+        """Test row initialization with invalid data length."""
+        row_data = {"parameter": "Test Parameter"}  # Missing "value"
+        with self.assertRaises(ValueError):
+            SystemRow(
+                row_data
+            )  # Expecting a ValueError due to missing "value"
+
+    def test_none_values_in_row_data(self):
+        """Test row initialization with None values."""
+        row_data = {
+            "parameter": None,
+            "value": "Test Value",
+        }  # "parameter" is None
+        with self.assertRaises(ValueError):
+            SystemRow(row_data)  # Expecting a ValueError due to None value
+
+    def test_invalid_type_in_row_data(self):
+        """Test row initialization with invalid type."""
+        row_data = {
+            "parameter": "Test Parameter",
+            "value": 12345,
+        }  # "value" should be a string
+        with self.assertRaises(ValueError):
+            SystemRow(row_data)  # Expecting a ValueError due to invalid type
+
+    def test_empty_row_data(self):
+        """Test row initialization with empty row data."""
+        row_data = {}
+        with self.assertRaises(ValueError):
+            SystemRow(row_data)  # Expecting a ValueError due to missing data
 
 
 class TestTableFunction(unittest.TestCase):
@@ -52,7 +88,10 @@ class TestTableFunction(unittest.TestCase):
     def test_table_with_rows(self, mock_system):
         """Test table function with valid rows."""
         # Mock data
-        mock_rows = [["Parameter1", "Value1"], ["Parameter2", "Value2"]]
+        mock_rows = [
+            MagicMock(parameter="Parameter1", value="Value1"),
+            MagicMock(parameter="Parameter2", value="Value2"),
+        ]
         mock_system_instance = MagicMock()
         mock_system_instance.rows.return_value = mock_rows
         mock_system.return_value = mock_system_instance
