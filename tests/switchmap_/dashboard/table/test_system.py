@@ -7,7 +7,7 @@ from switchmap.dashboard.table.system import (
     _RawCol,
     SystemTable,
     SystemRow,
-    table
+    table,
 )
 from switchmap.dashboard.data.system import System
 
