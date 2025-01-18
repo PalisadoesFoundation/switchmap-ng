@@ -3,6 +3,35 @@ Testing
 
 Follow the installation steps above to have the application ready, then add these steps for developing code.
 
+Making Your System an SNMP Server
+---------------------------------
+
+Switchmap uses SNMP to gather data from network devices. As a developer it may be difficult to get access to test equipment. This section outlines how to run SNMP on your local machine as an SNMP server.
+
+#. When the server is running and correctly configured, it will provide data about its interfaces via SNMP.
+#. You'll need to use an SNMP client to extract the data from the server.
+
+Here are some links to get you started:
+
+#. Windows 11:
+
+   #. SNMP Server: 
+
+      #. `Enable SNMP on Windows <https://blog.paessler.com/how-to-enable-snmp-on-your-operating-system>`_
+    
+   #. SNMP Client:
+            
+      #. Software: `Net-SNMP Download <http://www.net-snmp.org/download.html>`_
+      
+      #. Tutorial: `SNMP Walk Examples for Windows <https://www.itprc.com/snmpwalk-examples-for-windows/>`_
+
+#. Ubuntu: 
+   
+   #. This page includes both server and client setup.
+   
+   #. `Ubuntu SNMP Setup Guide <https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring->`_
+
+
 Testing Setup for Developers
 ----------------------------
 
