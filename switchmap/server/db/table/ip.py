@@ -144,6 +144,7 @@ def insert_row(rows):
 
     Returns:
         None: This function does not return any value.
+
     """
     # Initialize key variables
     inserts = []
@@ -186,6 +187,7 @@ def update_row(idx, row):
 
     Returns:
         None
+
     """
     # Fix the MAC address
     ip = general.ipaddress(row.address)
