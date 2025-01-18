@@ -130,11 +130,11 @@ def exists(idx_mac, idx_ip):
 #     result = list(set(result))
 #     return result
 
+
 def insert_row(rows):
     """Perform bulk insert for the Mac table.
 
     Args:
-        model: SQLAlchemy model representing the target database table.
         rows: List of IMac objects to be inserted into the database.
 
     Returns:

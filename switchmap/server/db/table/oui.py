@@ -117,7 +117,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_insert_row(1096, Oui,inserts)
+        db.db_insert_row(1096, Oui, inserts)
 
 
 def update_row(idx, row):
@@ -142,9 +142,7 @@ def update_row(idx, row):
                     if bool(row.organization) is False
                     else row.organization.encode()
                 ),
-                "oui": (
-                    None if bool(row.oui) is False else row.oui.encode()
-                ),
+                "oui": (None if bool(row.oui) is False else row.oui.encode()),
                 "enabled": int(bool(row.enabled) is True),
             }
         )

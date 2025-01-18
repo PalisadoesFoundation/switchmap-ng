@@ -90,7 +90,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_insert_row(1033,Root ,inserts)
+        db.db_insert_row(1033, Root, inserts)
 
 
 def update_row(idx, row):

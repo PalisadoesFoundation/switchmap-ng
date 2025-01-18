@@ -119,7 +119,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_insert_row(1093, Vlan,inserts)
+        db.db_insert_row(1093, Vlan, inserts)
 
 
 def update_row(idx, row):

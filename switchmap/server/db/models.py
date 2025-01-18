@@ -40,7 +40,9 @@ class Oui(BASE):
     __table_args__ = {"mysql_engine": "InnoDB"}
 
     idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
-    oui = Column(VARBINARY(256), unique=True, nullable=True, index=True, default=None)
+    oui = Column(
+        VARBINARY(256), unique=True, nullable=True, index=True, default=None
+    )
     organization = Column(
         VARBINARY(256), nullable=True, default=None, index=True
     )
@@ -178,7 +180,7 @@ class Device(BASE):
     sys_description = Column(VARBINARY(1024), nullable=True, default=None)
     sys_objectid = Column(VARBINARY(256), nullable=True, default=None)
     sys_uptime = Column(BIGINT(20, unsigned=True), default=None)
-    last_polled = Column(BIGINT(20, unsigned=True),default=None)
+    last_polled = Column(BIGINT(20, unsigned=True), default=None)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,

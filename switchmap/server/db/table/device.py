@@ -135,7 +135,7 @@ def insert_row(rows):
                 "last_polled": (
                     None if row.last_polled is None else row.last_polled
                 ),
-                "enabled":int(bool(row.enabled) is True),
+                "enabled": int(bool(row.enabled) is True),
             }
         )
 

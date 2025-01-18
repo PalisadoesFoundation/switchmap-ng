@@ -110,11 +110,11 @@ def findmac(idx_zone, macs):
         result.append(_rows.mac(row))
     return result
 
+
 def insert_row(rows):
     """Perform bulk insert for the Mac table.
 
     Args:
-        model: SQLAlchemy model representing the target database table.
         rows: List of IMac objects to be inserted into the database.
 
     Returns:

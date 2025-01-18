@@ -166,7 +166,9 @@ def insert_row(rows):
                 "ifalias": (
                     None if row.ifalias is None else row.ifalias.encode()
                 ),
-                "ifname": (None if row.ifname is None else row.ifname.encode()),
+                "ifname": (
+                    None if row.ifname is None else row.ifname.encode()
+                ),
                 "ifdescr": (
                     None if row.ifdescr is None else row.ifdescr.encode()
                 ),
@@ -176,7 +178,7 @@ def insert_row(rows):
                 "ifoperstatus": (
                     None if row.ifoperstatus is None else row.ifoperstatus
                 ),
-                "ts_idle":0 if not bool(row.ts_idle) else row.ts_idle,
+                "ts_idle": 0 if not bool(row.ts_idle) else row.ts_idle,
                 "cdpcachedeviceid": (
                     None
                     if row.cdpcachedeviceid is None
@@ -218,7 +220,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_insert_row(1154, L1Interface ,inserts)
+        db.db_insert_row(1154, L1Interface, inserts)
 
 
 def update_row(idx, row):

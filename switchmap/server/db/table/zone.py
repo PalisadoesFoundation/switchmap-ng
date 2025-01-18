@@ -122,7 +122,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_insert_row(1155, Zone ,inserts)
+        db.db_insert_row(1155, Zone, inserts)
 
 
 def update_row(idx, row):

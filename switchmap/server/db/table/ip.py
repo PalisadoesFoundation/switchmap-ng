@@ -135,11 +135,11 @@ def findip(idx_zone, ips):
         result.append(_rows.ip(row))
     return result
 
+
 def insert_row(rows):
     """Perform bulk insert for the Mac table.
 
     Args:
-        model: SQLAlchemy model representing the target database table.
         rows: List of IMac objects to be inserted into the database.
 
     Returns:
@@ -159,20 +159,23 @@ def insert_row(rows):
     for row in rows:
         ip = general.ipaddress(row.address)
         inserts.append(
-                {
-                    "idx_zone": row.idx_zone,
-                    "hostname": None
-                    if bool(row.hostname) is False
-                    else row.hostname.encode(),
-                    "version": row.version,
-                    "address": (None if bool(ip) is False else ip.address.encode()),
-                    "enabled":int(bool(row.enabled)),
-                }
-            )
+            {
+                "idx_zone": row.idx_zone,
+                "hostname": None
+                if bool(row.hostname) is False
+                else row.hostname.encode(),
+                "version": row.version,
+                "address": (
+                    None if bool(ip) is False else ip.address.encode()
+                ),
+                "enabled": int(bool(row.enabled)),
+            }
+        )
 
     # Perform bulk insert
     if inserts:
         db.db_insert_row(1070, Ip, inserts)
+
 
 def update_row(idx, row):
     """Upadate a Ip table entry.

@@ -120,7 +120,7 @@ def insert_row(rows):
 
     # Insert
     if bool(inserts):
-        db.db_insert_row(1063, IpPort ,inserts)
+        db.db_insert_row(1063, IpPort, inserts)
 
 
 def update_row(idx, row):
