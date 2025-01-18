@@ -152,7 +152,7 @@ class Topology:
         """Process data received from a device.
 
         Args:
-            dns: Data received from a device to be processed.
+            dns: If True, perform DNS lookups to resolve hostnames.
 
         Returns:
             None
