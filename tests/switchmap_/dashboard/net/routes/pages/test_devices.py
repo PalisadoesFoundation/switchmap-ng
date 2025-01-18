@@ -52,7 +52,6 @@ else:
 
 # Import the switchmap classes to test
 from switchmap.dashboard.net.routes.pages import devices
-from switchmap.dashboard import uri
 
 
 class TestDevices(unittest.TestCase):
@@ -193,6 +192,98 @@ class TestDevices(unittest.TestCase):
 
         # Test
         with self.assertRaises(ValueError):
+            devices.devices(idx_device)
+
+    @patch("switchmap.dashboard.net.routes.pages.devices.Device")
+    @patch("switchmap.dashboard.net.routes.pages.devices.ConfigDashboard")
+    @patch("switchmap.dashboard.net.routes.pages.devices.rest")
+    @patch("switchmap.dashboard.net.routes.pages.devices.render_template")
+    def test_devices_route_different_idx_device(
+        self, mock_render, mock_rest, mock_config, mock_device
+    ):
+        """Testing devices route with different idx_device values.
+
+        Args:
+            mock_render: Mock render_template function
+            mock_rest: Mock rest module
+            mock_config: Mock ConfigDashboard class
+            mock_device: Mock Device class
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        idx_device = 123
+
+        # Create mock device instance
+        mock_device_instance = MagicMock()
+        mock_device_instance.interfaces.return_value = self.mock_interfaces
+        mock_device_instance.system.return_value = self.mock_system
+        mock_device_instance.hostname.return_value = self.mock_hostname
+        mock_device.return_value = mock_device_instance
+
+        # Set up rest mock
+        mock_rest.get.return_value = self.test_device_data
+
+        # Set up render mock
+        expected_template = "device.html"
+        mock_render.return_value = "Rendered HTML Content"
+
+        # Test
+        result = devices.devices(idx_device)
+
+        # Verify rest.get call
+        mock_rest.get.assert_called_once()
+        call_args = mock_rest.get.call_args
+        self.assertEqual(call_args[1]["server"], False)
+
+        # Verify Device instantiation and method calls
+        mock_device.assert_called_once_with(self.test_device_data)
+        mock_device_instance.interfaces.assert_called_once()
+        mock_device_instance.system.assert_called_once()
+        mock_device_instance.hostname.assert_called_once()
+
+        # Verify template rendering
+        mock_render.assert_called_once_with(
+            expected_template,
+            hostname=self.mock_hostname,
+            port_table=self.mock_interfaces,
+            system_table=self.mock_system,
+            idx_root=123,
+            date="2025-01-18 10:00:00",
+        )
+
+        # Verify result
+        self.assertEqual(result, "Rendered HTML Content")
+
+    @patch("switchmap.dashboard.net.routes.pages.devices.Device")
+    @patch("switchmap.dashboard.net.routes.pages.devices.ConfigDashboard")
+    @patch("switchmap.dashboard.net.routes.pages.devices.rest")
+    @patch("switchmap.dashboard.net.routes.pages.devices.render_template")
+    def test_devices_route_no_data(
+        self, mock_render, mock_rest, mock_config, mock_device
+    ):
+        """Testing devices route with no data returned.
+
+        Args:
+            mock_render: Mock render_template function
+            mock_rest: Mock rest module
+            mock_config: Mock ConfigDashboard class
+            mock_device: Mock Device class
+
+        Returns:
+            None
+
+        """
+        # Initialize key variables
+        idx_device = 97
+
+        # Set up rest mock to return no data
+        mock_rest.get.return_value = {}
+
+        # Test
+        with self.assertRaises(KeyError):
             devices.devices(idx_device)
 
 
