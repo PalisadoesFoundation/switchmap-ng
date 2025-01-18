@@ -81,16 +81,16 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            Root(
-                idx_event=row.idx_event,
-                name=row.name.encode(),
-                enabled=int(bool(row.enabled) is True),
-            )
+            {
+                "idx_event": row.idx_event,
+                "name": row.name.encode(),
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1033, inserts)
+        db.db_insert_row(1033,Root ,inserts)
 
 
 def update_row(idx, row):

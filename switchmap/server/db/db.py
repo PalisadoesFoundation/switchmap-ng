@@ -244,53 +244,7 @@ Only the "Delete" ORM expression is supported. Not "{}"'''.format(
     return result
 
 
-def db_add_all(error_code, instances, die=True):
-    """Provide a transactional support for Delete actions.
-
-    Args:
-        error_code: Error code to use in messages
-        instances: List of instances
-        die: Die if True
-
-    Returns:
-        result: True if successful
-
-    """
-    # Initialize key variables
-    result = False
-
-    with ENGINE.connect() as connection:
-        with Session(bind=connection, future=True) as session:
-            try:
-                session.add_all(instances)
-            except:
-                # Recover and log error
-                session.rollback()
-                log.log2info(error_code, 'DB "add_all" error.')
-                log.log2exception(error_code, sys.exc_info())
-                if bool(die):
-                    raise
-                log.log2debug(error_code, "Continuing processing.")
-
-            # Sometimes the commit fails
-            try:
-                session.commit()
-            except:
-                # Recover and log error
-                session.rollback()
-                log.log2info(error_code, 'DB "add_all" commit error.')
-                log.log2exception(error_code, sys.exc_info())
-                if bool(die):
-                    raise
-                log.log2debug(error_code, "Continuing processing.")
-            else:
-                result = True
-
-    # Return
-    return result
-
-
-def db_bulk_insert(error_code, model, mappings, die=True):
+def db_insert_row(error_code, model, mappings, die=True):
     """Perform bulk insert for ORM objects with enhanced logging.
 
     Args:

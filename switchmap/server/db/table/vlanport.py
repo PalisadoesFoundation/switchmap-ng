@@ -87,43 +87,7 @@ def find_idx_vlan(idx_vlan):
         result.append(_rows.vlanport(row))
     return result
 
-
 def insert_row(rows):
-    """Create a VlanPort table entry.
-
-    Args:
-        rows: IVlanPort objects
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    inserts = []
-
-    # Create list
-    if isinstance(rows, list) is False:
-        rows = [rows]
-
-    # Remove any duplicates
-    rows = list(set(rows))
-
-    # Create objects
-    for row in rows:
-        inserts.append(
-            VlanPort(
-                idx_l1interface=row.idx_l1interface,
-                idx_vlan=row.idx_vlan,
-                enabled=int(bool(row.enabled) is True),
-            )
-        )
-
-    # Insert
-    if bool(inserts):
-        db.db_add_all(1185, inserts)
-
-
-def bulk_insert_rows(model, rows):
     """Perform bulk insert for the Mac table.
 
     Args:
@@ -155,7 +119,7 @@ def bulk_insert_rows(model, rows):
 
     # Bulk insert
     if bool(inserts):
-        db.db_bulk_insert(1201, model, inserts)
+        db.db_insert_row(1201, VlanPort, inserts)
 
 
 def update_row(idx, row):

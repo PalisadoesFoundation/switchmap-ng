@@ -110,57 +110,7 @@ def findmac(idx_zone, macs):
         result.append(_rows.mac(row))
     return result
 
-
 def insert_row(rows):
-    """Create a Mac table entry.
-
-    Args:
-        rows: TopologyMac objects
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    inserts = []
-
-    # Create list
-    if isinstance(rows, list) is False:
-        rows = [rows]
-
-    # Remove any duplicates
-    rows = list(set(rows))
-
-    # Create objects
-    for row in rows:
-        # Fix the MAC address
-        mactest = general.mac(row.mac)
-
-        # Check the validity
-        if bool(mactest.valid) is False:
-            continue
-        else:
-            mac = mactest.mac
-
-        # Find the true idx_oui
-        idx_oui = oui.idx_oui(mac)
-
-        # Do the insertion
-        inserts.append(
-            Mac(
-                idx_oui=idx_oui,
-                idx_zone=row.idx_zone,
-                mac=(null() if bool(mac) is False else mac.encode()),
-                enabled=int(bool(row.enabled) is True),
-            )
-        )
-
-    # Insert
-    if bool(inserts):
-        db.db_add_all(1087, inserts)
-
-
-def bulk_insert_rows(model, rows):
     """Perform bulk insert for the Mac table.
 
     Args:
@@ -206,7 +156,7 @@ def bulk_insert_rows(model, rows):
 
     # Perform bulk insert
     if bool(inserts):
-        db.db_bulk_insert(1202, model, inserts)
+        db.db_insert_row(1202, Mac, inserts)
 
 
 def update_row(idx, row):
@@ -235,7 +185,7 @@ def update_row(idx, row):
             {
                 "idx_oui": idx_oui,
                 "idx_zone": row.idx_zone,
-                "mac": (null() if bool(mac) is False else mac.encode()),
+                "mac": (None if bool(mac) is False else mac.encode()),
                 "enabled": int(bool(row.enabled) is True),
             }
         )

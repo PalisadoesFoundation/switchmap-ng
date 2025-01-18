@@ -135,53 +135,7 @@ def findip(idx_zone, ips):
         result.append(_rows.ip(row))
     return result
 
-
 def insert_row(rows):
-    """Create a Ip table entry.
-
-    Args:
-        rows: TopologyIp objects
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    inserts = []
-
-    # Create list
-    if isinstance(rows, list) is False:
-        rows = [rows]
-
-    # Remove any duplicates
-    rows = list(set(rows))
-
-    # Create objects
-    for row in rows:
-        # Fix the MAC address
-        ip = general.ipaddress(row.address)
-
-        # Do the insertion
-        inserts.append(
-            Ip(
-                idx_zone=row.idx_zone,
-                hostname=(
-                    null()
-                    if bool(row.hostname) is False
-                    else row.hostname.encode()
-                ),
-                version=row.version,
-                address=(null() if bool(ip) is False else ip.address.encode()),
-                enabled=int(bool(row.enabled) is True),
-            )
-        )
-
-    # Insert
-    if bool(inserts):
-        db.db_add_all(1065, inserts)
-
-
-def bulk_insert_rows(model, rows):
     """Perform bulk insert for the Mac table.
 
     Args:
@@ -205,23 +159,20 @@ def bulk_insert_rows(model, rows):
     for row in rows:
         ip = general.ipaddress(row.address)
         inserts.append(
-            Ip(
-                idx_zone=row.idx_zone,
-                hostname=(
-                    null()
+                {
+                    "idx_zone": row.idx_zone,
+                    "hostname": None
                     if bool(row.hostname) is False
-                    else row.hostname.encode()
-                ),
-                version=row.version,
-                address=(null() if bool(ip) is False else ip.address.encode()),
-                enabled=int(bool(row.enabled)),
+                    else row.hostname.encode(),
+                    "version": row.version,
+                    "address": (None if bool(ip) is False else ip.address.encode()),
+                    "enabled":int(bool(row.enabled)),
+                }
             )
-        )
 
     # Perform bulk insert
     if inserts:
-        db.db_bulk_insert(1070, model, inserts)
-
+        db.db_insert_row(1070, Ip, inserts)
 
 def update_row(idx, row):
     """Upadate a Ip table entry.
@@ -245,11 +196,11 @@ def update_row(idx, row):
             {
                 "idx_zone": row.idx_zone,
                 "address": (
-                    null() if bool(ip) is False else ip.address.encode()
+                    None if bool(ip) is False else ip.address.encode()
                 ),
                 "version": row.version,
                 "hostname": (
-                    null()
+                    None
                     if bool(row.hostname) is False
                     else row.hostname.lower().encode()
                 ),

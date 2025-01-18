@@ -108,18 +108,18 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            Vlan(
-                idx_device=row.idx_device,
-                vlan=null() if row.vlan is None else row.vlan,
-                name=null() if bool(row.name) is False else row.name.encode(),
-                state=null() if bool(row.state) is False else row.state,
-                enabled=int(bool(row.enabled) is True),
-            )
+            {
+                "idx_device": row.idx_device,
+                "vlan": None if row.vlan is None else row.vlan,
+                "name": None if bool(row.name) is False else row.name.encode(),
+                "state": None if bool(row.state) is False else row.state,
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1093, inserts)
+        db.db_insert_row(1093, Vlan,inserts)
 
 
 def update_row(idx, row):
@@ -140,11 +140,11 @@ def update_row(idx, row):
         .values(
             {
                 "idx_device": row.idx_device,
-                "vlan": null() if bool(row.vlan) is False else row.vlan,
+                "vlan": None if bool(row.vlan) is False else row.vlan,
                 "name": (
-                    null() if bool(row.name) is False else row.name.encode()
+                    None if bool(row.name) is False else row.name.encode()
                 ),
-                "state": null() if bool(row.state) is False else row.state,
+                "state": None if bool(row.state) is False else row.state,
                 "enabled": int(bool(row.enabled) is True),
             }
         )
