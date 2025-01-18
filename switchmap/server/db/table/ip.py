@@ -186,7 +186,6 @@ def update_row(idx, row):
 
     Returns:
         None
-
     """
     # Fix the MAC address
     ip = general.ipaddress(row.address)
