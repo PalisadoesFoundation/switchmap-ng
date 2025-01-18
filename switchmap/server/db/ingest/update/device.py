@@ -234,7 +234,9 @@ class Topology:
         # Initialize more key variables
         data = self._data
         interfaces = data.get("layer1")
-        historical = {_.ifname: _ for _ in _historical.interfaces(self._device)}
+        historical = {
+            _.ifname: _ for _ in _historical.interfaces(self._device)
+        }
         rows = []
 
         # Log

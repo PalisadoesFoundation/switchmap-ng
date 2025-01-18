@@ -361,7 +361,9 @@ class ConfigAPIClient(ConfigCore):
                 f"https://{self.server_address()}:{self.server_bind_port()}"
             )
         else:
-            result = f"http://{self.server_address()}:{self.server_bind_port()}"
+            result = (
+                f"http://{self.server_address()}:{self.server_bind_port()}"
+            )
 
         # Return
         return result

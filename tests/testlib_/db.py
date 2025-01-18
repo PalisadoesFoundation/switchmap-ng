@@ -148,7 +148,9 @@ def populate():
 
         # Create Root record
         root.insert_row(
-            IRoot(idx_event=row.idx_event, name=data.random_string(), enabled=1)
+            IRoot(
+                idx_event=row.idx_event, name=data.random_string(), enabled=1
+            )
         )
 
     # Create Zone record
@@ -269,11 +271,15 @@ def populate():
             ifadminstatus=random.randint(0, 1000000),
             ifoperstatus=random.randint(0, 1000000),
             ts_idle=random.randint(0, 1000000),
-            cdpcachedeviceid="cdpcachedeviceid_{}".format(data.random_string()),
+            cdpcachedeviceid="cdpcachedeviceid_{}".format(
+                data.random_string()
+            ),
             cdpcachedeviceport="cdpcachedeviceport_{}".format(
                 data.random_string()
             ),
-            cdpcacheplatform="cdpcacheplatform_{}".format(data.random_string()),
+            cdpcacheplatform="cdpcacheplatform_{}".format(
+                data.random_string()
+            ),
             lldpremportdesc="lldpremportdesc_{}".format(data.random_string()),
             lldpremsyscapenabled="lldpremsyscapenabled_{}".format(
                 data.random_string()

@@ -152,7 +152,9 @@ class TestDbTableIpPort(unittest.TestCase):
                 result = testimport.find_idx_ip(row.idx_ip)
                 if row.idx_ip not in finds:
                     self.assertFalse(
-                        bool(testimport.exists(row.idx_l1interface, row.idx_ip))
+                        bool(
+                            testimport.exists(row.idx_l1interface, row.idx_ip)
+                        )
                     )
                     # The combination idx_l1interface, idx_ip must not exist
                     for item in result:

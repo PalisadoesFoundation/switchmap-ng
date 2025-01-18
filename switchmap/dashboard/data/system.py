@@ -104,7 +104,9 @@ class System:
         """
         # Return
         timestamp = self._data.get("lastPolled", 0)
-        result = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+        result = datetime.fromtimestamp(timestamp).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
         return result
 
     def sysdescription(self):

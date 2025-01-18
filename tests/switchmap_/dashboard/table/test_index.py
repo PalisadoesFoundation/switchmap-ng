@@ -24,7 +24,8 @@ ROOT_DIR = os.path.abspath(
     )
 )
 _EXPECTED = (
-    "{0}switchmap-ng{0}tests{0}switchmap_{0}" "dashboard{0}table".format(os.sep)
+    "{0}switchmap-ng{0}tests{0}switchmap_{0}"
+    "dashboard{0}table".format(os.sep)
 )
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed

@@ -340,14 +340,18 @@ def _logit(error_num, error_string, error=False, verbose=False, level="info"):
 
     # Log the message
     if error:
-        log_message = "[{}] ({}E): {}".format(username, error_num, error_string)
+        log_message = "[{}] ({}E): {}".format(
+            username, error_num, error_string
+        )
         logger_stdout.critical("%s", log_message)
         logger_file.critical(log_message)
 
         # All done
         sys.exit(2)
     else:
-        log_message = "[{}] ({}S): {}".format(username, error_num, error_string)
+        log_message = "[{}] ({}S): {}".format(
+            username, error_num, error_string
+        )
         _logger_file(logger_file, log_message, log_level)
         if verbose:
             _logger_stdout(logger_stdout, log_message, log_level)

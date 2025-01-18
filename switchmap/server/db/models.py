@@ -64,7 +64,9 @@ class Event(BASE):
     __tablename__ = "smap_event"
     __table_args__ = {"mysql_engine": "InnoDB"}
 
-    idx_event = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_event = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
     name = Column(VARBINARY(256), unique=True)
     epoch_utc = Column(BIGINT(20, unsigned=True))
     enabled = Column(BIT(1), default=1)
@@ -587,7 +589,9 @@ class MacIp(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_macip = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
+    idx_macip = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
     idx_ip = Column(
         ForeignKey(Ip.idx_ip, ondelete="CASCADE"),
         nullable=True,
