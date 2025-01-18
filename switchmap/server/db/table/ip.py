@@ -166,9 +166,7 @@ def insert_row(rows):
                 if bool(row.hostname) is False
                 else row.hostname.encode(),
                 "version": row.version,
-                "address": (
-                    None if bool(ip) is False else ip.address.encode()
-                ),
+                "address": (None if bool(ip) is False else ip.address.encode()),
                 "enabled": int(bool(row.enabled)),
             }
         )
@@ -199,9 +197,7 @@ def update_row(idx, row):
         .values(
             {
                 "idx_zone": row.idx_zone,
-                "address": (
-                    None if bool(ip) is False else ip.address.encode()
-                ),
+                "address": (None if bool(ip) is False else ip.address.encode()),
                 "version": row.version,
                 "hostname": (
                     None
