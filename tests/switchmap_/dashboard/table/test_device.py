@@ -51,7 +51,7 @@ class TestDevice(unittest.TestCase):
             self.assertIsNone(result, "Expected None for empty data")
 
     def test_interfaces_with_none_data(self):
-        """Test the interfaces method with None as data."""
+        """Test the interfaces method with none as data."""
         device_instance = device.Device({"l1interfaces": None})
         with patch.object(interfaces_, "table", return_value=None):
             result = device_instance.interfaces()
