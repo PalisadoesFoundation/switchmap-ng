@@ -5,8 +5,6 @@ import sys
 from sqlalchemy.sql import Select, Update, Delete
 from sqlalchemy.orm import Session
 from sqlalchemy import insert
-from sqlalchemy.inspection import inspect
-
 
 # Import project libraries
 from switchmap.core import log
