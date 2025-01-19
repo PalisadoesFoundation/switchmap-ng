@@ -211,4 +211,3 @@ def update_row(idx, row):
         )
     )
     db.db_update(1069, statement)
-    
