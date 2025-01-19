@@ -268,7 +268,8 @@ class Topology:
                 except Exception as e:
                     log.log2debug(
                         1035,
-                        f"Unexpected error during DNS lookup for {ip}: {str(e)}",
+                        f"Unexpected error during DNS lookup for {ip}: ",
+                        f"{str(e)}",
                     )
                     hostname_map[ip] = None
 
