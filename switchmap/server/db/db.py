@@ -244,7 +244,7 @@ Only the "Delete" ORM expression is supported. Not "{}"'''.format(
 
 def db_insert_row(error_code, model, mappings, die=True):
     """Perform bulk insert for ORM objects with enhanced logging.
-    
+
     Args:
         error_code: Error code to use in messages
         model: SQLAlchemy model to insert into
