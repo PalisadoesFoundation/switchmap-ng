@@ -132,9 +132,7 @@ def insert_row(rows):
                 sys_uptime=(
                     null() if row.sys_uptime is None else row.sys_uptime
                 ),
-                last_polled=(
-                    0 if row.last_polled is None else row.last_polled
-                ),
+                last_polled=(0 if row.last_polled is None else row.last_polled),
                 enabled=int(bool(row.enabled) is True),
             )
         )
