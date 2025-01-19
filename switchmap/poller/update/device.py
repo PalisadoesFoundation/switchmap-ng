@@ -152,7 +152,7 @@ class Device:
                     higherlayers = updated_device_data["system"]["IF-MIB"][
                         "ifStackStatus"
                     ][ifindex]
-                except:
+                except KeyError:
                     log_message = f"""\
 Host {self._devicename} is missing ifindex {ifindex} in \
 the IF-MIB::ifStackStatus OID"""
