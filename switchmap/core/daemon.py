@@ -118,9 +118,7 @@ file and directory permissions.""".format(
             try:
                 os.remove(self.pidfile)
             except:
-                log_message = "PID file {} already deleted".format(
-                    self.pidfile
-                )
+                log_message = "PID file {} already deleted".format(self.pidfile)
                 log.log2warning(1152, log_message)
 
     def delskip(self):
