@@ -116,17 +116,13 @@ You can run all the tests with this command.
 
 ```bash
 (venv) $ cd /path/to/switchmap
-(venv) $ tests/bin/_do_all_tests.py
-```
-An alternative method is to use pytest.
-```bash
-(venv) $ cd /path/to/switchmap
 (venv) $ pytest tests/switchmap_
+```
 ```
 You can run individual tests with this command.
 ```bash
 (venv) $ cd /path/to/switchmap
-(venv) $ tests/switchmap_/path/to/test.py
+(venv) $ pytest tests/switchmap_/path/to/test.py
 ```
 ### Populating the Database Using the Ingester
 
@@ -143,3 +139,12 @@ An easy way to populate the database using this data is to:
     `cache_directory`
 3)  Start or restart the poller daemon or app
 4)  The updated data should now be visible in the web UI
+
+## Running Tests with Coverage Report
+
+To run the test suite and generate a coverage report, use this command:
+
+```bash
+(venv) $ cd /path/to/switchmap
+(venv) $ pytest --cov=switchmap --cov-report=lcov:coverage/coverage.lcov --cov-report=term-missing tests/switchmap_
+```
