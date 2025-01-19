@@ -163,22 +163,22 @@ def insert_row(rows):
 
         # Do the insertion
         inserts.append(
-            Ip(
-                idx_zone=row.idx_zone,
-                hostname=(
-                    null()
-                    if bool(row.hostname) is False
-                    else row.hostname.encode()
+            {
+                "idx_zone": row.idx_zone,
+                "hostname": None
+                if bool(row.hostname) is False
+                else row.hostname.encode(),
+                "version": row.version,
+                "address": (
+                    None if bool(ip) is False else ip.address.encode()
                 ),
-                version=row.version,
-                address=(null() if bool(ip) is False else ip.address.encode()),
-                enabled=int(bool(row.enabled) is True),
-            )
+                "enabled": int(bool(row.enabled)),
+            }
         )
 
-    # Insert
-    if bool(inserts):
-        db.db_add_all(1065, inserts)
+    # Perform bulk insert
+    if inserts:
+        db.db_insert_row(1070, Ip, inserts)
 
 
 def update_row(idx, row):
@@ -203,11 +203,11 @@ def update_row(idx, row):
             {
                 "idx_zone": row.idx_zone,
                 "address": (
-                    null() if bool(ip) is False else ip.address.encode()
+                    None if bool(ip) is False else ip.address.encode()
                 ),
                 "version": row.version,
                 "hostname": (
-                    null()
+                    None
                     if bool(row.hostname) is False
                     else row.hostname.lower().encode()
                 ),

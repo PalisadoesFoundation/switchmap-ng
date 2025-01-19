@@ -111,16 +111,16 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            VlanPort(
-                idx_l1interface=row.idx_l1interface,
-                idx_vlan=row.idx_vlan,
-                enabled=int(bool(row.enabled) is True),
-            )
+            {
+                "idx_l1interface": row.idx_l1interface,
+                "idx_vlan": row.idx_vlan,
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
-    # Insert
+    # Bulk insert
     if bool(inserts):
-        db.db_add_all(1185, inserts)
+        db.db_insert_row(1201, VlanPort, inserts)
 
 
 def update_row(idx, row):

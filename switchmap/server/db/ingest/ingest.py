@@ -537,8 +537,8 @@ def insert_macips(items, test=False):
     if bool(test) is False:
         _macip.insert_row(rows)
     else:
-        for row in sorted(rows, key=attrgetter("idx_mac", "idx_ip")):
-            _macip.insert_row(row)
+        row = sorted(rows, key=attrgetter("idx_mac", "idx_ip"))
+        _macip.insert_row(row)
 
 
 def insert_ipports(items, test=False):

@@ -428,10 +428,8 @@ class Topology:
             if bool(test) is False:
                 _vlanport.insert_row(inserts)
             else:
-                for insert in sorted(
-                    inserts, key=attrgetter("idx_vlan", "idx_l1interface")
-                ):
-                    _vlanport.insert_row(insert)
+                inserts = sorted(inserts)
+                _vlanport.insert_row(inserts)
 
         # Log
         self.log("VlanPort", updated=True)
