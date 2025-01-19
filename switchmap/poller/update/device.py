@@ -152,11 +152,11 @@ class Device:
                     higherlayers = updated_device_data["system"]["IF-MIB"][
                         "ifStackStatus"
                     ][ifindex]
+                except:
                     log_message = f"""\
 Host {self._devicename} is missing ifindex {ifindex} in \
 the IF-MIB::ifStackStatus OID"""
                     log.log2debug(1071, log_message)
-                except:
                     higherlayers = []
 
                 # Update vlan to universal switchmap.port_data value
