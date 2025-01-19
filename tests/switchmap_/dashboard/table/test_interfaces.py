@@ -6,7 +6,6 @@ import unittest
 from collections import namedtuple
 from unittest.mock import patch
 
-# PIP imports
 from flask_table import Col
 from markupsafe import Markup
 
