@@ -166,9 +166,7 @@ def insert_row(rows):
                 "ifalias": (
                     None if row.ifalias is None else row.ifalias.encode()
                 ),
-                "ifname": (
-                    None if row.ifname is None else row.ifname.encode()
-                ),
+                "ifname": (None if row.ifname is None else row.ifname.encode()),
                 "ifdescr": (
                     None if row.ifdescr is None else row.ifdescr.encode()
                 ),
@@ -253,9 +251,7 @@ def update_row(idx, row):
                 "ifalias": (
                     None if row.ifalias is None else row.ifalias.encode()
                 ),
-                "ifname": (
-                    None if row.ifname is None else row.ifname.encode()
-                ),
+                "ifname": (None if row.ifname is None else row.ifname.encode()),
                 "ifdescr": (
                     None if row.ifdescr is None else row.ifdescr.encode()
                 ),
