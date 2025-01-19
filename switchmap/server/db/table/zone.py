@@ -108,19 +108,21 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            Zone(
-                idx_event=row.idx_event,
-                name=(null() if bool(row.name) is False else row.name.encode()),
-                notes=(
-                    null() if bool(row.notes) is False else row.notes.encode()
+            {
+                "idx_event": row.idx_event,
+                "name": (
+                    None if bool(row.name) is False else row.name.encode()
                 ),
-                enabled=int(bool(row.enabled) is True),
-            )
+                "notes": (
+                    None if bool(row.notes) is False else row.notes.encode()
+                ),
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1155, inserts)
+        db.db_insert_row(1155, Zone, inserts)
 
 
 def update_row(idx, row):
@@ -142,10 +144,10 @@ def update_row(idx, row):
             {
                 "idx_event": row.idx_event,
                 "name": (
-                    null() if bool(row.name) is False else row.name.encode()
+                    None if bool(row.name) is False else row.name.encode()
                 ),
                 "notes": (
-                    null() if bool(row.notes) is False else row.notes.encode()
+                    None if bool(row.notes) is False else row.notes.encode()
                 ),
                 "enabled": int(bool(row.enabled) is True),
             }

@@ -4,6 +4,7 @@ import sys
 
 from sqlalchemy.sql import Select, Update, Delete
 from sqlalchemy.orm import Session
+from sqlalchemy import insert
 
 # Import project libraries
 from switchmap.core import log
@@ -241,47 +242,46 @@ Only the "Delete" ORM expression is supported. Not "{}"'''.format(
     return result
 
 
-def db_add_all(error_code, instances, die=True):
-    """Provide a transactional support for Delete actions.
+def db_insert_row(error_code, model, mappings, die=True):
+    """Perform bulk insert for ORM objects with enhanced logging.
 
     Args:
         error_code: Error code to use in messages
-        instances: List of instances
+        model: SQLAlchemy model to insert into
+        mappings: List of dictionaries with data to insert
         die: Die if True
 
     Returns:
         result: True if successful
 
     """
-    # Initialize key variables
     result = False
 
     with ENGINE.connect() as connection:
         with Session(bind=connection, future=True) as session:
             try:
-                session.add_all(instances)
-            except:
+                # Perform the insert
+                session.execute(insert(model), mappings)
+            except Exception:
                 # Recover and log error
                 session.rollback()
-                log.log2info(error_code, 'DB "add_all" error.')
+                log.log2info(error_code, 'DB "bulk_insert" error.')
                 log.log2exception(error_code, sys.exc_info())
                 if bool(die):
                     raise
                 log.log2debug(error_code, "Continuing processing.")
 
-            # Sometimes the commit fails
+            # Commit the transaction
             try:
                 session.commit()
-            except:
+            except Exception:
                 # Recover and log error
                 session.rollback()
-                log.log2info(error_code, 'DB "add_all" commit error.')
+                log.log2info(error_code, 'DB "bulk_insert" commit error.')
                 log.log2exception(error_code, sys.exc_info())
                 if bool(die):
                     raise
                 log.log2debug(error_code, "Continuing processing.")
             else:
                 result = True
-
-    # Return
     return result

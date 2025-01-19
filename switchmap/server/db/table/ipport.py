@@ -111,16 +111,16 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            IpPort(
-                idx_l1interface=row.idx_l1interface,
-                idx_ip=row.idx_ip,
-                enabled=int(bool(row.enabled) is True),
-            )
+            {
+                "idx_l1interface": row.idx_l1interface,
+                "idx_ip": row.idx_ip,
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1063, inserts)
+        db.db_insert_row(1063, IpPort, inserts)
 
 
 def update_row(idx, row):

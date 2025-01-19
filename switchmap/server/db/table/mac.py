@@ -147,17 +147,17 @@ def insert_row(rows):
 
         # Do the insertion
         inserts.append(
-            Mac(
-                idx_oui=idx_oui,
-                idx_zone=row.idx_zone,
-                mac=(null() if bool(mac) is False else mac.encode()),
-                enabled=int(bool(row.enabled) is True),
-            )
+            {
+                "idx_oui": idx_oui,
+                "idx_zone": row.idx_zone,
+                "mac": mac.encode("utf-8") if isinstance(mac, str) else mac,
+                "enabled": int(bool(row.enabled)),
+            }
         )
 
-    # Insert
+    # Perform bulk insert
     if bool(inserts):
-        db.db_add_all(1087, inserts)
+        db.db_insert_row(1202, Mac, inserts)
 
 
 def update_row(idx, row):
@@ -186,7 +186,7 @@ def update_row(idx, row):
             {
                 "idx_oui": idx_oui,
                 "idx_zone": row.idx_zone,
-                "mac": (null() if bool(mac) is False else mac.encode()),
+                "mac": (None if bool(mac) is False else mac.encode()),
                 "enabled": int(bool(row.enabled) is True),
             }
         )

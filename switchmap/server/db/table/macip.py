@@ -154,16 +154,16 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            MacIp(
-                idx_ip=row.idx_ip,
-                idx_mac=row.idx_mac,
-                enabled=int(bool(row.enabled) is True),
-            )
+            {
+                "idx_ip": row.idx_ip,
+                "idx_mac": row.idx_mac,
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1091, inserts)
+        db.db_insert_row(1091, MacIp, inserts)
 
 
 def update_row(idx, row):
