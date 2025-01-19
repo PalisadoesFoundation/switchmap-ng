@@ -137,37 +137,36 @@ def findip(idx_zone, ips):
 
 
 def insert_row(rows):
-    """Create a Ip table entry.
+    """Perform bulk insert for the Mac table.
 
     Args:
-        rows: TopologyIp objects
+        rows: List of IMac objects to be inserted into the database.
 
     Returns:
-        None
+        None: This function does not return any value.
 
     """
     # Initialize key variables
     inserts = []
 
-    # Create list
+    # Ensure input is a list
     if isinstance(rows, list) is False:
         rows = [rows]
 
-    # Remove any duplicates
+    # Remove duplicates
     rows = list(set(rows))
 
-    # Create objects
+    # Create objects for insertion
     for row in rows:
-        # Fix the MAC address
         ip = general.ipaddress(row.address)
-
-        # Do the insertion
         inserts.append(
             {
                 "idx_zone": row.idx_zone,
-                "hostname": None
-                if bool(row.hostname) is False
-                else row.hostname.encode(),
+                "hostname": (
+                    None
+                    if bool(row.hostname) is False
+                    else row.hostname.encode()
+                ),
                 "version": row.version,
                 "address": (None if bool(ip) is False else ip.address.encode()),
                 "enabled": int(bool(row.enabled)),
@@ -212,3 +211,4 @@ def update_row(idx, row):
         )
     )
     db.db_update(1069, statement)
+    
