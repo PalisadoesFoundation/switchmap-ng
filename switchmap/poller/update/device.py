@@ -143,9 +143,21 @@ class Device:
                 # layer subinterfaces whose data could be used
                 # for upper layer2 features such as VLANs and
                 # LAG trunking
-                higherlayers = updated_device_data["system"]["IF-MIB"][
-                    "ifStackStatus"
-                ][ifindex]
+
+                # Some devices don't have this information and this step
+                # must be skipped and logged
+                # github.com/PalisadoesFoundation/switchmap-ng/issues/127
+
+                try:
+                    higherlayers = updated_device_data["system"]["IF-MIB"][
+                        "ifStackStatus"
+                    ][ifindex]
+                except KeyError:
+                    log_message = f"""\
+Host {self._devicename} is missing ifindex {ifindex} in \
+the IF-MIB::ifStackStatus OID"""
+                    log.log2debug(1071, log_message)
+                    higherlayers = []
 
                 # Update vlan to universal switchmap.port_data value
                 for ifstackhigherlayer in higherlayers:
@@ -375,7 +387,6 @@ def _nativevlan(port_data):
 
     Args:
         port_data: Data dict related to the port
-        ifindex: ifindex in question
 
     Returns:
         vlan: VLAN number
@@ -423,7 +434,7 @@ def _duplex(port_data):
 
         Args:
             status: The status of the port
-            value: The value of the port status
+            val: The value of the port status
 
         Returns:
             value: Duplex value

@@ -59,7 +59,15 @@ class _GetLog:
     """Class to manage the logging without duplicates."""
 
     def __init__(self):
-        """Initialize the class."""
+        """Initialize the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
         # Application libraries
         from switchmap.core.configuration import ConfigCore
 
@@ -268,6 +276,7 @@ def log2exception(code, sys_exc_info, message=None, die=False):
     Args:
         code: Message code
         sys_exc_info: Tuple from exception from sys.exc_info
+        message: Message to log
         die: Die if True
 
     Returns:
@@ -331,18 +340,14 @@ def _logit(error_num, error_string, error=False, verbose=False, level="info"):
 
     # Log the message
     if error:
-        log_message = "[{}] ({}E): {}".format(
-            username, error_num, error_string
-        )
+        log_message = "[{}] ({}E): {}".format(username, error_num, error_string)
         logger_stdout.critical("%s", log_message)
         logger_file.critical(log_message)
 
         # All done
         sys.exit(2)
     else:
-        log_message = "[{}] ({}S): {}".format(
-            username, error_num, error_string
-        )
+        log_message = "[{}] ({}S): {}".format(username, error_num, error_string)
         _logger_file(logger_file, log_message, log_level)
         if verbose:
             _logger_stdout(logger_stdout, log_message, log_level)

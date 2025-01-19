@@ -8,12 +8,28 @@ from switchmap.poller.snmp import BridgeQuery
 
 
 def get_query():
-    """Return this module's Query class."""
+    """Return this module's Query class.
+
+    Args:
+        None
+
+    Returns:
+        JuniperVlanQuery: Query class for JUNIPER-VLAN-MIB
+
+    """
     return JuniperVlanQuery
 
 
 def init_query(snmp_object):
-    """Return initialize and return this module's Query class."""
+    """Return initialize and return this module's Query class.
+
+    Args:
+        snmp_object: SNMPInteract object
+
+    Returns:
+        JuniperVlanQuery: Query class for JUNIPER-VLAN-MIB
+
+    """
     return JuniperVlanQuery(snmp_object)
 
 
@@ -202,7 +218,7 @@ class JuniperVlanQuery(Query):
         """Return dict of JUNIPER-VLAN-MIB jnxExVlanTag w/ dot1dbaseport key.
 
         Args:
-            None:
+            None
 
         Returns:
             data_dict: Dict of mapping

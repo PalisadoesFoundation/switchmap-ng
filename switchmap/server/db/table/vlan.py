@@ -37,6 +37,7 @@ def exists(idx_device, vlan):
     """Determine whether vlan exists in the Vlan table.
 
     Args:
+        idx_device: DB idx for the device
         vlan: Vlan
 
     Returns:

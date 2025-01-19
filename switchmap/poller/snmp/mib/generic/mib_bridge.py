@@ -8,12 +8,25 @@ from . import mib_if
 
 
 def get_query():
-    """Return this module's Query class."""
+    """Return this module's Query class.
+
+    Args:
+        None
+
+    Returns:
+        BridgeQuery: Query class object
+    """
     return BridgeQuery
 
 
 def init_query(snmp_object):
-    """Return initialize and return this module's Query class."""
+    """Return initialize and return this module's Query class.
+
+    Args:
+        snmp_object: SNMP Interact class object from snmp_manager.py
+    Returns:
+        BridgeQuery: Query class object
+    """
     return BridgeQuery(snmp_object)
 
 
@@ -236,7 +249,7 @@ class BridgeQuery(Query):
         """Return dict of BRIDGE-MIB dot1dTpFdbPort data.
 
         Args:
-            None
+            context_names: List of context names
 
         Returns:
             data_dict: Dict of dot1dTpFdbPort using the OID nodes
@@ -305,7 +318,7 @@ class BridgeQuery(Query):
         """Return dict of BRIDGE-MIB dot1dTpFdbAddress data.
 
         Args:
-            None
+            context_names: List of context names
 
         Returns:
             data_dict: Dict of dot1dTpFdbAddress using the OID nodes
@@ -335,7 +348,7 @@ class BridgeQuery(Query):
         """Return dict of BRIDGE-MIB dot1dBasePortIfIndex data.
 
         Args:
-            None
+            context_names: List of context names
 
         Returns:
             data_dict: Dict of dot1dBasePortIfIndex with dot1dBasePort as key.

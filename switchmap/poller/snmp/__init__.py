@@ -51,12 +51,14 @@ def get_queries(layer):
     """Get mib queries which gather information related to a specific OSI layer.
 
     Args:
-        tag: The layer of queries needed
+        layer: The layer of queries needed
 
     Returns:
         queries: List of queries tagged the given layer
 
     """
-    return [
+    # Return
+    queries = [
         class_object for class_object in QUERIES if layer in dir(class_object)
     ]
+    return queries

@@ -28,7 +28,7 @@ def search():
         None
 
     Returns:
-        HTML
+        render_template: HTML
 
     """
     # Initialize key variables
@@ -100,10 +100,10 @@ def get_tables(_interfaces):
     """Convert interface information to HTML.
 
     Args:
-        interfaces: List of interface data dicts
+        _interfaces: List of interface data dicts
 
     Returns:
-        HTML
+        result: HTML
 
     """
     # Initialize key variables
@@ -125,9 +125,7 @@ def get_tables(_interfaces):
                 # Extract device information
                 next_hostname = next_device.get("hostname", "")
                 zone_dict = next_device.get("device", "")
-                next_zone = (
-                    zone_dict.get("name", "") if bool(zone_dict) else ""
-                )
+                next_zone = zone_dict.get("name", "") if bool(zone_dict) else ""
 
                 # Populate the zones dict
                 zones[next_zone][next_hostname].append(next_interface)

@@ -12,7 +12,7 @@ def idx_oui(mac):
     """Get the idx_oui value.
 
     Args:
-        row: MAC address
+        mac: MAC address
 
     Returns:
         result: idx_oui value

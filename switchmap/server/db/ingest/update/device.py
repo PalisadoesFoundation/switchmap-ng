@@ -113,7 +113,15 @@ class Status:
     """Tracks the status of various Topology methods."""
 
     def __init__(self):
-        """Instantiate the class."""
+        """Instantiate the class.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        """
         self._vlan = False
         self._vlanport = False
         self._macport = False
@@ -169,6 +177,7 @@ class Topology:
         Args:
             exists: RDevice object
             data: Dict of device data
+            dns: Do DNS lookups if True
 
         Returns:
             None
@@ -224,9 +233,7 @@ class Topology:
         # Initialize more key variables
         data = self._data
         interfaces = data.get("layer1")
-        historical = {
-            _.ifname: _ for _ in _historical.interfaces(self._device)
-        }
+        historical = {_.ifname: _ for _ in _historical.interfaces(self._device)}
         rows = []
 
         # Log
@@ -537,7 +544,6 @@ class Topology:
 
         Args:
             table: Name of table being updated
-            updated: True if the table has been updated
 
         Returns:
             None
@@ -561,7 +567,7 @@ def _ifspeed(interface):
         interface: L1Interface dict
 
     Returns:
-        result
+        result: Interface speed
 
     """
     result = interface.get("ifHighSpeed")

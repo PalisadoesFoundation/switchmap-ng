@@ -133,7 +133,7 @@ def events():
     """Get list of Events.
 
     Args:
-        idx: idx_event
+        None
 
     Returns:
         result: REvent object

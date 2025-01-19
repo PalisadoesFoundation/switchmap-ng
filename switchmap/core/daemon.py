@@ -118,9 +118,7 @@ file and directory permissions.""".format(
             try:
                 os.remove(self.pidfile)
             except:
-                log_message = "PID file {} already deleted".format(
-                    self.pidfile
-                )
+                log_message = "PID file {} already deleted".format(self.pidfile)
                 log.log2warning(1152, log_message)
 
     def delskip(self):
@@ -277,7 +275,7 @@ file and directory permissions.""".format(
         """Get daemon status.
 
         Args:
-            verbose: Print message if True
+            None
 
         Returns:
             result: True if the PID and PID file exists
@@ -292,17 +290,23 @@ file and directory permissions.""".format(
         return bool(pid)
 
     def run(self):
-        """You should override this method when you subclass Daemon.
+        """Override this method when you subclass Daemon.
 
-        It will be called after the process has been daemonized by
-        start() or restart().
+        This method will be called after the process has been daemonized by
+        start() or restart(). The base implementation does nothing and should
+        be overridden in derived classes to add actual daemon functionality.
+
+        Args:
+            None
+
+        Returns:
+            None
         """
-        # Simple comment to pass linter
         pass
 
 
 class GracefulDaemon(Daemon):
-    """Daemon that allows for graceful shutdown
+    """Daemon that allows for graceful shutdown.
 
     This daemon should allow for stop/restart commands to perform graceful
     shutdown of a given process. A graceful shutdown involves checking that
@@ -316,6 +320,7 @@ class GracefulDaemon(Daemon):
 
         Args:
             agent: Agent object
+            timeout: Timeout for graceful shutdown
 
         Returns:
             None
@@ -327,14 +332,14 @@ class GracefulDaemon(Daemon):
         Daemon.__init__(self, agent)
 
     def __daemon_running(self):
-        """Determines if daemon is processing data
+        """Determines if daemon is processing data.
 
         Daemon is running based on whether it has an associated lockfile
 
         Args:
             None
 
-        Return:
+        Returns:
             running: True if daemon is currently running or conducing a process
 
         """
@@ -346,19 +351,25 @@ class GracefulDaemon(Daemon):
         return running
 
     def graceful_shutdown(self, callback):
-        """Wrapper class that handles graceful_shutdown prior to using
-        callaback function `fn`
+        """Initializes the wrapper with the callback function `fn`.
 
         Args:
             callback: callback method
 
-        Return:
-            wrapper
+        Returns:
+            wrapper: Wrapper function
 
         """
 
         def wrapper():
-            """Wrapper function"""
+            """Wrapper function.
+
+            Args:
+                None
+
+            Returns:
+                None
+            """
             if self.__daemon_running():
                 log_message = """\
 Lock file {} exists. Process still running.""".format(
