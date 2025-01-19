@@ -110,9 +110,7 @@ def insert_row(rows):
         inserts.append(
             Zone(
                 idx_event=row.idx_event,
-                name=(
-                    null() if bool(row.name) is False else row.name.encode()
-                ),
+                name=(null() if bool(row.name) is False else row.name.encode()),
                 notes=(
                     null() if bool(row.notes) is False else row.notes.encode()
                 ),

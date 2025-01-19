@@ -108,9 +108,7 @@ class TestDbTableMacPort(unittest.TestCase):
 
         # Test after insertion of an initial row
         testimport.insert_row(row)
-        preliminary_result = testimport.exists(
-            row.idx_l1interface, row.idx_mac
-        )
+        preliminary_result = testimport.exists(row.idx_l1interface, row.idx_mac)
         self.assertTrue(preliminary_result)
         self.assertEqual(_convert(preliminary_result), _convert(row))
 
@@ -165,9 +163,7 @@ class TestDbTableMacPort(unittest.TestCase):
 
                 # Insert entry and then it should be found
                 testimport.insert_row(row)
-                now_exists = testimport.exists(
-                    row.idx_l1interface, row.idx_mac
-                )
+                now_exists = testimport.exists(row.idx_l1interface, row.idx_mac)
                 self.assertTrue(bool(now_exists))
                 post_result = testimport.find_idx_mac(now_exists.idx_mac)
                 self.assertEqual(now_exists.idx_mac, row.idx_mac)
