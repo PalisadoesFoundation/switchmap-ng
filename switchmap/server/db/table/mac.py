@@ -150,7 +150,7 @@ def insert_row(rows):
             {
                 "idx_oui": idx_oui,
                 "idx_zone": row.idx_zone,
-                "mac": bytes(mac, "utf-8"),
+                "mac": mac.encode("utf-8") if isinstance(mac, str) else mac,
                 "enabled": int(bool(row.enabled)),
             }
         )

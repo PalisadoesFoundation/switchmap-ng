@@ -265,8 +265,11 @@ class Topology:
             for ip in unique_ips:
                 try:
                     hostname_map[ip] = socket.gethostbyaddr(ip)[0]
-                except (socket.herror, socket.gaierror) as e:
-                    log.log2debug(1033, f"DNS lookup failed for {ip}: {str(e)}")
+                except Exception as e:
+                    log.log2debug(
+                        1035,
+                        f"Unexpected error during DNS lookup for {ip}: {str(e)}",
+                    )
                     hostname_map[ip] = None
 
         # Create a DB record
