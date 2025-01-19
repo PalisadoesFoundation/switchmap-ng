@@ -79,9 +79,7 @@ class TestFunctions(unittest.TestCase):
     def test_check_hashstring(self):
         """Testing function check_hashstring."""
         # Initializing key variables
-        _string = (
-            "f5rAwrU@Rop=Op-1QE$?yOs&@phit-=swoP*lqo6T!iwlcUthE2PistA7Re-"
-        )
+        _string = "f5rAwrU@Rop=Op-1QE$?yOs&@phit-=swoP*lqo6T!iwlcUthE2PistA7Re-"
         shas = [1, 224, 384, 256, 512]
         expecteds = [
             "f53766caaf3a1f567c6013ecafb840818eee2901",
