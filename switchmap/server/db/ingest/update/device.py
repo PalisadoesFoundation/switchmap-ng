@@ -233,9 +233,7 @@ class Topology:
         # Initialize more key variables
         data = self._data
         interfaces = data.get("layer1")
-        historical = {
-            _.ifname: _ for _ in _historical.interfaces(self._device)
-        }
+        historical = {_.ifname: _ for _ in _historical.interfaces(self._device)}
         rows = []
 
         # Log
@@ -437,10 +435,8 @@ class Topology:
             if bool(test) is False:
                 _vlanport.insert_row(inserts)
             else:
-                for insert in sorted(
-                    inserts, key=attrgetter("idx_vlan", "idx_l1interface")
-                ):
-                    _vlanport.insert_row(insert)
+                inserts = sorted(inserts)
+                _vlanport.insert_row(inserts)
 
         # Log
         self.log("VlanPort", updated=True)
