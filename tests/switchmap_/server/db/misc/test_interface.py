@@ -49,10 +49,6 @@ else:
     )
     sys.exit(2)
 
-# Import test dependencies
-from tests.testlib_ import setup
-from tests.testlib_ import db
-from tests.testlib_ import data
 
 # Import modules to test
 from switchmap.server.db.misc import interface as testimport
