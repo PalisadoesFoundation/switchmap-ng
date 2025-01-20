@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Test the interface module."""
+"""Test the macport module."""
 
 import os
 import sys
 import unittest
-from unittest.mock import Mock, patch
+from operator import attrgetter
+
+from collections import namedtuple
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -31,7 +33,6 @@ ROOT_DIR = os.path.abspath(
         os.pardir,
     )
 )
-
 _EXPECTED = """\
 {0}switchmap-ng{0}tests{0}switchmap_{0}server{0}db{0}misc""".format(
     os.sep
@@ -49,10 +50,22 @@ else:
     )
     sys.exit(2)
 
+# Create the necessary configuration to load the module
+from tests.testlib_ import setup
 
-# Import modules to test
+CONFIG = setup.config()
+CONFIG.save()
+
+from switchmap.server.db import models
+from tests.testlib_ import db
+from tests.testlib_ import data
 from switchmap.server.db.misc import interface as testimport
-from switchmap.server.db.table import zone, event, device, l1interface
+
+InterfaceTerms = namedtuple(
+    "InterfaceTerms", "interfaces devices zones ipports"
+)
+
+LOOP_MAX = 30
 
 
 class TestInterface(unittest.TestCase):
@@ -62,123 +75,117 @@ class TestInterface(unittest.TestCase):
     # General object setup
     #########################################################################
 
-    def setUp(self):
-        """Execute these steps before each test."""
-        # Create mock objects
-        self.mock_rdevice = Mock()
-        self.mock_rdevice.idx_zone = 1
-        self.mock_rdevice.hostname = "test_device"
-        self.mock_rdevice.idx_device = 1
+    iterations = 20
 
-        # Create mock zone
-        self.mock_zone = Mock()
-        self.mock_zone.idx_event = 2
+    @classmethod
+    def setUpClass(cls):
+        """Execute these steps before starting each test."""
+        # Load the configuration in case it's been deleted after loading the
+        # configuration above. Sometimes this happens when running
+        # `python3 -m unittest discover` where another the tearDownClass of
+        # another test module prematurely deletes the configuration required
+        # for this module
+        config = setup.config()
+        config.save()
 
-        # Create mock event
-        self.mock_event = Mock()
+        # Drop tables
+        database = db.Database()
+        database.drop()
 
-        # Create mock device
-        self.mock_device = Mock()
-        self.mock_device.idx_device = 1
+        # Create database tables
+        models.create_all_tables()
 
-        # Create mock interfaces
-        self.mock_interfaces = [Mock()]
-        self.mock_interfaces[0].idx_device = 1
+        # Pollinate db with prerequisites
+        cls.interface_terms = db.populate()
 
-    def tearDown(self):
-        """Execute these steps after each test."""
+    @classmethod
+    def tearDownClass(cls):
+        """Execute these steps after each tests is completed."""
+        # Drop tables
+        database = db.Database()
+        database.drop()
+
+        # Cleanup the configuration
+        CONFIG.cleanup()
+
+    def test___init__(self):
+        """Testing function __init__."""
         pass
 
-    @patch("switchmap.server.db.table.zone.idx_exists")
-    @patch("switchmap.server.db.table.event.idx_exists")
-    @patch("switchmap.server.db.table.zone.zones")
-    @patch("switchmap.server.db.table.device.exists")
-    @patch("switchmap.server.db.table.l1interface.ifindexes")
-    def test_interfaces_with_existing_zone_and_device(
-        self,
-        mock_ifindexes,
-        mock_device_exists,
-        mock_zones,
-        mock_event_exists,
-        mock_zone_exists,
-    ):
-        """Testing function interfaces with existing zone and device."""
-        # Set up mocks
-        mock_zone_exists.return_value = self.mock_zone
-        mock_event_exists.return_value = self.mock_event
-        mock_zones.return_value = [self.mock_zone]
-        mock_device_exists.return_value = self.mock_device
-        mock_ifindexes.return_value = self.mock_interfaces
+    def test_get_interface(self):
+        """Testing function get_interface."""
+        # Initialize key variables
+        terms = self.interface_terms
+        expected = sorted(terms.interfaces, key=attrgetter("idx_device"))
+        results = []
+        controls = []
 
-        # Get interfaces
-        result = testimport.interfaces(self.mock_rdevice)
+        # Get results
+        for interface in terms.interfaces:
+            test_interface = testimport.Interface(terms.idx_event, interface.id)
+            found = test_interface.get_interface()
+            if found:
+                results.append(found)
 
-        # Verify results
-        self.assertEqual(result, self.mock_interfaces)
-        mock_zone_exists.assert_called_once_with(self.mock_rdevice.idx_zone)
-        mock_event_exists.assert_called_once_with(1)  # idx_event - 1
-        mock_zones.assert_called_once_with(1)
-        mock_device_exists.assert_called_once_with(
-            self.mock_zone.idx_zone, self.mock_rdevice.hostname
-        )
-        mock_ifindexes.assert_called_once_with(self.mock_device.idx_device)
+        # Test
+        for key, result in enumerate(
+            sorted(results, key=attrgetter("idx_device"))
+        ):
+            self.assertEqual(result.idx_device, expected[key].idx_device)
+            self.assertEqual(result.name, expected[key].name)
+            self.assertEqual(result.description, expected[key].description)
+        self.assertEqual(len(results), len(expected))
 
-    @patch("switchmap.server.db.table.zone.idx_exists")
-    def test_interfaces_with_nonexistent_zone(self, mock_zone_exists):
-        """Testing function interfaces with non-existent zone."""
-        # Set up mock
-        mock_zone_exists.return_value = None
+        # Create control values
+        for value in range(self.iterations * 10):
+            new = data.random_integer()
+            if new not in [_.id for _ in terms.interfaces]:
+                controls.append(new)
+            if len(controls) >= self.iterations:
+                break
 
-        # Get interfaces
-        result = testimport.interfaces(self.mock_rdevice)
+        # Test invalid interface IDs
+        for control in controls:
+            test_interface = testimport.Interface(terms.idx_event, control)
+            self.assertFalse(test_interface.get_interface())
 
-        # Verify results
-        self.assertEqual(result, [])
-        mock_zone_exists.assert_called_once_with(self.mock_rdevice.idx_zone)
+    def test_get_ipports(self):
+        """Testing function get_ipports."""
+        # Initialize key variables
+        terms = self.interface_terms
+        expected = sorted(terms.ipports, key=attrgetter("idx_l1interface"))
+        results = []
+        controls = []
 
-    @patch("switchmap.server.db.table.zone.idx_exists")
-    @patch("switchmap.server.db.table.event.idx_exists")
-    @patch("switchmap.server.db.table.zone.zones")
-    @patch("switchmap.server.db.table.device.exists")
-    def test_interfaces_with_nonexistent_device(
-        self,
-        mock_device_exists,
-        mock_zones,
-        mock_event_exists,
-        mock_zone_exists,
-    ):
-        """Testing function interfaces with non-existent device."""
-        # Set up mocks
-        mock_zone_exists.return_value = self.mock_zone
-        mock_event_exists.return_value = self.mock_event
-        mock_zones.return_value = [self.mock_zone]
-        mock_device_exists.return_value = None
+        # Get results
+        for interface in terms.interfaces:
+            test_interface = testimport.Interface(terms.idx_event, interface.id)
+            found = test_interface.get_ipports()
+            results.extend(found)
 
-        # Get interfaces
-        result = testimport.interfaces(self.mock_rdevice)
+        # Test
+        for key, result in enumerate(
+            sorted(results, key=attrgetter("idx_l1interface"))
+        ):
+            self.assertEqual(
+                result.idx_l1interface, expected[key].idx_l1interface
+            )
+            self.assertEqual(result.ip_address, expected[key].ip_address)
+            self.assertEqual(result.port, expected[key].port)
+        self.assertEqual(len(results), len(expected))
 
-        # Verify results
-        self.assertEqual(result, [])
-        mock_device_exists.assert_called_once_with(
-            self.mock_zone.idx_zone, self.mock_rdevice.hostname
-        )
+        # Create control values
+        for value in range(self.iterations * 10):
+            new = data.random_integer()
+            if new not in [_.id for _ in terms.interfaces]:
+                controls.append(new)
+            if len(controls) >= self.iterations:
+                break
 
-    @patch("switchmap.server.db.table.zone.idx_exists")
-    @patch("switchmap.server.db.table.event.idx_exists")
-    def test_interfaces_with_no_previous_event(
-        self, mock_event_exists, mock_zone_exists
-    ):
-        """Testing function interfaces with no previous event."""
-        # Set up mocks
-        mock_zone_exists.return_value = self.mock_zone
-        mock_event_exists.return_value = None
-
-        # Get interfaces
-        result = testimport.interfaces(self.mock_rdevice)
-
-        # Verify results
-        self.assertEqual(result, [])
-        mock_event_exists.assert_called_once_with(1)  # idx_event - 1
+        # Test invalid interface IDs
+        for control in controls:
+            test_interface = testimport.Interface(terms.idx_event, control)
+            self.assertFalse(test_interface.get_ipports())
 
 
 if __name__ == "__main__":
