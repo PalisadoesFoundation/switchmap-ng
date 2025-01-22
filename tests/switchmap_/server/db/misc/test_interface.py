@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
-"""Test the macport module."""
+"""Test the interface module."""
 
 import os
 import sys
 import unittest
-from operator import attrgetter
-
-from collections import namedtuple
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -33,6 +30,7 @@ ROOT_DIR = os.path.abspath(
         os.pardir,
     )
 )
+
 _EXPECTED = """\
 {0}switchmap-ng{0}tests{0}switchmap_{0}server{0}db{0}misc""".format(
     os.sep
@@ -57,34 +55,27 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.server.db import models
+from switchmap.server.db.table import zone
+from switchmap.server.db.table import event
+from switchmap.server.db.table import device
+from switchmap.server.db.table import l1interface
+from switchmap.server.db.table import IDevice
+from switchmap.server.db.table import IL1Interface
+from switchmap.server.db.table import IZone
+
 from tests.testlib_ import db
 from tests.testlib_ import data
+
 from switchmap.server.db.misc import interface as testimport
-
-InterfaceTerms = namedtuple(
-    "InterfaceTerms", "interfaces devices zones ipports"
-)
-
-LOOP_MAX = 30
 
 
 class TestInterface(unittest.TestCase):
     """Checks all functions and methods."""
 
-    #########################################################################
-    # General object setup
-    #########################################################################
-
-    iterations = 20
-
     @classmethod
     def setUpClass(cls):
-        """Execute these steps before starting each test."""
-        # Load the configuration in case it's been deleted after loading the
-        # configuration above. Sometimes this happens when running
-        # `python3 -m unittest discover` where another the tearDownClass of
-        # another test module prematurely deletes the configuration required
-        # for this module
+        """Setup database for testing."""
+        # Load the configuration
         config = setup.config()
         config.save()
 
@@ -95,97 +86,106 @@ class TestInterface(unittest.TestCase):
         # Create database tables
         models.create_all_tables()
 
-        # Pollinate db with prerequisites
-        cls.interface_terms = db.populate()
+    def test_interfaces_success(self):
+        """Testing function interfaces with existing interfaces."""
+        # Create events
+        event_row1 = event.create()  # Event 1
+        event_row2 = event.create()  # Event 2
 
-    @classmethod
-    def tearDownClass(cls):
-        """Execute these steps after each tests is completed."""
-        # Drop tables
-        database = db.Database()
-        database.drop()
+        # Create zones for both events
+        test_zone1 = IZone(
+            idx_event=event_row1.idx_event,
+            name=data.random_string(),
+            notes=data.random_string(),
+            enabled=1,
+        )
+        zone.insert_row(test_zone1)
+        zone_record1 = zone.exists(event_row1.idx_event, test_zone1.name)
 
-        # Cleanup the configuration
-        CONFIG.cleanup()
+        test_zone2 = IZone(
+            idx_event=event_row2.idx_event,
+            name=data.random_string(),
+            notes=data.random_string(),
+            enabled=1,
+        )
+        zone.insert_row(test_zone2)
+        zone_record2 = zone.exists(event_row2.idx_event, test_zone2.name)
 
-    def test___init__(self):
-        """Testing function __init__."""
-        pass
+        # Create device in previous event
+        test_device1 = IDevice(
+            idx_zone=zone_record1.idx_zone,  # Use actual zone record
+            hostname="test_host",
+            name=data.random_string(),
+            sys_name=data.random_string(),
+            sys_description=data.random_string(),
+            sys_objectid=data.random_string(),
+            sys_uptime=123456,
+            last_polled=123456,
+            enabled=1,
+        )
+        device.insert_row(test_device1)
 
-    def test_get_interface(self):
-        """Testing function get_interface."""
-        # Initialize key variables
-        terms = self.interface_terms
-        expected = sorted(terms.interfaces, key=attrgetter("idx_device"))
-        results = []
-        controls = []
+        # Create device in current event
+        test_device2 = IDevice(
+            idx_zone=zone_record2.idx_zone,  # Use actual zone record
+            hostname="test_host",  # Same hostname as previous device
+            name=data.random_string(),
+            sys_name=data.random_string(),
+            sys_description=data.random_string(),
+            sys_objectid=data.random_string(),
+            sys_uptime=123456,
+            last_polled=123456,
+            enabled=1,
+        )
+        device.insert_row(test_device2)
 
-        # Get results
-        for interface in terms.interfaces:
-            test_interface = testimport.Interface(terms.idx_event, interface.id)
-            found = test_interface.get_interface()
-            if found:
-                results.append(found)
+        # Get the actual device record
+        device_record = device.exists(
+            zone_record1.idx_zone, test_device1.hostname
+        )
 
-        # Test
-        for key, result in enumerate(
-            sorted(results, key=attrgetter("idx_device"))
-        ):
-            self.assertEqual(result.idx_device, expected[key].idx_device)
-            self.assertEqual(result.name, expected[key].name)
-            self.assertEqual(result.description, expected[key].description)
-        self.assertEqual(len(results), len(expected))
-
-        # Create control values
-        for value in range(self.iterations * 10):
-            new = data.random_integer()
-            if new not in [_.id for _ in terms.interfaces]:
-                controls.append(new)
-            if len(controls) >= self.iterations:
-                break
-
-        # Test invalid interface IDs
-        for control in controls:
-            test_interface = testimport.Interface(terms.idx_event, control)
-            self.assertFalse(test_interface.get_interface())
-
-    def test_get_ipports(self):
-        """Testing function get_ipports."""
-        # Initialize key variables
-        terms = self.interface_terms
-        expected = sorted(terms.ipports, key=attrgetter("idx_l1interface"))
-        results = []
-        controls = []
-
-        # Get results
-        for interface in terms.interfaces:
-            test_interface = testimport.Interface(terms.idx_event, interface.id)
-            found = test_interface.get_ipports()
-            results.extend(found)
-
-        # Test
-        for key, result in enumerate(
-            sorted(results, key=attrgetter("idx_l1interface"))
-        ):
-            self.assertEqual(
-                result.idx_l1interface, expected[key].idx_l1interface
+        # Create test interfaces for previous device
+        test_interfaces = []
+        for i in range(3):
+            interface = IL1Interface(
+                idx_device=device_record.idx_device,  # Use actual device record
+                ifindex=i,
+                duplex=1,
+                ethernet=1,
+                nativevlan=1,
+                trunk=0,
+                iftype=6,
+                ifspeed=1000000000,
+                ifalias=f"Interface_{i}",
+                ifname=f"Gi0/{i}",
+                ifdescr=f"GigabitEthernet0/{i}",
+                ifadminstatus=1,
+                ifoperstatus=1,
+                ts_idle=0,
+                cdpcachedeviceid=data.random_string(),
+                cdpcachedeviceport=data.random_string(),
+                cdpcacheplatform=data.random_string(),
+                lldpremportdesc=data.random_string(),
+                lldpremsyscapenabled=data.random_string(),
+                lldpremsysdesc=data.random_string(),
+                lldpremsysname=data.random_string(),
+                enabled=1,
             )
-            self.assertEqual(result.ip_address, expected[key].ip_address)
-            self.assertEqual(result.port, expected[key].port)
-        self.assertEqual(len(results), len(expected))
+            l1interface.insert_row(interface)
+            test_interfaces.append(interface)
 
-        # Create control values
-        for value in range(self.iterations * 10):
-            new = data.random_integer()
-            if new not in [_.id for _ in terms.interfaces]:
-                controls.append(new)
-            if len(controls) >= self.iterations:
-                break
+        # Test interfaces function with the second device
+        device_record2 = device.exists(
+            zone_record2.idx_zone, test_device2.hostname
+        )
+        result = testimport.interfaces(device_record2)
 
-        # Test invalid interface IDs
-        for control in controls:
-            test_interface = testimport.Interface(terms.idx_event, control)
-            self.assertFalse(test_interface.get_ipports())
+        # Verify results
+        self.assertEqual(len(result), len(test_interfaces))
+        for i, interface in enumerate(result):
+            self.assertEqual(interface.ifindex, test_interfaces[i].ifindex)
+            self.assertEqual(interface.ifname, test_interfaces[i].ifname)
+            self.assertEqual(interface.ifdescr, test_interfaces[i].ifdescr)
 
 
 if __name__ == "__main__":
