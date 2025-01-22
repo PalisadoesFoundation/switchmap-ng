@@ -60,25 +60,32 @@ from switchmap.server.db.misc import rows as testimport
 class TestRows(unittest.TestCase):
     """Checks all functions and methods."""
 
+    def setUp(self):
+        """Set up test data."""
+        self.mock_row = MagicMock()
+
+    def tearDown(self):
+        """Clean up after each test."""
+        del self.mock_row
+
     def test_device(self):
         """Testing function device."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_device = 1
-        mock_row.idx_zone = 2
-        mock_row.sys_name = b"sys_name"
-        mock_row.hostname = b"hostname"
-        mock_row.name = b"name"
-        mock_row.sys_description = b"sys_description"
-        mock_row.sys_objectid = b"sys_objectid"
-        mock_row.sys_uptime = 100
-        mock_row.last_polled = 200
-        mock_row.enabled = 1
-        mock_row.ts_created = 300
-        mock_row.ts_modified = 400
+        self.mock_row.idx_device = 1
+        self.mock_row.idx_zone = 2
+        self.mock_row.sys_name = b"sys_name"
+        self.mock_row.hostname = b"hostname"
+        self.mock_row.name = b"name"
+        self.mock_row.sys_description = b"sys_description"
+        self.mock_row.sys_objectid = b"sys_objectid"
+        self.mock_row.sys_uptime = 100
+        self.mock_row.last_polled = 200
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 300
+        self.mock_row.ts_modified = 400
 
         # Call the function
-        result = testimport.device(mock_row)
+        result = testimport.device(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_device, 1)
@@ -94,19 +101,51 @@ class TestRows(unittest.TestCase):
         self.assertEqual(result.ts_created, 300)
         self.assertEqual(result.ts_modified, 400)
 
+    def test_device_with_none_values(self):
+        """Testing function device with None values."""
+        # Mock a database row with None values
+        self.mock_row.idx_device = 1
+        self.mock_row.idx_zone = 2
+        self.mock_row.sys_name = None
+        self.mock_row.hostname = None
+        self.mock_row.name = None
+        self.mock_row.sys_description = None
+        self.mock_row.sys_objectid = None
+        self.mock_row.sys_uptime = 100
+        self.mock_row.last_polled = 200
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 300
+        self.mock_row.ts_modified = 400
+
+        # Call the function
+        result = testimport.device(self.mock_row)
+
+        # Assertions
+        self.assertEqual(result.idx_device, 1)
+        self.assertEqual(result.idx_zone, 2)
+        self.assertIsNone(result.sys_name)
+        self.assertIsNone(result.hostname)
+        self.assertIsNone(result.name)
+        self.assertIsNone(result.sys_description)
+        self.assertIsNone(result.sys_objectid)
+        self.assertEqual(result.sys_uptime, 100)
+        self.assertEqual(result.last_polled, 200)
+        self.assertEqual(result.enabled, 1)
+        self.assertEqual(result.ts_created, 300)
+        self.assertEqual(result.ts_modified, 400)
+
     def test_root(self):
         """Testing function root."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_root = 1
-        mock_row.idx_event = 2
-        mock_row.name = b"name"
-        mock_row.enabled = 1
-        mock_row.ts_created = 300
-        mock_row.ts_modified = 400
+        self.mock_row.idx_root = 1
+        self.mock_row.idx_event = 2
+        self.mock_row.name = b"name"
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 300
+        self.mock_row.ts_modified = 400
 
         # Call the function
-        result = testimport.root(mock_row)
+        result = testimport.root(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_root, 1)
@@ -119,16 +158,15 @@ class TestRows(unittest.TestCase):
     def test_event(self):
         """Testing function event."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_event = 1
-        mock_row.name = b"name"
-        mock_row.epoch_utc = 100
-        mock_row.enabled = 1
-        mock_row.ts_created = 300
-        mock_row.ts_modified = 400
+        self.mock_row.idx_event = 1
+        self.mock_row.name = b"name"
+        self.mock_row.epoch_utc = 100
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 300
+        self.mock_row.ts_modified = 400
 
         # Call the function
-        result = testimport.event(mock_row)
+        result = testimport.event(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_event, 1)
@@ -141,35 +179,34 @@ class TestRows(unittest.TestCase):
     def test_l1interface(self):
         """Testing function l1interface."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_l1interface = 1
-        mock_row.idx_device = 2
-        mock_row.ifindex = 3
-        mock_row.duplex = 4
-        mock_row.ethernet = 5
-        mock_row.nativevlan = 6
-        mock_row.trunk = 7
-        mock_row.iftype = 8
-        mock_row.ifspeed = 9
-        mock_row.ifalias = b"ifalias"
-        mock_row.ifname = b"ifname"
-        mock_row.ifdescr = b"ifdescr"
-        mock_row.ifadminstatus = 10
-        mock_row.ifoperstatus = 11
-        mock_row.ts_idle = 12
-        mock_row.cdpcachedeviceid = b"cdpcachedeviceid"
-        mock_row.cdpcachedeviceport = b"cdpcachedeviceport"
-        mock_row.cdpcacheplatform = b"cdpcacheplatform"
-        mock_row.lldpremportdesc = b"lldpremportdesc"
-        mock_row.lldpremsyscapenabled = b"lldpremsyscapenabled"
-        mock_row.lldpremsysdesc = b"lldpremsysdesc"
-        mock_row.lldpremsysname = b"lldpremsysname"
-        mock_row.enabled = 1
-        mock_row.ts_created = 300
-        mock_row.ts_modified = 400
+        self.mock_row.idx_l1interface = 1
+        self.mock_row.idx_device = 2
+        self.mock_row.ifindex = 3
+        self.mock_row.duplex = 4
+        self.mock_row.ethernet = 5
+        self.mock_row.nativevlan = 6
+        self.mock_row.trunk = 7
+        self.mock_row.iftype = 8
+        self.mock_row.ifspeed = 9
+        self.mock_row.ifalias = b"ifalias"
+        self.mock_row.ifname = b"ifname"
+        self.mock_row.ifdescr = b"ifdescr"
+        self.mock_row.ifadminstatus = 10
+        self.mock_row.ifoperstatus = 11
+        self.mock_row.ts_idle = 12
+        self.mock_row.cdpcachedeviceid = b"cdpcachedeviceid"
+        self.mock_row.cdpcachedeviceport = b"cdpcachedeviceport"
+        self.mock_row.cdpcacheplatform = b"cdpcacheplatform"
+        self.mock_row.lldpremportdesc = b"lldpremportdesc"
+        self.mock_row.lldpremsyscapenabled = b"lldpremsyscapenabled"
+        self.mock_row.lldpremsysdesc = b"lldpremsysdesc"
+        self.mock_row.lldpremsysname = b"lldpremsysname"
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 300
+        self.mock_row.ts_modified = 400
 
         # Call the function
-        result = testimport.l1interface(mock_row)
+        result = testimport.l1interface(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_l1interface, 1)
@@ -201,17 +238,16 @@ class TestRows(unittest.TestCase):
     def test_mac(self):
         """Testing function mac."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_mac = 1
-        mock_row.idx_oui = 2
-        mock_row.idx_zone = 3
-        mock_row.mac = b"00:11:22:33:44:55"
-        mock_row.enabled = 1
-        mock_row.ts_created = 100
-        mock_row.ts_modified = 200
+        self.mock_row.idx_mac = 1
+        self.mock_row.idx_oui = 2
+        self.mock_row.idx_zone = 3
+        self.mock_row.mac = b"00:11:22:33:44:55"
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 100
+        self.mock_row.ts_modified = 200
 
         # Call the function
-        result = testimport.mac(mock_row)
+        result = testimport.mac(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_mac, 1)
@@ -225,16 +261,15 @@ class TestRows(unittest.TestCase):
     def test_macip(self):
         """Testing function macip."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_macip = 1
-        mock_row.idx_ip = 2
-        mock_row.idx_mac = 3
-        mock_row.enabled = 1
-        mock_row.ts_created = 100
-        mock_row.ts_modified = 200
+        self.mock_row.idx_macip = 1
+        self.mock_row.idx_ip = 2
+        self.mock_row.idx_mac = 3
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 100
+        self.mock_row.ts_modified = 200
 
         # Call the function
-        result = testimport.macip(mock_row)
+        result = testimport.macip(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_macip, 1)
@@ -247,16 +282,15 @@ class TestRows(unittest.TestCase):
     def test_macport(self):
         """Testing function macport."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_macport = 1
-        mock_row.idx_l1interface = 2
-        mock_row.idx_mac = 3
-        mock_row.enabled = 1
-        mock_row.ts_created = 100
-        mock_row.ts_modified = 200
+        self.mock_row.idx_macport = 1
+        self.mock_row.idx_l1interface = 2
+        self.mock_row.idx_mac = 3
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 100
+        self.mock_row.ts_modified = 200
 
         # Call the function
-        result = testimport.macport(mock_row)
+        result = testimport.macport(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_macport, 1)
@@ -269,16 +303,15 @@ class TestRows(unittest.TestCase):
     def test_oui(self):
         """Testing function oui."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_oui = 1
-        mock_row.oui = b"00:11:22"
-        mock_row.organization = b"Test Organization"
-        mock_row.enabled = 1
-        mock_row.ts_created = 100
-        mock_row.ts_modified = 200
+        self.mock_row.idx_oui = 1
+        self.mock_row.oui = b"00:11:22"
+        self.mock_row.organization = b"Test Organization"
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 100
+        self.mock_row.ts_modified = 200
 
         # Call the function
-        result = testimport.oui(mock_row)
+        result = testimport.oui(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_oui, 1)
@@ -291,18 +324,17 @@ class TestRows(unittest.TestCase):
     def test_vlan(self):
         """Testing function vlan."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_vlan = 1
-        mock_row.idx_device = 2
-        mock_row.vlan = 10
-        mock_row.name = b"VLAN10"
-        mock_row.state = 1
-        mock_row.enabled = 1
-        mock_row.ts_created = 100
-        mock_row.ts_modified = 200
+        self.mock_row.idx_vlan = 1
+        self.mock_row.idx_device = 2
+        self.mock_row.vlan = 10
+        self.mock_row.name = b"VLAN10"
+        self.mock_row.state = 1
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 100
+        self.mock_row.ts_modified = 200
 
         # Call the function
-        result = testimport.vlan(mock_row)
+        result = testimport.vlan(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_vlan, 1)
@@ -317,16 +349,15 @@ class TestRows(unittest.TestCase):
     def test_vlanport(self):
         """Testing function vlanport."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_vlanport = 1
-        mock_row.idx_l1interface = 2
-        mock_row.idx_vlan = 3
-        mock_row.enabled = 1
-        mock_row.ts_created = 100
-        mock_row.ts_modified = 200
+        self.mock_row.idx_vlanport = 1
+        self.mock_row.idx_l1interface = 2
+        self.mock_row.idx_vlan = 3
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 100
+        self.mock_row.ts_modified = 200
 
         # Call the function
-        result = testimport.vlanport(mock_row)
+        result = testimport.vlanport(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_vlanport, 1)
@@ -339,17 +370,16 @@ class TestRows(unittest.TestCase):
     def test_zone(self):
         """Testing function zone."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_zone = 1
-        mock_row.idx_event = 2
-        mock_row.name = b"Zone1"
-        mock_row.notes = b"Test Zone"
-        mock_row.enabled = 1
-        mock_row.ts_created = 100
-        mock_row.ts_modified = 200
+        self.mock_row.idx_zone = 1
+        self.mock_row.idx_event = 2
+        self.mock_row.name = b"Zone1"
+        self.mock_row.notes = b"Test Zone"
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 100
+        self.mock_row.ts_modified = 200
 
         # Call the function
-        result = testimport.zone(mock_row)
+        result = testimport.zone(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_zone, 1)
@@ -363,18 +393,17 @@ class TestRows(unittest.TestCase):
     def test_ip(self):
         """Testing function ip."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_ip = 1
-        mock_row.idx_zone = 2
-        mock_row.address = b"192.168.1.1"
-        mock_row.hostname = b"hostname.example.com"
-        mock_row.version = 4
-        mock_row.enabled = 1
-        mock_row.ts_created = 100
-        mock_row.ts_modified = 200
+        self.mock_row.idx_ip = 1
+        self.mock_row.idx_zone = 2
+        self.mock_row.address = b"192.168.1.1"
+        self.mock_row.hostname = b"hostname.example.com"
+        self.mock_row.version = 4
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 100
+        self.mock_row.ts_modified = 200
 
         # Call the function
-        result = testimport.ip(mock_row)
+        result = testimport.ip(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_ip, 1)
@@ -389,16 +418,15 @@ class TestRows(unittest.TestCase):
     def test_ipport(self):
         """Testing function ipport."""
         # Mock a database row
-        mock_row = MagicMock()
-        mock_row.idx_ipport = 1
-        mock_row.idx_l1interface = 2
-        mock_row.idx_ip = 3
-        mock_row.enabled = 1
-        mock_row.ts_created = 100
-        mock_row.ts_modified = 200
+        self.mock_row.idx_ipport = 1
+        self.mock_row.idx_l1interface = 2
+        self.mock_row.idx_ip = 3
+        self.mock_row.enabled = 1
+        self.mock_row.ts_created = 100
+        self.mock_row.ts_modified = 200
 
         # Call the function
-        result = testimport.ipport(mock_row)
+        result = testimport.ipport(self.mock_row)
 
         # Assertions
         self.assertEqual(result.idx_ipport, 1)
