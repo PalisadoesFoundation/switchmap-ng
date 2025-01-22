@@ -56,6 +56,7 @@ CONFIG.save()
 
 from switchmap.server.db.misc import rows as testimport
 
+
 class TestRows(unittest.TestCase):
     """Checks all functions and methods."""
 
@@ -406,6 +407,7 @@ class TestRows(unittest.TestCase):
         self.assertEqual(result.enabled, 1)
         self.assertEqual(result.ts_created, 100)
         self.assertEqual(result.ts_modified, 200)
+
 
 if __name__ == "__main__":
     # Do the unit test
