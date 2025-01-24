@@ -8,6 +8,7 @@ from switchmap.server.db.table import IOui
 from switchmap.server.db.table import oui as _oui
 from switchmap.server.db import SCOPED_SESSION
 from switchmap.server.db.models import Oui
+from sqlalchemy.exc import IntegrityError
 
 
 def update_db_oui(filepath):
@@ -19,41 +20,37 @@ def update_db_oui(filepath):
     Returns:
         None
 
+    Raises:
+        FileNotFoundError: If the file cannot be found
+        ValueError: If the CSV is improperly formatted
     """
-    # Initialize key variables
-    inserts = []
+    try:
+        # Read OUI file
+        df_ = pandas.read_csv(filepath, delimiter=":", header=None)
+        if len(df_.columns) != 2:
+            raise ValueError(
+                "CSV must have exactly two columns: OUI and Organization"
+            )
+        df_.columns = ["oui", "organization"]
+
+        # Validate for duplicate OUIs
+        if df_["oui"].duplicated().any():
+            raise ValueError("The input file contains duplicate OUIs.")
+    except pandas.errors.EmptyDataError:
+        raise ValueError("The CSV file is empty")
+
+    # Process rows and update database
     rows = []
-
-    # Get the row count
-    row_count = SCOPED_SESSION.query(Oui).count()
-
-    # Read OUI file
-    df_ = pandas.read_csv(filepath, delimiter=":")
-    df_.columns = ["oui", "organization"]
-
-    # Process DataFrame
     for _, row in df_.iterrows():
-        rows.append(
-            IOui(oui=row["oui"], organization=row["organization"], enabled=1)
-        )
+        oui = row["oui"].strip()
+        organization = row["organization"].strip()
+        rows.append(IOui(oui=oui, organization=organization, enabled=1))
 
-    # Insert rows into the database if it is empty
-    if row_count <= 1:
-        _oui.insert_row(rows)
+    for row in rows:
+        existing_entry = _oui.exists(row.oui)
+        if not existing_entry:
+            _oui.insert_row([row])
+        elif existing_entry.organization != row.organization:
+            _oui.update_row(existing_entry.idx_oui, row)
 
-    # Selectively update rows if the database is not empty
-    else:
-        for row in rows:
-            # Determine whether the record already exists
-            exists = _oui.exists(row.oui)
-
-            # Process insertions and updates
-            if bool(exists) is False:
-                inserts.add(row)
-            else:
-                if exists.organization != row.organization:
-                    _oui.update_row(exists.idx_oui, row)
-
-        # Do insertions
-        if bool(inserts):
-            _oui.insert_row(inserts)
+    SCOPED_SESSION.commit()
