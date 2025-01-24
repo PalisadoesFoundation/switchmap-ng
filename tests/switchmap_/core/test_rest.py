@@ -27,19 +27,47 @@ class MockConfig:
     """Mock configuration class for testing."""
 
     def server_username(self):
-        """Return mock username."""
+        """Return mock username.
+
+        Args:
+            None
+
+        Returns:
+            str: Mock username.
+        """
         return "test_user"
 
     def server_password(self):
-        """Return mock password."""
+        """Return mock password.
+
+        Args:
+            None
+
+        Returns:
+            str: Mock password.
+        """
         return "test_pass"
 
     def server_url_root(self):
-        """Return mock server URL."""
+        """Return mock server URL.
+
+        Args:
+            None
+
+        Returns:
+            str: Mock server URL.
+        """
         return "http://localhost:5000"
 
     def api_url_root(self):
-        """Return mock API URL."""
+        """Return mock API URL.
+
+        Args:
+            None
+
+        Returns:
+            str: Mock API URL.
+        """
         return "http://localhost:5000/api"
 
 
