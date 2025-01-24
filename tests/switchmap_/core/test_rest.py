@@ -47,14 +47,14 @@ class TestREST(unittest.TestCase):
     """Checks all REST functions and methods."""
 
     def setUp(self):
-        """Setup the test case."""
+        """Set up the test case."""
         self.config = MockConfig()
         self.test_url = "http://localhost:5000"
         self.test_uri = "test/endpoint"
         self.test_data = {"key": "value"}
 
     def test_clean_url(self):
-        """Testing function _clean_url."""
+        """Test the _clean_url function."""
         urls = [
             "http://example.com//api//v1//data",
             "https://example.com//api//v1//data",
@@ -73,10 +73,7 @@ class TestREST(unittest.TestCase):
             self.assertEqual(result, expected[i])
 
     def test_post_success_no_auth(self):
-        """
-        Testing function post with successful response
-        when no authentication is used.
-        """
+        """Test post with success when no authentication is used."""
         mock_config = MockConfig()
         mock_config.server_username = lambda: ""
         mock_config.server_password = lambda: ""
@@ -94,7 +91,7 @@ class TestREST(unittest.TestCase):
             self.assertEqual(result.response.status_code, 200)
 
     def test_post_external_api(self):
-        """Testing function post with API server flag set to False."""
+        """Test post with API server flag set to False."""
         mock_response = Mock()
         mock_response.status_code = 200
 
@@ -110,22 +107,20 @@ class TestREST(unittest.TestCase):
             self.assertEqual(result.response.status_code, 200)
 
     def test_get_success_with_graphql(self):
-        """Testing get_graphql function with successful response."""
+        """Test get_graphql with a successful response."""
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = {"data": {"test": "value"}}
 
         with patch("switchmap.core.rest._get") as mock_get:
             mock_get.return_value = type(
-                "obj",
-                (object,),
-                {"success": True, "response": mock_response},
+                "obj", (object,), {"success": True, "response": mock_response}
             )()
             result = rest.get_graphql("query { test }", self.config)
             self.assertEqual(result, {"data": {"test": "value"}})
 
     def test_get_json_failure(self):
-        """Testing _get_json method with JSON parsing failure."""
+        """Test _get_json with a JSON parsing failure."""
         mock_response = Mock()
         mock_response.json.side_effect = ValueError("Invalid JSON")
 
@@ -133,16 +128,14 @@ class TestREST(unittest.TestCase):
             "switchmap.core.log.log2info"
         ) as mock_log:
             mock_get.return_value = type(
-                "obj",
-                (object,),
-                {"success": True, "response": mock_response},
+                "obj", (object,), {"success": True, "response": mock_response}
             )()
             result = rest.get("test/uri", self.config, die=False)
             self.assertEqual(result, [])
             mock_log.assert_called_once()
 
     def test_get_successful_with_streaming(self):
-        """Testing _get method with streaming enabled."""
+        """Test _get with streaming enabled."""
         mock_response = Mock()
         mock_response.ok = True
 
@@ -154,7 +147,7 @@ class TestREST(unittest.TestCase):
             self.assertEqual(result.response, mock_response)
 
     def test_get_with_query_parameter(self):
-        """Testing _get method with query parameter."""
+        """Test _get with query parameter."""
         mock_response = Mock()
         mock_response.ok = True
 
@@ -220,7 +213,7 @@ class TestPostFunction(unittest.TestCase):
 
     @patch("requests.Session")
     def test_post_error_logging(self, mock_session):
-        """Test logging when POST response has an error status code."""
+        """Test logging when post response has an error status code."""
         mock_response = Mock()
         mock_response.status_code = 500
         mock_session.return_value.__enter__.return_value.post.return_value = (
@@ -245,10 +238,10 @@ class TestPostFunction(unittest.TestCase):
 
 
 class TestRESTAdditional(unittest.TestCase):
-    """Additional tests to cover `_get_json` and `_get` exception handling."""
+    """Additional tests for `_get_json` and `_get`."""
 
     def setUp(self):
-        """Shared mock config for these tests."""
+        """Set up mock configuration for these tests."""
         self.mock_config = MockConfig()
         self.test_uri = "test/endpoint"
         self.test_data = {"key": "value"}
@@ -261,9 +254,7 @@ class TestRESTAdditional(unittest.TestCase):
         mock_response = Mock()
         mock_response.json.side_effect = ValueError("Bad JSON")
         mock_get.return_value = type(
-            "obj",
-            (object,),
-            {"success": True, "response": mock_response},
+            "obj", (object,), {"success": True, "response": mock_response}
         )()
 
         with self.assertRaises(SystemExit):
@@ -287,15 +278,16 @@ class TestMissingCoverage(unittest.TestCase):
     """Tests covering code paths not hit in standard scenarios."""
 
     def setUp(self):
+        """Set up mock config for missing coverage tests."""
         self.config = MockConfig()
         self.test_uri = "test/endpoint"
         self.test_data = {"key": "value"}
 
     @patch("requests.Session")
     def test_post_bare_except_block(self, mock_session):
-        """
-        Force the bare `except:` block in `post` (lines 73-77)
-        by raising a non-`Exception` error.
+        """Force the bare `except:`block in post by raising a non-`Exception`.
+
+        This triggers lines 73-77, which would otherwise be missed.
         """
         mock_session.return_value.__enter__.return_value.post.side_effect = (
             BaseException("Generic BaseException")
@@ -306,9 +298,9 @@ class TestMissingCoverage(unittest.TestCase):
     @patch("requests.Session")
     @patch("switchmap.core.log.log2info")
     def test_post_server_false_line_119(self, mock_log_info, mock_session):
-        """
-        Covers line 119 by calling post(..., server=False).
-        Confirms api_url_root usage.
+        """Cover line 119 by calling post(..., server=False).
+
+        Confirms api_url_root usage in that branch.
         """
         mock_response = unittest.mock.Mock()
         mock_response.status_code = 200
@@ -331,9 +323,9 @@ class TestMissingCoverage(unittest.TestCase):
 
     @patch("requests.Session")
     def test_get_exception_die_true_line_233(self, mock_session):
-        """
-        Covers line 233 in `_get` by forcing an exception
-        and leaving die=True.
+        """Cover line 233 in `_get` by forcing an exception with die=True.
+
+        This logs via log2die and raises SystemExit.
         """
         mock_session.return_value.__enter__.return_value.get.side_effect = (
             Exception("Simulated GET failure")
@@ -343,13 +335,16 @@ class TestMissingCoverage(unittest.TestCase):
             rest._get("http://test.com", self.config, die=True)
 
     def test_get_with_external_api_server_false(self):
-        """Test get(...) with server=False picks api_url_root."""
+        """Test get(...) with server=False picks api_url_root.
+
+        Ensures coverage for that branch in the `get` function.
+        """
         mock_response = Mock()
         mock_response.status_code = 200
         mock_response.json.return_value = []
 
         with patch("requests.Session") as mock_session:
-            ((mock_session.return_value.__enter__().get.return_value)) = (
+            (mock_session.return_value.__enter__().get.return_value) = (
                 mock_response
             )
             result = rest.get("external/endpoint", self.config, server=False)
