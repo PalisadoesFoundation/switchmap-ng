@@ -9,6 +9,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.
 
 from switchmap.server.api.routes.post import API_POST, API_POLLER_SEARCH_URI
 
+
 class TestAPIRoutes(unittest.TestCase):
     """Test API routes functionality."""
 
