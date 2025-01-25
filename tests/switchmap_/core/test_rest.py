@@ -39,6 +39,9 @@ class MockConfigNoCredentials:
     def server_username(self):
         """Return empty username.
 
+        Args:
+            None
+
         Returns:
             str: Empty string representing no username.
         """
@@ -46,6 +49,9 @@ class MockConfigNoCredentials:
 
     def server_password(self):
         """Return empty password.
+
+        Args:
+            None
 
         Returns:
             str: Empty string representing no password.
@@ -55,6 +61,9 @@ class MockConfigNoCredentials:
     def server_url_root(self):
         """Get server root URL.
 
+        Args:
+            None
+
         Returns:
             str: Server root URL.
         """
@@ -62,6 +71,9 @@ class MockConfigNoCredentials:
 
     def api_url_root(self):
         """Get API root URL.
+
+        Args:
+            None
 
         Returns:
             str: API root URL.
@@ -93,6 +105,9 @@ class MockConfig:
     def server_username(self):
         """Return test username.
 
+        Args:
+            None
+
         Returns:
             str: Test username for authentication.
         """
@@ -100,6 +115,9 @@ class MockConfig:
 
     def server_password(self):
         """Return test password.
+
+        Args:
+            None
 
         Returns:
             str: Test password for authentication.
@@ -109,6 +127,9 @@ class MockConfig:
     def server_url_root(self):
         """Get server root URL.
 
+        Args:
+            None
+
         Returns:
             str: Server root URL.
         """
@@ -116,6 +137,9 @@ class MockConfig:
 
     def api_url_root(self):
         """Get API root URL.
+
+        Args:
+            None
 
         Returns:
             str: API root URL.
@@ -132,6 +156,9 @@ class TestRest(LiveServerTestCase):
 
     def create_app(self):
         """Create Flask application with test routes.
+
+        Args:
+            None
 
         Returns:
             Flask: Configured Flask application for testing.
@@ -160,29 +187,48 @@ class TestRest(LiveServerTestCase):
 
         @app.route("/switchmap/api/test/json-malformed", methods=["GET"])
         def json_malformed():
-            """Return malformed JSON for testing."""
+            """Return malformed JSON for testing.
+
+            Args:
+            None
+            """
             return "{invalid json...", 200
 
         @app.route("/switchmap/api/test/fail_on_purpose", methods=["GET"])
         def fail_on_purpose():
-            """Return a forced failure response."""
+            """Return a forced failure response.
+
+            Args:
+            None
+            """
             return jsonify({"error": "Forced failure"}), 500
 
         @app.route("/api/switchmap/test/endpoint", methods=["GET", "POST"])
         def test_endpoint_server_false():
-            """Handle GET and POST requests for server=False scenario."""
+            """Handle GET and POST requests for server=False scenario.
+
+            Args:
+            None
+            """
             if request.method == "POST":
                 return jsonify({"posted_server_false": True}), 200
-            return jsonify({"data_server_false": True}), 200
 
         @app.route("/switchmap/api/graphql", methods=["GET"])
         def graphql_endpoint():
-            """Simulate GraphQL endpoint."""
+            """Simulate GraphQL endpoint.
+
+            Args:
+            None
+            """
             return jsonify({"data": {"test": "value"}}), 200
 
         @app.route("/switchmap/api/test/json-ok", methods=["GET"])
         def json_ok():
-            """Return valid JSON for testing."""
+            """Return valid JSON for testing.
+
+            Args:
+            None
+            """
             return jsonify({"valid": "json"}), 200
 
         return app
@@ -198,6 +244,10 @@ class TestRest(LiveServerTestCase):
         """Test handling of BaseException in post method."""
         result = rest.post("test/base-exception", self.test_data, self.config)
         self.assertIsNotNone(result)
+        self.assertIsInstance(result, ExceptionWrapper)
+        self.assertFalse(
+            hasattr(result, "success")
+        )  # Ensure it's not a Post namedtuple
 
     def test_get_json_malformed_die_true(self):
         """Tests if system exits when encountering malformed JSON."""
@@ -293,15 +343,27 @@ class TestRestEdgeCases(LiveServerTestCase):
     """Test edge cases and uncovered scenarios in rest.py module."""
 
     def create_app(self):
-        """Simulate scenarios for uncovered lines."""
+        """Simulate scenarios for uncovered lines.
+
+        Args:
+            None
+        """
         app = Flask(__name__)
         app.config["TESTING"] = True
         app.config["LIVESERVER_PORT"] = 5000
 
         # Route for server=False scenario
         @app.route("/api/switchmap/api/test/endpoint", methods=["POST"])
-        def test_endpoint_server_false():
-            return jsonify({"posted_server_false": True}), 200
+        def server_false_test():
+            """Handle GET requests for server=False testing.
+
+            Args:
+                None
+
+            Returns:
+                tuple: JSON response and HTTP status code
+            """
+            return jsonify({"server": "false", "status": "ok"})
 
         # Route to simulate BaseException for bare except block
         @app.route("/switchmap/api/test/base-exception", methods=["POST"])
@@ -311,6 +373,11 @@ class TestRestEdgeCases(LiveServerTestCase):
         # Route to return malformed JSON
         @app.route("/switchmap/api/test/json-malformed", methods=["GET"])
         def json_malformed():
+            """Return malformed JSON for testing.
+
+            Args:
+            None
+            """
             return "{invalid json...", 200
 
         return app
@@ -333,7 +400,8 @@ class TestRestEdgeCases(LiveServerTestCase):
         # Ensure success is True and correct response is returned
         self.assertTrue(result.success)
         self.assertEqual(result.response.status_code, 200)
-        self.assertIn("posted_server_false", result.response.json())
+        self.assertIn("server", result.response.json())
+        self.assertIn("status", result.response.json())
 
     def test_get_json_malformed_die_true(self):
         """Test get_json malformed JSON response."""
@@ -386,10 +454,29 @@ class TestRestCoverage(LiveServerTestCase):
 
         @app.route("/api/switchmap/server-false-test", methods=["GET"])
         def server_false_test():
+            """Handle GET requests for server=False testing.
+
+            Args:
+            None
+
+            Returns:
+            tuple: JSON response and HTTP status code
+            """
             return jsonify({"server": "false", "status": "ok"})
 
         @app.route("/switchmap/api/bare-except", methods=["POST"])
         def bare_except_route():
+            """Handle POST requests to test bare except handling.
+
+            Args:
+                None
+
+            Returns:
+                None
+
+            Raises:
+                Exception: Always raises to test exception handling
+            """
             # Simulate a scenario that might trigger a bare except
             raise Exception("Simulated exception")
 

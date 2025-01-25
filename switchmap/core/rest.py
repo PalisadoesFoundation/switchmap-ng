@@ -1,4 +1,3 @@
-# /home/dhiren-mhatre/open-source/switchmap-ng/switchmap/core/rest.py
 """Functions for creating URIs."""
 
 # Standard imports
