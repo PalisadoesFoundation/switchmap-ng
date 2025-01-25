@@ -5,7 +5,6 @@ import unittest
 from flask import Flask
 from unittest.mock import patch, MagicMock
 
-# Adjust sys.path to locate your application modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../..")))
 
 from switchmap.server.api.routes.post import API_POST, API_POLLER_SEARCH_URI
