@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+"""Unit tests for the API POST routes in the switchmap-ng application.
+
+This module tests the functionality and behavior of the POST routes for the API,
+ensuring correctness and expected behavior under different scenarios.
+"""
+
 import os
 import sys
 import unittest
