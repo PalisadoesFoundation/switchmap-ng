@@ -6,12 +6,10 @@ functionality of API request handling under various scenarios.
 """
 
 import unittest
-import sys
 from flask import Flask, jsonify, request
 from flask_testing import LiveServerTestCase
 from switchmap.core import rest
 from switchmap.core.log import ExceptionWrapper
-from switchmap.core.rest import API_PREFIX
 from unittest.mock import patch
 
 
