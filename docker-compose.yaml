@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  db: 
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: switchmap
+      MYSQL_USER: switchmap
+      MYSQL_PASSWORD: CHANGE_ME_NOW
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_HOST: '%'
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --bind-address=0.0.0.0
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "switchmap", "-pwinteriscoming"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - switchmap-network
+
+  switchmap-server: 
+    build: .
+    environment:
+      - COMPONENT=server
+      - DB_HOST=db
+      - DB_USER=switchmap
+      - DB_PASSWORD=CHANGE_ME_NOW
+      - DB_NAME=switchmap
+    volumes:
+      - ./etc:/opt/switchmap-ng/etc
+      - ./var:/opt/switchmap-ng/var
+    ports:
+      - "7000:7000"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - switchmap-network
+
+  switchmap-dashboard: 
+    build: .
+    environment:
+      - COMPONENT=dashboard
+      - DB_HOST=db
+      - DB_USER=switchmap
+      - DB_PASSWORD=CHANGE_ME_NOW
+      - DB_NAME=switchmap
+    volumes:
+      - ./etc:/opt/switchmap-ng/etc
+      - ./var:/opt/switchmap-ng/var
+    ports:
+      - "7001:7001"
+    depends_on:
+      switchmap-server: 
+        condition: service_started
+      db: 
+        condition: service_healthy
+    networks:
+      - switchmap-network
+
+networks:
+  switchmap-network:
+    driver: bridge
+
+volumes:
+  mysql_data: {}
+

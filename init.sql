@@ -1,0 +1,10 @@
+
+CREATE DATABASE IF NOT EXISTS switchmap;
+
+USE switchmap;
+
+CREATE USER IF NOT EXISTS 'switchmap_user'@'%' IDENTIFIED BY 'CHANGE_ME_NOW';
+
+GRANT ALL PRIVILEGES ON switchmap.* TO 'switchmap'@'%';
+
+FLUSH PRIVILEGES;
