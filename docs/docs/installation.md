@@ -29,7 +29,7 @@ $ sudo mysql
 ```sql
 CREATE DATABASE switchmap;
 DROP USER IF EXISTS 'switchmap'@'localhost';
-CREATE USER 'switchmap'@'localhost' IDENTIFIED BY 'Switchm@p_D8_Us3r_P@ss_2024!';
+CREATE USER 'switchmap'@'localhost' IDENTIFIED BY '<secure-password>';
 GRANT ALL PRIVILEGES ON switchmap.* TO 'switchmap'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;

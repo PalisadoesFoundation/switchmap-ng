@@ -20,7 +20,7 @@ services:
     ports:
       - "3306:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "switchmap", "-pwinteriscoming"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "switchmap", "-pCHANGE_ME_NOW"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -35,6 +35,7 @@ services:
       - DB_USER=switchmap
       - DB_PASSWORD=CHANGE_ME_NOW
       - DB_NAME=switchmap
+    restart: unless-stopped
     volumes:
       - ./etc:/opt/switchmap-ng/etc
       - ./var:/opt/switchmap-ng/var
@@ -54,6 +55,7 @@ services:
       - DB_USER=switchmap
       - DB_PASSWORD=CHANGE_ME_NOW
       - DB_NAME=switchmap
+    restart: unless-stopped
     volumes:
       - ./etc:/opt/switchmap-ng/etc
       - ./var:/opt/switchmap-ng/var
