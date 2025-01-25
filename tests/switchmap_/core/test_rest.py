@@ -32,6 +32,9 @@ class MockConfigNoCredentials:
         Args:
             server_root (str, optional): Base server URL. Defaults to localhost.
             api_root (str, optional): Base API URL. Defaults to localhost.
+
+        Returns:
+            None
         """
         self._server_root = server_root
         self._api_root = api_root
@@ -98,6 +101,9 @@ class MockConfig:
         Args:
             server_root (str, optional): Base server URL. Defaults to localhost.
             api_root (str, optional): Base API URL. Defaults to localhost.
+
+        Returns:
+            None
         """
         self._server_root = server_root
         self._api_root = api_root
@@ -191,6 +197,9 @@ class TestRest(LiveServerTestCase):
 
             Args:
             None
+
+            Returns:
+                tuple: Malformed JSON response body and the HTTP status code
             """
             return "{invalid json...", 200
 
@@ -200,6 +209,9 @@ class TestRest(LiveServerTestCase):
 
             Args:
             None
+
+            Returns:
+            tuple: JSON response containing an error message.
             """
             return jsonify({"error": "Forced failure"}), 500
 
@@ -218,7 +230,10 @@ class TestRest(LiveServerTestCase):
             """Simulate GraphQL endpoint.
 
             Args:
-            None
+                None
+
+            Returns:
+                tuple: JSON response containing test data and HTTP status code
             """
             return jsonify({"data": {"test": "value"}}), 200
 
@@ -227,7 +242,10 @@ class TestRest(LiveServerTestCase):
             """Return valid JSON for testing.
 
             Args:
-            None
+                None
+
+            Returns:
+                tuple: JSON response containing test data and HTTP status code
             """
             return jsonify({"valid": "json"}), 200
 
@@ -347,6 +365,9 @@ class TestRestEdgeCases(LiveServerTestCase):
 
         Args:
             None
+
+        Returns:
+            Flask: A Flask application configured for testing
         """
         app = Flask(__name__)
         app.config["TESTING"] = True
@@ -376,7 +397,10 @@ class TestRestEdgeCases(LiveServerTestCase):
             """Return malformed JSON for testing.
 
             Args:
-            None
+                None
+
+            Returns:
+                tuple: Malformed JSON string and HTTP status code
             """
             return "{invalid json...", 200
 
@@ -447,7 +471,14 @@ class TestRestCoverage(LiveServerTestCase):
     """Tests edge cases and error scenarios for REST API."""
 
     def create_app(self):
-        """Create a Flask application with routes to simulate edge cases."""
+        """Create a Flask application with routes to simulate edge cases.
+
+        Args:
+            None
+
+        Returns:
+            Flask: Flask application configured for testing edge cases
+        """
         app = Flask(__name__)
         app.config["TESTING"] = True
         app.config["LIVESERVER_PORT"] = 5000
