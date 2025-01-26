@@ -1,6 +1,32 @@
+#!/usr/bin/env python3
+"""Test the poller poll module."""
+
+import os
+import sys
 import unittest
 from unittest.mock import patch, MagicMock
 from switchmap.poller.poll import devices, device, cli_device, _META
+
+# Try to create a working PYTHONPATH
+EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
+ROOT_DIR = os.path.abspath(
+    os.path.join(
+        os.path.abspath(
+            os.path.join(EXEC_DIR, os.pardir)  # Move up to 'poller'
+        ),
+        os.pardir,  # Move up to 'switchmap_'
+    )
+)
+_EXPECTED = "{0}tests{0}switchmap_{0}poller".format(os.sep)
+
+if EXEC_DIR.endswith(_EXPECTED):
+    # Prepend the root directory to the Python path
+    sys.path.insert(0, ROOT_DIR)
+else:
+    print(
+        f'This script is not installed in the "{_EXPECTED}" directory. Please fix.'
+    )
+    sys.exit(2)
 
 
 class TestPollModule(unittest.TestCase):
