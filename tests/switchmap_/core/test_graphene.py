@@ -189,6 +189,21 @@ class TestFunctions(unittest.TestCase):
         result = testimport.nodes(data)
         self.assertEqual(result, expected)
 
+    def test_normalize_return_data(self):
+        """Test normalize when input is not a dict and is directly returned."""
+        input_data = "simple string"
+        result = testimport.normalize(input_data)
+        self.assertEqual(result, input_data)
+
+    def test_nodes_append_node(self):
+        """Test nodes appending non-dict node values."""
+        input_data = [
+            {"node": "simple string"},
+            {"node": 42},
+        ]
+        expected_output = ["simple string", 42]
+        result = testimport.nodes(input_data)
+        self.assertEqual(result, expected_output)
 
 if __name__ == "__main__":
     # Do the unit test
