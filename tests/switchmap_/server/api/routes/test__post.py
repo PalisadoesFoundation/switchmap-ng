@@ -54,7 +54,7 @@ class TestAPIRoutes(unittest.TestCase):
 
     @patch("switchmap.server.db.misc.search.search")
     def test_post_searchterm_special_chars(self, mock_search):
-        """Test searching with special characters."""
+        """Test searching with special characters like (!@)."""
         mock_search.return_value = []
         test_data = {"searchterm": "test@#$%", "idx_root": 1}
         response = self.client.post(API_POLLER_SEARCH_URI, json=test_data)
