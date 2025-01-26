@@ -4,7 +4,8 @@
 import os
 import sys
 import unittest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, call, MagicMock
+from multiprocessing.pool import Pool
 from switchmap.poller.poll import devices, device, cli_device, _META
 
 # Set up the PYTHONPATH
@@ -75,9 +76,19 @@ class TestPollModule(unittest.TestCase):
             mock_device.return_value = mock_device_instance
 
             devices(multiprocessing=False)
-
-            mock_poll.assert_called()
-            mock_rest_post.assert_called()
+            # Verify SNMP polling for both devices
+            self.assertEqual(mock_poll.call_count, 2)
+            # Verify REST posts for both devices
+            self.assertEqual(mock_rest_post.call_count, 2)
+            # Verify processing order
+            mock_device.assert_has_calls(
+                [
+                    unittest.mock.call({"misc": {"host": "device1"}}),
+                    unittest.mock.call().process(),
+                    unittest.mock.call({"misc": {"host": "device1"}}),
+                    unittest.mock.call().process(),
+                ]
+            )
 
     @patch("switchmap.poller.poll.files.skip_file")
     @patch("switchmap.poller.poll.os.path.isfile")
