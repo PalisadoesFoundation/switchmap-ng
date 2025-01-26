@@ -15,7 +15,9 @@ _EXPECTED = f"{os.sep}tests{os.sep}switchmap_{os.sep}poller"
 if EXEC_DIR.endswith(_EXPECTED):
     sys.path.insert(0, ROOT_DIR)
 else:
-    print(f'This script is not installed in the "{_EXPECTED}" directory. Please fix.')
+    print(
+        f'This script is not installed in the "{_EXPECTED}" directory. Please fix.'
+    )
     sys.exit(2)
 
 
@@ -34,7 +36,12 @@ class TestPollModule(unittest.TestCase):
     @patch("switchmap.poller.poll.poller.Poll")
     @patch("switchmap.poller.poll.rest.post")
     def test_devices_without_multiprocessing(
-        self, mock_rest_post, mock_poll, mock_isfile, mock_skip_file, mock_config
+        self,
+        mock_rest_post,
+        mock_poll,
+        mock_isfile,
+        mock_skip_file,
+        mock_config,
     ):
         mock_config.return_value = self.mock_config_instance
         mock_skip_file.return_value = "/path/to/skip/file"
@@ -62,11 +69,11 @@ class TestPollModule(unittest.TestCase):
         self, mock_rest_post, mock_poll, mock_isfile, mock_skip_file
     ):
         """Test processing of a single device with valid data.
-            Verify that:
-            1. Skip file checks are performed
-            2. SNMP polling is executed
-            3. Device processing occurs
-            4. Results are posted via REST
+        Verify that:
+        1. Skip file checks are performed
+        2. SNMP polling is executed
+        3. Device processing occurs
+        4. Results are posted via REST
         """
 
         mock_skip_file.return_value = "/path/to/skip/file"
@@ -87,9 +94,10 @@ class TestPollModule(unittest.TestCase):
             device(poll_meta)
 
             mock_poll.assert_called_once()
-            mock_device.assert_called_once_with({"key": "value"})  # Use this method
+            mock_device.assert_called_once_with(
+                {"key": "value"}
+            )  # Use this method
             mock_rest_post.assert_called_once()
-
 
     @patch("switchmap.poller.poll.ConfigPoller")
     @patch("switchmap.poller.poll.log.log2see")
