@@ -205,6 +205,7 @@ class TestFunctions(unittest.TestCase):
         result = testimport.nodes(input_data)
         self.assertEqual(result, expected_output)
 
+
 if __name__ == "__main__":
     # Do the unit test
     unittest.main()
