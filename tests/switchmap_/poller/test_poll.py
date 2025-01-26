@@ -16,7 +16,8 @@ if EXEC_DIR.endswith(_EXPECTED):
     sys.path.insert(0, ROOT_DIR)
 else:
     print(
-        f'This script is not installed in the "{_EXPECTED}" directory. Please fix.'
+        f'This script is not installed in the "{_EXPECTED}" directory. '
+        "Please fix."
     )
     sys.exit(2)
 
@@ -32,6 +33,7 @@ class TestPollModule(unittest.TestCase):
     """
 
     def setUp(self):
+        """Set up the test environment."""
         self.mock_config_instance = MagicMock()
         self.mock_zone = MagicMock()
         self.mock_zone.name = "zone1"
@@ -85,13 +87,13 @@ class TestPollModule(unittest.TestCase):
         self, mock_rest_post, mock_poll, mock_isfile, mock_skip_file
     ):
         """Test processing of a single device with valid data.
+
         Verify that:
         1. Skip file checks are performed
         2. SNMP polling is executed
         3. Device processing occurs
         4. Results are posted via REST
         """
-
         mock_skip_file.return_value = "/path/to/skip/file"
         mock_isfile.return_value = False
 
@@ -159,7 +161,6 @@ class TestPollModule(unittest.TestCase):
         Verify that agent_subprocesses method returns the expected
         number of subprocesses, based on the configuration.
         """
-
         self.mock_config_instance.agent_subprocesses.return_value = 8
         mock_config.return_value = self.mock_config_instance
 
