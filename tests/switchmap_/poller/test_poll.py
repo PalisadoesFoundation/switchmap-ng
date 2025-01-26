@@ -22,6 +22,14 @@ else:
 
 
 class TestPollModule(unittest.TestCase):
+    """Test cases for the poll module functionality.
+
+    This class tests various components of the poll module including:
+     - Device processing with and without multiprocessing
+     - CLI device handling
+     - Configuration retrieval for agent subprocesses, server address,
+     and polling interval
+    """
 
     def setUp(self):
         self.mock_config_instance = MagicMock()
@@ -43,6 +51,14 @@ class TestPollModule(unittest.TestCase):
         mock_skip_file,
         mock_config,
     ):
+        """Test device processing without multiprocessing.
+
+        Verify that:
+        1. Device configuration is correctly retrieved
+        2. Skip file checks are performed
+        3. SNMP polling is executed
+        4. Results are posted via REST
+        """
         mock_config.return_value = self.mock_config_instance
         mock_skip_file.return_value = "/path/to/skip/file"
         mock_isfile.return_value = False
@@ -102,6 +118,11 @@ class TestPollModule(unittest.TestCase):
     @patch("switchmap.poller.poll.ConfigPoller")
     @patch("switchmap.poller.poll.log.log2see")
     def test_cli_device_hostname_not_found(self, mock_log, mock_config):
+        """Test CLI device handling when hostname is not found.
+
+        Verify that log message is output when a hostname is not found in
+        the configuration.
+        """
         mock_config.return_value = self.mock_config_instance
         self.mock_config_instance.zones.return_value = []
 
@@ -114,14 +135,31 @@ class TestPollModule(unittest.TestCase):
     @patch("switchmap.poller.poll.ConfigPoller")
     @patch("switchmap.poller.poll.device")
     def test_cli_device_hostname_found(self, mock_device, mock_config):
+        """Test CLI device handling when hostname is found.
+
+        Verify that device processing is triggered for a valid hostname.
+        """
         mock_config.return_value = self.mock_config_instance
 
         cli_device("device1")
 
-        mock_device.assert_called()
+        mock_device.assert_called_once_with(
+            _META(
+                zone="zone1",
+                hostname="device1",
+                config=mock_config.return_value,
+            ),
+            post=False,  # Include the missing argument
+        )
 
     @patch("switchmap.poller.poll.ConfigPoller")
     def test_agent_subprocesses(self, mock_config):
+        """Test agent_subprocesses method.
+
+        Verify that agent_subprocesses method returns the expected
+        number of subprocesses, based on the configuration.
+        """
+
         self.mock_config_instance.agent_subprocesses.return_value = 8
         mock_config.return_value = self.mock_config_instance
 
@@ -130,6 +168,11 @@ class TestPollModule(unittest.TestCase):
 
     @patch("switchmap.poller.poll.ConfigPoller")
     def test_server_address(self, mock_config):
+        """Test server_address method.
+
+        Verify that server_address method returns the expected
+        server IP address, based on the configuration.
+        """
         self.mock_config_instance.server_address.return_value = "127.0.0.1"
         mock_config.return_value = self.mock_config_instance
 
@@ -138,6 +181,11 @@ class TestPollModule(unittest.TestCase):
 
     @patch("switchmap.poller.poll.ConfigPoller")
     def test_polling_interval(self, mock_config):
+        """Test polling_interval method.
+
+        Verify that polling_interval method returns the expected
+        polling interval in seconds, based on the configuration.
+        """
         self.mock_config_instance.polling_interval.return_value = 3600
         mock_config.return_value = self.mock_config_instance
 
