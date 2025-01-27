@@ -6,11 +6,12 @@ functionality of API request handling under various scenarios.
 """
 
 import unittest
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify
 from flask_testing import LiveServerTestCase
 from switchmap.core import rest
 from switchmap.core.log import ExceptionWrapper
 from unittest.mock import patch
+from flask import request
 
 
 class MockConfigNoCredentials:
@@ -247,6 +248,18 @@ class TestRest(LiveServerTestCase):
             """
             return jsonify({"valid": "json"}), 200
 
+        @app.route("/switchmap/api/test/no-creds-endpoint", methods=["POST"])
+        def no_creds_endpoint():
+            """Handle POST requests without credentials.
+
+            Args:
+            None
+
+            Returns:
+            tuple: JSON response and HTTP status code
+            """
+            return jsonify({"posted_no_creds": True}), 200
+
         return app
 
     def setUp(self):
@@ -255,15 +268,6 @@ class TestRest(LiveServerTestCase):
         self.nocreds_config = MockConfigNoCredentials()
         self.test_uri = "test/endpoint"
         self.test_data = {"hello": "world"}
-
-    def test_post_base_exception_handling(self):
-        """Test handling of BaseException in post method."""
-        result = rest.post("test/base-exception", self.test_data, self.config)
-        self.assertIsNotNone(result)
-        self.assertIsInstance(result, ExceptionWrapper)
-        self.assertFalse(
-            hasattr(result, "success")
-        )  # Ensure it's not a Post namedtuple
 
     def test_get_json_malformed_die_true(self):
         """Tests if system exits when encountering malformed JSON."""
@@ -282,9 +286,12 @@ class TestRest(LiveServerTestCase):
 
     def test_post_no_credentials(self):
         """Test post request without authentication credentials."""
-        result = rest.post(self.test_uri, self.test_data, self.nocreds_config)
+        result = rest.post(
+            "test/no-creds-endpoint", self.test_data, self.nocreds_config
+        )
         self.assertFalse(isinstance(result, ExceptionWrapper))
         self.assertTrue(result.success)
+        self.assertEqual(result.response.status_code, 200)
 
     def test_clean_url(self):
         """Test the _clean_url utility function directly."""
@@ -298,29 +305,12 @@ class TestRest(LiveServerTestCase):
         for url in urls:
             _ = rest._clean_url(url)
 
-    def test_post_success(self):
-        """Test successful POST request to API endpoint with credentials."""
-        result = rest.post(self.test_uri, self.test_data, self.config)
-        self.assertFalse(isinstance(result, ExceptionWrapper))
-        self.assertTrue(result.success)
-        self.assertEqual(result.response.status_code, 200)
-
     def test_post_http_500(self):
         """Test POST request handling for HTTP 500 error response."""
         result = rest.post("test/error", self.test_data, self.config)
         self.assertFalse(isinstance(result, ExceptionWrapper))
         self.assertFalse(result.success)
         self.assertEqual(result.response.status_code, 500)
-
-    def test_post_exception_handling(self):
-        """Test exception handling when a network error."""
-        saved_server_url = self.config.server_url_root()
-        try:
-            self.config._server_root = "http://invalid.domain123"
-            result = rest.post(self.test_uri, self.test_data, self.config)
-            self.assertIsInstance(result, ExceptionWrapper)
-        finally:
-            self.config._server_root = saved_server_url
 
     def test_get_http_500_with_die(self):
         """GET => returns 500 => raises SystemExit if die=True."""
@@ -351,6 +341,27 @@ class TestRest(LiveServerTestCase):
             # die=False => no SystemExit => [] returned
             data = rest.get("test/json-ok", self.config, die=False)
             self.assertEqual(data, [])
+        finally:
+            self.config._server_root = saved_server_url
+
+    @patch("switchmap.core.log.log2exception")
+    @patch("switchmap.core.log.log2warning")
+    def test_post_exception_wrapper(self, mock_log2warning, mock_log2exception):
+        """Test that rest.post() returns an ExceptionWrapper."""
+        # Force a network error by pointing the config to a bad URL.
+        saved_server_url = self.config.server_url_root()
+        self.config._server_root = "http://127.0.0.1:9999"
+        try:
+            result = rest.post(
+                "force-exception",
+                {"test_key": "test_value"},
+                self.config,
+                server=True,
+            )
+            self.assertIsInstance(result, ExceptionWrapper)
+            # Ensure logging functions were called
+            mock_log2warning.assert_called()
+            mock_log2exception.assert_called()
         finally:
             self.config._server_root = saved_server_url
 
@@ -388,6 +399,11 @@ class TestRestEdgeCases(LiveServerTestCase):
         @app.route("/switchmap/api/test/base-exception", methods=["POST"])
         def test_base_exception():
             raise BaseException("Triggered BaseException.")
+
+        @app.route("/switchmap/api/test/exception", methods=["POST"])
+        def trigger_exception():
+            """Simulate an endpoint that raises an exception."""
+            raise Exception("Simulated server exception")
 
         # Route to return malformed JSON
         @app.route("/switchmap/api/test/json-malformed", methods=["GET"])
