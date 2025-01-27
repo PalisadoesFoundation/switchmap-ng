@@ -397,11 +397,29 @@ class TestRestEdgeCases(LiveServerTestCase):
         # Route to simulate BaseException for bare except block
         @app.route("/switchmap/api/test/base-exception", methods=["POST"])
         def test_base_exception():
+            """Trigger a BaseException for testing error handling.
+
+            Args:
+            None
+
+            Returns:
+            None
+
+            Raises:
+            BaseException: Always raises to test exception handling
+            """
             raise BaseException("Triggered BaseException.")
 
         @app.route("/switchmap/api/test/exception", methods=["POST"])
         def trigger_exception():
-            """Simulate an endpoint that raises an exception."""
+            """Simulate an endpoint that raises an exception.
+
+            Args:
+            None
+
+            Returns:
+            None
+            """
             raise Exception("Simulated server exception")
 
         # Route to return malformed JSON
