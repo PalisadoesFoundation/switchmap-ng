@@ -382,7 +382,6 @@ class TestRestEdgeCases(LiveServerTestCase):
         app.config["TESTING"] = True
         app.config["LIVESERVER_PORT"] = 5000
 
-        # Route for server=False scenario
         @app.route("/api/switchmap/api/test/endpoint", methods=["POST"])
         def server_false_test():
             """Handle GET requests for server=False testing.
