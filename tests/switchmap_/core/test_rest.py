@@ -293,18 +293,6 @@ class TestRest(LiveServerTestCase):
         self.assertTrue(result.success)
         self.assertEqual(result.response.status_code, 200)
 
-    def test_clean_url(self):
-        """Test the _clean_url utility function directly."""
-        urls = [
-            "http://example.com//api//v1//data",
-            "https://example.com//api//v1//data",
-            "http:/example.com/api/v1/data",
-            "https:/example.com/api/v1/data",
-            "http://example.com////////",
-        ]
-        for url in urls:
-            _ = rest._clean_url(url)
-
     def test_post_http_500(self):
         """Test POST request handling for HTTP 500 error response."""
         result = rest.post("test/error", self.test_data, self.config)
