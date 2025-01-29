@@ -86,6 +86,7 @@ from tests.testlib_ import db
 from tests.testlib_ import data
 
 from switchmap.server.db.misc import rows as testimport
+from switchmap.server.db import scoped_session
 
 
 class TestRows(unittest.TestCase):
@@ -125,7 +126,7 @@ class TestRows(unittest.TestCase):
         # Create device
         test_data = IDevice(
             idx_zone=zone_record.idx_zone,
-            hostname="test_host",
+            hostname=b"test_host",
             name=data.random_string(),
             sys_name=data.random_string(),
             sys_description=data.random_string(),
@@ -134,7 +135,7 @@ class TestRows(unittest.TestCase):
             last_polled=2000,
             enabled=1,
         )
-        device_row = device.insert_row(test_data)
+        device.insert_row(test_data)
         device_record = device.exists(zone_record.idx_zone, "test_host")
 
         # Test conversion
@@ -159,11 +160,11 @@ class TestRows(unittest.TestCase):
 
     def test_event(self):
         """Test rows.event()."""
-        # Create event and manually set name to bytes
+        # Create event using table function
         event_row = event.create()
-        event_row.name = event_row.name.encode("utf-8")  # Encode to bytes
         result = rows.event(event_row)
         self.assertEqual(result.idx_event, event_row.idx_event)
+        self.assertEqual(result.name, event_row.name)
 
     def test_l1interface(self):
         """Test rows.l1interface()."""
@@ -185,7 +186,7 @@ class TestRows(unittest.TestCase):
         device.insert_row(
             IDevice(
                 idx_zone=zone_record.idx_zone,
-                hostname="test",
+                hostname=b"test",
                 name=data.random_string(),
                 sys_name=data.random_string(),
                 sys_description=data.random_string(),
@@ -208,9 +209,9 @@ class TestRows(unittest.TestCase):
                 trunk=0,
                 iftype=6,
                 ifspeed=1000,
-                ifalias="Test Alias",
-                ifname="eth0",
-                ifdescr="Ethernet0",
+                ifalias=b"Test Alias",
+                ifname=b"eth0",
+                ifdescr=b"Ethernet0",
                 ifadminstatus=1,
                 ifoperstatus=1,
                 ts_idle=0,
@@ -219,6 +220,91 @@ class TestRows(unittest.TestCase):
         )
         result = rows.l1interface(if_row)
         self.assertEqual(result.ifname, "eth0")
+
+    def test_mac(self):
+        """Test rows.mac()."""
+        event_row = event.create()
+
+        # Insert zone
+        zone_name = data.random_string()
+        zone.insert_row(
+            IZone(
+                idx_event=event_row.idx_event,
+                name=zone_name,
+                notes=data.random_string(),
+                enabled=1,
+            )
+        )
+        zone_record = zone.exists(event_row.idx_event, zone_name)
+
+        # Insert OUI
+        oui_value = "00:11:22"
+        oui.insert_row(
+            IOui(
+                oui=oui_value,
+                organization=data.random_string(),
+                enabled=1,
+            )
+        )
+        oui_record = oui.exists(oui_value)
+
+        # Insert MAC
+        mac_row = mac.insert_row(
+            IMac(
+                idx_oui=oui_record.idx_oui,
+                idx_zone=zone_record.idx_zone,
+                mac=b"00:11:22:33:44:55",
+                enabled=1,
+            )
+        )
+        result = rows.mac(mac_row)
+        self.assertEqual(result.mac, "00:11:22:33:44:55")
+
+    def test_macip(self):
+        """Test rows.macip()."""
+        event_row = event.create()
+
+        # Insert zone
+        zone_name = data.random_string()
+        zone.insert_row(
+            IZone(
+                idx_event=event_row.idx_event,
+                name=zone_name,
+                notes=data.random_string(),
+                enabled=1,
+            )
+        )
+        zone_record = zone.exists(event_row.idx_event, zone_name)
+
+        # Insert MAC
+        mac_row = mac.insert_row(
+            IMac(
+                idx_zone=zone_record.idx_zone,
+                mac=b"00:11:22:33:44:55",
+                enabled=1,
+            )
+        )
+
+        # Insert IP
+        ip_row = ip_table.insert_row(
+            ip_table.IIp(
+                idx_zone=zone_record.idx_zone,
+                address=b"192.168.1.1",
+                version=4,
+                enabled=1,
+            )
+        )
+
+        # Insert MAC IP
+        macip_row = macip.insert_row(
+            IMacIp(
+                idx_mac=mac_row.idx_mac,
+                idx_ip=ip_row.idx_ip,
+                enabled=1,
+            )
+        )
+        result = rows.macip(macip_row)
+        self.assertEqual(result.idx_mac, mac_row.idx_mac)
 
 
 if __name__ == "__main__":
