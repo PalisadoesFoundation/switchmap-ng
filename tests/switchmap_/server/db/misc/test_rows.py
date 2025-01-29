@@ -53,6 +53,17 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.server.db import models
+from switchmap.server.db.table import (
+    event,
+    zone,
+    device,
+    l1interface,
+    mac,
+    ip as ip_table,
+    macip,
+    oui,
+    root as root_table,
+)
 from switchmap.server.db.misc import rows
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import event
