@@ -71,6 +71,7 @@ from switchmap.server.db.table import macip
 from switchmap.server.db.table import IMacIp
 from switchmap.server.db.table import ip as ip_table
 from switchmap.server.db.table import IOui
+from switchmap.server.db.table import oui
 from tests.testlib_ import db
 from tests.testlib_ import data
 
