@@ -100,13 +100,16 @@ class TestDbTableMacPort(unittest.TestCase):
     def test_idx_exists(self):
         """Testing function idx_exists."""
         # Create record
-        row = _row()
+        while True:
+            row = _row()
+            if not testimport.exists(row.idx_l1interface, row.idx_mac):
+                break
 
-        # Test before insertion of an initial row
+        # Test before insertion
         nonexistent = testimport.exists(row.idx_l1interface, row.idx_mac)
         self.assertFalse(nonexistent)
 
-        # Test after insertion of an initial row
+        # Insert
         testimport.insert_row(row)
         preliminary_result = testimport.exists(row.idx_l1interface, row.idx_mac)
         self.assertTrue(preliminary_result)
@@ -120,13 +123,16 @@ class TestDbTableMacPort(unittest.TestCase):
     def test_exists(self):
         """Testing function exists."""
         # Create record
-        row = _row()
+        while True:
+            row = _row()
+            if not testimport.exists(row.idx_l1interface, row.idx_mac):
+                break
 
-        # Test before insertion of an initial row
+        # Test before insertion
         result = testimport.exists(row.idx_l1interface, row.idx_mac)
         self.assertFalse(result)
 
-        # Test after insertion of an initial row
+        # Insert
         testimport.insert_row(row)
         result = testimport.exists(row.idx_l1interface, row.idx_mac)
         self.assertTrue(result)
@@ -200,7 +206,7 @@ class TestDbTableMacPort(unittest.TestCase):
                 self.assertFalse(result)
                 break
 
-        # Test after insertion of an initial row
+        # Test after insertion
         testimport.insert_row(row)
         result = testimport.exists(row.idx_l1interface, row.idx_mac)
         self.assertTrue(result)
@@ -208,12 +214,9 @@ class TestDbTableMacPort(unittest.TestCase):
 
     def test_update_row(self):
         """Testing function update_row."""
-        # Find a row combination that does not exist
+        # Find a row combination that does exist
         while True:
-            # Create record
             row = _row()
-
-            # Test before insertion of an initial row
             result = testimport.exists(row.idx_l1interface, row.idx_mac)
             if bool(result) is True:
                 self.assertTrue(result)
