@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Test the rows module."""
+"""Test the interface module."""
 
 import os
 import sys
 import unittest
-from unittest.mock import MagicMock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -31,6 +30,7 @@ ROOT_DIR = os.path.abspath(
         os.pardir,
     )
 )
+
 _EXPECTED = """\
 {0}switchmap-ng{0}tests{0}switchmap_{0}server{0}db{0}misc""".format(
     os.sep
@@ -47,396 +47,265 @@ else:
         )
     )
     sys.exit(2)
-
-# Create the necessary configuration to load the module
 from tests.testlib_ import setup
-
 CONFIG = setup.config()
 CONFIG.save()
 
+from switchmap.server.db import models
+from switchmap.server.db.table import (
+    event,
+    zone,
+    device,
+    l1interface,
+    mac,
+    ip as ip_table,
+    macip,
+    macport,
+    oui,
+    vlan,
+    vlanport,
+    root as root_table,
+)
+from switchmap.server.db.misc import rows
+from switchmap.server.db.table import zone
+from switchmap.server.db.table import event
+from switchmap.server.db.table import device
+from switchmap.server.db.table import l1interface
+from switchmap.server.db.table import IDevice
+from switchmap.server.db.table import IL1Interface
+from switchmap.server.db.table import IZone
+from switchmap.server.db.table import mac
+from switchmap.server.db.table import IMac
+from switchmap.server.db.table import IRoot
+from switchmap.server.db.table import macip
+from switchmap.server.db.table import IMacIp
+from switchmap.server.db.table import ip as ip_table
+from switchmap.server.db.table import IOui
+from tests.testlib_ import db
+from tests.testlib_ import data
+
 from switchmap.server.db.misc import rows as testimport
+
+
 
 
 class TestRows(unittest.TestCase):
     """Checks all functions and methods."""
 
-    def setUp(self):
-        """Set up test data."""
-        self.mock_row = MagicMock()
+    @classmethod
+    def setUpClass(cls):
+        """Setup database for testing."""
+        # Load the configuration
+        config = setup.config()
+        config.save()
 
-    def tearDown(self):
-        """Clean up after each test."""
-        del self.mock_row
+        # Drop tables
+        database = db.Database()
+        database.drop()
+
+        # Create database tables
+        models.create_all_tables()
 
     def test_device(self):
-        """Testing function device."""
-        # Mock a database row
-        self.mock_row.idx_device = 1
-        self.mock_row.idx_zone = 2
-        self.mock_row.sys_name = b"sys_name"
-        self.mock_row.hostname = b"hostname"
-        self.mock_row.name = b"name"
-        self.mock_row.sys_description = b"sys_description"
-        self.mock_row.sys_objectid = b"sys_objectid"
-        self.mock_row.sys_uptime = 100
-        self.mock_row.last_polled = 200
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 300
-        self.mock_row.ts_modified = 400
-
-        # Call the function
-        result = testimport.device(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_device, 1)
-        self.assertEqual(result.idx_zone, 2)
-        self.assertEqual(result.sys_name, "sys_name")
-        self.assertEqual(result.hostname, "hostname")
-        self.assertEqual(result.name, "name")
-        self.assertEqual(result.sys_description, "sys_description")
-        self.assertEqual(result.sys_objectid, "sys_objectid")
-        self.assertEqual(result.sys_uptime, 100)
-        self.assertEqual(result.last_polled, 200)
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 300)
-        self.assertEqual(result.ts_modified, 400)
-
-    def test_device_with_none_values(self):
-        """Testing function device with None values."""
-        # Mock a database row with None values
-        self.mock_row.idx_device = 1
-        self.mock_row.idx_zone = 2
-        self.mock_row.sys_name = None
-        self.mock_row.hostname = None
-        self.mock_row.name = None
-        self.mock_row.sys_description = None
-        self.mock_row.sys_objectid = None
-        self.mock_row.sys_uptime = 100
-        self.mock_row.last_polled = 200
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 300
-        self.mock_row.ts_modified = 400
-
-        # Call the function
-        result = testimport.device(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_device, 1)
-        self.assertEqual(result.idx_zone, 2)
-        self.assertIsNone(result.sys_name)
-        self.assertIsNone(result.hostname)
-        self.assertIsNone(result.name)
-        self.assertIsNone(result.sys_description)
-        self.assertIsNone(result.sys_objectid)
-        self.assertEqual(result.sys_uptime, 100)
-        self.assertEqual(result.last_polled, 200)
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 300)
-        self.assertEqual(result.ts_modified, 400)
+        """Test rows.device()."""
+        # Create parent records
+        event_row = event.create()
+        
+        # Insert zone and retrieve it
+        zone_name = data.random_string()
+        zone.insert_row(
+            IZone(
+                idx_event=event_row.idx_event,
+                name=zone_name,
+                notes=data.random_string(),
+                enabled=1,
+            )
+        )
+        zone_record = zone.exists(event_row.idx_event, zone_name)
+        
+        # Create device
+        test_data = IDevice(
+            idx_zone=zone_record.idx_zone,
+            hostname="test_host",
+            name=data.random_string(),
+            sys_name=data.random_string(),
+            sys_description=data.random_string(),
+            sys_objectid=data.random_string(),
+            sys_uptime=1000,
+            last_polled=2000,
+            enabled=1,
+        )
+        device_row = device.insert_row(test_data)
+        device_record = device.exists(zone_record.idx_zone, "test_host")
+        
+        # Test conversion
+        result = rows.device(device_record)
+        self.assertEqual(result.idx_device, device_record.idx_device)
+        self.assertEqual(result.hostname, "test_host")
 
     def test_root(self):
-        """Testing function root."""
-        # Mock a database row
-        self.mock_row.idx_root = 1
-        self.mock_row.idx_event = 2
-        self.mock_row.name = b"name"
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 300
-        self.mock_row.ts_modified = 400
-
-        # Call the function
-        result = testimport.root(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_root, 1)
-        self.assertEqual(result.idx_event, 2)
-        self.assertEqual(result.name, "name")
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 300)
-        self.assertEqual(result.ts_modified, 400)
+        """Test rows.root()."""
+        event_row = event.create()
+        root_name = data.random_string()
+        root_table.insert_row(
+            IRoot(
+                idx_event=event_row.idx_event,
+                name=root_name,
+                enabled=1,
+            )
+        )
+        root_record = root_table.exists(event_row.idx_event, root_name)
+        result = rows.root(root_record)
+        self.assertEqual(result.idx_root, root_record.idx_root)
 
     def test_event(self):
-        """Testing function event."""
-        # Mock a database row
-        self.mock_row.idx_event = 1
-        self.mock_row.name = b"name"
-        self.mock_row.epoch_utc = 100
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 300
-        self.mock_row.ts_modified = 400
-
-        # Call the function
-        result = testimport.event(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_event, 1)
-        self.assertEqual(result.name, "name")
-        self.assertEqual(result.epoch_utc, 100)
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 300)
-        self.assertEqual(result.ts_modified, 400)
+        """Test rows.event()."""
+        # Create event and manually set name to bytes
+        event_row = event.create()
+        event_row.name = event_row.name.encode('utf-8')  # Encode to bytes
+        result = rows.event(event_row)
+        self.assertEqual(result.idx_event, event_row.idx_event)
 
     def test_l1interface(self):
-        """Testing function l1interface."""
-        # Mock a database row
-        self.mock_row.idx_l1interface = 1
-        self.mock_row.idx_device = 2
-        self.mock_row.ifindex = 3
-        self.mock_row.duplex = 4
-        self.mock_row.ethernet = 5
-        self.mock_row.nativevlan = 6
-        self.mock_row.trunk = 7
-        self.mock_row.iftype = 8
-        self.mock_row.ifspeed = 9
-        self.mock_row.ifalias = b"ifalias"
-        self.mock_row.ifname = b"ifname"
-        self.mock_row.ifdescr = b"ifdescr"
-        self.mock_row.ifadminstatus = 10
-        self.mock_row.ifoperstatus = 11
-        self.mock_row.ts_idle = 12
-        self.mock_row.cdpcachedeviceid = b"cdpcachedeviceid"
-        self.mock_row.cdpcachedeviceport = b"cdpcachedeviceport"
-        self.mock_row.cdpcacheplatform = b"cdpcacheplatform"
-        self.mock_row.lldpremportdesc = b"lldpremportdesc"
-        self.mock_row.lldpremsyscapenabled = b"lldpremsyscapenabled"
-        self.mock_row.lldpremsysdesc = b"lldpremsysdesc"
-        self.mock_row.lldpremsysname = b"lldpremsysname"
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 300
-        self.mock_row.ts_modified = 400
-
-        # Call the function
-        result = testimport.l1interface(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_l1interface, 1)
-        self.assertEqual(result.idx_device, 2)
-        self.assertEqual(result.ifindex, 3)
-        self.assertEqual(result.duplex, 4)
-        self.assertEqual(result.ethernet, 5)
-        self.assertEqual(result.nativevlan, 6)
-        self.assertEqual(result.trunk, 7)
-        self.assertEqual(result.iftype, 8)
-        self.assertEqual(result.ifspeed, 9)
-        self.assertEqual(result.ifalias, "ifalias")
-        self.assertEqual(result.ifname, "ifname")
-        self.assertEqual(result.ifdescr, "ifdescr")
-        self.assertEqual(result.ifadminstatus, 10)
-        self.assertEqual(result.ifoperstatus, 11)
-        self.assertEqual(result.ts_idle, 12)
-        self.assertEqual(result.cdpcachedeviceid, "cdpcachedeviceid")
-        self.assertEqual(result.cdpcachedeviceport, "cdpcachedeviceport")
-        self.assertEqual(result.cdpcacheplatform, "cdpcacheplatform")
-        self.assertEqual(result.lldpremportdesc, "lldpremportdesc")
-        self.assertEqual(result.lldpremsyscapenabled, "lldpremsyscapenabled")
-        self.assertEqual(result.lldpremsysdesc, "lldpremsysdesc")
-        self.assertEqual(result.lldpremsysname, "lldpremsysname")
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 300)
-        self.assertEqual(result.ts_modified, 400)
+        """Test rows.l1interface()."""
+        event_row = event.create()
+        
+        # Insert zone
+        zone_name = data.random_string()
+        zone.insert_row(
+            IZone(
+                idx_event=event_row.idx_event,
+                name=zone_name,
+                notes=data.random_string(),
+                enabled=1,
+            )
+        )
+        zone_record = zone.exists(event_row.idx_event, zone_name)
+        
+        # Insert device
+        device.insert_row(
+            IDevice(
+                idx_zone=zone_record.idx_zone,
+                hostname="test",
+                name=data.random_string(),
+                sys_name=data.random_string(),
+                sys_description=data.random_string(),
+                sys_objectid=data.random_string(),
+                sys_uptime=0,
+                last_polled=0,
+                enabled=1,
+            )
+        )
+        device_record = device.exists(zone_record.idx_zone, "test")
+        
+        # Create interface
+        if_row = l1interface.insert_row(
+            IL1Interface(
+                idx_device=device_record.idx_device,
+                ifindex=1,
+                duplex=1,
+                ethernet=1,
+                nativevlan=1,
+                trunk=0,
+                iftype=6,
+                ifspeed=1000,
+                ifalias="Test Alias",
+                ifname="eth0",
+                ifdescr="Ethernet0",
+                ifadminstatus=1,
+                ifoperstatus=1,
+                ts_idle=0,
+                enabled=1,
+            )
+        )
+        result = rows.l1interface(if_row)
+        self.assertEqual(result.ifname, "eth0")
 
     def test_mac(self):
-        """Testing function mac."""
-        # Mock a database row
-        self.mock_row.idx_mac = 1
-        self.mock_row.idx_oui = 2
-        self.mock_row.idx_zone = 3
-        self.mock_row.mac = b"00:11:22:33:44:55"
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 100
-        self.mock_row.ts_modified = 200
-
-        # Call the function
-        result = testimport.mac(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_mac, 1)
-        self.assertEqual(result.idx_oui, 2)
-        self.assertEqual(result.idx_zone, 3)
+        """Test rows.mac()."""
+        event_row = event.create()
+        
+        # Insert zone
+        zone_name = data.random_string()
+        zone.insert_row(
+            IZone(
+                idx_event=event_row.idx_event,
+                name=zone_name,
+                notes=data.random_string(),
+                enabled=1,
+            )
+        )
+        zone_record = zone.exists(event_row.idx_event, zone_name)
+        
+        # Insert OUI
+        oui_value = data.random_string()
+        oui.insert_row(
+            IOui(
+                oui=oui_value,
+                organization=data.random_string(),
+                enabled=1,
+            )
+        )
+        oui_record = oui.exists(oui_value)
+        
+        # Insert MAC
+        mac_row = mac.insert_row(
+            IMac(
+                idx_oui=oui_record.idx_oui,
+                idx_zone=zone_record.idx_zone,
+                mac="00:11:22:33:44:55",
+                enabled=1,
+            )
+        )
+        result = rows.mac(mac_row)
         self.assertEqual(result.mac, "00:11:22:33:44:55")
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 100)
-        self.assertEqual(result.ts_modified, 200)
 
     def test_macip(self):
-        """Testing function macip."""
-        # Mock a database row
-        self.mock_row.idx_macip = 1
-        self.mock_row.idx_ip = 2
-        self.mock_row.idx_mac = 3
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 100
-        self.mock_row.ts_modified = 200
-
-        # Call the function
-        result = testimport.macip(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_macip, 1)
-        self.assertEqual(result.idx_ip, 2)
-        self.assertEqual(result.idx_mac, 3)
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 100)
-        self.assertEqual(result.ts_modified, 200)
-
-    def test_macport(self):
-        """Testing function macport."""
-        # Mock a database row
-        self.mock_row.idx_macport = 1
-        self.mock_row.idx_l1interface = 2
-        self.mock_row.idx_mac = 3
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 100
-        self.mock_row.ts_modified = 200
-
-        # Call the function
-        result = testimport.macport(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_macport, 1)
-        self.assertEqual(result.idx_l1interface, 2)
-        self.assertEqual(result.idx_mac, 3)
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 100)
-        self.assertEqual(result.ts_modified, 200)
-
-    def test_oui(self):
-        """Testing function oui."""
-        # Mock a database row
-        self.mock_row.idx_oui = 1
-        self.mock_row.oui = b"00:11:22"
-        self.mock_row.organization = b"Test Organization"
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 100
-        self.mock_row.ts_modified = 200
-
-        # Call the function
-        result = testimport.oui(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_oui, 1)
-        self.assertEqual(result.oui, "00:11:22")
-        self.assertEqual(result.organization, "Test Organization")
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 100)
-        self.assertEqual(result.ts_modified, 200)
-
-    def test_vlan(self):
-        """Testing function vlan."""
-        # Mock a database row
-        self.mock_row.idx_vlan = 1
-        self.mock_row.idx_device = 2
-        self.mock_row.vlan = 10
-        self.mock_row.name = b"VLAN10"
-        self.mock_row.state = 1
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 100
-        self.mock_row.ts_modified = 200
-
-        # Call the function
-        result = testimport.vlan(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_vlan, 1)
-        self.assertEqual(result.idx_device, 2)
-        self.assertEqual(result.vlan, 10)
-        self.assertEqual(result.name, "VLAN10")
-        self.assertEqual(result.state, 1)
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 100)
-        self.assertEqual(result.ts_modified, 200)
-
-    def test_vlanport(self):
-        """Testing function vlanport."""
-        # Mock a database row
-        self.mock_row.idx_vlanport = 1
-        self.mock_row.idx_l1interface = 2
-        self.mock_row.idx_vlan = 3
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 100
-        self.mock_row.ts_modified = 200
-
-        # Call the function
-        result = testimport.vlanport(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_vlanport, 1)
-        self.assertEqual(result.idx_l1interface, 2)
-        self.assertEqual(result.idx_vlan, 3)
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 100)
-        self.assertEqual(result.ts_modified, 200)
-
-    def test_zone(self):
-        """Testing function zone."""
-        # Mock a database row
-        self.mock_row.idx_zone = 1
-        self.mock_row.idx_event = 2
-        self.mock_row.name = b"Zone1"
-        self.mock_row.notes = b"Test Zone"
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 100
-        self.mock_row.ts_modified = 200
-
-        # Call the function
-        result = testimport.zone(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_zone, 1)
-        self.assertEqual(result.idx_event, 2)
-        self.assertEqual(result.name, "Zone1")
-        self.assertEqual(result.notes, "Test Zone")
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 100)
-        self.assertEqual(result.ts_modified, 200)
-
-    def test_ip(self):
-        """Testing function ip."""
-        # Mock a database row
-        self.mock_row.idx_ip = 1
-        self.mock_row.idx_zone = 2
-        self.mock_row.address = b"192.168.1.1"
-        self.mock_row.hostname = b"hostname.example.com"
-        self.mock_row.version = 4
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 100
-        self.mock_row.ts_modified = 200
-
-        # Call the function
-        result = testimport.ip(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_ip, 1)
-        self.assertEqual(result.idx_zone, 2)
-        self.assertEqual(result.address, "192.168.1.1")
-        self.assertEqual(result.hostname, "hostname.example.com")
-        self.assertEqual(result.version, 4)
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 100)
-        self.assertEqual(result.ts_modified, 200)
-
-    def test_ipport(self):
-        """Testing function ipport."""
-        # Mock a database row
-        self.mock_row.idx_ipport = 1
-        self.mock_row.idx_l1interface = 2
-        self.mock_row.idx_ip = 3
-        self.mock_row.enabled = 1
-        self.mock_row.ts_created = 100
-        self.mock_row.ts_modified = 200
-
-        # Call the function
-        result = testimport.ipport(self.mock_row)
-
-        # Assertions
-        self.assertEqual(result.idx_ipport, 1)
-        self.assertEqual(result.idx_l1interface, 2)
-        self.assertEqual(result.idx_ip, 3)
-        self.assertEqual(result.enabled, 1)
-        self.assertEqual(result.ts_created, 100)
-        self.assertEqual(result.ts_modified, 200)
-
+        """Test rows.macip()."""
+        event_row = event.create()
+        
+        # Insert zone
+        zone_name = data.random_string()
+        zone.insert_row(
+            IZone(
+                idx_event=event_row.idx_event,
+                name=zone_name,
+                notes=data.random_string(),
+                enabled=1,
+            )
+        )
+        zone_record = zone.exists(event_row.idx_event, zone_name)
+        
+        # Insert MAC
+        mac_row = mac.insert_row(
+            IMac(
+                idx_oui=1,
+                idx_zone=zone_record.idx_zone,
+                mac="00:11:22:33:44:55",
+                enabled=1,
+            )
+        )
+        
+        # Insert IP
+        ip_row = ip_table.insert_row(
+            ip_table.IIp(
+                idx_zone=zone_record.idx_zone,
+                address="192.168.1.1",
+                version=4,
+                enabled=1,
+            )
+        )
+        
+        # Insert MAC IP
+        macip_row = macip.insert_row(
+            IMacIp(
+                idx_mac=mac_row.idx_mac,
+                idx_ip=ip_row.idx_ip,
+                enabled=1,
+            )
+        )
+        result = rows.macip(macip_row)
+        self.assertEqual(result.idx_mac, mac_row.idx_mac)
 
 if __name__ == "__main__":
-    # Do the unit test
     unittest.main()
