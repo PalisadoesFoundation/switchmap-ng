@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Test the files module."""
+"""Test the general module."""
 
 import unittest
+import random
 import os
-import tempfile
-import shutil
 import sys
+import string
+import tempfile
 import yaml
+import shutil
 
 
 # Try to create a working PYTHONPATH
@@ -35,282 +37,549 @@ else:
     )
     sys.exit(2)
 
+
+# Create the necessary configuration to load the module
 from tests.testlib_ import setup
 
 CONFIG = setup.config()
 CONFIG.save()
 
 
+# Import switchmap libraries
 from switchmap.core import files
 
 
-class TestMoveYamlFiles(unittest.TestCase):
-    """Test the move_yaml_files function."""
+class TestFiles(unittest.TestCase):
+    """Test all the files module."""
+
+    #########################################################################
+    # General object setup
+    #########################################################################
+
+    # Required
+    maxDiff = None
+
+    random_string = ''.join(
+        [random.choice(string.ascii_letters + string.digits) for n in range(9)]
+    )
+
+    @classmethod
+    def setUpClass(cls):
+        """Execute these steps before starting tests."""
+        # Load the configuration in case it's been deleted after loading the
+        # configuration above.
+        config = setup.config()
+        config.save()
+
+        # Create temporary test directory that persists for all tests
+        cls.class_temp_dir = tempfile.mkdtemp()
+
+    @classmethod
+    def tearDownClass(cls):
+        """Execute these steps when all tests are completed."""
+        # Remove the temporary directory and its contents
+        shutil.rmtree(cls.class_temp_dir)
+        
+        # Cleanup config
+        CONFIG.cleanup()
 
     def setUp(self):
-        """Set up the test environment before each test."""
-        # Create temporary source and destination directories
-        self.src_dir = tempfile.mkdtemp()
-        self.dst_dir = tempfile.mkdtemp()
+        """Setup the test case."""
+        # Create a temporary directory for each test
+        self.temp_dir = tempfile.mkdtemp()
         
-        # Create test YAML files in source directory
-        self.yaml_files = ['test1.yaml', 'test2.yaml', 'config.yaml']
-        self.non_yaml_files = ['test.txt', 'test.json', 'data.csv']
+        # Setup the configuration
+        self.config = CONFIG
         
-        # Create YAML files
-        for filename in self.yaml_files:
-            filepath = os.path.join(self.src_dir, filename)
-            with open(filepath, 'w') as f:
-                f.write('key: value\n')
-                
-        # Create non-YAML files
-        for filename in self.non_yaml_files:
-            filepath = os.path.join(self.src_dir, filename)
-            with open(filepath, 'w') as f:
-                f.write('test content\n')
+        # Create test directories
+        self.system_dir = os.path.join(self.temp_dir, 'system')
+        self.daemon_dir = os.path.join(self.temp_dir, 'daemon')
+        
+        # Mock the config methods
+        self.config.system_directory = lambda: self.system_dir
+        self.config.daemon_directory = lambda: self.daemon_dir
 
     def tearDown(self):
-        """Clean up the test environment after each test."""
-        # Remove temporary directories and their contents
-        shutil.rmtree(self.src_dir)
-        shutil.rmtree(self.dst_dir)
+        """Cleanup after each test."""
+        # Remove the temporary directory and its contents
+        shutil.rmtree(self.temp_dir)
 
     def test_move_yaml_files(self):
-        """Test moving YAML files from source to destination directory."""
-        # Execute the function
-        files.move_yaml_files(self.src_dir, self.dst_dir)
-        
-        # Check that YAML files were moved to destination
-        for filename in self.yaml_files:
-            src_path = os.path.join(self.src_dir, filename)
-            dst_path = os.path.join(self.dst_dir, filename)
-            
-            # YAML file should not exist in source
-            self.assertFalse(
-                os.path.exists(src_path),
-                f"YAML file {filename} still exists in source directory"
-            )
-            
-            # YAML file should exist in destination
-            self.assertTrue(
-                os.path.exists(dst_path),
-                f"YAML file {filename} not found in destination directory"
-            )
-        
-        # Check that non-YAML files remain in source
-        for filename in self.non_yaml_files:
-            src_path = os.path.join(self.src_dir, filename)
-            dst_path = os.path.join(self.dst_dir, filename)
-            
-            # Non-YAML file should still exist in source
-            self.assertTrue(
-                os.path.exists(src_path),
-                f"Non-YAML file {filename} missing from source directory"
-            )
-            
-            # Non-YAML file should not exist in destination
-            self.assertFalse(
-                os.path.exists(dst_path),
-                f"Non-YAML file {filename} found in destination directory"
-            )
+        """Test moving YAML files between directories."""
+        # Create source and destination directories
+        src_dir = os.path.join(self.temp_dir, 'source')
+        dst_dir = os.path.join(self.temp_dir, 'destination')
+        os.makedirs(src_dir)
+        os.makedirs(dst_dir)
 
-    def test_move_yaml_files_empty_source(self):
-        """Test moving YAML files from an empty source directory."""
-        # Create new empty source directory
-        empty_src = tempfile.mkdtemp()
-        
-        # Execute the function
-        files.move_yaml_files(empty_src, self.dst_dir)
-        
-        # Verify destination directory is empty
-        self.assertEqual(
-            len(os.listdir(self.dst_dir)),
-            0,
-            "Destination directory should be empty"
-        )
-        
-        # Cleanup
-        shutil.rmtree(empty_src)
-
-    def test_move_yaml_files_no_yaml(self):
-        """Test moving YAML files when source has no YAML files."""
-        # Create directory with only non-YAML files
-        no_yaml_src = tempfile.mkdtemp()
-        
-        # Create some non-YAML files
-        for filename in ['test.txt', 'data.json']:
-            filepath = os.path.join(no_yaml_src, filename)
-            with open(filepath, 'w') as f:
-                f.write('test content\n')
-        
-        # Execute the function
-        files.move_yaml_files(no_yaml_src, self.dst_dir)
-        
-        # Verify destination directory is empty
-        self.assertEqual(
-            len(os.listdir(self.dst_dir)),
-            0,
-            "Destination directory should be empty"
-        )
-        
-        # Verify source files weren't moved
-        self.assertEqual(
-            len(os.listdir(no_yaml_src)),
-            2,
-            "Source directory should still contain its files"
-        )
-        
-        # Cleanup
-        shutil.rmtree(no_yaml_src)
-
-
-
-class TestYamlReading(unittest.TestCase):
-    """Test the YAML file reading functions."""
-
-    def setUp(self):
-        """Set up the test environment before each test."""
-        # Create temporary test directory
-        self.test_dir = tempfile.mkdtemp()
-        self.test_dir_2 = tempfile.mkdtemp()
-        
-        # Sample YAML contents
-        self.yaml_content1 = {
-            'server': {
-                'host': 'localhost',
-                'port': 8080
-            },
-            'database': {
-                'name': 'testdb',
-                'user': 'admin'
-            }
-        }
-        
-        self.yaml_content2 = {
-            'logging': {
-                'level': 'INFO',
-                'file': '/var/log/app.log'
-            },
-            'cache': {
-                'enabled': True,
-                'timeout': 300
-            }
-        }
-        
         # Create test YAML files
-        self.yaml_file1 = os.path.join(self.test_dir, 'config1.yaml')
-        with open(self.yaml_file1, 'w') as f:
-            yaml.dump(self.yaml_content1, f)
-            
-        self.yaml_file2 = os.path.join(self.test_dir, 'config2.yaml')
-        with open(self.yaml_file2, 'w') as f:
-            yaml.dump(self.yaml_content2, f)
+        test_files = {
+            'test1.yaml': {'key1': 'value1'},
+            'test2.yaml': {'key2': 'value2'},
+            'not_yaml.txt': 'not a yaml file'
+        }
 
-    def tearDown(self):
-        """Clean up the test environment after each test."""
-        # Remove temporary directories and their contents
-        shutil.rmtree(self.test_dir)
-        shutil.rmtree(self.test_dir_2)
+        # Create the test files in source directory
+        for filename, content in test_files.items():
+            filepath = os.path.join(src_dir, filename)
+            with open(filepath, 'w') as f:
+                if filename.endswith('.yaml'):
+                    yaml.dump(content, f)
+                else:
+                    f.write(content)
 
-    def test_read_yaml_file_as_dict(self):
-        """Test reading a single YAML file as dictionary."""
-        # Test reading valid YAML file
-        result = files.read_yaml_file(self.yaml_file1)
-        self.assertEqual(result, self.yaml_content1)
-        
-        # Verify the structure
-        self.assertIn('server', result)
-        self.assertIn('database', result)
-        self.assertEqual(result['server']['port'], 8080)
+        # Move YAML files
+        files.move_yaml_files(src_dir, dst_dir)
 
-    def test_read_yaml_file_as_string(self):
-        """Test reading a single YAML file as string."""
-        result = files.read_yaml_file(self.yaml_file1, as_string=True)
-        self.assertIsInstance(result, str)
-        
-        # Verify content can be parsed back to original dict
-        parsed_result = yaml.safe_load(result)
-        self.assertEqual(parsed_result, self.yaml_content1)
+        # Verify YAML files were moved
+        src_files = os.listdir(src_dir)
+        dst_files = os.listdir(dst_dir)
 
-    def test_read_yaml_file_nonexistent(self):
-        """Test reading a non-existent YAML file."""
-        nonexistent_file = os.path.join(self.test_dir, 'nonexistent.yaml')
+        # Only non-YAML files should remain in source
+        self.assertEqual(src_files, ['not_yaml.txt'])
         
-        # Test with die=False
-        result = files.read_yaml_file(nonexistent_file, die=False)
-        self.assertEqual(result, {})
-        
-        # Test with die=True
-        with self.assertRaises(SystemExit):
-            files.read_yaml_file(nonexistent_file, die=True)
+        # Only YAML files should be in destination
+        self.assertEqual(sorted(dst_files), ['test1.yaml', 'test2.yaml'])
 
-    def test_read_yaml_file_invalid_extension(self):
-        """Test reading a file with invalid extension."""
-        # Create a text file
-        invalid_file = os.path.join(self.test_dir, 'config.txt')
-        with open(invalid_file, 'w') as f:
-            f.write('invalid: yaml: content')
-        
-        # Test with die=False
-        result = files.read_yaml_file(invalid_file, die=False)
-        self.assertEqual(result, {})
-        
-        # Test with die=True
-        with self.assertRaises(SystemExit):
-            files.read_yaml_file(invalid_file, die=True)
+        # Verify content of moved files
+        for yaml_file in ['test1.yaml', 'test2.yaml']:
+            with open(os.path.join(dst_dir, yaml_file), 'r') as f:
+                content = yaml.safe_load(f)
+                self.assertEqual(content, test_files[yaml_file])
 
-    def test_read_yaml_files_multiple_directories(self):
-        """Test reading YAML files from multiple directories."""
-        # Create additional YAML file in second directory
-        yaml_file3 = os.path.join(self.test_dir_2, 'config3.yaml')
-        yaml_content3 = {'api': {'key': 'secret', 'timeout': 60}}
-        with open(yaml_file3, 'w') as f:
+    def test_read_yaml_files(self):
+        """Test reading multiple YAML files from directories."""
+        # Create test directories
+        dir1 = os.path.join(self.temp_dir, 'config1')
+        dir2 = os.path.join(self.temp_dir, 'config2')
+        os.makedirs(dir1)
+        os.makedirs(dir2)
+
+        # Create test YAML files in first directory
+        yaml_content1 = {
+            'server': {'host': 'localhost', 'port': 8080},
+            'database': {'name': 'testdb', 'user': 'admin'}
+        }
+        yaml_content2 = {
+            'logging': {'level': 'INFO', 'file': 'app.log'},
+            'cache': {'enabled': True, 'timeout': 300}
+        }
+        
+        with open(os.path.join(dir1, 'config1.yaml'), 'w') as f:
+            yaml.dump(yaml_content1, f)
+        with open(os.path.join(dir1, 'config2.yaml'), 'w') as f:
+            yaml.dump(yaml_content2, f)
+
+        # Create test YAML file in second directory
+        yaml_content3 = {
+            'security': {'ssl': True, 'key_file': 'server.key'},
+            'api': {'version': '1.0', 'endpoints': ['/v1', '/v2']}
+        }
+        with open(os.path.join(dir2, 'config3.yaml'), 'w') as f:
             yaml.dump(yaml_content3, f)
-        
-        # Read from both directories
-        result = files.read_yaml_files([self.test_dir, self.test_dir_2])
-        
-        # Verify all content is merged
+
+        # Test reading from both directories
+        directories = [dir1, dir2]
+        result = files.read_yaml_files(directories)
+
+        # Verify all content was merged correctly
         self.assertIn('server', result)
         self.assertIn('logging', result)
-        self.assertIn('api', result)
+        self.assertIn('security', result)
+        self.assertEqual(result['server']['host'], 'localhost')
+        self.assertEqual(result['logging']['level'], 'INFO')
+        self.assertEqual(result['security']['ssl'], True)
 
-    def test_read_yaml_files_empty_directory(self):
-        """Test reading from directory with no YAML files."""
-        empty_dir = tempfile.mkdtemp()
-        
-        # Should raise exception when no YAML files found
+        # Test with non-existent directory
+        with self.assertRaises(SystemExit):
+            files.read_yaml_files(['/nonexistent/directory'])
+
+        # Test with directory containing no YAML files
+        empty_dir = os.path.join(self.temp_dir, 'empty')
+        os.makedirs(empty_dir)
         with self.assertRaises(SystemExit):
             files.read_yaml_files([empty_dir])
-        
-        # Cleanup
-        shutil.rmtree(empty_dir)
 
-    def test_read_yaml_files_invalid_directory(self):
-        """Test reading from non-existent directory."""
-        invalid_dir = '/nonexistent/directory'
+        # Test with mixed valid and non-YAML files
+        mixed_dir = os.path.join(self.temp_dir, 'mixed')
+        os.makedirs(mixed_dir)
+        with open(os.path.join(mixed_dir, 'config.yaml'), 'w') as f:
+            yaml.dump({'key': 'value'}, f)
+        with open(os.path.join(mixed_dir, 'not_yaml.txt'), 'w') as f:
+            f.write('plain text')
         
-        # Should raise exception for invalid directory
+        result = files.read_yaml_files([mixed_dir])
+        self.assertIn('key', result)
+
+    def test_read_yaml_file(self):
+        """Test reading YAML file as dictionary."""
+        # Create test YAML file with various data types
+        test_data = {
+            'string': 'value',
+            'integer': 42,
+            'float': 3.14,
+            'boolean': True,
+            'list': [1, 2, 3],
+            'dict': {'nested': 'value'},
+            'null': None
+        }
+        
+        filepath = os.path.join(self.temp_dir, 'test.yaml')
+        with open(filepath, 'w') as f:
+            yaml.dump(test_data, f)
+
+        # Test reading as dictionary
+        result = files.read_yaml_file(filepath)
+        self.assertEqual(result, test_data)
+        
+        # Test with non-existent file
         with self.assertRaises(SystemExit):
-            files.read_yaml_files([invalid_dir])
+            files.read_yaml_file('nonexistent.yaml')
 
-    def test_read_yaml_file_invalid_content(self):
-        """Test reading YAML file with invalid content."""
-        # Create YAML file with invalid content
-        invalid_yaml = os.path.join(self.test_dir, 'invalid.yaml')
-        with open(invalid_yaml, 'w') as f:
-            f.write('invalid: : yaml: content')
+        # Test with invalid YAML syntax
+        invalid_filepath = os.path.join(self.temp_dir, 'invalid.yaml')
+        with open(invalid_filepath, 'w') as f:
+            f.write('invalid: yaml: [}}')
         
-        # Test with die=False
-        result = files.read_yaml_file(invalid_yaml, die=False)
-        self.assertEqual(result, {})
-        
-        # Test with die=True
         with self.assertRaises(SystemExit):
-            files.read_yaml_file(invalid_yaml, die=True)
+            files.read_yaml_file(invalid_filepath)
 
+
+    def test_mkdir(self):
+        """Test directory creation function."""
+        # Test 1: Create new directory
+        new_dir = os.path.join(self.temp_dir, 'new_directory')
+        files.mkdir(new_dir)
+        self.assertTrue(os.path.isdir(new_dir))
+        
+        # Verify permissions (mode 0o775)
+        stats = os.stat(new_dir)
+        self.assertEqual(stats.st_mode & 0o777, 0o775)
+
+        # Test 2: Create nested directory
+        nested_dir = os.path.join(self.temp_dir, 'parent', 'child', 'grandchild')
+        files.mkdir(nested_dir)
+        self.assertTrue(os.path.isdir(nested_dir))
+
+        # Test 3: Create existing directory (should not raise error)
+        files.mkdir(new_dir)
+        self.assertTrue(os.path.isdir(new_dir))
+
+        # Test 4: Try to create directory in read-only location (if not root)
+        if os.getuid() != 0:
+            with self.assertRaises(SystemExit):
+                files.mkdir('/root/test_dir')
+
+        # Test 5: Try to create directory when a file exists with same name
+        file_path = os.path.join(self.temp_dir, 'file_exists')
+        with open(file_path, 'w') as f:
+            f.write('test')
+            
+        with self.assertRaises(SystemExit):
+            files.mkdir(file_path)
+    
+    def test_pid_file(self):
+        """Test pid_file function behavior."""
+        # Test with string agent name
+        agent_name = "test_agent"
+        expected = os.path.join(self.daemon_dir, "pid", "test_agent.pid")
+        result = files.pid_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+        
+        # Test with lowercase conversion
+        agent_name = "TestAgent"
+        expected = os.path.join(self.daemon_dir, "pid", "testagent.pid")
+        result = files.pid_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+        
+        # Test with numeric agent name
+        agent_name = 123
+        expected = os.path.join(self.daemon_dir, "pid", "123.pid")
+        result = files.pid_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+        
+        # Verify directory creation
+        self.assertTrue(os.path.isdir(os.path.dirname(result)))
+        
+        # Test with special characters
+        agent_name = "test-agent_123"
+        expected = os.path.join(self.daemon_dir, "pid", "test-agent_123.pid")
+        result = files.pid_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+
+    def test_lock_file(self):
+        """Test lock_file function behavior."""
+        # Test with string agent name
+        agent_name = "test_agent"
+        expected = os.path.join(self.daemon_dir, "lock", "test_agent.lock")
+        result = files.lock_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+        
+        # Test with lowercase conversion
+        agent_name = "TestAgent"
+        expected = os.path.join(self.daemon_dir, "lock", "testagent.lock")
+        result = files.lock_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+        
+        # Test with numeric agent name
+        agent_name = 123
+        expected = os.path.join(self.daemon_dir, "lock", "123.lock")
+        result = files.lock_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+        
+        # Verify directory creation
+        self.assertTrue(os.path.isdir(os.path.dirname(result)))
+        
+        # Test with empty string
+        agent_name = ""
+        expected = os.path.join(self.daemon_dir, "lock", ".lock")
+        result = files.lock_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+
+    def test_skip_file(self):
+        """Test skip_file function behavior."""
+        # Test with string agent name
+        agent_name = "test_agent"
+        expected = os.path.join(self.daemon_dir, "lock", "test_agent.skip")
+        result = files.skip_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+        
+        # Test with lowercase conversion
+        agent_name = "TestAgent"
+        expected = os.path.join(self.daemon_dir, "lock", "testagent.skip")
+        result = files.skip_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+        
+        # Test with numeric agent name
+        agent_name = 123
+        expected = os.path.join(self.daemon_dir, "lock", "123.skip")
+        result = files.skip_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+        
+        # Verify directory creation
+        self.assertTrue(os.path.isdir(os.path.dirname(result)))
+        
+        # Test with special characters and spaces
+        agent_name = "test agent-123_456"
+        expected = os.path.join(self.daemon_dir, "lock", "test agent-123_456.skip")
+        result = files.skip_file(agent_name, self.config)
+        self.assertEqual(result, expected)
+
+    def test_snmp_file(self):
+        """Test snmp_file function behavior."""
+        # Test with basic hostname
+        hostname = "test-host"
+        expected = os.path.join(self.system_dir, "snmp", "test-host.snmp")
+        result = files.snmp_file(hostname, self.config)
+        self.assertEqual(result, expected)
+        
+        # Test with FQDN
+        hostname = "test-host.example.com"
+        expected = os.path.join(self.system_dir, "snmp", "test-host.example.com.snmp")
+        result = files.snmp_file(hostname, self.config)
+        self.assertEqual(result, expected)
+        
+        # Test with IP address format
+        hostname = "192.168.1.1"
+        expected = os.path.join(self.system_dir, "snmp", "192.168.1.1.snmp")
+        result = files.snmp_file(hostname, self.config)
+        self.assertEqual(result, expected)
+        
+        # Verify directory creation
+        self.assertTrue(os.path.isdir(os.path.dirname(result)))
+        
+        # Test with uppercase hostname (should preserve case)
+        hostname = "TEST-HOST"
+        expected = os.path.join(self.system_dir, "snmp", "TEST-HOST.snmp")
+        result = files.snmp_file(hostname, self.config)
+        self.assertEqual(result, expected)
+
+    def test_file_permissions(self):
+        """Test file permissions for all file types."""
+        agent_name = "test_agent"
+        
+        # Test PID file permissions
+        pid_file_path = files.pid_file(agent_name, self.config)
+        with open(pid_file_path, 'w') as f:
+            f.write("test")
+        self.assertTrue(os.path.exists(pid_file_path))
+        stats = os.stat(pid_file_path)
+        self.assertEqual(stats.st_mode & 0o777, 0o664)  # Assuming default umask
+        
+        # Test Lock file permissions
+        lock_file_path = files.lock_file(agent_name, self.config)
+        with open(lock_file_path, 'w') as f:
+            f.write("test")
+        self.assertTrue(os.path.exists(lock_file_path))
+        stats = os.stat(lock_file_path)
+        self.assertEqual(stats.st_mode & 0o777, 0o664)  # Assuming default umask
+        
+        # Test Skip file permissions
+        skip_file_path = files.skip_file(agent_name, self.config)
+        with open(skip_file_path, 'w') as f:
+            f.write("test")
+        self.assertTrue(os.path.exists(skip_file_path))
+        stats = os.stat(skip_file_path)
+        self.assertEqual(stats.st_mode & 0o777, 0o664)  # Assuming default umask
+        
+        # Test SNMP file permissions
+        snmp_file_path = files.snmp_file("test-host", self.config)
+        with open(snmp_file_path, 'w') as f:
+            f.write("test")
+        self.assertTrue(os.path.exists(snmp_file_path))
+        stats = os.stat(snmp_file_path)
+        self.assertEqual(stats.st_mode & 0o777, 0o664)  # Assuming default umask
+
+    def test_file_directory_structure(self):
+        """Test the overall directory structure created by file operations."""
+        # Create files of each type
+        agent_name = "test_agent"
+        hostname = "test-host"
+        
+        pid_path = files.pid_file(agent_name, self.config)
+        lock_path = files.lock_file(agent_name, self.config)
+        skip_path = files.skip_file(agent_name, self.config)
+        snmp_path = files.snmp_file(hostname, self.config)
+        
+        # Verify directory structure
+        self.assertTrue(os.path.isdir(self.daemon_dir))
+        self.assertTrue(os.path.isdir(self.system_dir))
+        self.assertTrue(os.path.isdir(os.path.join(self.daemon_dir, "pid")))
+        self.assertTrue(os.path.isdir(os.path.join(self.daemon_dir, "lock")))
+        self.assertTrue(os.path.isdir(os.path.join(self.system_dir, "snmp")))
+        
+        # Verify directory permissions
+        for directory in [
+            self.daemon_dir,
+            self.system_dir,
+            os.path.join(self.daemon_dir, "pid"),
+            os.path.join(self.daemon_dir, "lock"),
+            os.path.join(self.system_dir, "snmp")
+        ]:
+            stats = os.stat(directory)
+            self.assertEqual(stats.st_mode & 0o777, 0o775)  # Verifying directory permissions
+    
+    def test_execute(self):
+        """Test the execute function for command execution."""
+        # Test successful command
+        command = "echo 'test message'"
+        result = files.execute(command)
+        self.assertEqual(result, 0)
+
+        # Test successful command with space in arguments
+        command = "echo 'test message with spaces'"
+        result = files.execute(command)
+        self.assertEqual(result, 0)
+
+        # Test failing command with die=False
+        command = "ls /nonexistent_directory"
+        result = files.execute(command, die=False)
+        self.assertNotEqual(result, 0)
+
+        # Test command with stdout
+        command = "echo 'test stdout'"
+        result = files.execute(command)
+        self.assertEqual(result, 0)
+
+        # Test command with stderr
+        command = "ls /nonexistent_directory 2>&1"
+        try:
+            result = files.execute(command, die=False)
+            self.assertNotEqual(result, 0)
+        except SystemExit:
+            pass
+
+        # Test invalid command
+        command = "invalid_command_123"
+        try:
+            result = files.execute(command, die=False)
+            self.assertNotEqual(result, 0)
+        except SystemExit:
+            pass
+
+        # Test command with multiple arguments
+        command = "ls -la /tmp"
+        result = files.execute(command)
+        self.assertEqual(result, 0)
+
+        # Test empty command
+        command = ""
+        try:
+            result = files.execute(command, die=False)
+            self.assertNotEqual(result, 0)
+        except (SystemExit, ValueError):
+            pass
+
+    def test_execute_with_output(self):
+        """Test the execute function output handling."""
+        # Create a temporary file for testing
+        test_file = os.path.join(self.temp_dir, "test.txt")
+        with open(test_file, "w") as f:
+            f.write("test content")
+
+        # Test command with both stdout and stderr
+        command = f"cat {test_file} && ls /nonexistent_directory"
+        try:
+            files.execute(command, die=False)
+        except SystemExit:
+            pass
+
+        # Test command with large output
+        large_text = "x" * 10000
+        command = f"echo '{large_text}'"
+        result = files.execute(command)
+        self.assertEqual(result, 0)
+
+        # Test command with special characters
+        command = "echo 'test@#$%^&*()'"
+        result = files.execute(command)
+        self.assertEqual(result, 0)
+
+        # Test command with environment variables
+        os.environ['TEST_VAR'] = 'test_value'
+        command = "echo $TEST_VAR"
+        result = files.execute(command)
+        self.assertEqual(result, 0)
+
+    def test_execute_error_handling(self):
+        """Test error handling in execute function."""
+        # Test with None command
+        with self.assertRaises((SystemExit, AttributeError, TypeError)):
+            files.execute(None)
+
+        # Test with integer command
+        with self.assertRaises((SystemExit, AttributeError, TypeError)):
+            files.execute(123)
+
+        # Test with very long command
+        long_command = "echo " + "x" * 10000
+        try:
+            files.execute(long_command, die=False)
+        except SystemExit:
+            pass
+
+        # Test with malformed command
+        command = "ls | | ls"
+        try:
+            files.execute(command, die=False)
+        except SystemExit:
+            pass
+
+    def test_config_filepath(self):
+        """Test the config_filepath function."""
+        # Get the result from the function
+        result = files.config_filepath()
+
+        # Basic assertions about the result
+        self.assertIsInstance(result, str)
+        self.assertTrue(result.endswith('config.yaml'))
+        self.assertTrue(os.sep in result)
+
+        # Test if the directory exists
+        directory = os.path.dirname(result)
+        self.assertTrue(os.path.exists(directory))
 
 
 if __name__ == '__main__':
+    # Do the unit test
     unittest.main()
-    
