@@ -74,6 +74,7 @@ def post(uri, data, config, server=True):
                 url
             )
             log.log2info(1038, log_message)
+            result = None  # Ensure result is defined
 
     # Define success
     if response is True:
