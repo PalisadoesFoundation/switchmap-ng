@@ -50,14 +50,7 @@ from switchmap.core import files
 
 
 class TestFiles(unittest.TestCase):
-    """Test suite for the files module, covering file operations, permissions, and command execution.
-
-    This test class validates:
-    - YAML file operations
-    - Directory creation and permissions
-    - PID, lock, skip, and SNMP file handling
-    - Command execution and error handling
-    """
+    """Test suite for the files module."""
 
     #########################################################################
     # General object setup
