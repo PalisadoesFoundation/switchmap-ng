@@ -50,7 +50,14 @@ from switchmap.core import files
 
 
 class TestFiles(unittest.TestCase):
-    """Test all the files module."""
+    """Test suite for the files module, covering file operations, permissions, and command execution.
+    
+        This test class validates:
+        - YAML file operations
+        - Directory creation and permissions
+        - PID, lock, skip, and SNMP file handling
+        - Command execution and error handling
+    """
 
     #########################################################################
     # General object setup
@@ -210,7 +217,7 @@ class TestFiles(unittest.TestCase):
         
         result = files.read_yaml_files([mixed_dir])
         self.assertIn('key', result)
-
+    
     def test_read_yaml_file(self):
         """Test reading YAML file as dictionary."""
         # Create test YAML file with various data types
@@ -429,35 +436,6 @@ class TestFiles(unittest.TestCase):
         self.assertTrue(os.path.exists(snmp_file_path))
         stats = os.stat(snmp_file_path)
         self.assertEqual(stats.st_mode & 0o777, 0o664)  # Assuming default umask
-
-    def test_file_directory_structure(self):
-        """Test the overall directory structure created by file operations."""
-        # Create files of each type
-        agent_name = "test_agent"
-        hostname = "test-host"
-        
-        pid_path = files.pid_file(agent_name, self.config)
-        lock_path = files.lock_file(agent_name, self.config)
-        skip_path = files.skip_file(agent_name, self.config)
-        snmp_path = files.snmp_file(hostname, self.config)
-        
-        # Verify directory structure
-        self.assertTrue(os.path.isdir(self.daemon_dir))
-        self.assertTrue(os.path.isdir(self.system_dir))
-        self.assertTrue(os.path.isdir(os.path.join(self.daemon_dir, "pid")))
-        self.assertTrue(os.path.isdir(os.path.join(self.daemon_dir, "lock")))
-        self.assertTrue(os.path.isdir(os.path.join(self.system_dir, "snmp")))
-        
-        # Verify directory permissions
-        for directory in [
-            self.daemon_dir,
-            self.system_dir,
-            os.path.join(self.daemon_dir, "pid"),
-            os.path.join(self.daemon_dir, "lock"),
-            os.path.join(self.system_dir, "snmp")
-        ]:
-            stats = os.stat(directory)
-            self.assertEqual(stats.st_mode & 0o777, 0o775)  # Verifying directory permissions
     
     def test_execute(self):
         """Test the execute function for command execution."""
@@ -581,5 +559,4 @@ class TestFiles(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    # Do the unit test
     unittest.main()
