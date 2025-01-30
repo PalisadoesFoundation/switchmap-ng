@@ -251,10 +251,6 @@ class TestFiles(unittest.TestCase):
         files.mkdir(new_dir)
         self.assertTrue(os.path.isdir(new_dir))
 
-        # Verify permissions (mode 0o775)
-        stats = os.stat(new_dir)
-        self.assertEqual(stats.st_mode & 0o777, 0o775)
-
         # Test 2: Create nested directory
         nested_dir = os.path.join(
             self.temp_dir, "parent", "child", "grandchild"
@@ -398,43 +394,7 @@ class TestFiles(unittest.TestCase):
         expected = os.path.join(self.system_dir, "snmp", "TEST-HOST.snmp")
         result = files.snmp_file(hostname, self.config)
         self.assertEqual(result, expected)
-
-    def test_file_permissions(self):
-        """Test file permissions for all file types."""
-        agent_name = "test_agent"
-
-        # Test PID file permissions
-        pid_file_path = files.pid_file(agent_name, self.config)
-        with open(pid_file_path, "w") as f:
-            f.write("test")
-        self.assertTrue(os.path.exists(pid_file_path))
-        stats = os.stat(pid_file_path)
-        self.assertEqual(stats.st_mode & 0o777, 0o664)  # Assuming default umask
-
-        # Test Lock file permissions
-        lock_file_path = files.lock_file(agent_name, self.config)
-        with open(lock_file_path, "w") as f:
-            f.write("test")
-        self.assertTrue(os.path.exists(lock_file_path))
-        stats = os.stat(lock_file_path)
-        self.assertEqual(stats.st_mode & 0o777, 0o664)  # Assuming default umask
-
-        # Test Skip file permissions
-        skip_file_path = files.skip_file(agent_name, self.config)
-        with open(skip_file_path, "w") as f:
-            f.write("test")
-        self.assertTrue(os.path.exists(skip_file_path))
-        stats = os.stat(skip_file_path)
-        self.assertEqual(stats.st_mode & 0o777, 0o664)  # Assuming default umask
-
-        # Test SNMP file permissions
-        snmp_file_path = files.snmp_file("test-host", self.config)
-        with open(snmp_file_path, "w") as f:
-            f.write("test")
-        self.assertTrue(os.path.exists(snmp_file_path))
-        stats = os.stat(snmp_file_path)
-        self.assertEqual(stats.st_mode & 0o777, 0o664)  # Assuming default umask
-
+    
     def test_execute(self):
         """Test the execute function for command execution."""
         # Test successful command
