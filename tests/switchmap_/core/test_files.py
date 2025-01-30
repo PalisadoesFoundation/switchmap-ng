@@ -394,7 +394,7 @@ class TestFiles(unittest.TestCase):
         expected = os.path.join(self.system_dir, "snmp", "TEST-HOST.snmp")
         result = files.snmp_file(hostname, self.config)
         self.assertEqual(result, expected)
-    
+
     def test_execute(self):
         """Test the execute function for command execution."""
         # Test successful command
