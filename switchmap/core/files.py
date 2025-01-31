@@ -4,6 +4,7 @@ import os
 import sys
 import subprocess
 import shutil
+import shlex
 
 # PIP imports
 import yaml
@@ -410,7 +411,7 @@ def execute(command, die=True):
     returncode = 1
 
     # Run update_targets script
-    do_command_list = list(command.split(" "))
+    do_command_list = shlex.split(command)
 
     # Create the subprocess object
     try:

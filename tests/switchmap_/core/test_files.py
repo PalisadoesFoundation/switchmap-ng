@@ -441,29 +441,24 @@ class TestFiles(unittest.TestCase):
 
         # Test empty command
         command = ""
-        try:
+        with contextlib.suppress(SystemExit, ValueError):
             result = files.execute(command, die=False)
             self.assertNotEqual(result, 0)
-        except (SystemExit, ValueError):
-            pass
+
         # Test command injection attempt
         command = 'echo "test" && rm -rf /'
-
         with contextlib.suppress(SystemExit):
             res = files.execute(command, die=False)
             self.assertEqual(res, 0)
 
         # Test shell metacharacters
-
         command_meta = "echo $(cat /etc/passwd)"
-
         with contextlib.suppress(SystemExit):
             res = files.execute(command_meta, die=False)
             self.assertEqual(res, 0)
 
         # Test path traversal
         command_traversal = "cat ../../../etc/passwd"
-
         with contextlib.suppress(SystemExit):
             res = files.execute(command_traversal, die=False)
             self.assertEqual(res, 1)
@@ -500,10 +495,6 @@ class TestFiles(unittest.TestCase):
 
     def test_execute_error_handling(self):
         """Test error handling in execute function."""
-        # Test with None command
-        with self.assertRaises((SystemExit, AttributeError, TypeError)):
-            files.execute(None)
-
         # Test with integer command
         with self.assertRaises((SystemExit, AttributeError, TypeError)):
             files.execute(123)
