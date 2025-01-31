@@ -446,34 +446,30 @@ class TestFiles(unittest.TestCase):
             self.assertNotEqual(result, 0)
         except (SystemExit, ValueError):
             pass
-        # Test command injection attempt 
+        # Test command injection attempt
         command = 'echo "test" && rm -rf /'
-        
+
         with contextlib.suppress(SystemExit):
             res = files.execute(command, die=False)
             self.assertEqual(res, 0)
-        
-        # Test shell metacharacters 
-         
-        command_meta = 'echo $(cat /etc/passwd)'
-        
+
+        # Test shell metacharacters
+
+        command_meta = "echo $(cat /etc/passwd)"
+
         with contextlib.suppress(SystemExit):
             res = files.execute(command_meta, die=False)
             self.assertEqual(res, 0)
-            
-        
+
         # Test path traversal
-        command_traversal = 'cat ../../../etc/passwd'
-        
+        command_traversal = "cat ../../../etc/passwd"
+
         with contextlib.suppress(SystemExit):
             res = files.execute(command_traversal, die=False)
-            self.assertEqual(res, 1)    
-            
-        
+            self.assertEqual(res, 1)
 
     def test_execute_with_output(self):
         """Test the execute function output handling."""
-        
         # Create a temporary file for testing
         test_file = os.path.join(self.temp_dir, "test.txt")
         with open(test_file, "w") as f:
@@ -481,10 +477,9 @@ class TestFiles(unittest.TestCase):
 
         # Test command with both stdout and stderr
         command = f"cat {test_file} && ls /nonexistent_directory"
-        
+
         with contextlib.suppress(SystemExit):
             files.execute(command, die=False)
-  
 
         # Test command with large output
         large_text = "x" * 10000
