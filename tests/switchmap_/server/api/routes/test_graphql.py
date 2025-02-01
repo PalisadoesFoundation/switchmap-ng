@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Unit tests for the GraphQL API routes in the switchmap-ng application.
 
-This module tests the functionality and behavior of the GraphQL routes for the
-API.
+This module tests the functionality and behavior of the GraphQL routes for
+the API.
 """
 
 import sys
@@ -32,7 +32,6 @@ class TestGraphQLRoutes(unittest.TestCase):
         """Test GraphQL route with an empty query."""
         mock_schema.return_value.execute.return_value = {"errors": ["Error"]}
         response = self.client.post("/graphql", json={"query": ""})
-        print(response.data)  # Debug statement
         self.assertEqual(response.status_code, 400)
 
     @patch("switchmap.server.api.routes.graphql.SCHEMA.graphql_schema")
@@ -42,7 +41,6 @@ class TestGraphQLRoutes(unittest.TestCase):
         response = self.client.post(
             "/graphql", data="invalid json", content_type="application/json"
         )
-        print(response.data)  # Debug statement
         self.assertEqual(response.status_code, 400)
 
     @patch("switchmap.server.api.routes.graphql.SCHEMA.graphql_schema")
@@ -52,7 +50,6 @@ class TestGraphQLRoutes(unittest.TestCase):
             "data": {"field": "value"}
         }
         response = self.client.post("/graphql", json={"query": "{ field }"})
-        print(response.data)  # Debug statement
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, {"data": {"field": "value"}})
 
@@ -65,7 +62,6 @@ class TestGraphQLRoutes(unittest.TestCase):
         response = self.client.post(
             "/graphql", json={"query": "mutation { mutateField }"}
         )
-        print(response.data)  # Debug statement
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json, {"data": {"mutateField": "mutatedValue"}}
@@ -79,7 +75,6 @@ class TestGraphQLRoutes(unittest.TestCase):
             "data": {f"field{i}": f"value{i}" for i in range(100)}
         }
         response = self.client.post("/graphql", json={"query": large_query})
-        print(response.data)  # Debug statement
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json,
@@ -94,7 +89,6 @@ class TestGraphQLRoutes(unittest.TestCase):
             "data": {"parent": {"child": {"field": "value"}}}
         }
         response = self.client.post("/graphql", json={"query": nested_query})
-        print(response.data)  # Debug statement
         self.assertEqual(response.status_code, 200)
         self.assertEqual(
             response.json, {"data": {"parent": {"child": {"field": "value"}}}}
