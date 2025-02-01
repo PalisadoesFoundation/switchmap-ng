@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""
-Unit tests for the GraphQL API routes in the switchmap-ng application.
+"""Unit tests for the GraphQL API routes in the switchmap-ng application.
 
-This module tests the functionality and behavior of the GraphQL routes for the API.
+This module tests the functionality and behavior of the GraphQL routes for the
+API.
 """
 
 import sys
