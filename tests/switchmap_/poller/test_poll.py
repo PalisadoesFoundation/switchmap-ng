@@ -5,7 +5,7 @@ import os
 import sys
 import unittest
 from unittest.mock import patch, MagicMock, call
-from multiprocessing import TimeoutError
+from multiprocessing import ProcessError, TimeoutError
 from switchmap.poller.poll import devices, device, cli_device, _META
 
 # Try to create a working PYTHONPATH
@@ -114,12 +114,25 @@ class TestPollModule(unittest.TestCase):
                 mock_pool.return_value.__enter__.return_value = (
                     mock_pool_instance
                 )
-                mock_pool_instance.map.side_effect = Exception(
+                mock_pool_instance.map.side_effect = RuntimeError(
                     "Worker process failed"
                 )
 
-                with self.assertRaises(Exception):
+                with self.assertRaises((RuntimeError, ProcessError)):
                     devices(multiprocessing=True)
+    
+    def test_devices_with_multiprocessing_timeout(self):
+        """Test handling of worker process timeout in multiprocessing mode."""
+        with patch("switchmap.poller.poll.ConfigPoller") as mock_config:
+            mock_config.return_value = self.mock_config_instance
+            with patch("switchmap.poller.poll.Pool") as mock_pool:
+                mock_pool_instance = MagicMock()
+                mock_pool.return_value.__enter__.return_value = mock_pool_instance
+                mock_pool_instance.map.side_effect = TimeoutError("Worker timeout")
+                
+                with self.assertRaises(TimeoutError):
+                    devices(multiprocessing=True)
+
 
     @patch("switchmap.poller.poll.files.skip_file")
     @patch("switchmap.poller.poll.os.path.isfile")
