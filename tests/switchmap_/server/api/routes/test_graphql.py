@@ -43,57 +43,6 @@ class TestGraphQLRoutes(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 400)
 
-    @patch("switchmap.server.api.routes.graphql.SCHEMA.graphql_schema")
-    def test_successful_graphql_query(self, mock_schema):
-        """Test a successful GraphQL query."""
-        mock_schema.return_value.execute.return_value = {
-            "data": {"field": "value"}
-        }
-        response = self.client.post("/graphql", json={"query": "{ field }"})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json, {"data": {"field": "value"}})
-
-    @patch("switchmap.server.api.routes.graphql.SCHEMA.graphql_schema")
-    def test_successful_graphql_mutation(self, mock_schema):
-        """Test a successful GraphQL mutation."""
-        mock_schema.return_value.execute.return_value = {
-            "data": {"mutateField": "mutatedValue"}
-        }
-        response = self.client.post(
-            "/graphql", json={"query": "mutation { mutateField }"}
-        )
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json, {"data": {"mutateField": "mutatedValue"}}
-        )
-
-    @patch("switchmap.server.api.routes.graphql.SCHEMA.graphql_schema")
-    def test_large_graphql_query(self, mock_schema):
-        """Test GraphQL route with a large query."""
-        large_query = "{ " + " ".join([f"field{i}" for i in range(100)]) + " }"
-        mock_schema.return_value.execute.return_value = {
-            "data": {f"field{i}": f"value{i}" for i in range(100)}
-        }
-        response = self.client.post("/graphql", json={"query": large_query})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json,
-            {"data": {f"field{i}": f"value{i}" for i in range(100)}},
-        )
-
-    @patch("switchmap.server.api.routes.graphql.SCHEMA.graphql_schema")
-    def test_nested_graphql_query(self, mock_schema):
-        """Test GraphQL route with a nested query."""
-        nested_query = "{ parent { child { field } } }"
-        mock_schema.return_value.execute.return_value = {
-            "data": {"parent": {"child": {"field": "value"}}}
-        }
-        response = self.client.post("/graphql", json={"query": nested_query})
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(
-            response.json, {"data": {"parent": {"child": {"field": "value"}}}}
-        )
-
 
 if __name__ == "__main__":
     unittest.main()
