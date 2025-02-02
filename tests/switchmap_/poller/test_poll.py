@@ -25,7 +25,8 @@ if EXEC_DIR.endswith(_EXPECTED):
     sys.path.insert(0, ROOT_DIR)
 else:
     print(
-        f'This script is not installed in the "{_EXPECTED}" directory. Please fix.'
+        f'This script is not installed in the "{_EXPECTED}" directory. '
+        'Please fix.'
     )
     sys.exit(2)
 
