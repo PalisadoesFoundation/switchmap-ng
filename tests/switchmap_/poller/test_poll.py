@@ -28,6 +28,8 @@ else:
         f'This script is not installed in the "{_EXPECTED}" directory. Please fix.'
     )
     sys.exit(2)
+
+
 class TestPollModule(unittest.TestCase):
     """Test cases for the poll module functionality."""
 
@@ -92,6 +94,31 @@ class TestPollModule(unittest.TestCase):
                 mock_pool_instance.map.assert_called_once_with(
                     device, expected_args
                 )
+
+    def test_devices_with_multiprocessing_pool_error(self):
+        """Test error handling when pool creation fails."""
+        with patch("switchmap.poller.poll.ConfigPoller") as mock_config:
+            mock_config.return_value = self.mock_config_instance
+            with patch("switchmap.poller.poll.Pool") as mock_pool:
+                mock_pool.side_effect = OSError("Failed to create pool")
+                with self.assertRaises(OSError):
+                    devices(multiprocessing=True)
+
+    def test_devices_with_multiprocessing_worker_error(self):
+        """Test error handling when a worker process fails."""
+        with patch("switchmap.poller.poll.ConfigPoller") as mock_config:
+            mock_config.return_value = self.mock_config_instance
+            with patch("switchmap.poller.poll.Pool") as mock_pool:
+                mock_pool_instance = MagicMock()
+                mock_pool.return_value.__enter__.return_value = (
+                    mock_pool_instance
+                )
+                mock_pool_instance.map.side_effect = Exception(
+                    "Worker process failed"
+                )
+
+                with self.assertRaises(Exception):
+                    devices(multiprocessing=True)
 
     @patch("switchmap.poller.poll.files.skip_file")
     @patch("switchmap.poller.poll.os.path.isfile")
