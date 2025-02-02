@@ -15,7 +15,9 @@ _EXPECTED = f"{os.sep}tests{os.sep}switchmap_{os.sep}poller"
 if EXEC_DIR.endswith(_EXPECTED):
     sys.path.insert(0, ROOT_DIR)
 else:
-    print(f'This script is not installed in the "{_EXPECTED}" directory. Please fix.')
+    print(
+        f'This script is not installed in the "{_EXPECTED}" directory. Please fix.'
+    )
     sys.exit(2)
 
 
@@ -31,23 +33,32 @@ class TestPollModule(unittest.TestCase):
         self.mock_config_instance.zones.return_value = [self.mock_zone]
         self.mock_config_instance.agent_subprocesses.return_value = 2
 
-
     @patch("switchmap.poller.poll.ConfigPoller")
-    @patch("switchmap.poller.poll.files.skip_file", return_value="/path/to/skip/file")
+    @patch(
+        "switchmap.poller.poll.files.skip_file",
+        return_value="/path/to/skip/file",
+    )
     @patch("switchmap.poller.poll.os.path.isfile", return_value=False)
     @patch("switchmap.poller.poll.poller.Poll")
     @patch("switchmap.poller.poll.rest.post")
-    def test_devices_without_multiprocessing(self, mock_rest_post, mock_poll, mock_isfile, mock_skip_file, mock_config):
+    def test_devices_without_multiprocessing(
+        self,
+        mock_rest_post,
+        mock_poll,
+        mock_isfile,
+        mock_skip_file,
+        mock_config,
+    ):
         """Test device processing without multiprocessing."""
-        
+
         # Ensure mock_config is properly returned
         mock_config.return_value = self.mock_config_instance
 
         # Ensure poller.Poll is called
         mock_poll_instance = MagicMock()
         mock_poll_instance.query.side_effect = [
-            {"misc": {"host": "device1"}}, 
-            {"misc": {"host": "device2"}}
+            {"misc": {"host": "device1"}},
+            {"misc": {"host": "device2"}},
         ]
         mock_poll.return_value = mock_poll_instance
 
@@ -65,12 +76,15 @@ class TestPollModule(unittest.TestCase):
             # Ensure each device was processed
             self.assertEqual(mock_poll.call_count, 2)
             self.assertEqual(mock_rest_post.call_count, 2)
-            mock_device.assert_has_calls([
-                call({"misc": {"host": "device1"}}),
-                call().process(),
-                call({"misc": {"host": "device2"}}),
-                call().process(),
-            ], any_order=False)
+            mock_device.assert_has_calls(
+                [
+                    call({"misc": {"host": "device1"}}),
+                    call().process(),
+                    call({"misc": {"host": "device2"}}),
+                    call().process(),
+                ],
+                any_order=False,
+            )
 
     @patch("switchmap.poller.poll.Pool")
     @patch("switchmap.poller.poll.ConfigPoller")
@@ -85,16 +99,31 @@ class TestPollModule(unittest.TestCase):
         devices(multiprocessing=True)
 
         # Assert
-        mock_pool.assert_called_once_with(processes=self.mock_config_instance.agent_subprocesses.return_value)
-        
+        mock_pool.assert_called_once_with(
+            processes=self.mock_config_instance.agent_subprocesses.return_value
+        )
+
         # Check if map was called with correct arguments
         expected_meta_objects = [
-            _META(zone='zone1', hostname='device1', config=self.mock_config_instance),
-            _META(zone='zone1', hostname='device2', config=self.mock_config_instance)
+            _META(
+                zone="zone1",
+                hostname="device1",
+                config=self.mock_config_instance,
+            ),
+            _META(
+                zone="zone1",
+                hostname="device2",
+                config=self.mock_config_instance,
+            ),
         ]
-        mock_pool_instance.map.assert_called_once_with(device, expected_meta_objects)
+        mock_pool_instance.map.assert_called_once_with(
+            device, expected_meta_objects
+        )
 
-    @patch("switchmap.poller.poll.files.skip_file", return_value="/path/to/skip/file")
+    @patch(
+        "switchmap.poller.poll.files.skip_file",
+        return_value="/path/to/skip/file",
+    )
     @patch("switchmap.poller.poll.os.path.isfile", return_value=False)
     @patch("switchmap.poller.poll.poller.Poll")
     @patch("switchmap.poller.poll.rest.post")
@@ -126,7 +155,9 @@ class TestPollModule(unittest.TestCase):
         self.mock_config_instance.zones.return_value = []
 
         cli_device("unknown-device")
-        mock_log.assert_called_with(1036, "No hostname unknown-device found in configuration")
+        mock_log.assert_called_with(
+            1036, "No hostname unknown-device found in configuration"
+        )
 
     @patch("switchmap.poller.poll.ConfigPoller")
     @patch("switchmap.poller.poll.device")
@@ -135,7 +166,14 @@ class TestPollModule(unittest.TestCase):
 
         mock_config.return_value = self.mock_config_instance
         cli_device("device1")
-        mock_device.assert_called_once_with(_META(zone="zone1", hostname="device1", config=mock_config.return_value), post=False)
+        mock_device.assert_called_once_with(
+            _META(
+                zone="zone1",
+                hostname="device1",
+                config=mock_config.return_value,
+            ),
+            post=False,
+        )
 
     @patch("switchmap.poller.poll.ConfigPoller")
     def test_agent_subprocesses(self, mock_config):
@@ -151,7 +189,9 @@ class TestPollModule(unittest.TestCase):
 
         self.mock_config_instance.server_address.return_value = "127.0.0.1"
         mock_config.return_value = self.mock_config_instance
-        self.assertEqual(self.mock_config_instance.server_address(), "127.0.0.1")
+        self.assertEqual(
+            self.mock_config_instance.server_address(), "127.0.0.1"
+        )
 
     @patch("switchmap.poller.poll.ConfigPoller")
     def test_polling_interval(self, mock_config):
