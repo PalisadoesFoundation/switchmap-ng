@@ -26,7 +26,7 @@ if EXEC_DIR.endswith(_EXPECTED):
 else:
     print(
         f'This script is not installed in the "{_EXPECTED}" directory. '
-        'Please fix.'
+        "Please fix."
     )
     sys.exit(2)
 
