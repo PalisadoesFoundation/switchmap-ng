@@ -35,6 +35,8 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: 3.11
+      - name: Updated Ubuntu package sources
+        run: sudo apt-get -y update          
       - name: Install Ubuntu packages
         run: sudo apt-get install -y python3 python3-pip snmp libsnmp-dev gcc python-dev-is-python3 python3-venv mysql-server
       - name: Cache pip packages
