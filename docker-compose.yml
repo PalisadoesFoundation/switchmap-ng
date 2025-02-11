@@ -1,0 +1,97 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: switchmap-mysql
+    environment:
+      MYSQL_DATABASE: switchmap
+      MYSQL_USER: switchmap
+      MYSQL_PASSWORD: CHANGE_ME_NOW
+      MYSQL_ROOT_PASSWORD: root_password
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "switchmap", "--password=CHANGE_ME_NOW"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - switchmap_network
+
+  switchmap-api:
+    build: .
+    container_name: switchmap-api
+    environment:
+      - SERVICE_TYPE=api
+      - MYSQL_HOST=switchmap-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=switchmap
+      - MYSQL_USER=switchmap
+      - MYSQL_PASSWORD=CHANGE_ME_NOW
+    ports:
+      - "7000:7000"
+    volumes:
+      - ./etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - switchmap_network
+
+  switchmap-dashboard:
+    build: .
+    container_name: switchmap-dashboard
+    environment:
+      - SERVICE_TYPE=dashboard
+      - MYSQL_HOST=switchmap-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=switchmap
+      - MYSQL_USER=switchmap
+      - MYSQL_PASSWORD=CHANGE_ME_NOW
+    ports:
+      - "7001:7001"
+    volumes:
+      - ./etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
+    depends_on:
+      mysql:
+        condition: service_healthy
+      switchmap-api:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - switchmap_network
+
+  switchmap-poller:
+    build: .
+    container_name: switchmap-poller
+    environment:
+      - SERVICE_TYPE=poller
+      - MYSQL_HOST=switchmap-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=switchmap
+      - MYSQL_USER=switchmap
+      - MYSQL_PASSWORD=CHANGE_ME_NOW
+    volumes:
+      - ./etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - switchmap_network
+
+networks:
+  switchmap_network:
+    name: switchmap_network
+
+volumes:
+  mysql_data:
