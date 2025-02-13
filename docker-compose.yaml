@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: switchmap
+      MYSQL_USER: switchmap
+      MYSQL_PASSWORD: switchmap_password
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+
+  server:
+    build: .
+    command: ["bin/systemd/switchmap_server", "--start"]
+    environment:
+      - DB_HOST=mysql
+      - DB_NAME=switchmap
+      - DB_USER=switchmap
+      - DB_PASSWORD=CHANGE_ME_NOW
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  poller:
+    build: .
+    command: ["bin/systemd/switchmap_poller", "--start"]
+    depends_on:
+       - server
+
+  ingester:
+    build: .
+    command: ["bin/systemd/switchmap_ingester", "--start"]
+    depends_on:
+       - server
+
+volumes:
+  db_data:
