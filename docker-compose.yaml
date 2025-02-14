@@ -1,17 +1,23 @@
 services:
   mysql:
-    image: mysql:latest
+    image: mysql:8.0
     environment:
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_DATABASE: switchmap
       MYSQL_USER: switchmap
-      MYSQL_PASSWORD: switchmap_password
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+    ports:
+      - "127.0.0.1:3307:3306"  # Map host port 3307 to container port 3306
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      retries: 5
+      interval: 20s
+      timeout: 10s
+      retries: 10
+    secrets:
+      - mysql_root_password
+      - mysql_password
 
   server:
     build: .
@@ -20,7 +26,13 @@ services:
       - DB_HOST=mysql
       - DB_NAME=switchmap
       - DB_USER=switchmap
-      - DB_PASSWORD=CHANGE_ME_NOW
+      - DB_PASSWORD_FILE=/run/secrets/mysql_password
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
       mysql:
         condition: service_healthy
@@ -28,14 +40,32 @@ services:
   poller:
     build: .
     command: ["bin/systemd/switchmap_poller", "--start"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "switchmap_poller"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
-       - server
+      - server
 
   ingester:
     build: .
     command: ["bin/systemd/switchmap_ingester", "--start"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "switchmap_ingester"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     depends_on:
-       - server
+      - server
 
 volumes:
   db_data:
+
+secrets:
+  mysql_root_password:
+    file: ./secrets/mysql_root_password.txt
+  mysql_password:
+    file: ./secrets/mysql_password.txt

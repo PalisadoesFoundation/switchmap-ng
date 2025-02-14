@@ -1,7 +1,7 @@
 FROM ubuntu:24.04
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
+#dependencies
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     python3 \
     python3-pip \
     snmp \
@@ -12,43 +12,50 @@ RUN apt-get update && apt-get install -y \
     python3-venv \
     dos2unix \
     mysql-client \
-    yq && \
+    yq \
+    ca-certificates \
+    curl \
+    gnupg \
+    apt-transport-https && \
     rm -rf /var/lib/apt/lists/*
 
-# Create user
-RUN useradd -r -s /bin/false switchmap
+#user
+RUN groupadd -r switchmap && \
+    useradd -r -g switchmap -s /bin/false switchmap
 
-# Copy application
 COPY . /switchmap-ng
+RUN chown -R root:switchmap /switchmap-ng && \
+    chmod -R 750 /switchmap-ng
 WORKDIR /switchmap-ng
 
-# Fix line endings and permissions
+# Fixing line endings and permissions
 RUN find . -type f -exec dos2unix {} + && \
-    chmod +x bin/systemd/*
+    chmod 750 bin/systemd/*
 
-# Ensure config directory exists
+# Ensuring config directory exists
 RUN mkdir -p etc && cp examples/etc/config.yaml etc/config.yaml && \
-    chmod 644 etc/config.yaml && \
+    chmod 640 etc/config.yaml && \
     chown switchmap:switchmap etc/config.yaml
 
-# Modify config paths using yq
+# Modifing config paths using yq
 RUN yq -i -y '.core.system_directory = "/switchmap-ng/var"' etc/config.yaml && \
     yq -i -y '.core.log_directory = "/switchmap-ng/var/log"' etc/config.yaml && \
     yq -i -y '.core.daemon_directory = "/switchmap-ng/var/run"' etc/config.yaml && \
     yq -i -y '.server.db_host = "mysql"' etc/config.yaml && \
     yq -i -y '.server.db_user = "switchmap"' etc/config.yaml && \
-    yq -i -y '.server.db_pass = "CHANGE_ME_NOW"' etc/config.yaml
-    
-# Create necessary directories
+    yq -i -y '.server.db_pass = "${DB_PASSWORD}"' etc/config.yaml
+
+#necessary directories
 RUN mkdir -p /switchmap-ng/var/{log,run,cache} && \
     chown -R switchmap:switchmap /switchmap-ng/var
 
-# Setup virtual environment
+#virtual environment
 RUN python3 -m venv /venv && \
     /venv/bin/pip install --upgrade pip && \
-    /venv/bin/pip install -r requirements.txt
+    /venv/bin/pip install -r requirements.txt && \
+    rm -rf /root/.cache/pip
 
-# Set permissions
+#permissions
 RUN chown -R switchmap:switchmap /switchmap-ng
 
 USER switchmap
