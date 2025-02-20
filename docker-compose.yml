@@ -4,14 +4,12 @@ services:
   mysql:
     image: mysql:8.0
     container_name: switchmap-mysql
-    env_file:
-      - .env  # Load environment variables from .env file
     environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_DATABASE: switchmap
+      MYSQL_USER: switchmap
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DEFAULT_AUTHENTICATION_PLUGIN: ${MYSQL_DEFAULT_AUTHENTICATION_PLUGIN}
+      MYSQL_DEFAULT_AUTHENTICATION_PLUGIN: mysql_native_password
     command: >
       --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
@@ -23,7 +21,7 @@ services:
     ports:
       - "3307:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "--password=${MYSQL_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "switchmap-mysql", "-u", "switchmap", "--password=CHANGE_ME_NOW"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,20 +31,18 @@ services:
   switchmap-api:
     build: .
     container_name: switchmap-api
-    env_file:
-      - .env  # Load environment variables from .env file
     environment:
-      - SERVICE_TYPE=${SERVICE_TYPE_API}
-      - MYSQL_HOST=${MYSQL_HOST}
-      - MYSQL_PORT=${MYSQL_PORT}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
+      - SERVICE_TYPE=api
+      - MYSQL_HOST=switchmap-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=switchmap
+      - MYSQL_USER=switchmap
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - BIND_ADDRESS=${BIND_ADDRESS}
-      - API_LISTEN_ADDRESS=${API_LISTEN_ADDRESS}
-      - API_BIND_PORT=${API_BIND_PORT_API}
+      - BIND_ADDRESS=0.0.0.0
+      - API_LISTEN_ADDRESS=0.0.0.0
+      - API_BIND_PORT=7000
     ports:
-      - "${API_BIND_PORT_API}:${API_BIND_PORT_API}"
+      - "7000:7000"
     volumes:
       - ./etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
     depends_on:
@@ -59,20 +55,19 @@ services:
   switchmap-dashboard:
     build: .
     container_name: switchmap-dashboard
-    env_file:
-      - .env  # Load environment variables from .env file
     environment:
-      - SERVICE_TYPE=${SERVICE_TYPE_DASHBOARD}
-      - MYSQL_HOST=${MYSQL_HOST}
-      - MYSQL_PORT=${MYSQL_PORT}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
+      - SERVICE_TYPE=dashboard
+      - MYSQL_HOST=switchmap-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=switchmap
+      - MYSQL_USER=switchmap
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - BIND_ADDRESS=${BIND_ADDRESS}
-      - API_LISTEN_ADDRESS=${API_LISTEN_ADDRESS}
-      - API_BIND_PORT=${API_BIND_PORT_DASHBOARD}
+      - BIND_ADDRESS=0.0.0.0
+      - API_LISTEN_ADDRESS=0.0.0.0
+      - API_BIND_PORT=7001
+      
     ports:
-      - "${API_BIND_PORT_DASHBOARD}:${API_BIND_PORT_DASHBOARD}"
+      - "7001:7001"
     volumes:
       - ./etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
     depends_on:
