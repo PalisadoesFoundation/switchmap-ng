@@ -31,9 +31,15 @@ ENV PATH="/opt/switchmap-ng/venv/bin:$PATH" \
 
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
-RUN mkdir -p /etc
-COPY examples/etc/config.yaml /etc/config.yaml
+COPY .env /opt/switchmap-ng/.env
+# RUN mkdir -p /etc
+# COPY examples/etc/config.yaml /etc/config.yaml
+RUN mkdir -p etc && cp examples/etc/config.yaml etc/config.yaml && \
+    chmod 640 etc/config.yaml && \
+    chown switchmap:switchmap etc/config.yaml
 
+
+# COPY .env /opt/switchmap-ng/.env
 COPY . .
 
 COPY entrypoint.sh /opt/switchmap-ng/entrypoint.sh

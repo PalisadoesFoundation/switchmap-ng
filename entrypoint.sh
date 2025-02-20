@@ -5,6 +5,17 @@ set -e
 chown -R switchmap:switchmap /opt/switchmap-ng/var 2>/dev/null || true
 
 source venv/bin/activate
+echo "=== Debugging Environment Variables ==="
+env  # Print all environment variables
+
+echo "=== Checking Specific Variables ==="
+echo "MYSQL_DATABASE: $MYSQL_DATABASE"
+echo "MYSQL_USER: $MYSQL_USER"
+echo "MYSQL_PASSWORD: $MYSQL_PASSWORD"
+echo "MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD"
+
+echo "=== Starting Application ==="
+exec "$@"
 
 wait_for_mysql() {
     echo "Waiting for MySQL to be ready..."
