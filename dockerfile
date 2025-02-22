@@ -1,15 +1,17 @@
 FROM ubuntu:24.04
 
-#dependencies
+#Installing dependencies
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    apache2 \
+    systemd \
     python3 \
     python3-pip \
+    python3-venv \
     snmp \
     libsnmp-dev \
     snmp-mibs-downloader \
     gcc \
     python3-dev \
-    python3-venv \
     dos2unix \
     mysql-client \
     yq \
@@ -19,33 +21,43 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
     apt-transport-https && \
     rm -rf /var/lib/apt/lists/*
 
-#user
+# Enabling Apache modules
+RUN a2enmod proxy proxy_http
+
+# Creating a user for SwitchMap-NG
 RUN groupadd -r switchmap && \
     useradd -r -g switchmap -s /bin/false switchmap
 
 COPY . /switchmap-ng
-RUN chown -R root:switchmap /switchmap-ng && \
-    chmod -R 750 /switchmap-ng
 WORKDIR /switchmap-ng
 
-# Fixing line endings and permissions
+#Fixing line endings and permissions
 RUN find . -type f -exec dos2unix {} + && \
     chmod 750 bin/systemd/*
 
-# Ensuring config directory exists
-RUN mkdir -p etc && cp examples/etc/config.yaml etc/config.yaml && \
-    chmod 640 etc/config.yaml && \
-    chown switchmap:switchmap etc/config.yaml
+#configuring Apache
+COPY examples/linux/apache/switchmap-ng-apache.conf /etc/apache2/sites-available/switchmap-ng.conf
+RUN a2ensite switchmap-ng.conf && \
+    a2enmod proxy proxy_http 
 
-# Modifing config paths using yq
-RUN yq -i -y '.core.system_directory = "/switchmap-ng/var"' etc/config.yaml && \
-    yq -i -y '.core.log_directory = "/switchmap-ng/var/log"' etc/config.yaml && \
-    yq -i -y '.core.daemon_directory = "/switchmap-ng/var/run"' etc/config.yaml && \
-    yq -i -y '.server.db_host = "mysql"' etc/config.yaml && \
-    yq -i -y '.server.db_user = "switchmap"' etc/config.yaml && \
-    yq -i -y '.server.db_pass = "${DB_PASSWORD}"' etc/config.yaml
+#configuring SwitchMap
+COPY examples/etc/config.yaml /switchmap-ng/etc/config.yaml
+RUN chmod 640 /switchmap-ng/etc/config.yaml && \
+    chown switchmap:switchmap /switchmap-ng/etc/config.yaml
 
-#necessary directories
+# Copying systemd service files
+COPY examples/linux/systemd/switchmap_server.service /etc/systemd/system/
+COPY examples/linux/systemd/switchmap_poller.service /etc/systemd/system/
+COPY examples/linux/systemd/switchmap_ingester.service /etc/systemd/system/
+COPY examples/linux/systemd/switchmap_dashboard.service /etc/systemd/system/
+
+#systemd services
+RUN systemctl enable switchmap_server.service && \
+    systemctl enable switchmap_poller.service && \
+    systemctl enable switchmap_ingester.service && \
+    systemctl enable switchmap_dashboard.service
+
+#Creating necessary directories
 RUN mkdir -p /switchmap-ng/var/{log,run,cache} && \
     chown -R switchmap:switchmap /switchmap-ng/var
 
@@ -55,8 +67,17 @@ RUN python3 -m venv /venv && \
     /venv/bin/pip install -r requirements.txt && \
     rm -rf /root/.cache/pip
 
-#permissions
-RUN chown -R switchmap:switchmap /switchmap-ng
+#entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN dos2unix /entrypoint.sh && \
+    chmod 750 /entrypoint.sh
 
-USER switchmap
+#environment variables
 ENV PATH="/venv/bin:$PATH"
+ENV SWITCHMAP_CONFIGDIR=/switchmap-ng/etc
+
+#ports
+EXPOSE 80 7000 7001
+
+# Set the entrypoint
+ENTRYPOINT ["/entrypoint.sh"]

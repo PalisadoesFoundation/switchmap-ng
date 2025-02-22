@@ -1,15 +1,15 @@
 services:
   mysql:
     image: mysql:8.0
+    container_name: switchmap-mysql
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_DATABASE: switchmap
       MYSQL_USER: switchmap
       MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
-    ports:
-      - "127.0.0.1:3307:3306"  # Map host port 3307 to container port 3306
     volumes:
       - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 20s
@@ -21,45 +21,87 @@ services:
 
   server:
     build: .
-    command: ["bin/systemd/switchmap_server", "--start"]
+    container_name: switchmap-server
     environment:
-      - DB_HOST=mysql
-      - DB_NAME=switchmap
-      - DB_USER=switchmap
-      - DB_PASSWORD_FILE=/run/secrets/mysql_password
-    restart: unless-stopped
+      - CONTAINER_ROLE=server
+    ports:
+      - "7000:7000"  
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: ["CMD", "pgrep", "-f", "switchmap_server"]
       interval: 30s
       timeout: 10s
       retries: 3
+    secrets:
+      - mysql_password
     depends_on:
       mysql:
         condition: service_healthy
 
   poller:
     build: .
-    command: ["bin/systemd/switchmap_poller", "--start"]
-    restart: unless-stopped
+    container_name: switchmap-poller
+    environment:
+      - CONTAINER_ROLE=poller
     healthcheck:
       test: ["CMD", "pgrep", "-f", "switchmap_poller"]
       interval: 30s
       timeout: 10s
       retries: 3
+    secrets:
+      - mysql_password
     depends_on:
-      - server
+      server:
+        condition: service_healthy
 
   ingester:
     build: .
-    command: ["bin/systemd/switchmap_ingester", "--start"]
-    restart: unless-stopped
+    container_name: switchmap-ingester
+    environment:
+      - CONTAINER_ROLE=ingester
     healthcheck:
       test: ["CMD", "pgrep", "-f", "switchmap_ingester"]
       interval: 30s
       timeout: 10s
       retries: 3
+    secrets:
+      - mysql_password
     depends_on:
-      - server
+      server:
+        condition: service_healthy
+
+  dashboard:
+    build: .
+    container_name: switchmap-dashboard
+    environment:
+      - CONTAINER_ROLE=dashboard
+    ports:
+      - "7001:7001" 
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "switchmap_dashboard"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    secrets:
+      - mysql_password
+    depends_on:
+      server:
+        condition: service_healthy
+
+  apache:
+    build: .
+    container_name: switchmap-apache
+    ports:
+      - "80:80"      
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/switchmap-ng"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      server:
+        condition: service_healthy
+      dashboard:
+        condition: service_healthy
 
 volumes:
   db_data:

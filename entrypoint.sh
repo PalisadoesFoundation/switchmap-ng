@@ -1,11 +1,25 @@
 #!/bin/bash
 set -e
 
-mkdir -p /run/secrets
+# Activate the virtual environment
+source /venv/bin/activate
 
-echo "${MYSQL_ROOT_PASSWORD_VALUE}" > /run/secrets/mysql_root_password
-echo "${MYSQL_PASSWORD_VALUE}" > /run/secrets/mysql_password
+# Replace ${DB_PASSWORD} with the actual password
+if [ -f /run/secrets/mysql_password ]; then
+  export DB_PASSWORD=$(cat /run/secrets/mysql_password)
+  sed -i "s/\${DB_PASSWORD}/$DB_PASSWORD/g" /switchmap-ng/etc/config.yaml
+else
+  echo "Error: MySQL password secret not found!"
+  exit 1
+fi
 
-unset MYSQL_ROOT_PASSWORD_VALUE MYSQL_PASSWORD_VALUE
+# Start SwitchMap server
+bin/systemd/switchmap_server --start
 
-exec /entrypoint.sh "$@"
+bin/systemd/switchmap_dashboard --start
+
+# Start Apache
+service apache2 start
+
+# Keep the container running
+tail -f /dev/null
