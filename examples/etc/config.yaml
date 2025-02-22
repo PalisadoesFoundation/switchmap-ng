@@ -42,17 +42,17 @@ poller:
   snmp_groups:
     - group_name: V2
       snmp_version: 2
-      snmp_community: Q6RNgKDntG77xseZ
+      snmp_community: ${SNMP_COMMUNITY}
       snmp_port: 161
       enabled: true
 
     - group_name: Corporate Campus
       snmp_version: 3
-      snmp_secname: woohoo
+      snmp_secname: ${SNMP_SECNAME_CORP}
       snmp_authprotocol: sha
       snmp_authpassword: testing123
       snmp_privprotocol: des
-      snmp_privpassword: secret_password
+      snmp_privpassword: ${SNMP_PRIV_PASSWORD_CORP}
 
     - group_name: Remote Sites
       snmp_version: 3
