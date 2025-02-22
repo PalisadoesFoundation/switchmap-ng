@@ -1,3 +1,7 @@
+networks:
+  switchmap-net:
+    driver: bridge
+
 services:
   mysql:
     image: mysql:8.0
@@ -10,6 +14,8 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - switchmap-net
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 20s
@@ -31,8 +37,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - switchmap-net
     secrets:
       - mysql_password
+    restart: unless-stopped
     depends_on:
       mysql:
         condition: service_healthy
@@ -42,6 +51,8 @@ services:
     container_name: switchmap-poller
     environment:
       - CONTAINER_ROLE=poller
+    networks:
+      - switchmap-net
     healthcheck:
       test: ["CMD", "pgrep", "-f", "switchmap_poller"]
       interval: 30s
@@ -58,6 +69,8 @@ services:
     container_name: switchmap-ingester
     environment:
       - CONTAINER_ROLE=ingester
+    networks:
+      - switchmap-net
     healthcheck:
       test: ["CMD", "pgrep", "-f", "switchmap_ingester"]
       interval: 30s
@@ -74,6 +87,8 @@ services:
     container_name: switchmap-dashboard
     environment:
       - CONTAINER_ROLE=dashboard
+    networks:
+      - switchmap-net
     ports:
       - "7001:7001" 
     healthcheck:
@@ -91,17 +106,17 @@ services:
     build: .
     container_name: switchmap-apache
     ports:
-      - "80:80"      
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/switchmap-ng"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - "80:80"
     depends_on:
       server:
         condition: service_healthy
       dashboard:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/switchmap/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   db_data:
