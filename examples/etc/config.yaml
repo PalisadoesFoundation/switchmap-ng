@@ -4,21 +4,23 @@ core:
 
 server:
   username: switchmap
-  listen_address: localhost
   ingest_interval: 86400
-  purge_after_ingest: True
-  db_host: localhost
+  purge_after_ingest: True 
+  db_host: switchmap-mysql
   db_name: switchmap
   db_user: switchmap
   db_pass: CHANGE_ME_NOW
+  api_listen_address: 0.0.0.0  
+  api_bind_port: 7000
 
 dashboard:
-  listen_address: localhost
+  api_listen_address: 0.0.0.0  
+  api_bind_port: 7001
 
 poller:
   username: switchmap
   polling_interval: 86400
-  server_address: localhost
+  server_address: switchmap-api
   server_bind_port: 7000
   server_username: null
   server_password: None
