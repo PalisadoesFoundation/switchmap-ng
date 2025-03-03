@@ -1,0 +1,77 @@
+networks:
+  switchmap-net:
+    driver: bridge
+
+services:
+  mysql:
+    networks:
+      - switchmap-net
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_DATABASE: switchmap
+      MYSQL_USER: switchmap
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./secrets/mysql_root_password.txt:/run/secrets/mysql_root_password:ro
+      - ./secrets/mysql_password.txt:/run/secrets/mysql_password:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  server:
+    networks:
+      - switchmap-net
+    build: .
+    environment:
+      DB_PASSWORD: /run/secrets/mysql_password
+    volumes:
+      - ./secrets/mysql_password.txt:/run/secrets/mysql_password:ro
+    ports:
+      - "7000:7000"
+    secrets:
+      - mysql_password
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f switchmap_server"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+
+  poller:
+    networks:
+      - switchmap-net
+    build: .
+    environment:
+      DB_PASSWORD: /run/secrets/mysql_password
+    volumes:
+      - ./secrets/mysql_password.txt:/run/secrets/mysql_password:ro
+    command: >
+      bash -c "
+        rm -f /switchmap-ng/var/run/pid/poller.pid &&
+        venv/bin/python3 bin/systemd/switchmap_poller --start
+      "
+    healthcheck:
+      test: ["CMD-SHELL", "pgrep -f switchmap_poller"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      server:
+        condition: service_healthy
+
+volumes:
+  db_data:
+
+secrets:
+  mysql_root_password:
+    file: ./secrets/mysql_root_password.txt
+  mysql_password:
+    file: ./secrets/mysql_password.txt
