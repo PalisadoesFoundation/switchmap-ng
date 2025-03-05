@@ -40,3 +40,6 @@ flake8-docstrings
 pydocstyle
 black
 docstring_parser
+
+#Document Generation
+pydoc-markdown
