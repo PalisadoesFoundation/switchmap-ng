@@ -26,7 +26,7 @@ class Mac:
         ]
 
     def macs(self):
-        """Get the MacState of the interface.
+        """Get MacState of the interface.
 
         Args:
             None
