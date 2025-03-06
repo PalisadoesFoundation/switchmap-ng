@@ -1,8 +1,12 @@
 import os
 import shutil
 
-HOOKS_DIR = ".git/hooks"
-SOURCE_HOOKS_DIR = "hooks"
+# Use os.path.join for path construction
+# Get the script's directory to make paths relative to the project root
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)
+HOOKS_DIR = os.path.join(PROJECT_ROOT, ".git", "hooks")
+SOURCE_HOOKS_DIR = os.path.join(PROJECT_ROOT, "hooks")
 HOOK_FILE = "pre-commit"
 
 
@@ -32,7 +36,7 @@ def install_git_hooks():
     # Make the hook file executable
     os.chmod(destination_hook_path, 0o755)
 
-    print("Git hooks installed successfully.")
+    print(f"Git hook '{HOOK_FILE}' installed successfully in {HOOKS_DIR}")
 
 
 # Run the function to install the hooks
