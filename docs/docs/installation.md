@@ -135,6 +135,18 @@ Here are the steps using the `vim` editor:
 
 Make the required changes.
 
+### Generate Documentation and Set Up Git Hooks
+
+To automatically generate documentation and ensure the pre-commit hook is properly set up, follow these steps after cloning or pulling the repository:
+
+1. **Run the setup script to install Git hooks:**
+
+   ```bash
+   bash scripts/setup_hooks.sh
+
+This will copy the required hooks from the hooks folder to the .git/hooks/ directory and make them executable.
+Commit your changes. The pre-commit hook will automatically run and generate Markdown files for the changed code.
+
 ### Run Installation Script
 
 You will now need to run the database installation script. This creates
