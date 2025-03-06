@@ -60,7 +60,7 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/PalisadoesFoundation/switchmap-ng',
           label: 'GitHub',
           position: 'right',
         },
@@ -83,11 +83,12 @@ const config: Config = {
           items: [
             {
               label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              href: 'https://github.com/PalisadoesFoundation',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: ' Contact Us',
+              to: 'https://www.palisadoes.org/contact/',
+              className: 'footer__icon footer__contact',
             },
             {
               label: 'X',
@@ -100,12 +101,12 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/PalisadoesFoundation/switchmap-ng',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} The Palisadoes Foundation, LLC. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
