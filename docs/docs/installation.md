@@ -140,7 +140,7 @@ Make the required changes.
 Run the following command to set up the pre-commit hook for automatically generating documentation:
 
 ```bash
-bash scripts/setup_hooks.sh
+python scripts/setup_hooks.py
 ```
 
 ### Run Installation Script
