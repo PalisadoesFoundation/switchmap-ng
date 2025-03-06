@@ -509,7 +509,7 @@ Instantiate the class.
 def macs()
 ```
 
-Get MacState of the interface.
+Get the MacState of the interface.
 
 **Arguments**:
 
