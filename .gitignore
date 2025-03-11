@@ -9,9 +9,6 @@ deprecated/
 
 # Ignore files in these directories and ALL subdirectories
 var/**
-#var/daemon/**
-#var/log/**
-#var/cache/**
 etc/**
 
 # There are exceptions
@@ -34,6 +31,15 @@ Other filetypes to ignore follow
 #############################################################################
 
 yarn.lock
+
+#############################################################################
+# JavaScript
+#############################################################################
+
+/.env
+/.env-*
+/.env_*
+/.env.*
 
 #############################################################################
 # Ignore VS Code files
