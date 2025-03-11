@@ -4,6 +4,7 @@ core:
 
 server:
   username: switchmap
+  api_bind_port: 7000
   listen_address: localhost
   ingest_interval: 86400
   purge_after_ingest: True
