@@ -190,7 +190,7 @@ Technical Support:<br>http://www.cisco.com/techsupport Copyright (c) \
 prod_rel_team</td></tr>
 <tr><td>System sysObjectID</td><td>.1.3.6.1.4.1.9.1.516</td></tr>
 <tr><td>System Uptime</td><td>94 Days, 18:39:06</td></tr>
-<tr><td>Time Last Polled</td><td>2023-02-23 23:13:37</td></tr>
+<tr><td>Time Last Polled</td><td>2023-02-23 15:13:37</td></tr>
 </tbody>
 </table>"""
         result = self.device.system()

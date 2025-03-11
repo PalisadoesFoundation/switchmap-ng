@@ -16,3 +16,6 @@ ZoneObjects = namedtuple("ZoneObjects", "ips macs pairmacips")
 ZoneDevice = namedtuple("ZoneDevice", "idx_zone, data, filepath, config")
 EventObjects = namedtuple("EventObjects", "zones event")
 PairMacIp = namedtuple("PairMacIp", "mac ip ip_version idx_zone")
+IngestArgument = namedtuple(
+    "IngestArgument", "idx_zone data filepath config dns"
+)
