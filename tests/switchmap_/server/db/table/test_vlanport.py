@@ -153,9 +153,7 @@ class TestDbTableVlanPort(unittest.TestCase):
                 if row.idx_vlan not in finds:
                     self.assertFalse(
                         bool(
-                            testimport.exists(
-                                row.idx_l1interface, row.idx_vlan
-                            )
+                            testimport.exists(row.idx_l1interface, row.idx_vlan)
                         )
                     )
                     # The combination idx_l1interface, idx_vlan must not exist

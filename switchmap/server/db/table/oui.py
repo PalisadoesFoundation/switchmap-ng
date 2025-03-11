@@ -104,20 +104,20 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            Oui(
-                oui=(null() if bool(row.oui) is False else row.oui.encode()),
-                organization=(
-                    null()
+            {
+                "oui": (None if bool(row.oui) is False else row.oui.encode()),
+                "organization": (
+                    None
                     if bool(row.organization) is False
                     else row.organization.encode()
                 ),
-                enabled=int(bool(row.enabled) is True),
-            )
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1096, inserts)
+        db.db_insert_row(1096, Oui, inserts)
 
 
 def update_row(idx, row):
@@ -138,13 +138,11 @@ def update_row(idx, row):
         .values(
             {
                 "organization": (
-                    null()
+                    None
                     if bool(row.organization) is False
                     else row.organization.encode()
                 ),
-                "oui": (
-                    null() if bool(row.oui) is False else row.oui.encode()
-                ),
+                "oui": (None if bool(row.oui) is False else row.oui.encode()),
                 "enabled": int(bool(row.enabled) is True),
             }
         )

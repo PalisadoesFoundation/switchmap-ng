@@ -40,7 +40,9 @@ class Oui(BASE):
     __table_args__ = {"mysql_engine": "InnoDB"}
 
     idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
-    oui = Column(VARBINARY(256), unique=True, nullable=True, index=True)
+    oui = Column(
+        VARBINARY(256), unique=True, nullable=True, index=True, default=None
+    )
     organization = Column(
         VARBINARY(256), nullable=True, default=Null, index=True
     )
@@ -62,9 +64,7 @@ class Event(BASE):
     __tablename__ = "smap_event"
     __table_args__ = {"mysql_engine": "InnoDB"}
 
-    idx_event = Column(
-        BIGINT(20, unsigned=True), primary_key=True, unique=True
-    )
+    idx_event = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     name = Column(VARBINARY(256), unique=True)
     epoch_utc = Column(BIGINT(20, unsigned=True))
     enabled = Column(BIT(1), default=1)
@@ -131,8 +131,8 @@ class Zone(BASE):
         default=1,
         server_default=text("1"),
     )
-    name = Column(VARBINARY(256), index=True)
-    notes = Column(VARBINARY(2048), nullable=True, default=Null)
+    name = Column(VARBINARY(256), index=True, default=None)
+    notes = Column(VARBINARY(2048), nullable=True, default=None)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,
@@ -172,13 +172,13 @@ class Device(BASE):
         default=1,
         server_default=text("1"),
     )
-    sys_name = Column(VARBINARY(256), nullable=True, default=Null)
-    hostname = Column(VARBINARY(256), nullable=True, default=Null, index=True)
-    name = Column(VARBINARY(256), nullable=True, default=Null)
-    sys_description = Column(VARBINARY(1024), nullable=True, default=Null)
-    sys_objectid = Column(VARBINARY(256), nullable=True, default=Null)
-    sys_uptime = Column(BIGINT(20, unsigned=True))
-    last_polled = Column(BIGINT(20, unsigned=True))
+    sys_name = Column(VARBINARY(256), nullable=True, default=None)
+    hostname = Column(VARBINARY(256), nullable=True, default=None, index=True)
+    name = Column(VARBINARY(256), nullable=True, default=None)
+    sys_description = Column(VARBINARY(1024), nullable=True, default=None)
+    sys_objectid = Column(VARBINARY(256), nullable=True, default=None)
+    sys_uptime = Column(BIGINT(20, unsigned=True), default=None)
+    last_polled = Column(BIGINT(20, unsigned=True), default=None)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,
@@ -221,26 +221,26 @@ class L1Interface(BASE):
         default=1,
         server_default=text("1"),
     )
-    ifindex = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    duplex = Column(BIGINT(unsigned=True), nullable=True, default=Null)
+    ifindex = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    duplex = Column(BIGINT(unsigned=True), nullable=True, default=None)
     ethernet = Column(BIT(1), default=0)
-    nativevlan = Column(BIGINT(unsigned=True), nullable=True, default=Null)
+    nativevlan = Column(BIGINT(unsigned=True), nullable=True, default=None)
     trunk = Column(BIT(1), default=0)
-    ifspeed = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    iftype = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    ifname = Column(VARBINARY(256), nullable=True, default=Null)
-    ifalias = Column(VARBINARY(256), nullable=True, default=Null, index=True)
-    ifdescr = Column(VARBINARY(256), nullable=True, default=Null)
-    ifadminstatus = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    ifoperstatus = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    ts_idle = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    cdpcachedeviceid = Column(VARBINARY(256), nullable=True, default=Null)
-    cdpcachedeviceport = Column(VARBINARY(256), nullable=True, default=Null)
-    cdpcacheplatform = Column(VARBINARY(256), nullable=True, default=Null)
-    lldpremportdesc = Column(VARBINARY(256), nullable=True, default=Null)
-    lldpremsyscapenabled = Column(VARBINARY(256), nullable=True, default=Null)
-    lldpremsysdesc = Column(VARBINARY(2048), nullable=True, default=Null)
-    lldpremsysname = Column(VARBINARY(256), nullable=True, default=Null)
+    ifspeed = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    iftype = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifname = Column(VARBINARY(256), nullable=True, default=None)
+    ifalias = Column(VARBINARY(256), nullable=True, default=None, index=True)
+    ifdescr = Column(VARBINARY(256), nullable=True, default=None)
+    ifadminstatus = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifoperstatus = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ts_idle = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    cdpcachedeviceid = Column(VARBINARY(256), nullable=True, default=None)
+    cdpcachedeviceport = Column(VARBINARY(256), nullable=True, default=None)
+    cdpcacheplatform = Column(VARBINARY(256), nullable=True, default=None)
+    lldpremportdesc = Column(VARBINARY(256), nullable=True, default=None)
+    lldpremsyscapenabled = Column(VARBINARY(256), nullable=True, default=None)
+    lldpremsysdesc = Column(VARBINARY(2048), nullable=True, default=None)
+    lldpremsysname = Column(VARBINARY(256), nullable=True, default=None)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,
@@ -282,10 +282,10 @@ class Vlan(BASE):
         server_default=text("1"),
     )
     vlan = Column(
-        BIGINT(unsigned=True), nullable=True, default=Null, index=True
+        BIGINT(unsigned=True), nullable=True, default=None, index=True
     )
-    name = Column(VARBINARY(256), nullable=True, default=Null)
-    state = Column(BIGINT(unsigned=True), nullable=True, default=Null)
+    name = Column(VARBINARY(256), nullable=True, default=None)
+    state = Column(BIGINT(unsigned=True), nullable=True, default=None)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,
@@ -494,9 +494,9 @@ class Ip(BASE):
         default=1,
         server_default=text("1"),
     )
-    address = Column(VARBINARY(256), nullable=True, default=Null, index=True)
-    version = Column(BIGINT(unsigned=True), nullable=True, default=Null)
-    hostname = Column(VARBINARY(256), nullable=True, default=Null, index=True)
+    address = Column(VARBINARY(256), nullable=True, default=None, index=True)
+    version = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    hostname = Column(VARBINARY(256), nullable=True, default=None, index=True)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,
@@ -587,9 +587,7 @@ class MacIp(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_macip = Column(
-        BIGINT(20, unsigned=True), primary_key=True, unique=True
-    )
+    idx_macip = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_ip = Column(
         ForeignKey(Ip.idx_ip, ondelete="CASCADE"),
         nullable=True,

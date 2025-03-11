@@ -92,16 +92,16 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            Event(
-                name=row.name.encode(),
-                epoch_utc=row.epoch_utc,
-                enabled=int(bool(row.enabled) is True),
-            )
+            {
+                "name": row.name.encode(),
+                "epoch_utc": row.epoch_utc,
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1157, inserts)
+        db.db_insert_row(1157, Event, inserts)
 
 
 def update_row(idx, row):

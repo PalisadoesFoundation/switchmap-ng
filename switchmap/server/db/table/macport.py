@@ -111,16 +111,16 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            MacPort(
-                idx_l1interface=row.idx_l1interface,
-                idx_mac=row.idx_mac,
-                enabled=int(bool(row.enabled) is True),
-            )
+            {
+                "idx_l1interface": row.idx_l1interface,
+                "idx_mac": row.idx_mac,
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1092, inserts)
+        db.db_insert_row(1092, MacPort, inserts)
 
 
 def update_row(idx, row):

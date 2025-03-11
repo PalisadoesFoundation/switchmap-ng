@@ -110,38 +110,38 @@ def insert_row(rows):
     # Create objects
     for row in rows:
         inserts.append(
-            _Device(
-                idx_zone=row.idx_zone,
-                sys_name=(
-                    null() if row.sys_name is None else row.sys_name.encode()
+            {
+                "idx_zone": row.idx_zone,
+                "sys_name": (
+                    None if row.sys_name is None else row.sys_name.encode()
                 ),
-                hostname=(
-                    null() if row.hostname is None else row.hostname.encode()
+                "hostname": (
+                    None if row.hostname is None else row.hostname.encode()
                 ),
-                name=(null() if row.name is None else row.name.encode()),
-                sys_description=(
-                    null()
+                "name": (None if row.name is None else row.name.encode()),
+                "sys_description": (
+                    None
                     if row.sys_description is None
                     else row.sys_description.encode()
                 ),
-                sys_objectid=(
-                    null()
+                "sys_objectid": (
+                    None
                     if row.sys_objectid is None
                     else row.sys_objectid.encode()
                 ),
-                sys_uptime=(
-                    null() if row.sys_uptime is None else row.sys_uptime
+                "sys_uptime": (
+                    None if row.sys_uptime is None else row.sys_uptime
                 ),
-                last_polled=(
-                    0 if row.last_polled is None else row.last_polled
+                "last_polled": (
+                    None if row.last_polled is None else row.last_polled
                 ),
-                enabled=int(bool(row.enabled) is True),
-            )
+                "enabled": int(bool(row.enabled) is True),
+            }
         )
 
     # Insert
     if bool(inserts):
-        db.db_add_all(1156, inserts)
+        db.db_insert_row(1156, _Device, inserts)
 
 
 def update_row(idx, row):
@@ -163,33 +163,33 @@ def update_row(idx, row):
             {
                 "idx_zone": row.idx_zone,
                 "sys_name": (
-                    null()
+                    None
                     if bool(row.sys_name) is False
                     else row.sys_name.encode()
                 ),
                 "hostname": (
-                    null()
+                    None
                     if bool(row.hostname) is False
                     else row.hostname.encode()
                 ),
                 "name": (
-                    null() if bool(row.name) is False else row.name.encode()
+                    None if bool(row.name) is False else row.name.encode()
                 ),
                 "sys_description": (
-                    null()
+                    None
                     if bool(row.sys_description) is False
                     else row.sys_description.encode()
                 ),
                 "sys_objectid": (
-                    null()
+                    None
                     if bool(row.sys_objectid) is False
                     else row.sys_objectid.encode()
                 ),
                 "sys_uptime": (
-                    null() if bool(row.sys_uptime) is False else row.sys_uptime
+                    None if bool(row.sys_uptime) is False else row.sys_uptime
                 ),
                 "last_polled": (
-                    0 if bool(row.last_polled) is False else row.last_polled
+                    None if bool(row.last_polled) is False else row.last_polled
                 ),
                 "enabled": int(bool(row.enabled) is True),
             }
