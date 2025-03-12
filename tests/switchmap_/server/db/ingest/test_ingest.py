@@ -62,7 +62,6 @@ CONFIG.save()
 from switchmap.poller.update import device
 from switchmap.server.db.ingest.update import device as device_update
 from switchmap.server.db.ingest.update import zone as zone_update
-from switchmap.server.db.ingest import update as testimport
 from switchmap.server.db.ingest import ingest
 from switchmap.server.db.table import zone
 from switchmap.server.db.table import oui
@@ -143,8 +142,8 @@ def _reset_db():
     device_data = _device.process()
 
     # Update the Zone ARP table
-    _zone = zone_update.Topology(device_data, idx_zone)
-    result = ingest.insert_arptable(_zone.process(dns=False))
+    _zone = zone_update.Topology(device_data, idx_zone, dns=False)
+    result = ingest.insert_arptable(_zone.process())
     return result
 
 

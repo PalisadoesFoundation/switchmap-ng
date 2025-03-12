@@ -11,6 +11,7 @@ from switchmap.core import log
 from switchmap.core import files
 from switchmap.core import general
 from switchmap import AGENT_INGESTER, AGENT_POLLER
+from switchmap.server import IngestArgument
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IRoot
 from switchmap.server.db.table import IMacIp
@@ -52,7 +53,8 @@ class Ingest:
         """
         # Initialize key variables
         self._config = config
-        self._test = test
+        self._test = bool(test)
+        self._dns = not bool(test)
         self._test_cache_directory = test_cache_directory
         self._multiprocessing = bool(multiprocessing)
 
@@ -93,7 +95,15 @@ class Ingest:
                 if bool(setup_success) is True:
                     # Populate the arguments
                     arguments = [
-                        [item.idx_zone, item.data, item.filepath, item.config]
+                        [
+                            IngestArgument(
+                                idx_zone=item.idx_zone,
+                                data=item.data,
+                                filepath=item.filepath,
+                                config=item.config,
+                                dns=self._dns,
+                            )
+                        ]
                         for item in setup_success.zones
                     ]
 
@@ -123,8 +133,7 @@ class Ingest:
         """Ingest the files' zone data.
 
         Args:
-            arguments: List of arguments for the processing the zone
-                [[item.idx_zone, item.data, item.filepath, item.config]]
+            arguments: List of Argument objects
 
         Returns:
             success: True if successful
@@ -269,19 +278,19 @@ class Ingest:
             _event.delete(event.idx_event)
 
 
-def process_zone(idx_zone, data, filepath, config):
+def process_zone(argument):
     """Ingest a single file for device updates.
 
     Args:
-        idx_zone: Zone index to be used for the data
-        data: Cache file containing data
-        filepath: Cache file filepath that contains the data
-        config: Daemon configuration
+        argument: Argument object
 
     Returns:
         rows: ZoneObjects object
 
     """
+    # Initialize key variables
+    (idx_zone, data, filepath, config, dns) = _get_arguments(argument)
+
     # Do nothing if the skip file exists
     skip_file = files.skip_file(AGENT_INGESTER, config)
     if os.path.isfile(skip_file) is True:
@@ -294,23 +303,23 @@ shutdown request was probably requested""".format(
         return
 
     # Process the ingested data
-    rows = update_zone.process(data, idx_zone)
+    rows = update_zone.process(data, idx_zone, dns=dns)
     return rows
 
 
-def process_device(idx_zone, data, filepath, config):
+def process_device(argument):
     """Ingest a single file for device updates.
 
     Args:
-        idx_zone: Zone index to be used for the data
-        data: Cache file containing data
-        filepath: Cache file filepath that contains the data
-        config: Daemon configuration
+        argument: Argument object
 
     Returns:
         None
 
     """
+    # Initialize key variables
+    (idx_zone, data, filepath, config, dns) = _get_arguments(argument)
+
     # Do nothing if the skip file exists
     skip_file = files.skip_file(AGENT_INGESTER, config)
     if os.path.isfile(skip_file) is True:
@@ -323,7 +332,7 @@ shutdown request was probably requested""".format(
         return
 
     # Process the ingested data
-    update_device.process(data, idx_zone)
+    update_device.process(data, idx_zone, dns=dns)
 
 
 def setup(src, config):
@@ -363,74 +372,6 @@ def setup(src, config):
         result = EventObjects(event=event, zones=_zones)
 
     # Return
-    return result
-
-
-def _filepaths(src):
-    """Get and _event ID for the next polling cycle.
-
-    Args:
-        src: Source directory
-
-    Returns:
-        filepaths: List of all yaml files in the directory
-
-    """
-    # Initialize key variables
-    filepaths = []
-
-    # Log progress
-    log_message = "Reading ingest YAML files."
-    log.log2info(1234, log_message)
-
-    # Process files
-    src_files = os.listdir(src)
-    for filename in src_files:
-        filepath = os.path.join(src, filename)
-        if os.path.isfile(filepath) and filepath.lower().endswith(".yaml"):
-            filepaths.append(filepath)
-    return filepaths
-
-
-def _get_zone(event, filepath):
-    """Create an RZone object from YAML file data.
-
-    Args:
-        event: RZone object
-        filepath: YAML filepath
-
-    Returns:
-        result: ZoneData object
-
-    """
-    # Read the yaml file
-    data = files.read_yaml_file(filepath)
-
-    # Get the zone information
-    name = data["misc"]["zone"]
-    exists = _zone.exists(event.idx_event, name)
-
-    if bool(exists) is False:
-        # Log progress
-        log_message = (
-            "Creating database zone '{}' in preparation "
-            "for database ingest".format(name)
-        )
-        log.log2info(1054, log_message)
-
-        # Insert
-        _zone.insert_row(
-            IZone(
-                idx_event=event.idx_event,
-                name=name,
-                notes=None,
-                enabled=1,
-            )
-        )
-        exists = _zone.exists(event.idx_event, name)
-
-    # Return
-    result = ZoneData(idx_zone=exists.idx_zone, data=data)
     return result
 
 
@@ -606,3 +547,92 @@ def insert_ipports(items, test=False):
     else:
         for row in sorted(rows, key=attrgetter("idx_ip", "idx_l1interface")):
             _ipport.insert_row(row)
+
+
+def _filepaths(src):
+    """Get and _event ID for the next polling cycle.
+
+    Args:
+        src: Source directory
+
+    Returns:
+        filepaths: List of all yaml files in the directory
+
+    """
+    # Initialize key variables
+    filepaths = []
+
+    # Log progress
+    log_message = "Reading ingest YAML files."
+    log.log2info(1234, log_message)
+
+    # Process files
+    src_files = os.listdir(src)
+    for filename in src_files:
+        filepath = os.path.join(src, filename)
+        if os.path.isfile(filepath) and filepath.lower().endswith(".yaml"):
+            filepaths.append(filepath)
+    return filepaths
+
+
+def _get_zone(event, filepath):
+    """Create an RZone object from YAML file data.
+
+    Args:
+        event: RZone object
+        filepath: YAML filepath
+
+    Returns:
+        result: ZoneData object
+
+    """
+    # Read the yaml file
+    data = files.read_yaml_file(filepath)
+
+    # Get the zone information
+    name = data["misc"]["zone"]
+    exists = _zone.exists(event.idx_event, name)
+
+    if bool(exists) is False:
+        # Log progress
+        log_message = (
+            "Creating database zone '{}' in preparation "
+            "for database ingest".format(name)
+        )
+        log.log2info(1054, log_message)
+
+        # Insert
+        _zone.insert_row(
+            IZone(
+                idx_event=event.idx_event,
+                name=name,
+                notes=None,
+                enabled=1,
+            )
+        )
+        exists = _zone.exists(event.idx_event, name)
+
+    # Return
+    result = ZoneData(idx_zone=exists.idx_zone, data=data)
+    return result
+
+
+def _get_arguments(argument):
+    """Ingest a single file for device updates.
+
+    Args:
+        argument: Argument object
+
+    Returns:
+        result: A tuple of the values of the argument
+
+    """
+    # Initialize key variables
+    result = (
+        argument.idx_zone,
+        argument.data,
+        argument.filepath,
+        argument.config,
+        argument.dns,
+    )
+    return result
