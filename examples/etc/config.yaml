@@ -6,13 +6,11 @@ core:
   log_directory: /switchmap-ng/var/log
   daemon_directory: /switchmap-ng/var/run
   multiprocessing: true
-
 dashboard:
   bind_port: 7001
   api_listen_address: 0.0.0.0
-  server_address: switchmap-api 
-  server_bind_port: 7000 
-
+  server_address: switchmap-api
+  server_bind_port: 7000
 server:
   username: switchmap
   api_listen_address: 0.0.0.0
@@ -25,7 +23,6 @@ server:
   db_user: switchmap
   db_pass: ${DB_PASSWORD}
   db_pool_size: 30
-
 poller:
   username: switchmap
   polling_interval: 86400
@@ -47,7 +44,6 @@ poller:
       snmp_community: ${SNMP_COMMUNITY}
       snmp_port: 161
       enabled: true
-
     - group_name: Corporate Campus
       snmp_version: 3
       snmp_secname: ${SNMP_SECNAME_CORP}
@@ -55,11 +51,10 @@ poller:
       snmp_authpassword: testing123
       snmp_privprotocol: des
       snmp_privpassword: ${SNMP_PRIV_PASSWORD_CORP}
-
     - group_name: Remote Sites
       snmp_version: 3
       snmp_secname: foobar
       snmp_authprotocol: sha
-      snmp_authpassword: testing123
+      snmp_authpassword: ${SNMP_AUTHPASSWORD_REMOTE}
       snmp_privprotocol: aes
-      snmp_privpassword: secret_password
+      snmp_privpassword: ${SNMP_PRIVPASSWORD_REMOTE}
