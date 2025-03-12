@@ -1,4 +1,9 @@
-CREATE DATABASE IF NOT EXISTS switchmap;
-CREATE USER IF NOT EXISTS 'switchmap'@'%' IDENTIFIED BY 'CHANGE_ME_NOW';
+CREATE DATABASE IF NOT EXISTS switchmap CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+USE switchmap;
+
+CREATE USER IF NOT EXISTS 'switchmap'@'%' IDENTIFIED WITH mysql_native_password BY 'CHANGE_ME_NOW';
+
 GRANT ALL PRIVILEGES ON switchmap.* TO 'switchmap'@'%';
+
 FLUSH PRIVILEGES;

@@ -1,77 +1,106 @@
-networks:
-  switchmap-net:
-    driver: bridge
-
 services:
   mysql:
-    networks:
-      - switchmap-net
     image: mysql:8.0
+    container_name: switchmap-mysql
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_DATABASE: switchmap
       MYSQL_USER: switchmap
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DEFAULT_AUTHENTICATION_PLUGIN: mysql_native_password
+    command: >
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+      --sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"
     volumes:
-      - db_data:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./secrets/mysql_root_password.txt:/run/secrets/mysql_root_password:ro
-      - ./secrets/mysql_password.txt:/run/secrets/mysql_password:ro
+    ports:
+      - "3307:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 30s
-      timeout: 10s
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "switchmap", "--password=${MYSQL_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
       retries: 5
-
-  server:
     networks:
-      - switchmap-net
+      - switchmap_network
+
+  switchmap-api:
     build: .
+    container_name: switchmap-api
     environment:
-      DB_PASSWORD: /run/secrets/mysql_password
-    volumes:
-      - ./secrets/mysql_password.txt:/run/secrets/mysql_password:ro
+      - SERVICE_TYPE=api
+      - MYSQL_HOST=switchmap-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=switchmap
+      - MYSQL_USER=switchmap
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - BIND_ADDRESS=0.0.0.0
+      - API_LISTEN_ADDRESS=0.0.0.0
+      - API_BIND_PORT=7000
     ports:
       - "7000:7000"
-    secrets:
-      - mysql_password
+    volumes:
+      - ./examples/etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
     depends_on:
       mysql:
         condition: service_healthy
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -f switchmap_server"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-
-
-  poller:
+    restart: unless-stopped
     networks:
-      - switchmap-net
+      - switchmap_network
+
+  switchmap-dashboard:
     build: .
+    container_name: switchmap-dashboard
     environment:
-      DB_PASSWORD: /run/secrets/mysql_password
+      - SERVICE_TYPE=dashboard
+      - MYSQL_HOST=switchmap-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=switchmap
+      - MYSQL_USER=switchmap
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - BIND_ADDRESS=0.0.0.0
+      - API_LISTEN_ADDRESS=0.0.0.0
+      - API_BIND_PORT=7001
+    ports:
+      - "7001:7001"
     volumes:
-      - ./secrets/mysql_password.txt:/run/secrets/mysql_password:ro
-    command: >
-      bash -c "
-        rm -f /switchmap-ng/var/run/pid/poller.pid &&
-        venv/bin/python3 bin/systemd/switchmap_poller --start
-      "
-    healthcheck:
-      test: ["CMD-SHELL", "pgrep -f switchmap_poller"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - ./etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
     depends_on:
-      server:
+      mysql:
         condition: service_healthy
+      switchmap-api:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - switchmap_network
+
+  switchmap-poller:
+    build: .
+    container_name: switchmap-poller
+    environment:
+      - SERVICE_TYPE=poller
+      - MYSQL_HOST=switchmap-mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DATABASE=switchmap
+      - MYSQL_USER=switchmap
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - BIND_ADDRESS=0.0.0.0
+    volumes:
+      - ./etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
+    depends_on:
+      mysql:
+        condition: service_healthy
+      switchmap-api:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - switchmap_network
+
+networks:
+  switchmap_network:
+    name: switchmap_network
 
 volumes:
-  db_data:
-
-secrets:
-  mysql_root_password:
-    file: ./secrets/mysql_root_password.txt
-  mysql_password:
-    file: ./secrets/mysql_password.txt
+  mysql_data:

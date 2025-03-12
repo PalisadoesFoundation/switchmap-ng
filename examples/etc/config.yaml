@@ -10,7 +10,7 @@ core:
 dashboard:
   bind_port: 7001
   api_listen_address: 0.0.0.0
-  server_address: server 
+  server_address: switchmap-api 
   server_bind_port: 7000 
 
 server:
@@ -29,7 +29,7 @@ server:
 poller:
   username: switchmap
   polling_interval: 86400
-  server_address: server
+  server_address: switchmap-api
   server_bind_port: 7000
   server_username: null
   server_password: null
