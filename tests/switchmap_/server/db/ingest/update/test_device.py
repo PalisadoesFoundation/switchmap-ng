@@ -75,10 +75,12 @@ from switchmap.server.db.table import event
 from switchmap.server.db import db
 from switchmap.server.db import models
 from switchmap.server.db.models import VlanPort
+from switchmap.server.db.models import IpPort
 from switchmap.server.db.models import MacPort
 from switchmap.server.db.models import Vlan
 from switchmap.server.db.models import L1Interface
 from switchmap.server.db.models import Device
+from switchmap.server.db.table import RIpPort
 from switchmap.server.db.table import RMacPort
 from switchmap.server.db.table import RVlanPort
 from switchmap.server.db.table import RVlan
@@ -1576,8 +1578,49 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                     ts_modified=None,
                 )
             )
-        # Sort by idx_vlanport
+        # Sort by idx_macport
         result.sort(key=lambda x: (x.idx_macport))
+        self.assertEqual(result[: self.max_loops], expected)
+
+    def test_ipport(self):
+        """Testing function ipport."""
+        # Initialize key variables
+        result = []
+        expected = []
+
+        # Process the device
+        _device = device.Device(_polled_data())
+        data = _device.process()
+
+        # Make sure the device exists
+        exists = testimport.device(self.idx_zone, data)
+
+        # Test transaction
+        tester = testimport.Topology(exists, data)
+        tester.l1interface(test=True)
+        tester.vlan(test=True)
+        tester.vlanport(test=True)
+        tester.macport(test=True)
+        tester.ipport(test=True)
+
+        # Verify ipport data
+        statement = select(IpPort)
+        rows = db.db_select_row(1033, statement)
+
+        # Return
+        for row in rows:
+            result.append(
+                RIpPort(
+                    idx_ipport=row.idx_ipport,
+                    idx_l1interface=row.idx_l1interface,
+                    idx_ip=row.idx_ip,
+                    enabled=row.enabled,
+                    ts_created=None,
+                    ts_modified=None,
+                )
+            )
+        # Sort by idx_ipport
+        result.sort(key=lambda x: (x.idx_ipport))
         self.assertEqual(result[: self.max_loops], expected)
 
 
