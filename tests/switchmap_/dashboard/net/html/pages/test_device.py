@@ -190,11 +190,19 @@ Technical Support:<br>http://www.cisco.com/techsupport Copyright (c) \
 prod_rel_team</td></tr>
 <tr><td>System sysObjectID</td><td>.1.3.6.1.4.1.9.1.516</td></tr>
 <tr><td>System Uptime</td><td>94 Days, 18:39:06</td></tr>
-<tr><td>Time Last Polled</td><td>2023-02-23 15:13:37</td></tr>
+<tr><td>Time Last Polled</td><td>2023-02-23 00:13:37</td></tr>
 </tbody>
 </table>"""
         result = self.device.system()
-        self.assertEqual(result, expected)
+
+        # Split the lines, ignore the time last polled as it can be
+        # different based on the timezone of the test
+        rlines = result.splitlines()
+        elines = expected.splitlines()
+        for row, content in enumerate(rlines):
+            if "Polled" in content:
+                continue
+            self.assertEqual(content, elines[row])
 
 
 class TestInterfaceTable(unittest.TestCase):
