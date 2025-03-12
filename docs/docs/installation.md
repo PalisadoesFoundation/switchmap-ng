@@ -28,7 +28,8 @@ $ sudo mysql
 ```
 ```sql
 CREATE DATABASE switchmap;
-GRANT ALL PRIVILEGES ON switchmap.* TO 'switchmap'@'localhost' IDENTIFIED BY 'CHANGE_ME_NOW';
+CREATE USER 'switchmap'@'localhost' IDENTIFIED BY 'CHANGE_ME_NOW';
+GRANT ALL PRIVILEGES ON switchmap.* TO 'switchmap'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```

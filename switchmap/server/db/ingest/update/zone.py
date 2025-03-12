@@ -148,17 +148,16 @@ class Topology:
         self._hostname = str(self._data["misc"]["host"]).lower()
         self._arp_table = _arp_table(idx_zone, self._data)
 
-    def process(self, dns):
+    def process(self):
         """Process data received from a device.
 
         Args:
-            dns: If True, perform DNS lookups to resolve hostnames.
+            None
 
         Returns:
             None
         """
         # Process zone data
-        self._dns = dns
         macs = self.mac()
         ips = self.ip()
         pairmacips = self.macip()
@@ -262,16 +261,21 @@ class Topology:
         unique_ips = set(ips)
         hostname_map = {}
         if self._dns:
-            for ip in unique_ips:
+            for item in unique_ips:
                 try:
-                    hostname_map[ip] = socket.gethostbyaddr(ip)[0]
+                    hostname_map[item] = socket.gethostbyaddr(item)[0]
                 except Exception as e:
                     log.log2debug(
                         1035,
-                        f"Unexpected error during DNS lookup for {ip}: ",
-                        f"{str(e)}",
+                        f"""\
+Unexpected error during DNS lookup for {item}: {str(e)}""",
                     )
-                    hostname_map[ip] = None
+                    hostname_map[item] = None
+                except:
+                    log.log2debug(
+                        1037, f"Unexpected error during DNS lookup for {item}"
+                    )
+                    hostname_map[item] = None
 
         # Create a DB record
         rows = [

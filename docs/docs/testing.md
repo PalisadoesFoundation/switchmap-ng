@@ -25,8 +25,55 @@ Here are some links to get you started:
         1. Tutorial: [SNMP Walk Examples for Windows](https://www.itprc.com/snmpwalk-examples-for-windows/)
 1. Ubuntu: 
     1. This page includes both server and client setup.
-    1. [Ubuntu SNMP Setup Guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring-the-snmp-agent-server)
+        1. [Ubuntu SNMP Setup Guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring-the-snmp-agent-server)
+    1. Testing configuration example for the `/etc/snmp/snmpd.conf` file.
+        1. Add this sample SNMPv2 configuration in the `/etc/snmp/snmpd.conf` file adding the community string `switchmap` with the ability to scan the entire SNMP tree.
+            ```
+            view switchmap-view  included   .1
+            rocommunity  switchmap default -V switchmap-view
+            rocommunity6 switchmap default -V switchmap-view
+            ```
+        1. Restart the `snmpd` daemon.
+            ```bash
+            $ systemctl restart snmpd
+            ```
+        1. Test by running this command.
+            ```bash
+            $ snmpwalk -v2c -c switchmap localhost .1.3.6.1.2.1.2
+            ```
+        1. You can get more useful information by commenting out the `mibs:` line in the `/etc/snmp/snmp.conf` file. The output of the previous command will be more complete.
+            ```
+            # Contents of file etc/snmp/snmp.conf
+            #mibs :
+            ```
+        1. Run the command again.
+            ```bash
+            $ snmpwalk -v2c -c switchmap localhost .1.3.6.1.2.1.2
+            ```
+        1. Add these configuration parameters to the `etc/config.yaml` file
+            ```yaml
+                zones:
+                    - zone: TEST
+                    hostnames:
+                        - localhost
 
+                snmp_groups:
+
+                    - group_name: Localhost-Test
+                        snmp_version: 2
+                        snmp_secname:
+                        snmp_community: switchmap
+                        snmp_port: 161
+                        snmp_authprotocol:
+                        snmp_authpassword:
+                        snmp_privprotocol:
+                        snmp_privpassword:
+                        enabled: True
+            ```
+        1. This testing command for the new `localhost` entry will show results.
+            ```bash
+            sudo venv/bin/python3 bin/tools/switchmap_poller_test.py --hostname localhost
+            ```
 ## SwitchMap-NG Setup for Developers
 
 Follow the installation steps above to have the application ready, then

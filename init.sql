@@ -7,3 +7,4 @@ CREATE USER IF NOT EXISTS 'switchmap'@'%' IDENTIFIED WITH mysql_native_password 
 GRANT ALL PRIVILEGES ON switchmap.* TO 'switchmap'@'%';
 
 FLUSH PRIVILEGES;
+
