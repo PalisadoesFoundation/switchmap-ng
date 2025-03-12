@@ -40,20 +40,18 @@ ROOT_DIR = os.path.abspath(
         os.pardir,
     )
 )
-_EXPECTED = """\
-{0}switchmap-ng{0}tests{0}switchmap_{0}server{0}db{0}ingest{0}update""".format(
-    os.sep
-)
+_EXPECTED = f"""\
+{os.sep}switchmap-ng{os.sep}tests{os.sep}switchmap_{os.sep}\
+server{os.sep}db{0}ingest{os.sep}update"""
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
     print(
-        """This script is not installed in the "{0}" directory. Please fix.\
-""".format(
-            _EXPECTED
-        )
+        f"""\
+This script is not installed in the "{_EXPECTED}" directory. Please fix.\
+"""
     )
     sys.exit(2)
 

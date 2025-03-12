@@ -14,11 +14,14 @@ from switchmap.server.db.table import l1interface as _l1interface
 from switchmap.server.db.table import vlan as _vlan
 from switchmap.server.db.table import macport as _macport
 from switchmap.server.db.table import vlanport as _vlanport
+from switchmap.server.db.table import ipport as _ipport
+from switchmap.server.db.table import ip as _ip
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import (
     IVlan,
     IDevice,
     IMacPort,
+    IIpPort,
     IVlanPort,
     IL1Interface,
 )
@@ -69,7 +72,7 @@ def device(idx_zone, data):
     )
 
     # Log
-    log_message = "Updating Device table for host {}".format(hostname)
+    log_message = f"Updating Device table for host {hostname}"
     log.log2debug(1080, log_message)
 
     # Update the database
@@ -81,7 +84,7 @@ def device(idx_zone, data):
         exists = _device.exists(row.idx_zone, row.hostname)
 
     # Log
-    log_message = "Updated Device table for host {}".format(hostname)
+    log_message = f"Updated Device table for host {hostname}"
     log.log2debug(1137, log_message)
 
     # Return
@@ -224,16 +227,17 @@ class Topology:
         # Test validity
         if bool(self._valid) is False:
             # Log
-            log_message = "No interfaces detected for for host {}".format(
-                self._device.hostname
-            )
+            log_message = f"""\
+No interfaces detected for for host {self._device.hostname}"""
             log.log2debug(1021, log_message)
             return
 
         # Initialize more key variables
         data = self._data
         interfaces = data.get("layer1")
-        historical = {_.ifname: _ for _ in _historical.interfaces(self._device)}
+        historical = {
+            _.ifname: _ for _ in _historical.interfaces(self._device)
+        }
         rows = []
 
         # Log
@@ -328,7 +332,7 @@ class Topology:
         self.log("Vlan")
 
         # Process each interface
-        for ifindex, interface in sorted(interfaces.items()):
+        for _, interface in sorted(interfaces.items()):
             # Process the VLANs on the interface
             vlans = interface.get("l1_vlans")
             if isinstance(vlans, list) is True:
@@ -479,12 +483,9 @@ class Topology:
             _macs = interface.get("l1_macs")
             if bool(_macs) is True:
                 # Update MAC addresses for all zones
-                log_message = (
-                    "Updating MAC addresses in the DB for device {}"
-                    "based on SNMP MIB-BRIDGE entries".format(
-                        self._device.hostname
-                    )
-                )
+                log_message = f"""\
+Updating MAC address to interface {ifindex} mapping in the DB for device \
+{self._device.hostname} based on SNMP MIB-BRIDGE entries"""
                 log.log2debug(1094, log_message)
 
                 # Iterate over the MACs found
@@ -518,6 +519,77 @@ class Topology:
         # Everything is completed
         self._status.macport = True
 
+    def ipport(self, test=False):
+        """Update the IpPort DB table.
+
+        Args:
+            test: Sequentially insert values into the database if True.
+                Bulk inserts don't insert data with predictable primary keys.
+
+        Returns:
+            None
+
+        """
+        # Test prerequisite
+        if bool(self._status.macport) is False:
+            self.log_invalid("IpPort")
+            return
+
+        # Initialize key variables
+        interfaces = self._data.get("layer1")
+        lookup = _lookup(self._device.idx_device)
+        inserts = []
+
+        # Log
+        self.log("MacPort")
+
+        # Get all the existing ifindexes
+        db_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
+
+        # Process each interface
+        for ifindex, interface in sorted(interfaces.items()):
+            if_exists = db_ifindexes.get(ifindex)
+
+            # Process each Mac
+            _ips = interface.get("l1_macs")
+            if bool(_ips) is True:
+                # Update MAC addresses for all zones
+                log_message = f"""\
+Updating IP address to device interface {ifindex} mapping in the DB for \
+device {self._device.hostname} based on SNMP MIB-BRIDGE entries"""
+                log.log2debug(1094, log_message)
+
+                # Iterate over the IPs found
+                for item in sorted(_ips):
+                    # Ensure the IP exists in the database
+                    ip_exists = _ip.exists(self._device.idx_zone, item)
+
+                    # If True update the port to IP address mapping
+                    if bool(ip_exists) is True:
+                        inserts.append(
+                            IIpPort(
+                                idx_l1interface=if_exists.idx_l1interface,
+                                idx_ip=ip_exists.idx_ip,
+                                enabled=1,
+                            )
+                        )
+
+        # Insert rows
+        if bool(inserts) is True:
+            if bool(test) is False:
+                _ipport.insert_row(inserts)
+            else:
+                for insert in sorted(
+                    inserts, key=attrgetter("idx_mac", "idx_l1interface")
+                ):
+                    _ipport.insert_row(insert)
+
+        # Log
+        self.log("IpPort", updated=True)
+
+        # Everything is completed
+        self._status.ipport = True
+
     def log(self, table, updated=False):
         """Create standardized log messaging.
 
@@ -530,13 +602,12 @@ class Topology:
 
         """
         # Initialize key variables
-        log_message = '\
-{} table update "{}" for host {}, {} seconds after starting'.format(
-            "Completed" if bool(updated) else "Starting",
-            table,
-            self._device.hostname,
-            int(time.time()) - self._start,
-        )
+        duration = int(time.time()) - self._start
+        state = "Completed" if bool(updated) else "Starting"
+        log_message = f"""\
+{state} table update "{table}" for host {self._device.hostname}, \
+{duration} seconds after starting"""
+
         log.log2debug(1028, log_message)
 
     def log_invalid(self, table):
@@ -550,13 +621,10 @@ class Topology:
 
         """
         # Initialize key variables
-        log_message = "\
-Invalid update sequence for table {} when processing host {}, {} seconds\
-after starting".format(
-            table,
-            self._device.hostname,
-            int(time.time()) - self._start,
-        )
+        duration = int(time.time()) - self._start
+        log_message = f"""\
+Invalid update sequence for table {table} when processing host \
+{self._device.hostname}, {duration} seconds after starting"""
         log.log2debug(1029, log_message)
 
 
