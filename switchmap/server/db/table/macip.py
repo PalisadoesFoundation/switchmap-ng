@@ -130,7 +130,6 @@ def idx_ips_exist(idx_mac):
 
     Args:
         idx_mac: Mac.idx_mac
-        idx_ip: Ip.idx_ip
 
     Returns:
         result: List of RMacIp tuples
