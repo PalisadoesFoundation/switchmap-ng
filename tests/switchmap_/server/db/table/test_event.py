@@ -339,7 +339,9 @@ def _convert(row):
 
     """
     # Do conversion
-    result = IEvent(name=row.name, epoch_utc=row.epoch_utc, enabled=row.enabled)
+    result = IEvent(
+        name=row.name, epoch_utc=row.epoch_utc, enabled=row.enabled
+    )
     return result
 
 
