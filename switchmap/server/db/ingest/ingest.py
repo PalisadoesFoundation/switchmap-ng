@@ -9,21 +9,17 @@ from operator import attrgetter
 from multiprocessing import get_context
 from switchmap.core import log
 from switchmap.core import files
-from switchmap.core import general
 from switchmap import AGENT_INGESTER, AGENT_POLLER
 from switchmap.server import IngestArgument
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IRoot
 from switchmap.server.db.table import IMacIp
-from switchmap.server.db.table import IIpPort
 from switchmap.server.db.table import event as _event
 from switchmap.server.db.table import zone as _zone
 from switchmap.server.db.table import root as _root
 from switchmap.server.db.table import ip as _ip
-from switchmap.server.db.table import ipport as _ipport
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import macip as _macip
-from switchmap.server.db.table import macport as _macport
 from switchmap.server import ZoneData, ZoneDevice, EventObjects
 from switchmap.server.db.ingest.update import device as update_device
 from switchmap.server.db.ingest.update import zone as update_zone
@@ -76,6 +72,7 @@ class Ingest:
         )
         poller_lock_file = files.lock_file(AGENT_POLLER, self._config)
         arguments = []
+        pairmacips = None
 
         # Process files
         with tempfile.TemporaryDirectory(
@@ -116,17 +113,12 @@ class Ingest:
                     if bool(pairmacips):
                         self.device(arguments)
 
-                    # Update the IpPort table
-                    insert_ipports(pairmacips)
-
                     # Cleanup
                     self.cleanup(setup_success.event)
             else:
-                log_message = (
-                    "Poller lock file {} exists. Skipping processing of cache "
-                    "files. Is the poller running or did it crash "
-                    "unexpectedly?".format(poller_lock_file)
-                )
+                log_message = f"""\
+Poller lock file {poller_lock_file} exists. Skipping processing of cache \
+files. Is the poller running or did it crash unexpectedly?"""
                 log.log2info(1077, log_message)
 
     def zone(self, arguments):
@@ -294,11 +286,9 @@ def process_zone(argument):
     # Do nothing if the skip file exists
     skip_file = files.skip_file(AGENT_INGESTER, config)
     if os.path.isfile(skip_file) is True:
-        log_message = """\
-Skip file {} found. Aborting ingesting {}. A daemon \
-shutdown request was probably requested""".format(
-            skip_file, filepath
-        )
+        log_message = f"""\
+Skip file {skip_file} found. Aborting ingesting {filepath}. A daemon \
+shutdown request was probably requested"""
         log.log2debug(1075, log_message)
         return
 
@@ -323,11 +313,9 @@ def process_device(argument):
     # Do nothing if the skip file exists
     skip_file = files.skip_file(AGENT_INGESTER, config)
     if os.path.isfile(skip_file) is True:
-        log_message = """\
-Skip file {} found. Aborting ingesting {}. A daemon \
-shutdown request was probably requested""".format(
-            skip_file, filepath
-        )
+        log_message = f"""\
+Skip file {skip_file} found. Aborting ingesting {filepath}. A daemon \
+shutdown request was probably requested"""
         log.log2debug(1049, log_message)
         return
 
@@ -483,72 +471,6 @@ def insert_macips(items, test=False):
         _macip.insert_row(row)
 
 
-def insert_ipports(items, test=False):
-    """Update the mac DB table.
-
-    Args:
-        items: PairMacIp objects list
-        test: Sequentially insert values into the database if True.
-            Bulk inserts don't insert data with predictable primary keys.
-
-    Returns:
-        None
-
-    """
-    # Initialize key variables
-    rows = []
-
-    # Process data
-    for item in items:
-        # Create expanded lower case versions of the IP address
-        myp = general.ipaddress(item.ip)
-        if bool(myp) is False:
-            continue
-
-        # Create lowercase version of mac address
-        mactest = general.mac(item.mac)
-        if bool(mactest.valid) is False:
-            continue
-        else:
-            next_mac = mactest.mac
-
-        # Verify prerequisites
-        mac_exists = _mac.exists(item.idx_zone, next_mac)
-        ip_exists = _ip.exists(item.idx_zone, myp.address)
-
-        # Skip if the IP doesn't exist, or else the following logic will crash
-        if bool(ip_exists) is False:
-            continue
-
-        # Iterate over existing MAC entries
-        if bool(mac_exists) is True:
-            # Get the ports on which the MAC address resides
-            macports = _macport.find_idx_mac(mac_exists.idx_mac)
-
-            # Iterate over the MAC assignments to interfaces
-            for macport in macports:
-                ipport_exists = _ipport.exists(
-                    macport.idx_l1interface, ip_exists.idx_ip
-                )
-
-                # Assign the IP to this port
-                if bool(ipport_exists) is False:
-                    rows.append(
-                        IIpPort(
-                            idx_l1interface=macport.idx_l1interface,
-                            idx_ip=ip_exists.idx_ip,
-                            enabled=1,
-                        )
-                    )
-
-    # Do the inserts
-    if bool(test) is False:
-        _ipport.insert_row(rows)
-    else:
-        for row in sorted(rows, key=attrgetter("idx_ip", "idx_l1interface")):
-            _ipport.insert_row(row)
-
-
 def _filepaths(src):
     """Get and _event ID for the next polling cycle.
 
@@ -595,10 +517,8 @@ def _get_zone(event, filepath):
 
     if bool(exists) is False:
         # Log progress
-        log_message = (
-            "Creating database zone '{}' in preparation "
-            "for database ingest".format(name)
-        )
+        log_message = f"""\
+Creating database zone '{name}' in preparation for database ingest"""
         log.log2info(1054, log_message)
 
         # Insert

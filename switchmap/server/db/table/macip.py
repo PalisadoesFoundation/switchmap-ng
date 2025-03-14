@@ -64,73 +64,6 @@ def exists(idx_mac, idx_ip):
     return result
 
 
-# def findip(idx_ip, ipaddress):
-#     """Find IP address.
-
-#     Args:
-#         idx_ip: Device index
-#         ipaddress: IP address
-
-#     Returns:
-#         result: RMacIp tuple
-
-#     """
-#     # Initialize key variables
-#     result = []
-#     rows = []
-
-#     # Get row from dataase
-#     statement = select(MacIp).where(
-#         and_(MacIp.ip_ == ipaddress.encode(), MacIp.idx_ip == idx_ip)
-#     )
-#     rows = db.db_select_row(1186, statement)
-
-#     # Return
-#     for row in rows:
-#         result.append(_rows.macip(row))
-#     return result
-
-
-# def findhostname(idx_ip, hostname):
-#     """Find hostname.
-
-#     Args:
-#         idx_ip: Device index
-#         hostname: Hostname
-
-#     Returns:
-#         result: MacIp tuple
-
-#     """
-#     # Initialize key variables
-#     result = []
-#     rows = []
-
-#     # Get row from database (Contains)
-#     statement = select(MacIp).where(
-#         and_(
-#             MacIp.hostname.like(
-#                 func.concat(func.concat("%", hostname.encode(), "%"))
-#             ),
-#             MacIp.idx_ip == idx_ip,
-#         )
-#     )
-
-#     rows_contains = db.db_select_row(1191, statement)
-
-#     # Merge results and remove duplicates
-#     if bool(rows_contains) is True:
-#         rows.extend(rows_contains)
-
-#     # Return
-#     for row in rows:
-#         result.append(_rows.macip(row))
-
-#     # Remove duplicates and return
-#     result = list(set(result))
-#     return result
-
-
 def insert_row(rows):
     """Create a MacIp table entry.
 
@@ -190,3 +123,29 @@ def update_row(idx, row):
         )
     )
     db.db_update(1115, statement)
+
+
+def idx_ips_exist(idx_mac):
+    """Get a list of idx_ip values matching idx_mac from the MacIp table.
+
+    Args:
+        idx_mac: Mac.idx_mac
+
+    Returns:
+        result: List of RMacIp tuples
+
+    """
+    # Initialize key variables
+    result = []
+
+    # Get row from dataase
+    statement = select(MacIp).where(
+        MacIp.idx_mac == idx_mac,
+    )
+    rows = db.db_select_row(1087, statement)
+
+    # Return
+    for row in rows:
+        result.append(_rows.macip(row))
+
+    return result

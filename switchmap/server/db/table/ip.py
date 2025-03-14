@@ -1,6 +1,6 @@
 """Module for querying the Ip table."""
 
-from sqlalchemy import select, update, null, and_, func
+from sqlalchemy import select, update, and_, func
 
 # Import project libraries
 from switchmap.server.db import db

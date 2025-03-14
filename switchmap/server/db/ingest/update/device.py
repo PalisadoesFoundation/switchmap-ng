@@ -7,6 +7,7 @@ from operator import attrgetter
 
 # Application imports
 from switchmap.core import log
+from switchmap.core import general
 from switchmap.server.db.ingest.query import device as _misc_device
 from switchmap.server.db.misc import interface as _historical
 from switchmap.server.db.table import device as _device
@@ -14,11 +15,14 @@ from switchmap.server.db.table import l1interface as _l1interface
 from switchmap.server.db.table import vlan as _vlan
 from switchmap.server.db.table import macport as _macport
 from switchmap.server.db.table import vlanport as _vlanport
+from switchmap.server.db.table import ipport as _ipport
 from switchmap.server.db.table import mac as _mac
+from switchmap.server.db.table import macip as _macip
 from switchmap.server.db.table import (
     IVlan,
     IDevice,
     IMacPort,
+    IIpPort,
     IVlanPort,
     IL1Interface,
 )
@@ -69,7 +73,7 @@ def device(idx_zone, data):
     )
 
     # Log
-    log_message = "Updating Device table for host {}".format(hostname)
+    log_message = f"Updating Device table for host {hostname}"
     log.log2debug(1080, log_message)
 
     # Update the database
@@ -81,7 +85,7 @@ def device(idx_zone, data):
         exists = _device.exists(row.idx_zone, row.hostname)
 
     # Log
-    log_message = "Updated Device table for host {}".format(hostname)
+    log_message = f"Updated Device table for host {hostname}"
     log.log2debug(1137, log_message)
 
     # Return
@@ -126,6 +130,7 @@ class Status:
         self._vlanport = False
         self._macport = False
         self._l1interface = False
+        self._ipport = False
 
     @property
     def l1interface(self):
@@ -136,6 +141,16 @@ class Status:
     def l1interface(self, value):
         """Set the 'l1interface' property."""
         self._l1interface = value
+
+    @property
+    def ipport(self):
+        """Provide the value of  the 'ipport' property."""
+        return self._ipport
+
+    @ipport.setter
+    def ipport(self, value):
+        """Set the 'ipport' property."""
+        self._ipport = value
 
     @property
     def macport(self):
@@ -209,6 +224,7 @@ class Topology:
         self.vlan()
         self.vlanport()
         self.macport()
+        self.ipport()
 
     def l1interface(self, test=False):
         """Update the L1interface DB table.
@@ -224,9 +240,8 @@ class Topology:
         # Test validity
         if bool(self._valid) is False:
             # Log
-            log_message = "No interfaces detected for for host {}".format(
-                self._device.hostname
-            )
+            log_message = f"""\
+No interfaces detected for for host {self._device.hostname}"""
             log.log2debug(1021, log_message)
             return
 
@@ -235,6 +250,7 @@ class Topology:
         interfaces = data.get("layer1")
         historical = {_.ifname: _ for _ in _historical.interfaces(self._device)}
         rows = []
+        inserts = []
 
         # Log
         self.log("L1Interface")
@@ -289,12 +305,15 @@ class Topology:
                 )
             )
 
+        # Remove duplicates
+        inserts = list(set(rows))
+
         # Insert rows
-        if bool(rows):
+        if bool(inserts):
             if bool(test) is False:
-                _l1interface.insert_row(rows)
+                _l1interface.insert_row(inserts)
             else:
-                for row in sorted(rows, key=attrgetter("ifindex")):
+                for row in sorted(inserts, key=attrgetter("ifindex")):
                     _l1interface.insert_row(row)
 
         # Log
@@ -328,7 +347,7 @@ class Topology:
         self.log("Vlan")
 
         # Process each interface
-        for ifindex, interface in sorted(interfaces.items()):
+        for _, interface in sorted(interfaces.items()):
             # Process the VLANs on the interface
             vlans = interface.get("l1_vlans")
             if isinstance(vlans, list) is True:
@@ -430,13 +449,15 @@ class Topology:
                             if bool(vlanport_exists) is False:
                                 inserts.append(row)
 
+        # Remove duplicates
+        unique_inserts = list(set(inserts))
+
         # Insert rows
-        if bool(inserts) is True:
+        if bool(unique_inserts) is True:
             if bool(test) is False:
-                _vlanport.insert_row(inserts)
+                _vlanport.insert_row(unique_inserts)
             else:
-                inserts = sorted(inserts)
-                _vlanport.insert_row(inserts)
+                _vlanport.insert_row(sorted(unique_inserts))
 
         # Log
         self.log("VlanPort", updated=True)
@@ -479,18 +500,25 @@ class Topology:
             _macs = interface.get("l1_macs")
             if bool(_macs) is True:
                 # Update MAC addresses for all zones
-                log_message = (
-                    "Updating MAC addresses in the DB for device {}"
-                    "based on SNMP MIB-BRIDGE entries".format(
-                        self._device.hostname
-                    )
-                )
-                log.log2debug(1094, log_message)
+                log_message = f"""\
+Updating MAC address to interface {ifindex} mapping in the DB for device \
+{self._device.hostname} based on SNMP MIB-BRIDGE entries"""
+                log.log2debug(1065, log_message)
 
                 # Iterate over the MACs found
-                for item in sorted(_macs):
+                for next_mac in sorted(_macs):
+                    # Initialize loop variables
+                    valid_mac = None
+
+                    # Create lowercase version of MAC address
+                    mactest = general.mac(next_mac)
+                    if bool(mactest.valid) is False:
+                        continue
+                    else:
+                        valid_mac = mactest.mac
+
                     # Ensure the MAC exists in the database
-                    mac_exists = _mac.exists(self._device.idx_zone, item)
+                    mac_exists = _mac.exists(self._device.idx_zone, valid_mac)
 
                     # If True update the port to MAC address mapping
                     if bool(mac_exists) is True:
@@ -502,13 +530,17 @@ class Topology:
                             )
                         )
 
+        # Remove duplicates
+        unique_inserts = list(set(inserts))
+
         # Insert rows
-        if bool(inserts) is True:
+        if bool(unique_inserts) is True:
             if bool(test) is False:
-                _macport.insert_row(inserts)
+                _macport.insert_row(unique_inserts)
             else:
                 for insert in sorted(
-                    inserts, key=attrgetter("idx_mac", "idx_l1interface")
+                    unique_inserts,
+                    key=attrgetter("idx_mac", "idx_l1interface"),
                 ):
                     _macport.insert_row(insert)
 
@@ -517,6 +549,85 @@ class Topology:
 
         # Everything is completed
         self._status.macport = True
+
+    def ipport(self, test=False):
+        """Update the IpPort DB table.
+
+        Args:
+            test: Sequentially insert values into the database if True.
+                Bulk inserts don't insert data with predictable primary keys.
+
+        Returns:
+            None
+
+        """
+        # Test prerequisite
+        if bool(self._status.macport) is False:
+            self.log_invalid("IpPort")
+            return
+
+        # Initialize key variables
+        interfaces = self._data.get("layer1")
+        lookup = _lookup(self._device.idx_device)
+        inserts = []
+
+        # Log
+        self.log("IpPort")
+
+        # Get all the existing ifindexes
+        db_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
+
+        # Process each interface
+        for ifindex, interface in sorted(interfaces.items()):
+            if_exists = db_ifindexes.get(ifindex)
+
+            # Process each Mac
+            _macs = interface.get("l1_macs")
+            if bool(_macs) is True:
+
+                # Update MAC addresses for all zones
+                log_message = f"""\
+Getting MAC addresses for interface {ifindex} in the DB for device \
+{self._device.hostname} based on SNMP MIB-BRIDGE entries"""
+                log.log2debug(1063, log_message)
+
+                # Iterate over the MACs found
+                for item in sorted(_macs):
+                    # Ensure the MAC exists in the database
+                    mac_exists = _mac.exists(self._device.idx_zone, item)
+                    if bool(mac_exists) is True:
+                        # Get all the IP addresses for the mac
+                        found = _macip.idx_ips_exist(mac_exists.idx_mac)
+
+                        # Get tie Ip records
+                        if bool(found) is True:
+                            for item in found:
+                                _ = IIpPort(
+                                    idx_l1interface=if_exists.idx_l1interface,
+                                    idx_ip=item.idx_ip,
+                                    enabled=1,
+                                )
+                                inserts.append(_)
+
+        # Remove duplicates
+        unique_inserts = list(set(inserts))
+
+        # Insert rows
+        if bool(unique_inserts) is True:
+            if bool(test) is False:
+                _ipport.insert_row(unique_inserts)
+            else:
+                for insert in sorted(
+                    unique_inserts,
+                    key=attrgetter("idx_ip", "idx_l1interface"),
+                ):
+                    _ipport.insert_row(insert)
+
+        # Log
+        self.log("IpPort", updated=True)
+
+        # Everything is completed
+        self._status.ipport = True
 
     def log(self, table, updated=False):
         """Create standardized log messaging.
@@ -530,13 +641,12 @@ class Topology:
 
         """
         # Initialize key variables
-        log_message = '\
-{} table update "{}" for host {}, {} seconds after starting'.format(
-            "Completed" if bool(updated) else "Starting",
-            table,
-            self._device.hostname,
-            int(time.time()) - self._start,
-        )
+        duration = int(time.time()) - self._start
+        state = "Completed" if bool(updated) else "Starting"
+        log_message = f"""\
+{state} table update "{table}" for host {self._device.hostname}, \
+{duration} seconds after starting"""
+
         log.log2debug(1028, log_message)
 
     def log_invalid(self, table):
@@ -550,13 +660,10 @@ class Topology:
 
         """
         # Initialize key variables
-        log_message = "\
-Invalid update sequence for table {} when processing host {}, {} seconds\
-after starting".format(
-            table,
-            self._device.hostname,
-            int(time.time()) - self._start,
-        )
+        duration = int(time.time()) - self._start
+        log_message = f"""\
+Invalid update sequence for table {table} when processing host \
+{self._device.hostname}, {duration} seconds after starting"""
         log.log2debug(1029, log_message)
 
 
