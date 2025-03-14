@@ -7,6 +7,7 @@ from operator import attrgetter
 
 # Application imports
 from switchmap.core import log
+from switchmap.core import general
 from switchmap.server.db.ingest.query import device as _misc_device
 from switchmap.server.db.misc import interface as _historical
 from switchmap.server.db.table import device as _device
@@ -15,8 +16,8 @@ from switchmap.server.db.table import vlan as _vlan
 from switchmap.server.db.table import macport as _macport
 from switchmap.server.db.table import vlanport as _vlanport
 from switchmap.server.db.table import ipport as _ipport
-from switchmap.server.db.table import ip as _ip
 from switchmap.server.db.table import mac as _mac
+from switchmap.server.db.table import macip as _macip
 from switchmap.server.db.table import (
     IVlan,
     IDevice,
@@ -129,6 +130,7 @@ class Status:
         self._vlanport = False
         self._macport = False
         self._l1interface = False
+        self._ipport = False
 
     @property
     def l1interface(self):
@@ -139,6 +141,16 @@ class Status:
     def l1interface(self, value):
         """Set the 'l1interface' property."""
         self._l1interface = value
+
+    @property
+    def ipport(self):
+        """Provide the value of  the 'ipport' property."""
+        return self._ipport
+
+    @ipport.setter
+    def ipport(self, value):
+        """Set the 'ipport' property."""
+        self._ipport = value
 
     @property
     def macport(self):
@@ -212,6 +224,7 @@ class Topology:
         self.vlan()
         self.vlanport()
         self.macport()
+        self.ipport()
 
     def l1interface(self, test=False):
         """Update the L1interface DB table.
@@ -239,6 +252,7 @@ No interfaces detected for for host {self._device.hostname}"""
             _.ifname: _ for _ in _historical.interfaces(self._device)
         }
         rows = []
+        inserts = []
 
         # Log
         self.log("L1Interface")
@@ -293,12 +307,15 @@ No interfaces detected for for host {self._device.hostname}"""
                 )
             )
 
+        # Remove duplicates
+        inserts = list(set(rows))
+
         # Insert rows
-        if bool(rows):
+        if bool(inserts):
             if bool(test) is False:
-                _l1interface.insert_row(rows)
+                _l1interface.insert_row(inserts)
             else:
-                for row in sorted(rows, key=attrgetter("ifindex")):
+                for row in sorted(inserts, key=attrgetter("ifindex")):
                     _l1interface.insert_row(row)
 
         # Log
@@ -434,13 +451,15 @@ No interfaces detected for for host {self._device.hostname}"""
                             if bool(vlanport_exists) is False:
                                 inserts.append(row)
 
+        # Remove duplicates
+        unique_inserts = list(set(inserts))
+
         # Insert rows
-        if bool(inserts) is True:
+        if bool(unique_inserts) is True:
             if bool(test) is False:
-                _vlanport.insert_row(inserts)
+                _vlanport.insert_row(unique_inserts)
             else:
-                inserts = sorted(inserts)
-                _vlanport.insert_row(inserts)
+                _vlanport.insert_row(sorted(unique_inserts))
 
         # Log
         self.log("VlanPort", updated=True)
@@ -486,12 +505,22 @@ No interfaces detected for for host {self._device.hostname}"""
                 log_message = f"""\
 Updating MAC address to interface {ifindex} mapping in the DB for device \
 {self._device.hostname} based on SNMP MIB-BRIDGE entries"""
-                log.log2debug(1094, log_message)
+                log.log2debug(1065, log_message)
 
                 # Iterate over the MACs found
-                for item in sorted(_macs):
+                for next_mac in sorted(_macs):
+                    # Initialize loop variables
+                    valid_mac = None
+
+                    # Create lowercase version of MAC address
+                    mactest = general.mac(next_mac)
+                    if bool(mactest.valid) is False:
+                        continue
+                    else:
+                        valid_mac = mactest.mac
+
                     # Ensure the MAC exists in the database
-                    mac_exists = _mac.exists(self._device.idx_zone, item)
+                    mac_exists = _mac.exists(self._device.idx_zone, valid_mac)
 
                     # If True update the port to MAC address mapping
                     if bool(mac_exists) is True:
@@ -503,13 +532,17 @@ Updating MAC address to interface {ifindex} mapping in the DB for device \
                             )
                         )
 
+        # Remove duplicates
+        unique_inserts = list(set(inserts))
+
         # Insert rows
-        if bool(inserts) is True:
+        if bool(unique_inserts) is True:
             if bool(test) is False:
-                _macport.insert_row(inserts)
+                _macport.insert_row(unique_inserts)
             else:
                 for insert in sorted(
-                    inserts, key=attrgetter("idx_mac", "idx_l1interface")
+                    unique_inserts,
+                    key=attrgetter("idx_mac", "idx_l1interface"),
                 ):
                     _macport.insert_row(insert)
 
@@ -541,7 +574,7 @@ Updating MAC address to interface {ifindex} mapping in the DB for device \
         inserts = []
 
         # Log
-        self.log("MacPort")
+        self.log("IpPort")
 
         # Get all the existing ifindexes
         db_ifindexes = {_.ifindex: _ for _ in lookup.ifindexes}
@@ -551,36 +584,44 @@ Updating MAC address to interface {ifindex} mapping in the DB for device \
             if_exists = db_ifindexes.get(ifindex)
 
             # Process each Mac
-            _ips = interface.get("l1_macs")
-            if bool(_ips) is True:
+            _macs = interface.get("l1_macs")
+            if bool(_macs) is True:
+
                 # Update MAC addresses for all zones
                 log_message = f"""\
-Updating IP address to device interface {ifindex} mapping in the DB for \
-device {self._device.hostname} based on SNMP MIB-BRIDGE entries"""
-                log.log2debug(1094, log_message)
+Getting MAC addresses for interface {ifindex} in the DB for device \
+{self._device.hostname} based on SNMP MIB-BRIDGE entries"""
+                log.log2debug(1063, log_message)
 
-                # Iterate over the IPs found
-                for item in sorted(_ips):
-                    # Ensure the IP exists in the database
-                    ip_exists = _ip.exists(self._device.idx_zone, item)
+                # Iterate over the MACs found
+                for item in sorted(_macs):
+                    # Ensure the MAC exists in the database
+                    mac_exists = _mac.exists(self._device.idx_zone, item)
+                    if bool(mac_exists) is True:
+                        # Get all the IP addresses for the mac
+                        found = _macip.idx_ips_exist(mac_exists.idx_mac)
 
-                    # If True update the port to IP address mapping
-                    if bool(ip_exists) is True:
-                        inserts.append(
-                            IIpPort(
-                                idx_l1interface=if_exists.idx_l1interface,
-                                idx_ip=ip_exists.idx_ip,
-                                enabled=1,
-                            )
-                        )
+                        # Get tie Ip records
+                        if bool(found) is True:
+                            for item in found:
+                                _ = IIpPort(
+                                    idx_l1interface=if_exists.idx_l1interface,
+                                    idx_ip=item.idx_ip,
+                                    enabled=1,
+                                )
+                                inserts.append(_)
+
+        # Remove duplicates
+        unique_inserts = list(set(inserts))
 
         # Insert rows
-        if bool(inserts) is True:
+        if bool(unique_inserts) is True:
             if bool(test) is False:
-                _ipport.insert_row(inserts)
+                _ipport.insert_row(unique_inserts)
             else:
                 for insert in sorted(
-                    inserts, key=attrgetter("idx_mac", "idx_l1interface")
+                    unique_inserts,
+                    key=attrgetter("idx_ip", "idx_l1interface"),
                 ):
                     _ipport.insert_row(insert)
 

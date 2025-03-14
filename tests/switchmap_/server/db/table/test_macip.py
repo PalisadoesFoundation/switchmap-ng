@@ -30,20 +30,17 @@ ROOT_DIR = os.path.abspath(
         os.pardir,
     )
 )
-_EXPECTED = """\
-{0}switchmap-ng{0}tests{0}switchmap_{0}server{0}db{0}table""".format(
-    os.sep
-)
+_EXPECTED = f"""\
+{os.sep}switchmap-ng{os.sep}tests{os.sep}switchmap_{os.sep}server\
+{os.sep}db{os.sep}table"""
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
     print(
-        """This script is not installed in the "{0}" directory. Please fix.\
-""".format(
-            _EXPECTED
-        )
+        f"""\
+This script is not installed in the "{_EXPECTED}" directory. Please fix."""
     )
     sys.exit(2)
 
@@ -189,6 +186,37 @@ class TestDbTableMacIp(unittest.TestCase):
             result = testimport.exists(updated_row.idx_ip, updated_row.idx_mac)
             self.assertTrue(result)
             self.assertEqual(_convert(result), _convert(updated_row))
+
+    def test_idx_ips_exist(self):
+        """Testing function idx_ips_exist."""
+        # Initialize key variables
+        items = []
+
+        # Loop a lot of times
+        for _ in range(self.loops):
+            # Create record
+            row = _row()
+
+            # Test before insertion of an initial row
+            result = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertFalse(result)
+
+            # Test after insertion of an initial row
+            testimport.insert_row(row)
+            result = testimport.exists(row.idx_mac, row.idx_ip)
+            self.assertTrue(result)
+            self.assertEqual(_convert(result), _convert(row))
+
+            # Validate idx_ip for each idx_mac
+            items.append(result)
+
+        # Test idx_ips_exist
+        for item in items:
+            result = testimport.idx_ips_exist(item.idx_mac)
+            self.assertTrue(result)
+            self.assertTrue(isinstance(result, list))
+            self.assertEqual(len(result), 1)
+            self.assertEqual(_convert(result[0]), _convert(item))
 
     def test__row(self):
         """Testing function _row."""

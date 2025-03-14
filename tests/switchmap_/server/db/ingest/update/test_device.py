@@ -42,7 +42,7 @@ ROOT_DIR = os.path.abspath(
 )
 _EXPECTED = f"""\
 {os.sep}switchmap-ng{os.sep}tests{os.sep}switchmap_{os.sep}\
-server{os.sep}db{0}ingest{os.sep}update"""
+server{os.sep}db{os.sep}ingest{os.sep}update"""
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
@@ -1584,7 +1584,248 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
         """Testing function ipport."""
         # Initialize key variables
         result = []
-        expected = []
+        expected = [
+            RIpPort(
+                idx_ipport=1,
+                idx_l1interface=21,
+                idx_ip=57,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=2,
+                idx_l1interface=21,
+                idx_ip=58,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=3,
+                idx_l1interface=65,
+                idx_ip=126,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=4,
+                idx_l1interface=48,
+                idx_ip=149,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=5,
+                idx_l1interface=49,
+                idx_ip=150,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=6,
+                idx_l1interface=44,
+                idx_ip=151,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=7,
+                idx_l1interface=49,
+                idx_ip=152,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=8,
+                idx_l1interface=48,
+                idx_ip=153,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=9,
+                idx_l1interface=49,
+                idx_ip=154,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=10,
+                idx_l1interface=48,
+                idx_ip=155,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=11,
+                idx_l1interface=49,
+                idx_ip=156,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=12,
+                idx_l1interface=48,
+                idx_ip=159,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=13,
+                idx_l1interface=48,
+                idx_ip=233,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=14,
+                idx_l1interface=49,
+                idx_ip=234,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=15,
+                idx_l1interface=48,
+                idx_ip=235,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=16,
+                idx_l1interface=48,
+                idx_ip=236,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=17,
+                idx_l1interface=49,
+                idx_ip=237,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=18,
+                idx_l1interface=49,
+                idx_ip=238,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=19,
+                idx_l1interface=48,
+                idx_ip=239,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=20,
+                idx_l1interface=49,
+                idx_ip=240,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=21,
+                idx_l1interface=49,
+                idx_ip=241,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=22,
+                idx_l1interface=49,
+                idx_ip=242,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=23,
+                idx_l1interface=49,
+                idx_ip=243,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=24,
+                idx_l1interface=49,
+                idx_ip=244,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=25,
+                idx_l1interface=48,
+                idx_ip=245,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=26,
+                idx_l1interface=48,
+                idx_ip=246,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=27,
+                idx_l1interface=48,
+                idx_ip=247,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=28,
+                idx_l1interface=49,
+                idx_ip=248,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=29,
+                idx_l1interface=48,
+                idx_ip=249,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+            RIpPort(
+                idx_ipport=30,
+                idx_l1interface=48,
+                idx_ip=250,
+                enabled=1,
+                ts_modified=None,
+                ts_created=None,
+            ),
+        ]
 
         # Process the device
         _device = device.Device(_polled_data())
@@ -1619,7 +1860,7 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
             )
         # Sort by idx_ipport
         result.sort(key=lambda x: (x.idx_ipport))
-        self.assertEqual(result[: self.max_loops], expected)
+        self.assertEqual(result[: self.max_loops * 3], expected)
 
 
 if __name__ == "__main__":
