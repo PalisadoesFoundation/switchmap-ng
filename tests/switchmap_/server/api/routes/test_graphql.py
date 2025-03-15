@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Unittests for the API Graphql routes.
 
-This module tests the functionaliity in the Graphql endpoint.
+This module tests the functionality in the Graphql endpoint.
 """
 
 import json
@@ -155,15 +155,12 @@ class TestGraphqlAPIRoute(unittest.TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertIn("data", response.json)
-        self.assertIn(
-            new_device.sys_name,
-            list(
-                map(
-                    lambda x: x["node"]["sysName"],
-                    response.json["data"]["devices"]["edges"],
-                )
-            ),
-        )
+
+        sys_names = [
+            res["node"]["sysName"]
+            for res in response.json["data"]["devices"]["edges"]
+        ]
+        self.assertIn(new_device.sys_name, sys_names)
 
     def test_graphql_invalid_query(self) -> None:
         """Test invalid query returns correct error response."""
