@@ -21,7 +21,9 @@ ROOT_DIR = os.path.abspath(
                     os.path.join(
                         os.path.abspath(
                             os.path.join(
-                                os.path.abspath(os.path.join(EXEC_DIR, os.pardir)),
+                                os.path.abspath(
+                                    os.path.join(EXEC_DIR, os.pardir)
+                                ),
                                 os.pardir,
                             )
                         ),
@@ -35,7 +37,9 @@ ROOT_DIR = os.path.abspath(
     )
 )
 _EXPECTED = """\
-{0}switchmap-ng{0}tests{0}switchmap_{0}server{0}api{0}routes""".format(os.sep)
+{0}switchmap-ng{0}tests{0}switchmap_{0}server{0}api{0}routes""".format(
+    os.sep
+)
 if EXEC_DIR.endswith(_EXPECTED) is True:
     # We need to prepend the path in case the repo has been installed
     # elsewhere on the system using PIP. This could corrupt expected results
@@ -43,7 +47,9 @@ if EXEC_DIR.endswith(_EXPECTED) is True:
 else:
     print(
         """This script is not installed in the "{0}" directory. Please fix.\
-""".format(_EXPECTED)
+""".format(
+            _EXPECTED
+        )
     )
     sys.exit(2)
 
