@@ -5,6 +5,7 @@
 #
 ##############################################################################
 ##############################################################################
+
 name: PR Workflow
 
 on:
@@ -27,6 +28,8 @@ jobs:
     steps:
       - name: Checkout the Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Check if the source and target branches are different
         if: ${{ github.event.pull_request.base.ref == github.event.pull_request.head.ref }}
@@ -66,6 +69,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get Changed Unauthorized files
         id: changed-unauth-files
@@ -141,6 +146,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get changed files
         id: changed-files
@@ -222,8 +229,7 @@ jobs:
           files: ./coverage/coverage.lcov
           gcov_ignore: "docs/"
           fail_ci_if_error: false
-          # This is added to make troubleshooting easier in the CodeCov SAAS site
-          name: "${{env.CODECOV_UNIQUE_NAME}}"
+          name: "${{ env.CODECOV_UNIQUE_NAME }}"
 
       - name: Test acceptable level of code coverage
         uses: VeryGoodOpenSource/very_good_coverage@v3
@@ -237,15 +243,22 @@ jobs:
     needs: [Test-Application]
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.base.ref == 'develop' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: yarn
           cache-dependency-path: "docs/"
+
       - name: Install dependencies
         working-directory: ./docs
         run: yarn install --frozen-lockfile
+
       - name: Test building the website
         working-directory: ./docs
         run: yarn build
@@ -258,7 +271,7 @@ jobs:
       - name: Check if the target branch is develop
         if: github.event.pull_request.base.ref != 'develop'
         run: |
-          echo "Error: Pull request target branch must be 'develop' not ${{github.event.pull_request.base.ref}}. Please refer PR_GUIDELINES.md"
+          echo "Error: Pull request target branch must be 'develop' not ${{ github.event.pull_request.base.ref }}. Please refer PR_GUIDELINES.md"
           echo "Error: Close this PR and try again."
           exit 1
 
@@ -270,6 +283,9 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Validate CodeRabbit.ai Approval
         run: |
           chmod +x $GITHUB_WORKSPACE/.github/workflows/scripts/validate-coderabbit.sh
