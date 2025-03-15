@@ -5,7 +5,6 @@
 #
 ##############################################################################
 ##############################################################################
-
 name: PR Workflow
 
 on:
@@ -28,12 +27,14 @@ jobs:
     steps:
       - name: Checkout the Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Check if the source and target branches are different
         if: ${{ github.event.pull_request.base.ref == github.event.pull_request.head.ref }}
         run: |
-          echo "Source Branch ${{ github.event.pull_request.head.ref }}"
-          echo "Target Branch ${{ github.event.pull_request.base.ref }}"
+          echo "Source Branch: ${{ github.event.pull_request.head.ref }}"
+          echo "Target Branch: ${{ github.event.pull_request.base.ref }}"
           echo "Error: Source and Target Branches are the same. Please ensure they are different."
           echo "Error: Close this PR and try again."
           exit 1
@@ -67,12 +68,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get Changed Unauthorized files
         id: changed-unauth-files
-        uses: tj-actions/changed-files@v45
-        with:
-          files: |
+        run: |
+          # Define the list of sensitive files/patterns:
+          SENSITIVE_FILES=(
             CODE_OF_CONDUCT.md
             CODE_STYLE.md
             CONTRIBUTING.md
@@ -88,7 +91,7 @@ jobs:
             docs/sidebar*.js
             docs/docusaurus.config.js
             docs/babel.config.js
-            docs/tsconfig.json     
+            docs/tsconfig.json
             .gitignore
             CODEOWNERS
             LICENSE
@@ -98,8 +101,31 @@ jobs:
             requirements.txt
             CNAME
             yaml.lock
-            package.json     
+            package.json
             package-lock.json
+          )
+
+          # Get changed/added/modified/renamed files and deleted files
+          CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRT ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+          DELETED_FILES=$(git diff --name-only --diff-filter=D ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+
+          SENSITIVE_CHANGED=false
+          ALL_CHANGED_FILES=""
+
+          # Check if any file in the diff matches our sensitive patterns
+          for PATTERN in "${SENSITIVE_FILES[@]}"; do
+            for FILE in $CHANGED_FILES $DELETED_FILES; do
+              if [[ "$FILE" == "$PATTERN" || "$FILE" =~ $PATTERN ]]; then
+                ALL_CHANGED_FILES+="$FILE "
+                SENSITIVE_CHANGED=true
+              fi
+            done
+          done
+
+          # Send outputs to GitHub Actions
+          echo "all_changed_files=$ALL_CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "any_changed=$SENSITIVE_CHANGED" >> $GITHUB_OUTPUT
+          echo "any_deleted=$([ -n "$DELETED_FILES" ] && echo "true" || echo "false")" >> $GITHUB_OUTPUT
 
       - name: List all changed unauthorized files
         if: steps.changed-unauth-files.outputs.any_changed == 'true' || steps.changed-unauth-files.outputs.any_deleted == 'true'
@@ -109,7 +135,7 @@ jobs:
           for file in ${CHANGED_UNAUTH_FILES}; do
             echo "$file is unauthorized to change/delete"
           done
-          echo "To override this, apply the 'ignore-sensitive-files-pr' label"          
+          echo "To override this, apply the 'ignore-sensitive-files-pr' label"
           exit 1
 
   Count-Changed-Files:
@@ -119,26 +145,32 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v45
+        run: |
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
+          # Use multiline token syntax to safely output file names
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          CHANGED_FILES_COUNT=$(echo "$CHANGED_FILES" | wc -l)
+          echo "changed_files_count=$CHANGED_FILES_COUNT" >> $GITHUB_OUTPUT
 
       - name: Echo number of changed files
-        env:
-          CHANGED_FILES_COUNT: ${{ steps.changed-files.outputs.all_changed_files_count }}
         run: |
-          echo "Number of files changed: $CHANGED_FILES_COUNT"
+          echo "Number of changed files: ${{ steps.changed-files.outputs.changed_files_count }}"
 
       - name: Check if the number of changed files is less than 10000
-        if: steps.changed-files.outputs.all_changed_files_count > 10000
-        env:
-          CHANGED_FILES_COUNT: ${{ steps.changed-files.outputs.all_changed_files_count }}
+        if: ${{ steps.changed-files.outputs.changed_files_count > 10000 }}
         run: |
           echo "Error: Too many files (greater than 10000) changed in the pull request."
           echo "Possible issues:"
           echo "- Contributor may be merging into an incorrect branch."
-          echo "- Source branch may be incorrect please use develop as source branch."
+          echo "- Source branch may be incorrect. Please use develop as the source branch."
           exit 1
 
   Test-Application:
@@ -150,14 +182,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - name: Set up Python 3.11
         uses: actions/setup-python@v3
         with:
           python-version: 3.11
+
       - name: Updated Ubuntu package sources
         run: sudo apt-get -y update
+
       - name: Install Ubuntu packages
         run: sudo apt-get install -y python3 python3-pip snmp libsnmp-dev gcc python-dev-is-python3 python3-venv mysql-server
+
       - name: Cache pip packages
         uses: actions/cache@v4
         with:
@@ -181,7 +217,7 @@ jobs:
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost';"
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "FLUSH PRIVILEGES;"
           pytest --cov=switchmap --cov-report=lcov:coverage/coverage.lcov --cov-report=term-missing tests/switchmap_
-          
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -191,8 +227,7 @@ jobs:
           files: ./coverage/coverage.lcov
           gcov_ignore: "docs/"
           fail_ci_if_error: false
-          # This is added to make troubleshooting easier in the CodeCov SAAS site
-          name: "${{env.CODECOV_UNIQUE_NAME}}"
+          name: "${{ env.CODECOV_UNIQUE_NAME }}"
 
       - name: Test acceptable level of code coverage
         uses: VeryGoodOpenSource/very_good_coverage@v3
@@ -204,19 +239,24 @@ jobs:
     name: Test Deployment to https://docs-legacy.switchmap-ng.io
     runs-on: ubuntu-latest
     needs: [Test-Application]
-    # Run only if the develop branch and not dependabot
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.base.ref == 'develop' }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: yarn
           cache-dependency-path: "docs/"
-      # Run Docusaurus in the ./docs directory
+
       - name: Install dependencies
         working-directory: ./docs
         run: yarn install --frozen-lockfile
+
       - name: Test building the website
         working-directory: ./docs
         run: yarn build
@@ -227,20 +267,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check if the target branch is develop
-        if: github.event.pull_request.base.ref != 'develop'
+        if: ${{ github.event.pull_request.base.ref != 'develop' }}
         run: |
-          echo "Error: Pull request target branch must be 'develop' not ${{github.event.pull_request.base.ref}}. Please refer PR_GUIDELINES.md"
+          echo "Error: Pull request target branch must be 'develop' not ${{ github.event.pull_request.base.ref }}. Please refer PR_GUIDELINES.md"
           echo "Error: Close this PR and try again."
           exit 1
 
   Validate-CodeRabbit:
     name: Validate CodeRabbit Approval
     runs-on: ubuntu-latest
-    if: github.actor != 'dependabot[bot]'
+    if: ${{ github.actor != 'dependabot[bot]' }}
     needs: [Code-Quality-Checks, Test-Application]
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Validate CodeRabbit.ai Approval
         run: |
           chmod +x $GITHUB_WORKSPACE/.github/workflows/scripts/validate-coderabbit.sh
