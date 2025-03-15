@@ -187,5 +187,5 @@ class TestGraphqlAPIRoute(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    # Do the unit test
+    # Run the unit test
     unittest.main()
