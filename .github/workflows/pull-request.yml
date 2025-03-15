@@ -5,7 +5,6 @@
 #
 ##############################################################################
 ##############################################################################
-
 name: PR Workflow
 
 on:
@@ -34,8 +33,8 @@ jobs:
       - name: Check if the source and target branches are different
         if: ${{ github.event.pull_request.base.ref == github.event.pull_request.head.ref }}
         run: |
-          echo "Source Branch ${{ github.event.pull_request.head.ref }}"
-          echo "Target Branch ${{ github.event.pull_request.base.ref }}"
+          echo "Source Branch: ${{ github.event.pull_request.head.ref }}"
+          echo "Target Branch: ${{ github.event.pull_request.base.ref }}"
           echo "Error: Source and Target Branches are the same. Please ensure they are different."
           echo "Error: Close this PR and try again."
           exit 1
@@ -153,21 +152,20 @@ jobs:
         id: changed-files
         run: |
           CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }})
-          CHANGED_FILES_COUNT=$(echo "$CHANGED_FILES" | wc -l)
+          # Use multiline token syntax to safely output file names
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
-          echo "all_changed_files=$CHANGED_FILES" >> $GITHUB_OUTPUT
-          echo "all_changed_files_count=$CHANGED_FILES_COUNT" >> $GITHUB_OUTPUT
+          CHANGED_FILES_COUNT=$(echo "$CHANGED_FILES" | wc -l)
+          echo "changed_files_count=$CHANGED_FILES_COUNT" >> $GITHUB_OUTPUT
 
       - name: Echo number of changed files
-        env:
-          CHANGED_FILES_COUNT: ${{ steps.changed-files.outputs.all_changed_files_count }}
         run: |
-          echo "Number of files changed: $CHANGED_FILES_COUNT"
+          echo "Number of changed files: ${{ steps.changed-files.outputs.changed_files_count }}"
 
       - name: Check if the number of changed files is less than 10000
-        if: steps.changed-files.outputs.all_changed_files_count > 10000
-        env:
-          CHANGED_FILES_COUNT: ${{ steps.changed-files.outputs.all_changed_files_count }}
+        if: ${{ steps.changed-files.outputs.changed_files_count > 10000 }}
         run: |
           echo "Error: Too many files (greater than 10000) changed in the pull request."
           echo "Possible issues:"
@@ -269,7 +267,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check if the target branch is develop
-        if: github.event.pull_request.base.ref != 'develop'
+        if: ${{ github.event.pull_request.base.ref != 'develop' }}
         run: |
           echo "Error: Pull request target branch must be 'develop' not ${{ github.event.pull_request.base.ref }}. Please refer PR_GUIDELINES.md"
           echo "Error: Close this PR and try again."
@@ -278,7 +276,7 @@ jobs:
   Validate-CodeRabbit:
     name: Validate CodeRabbit Approval
     runs-on: ubuntu-latest
-    if: github.actor != 'dependabot[bot]'
+    if: ${{ github.actor != 'dependabot[bot]' }}
     needs: [Code-Quality-Checks, Test-Application]
     steps:
       - name: Checkout Repository
