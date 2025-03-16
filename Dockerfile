@@ -1,7 +1,6 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
-ENV DEBIAN_FRONTEND=noninteractive
-
+# Install required packges
 RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
@@ -10,35 +9,39 @@ RUN apt-get update && apt-get install -y \
     snmp-mibs-downloader \
     gcc \
     python-dev-is-python3 \
-    python3-venv \
-    net-tools \
-    netcat-traditional \
+    git \
+    dos2unix \
     mysql-client \
-    libmysqlclient-dev \
-    && rm -rf /var/lib/apt/lists/*
+    python3-venv && \
+    rm -rf /var/lib/apt/lists/*
 
+# Setting up the working directory
 WORKDIR /opt/switchmap-ng
 
-RUN mkdir -p etc var/daemon/pid && \
-    chmod -R 755 var && \
-    chmod -R 700 var/daemon/pid && \
-    chmod 755 etc
+# Cloning the switchmap-ng repository into the working directory
+RUN git clone https://github.com/PalisadoesFoundation/switchmap-ng .
 
-RUN python3 -m venv venv
-ENV PATH="/opt/switchmap-ng/venv/bin:$PATH" \
-    PYTHONPATH="/opt/switchmap-ng"
+# Creating a user and group for running the app
+RUN groupadd -r switchmap && \
+    useradd -r -g switchmap -s /bin/false switchmap
 
+COPY examples/etc/config.yaml /opt/switchmap-ng/etc/config.yaml
 
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
-RUN mkdir -p /etc
-COPY examples/etc/config.yaml /etc/config.yaml
+RUN mkdir -p /opt/switchmap-ng/var/{log,run,cache} && \
+    chown -R switchmap:switchmap /opt/switchmap-ng/var
 
-COPY . .
+RUN python3 -m venv /opt/switchmap-ng/venv && \
+    /opt/switchmap-ng/venv/bin/pip install --upgrade pip && \
+    /opt/switchmap-ng/venv/bin/pip install -r requirements.txt
 
-COPY entrypoint.sh /opt/switchmap-ng/entrypoint.sh
-RUN chmod +x /opt/switchmap-ng/entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN dos2unix /entrypoint.sh && chmod 750 /entrypoint.sh
 
+# Exposing ports
 EXPOSE 7000 7001
 
-ENTRYPOINT ["/opt/switchmap-ng/entrypoint.sh"]
+#venv to PATH and config directory
+ENV PATH="/opt/switchmap-ng/venv/bin:$PATH" \
+    SWITCHMAP_CONFIGDIR=/opt/switchmap-ng/etc
+
+ENTRYPOINT ["/entrypoint.sh"]
