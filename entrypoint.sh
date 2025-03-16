@@ -46,34 +46,6 @@ verify_database() {
     fi
 }
 
-# Function: Verify service status (for API or Dashboard)
-verify_service_status() {
-    service_type=$1
-    max_attempts=5
-    attempt=1
-    while [ $attempt -le $max_attempts ]; do
-        case "$service_type" in
-            "api")
-                if bin/systemd/switchmap_server --status; then
-                    echo "API server is running properly"
-                    return 0
-                fi
-                ;;
-            "dashboard")
-                if bin/systemd/switchmap_dashboard --status; then
-                    echo "Dashboard is running properly"
-                    return 0
-                fi
-                ;;
-        esac
-        echo "Attempt $attempt of $max_attempts: Service not ready - waiting"
-        sleep 5
-        attempt=$((attempt + 1))
-    done
-    echo "Service failed to start properly after $max_attempts attempts"
-    return 1
-}
-
 # Wait for MySQL to become available
 wait_for_mysql
 
@@ -115,18 +87,10 @@ case "$SERVICE_TYPE" in
     "api")
         echo "Starting API Server..."
         bin/systemd/switchmap_server --start
-        if ! verify_service_status "api"; then
-            echo "API server failed to start properly"
-            exit 1
-        fi
         ;;
     "dashboard")
         echo "Starting Web Dashboard..."
         bin/systemd/switchmap_dashboard --start
-        if ! verify_service_status "dashboard"; then
-            echo "Dashboard failed to start properly"
-            exit 1
-        fi
         ;;
     "poller")
         echo "Starting Poller..."

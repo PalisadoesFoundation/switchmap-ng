@@ -9,13 +9,13 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DEFAULT_AUTHENTICATION_PLUGIN: mysql_native_password
     command: >
-      --default-authentication-plugin=mysql_native_password
       --character-set-server=utf8mb4
       --collation-server=utf8mb4_unicode_ci
       --sql-mode="STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./my.cnf:/etc/mysql/conf.d/my_custom.cnf:ro
     ports:
       - "3307:3306"
     healthcheck:
@@ -30,15 +30,15 @@ services:
     build: .
     container_name: switchmap-api
     environment:
-      - SERVICE_TYPE=api
-      - MYSQL_HOST=switchmap-mysql
-      - MYSQL_PORT=3306
-      - MYSQL_DATABASE=switchmap
-      - MYSQL_USER=switchmap
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - BIND_ADDRESS=0.0.0.0
-      - API_LISTEN_ADDRESS=0.0.0.0
-      - API_BIND_PORT=7000
+      SERVICE_TYPE: api
+      MYSQL_HOST: switchmap-mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: switchmap
+      MYSQL_USER: switchmap
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      BIND_ADDRESS: 0.0.0.0
+      API_LISTEN_ADDRESS: 0.0.0.0
+      API_BIND_PORT: "7000"
     ports:
       - "7000:7000"
     volumes:
@@ -54,19 +54,19 @@ services:
     build: .
     container_name: switchmap-dashboard
     environment:
-      - SERVICE_TYPE=dashboard
-      - MYSQL_HOST=switchmap-mysql
-      - MYSQL_PORT=3306
-      - MYSQL_DATABASE=switchmap
-      - MYSQL_USER=switchmap
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - BIND_ADDRESS=0.0.0.0
-      - API_LISTEN_ADDRESS=0.0.0.0
-      - API_BIND_PORT=7001
+      SERVICE_TYPE: dashboard
+      MYSQL_HOST: switchmap-mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: switchmap
+      MYSQL_USER: switchmap
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      BIND_ADDRESS: 0.0.0.0
+      API_LISTEN_ADDRESS: 0.0.0.0
+      API_BIND_PORT: "7001"
     ports:
       - "7001:7001"
     volumes:
-      - ./etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
+      - ./examples/etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
     depends_on:
       mysql:
         condition: service_healthy
@@ -80,15 +80,15 @@ services:
     build: .
     container_name: switchmap-poller
     environment:
-      - SERVICE_TYPE=poller
-      - MYSQL_HOST=switchmap-mysql
-      - MYSQL_PORT=3306
-      - MYSQL_DATABASE=switchmap
-      - MYSQL_USER=switchmap
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - BIND_ADDRESS=0.0.0.0
+      SERVICE_TYPE: poller
+      MYSQL_HOST: switchmap-mysql
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: switchmap
+      MYSQL_USER: switchmap
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      BIND_ADDRESS: 0.0.0.0
     volumes:
-      - ./etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
+      - ./examples/etc/config.yaml:/opt/switchmap-ng/etc/config.yaml
     depends_on:
       mysql:
         condition: service_healthy
