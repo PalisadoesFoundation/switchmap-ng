@@ -135,6 +135,14 @@ Here are the steps using the `vim` editor:
 
 Make the required changes.
 
+### Set Up Git Hooks
+
+Run the following command to set up the pre-commit hook for automatically generating documentation:
+
+```bash
+python scripts/setup_hooks.py
+```
+
 ### Run Installation Script
 
 You will now need to run the database installation script. This creates

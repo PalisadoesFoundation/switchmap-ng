@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Activate the virtual environment
+source venv/bin/activate
+
+# Get first-level changed subfolders inside switchmap/
+CHANGED_FOLDERS=$(git diff --name-only --cached | awk -F'/' '/^switchmap\// {print $2}' | sort -u)
+
+# Exit if no relevant files changed
+if [[ -z "$CHANGED_FOLDERS" ]]; then
+ echo "No files changed"
+    exit 0
+fi
+
+# Generate MD files only for changed subfolders
+for folder in $CHANGED_FOLDERS; do
+    if [[ -d "switchmap/$folder" ]]; then
+        echo "Generating docs for: $folder"
+        pydoc-markdown -I "switchmap/$folder" > "docs/docs/auto-docs/${folder^}.md"
+    fi
+done
+
+# Add generated files to the commit
+git add docs/docs/auto-docs/*.md
