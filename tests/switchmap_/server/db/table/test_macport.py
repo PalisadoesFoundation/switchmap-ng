@@ -237,9 +237,7 @@ class TestDbTableMacPort(unittest.TestCase):
         testimport.update_row(idx, updated_row)
 
         # checking if row unchanged due to duplication
-        result = testimport.exists(
-            row.idx_l1interface, row.idx_mac
-        )
+        result = testimport.exists(row.idx_l1interface, row.idx_mac)
         self.assertTrue(result)
         self.assertEqual(_convert(result), original_row)
 
