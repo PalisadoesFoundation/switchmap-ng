@@ -134,7 +134,6 @@ def update_row(idx, row):
         None
 
     """
-
     # checking for duplication
     existing = exists(row.idx_l1interface, row.idx_mac)
     if existing and existing.idx_macport != idx:

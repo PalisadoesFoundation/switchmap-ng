@@ -214,7 +214,6 @@ class TestDbTableMacPort(unittest.TestCase):
 
     def test_update_row(self):
         """Testing function update_row."""
-
         # inserting a known row to force out potential duplicate
         initial_row = MacPort(idx_l1interface=3, idx_mac=7, enabled=1)
         testimport.insert_row(initial_row)
