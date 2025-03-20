@@ -214,9 +214,6 @@ class TestDbTableMacPort(unittest.TestCase):
 
     def test_update_row(self):
         """Testing function update_row."""
-        # inserting a known row to force out potential duplicate
-        initial_row = MacPort(idx_l1interface=3, idx_mac=7, enabled=1)
-        testimport.insert_row(initial_row)
         # Find a row combination that does exist
         while True:
             row = _row()
@@ -227,18 +224,20 @@ class TestDbTableMacPort(unittest.TestCase):
 
         # Do an update
         idx = result.idx_macport
-        original_row = _convert(result)
-        updated_row = MacPort(
-            idx_l1interface=3,
-            idx_mac=7,
-            enabled=row.enabled,
-        )
+        while True: 
+            updated_row = MacPort(
+                idx_l1interface=random.randint(1,db.TEST_MAXIMUM),
+                idx_mac=random.randint(1, db.TEST_MAXIMUM),
+                enabled=row.enabled
+            )
+            if not testimport.exists(updated_row.idx_l1interface,updated_row.idx_mac):
+                break
         testimport.update_row(idx, updated_row)
 
         # checking if row unchanged due to duplication
-        result = testimport.exists(row.idx_l1interface, row.idx_mac)
+        result = testimport.exists(updated_row.idx_l1interface, updated_row.idx_mac)
         self.assertTrue(result)
-        self.assertEqual(_convert(result), original_row)
+        self.assertEqual(_convert(result), _convert(updated_row))
 
     def test__row(self):
         """Testing function _row."""
