@@ -224,18 +224,22 @@ class TestDbTableMacPort(unittest.TestCase):
 
         # Do an update
         idx = result.idx_macport
-        while True: 
+        while True:
             updated_row = MacPort(
-                idx_l1interface=random.randint(1,db.TEST_MAXIMUM),
+                idx_l1interface=random.randint(1, db.TEST_MAXIMUM),
                 idx_mac=random.randint(1, db.TEST_MAXIMUM),
-                enabled=row.enabled
+                enabled=row.enabled,
             )
-            if not testimport.exists(updated_row.idx_l1interface,updated_row.idx_mac):
+            if not testimport.exists(
+                updated_row.idx_l1interface, updated_row.idx_mac
+            ):
                 break
         testimport.update_row(idx, updated_row)
 
         # checking if row unchanged due to duplication
-        result = testimport.exists(updated_row.idx_l1interface, updated_row.idx_mac)
+        result = testimport.exists(
+            updated_row.idx_l1interface, updated_row.idx_mac
+        )
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(updated_row))
 
