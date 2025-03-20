@@ -134,7 +134,7 @@ def update_row(idx, row):
         None
 
     """
-    # updating if no duplicate
+    # update
     statement = (
         update(MacPort)
         .where(MacPort.idx_macport == idx)
