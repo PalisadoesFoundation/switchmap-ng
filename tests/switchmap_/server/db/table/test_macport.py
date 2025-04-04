@@ -260,7 +260,7 @@ class TestDbTableMacPort(unittest.TestCase):
         )
         testimport.update_row(idx, duplicate_row)
 
-        # Original row should still exist with its updated values, not with the duplicate values
+        # Original row remains unchanged despite duplicate update attempt.
 
         after_update = testimport.idx_exists(idx)
         self.assertTrue(after_update)
