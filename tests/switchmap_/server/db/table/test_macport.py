@@ -243,6 +243,32 @@ class TestDbTableMacPort(unittest.TestCase):
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(updated_row))
 
+        # Updates that would create duplicates are skipped
+        while True:
+            new_row = _row()
+            if not testimport.exists(new_row.idx_l1interface, new_row.idx_mac):
+                break
+
+        testimport.insert_row(new_row)
+        new_result = testimport.exists(new_row.idx_l1interface, new_row.idx_mac)
+        self.assertTrue(new_result)
+
+        duplicate_row = MacPort(
+            idx_l1interface=new_row.idx_l1interface,
+            idx_mac=new_row.idx_mac,
+            enabled=row.enabled,
+        )
+        testimport.update_row(idx, duplicate_row)
+
+        # Original row should still exist with its updated values, not with the duplicate values
+
+        after_update = testimport.idx_exists(idx)
+        self.assertTrue(after_update)
+        self.assertEqual(
+            after_update.idx_l1interface, updated_row.idx_l1interface
+        )
+        self.assertEqual(after_update.idx_mac, updated_row.idx_mac)
+
     def test__row(self):
         """Testing function _row."""
         # This function is tested by all the other tests
