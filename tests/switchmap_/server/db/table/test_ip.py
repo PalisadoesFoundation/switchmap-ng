@@ -227,11 +227,17 @@ class TestDbTableIp(unittest.TestCase):
             self.assertTrue(result)
             self.assertEqual(_convert(result), _convert(row))
 
+            unique_address = None
+            while unique_address is None:
+                new_address = data.ipv4() if row.version == 4 else data.ipv6()
+                if not testimport.exists(row.idx_zone,new_address):
+                    unique_address = new_address
+
             # Do an update
             idx = result.idx_ip
             updated_row = Ip(
                 idx_zone=row.idx_zone,
-                address=data.ipv4() if row.version == 4 else data.ipv6(),
+                address=unique_address,
                 version=row.version,
                 hostname=row.hostname,
                 enabled=row.enabled,
