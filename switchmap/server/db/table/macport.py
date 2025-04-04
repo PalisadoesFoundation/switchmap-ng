@@ -134,7 +134,7 @@ def update_row(idx, row):
         None
 
     """
-    # Update
+    # update
     statement = (
         update(MacPort)
         .where(MacPort.idx_macport == idx)

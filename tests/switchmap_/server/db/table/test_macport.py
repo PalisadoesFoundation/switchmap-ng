@@ -5,6 +5,7 @@ import os
 import sys
 import unittest
 import random
+import sqlalchemy
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -224,19 +225,51 @@ class TestDbTableMacPort(unittest.TestCase):
 
         # Do an update
         idx = result.idx_macport
-        updated_row = MacPort(
-            idx_l1interface=random.randint(1, db.TEST_MAXIMUM),
-            idx_mac=random.randint(1, db.TEST_MAXIMUM),
-            enabled=row.enabled,
-        )
+        while True:
+            updated_row = MacPort(
+                idx_l1interface=random.randint(1, db.TEST_MAXIMUM),
+                idx_mac=random.randint(1, db.TEST_MAXIMUM),
+                enabled=row.enabled,
+            )
+            if not testimport.exists(
+                updated_row.idx_l1interface, updated_row.idx_mac
+            ):
+                break
         testimport.update_row(idx, updated_row)
 
-        # Test the update
+        # checking if row unchanged due to duplication
         result = testimport.exists(
             updated_row.idx_l1interface, updated_row.idx_mac
         )
         self.assertTrue(result)
         self.assertEqual(_convert(result), _convert(updated_row))
+
+        # Updates that would create duplicates are skipped
+        while True:
+            new_row = _row()
+            if not testimport.exists(new_row.idx_l1interface, new_row.idx_mac):
+                break
+
+        testimport.insert_row(new_row)
+        new_result = testimport.exists(new_row.idx_l1interface, new_row.idx_mac)
+        self.assertTrue(new_result)
+
+        duplicate_row = MacPort(
+            idx_l1interface=new_row.idx_l1interface,
+            idx_mac=new_row.idx_mac,
+            enabled=row.enabled,
+        )
+        with self.assertRaises(sqlalchemy.exc.IntegrityError):
+            testimport.update_row(idx, duplicate_row)
+
+        # Original row remains unchanged despite duplicate update attempt.
+
+        after_update = testimport.idx_exists(idx)
+        self.assertTrue(after_update)
+        self.assertEqual(
+            after_update.idx_l1interface, updated_row.idx_l1interface
+        )
+        self.assertEqual(after_update.idx_mac, updated_row.idx_mac)
 
     def test__row(self):
         """Testing function _row."""
