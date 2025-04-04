@@ -230,7 +230,7 @@ class TestDbTableIp(unittest.TestCase):
             unique_address = None
             while unique_address is None:
                 new_address = data.ipv4() if row.version == 4 else data.ipv6()
-                if not testimport.exists(row.idx_zone,new_address):
+                if not testimport.exists(row.idx_zone, new_address):
                     unique_address = new_address
 
             # Do an update
