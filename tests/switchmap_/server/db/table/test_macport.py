@@ -5,6 +5,7 @@ import os
 import sys
 import unittest
 import random
+import sqlalchemy
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -258,7 +259,8 @@ class TestDbTableMacPort(unittest.TestCase):
             idx_mac=new_row.idx_mac,
             enabled=row.enabled,
         )
-        testimport.update_row(idx, duplicate_row)
+        with self.assertRaises(sqlalchemy.exc.IntegrityError):
+            testimport.update_row(idx, duplicate_row)
 
         # Original row remains unchanged despite duplicate update attempt.
 
