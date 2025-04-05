@@ -175,7 +175,7 @@ class TestDbTableEvent(unittest.TestCase):
                     epoch_utc=int(time.time()) * 1000,
                     enabled=row.enabled,
                 )
-            break
+                break
 
         testimport.update_row(idx, updated_row)
 
