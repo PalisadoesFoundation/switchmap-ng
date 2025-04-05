@@ -38,7 +38,6 @@ def validate_docstring(file_path):
 
     # Evaluate each line
     for line_number, line in enumerate(lines):
-
         # Identify sections of the file that are functions or methods
         if re.match(r"^\s*def ", line):
             # Get the function name and its arguments
@@ -342,7 +341,6 @@ Single line docstring without 'Args:' or 'Results:' sections defined.""",
 
         # Extract lines within the docstring area
         if found_start and found_end:
-
             # Get the lines of the Docstring, strip hard returns
             valid_lines = lines[docstring_start : docstring_end + 1]
 
@@ -579,7 +577,6 @@ Add a 'Returns:' section describing the return value.""",
             )
         )
     elif "Returns: None " not in docstring_no_multiple_white_space:
-
         # The parser fails if the 'Args:' section is set to None AND there
         # is a valid 'Returns:' section
         # This is a workaround where we search for 'Returns: VARIABLE: '

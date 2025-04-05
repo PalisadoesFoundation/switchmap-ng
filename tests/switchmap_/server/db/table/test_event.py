@@ -166,11 +166,17 @@ class TestDbTableEvent(unittest.TestCase):
 
         # Do an update
         idx = result.idx_event
-        updated_row = IEvent(
-            name=data.random_string(),
-            epoch_utc=int(time.time()) * 1000,
-            enabled=row.enabled,
-        )
+        while True:
+            updated_name = data.random_string()
+            result = testimport.exists(updated_name)
+            if bool(result) is False:
+                updated_row = IEvent(
+                    name=updated_name,
+                    epoch_utc=int(time.time()) * 1000,
+                    enabled=row.enabled,
+                )
+            break
+
         testimport.update_row(idx, updated_row)
 
         # Test the update
@@ -318,7 +324,7 @@ class TestDbTableEvent(unittest.TestCase):
         # Test
         self.assertTrue(len(after) == 3)
         indexes_before = [_.idx_event for _ in before]
-        indexes_after = [_.idx_event for _ in before]
+        indexes_after = [_.idx_event for _ in after]
         for index in [0, -1, -2]:
             self.assertEqual(indexes_before[index], indexes_after[index])
 
@@ -354,9 +360,15 @@ def _row():
 
     """
     # Create result
-    result = IEvent(
-        name=data.random_string(), epoch_utc=int(time.time()) * 1000, enabled=1
-    )
+    while True:
+        name_check = data.random_string()
+
+        if testimport.exists(name_check) is False:
+            result = IEvent(
+                name=name_check, epoch_utc=int(time.time()) * 1000, enabled=1
+            )
+            break
+
     return result
 
 
