@@ -48,7 +48,6 @@ def post(uri, data, config, server=True):
 
     # Post data save to cache if this fails
     with requests.Session() as session:
-
         # if bool(username) is False or bool(password) is False:
         #     result = session.post(url, json=data)
         # else:
