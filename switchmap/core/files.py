@@ -12,6 +12,7 @@ import yaml
 from switchmap.core import log
 from switchmap.core import general
 
+
 class _Directory:
     """A class for creating the names of system directories."""
 
