@@ -584,7 +584,6 @@ Updating MAC address to interface {ifindex} mapping in the DB for device \
             # Process each Mac
             _macs = interface.get("l1_macs")
             if bool(_macs) is True:
-
                 # Update MAC addresses for all zones
                 log_message = f"""\
 Getting MAC addresses for interface {ifindex} in the DB for device \
