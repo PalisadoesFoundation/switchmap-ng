@@ -19,7 +19,7 @@ Database Configuration
 Create the database, and grant privileges to a switchmap user. In this case both the database and the database user are named ``switchmap``.
 
 ::
-   
+
      $ sudo mysql
      >>> CREATE DATABASE switchmap;
      >>> GRANT ALL PRIVILEGES ON switchmap.* TO 'switchmap'@'localhost' IDENTIFIED BY 'CHANGE_ME_NOW';
@@ -94,7 +94,7 @@ Here are the commands:
     $ cd /path/to/switchmap-ng
     $ python3 -m venv venv
 
-You will now need to activate the use of these copied python files by ``switchmap-ng``. 
+You will now need to activate the use of these copied python files by ``switchmap-ng``.
 
 1) This can be done using the ``source`` command referencing a script that will do the activation.
 2) Your command prompt will change to have a ``(venv)`` prefix
@@ -104,7 +104,7 @@ Here are the commands:
 .. code-block:: bash
 
     $ source venv/bin/activate
-    (venv) $ 
+    (venv) $
 
 Now you can install the extra python packages using ``pip3`` referencing the packages in the ``requirements.txt`` file
 
@@ -182,7 +182,7 @@ Testing the Web Dashboard
 You can test whether the web dashboard API is working by
 
 1) Correctly configuring and starting the API server as shown above
-2) Starting the web dashboard as shown below. 
+2) Starting the web dashboard as shown below.
 
 
 ..  code-block:: bash
@@ -218,7 +218,7 @@ Database Configuration
 Create the ``switchmap_unittest`` database, and grant privileges to a ``switchmap_unittest`` user with the password ``switchmap_unittest``.
 
 ::
-   
+
      $ sudo mysql
      >>> CREATE DATABASE switchmap_unittest;
      >>> GRANT ALL PRIVILEGES ON switchmap_unittest.* TO 'switchmap_unittest'@'localhost' IDENTIFIED BY 'switchmap_unittest';
@@ -231,7 +231,7 @@ Setup the Test Config File
 Create the testing configuration file which will be stored in a hidden directory in ``$HOME``
 
 ::
-   
+
    (venv) $ tests/bin/test_db_config_setup.py
 
 Run the Test Suite
@@ -240,18 +240,18 @@ Run the Test Suite
 You can run all the tests with this command.
 
 ::
-   
+
    (venv) $ tests/bin/_do_all_tests.py
 
 An alternative method is to use pytest.
 
 ::
-   
+
    (venv) $ pytest tests/switchmap_
 
 
 You can run individual tests with this command.
 
 ::
-   
+
    (venv) $ tests/switchmap_/path/to/test.py

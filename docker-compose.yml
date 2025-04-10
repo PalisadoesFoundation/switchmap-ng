@@ -65,7 +65,7 @@ services:
       - BIND_ADDRESS=0.0.0.0
       - API_LISTEN_ADDRESS=0.0.0.0
       - API_BIND_PORT=7001
-      
+
     ports:
       - "7001:7001"
     volumes:

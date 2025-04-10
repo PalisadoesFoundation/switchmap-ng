@@ -20,7 +20,7 @@ Switchmap-NG Documentation
    troubleshooting
    architecture
    community
-   
+
 
 Indices and tables
 ==================

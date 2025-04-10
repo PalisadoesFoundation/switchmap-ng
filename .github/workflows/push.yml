@@ -36,7 +36,7 @@ jobs:
         with:
           python-version: 3.11
       - name: Updated Ubuntu package sources
-        run: sudo apt-get -y update          
+        run: sudo apt-get -y update
       - name: Install Ubuntu packages
         run: sudo apt-get install -y python3 python3-pip snmp libsnmp-dev gcc python-dev-is-python3 python3-venv mysql-server
       - name: Cache pip packages
@@ -61,7 +61,7 @@ jobs:
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "GRANT ALL PRIVILEGES ON ${{ env.DATABASE_NAME }}.* TO '${{ env.DATABASE_USERNAME }}'@'localhost';"
           sudo mysql -u${{ env.MYSQL_ROOT_USERNAME }} -p${{ env.MYSQL_ROOT_PASSWORD }} -e "FLUSH PRIVILEGES;"
           pytest --cov=switchmap --cov-report=lcov:coverage/coverage.lcov --cov-report=term-missing tests/switchmap_
-          
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5
         with:
@@ -72,7 +72,7 @@ jobs:
           gcov_ignore: "docs/"
           fail_ci_if_error: false
           name: "${{env.CODECOV_UNIQUE_NAME}}"
-          
+
   Linting-and-Formatting:
     name: Linting and Formatting Checks
     runs-on: ubuntu-latest
@@ -90,7 +90,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install flake8 black pydocstyle flake8-docstrings
-          
+
       - name: Run Black Formatter Check
         run: |
           black --check .
@@ -102,4 +102,3 @@ jobs:
       - name: Run Pydocstyle for Docstring Style
         run: |
           pydocstyle switchmap setup bin tests --convention=google --add-ignore=D415,D205
-          

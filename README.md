@@ -34,4 +34,3 @@ The dashboard shows a list of devices being polled for data.
 Clicking on any of the links will give interface information.
 
 ![Switch Table](docs/static/img/markdown/misc/switchmap-ng-table.jpg)
-

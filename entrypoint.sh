@@ -27,10 +27,10 @@ wait_for_mysql() {
 
 verify_database() {
     echo "Verifying database setup..."
-    
+
     if mysql -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" -e "USE $MYSQL_DATABASE"; then
         echo "Database $MYSQL_DATABASE exists."
-        
+
         tables=("smap_oui")
         for table in "${tables[@]}"; do
             if mysql -h"$MYSQL_HOST" -P"$MYSQL_PORT" -u"$MYSQL_USER" -p"$MYSQL_PASSWORD" "$MYSQL_DATABASE" -e "DESC $table" >/dev/null 2>&1; then
@@ -96,7 +96,7 @@ else
     echo "Waiting for API service to initialize database..."
     max_attempts=30
     attempt=1
-    
+
     while [ $attempt -le $max_attempts ]; do
         if verify_database; then
             echo "Database is ready"
@@ -106,7 +106,7 @@ else
         sleep 5
         attempt=$((attempt + 1))
     done
-    
+
     if [ $attempt -gt $max_attempts ]; then
         echo "Database was not initialized properly after maximum attempts"
         exit 1
@@ -117,7 +117,7 @@ case "$SERVICE_TYPE" in
     "api")
         echo "Starting API Server..."
         bin/systemd/switchmap_server --start
-        
+
         if ! verify_service_status "api"; then
             echo "API server failed to start properly"
             exit 1
@@ -126,7 +126,7 @@ case "$SERVICE_TYPE" in
     "dashboard")
         echo "Starting Web Dashboard..."
         bin/systemd/switchmap_dashboard --start
-        
+
         if ! verify_service_status "dashboard"; then
             echo "Dashboard failed to start properly"
             exit 1
