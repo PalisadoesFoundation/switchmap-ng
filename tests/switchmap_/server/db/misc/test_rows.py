@@ -2,7 +2,8 @@
 """Test the rows module.
 
 This module contains unit tests for the functions in the `rows.py` file.
-The tests ensure that the following functions correctly convert database rows to tuples:
+The tests ensure that the following functions correctly convert
+database rows to tuples:
 
 - device()
 - root()
@@ -18,7 +19,8 @@ The tests ensure that the following functions correctly convert database rows to
 - ip()
 - ipport()
 
-Additionally, edge cases where the input is None are tested to ensure that each function properly raises exceptions when provided with invalid input.
+Additionally, edge cases where the input is None are tested to ensure that
+each function properly raises exceptions when provided with invalid input.
 
 The tests verify the following:
 - Correct tuple conversion for each function.
@@ -86,7 +88,8 @@ if EXEC_DIR.endswith(_EXPECTED) is True:
     sys.path.insert(0, ROOT_DIR)
 else:
     print(
-        """This script is not installed in the "{0}" directory. Please fix.""".format(
+        """This script is not installed in the
+        "{0}" directory. Please fix.""".format(
             _EXPECTED
         )
     )
