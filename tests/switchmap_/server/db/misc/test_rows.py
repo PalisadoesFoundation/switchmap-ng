@@ -20,13 +20,13 @@ database rows to tuples:
 - ipport()
 
 Additionally, edge cases where the input is None are tested to ensure that
-each function properly raises exceptions when provided with invalid input.
+each function properly raises AttributeErrors when provided with invalid input.
 
 The tests verify the following:
 - Correct tuple conversion for each function.
 - Correct tuple length and data type.
 - Correct value in the tuple for each entry in the row
-- Handling of invalid (None) inputs with appropriate exceptions.
+- Handling of invalid (None) inputs with appropriate AttributeErrors.
 """
 
 import os
@@ -592,67 +592,67 @@ class TestRowsMethods(unittest.TestCase):
 
     def test_device_edge_none(self):
         """Edge Case: Test device() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.device(None)
 
     def test_root_edge_none(self):
         """Edge Case: Test root() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.root(None)
 
     def test_event_edge_none(self):
         """Edge Case: Test event() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.event(None)
 
     def test_l1interface_edge_none(self):
         """Edge Case: Test l1interface() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.l1interface(None)
 
     def test_mac_edge_none(self):
         """Edge Case: Test mac() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.mac(None)
 
     def test_macip_edge_none(self):
         """Edge Case: Test macip() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.macip(None)
 
     def test_macport_edge_none(self):
         """Edge Case: Test macport() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.macport(None)
 
     def test_oui_edge_none(self):
         """Edge Case: Test oui() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.oui(None)
 
     def test_vlan_edge_none(self):
         """Edge Case: Test vlan() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.vlan(None)
 
     def test_vlanport_edge_none(self):
         """Edge Case: Test vlanport() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.vlanport(None)
 
     def test_zone_edge_none(self):
         """Edge Case: Test zone() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.zone(None)
 
     def test_ip_edge_none(self):
         """Edge Case: Test ip() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.ip(None)
 
     def test_ipport_edge_none(self):
         """Edge Case: Test ipport() with None input."""
-        with self.assertRaises(Exception):
+        with self.assertRaises(AttributeError):
             rows.ipport(None)
 
 
