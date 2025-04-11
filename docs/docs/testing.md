@@ -18,12 +18,12 @@ Switchmap uses SNMP to gather data from network devices. As a developer it may b
 Here are some links to get you started:
 
 1. Windows 11:
-    1. SNMP Server: 
+    1. SNMP Server:
         1. Setting up the Server: [Enable SNMP on Windows](https://blog.paessler.com/how-to-enable-snmp-on-your-operating-system)
     1. SNMP Client:
         1. Software: [Net-SNMP Download](http://www.net-snmp.org/download.html)
         1. Tutorial: [SNMP Walk Examples for Windows](https://www.itprc.com/snmpwalk-examples-for-windows/)
-1. Ubuntu: 
+1. Ubuntu:
     1. This page includes both server and client setup.
         1. [Ubuntu SNMP Setup Guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring-the-snmp-agent-server)
     1. Testing configuration example for the `/etc/snmp/snmpd.conf` file.
@@ -86,7 +86,7 @@ Create the `switchmap_unittest` database, and grant privileges to a
 
 ```bash
 $ sudo mysql
-```    
+```
 ``` sql
 CREATE DATABASE switchmap_unittest;
 GRANT ALL PRIVILEGES ON switchmap_unittest.* TO 'switchmap_unittest'@'localhost' IDENTIFIED BY 'switchmap_unittest';

@@ -27,7 +27,7 @@ Intialize the class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -46,7 +46,7 @@ Get hostnames.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -65,7 +65,7 @@ Get polling_interval.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -84,7 +84,7 @@ Get list of dicts of SNMP information in configuration file.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -103,7 +103,7 @@ Get username.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -122,7 +122,7 @@ Get list of dicts of polling zone information in configuration file.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -149,7 +149,7 @@ Poll all devices for data using subprocesses and create YAML files.
 **Arguments**:
 
 - `multiprocessing` - Run multiprocessing when True
-  
+
 
 **Returns**:
 
@@ -169,7 +169,7 @@ Poll single device for data and create YAML files.
 
 - `poll` - _META object
 - `post` - Post the data if True, else just print it.
-  
+
 
 **Returns**:
 
@@ -188,7 +188,7 @@ Poll single device for data and create YAML files.
 **Arguments**:
 
 - `hostname` - Host to poll
-  
+
 
 **Returns**:
 
@@ -203,7 +203,7 @@ Define the switchmap.poller package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -228,7 +228,7 @@ Get mib queries which gather information related to a specific OSI layer.
 **Arguments**:
 
 - `layer` - The layer of queries needed
-  
+
 
 **Returns**:
 
@@ -253,12 +253,12 @@ Class interacts with devices to get vendor information.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
 
 **Methods**:
 
@@ -280,7 +280,7 @@ Instantiate the class.
 
 - `enterprise` - The enterprise number of the manufacturer
 - `sysobjectid` - The sysobjectid of the device
-  
+
 
 **Returns**:
 
@@ -299,7 +299,7 @@ Get enterprise number.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -318,7 +318,7 @@ Verify whether device is a Cisco device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -337,7 +337,7 @@ Verify whether device is a Juniper device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -362,7 +362,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -381,7 +381,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMPInteract object
-  
+
 
 **Returns**:
 
@@ -400,18 +400,18 @@ Class interacts with JUNIPER-VLAN-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -428,7 +428,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -447,7 +447,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -466,7 +466,7 @@ Get layer 2 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -485,7 +485,7 @@ Return dict of JUNIPER-VLAN-MIB jnxExVlanPortAccessMode per port.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -504,7 +504,7 @@ Return dict of JUNIPER-VLAN-MIB jnxExVlanTag per port.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -523,7 +523,7 @@ Return dict of JUNIPER-VLAN-MIB jnxExVlanName for each VLAN tag.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -554,7 +554,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -573,7 +573,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -592,18 +592,18 @@ Class interacts with devices supporting ENTITY-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `system` - Returns all relevant system information from the device.
   In some cases a system will have multiple subsystems that are
   covered by an OID. (eg. module / circuit board serial numbers).
@@ -627,7 +627,7 @@ Intialize the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -646,7 +646,7 @@ Get system data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -665,7 +665,7 @@ Return dict of ENTITY-MIB entPhysicalDescr for device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -685,7 +685,7 @@ Return dict of ENTITY-MIB entPhysicalClass for device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -705,7 +705,7 @@ Return dict of ENTITY-MIB entPhysicalSoftwareRev for device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -725,7 +725,7 @@ Return dict of ENTITY-MIB entPhysicalSerialNum for device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -745,7 +745,7 @@ Return dict of ENTITY-MIB entPhysicalModelName for device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -765,7 +765,7 @@ Return dict of ENTITY-MIB entPhysicalName for device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -785,7 +785,7 @@ Return dict of ENTITY-MIB entPhysicalHardwareRev for device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -805,7 +805,7 @@ Return dict of ENTITY-MIB entPhysicalFirmwareRev for device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -831,7 +831,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -850,7 +850,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -869,18 +869,18 @@ Class interacts with devices supporting IfMIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -897,7 +897,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -916,7 +916,7 @@ Get system data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -935,7 +935,7 @@ Get layer 1 data from device using Layer 1 OIDs.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -954,7 +954,7 @@ Return dict of IFMIB ifLastChange for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -974,7 +974,7 @@ Return dict of IFMIB ifInOctets for each ifIndex for device.
 
 - `safe` - Do a failsafe walk if True
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -994,7 +994,7 @@ Return dict of IFMIB ifOutOctets for each ifIndex for device.
 
 - `safe` - Do a failsafe walk if True
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1014,7 +1014,7 @@ Return dict of IFMIB ifDescr for each ifIndex for device.
 
 - `safe` - Do a failsafe walk if True
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1033,7 +1033,7 @@ Return dict of IFMIB ifType for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1052,7 +1052,7 @@ Return dict of IFMIB ifSpeed for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1071,7 +1071,7 @@ Return dict of IFMIB ifAdminStatus for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1090,7 +1090,7 @@ Return dict of IFMIB ifOperStatus for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1109,7 +1109,7 @@ Return dict of IFMIB ifAlias for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1128,7 +1128,7 @@ Return dict of IFMIB ifName for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1147,7 +1147,7 @@ Return dict of IFMIB ifindex for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1166,7 +1166,7 @@ Return dict of IFMIB ifPhysAddress for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1185,7 +1185,7 @@ Return dict of IFMIB ifInMulticastPkts for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1204,7 +1204,7 @@ Return dict of IFMIB ifOutMulticastPkts for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1223,7 +1223,7 @@ Return dict of IFMIB ifInBroadcastPkts for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1242,7 +1242,7 @@ Return dict of IFMIB ifOutBroadcastPkts for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1261,14 +1261,14 @@ Return dict of IFMIB ifStackStatus for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
 - `final` - Dict of ifStackStatus keyed by the ifIndex of the
   ifstacklowerlayer as primary, and ifstackhigherlayer as
   secondary.
-  
+
   Summary:
   According to the official IF-MIB file. ifStackStatus is a
   "table containing information on the relationships
@@ -1279,9 +1279,9 @@ Return dict of IFMIB ifStackStatus for each ifIndex for device.
   example, when the sub-layer with ifIndex value x runs over
   the sub-layer with ifIndex value y, then this table
   contains:
-  
+
   ifStackStatus.x.y=active
-  
+
   For each ifIndex value, I, which identifies an active
   interface, there are always at least two instantiated rows
   in this table associated with I.  For one of these rows, I
@@ -1289,18 +1289,18 @@ Return dict of IFMIB ifStackStatus for each ifIndex for device.
   value of ifStackLowerLayer.  (If I is not involved in
   multiplexing, then these are the only two rows associated
   with I.)
-  
+
   For example, two rows exist even for an interface which has
   no others stacked on top or below it:
-  
+
   ifStackStatus.0.x=active
   ifStackStatus.x.0=active"
-  
+
   In the case of Juniper equipment, VLAN information is only
   visible on subinterfaces of the main interface. For example
   interface ge-0/0/0 won't have VLAN information assigned to it
   directly.
-  
+
   When a VLAN is assigned to this interface, a subinterface
   ge-0/0/0.0 is automatically created with a non-Ethernet ifType.
   VLAN related OIDs are only maintained for this new subinterface
@@ -1309,7 +1309,7 @@ Return dict of IFMIB ifStackStatus for each ifIndex for device.
   the primary interface (ge-0/0/0) to the ifIndex of the secondary
   interface (ge-0/0/0.0) which manages higher level protocols and
   data structures such as VLANs and LLDP.
-  
+
   The primary interface is referred to as the
   ifStackLowerLayer and the secondary subinterface is referred to
   as the ifStackHigherLayer.
@@ -1333,7 +1333,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1352,7 +1352,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -1371,18 +1371,18 @@ Class interacts with ETHERLIKE-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -1399,7 +1399,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -1418,7 +1418,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1437,7 +1437,7 @@ Return dict of ETHERLIKE-MIB dot3StatsDuplexStatus for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1462,7 +1462,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1481,7 +1481,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -1500,18 +1500,18 @@ Class interacts with devices supporting IP-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer3` - Returns all needed layer 3 MIB information from the device.
   Keyed by OID's MIB name (primary key), IP address (secondary key).
 
@@ -1528,7 +1528,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -1547,7 +1547,7 @@ Return device's support for the MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1566,7 +1566,7 @@ Get layer 3 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1585,7 +1585,7 @@ Return dict of ipNetToMediaTable, the device's ARP table.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1604,7 +1604,7 @@ Return dict of the device's ipNetToPhysicalPhysAddress ARP table.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -1629,7 +1629,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1666,18 +1666,18 @@ Class interacts with devices supporting BRIDGE-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -1694,7 +1694,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -1713,7 +1713,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1732,7 +1732,7 @@ Return dict of BRIDGE-MIB dot1dBasePortIfIndex data.
 **Arguments**:
 
 - `context_names` - List of context names
-  
+
 
 **Returns**:
 
@@ -1757,7 +1757,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1776,7 +1776,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -1795,18 +1795,18 @@ Class interacts with devices supporting SNMPv2-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `system` - Returns all relevant system information from the device.
   In some cases a system will have multiple subsystems that are
   covered by an OID. (eg. module / circuit board serial numbers).
@@ -1830,7 +1830,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -1849,7 +1849,7 @@ Get system data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1874,7 +1874,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1893,7 +1893,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -1912,18 +1912,18 @@ Class interacts with MIB-ESSWITCH.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -1940,7 +1940,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -1959,7 +1959,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1978,7 +1978,7 @@ Return dict of MIB-ESSWITCH swPortDuplexStatus for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2003,7 +2003,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2022,7 +2022,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2041,18 +2041,18 @@ Class interacts with LLDP-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -2069,7 +2069,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2088,7 +2088,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2107,7 +2107,7 @@ Return dict of LLDP-MIB lldpRemSysName for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2126,7 +2126,7 @@ Return dict of LLDP-MIB lldpRemSysCapEnabled for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2145,7 +2145,7 @@ Return dict of LLDP-MIB lldpRemSysDesc for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2164,7 +2164,7 @@ Return dict of LLDP-MIB lldpRemPortDesc for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2183,7 +2183,7 @@ Return dict of LLDP-MIB lldpLocPortDesc for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2208,7 +2208,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2227,7 +2227,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2246,18 +2246,18 @@ Class interacts with CISCO-IETF-IP-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer3` - Returns all needed layer 3 MIB information from the device.
   Keyed by OID's MIB name (primary key), IP address (secondary key).
 
@@ -2274,7 +2274,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2293,7 +2293,7 @@ Get layer 3 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2312,7 +2312,7 @@ Return dict of the device's ipv6NetToMediaPhysAddress ARP table.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2337,7 +2337,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2356,7 +2356,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2375,18 +2375,18 @@ Class interacts with devices supporting IfMIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -2403,7 +2403,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2422,7 +2422,7 @@ Get system data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2441,7 +2441,7 @@ Get layer 1 data from device using Layer 1 OIDs.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2460,7 +2460,7 @@ Return dict of IFMIB ifHighSpeed for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2479,7 +2479,7 @@ Return dict of IFMIB ifHCInUcastPkts for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2498,7 +2498,7 @@ Return dict of IFMIB ifHCOutUcastPkts for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2517,7 +2517,7 @@ Return dict of IFMIB ifHCInMulticastPkts for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2538,7 +2538,7 @@ Keyed by ifIndex for the device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2557,7 +2557,7 @@ Return dict of IFMIB ifHCInBroadcastPkts for each ifIndex for device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2578,7 +2578,7 @@ Keyed by ifIndex for the device.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2598,7 +2598,7 @@ Return dict of IFMIB ifHCInOctets for each ifIndex for device.
 
 - `safe` - Do a failsafe walk if True
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2618,7 +2618,7 @@ Return dict of IFMIB ifHCOutOctets for each ifIndex for device.
 
 - `safe` - Do a failsafe walk if True
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2633,7 +2633,7 @@ Define the switchmap.poller.snmp.mib.generic package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2658,7 +2658,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2677,7 +2677,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2696,18 +2696,18 @@ Class interacts with Q-BRIDGE-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -2724,7 +2724,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2743,7 +2743,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2762,7 +2762,7 @@ Get layer 2 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2781,7 +2781,7 @@ Return dict of Q-BRIDGE-MIB dot1qPvid per port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2800,7 +2800,7 @@ Return dict of Q-BRIDGE-MIB dot1qVlanStaticName per port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2825,7 +2825,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2844,7 +2844,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2863,18 +2863,18 @@ Class interacts with CISCO-VLAN-IFTABLE-RELATIONSHIP-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -2891,7 +2891,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2910,7 +2910,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2931,7 +2931,7 @@ Keyed by OID cviRoutedVlanIfIndex for each VLAN.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -2957,7 +2957,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2976,7 +2976,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -2995,18 +2995,18 @@ Class interacts with CISCO-VLAN-MEMBERSHIP-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -3023,7 +3023,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3042,7 +3042,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3061,7 +3061,7 @@ Return dict of CISCO-VLAN-MEMBERSHIP-MIB vmVlan for each VLAN.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3080,7 +3080,7 @@ Return dict of CISCO-VLAN-MEMBERSHIP-MIB vmPortStatus for each VLAN.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3105,7 +3105,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3124,7 +3124,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3143,21 +3143,21 @@ Class interacts with CISCO-VTP-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
-  
+
 - `layer2` - Returns all needed layer 2 MIB information from the device.
   Keyed by OID's MIB name (primary key), VLAN number (secondary key)
 
@@ -3174,7 +3174,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3193,7 +3193,7 @@ Get layer 2 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3212,7 +3212,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3231,7 +3231,7 @@ Return CISCO-VTP-MIB vlanTrunkPortEncapsulationType per ifIndex.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3251,7 +3251,7 @@ Return dict of CISCO-VTP-MIB vlanTrunkPortNativeVlan per ifIndex.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3271,7 +3271,7 @@ Return dict of CISCO-VTP-MIB vlanTrunkPortDynamicStatus per ifIndex.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3291,7 +3291,7 @@ Return dict of CISCO-VTP-MIB vlanTrunkPortDynamicState per ifIndex.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3311,7 +3311,7 @@ Return dict of CISCO-VTP-MIB vtpVlanName for each VLAN.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3330,7 +3330,7 @@ Return dict of CISCO-VTP-MIB vtpVlanType for each VLAN.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3349,7 +3349,7 @@ Return dict of CISCO-VTP-MIB vtpVlanState for each VLAN.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3368,7 +3368,7 @@ Return CISCO-VTP-MIB vlanTrunkPortVlansEnabled data per ifIndex.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3394,7 +3394,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3413,7 +3413,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3432,18 +3432,18 @@ Class interacts with CISCO-STACK-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -3460,7 +3460,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3479,7 +3479,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3498,7 +3498,7 @@ Return dict of CISCO-STACK-MIB portDuplex for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3523,7 +3523,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3542,7 +3542,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3561,18 +3561,18 @@ Class interacts with CISCO-IETF-IP-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer3` - Returns all needed layer 3 MIB information from the device.
   Keyed by OID's MIB name (primary key), IP address (secondary key).
 
@@ -3589,7 +3589,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3608,7 +3608,7 @@ Get layer 3 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3627,7 +3627,7 @@ Return dict of the device's ARP table.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3652,7 +3652,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3671,7 +3671,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3690,18 +3690,18 @@ Class interacts with CISCO-CDP-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -3718,7 +3718,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3737,7 +3737,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3756,7 +3756,7 @@ Return dict of CISCO-CDP-MIB cdpCacheDeviceId for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3775,7 +3775,7 @@ Return dict of CISCO-CDP-MIB cdpCachePlatform for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3794,7 +3794,7 @@ Return dict of CISCO-CDP-MIB cdpCacheDevicePort for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3825,7 +3825,7 @@ Return this module's Query class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3844,7 +3844,7 @@ Return initialize and return this module's Query class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3863,18 +3863,18 @@ Class interacts with CISCO-C2900-MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -3891,7 +3891,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -3910,7 +3910,7 @@ Get layer 1 data from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3929,7 +3929,7 @@ Return dict of CISCO-C2900-MIB c2900PortLinkbeatStatus per port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3948,7 +3948,7 @@ Return dict of CISCO-C2900-MIB c2900PortDuplexStatus for each port.
 **Arguments**:
 
 - `oidonly` - Return OID's value, not results, if True
-  
+
 
 **Returns**:
 
@@ -3963,7 +3963,7 @@ Define the switchmap.poller.snmp.mib package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -3988,12 +3988,12 @@ Switchmap-NG agent that gathers data.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Functions:
   __init__:
   populate:
@@ -4012,7 +4012,7 @@ Initialize the class.
 **Arguments**:
 
 - `hostname` - Hostname to poll
-  
+
 
 **Returns**:
 
@@ -4031,7 +4031,7 @@ Query all remote hosts for data.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4066,7 +4066,7 @@ Initialize the Validate class.
 **Arguments**:
 
 - `options` - POLLING_OPTIONS object containing SNMP configuration
-  
+
 
 **Returns**:
 
@@ -4085,7 +4085,7 @@ Determine valid SNMP credentials for a host.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4106,7 +4106,7 @@ Determine valid SNMP authorization for a host.
 
 - `group` - String containing SNMP group name to try, or None to try all
   groups
-  
+
 
 **Returns**:
 
@@ -4136,7 +4136,7 @@ Initialize the Interact class.
 **Arguments**:
 
 - `_poll` - POLL object containing SNMP configuration and target info
-  
+
 
 **Returns**:
 
@@ -4155,7 +4155,7 @@ Get SNMP enterprise number for the device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4174,7 +4174,7 @@ Get SNMP hostname for the interaction.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4193,7 +4193,7 @@ Check if device is reachable via SNMP.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4213,7 +4213,7 @@ Get the sysObjectID of the device.
 
 - `check_reachability` - Boolean indicating whether to test connectivity.
   Some session errors are ignored to return null result.
-  
+
 
 **Returns**:
 
@@ -4234,7 +4234,7 @@ Determine if an OID exists on the device.
 - `oid_to_get` - String containing OID to check
 - `context_name` - String containing SNMPv3 context name.
   Default is empty string.
-  
+
 
 **Returns**:
 
@@ -4262,7 +4262,7 @@ Perform a safe SNMPwalk that handles errors gracefully.
 - `context_name` - Set the contextName used for SNMPv3 messages.
   The default contextName is the empty string "".  Overrides the
   defContext token in the snmp.conf file.
-  
+
 
 **Returns**:
 
@@ -4301,7 +4301,7 @@ Do an SNMPwalk.
   The default contextName is the empty string "".  Overrides the
   defContext token in the snmp.conf file.
 - `safe` - Safe query if true. If there is an exception, then return                 blank values.
-  
+
 
 **Returns**:
 
@@ -4336,7 +4336,7 @@ Do an SNMPget.
 - `context_name` - Set the contextName used for SNMPv3 messages.
   The default contextName is the empty string "".  Overrides the
   defContext token in the snmp.conf file.
-  
+
 
 **Returns**:
 
@@ -4375,7 +4375,7 @@ Do an SNMP query.
   The default contextName is the empty string "".  Overrides the
   defContext token in the snmp.conf file.
 - `safe` - Safe query if true. If there is an exception, then return                blank values.
-  
+
 
 **Returns**:
 
@@ -4406,7 +4406,7 @@ Initialize the _Session class.
 - `_poll` - POLL object containing SNMP configuration
 - `context_name` - String containing SNMPv3 context name.
   Default is empty string.
-  
+
 
 **Returns**:
 
@@ -4431,18 +4431,18 @@ Base snmp query object.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Key Methods:
-  
+
 - `supported` - Queries the device to determine whether the MIB is
   supported using a known OID defined in the MIB. Returns True
   if the device returns a response to the OID, False if not.
-  
+
 - `layer1` - Returns all needed layer 1 MIB information from the device.
   Keyed by OID's MIB name (primary key), ifIndex (secondary key)
 
@@ -4461,7 +4461,7 @@ Instantiate the class.
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
 - `test_oid` - Oid that is used to check if the mib is supported
 - `tags` - List of the layers for which this query gathers information
-  
+
 
 **Returns**:
 
@@ -4480,7 +4480,7 @@ Return device's support for the MIB.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4505,7 +4505,7 @@ Class interacts with IfMIB devices.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4524,7 +4524,7 @@ Instantiate the class.
 **Arguments**:
 
 - `snmp_object` - SNMP Interact class object from snmp_manager.py
-  
+
 
 **Returns**:
 
@@ -4543,7 +4543,7 @@ Get all information from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4562,7 +4562,7 @@ Provide miscellaneous information about device and the poll.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4581,7 +4581,7 @@ Get all system information from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4600,7 +4600,7 @@ Get all layer1 information from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4619,7 +4619,7 @@ Get all layer2 information from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4638,7 +4638,7 @@ Get all layer3 information from device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4653,7 +4653,7 @@ Define the switchmap.poller.update package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -4700,7 +4700,7 @@ Initialize class.
 **Arguments**:
 
 - `data` - Dict of device data
-  
+
 
 **Returns**:
 
@@ -4719,20 +4719,20 @@ Initialize class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-  
+
   Summary:
-  
+
   IF-MIB
-  
+
   A significant portion of this code relies on ifIndex
   IF-MIB::ifStackStatus information. This is stored under the
   'system' key of the device YAML files.
-  
+
   According to the official IF-MIB file. ifStackStatus is a
   "table containing information on the relationships
   between the multiple sub-layers of network interfaces.  In
@@ -4742,9 +4742,9 @@ Initialize class.
   example, when the sub-layer with ifIndex value x runs over
   the sub-layer with ifIndex value y, then this table
   contains:
-  
+
   ifStackStatus.x.y=active
-  
+
   For each ifIndex value, I, which identifies an active
   interface, there are always at least two instantiated rows
   in this table associated with I.  For one of these rows, I
@@ -4752,18 +4752,18 @@ Initialize class.
   value of ifStackLowerLayer.  (If I is not involved in
   multiplexing, then these are the only two rows associated
   with I.)
-  
+
   For example, two rows exist even for an interface which has
   no others stacked on top or below it:
-  
+
   ifStackStatus.0.x=active
   ifStackStatus.x.0=active"
-  
+
   In the case of Juniper equipment, VLAN information is only
   visible on subinterfaces of the main interface. For example
   interface ge-0/0/0 won't have VLAN information assigned to it
   directly.
-  
+
   When a VLAN is assigned to this interface, a subinterface
   ge-0/0/0.0 is automatically created with a non-Ethernet ifType.
   VLAN related OIDs are only maintained for this new subinterface
@@ -4772,20 +4772,19 @@ Initialize class.
   the primary interface (ge-0/0/0) to the ifIndex of the secondary
   interface (ge-0/0/0.0) which manages higher level protocols and
   data structures such as VLANs and LLDP.
-  
+
   The primary interface is referred to as the
   ifStackLowerLayer and the secondary subinterface is referred to
   as the ifStackHigherLayer.
-  
+
   =================================================================
-  
+
   Layer1 Keys
-  
+
   The following Layer1 keys are presented by the ethernet_data
   method due to this instantiation:
-  
+
 - `l1_nativevlan` - A vendor agnostic Native VLAN
 - `l1_vlans` - A list of vendor agnostic VLANs
 - `l1_trunk` - A vendor agnostic flag of "True" if the port is a Trunk
 - `l1_duplex` - A vendor agnostic status code for the duplex setting
-

@@ -2,13 +2,13 @@
 #
 # READ ALL STEPS BEFORE PROCEEDING
 #
-# 0) Change the daemon_directory setting in your configuration file to 
+# 0) Change the daemon_directory setting in your configuration file to
 #    /var/run/switchmap
 # 1) Copy this file to one of these directories depending on your Linux version
 #        i.  RedHat variants: /usr/lib/systemd/system/
 #        ii. Debian/Ubuntu variants: /lib/systemd/system/
 # 2) Edit the CODEROOT path to be the full path switchmap code's root directory
-# 3) Edit the SWITCHMAP_CONFIGDIR path to be the full path configuration file 
+# 3) Edit the SWITCHMAP_CONFIGDIR path to be the full path configuration file
 #    directory. This defaults to etc/ directory of the switchmap code base
 # 4) Edit the User and Group to match the POSIX user you want the daemon
 #    to run as.
@@ -35,7 +35,7 @@ Environment=SWITCHMAP_CONFIGDIR=
 ################################################################################
 
 Environment=VIRTUAL_ENV=$CODEROOT/venv/bin
-Environment=PATH=$CODEROOT/venv/bin:$PATH 
+Environment=PATH=$CODEROOT/venv/bin:$PATH
 Environment=START=--start "STOP=--stop --force" "RESTART=--restart --force"
 ExecStart=
 ExecStart=/bin/bash -c '${VIRTUAL_ENV}/python3 ${CODEROOT}/bin/systemd/switchmap_server $START'

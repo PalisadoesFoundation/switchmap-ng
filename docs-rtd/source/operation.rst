@@ -7,10 +7,10 @@ The ``switchmap-ng`` CLI is meant for ease of use. This page shows some advanced
 Running Switchmap Processes as System Daemons
 =============================================
 
-All the switchmap daemon executables can be configured to run at the system level using systemd. This means that they will reliably restart after a reboot. This is therefore the preferred mode of operation for production systems. 
+All the switchmap daemon executables can be configured to run at the system level using systemd. This means that they will reliably restart after a reboot. This is therefore the preferred mode of operation for production systems.
 
 1) Sample ``systemd`` files can be found in the ``examples/linux/systemd/`` directory.
-2) Each file contains instructions as to what to do 
+2) Each file contains instructions as to what to do
 
 
 Operating the Poller as a System Daemon

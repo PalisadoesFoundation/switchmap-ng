@@ -106,7 +106,7 @@ Here are the commands:
 
 ```bash
 $ source venv/bin/activate
-(venv) $ 
+(venv) $
 ```
 
 Now you can install the extra python packages using `pip3` referencing
@@ -235,7 +235,7 @@ Create the `switchmap_unittest` database, and grant privileges to a
 
 ```bash
 $ sudo mysql
-``` 
+```
 ```sql
 CREATE DATABASE switchmap_unittest;
 GRANT ALL PRIVILEGES ON switchmap_unittest.* TO 'switchmap_unittest'@'localhost' IDENTIFIED BY 'switchmap_unittest';

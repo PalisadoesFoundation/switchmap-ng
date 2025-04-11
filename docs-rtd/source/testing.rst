@@ -15,20 +15,20 @@ Here are some links to get you started:
 
 #. Windows 11:
 
-   #. SNMP Server: 
+   #. SNMP Server:
 
       #. `Enable SNMP on Windows <https://blog.paessler.com/how-to-enable-snmp-on-your-operating-system>`_
-    
+
    #. SNMP Client:
-            
+
       #. Software: `Net-SNMP Download <http://www.net-snmp.org/download.html>`_
-      
+
       #. Tutorial: `SNMP Walk Examples for Windows <https://www.itprc.com/snmpwalk-examples-for-windows/>`_
 
-#. Ubuntu: 
-   
+#. Ubuntu:
+
    #. This page includes both server and client setup.
-   
+
    #. `Ubuntu SNMP Setup Guide <https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring->`_
 
 
@@ -43,7 +43,7 @@ Database Configuration
 Create the ``switchmap_unittest`` database, and grant privileges to a ``switchmap_unittest`` user with the password ``switchmap_unittest``.
 
 ::
-   
+
      $ sudo mysql
      >>> CREATE DATABASE switchmap_unittest;
      >>> GRANT ALL PRIVILEGES ON switchmap_unittest.* TO 'switchmap_unittest'@'localhost' IDENTIFIED BY 'switchmap_unittest';
@@ -56,7 +56,7 @@ Setup the Test Config File
 Create the testing configuration file which will be stored in a hidden directory in ``$HOME``
 
 ::
-   
+
    (venv) $ tests/bin/test_db_config_setup.py
 
 API Interactive GraphQL Interaction
@@ -68,7 +68,7 @@ This is useful for:
 2) Troubleshooting your code.
 3) Creating new features.
 
-On the API server you'll be able to make GraphQL queries in an easy to use interactive web page. 
+On the API server you'll be able to make GraphQL queries in an easy to use interactive web page.
 
 1) Enter your query in the left hand panel
 2) Press the ``Play`` button
@@ -121,14 +121,14 @@ Run the Test Suite
 You can run all the tests with this command.
 
 ::
-   
+
    (venv) $ cd /path/to/switchmap
    (venv) $ tests/bin/_do_all_tests.py
 
 An alternative method is to use pytest.
 
 ::
-   
+
    (venv) $ cd /path/to/switchmap
    (venv) $ pytest tests/switchmap_
 
@@ -136,7 +136,7 @@ An alternative method is to use pytest.
 You can run individual tests with this command.
 
 ::
-   
+
    (venv) $ cd /path/to/switchmap
    (venv) $ tests/switchmap_/path/to/test.py
 
@@ -144,7 +144,7 @@ You can run individual tests with this command.
 Populating the Database Using the Ingester
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Pollers post network data to the Switchmap-NG server. The Ingester process reads this posted data and uses it to update the database. 
+Pollers post network data to the Switchmap-NG server. The Ingester process reads this posted data and uses it to update the database.
 
 You may not have access to network devices for testing, however there is test data data that can be imported using the ingester.
 

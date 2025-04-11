@@ -39,3 +39,4 @@ black
 
 #Document Generation
 pydoc-markdown
+pre-commit

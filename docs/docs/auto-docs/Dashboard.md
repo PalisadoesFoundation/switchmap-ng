@@ -27,7 +27,7 @@ Intialize the class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -46,7 +46,7 @@ Get api_bind_port.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -65,7 +65,7 @@ Get username.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -90,7 +90,7 @@ Create the dashboard  page URI.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -109,7 +109,7 @@ Create the dashboard  page URI.
 **Arguments**:
 
 - `idx_root` - Root index
-  
+
 
 **Returns**:
 
@@ -128,7 +128,7 @@ Create the device page URI.
 **Arguments**:
 
 - `idx_device` - IDX of the device in the database
-  
+
 
 **Returns**:
 
@@ -147,7 +147,7 @@ Create the event page URI.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -166,7 +166,7 @@ Create the filtered event page URI.
 **Arguments**:
 
 - `idx_root` - Index of the root in the DB
-  
+
 
 **Returns**:
 
@@ -185,7 +185,7 @@ Create the device page URI.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -204,7 +204,7 @@ Create the device page URI.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -230,7 +230,7 @@ Create a GraphQL filter string for OR operations.
 
 - `key` - GraphQL key to run the OR operation against
 - `items` - List of iitems for filtering
-  
+
 
 **Returns**:
 
@@ -258,7 +258,7 @@ Inject global variables for use by templates.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -273,7 +273,7 @@ Define the switchmap.dashboard.data package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -308,7 +308,7 @@ Instantiate the class.
 **Arguments**:
 
 - `interface` - Interface dict
-  
+
 
 **Returns**:
 
@@ -327,7 +327,7 @@ Get Row data.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -346,7 +346,7 @@ Return port CDP HTML string.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -365,7 +365,7 @@ Return port duplex string.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -384,7 +384,7 @@ Return port LLDP HTML string.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -403,7 +403,7 @@ Return port speed.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -422,7 +422,7 @@ Return InterfaceState object.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -441,7 +441,7 @@ Return idle time.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -460,7 +460,7 @@ Return VLAN number.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -495,7 +495,7 @@ Instantiate the class.
 **Arguments**:
 
 - `interface` - Interface dict
-  
+
 
 **Returns**:
 
@@ -514,7 +514,7 @@ Get the MacState of the interface.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -533,7 +533,7 @@ Get the IpState of the interface.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -552,7 +552,7 @@ Get the MacIpState of the interface.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -571,7 +571,7 @@ Get the MacIpState of the interface.
 **Arguments**:
 
 - `interface` - IDX of the interface in the DB
-  
+
 
 **Returns**:
 
@@ -606,7 +606,7 @@ Instantiate the class.
 **Arguments**:
 
 - `system_data` - Dictionary of system data
-  
+
 
 **Returns**:
 
@@ -625,7 +625,7 @@ Return data for the device's system information.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -644,7 +644,7 @@ Return hostname.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -663,7 +663,7 @@ Return last_polled.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -682,7 +682,7 @@ Return sysdescription.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -701,7 +701,7 @@ Return sysname.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -720,7 +720,7 @@ Return sysobjectid.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -739,7 +739,7 @@ Return sysuptime.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -754,7 +754,7 @@ Define the switchmap.dashboard.net package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -782,7 +782,7 @@ Create the search page.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -801,7 +801,7 @@ Convert interface information to HTML.
 **Arguments**:
 
 - `_interfaces` - List of interface data dicts
-  
+
 
 **Returns**:
 
@@ -829,7 +829,7 @@ Create the events page.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -857,7 +857,7 @@ Crerate device tables.
 **Arguments**:
 
 - `idx_device` - Device index
-  
+
 
 **Returns**:
 
@@ -872,7 +872,7 @@ Define the switchmap.dashboard.net.routes.pages package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -900,7 +900,7 @@ Create the dashboard home page.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -920,7 +920,7 @@ Create the dashboard home page for a specific event index.
 **Arguments**:
 
 - `idx_root` - Event index
-  
+
 
 **Returns**:
 
@@ -935,7 +935,7 @@ Define the switchmap.dashboard.net.routes package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -963,7 +963,7 @@ Get dashboard data.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -983,7 +983,7 @@ Get dashboard data.
 **Arguments**:
 
 - `idx_root` - IDX of the root in the DB
-  
+
 
 **Returns**:
 
@@ -1003,7 +1003,7 @@ Get event data.
 **Arguments**:
 
 - `idx_root` - IDX of the root in the DB
-  
+
 
 **Returns**:
 
@@ -1023,7 +1023,7 @@ Get event data.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1043,7 +1043,7 @@ Get device data.
 **Arguments**:
 
 - `idx_device` - IDX of the DB device table
-  
+
 
 **Returns**:
 
@@ -1063,7 +1063,7 @@ Get device data.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1082,7 +1082,7 @@ Get event data.
 **Arguments**:
 
 - `idx_root` - IDX of the DB root
-  
+
 
 **Returns**:
 
@@ -1097,7 +1097,7 @@ Define the switchmap.dashboard.net.routes.api package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1132,7 +1132,7 @@ Initialize the class.
 **Arguments**:
 
 - `data` - Device dictionary
-  
+
 
 **Returns**:
 
@@ -1151,7 +1151,7 @@ Get the system hostname.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1170,7 +1170,7 @@ Create the ports table for the device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1189,7 +1189,7 @@ Create summary table for the devie.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1225,7 +1225,7 @@ Initialize the class.
 
 - `data` - Search dictionary
 - `hostname` - The name of the Device
-  
+
 
 **Returns**:
 
@@ -1244,7 +1244,7 @@ Create the ports table for the search.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1279,7 +1279,7 @@ Initialize the class.
 **Arguments**:
 
 - `_events` - Events to process
-  
+
 
 **Returns**:
 
@@ -1298,7 +1298,7 @@ Create HTML table for the events.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1325,7 +1325,7 @@ Wrap the data in HTML stuff.
 - `title` - title
 - `table` - Table HTML
 - `strip` - Strip the thead if True
-  
+
 
 **Returns**:
 
@@ -1344,7 +1344,7 @@ Remove line in HTML code containing the 'thead'.
 **Arguments**:
 
 - `data` - HTML code
-  
+
 
 **Returns**:
 
@@ -1359,7 +1359,7 @@ Define the switchmap.dashboard.net.html.pages package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1394,7 +1394,7 @@ Initialize the class.
 **Arguments**:
 
 - `zones` - List of zones
-  
+
 
 **Returns**:
 
@@ -1413,7 +1413,7 @@ Create HTML table for the devices.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1428,7 +1428,7 @@ Define the switchmap.dashboard.net.html package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1443,7 +1443,7 @@ Define the switchmap.dashboard.table package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1478,7 +1478,7 @@ Initialize the class.
 **Arguments**:
 
 - `data` - Device dictionary
-  
+
 
 **Returns**:
 
@@ -1497,7 +1497,7 @@ Create the ports table for the device.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1516,7 +1516,7 @@ Create summary table for the devie.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1551,7 +1551,7 @@ Initialize the class.
 **Arguments**:
 
 - `data` - Search dictionary
-  
+
 
 **Returns**:
 
@@ -1570,7 +1570,7 @@ Create the ports table for the search.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1605,7 +1605,7 @@ Format the column content without escaping.
 **Arguments**:
 
 - `content` - The content to be displayed in the column
-  
+
 
 **Returns**:
 
@@ -1634,7 +1634,7 @@ Apply CSS class attributes to regular table row.
 **Arguments**:
 
 - `item` - Row data object containing interface information
-  
+
 
 **Returns**:
 
@@ -1675,7 +1675,7 @@ Initialize the class.
 - `lldp` - LLDP data string
 - `mac_address` - MAC Address
 - `organization` - Name of the organization
-  
+
 
 **Returns**:
 
@@ -1694,7 +1694,7 @@ Determine if the interface is active.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1713,7 +1713,7 @@ Determine if the interface is enabled.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1733,7 +1733,7 @@ Get Interface data from the device.
 **Arguments**:
 
 - `_interfaces` - Interface dict
-  
+
 
 **Returns**:
 
@@ -1770,7 +1770,7 @@ Format the column content without escaping.
 **Arguments**:
 
 - `content` - The content to be displayed in the column
-  
+
 
 **Returns**:
 
@@ -1809,7 +1809,7 @@ Initialize the class.
 **Arguments**:
 
 - `row_data` - List containing the data for each column in the row
-  
+
 
 **Returns**:
 
@@ -1830,7 +1830,7 @@ Creates a formatted table object from a list of events.
 **Arguments**:
 
 - `events` - List of EventMeta objects
-  
+
 
 **Returns**:
 
@@ -1865,7 +1865,7 @@ Format the column content without escaping.
 **Arguments**:
 
 - `content` - The content to be displayed in the column
-  
+
 
 **Returns**:
 
@@ -1904,7 +1904,7 @@ Initialize the class.
 **Arguments**:
 
 - `row` - SystemDataRow object containing parameter and value
-  
+
 
 **Returns**:
 
@@ -1923,7 +1923,7 @@ Create summary table for the devie.
 **Arguments**:
 
 - `data` - Dictionary containing system information data
-  
+
 
 **Returns**:
 
@@ -1958,7 +1958,7 @@ Fix the column formatting.
 **Arguments**:
 
 - `content` - Content to parse
-  
+
 
 **Returns**:
 
@@ -1977,7 +1977,7 @@ Create HTML table for the devices.
 **Arguments**:
 
 - `zones` - List of Zones
-  
+
 
 **Returns**:
 
@@ -2016,7 +2016,7 @@ Initialize the class.
 **Arguments**:
 
 - `row_data` - Row data
-  
+
 
 **Returns**:
 
@@ -2035,9 +2035,8 @@ Return data for the device's system information.
 **Arguments**:
 
 - `devices` - List of DeviceMeta objects
-  
+
 
 **Returns**:
 
 - `rows` - List of Col objects
-

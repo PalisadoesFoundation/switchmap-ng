@@ -6,7 +6,7 @@ This page outlines how to use the ``switchmap-ng`` command line interface (CLI)
 Viewing ``switchmap-ng`` status
 -------------------------------
 
-There are a few important ``switchmap-ng`` daemons. 
+There are a few important ``switchmap-ng`` daemons.
 
 1) **Dashboard** Displays device data on web pages
 2) **poller:** Gets data from devices
@@ -39,7 +39,7 @@ You can get the status of the API server using this command:
 .. code-block:: bash
 
     (venv) $ bin/systemd/switchmap_server --status
-    
+
 Ingester status
 ~~~~~~~~~~~~~~~
 
@@ -67,15 +67,15 @@ Managing the ``switchmap-ng`` Daemons
 Poller Management
 ~~~~~~~~~~~~~~~~~
 
-The poller can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung. 
+The poller can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung.
 
 .. code-block:: bash
 
     (venv) $ bin/systemd/switchmap_poller --start
-    
+
     (venv) $ bin/systemd/switchmap_poller --stop
     (venv) $ bin/systemd/switchmap_poller --stop --force
-    
+
     (venv) $ bin/systemd/switchmap_poller --restart
     (venv) $ bin/systemd/switchmap_poller --restart --force
 
@@ -83,45 +83,45 @@ The poller can be started, stopped and restarted using the following commands. U
 API Server Management
 ~~~~~~~~~~~~~~~~~~~~~
 
-The server can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung. 
+The server can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung.
 
 .. code-block:: bash
 
     (venv) $ bin/systemd/switchmap_server --start
-    
+
     (venv) $ bin/systemd/switchmap_server --stop
     (venv) $ bin/systemd/switchmap_server --stop --force
-    
+
     (venv) $ bin/systemd/switchmap_server --restart
     (venv) $ bin/systemd/switchmap_server --restart --force
 
 Ingester Management
 ~~~~~~~~~~~~~~~~~~~
 
-The ingester can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung. 
+The ingester can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung.
 
 .. code-block:: bash
 
     (venv) $ bin/systemd/switchmap_ingester --start
-    
+
     (venv) $ bin/systemd/switchmap_ingester --stop
     (venv) $ bin/systemd/switchmap_ingester --stop --force
-    
+
     (venv) $ bin/systemd/switchmap_ingester --restart
     (venv) $ bin/systemd/switchmap_ingester --restart --force
 
 Dashboard Management
 ~~~~~~~~~~~~~~~~~~~~
 
-The dashboard can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung. 
+The dashboard can be started, stopped and restarted using the following commands. Use the ``--force`` option only if the daemon may be hung.
 
 .. code-block:: bash
 
     (venv) $ bin/systemd/switchmap_dashboard --start
-    
+
     (venv) $ bin/systemd/switchmap_dashboard --stop
     (venv) $ bin/systemd/switchmap_dashboard --stop --force
-    
+
     (venv) $ bin/systemd/switchmap_dashboard --restart
     (venv) $ bin/systemd/switchmap_dashboard --restart --force
 
@@ -138,7 +138,7 @@ You may want to verify that the poller can access the hosts in the configuration
 Viewing ``switchmap-ng`` logs
 -----------------------------
 
-When troubleshooting it is a good practice to view the ``switchmap-ng`` log files. 
+When troubleshooting it is a good practice to view the ``switchmap-ng`` log files.
 
 These can be found in the directory configured with the ``log_directory`` in the configuration. The default is in the ``logs/`` directory.
 
@@ -147,4 +147,3 @@ These can be found in the directory configured with the ``log_directory`` in the
 3) ``switchmap-poller.log``: The log file used by the poller
 4) ``switchmap-ingester.log``: The log file used by the ingester
 5) ``switchmap-dashboard.log``: The log file used by the dashboard
-

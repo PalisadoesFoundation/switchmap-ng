@@ -131,7 +131,7 @@ operation of `switchmap-ng`. Here is how it is configured.
 | Parameter | Description |
 | --------- | ----------- |
 | `core:` | YAML key describing the server configuration.|
-| `system_directory:` | Location where temporary data files are stored. Make sure that the switchmap username has write access to it. defaults to the `var/` directory in the `switchmap-ng` root directory. |  
+| `system_directory:` | Location where temporary data files are stored. Make sure that the switchmap username has write access to it. defaults to the `var/` directory in the `switchmap-ng` root directory. |
 | `log_directory:` | The directory where `switchmap-ng` places its log files. Make sure that the switchmap username has write access to it. Defaultsto the `log/`subdirectory of `system_directory`|
 | `daemon_directory:` | The directory where `switchmap-ng` places its files necessary for proper daemon operation. Make sure that the switchmap username has write access to it. Defaults to the `daemon/`subdirectory of `system_directory`. <p>This directory needs to be empty on a reboot. So we recommend a few possible solutions:</p><p>1)  Place this directory in small RAM disk.The total storage required will be about 1 kB.</p><p>2)  If you plan to run the `switchmap-ng` executables as Linux daemons, then this should be set to `/var/run/switchmap` after testing with the default values.</p> |
 | `log_level:` | Defines the logging level. `debug` level is the most verbose, followed by `info`, `warning` and `critical`|
