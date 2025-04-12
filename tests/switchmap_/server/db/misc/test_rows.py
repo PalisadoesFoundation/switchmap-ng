@@ -210,36 +210,11 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 25
         when given an L1Interface row from the database.
         """
-        row = L1Interface(
-            idx_device=1,
-            ifindex=1,
-            duplex=1,
-            ethernet=0,
-            nativevlan=1,
-            trunk=0,
-            ifspeed=1000,
-            iftype=1,
-            ifname="eth0".encode(),
-            ifalias="Alias0".encode(),
-            ifdescr="Interface Description".encode(),
-            ifadminstatus=1,
-            ifoperstatus=1,
-            ts_idle=0,
-            cdpcachedeviceid="some_device_id".encode(),
-            cdpcachedeviceport="some_port".encode(),
-            cdpcacheplatform="platform".encode(),
-            lldpremportdesc="port_desc".encode(),
-            lldpremsyscapenabled="enabled".encode(),
-            lldpremsysdesc="system_desc".encode(),
-            lldpremsysname="system_name".encode(),
-            enabled=1,
-        )
-        self.session.add(row)
-        self.session.commit()
-
         row = self.session.query(L1Interface).first()
+        self.assertIsNotNone(
+            row, "No L1Interface row found in the test database."
+        )
 
-        self.assertIsNotNone(row, "No Event row found in the test database.")
         result = rows.l1interface(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 25)
