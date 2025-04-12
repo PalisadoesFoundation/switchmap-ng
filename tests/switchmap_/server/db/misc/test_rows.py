@@ -206,6 +206,9 @@ class TestRowsMethods(unittest.TestCase):
 
     def test_l1interface(self):
         """Test the l1interface() function for correct tuple conversion."""
+        assert (
+            self.session.query(L1Interface).count() > 0
+        ), "No L1Interface records in the database"
         row = self.session.query(L1Interface).first()
         self.assertIsNotNone(
             row, "No L1Interface row found in the test database."
