@@ -140,6 +140,9 @@ class TestRowsMethods(unittest.TestCase):
         Raises:
             AttributeError: If an attribute is missing in the row.
             AssertionError: If an attribute value does not match.
+
+        Returns:
+            None
         """
         for key, expected_value in expected_dict.items():
             actual_value = getattr(row, key)
