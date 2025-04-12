@@ -126,6 +126,19 @@ class TestRowsMethods(unittest.TestCase):
     # ----------------------------------------------------------------------
 
     def compare_row_to_expected(self, row, expected_dict):
+        """Compare the attributes of a row with expected values.
+
+        Iterates through the `expected_dict`, comparing each value with the
+        corresponding attribute of the `row` object, handling byte string
+        normalization and reporting mismatches.
+
+        Args:
+            row: The database row object.
+            expected_dict: A dictionary of expected attribute values.
+
+        Raises:
+            AttributeError: If an attribute is missing in the row.
+        """
         for key, expected_value in expected_dict.items():
             actual_value = getattr(row, key)
 
@@ -150,8 +163,8 @@ class TestRowsMethods(unittest.TestCase):
         """
         row = self.session.query(Device).first()
         self.assertIsNotNone(row, "No Device row found in the test database.")
-
         result = rows.device(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 12)
 
@@ -166,6 +179,7 @@ class TestRowsMethods(unittest.TestCase):
         row = self.session.query(Root).first()
         self.assertIsNotNone(row, "No Root row found in the test database.")
         result = rows.root(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
 
@@ -180,8 +194,10 @@ class TestRowsMethods(unittest.TestCase):
         row = self.session.query(Event).first()
         self.assertIsNotNone(row, "No Event row found in the test database.")
         result = rows.event(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
+
         self.compare_row_to_expected(row, result._asdict())
 
     def test_l1interface(self):
@@ -190,10 +206,11 @@ class TestRowsMethods(unittest.TestCase):
         self.assertIsNotNone(
             row, "No L1Interface row found in the test database."
         )
-
         result = rows.l1interface(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 25)
+
         self.compare_row_to_expected(row, result._asdict())
 
     def test_mac(self):
@@ -202,10 +219,10 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 7
         when given a Mac row from the database.
         """
-
         row = self.session.query(Mac).first()
         self.assertIsNotNone(row, "No Mac row found in the test database.")
         result = rows.mac(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 7)
 
@@ -217,12 +234,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a MacIp row from the database.
         """
-
         row = self.session.query(MacIp).first()
         self.assertIsNotNone(row, "No MacIp row found in the test database.")
         result = rows.macip(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
+
         self.compare_row_to_expected(row, result._asdict())
 
     def test_macport(self):
@@ -231,12 +249,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a MacPort row from the database.
         """
-
         row = self.session.query(MacPort).first()
         self.assertIsNotNone(row, "No MacPort row found in the test database.")
         result = rows.macport(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
+
         self.compare_row_to_expected(row, result._asdict())
 
     def test_oui(self):
@@ -245,12 +264,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a Oui row from the database.
         """
-
         row = self.session.query(Oui).first()
         self.assertIsNotNone(row, "No Oui row found in the test database.")
         result = rows.oui(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
+
         self.compare_row_to_expected(row, result._asdict())
 
     def test_vlan(self):
@@ -259,12 +279,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 8
         when given a Vlan row from the database.
         """
-
         row = self.session.query(Vlan).first()
         self.assertIsNotNone(row, "No Vlan row found in the test database.")
         result = rows.vlan(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 8)
+
         self.compare_row_to_expected(row, result._asdict())
 
     def test_vlanport(self):
@@ -273,12 +294,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a VlanPort row from the database.
         """
-
         row = self.session.query(VlanPort).first()
         self.assertIsNotNone(row, "No VlanPort row found in the test database.")
         result = rows.vlanport(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
+
         self.compare_row_to_expected(row, result._asdict())
 
     def test_zone(self):
@@ -287,12 +309,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 7
         when given a Zone row from the database.
         """
-
         row = self.session.query(Zone).first()
         self.assertIsNotNone(row, "No Zone row found in the test database.")
         result = rows.zone(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 7)
+
         self.compare_row_to_expected(row, result._asdict())
 
     def test_ip(self):
@@ -301,12 +324,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 8
         when given a Ip row from the database.
         """
-
         row = self.session.query(Ip).first()
         self.assertIsNotNone(row, "No Ip row found in the test database.")
         result = rows.ip(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 8)
+
         self.compare_row_to_expected(row, result._asdict())
 
     def test_ipport(self):
@@ -315,12 +339,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a IpPort row from the database.
         """
-
         row = self.session.query(IpPort).first()
         self.assertIsNotNone(row, "No IpPort row found in the test database.")
         result = rows.ipport(row)
+
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
+
         self.compare_row_to_expected(row, result._asdict())
 
     # ----------------------------------------------------------------------
