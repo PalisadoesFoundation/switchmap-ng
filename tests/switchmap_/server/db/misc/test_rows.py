@@ -210,54 +210,37 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 25
         when given an L1Interface row from the database.
         """
-        try:
-            # Try to query the first row
-            row = self.session.query(L1Interface).first()
+        row = L1Interface(
+            idx_device=1,
+            ifindex=1,
+            duplex=1,
+            ethernet=0,
+            nativevlan=1,
+            trunk=0,
+            ifspeed=1000,
+            iftype=1,
+            ifname="eth0".encode(),
+            ifalias="Alias0".encode(),
+            ifdescr="Interface Description".encode(),
+            ifadminstatus=1,
+            ifoperstatus=1,
+            ts_idle=0,
+            cdpcachedeviceid="some_device_id".encode(),
+            cdpcachedeviceport="some_port".encode(),
+            cdpcacheplatform="platform".encode(),
+            lldpremportdesc="port_desc".encode(),
+            lldpremsyscapenabled="enabled".encode(),
+            lldpremsysdesc="system_desc".encode(),
+            lldpremsysname="system_name".encode(),
+            enabled=1,
+        )
+        self.session.add(row)
+        self.session.commit()
 
-            # If no row is found, manually insert data
-            if row is None:
-                # Insert a sample row into the L1Interface table
-                row = L1Interface(
-                    idx_device=1,
-                    ifindex=1,
-                    duplex=1,
-                    ethernet=0,
-                    nativevlan=1,
-                    trunk=0,
-                    ifspeed=1000,
-                    iftype=1,
-                    ifname="eth0".encode(),
-                    ifalias="Alias0".encode(),
-                    ifdescr="Interface Description".encode(),
-                    ifadminstatus=1,
-                    ifoperstatus=1,
-                    ts_idle=0,
-                    cdpcachedeviceid="some_device_id".encode(),
-                    cdpcachedeviceport="some_port".encode(),
-                    cdpcacheplatform="platform".encode(),
-                    lldpremportdesc="port_desc".encode(),
-                    lldpremsyscapenabled="enabled".encode(),
-                    lldpremsysdesc="system_desc".encode(),
-                    lldpremsysname="system_name".encode(),
-                    enabled=1,
-                )
-                self.session.add(row)
-                self.session.commit()
+        row = self.session.query(L1Interface).first()
 
-                row = self.session.query(L1Interface).first()
-
-        except Exception as e:
-            self.fail(
-                f"Error while querying or inserting into L1Interface: {str(e)}"
-            )
-
-        # Proceed with the rest of the test
         self.assertIsNotNone(row, "No Event row found in the test database.")
-
-        # Convert row to a tuple using the function under test
         result = rows.l1interface(row)
-
-        # Validate the result
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 25)
 
