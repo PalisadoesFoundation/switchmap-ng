@@ -53,8 +53,6 @@ from switchmap.server.db import SCOPED_SESSION
 from tests.testlib_ import setup
 from tests.testlib_ import db
 
-from sqlalchemy import inspect
-
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
 ROOT_DIR = os.path.abspath(
@@ -207,18 +205,12 @@ class TestRowsMethods(unittest.TestCase):
         self.compare_row_to_expected(row, result._asdict())
 
     def test_l1interface(self):
-        """Test the l1interface() function for correct tuple conversion."""
-        inspector = inspect(self.session.bind)
-
-        if "l1interface" not in inspector.get_table_names():
-            self.skipTest(
-                "L1Interface table does not exist in the test database."
-            )
-
+        """Test the l1interface() function for correct tuple conversion.
+        Verifies that the function returns a tuple of length 25
+        when given an L1Interface row from the database.
+        """
         row = self.session.query(L1Interface).first()
-        self.assertIsNotNone(
-            row, "No L1Interface row found in the test database."
-        )
+        self.assertIsNotNone(row, "No Event row found in the test database.")
         result = rows.l1interface(row)
 
         self.assertIsInstance(result, tuple)
