@@ -147,10 +147,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(Device).first()
+        self.assertIsNotNone(row, "No Device row found in the test database.")
         result = rows.device(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 12)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -180,10 +181,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(Root).first()
+        self.assertIsNotNone(row, "No Root row found in the test database.")
         result = rows.root(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -213,10 +215,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(Event).first()
+        self.assertIsNotNone(row, "No Event row found in the test database.")
         result = rows.event(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -264,11 +267,16 @@ class TestRowsMethods(unittest.TestCase):
             "ts_modified",
             "ts_created",
         ]
+
         row = self.session.query(L1Interface).first()
+        self.assertIsNotNone(
+            row, "No L1Interface row found in the test database."
+        )
         result = rows.l1interface(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 25)
-        # Check each values in the tuple
+
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -299,11 +307,12 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(Mac).first()
+        self.assertIsNotNone(row, "No Mac row found in the test database.")
         result = rows.mac(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 7)
 
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -333,10 +342,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(MacIp).first()
+        self.assertIsNotNone(row, "No MacIp row found in the test database.")
         result = rows.macip(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -366,10 +376,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(MacPort).first()
+        self.assertIsNotNone(row, "No MacPort row found in the test database.")
         result = rows.macport(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -399,10 +410,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(Oui).first()
+        self.assertIsNotNone(row, "No Oui row found in the test database.")
         result = rows.oui(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -434,10 +446,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(Vlan).first()
+        self.assertIsNotNone(row, "No Vlan row found in the test database.")
         result = rows.vlan(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 8)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -467,10 +480,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(VlanPort).first()
+        self.assertIsNotNone(row, "No VlanPort row found in the test database.")
         result = rows.vlanport(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -501,10 +515,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(Zone).first()
+        self.assertIsNotNone(row, "No Zone row found in the test database.")
         result = rows.zone(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 7)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -536,10 +551,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(Ip).first()
+        self.assertIsNotNone(row, "No Ip row found in the test database.")
         result = rows.ip(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 8)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
@@ -569,10 +585,11 @@ class TestRowsMethods(unittest.TestCase):
             "ts_created",
         ]
         row = self.session.query(IpPort).first()
+        self.assertIsNotNone(row, "No IpPort row found in the test database.")
         result = rows.ipport(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each values in the tuple
+        # Check each value in the tuple
         for i, attr in enumerate(row_attributes):
             row_value = getattr(row, attr)
 
