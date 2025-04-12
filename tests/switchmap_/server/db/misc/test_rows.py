@@ -133,7 +133,6 @@ class TestRowsMethods(unittest.TestCase):
         normalization, and reporting mismatches using assertions.
 
         Args:
-            self: The test case instance.
             row: The database row object.
             expected_dict: A dictionary of expected attribute values.
 
