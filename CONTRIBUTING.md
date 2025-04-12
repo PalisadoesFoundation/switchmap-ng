@@ -163,7 +163,7 @@ The process of proposing a change to the repository can be summarized as:
                [![results.jpg](/public/images/codecov/results.jpg)]()
 
 7. After making changes you can add them to git locally using `git add <file_name>`(to add changes only in a particular file) or `git add .` (to add all changes).
-8. Before making a commit, run all hooks manually to catch and fix issues early using: `pre-commit run --all-files`. Some hooks (like formatters) may auto-fix code. If so, re-add the fixed files using `git add .`.
+8. Before making a commit, run all hooks manually to catch and fix issues early using: `pre-commit run --all-files`. Some hooks (like formatters) may auto-fix code. If so, re-add the fixed files using: `git add .`.
 9. After adding the changes you need to commit them using `git commit -m '<commit message>'`(look at the commit guidelines below for commit messages).
 10. Once you have successfully commited your changes, you need to push the changes to the forked repo on github using: `git push origin <branch_name>`.(Here branch name must be name of the branch you want to push the changes to.)
 11. Now create a pull request to the repository from your forked repo. Open an issue regarding the same and link your PR to it.
