@@ -125,45 +125,37 @@ class TestRowsMethods(unittest.TestCase):
     # Standard conversion tests
     # ----------------------------------------------------------------------
 
+    def compare_row_to_expected(self, row, expected_dict):
+        for key, expected_value in expected_dict.items():
+            actual_value = getattr(row, key)
+
+            # Normalize byte strings
+            if isinstance(actual_value, bytes):
+                actual_value = actual_value.decode()
+            if isinstance(expected_value, bytes):
+                expected_value = expected_value.decode()
+
+            with self.subTest(attribute=key):
+                self.assertEqual(
+                    actual_value,
+                    expected_value,
+                    f"Mismatch for attribute '{key}'",
+                )
+
     def test_device(self):
         """Test the device() function for correct tuple conversion.
 
         Verifies that the function returns a tuple of length 12
         when given a Device row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_device",
-            "idx_zone",
-            "sys_name",
-            "hostname",
-            "name",
-            "sys_description",
-            "sys_objectid",
-            "sys_uptime",
-            "last_polled",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
         row = self.session.query(Device).first()
         self.assertIsNotNone(row, "No Device row found in the test database.")
+
         result = rows.device(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 12)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
 
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_root(self):
         """Test the root() function for correct tuple conversion.
@@ -171,33 +163,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a Root row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_root",
-            "idx_event",
-            "name",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
         row = self.session.query(Root).first()
         self.assertIsNotNone(row, "No Root row found in the test database.")
         result = rows.root(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
 
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_event(self):
         """Test the event() function for correct tuple conversion.
@@ -205,90 +177,24 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given an Event row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_event",
-            "name",
-            "epoch_utc",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
         row = self.session.query(Event).first()
         self.assertIsNotNone(row, "No Event row found in the test database.")
         result = rows.event(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_l1interface(self):
-        """Test the l1interface() function for correct tuple conversion.
-
-        Verifies that the function returns a tuple of length 25
-        when given a L1Interface row from the database.
-        """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_l1interface",
-            "idx_device",
-            "ifindex",
-            "duplex",
-            "ethernet",
-            "nativevlan",
-            "trunk",
-            "ifspeed",
-            "iftype",
-            "ifalias",
-            "ifdescr",
-            "ifname",
-            "ifadminstatus",
-            "ifoperstatus",
-            "ts_idle",
-            "cdpcachedeviceid",
-            "cdpcachedeviceport",
-            "cdpcacheplatform",
-            "lldpremportdesc",
-            "lldpremsyscapenabled",
-            "lldpremsysdesc",
-            "lldpremsysname",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
-
+        """Test the l1interface() function for correct tuple conversion."""
         row = self.session.query(L1Interface).first()
         self.assertIsNotNone(
             row, "No L1Interface row found in the test database."
         )
+
         result = rows.l1interface(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 25)
-
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_mac(self):
         """Test the mac() function for correct tuple conversion.
@@ -296,35 +202,14 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 7
         when given a Mac row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_mac",
-            "idx_oui",
-            "idx_zone",
-            "mac",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
+
         row = self.session.query(Mac).first()
         self.assertIsNotNone(row, "No Mac row found in the test database.")
         result = rows.mac(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 7)
 
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_macip(self):
         """Test the macip() function for correct tuple conversion.
@@ -332,33 +217,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a MacIp row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_macip",
-            "idx_ip",
-            "idx_mac",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
+
         row = self.session.query(MacIp).first()
         self.assertIsNotNone(row, "No MacIp row found in the test database.")
         result = rows.macip(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_macport(self):
         """Test the macport() function for correct tuple conversion.
@@ -366,33 +231,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a MacPort row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_macport",
-            "idx_l1interface",
-            "idx_mac",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
+
         row = self.session.query(MacPort).first()
         self.assertIsNotNone(row, "No MacPort row found in the test database.")
         result = rows.macport(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_oui(self):
         """Test the oui() function for correct tuple conversion.
@@ -400,33 +245,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a Oui row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_oui",
-            "oui",
-            "organization",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
+
         row = self.session.query(Oui).first()
         self.assertIsNotNone(row, "No Oui row found in the test database.")
         result = rows.oui(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_vlan(self):
         """Test the vlan() function for correct tuple conversion.
@@ -434,35 +259,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 8
         when given a Vlan row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_vlan",
-            "idx_device",
-            "vlan",
-            "name",
-            "state",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
+
         row = self.session.query(Vlan).first()
         self.assertIsNotNone(row, "No Vlan row found in the test database.")
         result = rows.vlan(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 8)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_vlanport(self):
         """Test the vlanport() function for correct tuple conversion.
@@ -470,33 +273,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a VlanPort row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_vlanport",
-            "idx_l1interface",
-            "idx_vlan",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
+
         row = self.session.query(VlanPort).first()
         self.assertIsNotNone(row, "No VlanPort row found in the test database.")
         result = rows.vlanport(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_zone(self):
         """Test the zone() function for correct tuple conversion.
@@ -504,34 +287,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 7
         when given a Zone row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_zone",
-            "idx_event",
-            "name",
-            "notes",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
+
         row = self.session.query(Zone).first()
         self.assertIsNotNone(row, "No Zone row found in the test database.")
         result = rows.zone(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 7)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_ip(self):
         """Test the ip() function for correct tuple conversion.
@@ -539,35 +301,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 8
         when given a Ip row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_ip",
-            "idx_zone",
-            "address",
-            "version",
-            "hostname",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
+
         row = self.session.query(Ip).first()
         self.assertIsNotNone(row, "No Ip row found in the test database.")
         result = rows.ip(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 8)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     def test_ipport(self):
         """Test the ipport() function for correct tuple conversion.
@@ -575,33 +315,13 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 6
         when given a IpPort row from the database.
         """
-        # List of row attributes to match with the tuple values
-        row_attributes = [
-            "idx_ipport",
-            "idx_l1interface",
-            "idx_ip",
-            "enabled",
-            "ts_modified",
-            "ts_created",
-        ]
+
         row = self.session.query(IpPort).first()
         self.assertIsNotNone(row, "No IpPort row found in the test database.")
         result = rows.ipport(row)
         self.assertIsInstance(result, tuple)
         self.assertEqual(len(result), 6)
-        # Check each value in the tuple
-        for i, attr in enumerate(row_attributes):
-            row_value = getattr(row, attr)
-
-            # Decode byte string if necessary
-            if isinstance(row_value, bytes):
-                row_value = row_value.decode()
-
-            self.assertEqual(
-                row_value,
-                result[i],
-                f"Mismatch at index {i} for attribute '{attr}'",
-            )
+        self.compare_row_to_expected(row, result._asdict())
 
     # ----------------------------------------------------------------------
     # --- Edge case: None input tests ---
