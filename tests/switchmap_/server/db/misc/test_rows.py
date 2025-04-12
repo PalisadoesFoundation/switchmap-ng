@@ -133,13 +133,13 @@ class TestRowsMethods(unittest.TestCase):
         normalization, and reporting mismatches using assertions.
 
         Args:
+            self: The test case instance.
             row: The database row object.
             expected_dict: A dictionary of expected attribute values.
 
         Raises:
             AttributeError: If an attribute is missing in the row.
-            AssertionError: If an attribute value does not match
-            the expected value.
+            AssertionError: If an attribute value does not match.
         """
         for key, expected_value in expected_dict.items():
             actual_value = getattr(row, key)
