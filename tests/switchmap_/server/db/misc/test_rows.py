@@ -206,6 +206,7 @@ class TestRowsMethods(unittest.TestCase):
 
     def test_l1interface(self):
         """Test the l1interface() function for correct tuple conversion.
+
         Verifies that the function returns a tuple of length 25
         when given an L1Interface row from the database.
         """
@@ -217,7 +218,7 @@ class TestRowsMethods(unittest.TestCase):
             if row is None:
                 # Insert a sample row into the L1Interface table
                 row = L1Interface(
-                    idx_device=1,  # Provide appropriate values here for the insert
+                    idx_device=1,
                     ifindex=1,
                     duplex=1,
                     ethernet=0,
@@ -225,7 +226,7 @@ class TestRowsMethods(unittest.TestCase):
                     trunk=0,
                     ifspeed=1000,
                     iftype=1,
-                    ifname="eth0".encode(),  # Encoding to match VARBINARY
+                    ifname="eth0".encode(),
                     ifalias="Alias0".encode(),
                     ifdescr="Interface Description".encode(),
                     ifadminstatus=1,
@@ -240,11 +241,9 @@ class TestRowsMethods(unittest.TestCase):
                     lldpremsysname="system_name".encode(),
                     enabled=1,
                 )
-                # Add and commit the transaction
                 self.session.add(row)
                 self.session.commit()
 
-                # Query again to get the row after insertion
                 row = self.session.query(L1Interface).first()
 
         except Exception as e:
