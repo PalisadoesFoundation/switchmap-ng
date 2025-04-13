@@ -18,13 +18,13 @@ Run the following commands from the top directory of `switchmap-ng`
 
 ```
 $ sudo cp examples/linux/apache/switchmap-ng-apache.conf /etc/apache2/conf-available
-$ sudo ln -s /etc/apache2/conf-available/switchmap-ng-apache.conf /etc/apache2/conf-enabled/switchmap-ng-apache.conf 
+$ sudo ln -s /etc/apache2/conf-available/switchmap-ng-apache.conf /etc/apache2/conf-enabled/switchmap-ng-apache.conf
 
 # (Ubuntu only)
 $ sudo a2enmod proxy_http
 $ sudo systemctl restart apache2.service
 
-# (RedHat / CentOS)    
+# (RedHat / CentOS)
 $ sudo systemctl restart httpd.service
 ```
 
@@ -41,7 +41,7 @@ Run the following commands from the top directory of `switchmap-ng`
 
 ```bash
 $ sudo cp examples/linux/nginx/switchmap-ng-nginx.conf /etc/nginx/sites-available
-$ sudo ln -s /etc/nginx/sites-available/switchmap-ng-nginx.conf /etc/nginx/conf-enabled/switchmap-ng-nginx.conf 
+$ sudo ln -s /etc/nginx/sites-available/switchmap-ng-nginx.conf /etc/nginx/conf-enabled/switchmap-ng-nginx.conf
 ```
 **Note:** Edit the `/etc/nginx/conf-enabled/switchmap-ng-nginx.conf`
 file and change the IP address of the server then restart Nginx.

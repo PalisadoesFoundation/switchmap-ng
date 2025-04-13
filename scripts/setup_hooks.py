@@ -11,10 +11,12 @@ HOOK_FILE = "pre-commit"
 
 
 def install_git_hooks():
-    """Installs Git hooks by copying the pre-commit hook to the .git/hooks directory and making it executable.
+    """Installs Git hooks by copying the pre-commit hook to the
+    .git/hooks directory and making it executable.
 
-    Ensures that the .git/hooks directory exists, copies the 'pre-commit' hook from the specified source directory
-    to .git/hooks, and then sets the correct permissions for the hook file to be executable.
+    Ensures that the .git/hooks directory exists, copies the 'pre-commit'
+    hook from the specified source directory to .git/hooks, and then
+    sets the correct permissions for the hook file to be executable.
 
     Raises:
         FileNotFoundError: If the source hook file does not exist.

@@ -26,7 +26,7 @@ Here is a sample configuration file that will be explained later in
 detail. ``switchmap-ng`` will attempt to contact hosts with each of the
 parameter sets in the ``snmp_group`` section till successful.
 
-**NOTE:** If a default value is mentioned in the documentation it means that if the corresponding parameter is left out of the configuration, that the default value will be assumed. 
+**NOTE:** If a default value is mentioned in the documentation it means that if the corresponding parameter is left out of the configuration, that the default value will be assumed.
 
 ..  code-block:: yaml
 
@@ -107,7 +107,7 @@ parameter sets in the ``snmp_group`` section till successful.
 Explaining the Configuration Sections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-1) ``switchmap-ng`` runs three separate daemon processes. A Dashboard server, an API server, and the poller. 
+1) ``switchmap-ng`` runs three separate daemon processes. A Dashboard server, an API server, and the poller.
 2) Each daemon can run on the same physical device or VM. You can also split them up to run separately in a distributed architecture. The separation of the ``dashboard``, ``server`` and ``poller`` sections makes it easier for you to do this.
 3) You can have multiple pollers located in different geographies posting data to a central API server. Each poller would have unique ``poller`` sections to match the devices in their location.
 4) You must only have one API server. You can have multiple dashboard and poller servers.
@@ -126,7 +126,7 @@ Parameter                           Description
 ``daemon_directory:``               The directory where ``switchmap-ng`` places its files necessary for proper daemon operation. Make sure that the switchmap username has write access to it. Defaults to the `daemon/` subdirectory of `system_directory`
 
                                     This directory needs to be empty on a reboot. So we recommend a few possible solutions:
-                                    
+
                                     1) Place this directory in small RAM disk. The total storage required will be about 1 kB.
                                     2) If you plan to run the ``switchmap-ng`` executables as Linux daemons, then this should be set to ``/var/run/switchmap`` after testing with the default values.
 ``log_level:``                      Defines the logging level. ``debug`` level is the most verbose, followed by ``info``, ``warning`` and ``critical``
@@ -137,7 +137,7 @@ Parameter                           Description
 The ``dashboard:`` Section
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This section of the file is used to configure the web dashboard used in ``switchmap-ng``. 
+This section of the file is used to configure the web dashboard used in ``switchmap-ng``.
 
 Here is how it is configured:
 
@@ -145,7 +145,7 @@ Here is how it is configured:
 Parameter                           Description
 =================================== ========
 ``dashboard:``                      YAML key describing the poller configuration.
-``api_listen_address:``             IP address the dashboard server will be using to host web pages. The default is ``localhost``. This should be changed to the IP address of the dashboard server's network interface that web browsers can access. 
+``api_listen_address:``             IP address the dashboard server will be using to host web pages. The default is ``localhost``. This should be changed to the IP address of the dashboard server's network interface that web browsers can access.
 ``api_bind_port``                   The TCP port the dashboard server will use. Defaults to `7001`. In most cases this won't have to be changed.
 ``api_https:``                      Set this to `True` if web browsers need to use HTTPs to access the dashboard server pages. Switchmap only uses the SSL capabilities of the pre-installed webserver of your choice to encrypt data sent over the network. Default `False`.
 ``api_password:``                   The HTTPS simple authentication password that the dashboard server uses. Defaults to ``None``.
@@ -196,7 +196,7 @@ The ``poller:`` Section
 This section of the configuration file:
 
 1) needs to be added to the ``core:`` section if you plan to configure your server to be SNMP poller server.
-2) governs the polling operation of ``switchmap-ng``. 
+2) governs the polling operation of ``switchmap-ng``.
 
 Here is how it is configured.
 
@@ -247,7 +247,7 @@ Parameter                           Description
 ``snmp_secname:``                   SNMP security name (SNMP version 3 only). Must be present even if blank.
 ``snmp_community:``                 SNMP community (SNMP version 2 only). Must be present even if blank.
 ``snmp_port:``                      SNMP Authprotocol (SNMP version 3 only). Must be present even if blank.
-``snmp_authprotocol:``              SNMP AuthPassword (SNMP version 3 only). Must be present even if blank. 
+``snmp_authprotocol:``              SNMP AuthPassword (SNMP version 3 only). Must be present even if blank.
 ``snmp_authpassword:``              SNMP PrivProtocol (SNMP version 3 only). Must be present even if blank.
 ``snmp_privprotocol:``              SNMP PrivProtocol (SNMP version 3 only). Must be present even if blank.
 ``snmp_privpassword:``              SNMP PrivPassword (SNMP version 3 only). Must be present even if blank.

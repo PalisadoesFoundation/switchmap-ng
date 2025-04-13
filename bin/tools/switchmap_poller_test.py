@@ -52,6 +52,7 @@ polling data for the host will be displayed on the screen.""",
         type=str,
         help="Hostname to test for pollability.",
     )
+
     args = parser.parse_args()
 
     # Poll

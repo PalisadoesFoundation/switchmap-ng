@@ -36,7 +36,7 @@ Initialize the class.
 - `parent` - Name of parent daemon
 - `child` - Name of child daemon
 - `config` - ConfigCore object
-  
+
 
 **Returns**:
 
@@ -55,7 +55,7 @@ Return agent name.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -102,7 +102,7 @@ Initialize the class.
 **Arguments**:
 
 - `agent` - agent object
-  
+
 
 **Returns**:
 
@@ -121,7 +121,7 @@ Start Polling.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -150,7 +150,7 @@ Initialize the class.
 **Arguments**:
 
 - `agent` - agent object
-  
+
 
 **Returns**:
 
@@ -180,7 +180,7 @@ Initialize the class.
 
 - `agent` - agent object
 - `timeout` - agent timeout
-  
+
 
 **Returns**:
 
@@ -199,7 +199,7 @@ Class that manages the agent CLI.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -218,7 +218,7 @@ Initialize the class.
 **Arguments**:
 
 - `graceful` - True if graceful restart is required
-  
+
 
 **Returns**:
 
@@ -237,7 +237,7 @@ Return all the CLI options.
 **Arguments**:
 
 - `additional_help` - CLI additional help string for argparse
-  
+
 
 **Returns**:
 
@@ -258,7 +258,7 @@ Control the agent from the CLI.
 
 - `agent` - Agent object
 - `timeout` - Agent timeout
-  
+
 
 **Returns**:
 
@@ -277,7 +277,7 @@ Applcication API agent that serves web pages.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -299,7 +299,7 @@ Initialize the class.
 - `child` - Name of child daemon
 - `app` - Flask App
 - `config` - ConfigCore object
-  
+
 
 **Returns**:
 
@@ -318,7 +318,7 @@ Query all remote targets for data.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -387,7 +387,7 @@ Run the Flask application throught the Gunicorn WSGI.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -422,7 +422,7 @@ Intialize the class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -451,7 +451,7 @@ Intialize the class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -470,7 +470,7 @@ Get agent_subprocesses.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -489,7 +489,7 @@ Get api_log_file.
 **Arguments**:
 
 - `daemon` - Name of API daemon
-  
+
 
 **Returns**:
 
@@ -508,7 +508,7 @@ Determine the daemon_directory.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -527,7 +527,7 @@ Determine the log_directory.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -546,7 +546,7 @@ Get log_file.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -565,7 +565,7 @@ Get log_level.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -584,7 +584,7 @@ Get multiprocessing.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -603,7 +603,7 @@ Determine the system_directory.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -632,7 +632,7 @@ Intialize the class.
 **Arguments**:
 
 - `section` - Section of the config file to read
-  
+
 
 **Returns**:
 
@@ -651,7 +651,7 @@ Get server_address.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -670,7 +670,7 @@ Get server_bind_port.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -689,7 +689,7 @@ Get server_https.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -708,7 +708,7 @@ Get server_password.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -727,7 +727,7 @@ Get server_username.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -746,7 +746,7 @@ Return server_url_root value.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -775,7 +775,7 @@ Intialize the class.
 **Arguments**:
 
 - `section` - Section of the config file to read
-  
+
 
 **Returns**:
 
@@ -794,7 +794,7 @@ Get api_bind_port.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -813,7 +813,7 @@ Get api_listen_address.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -832,7 +832,7 @@ Get api_https.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -851,7 +851,7 @@ Get api_password.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -870,7 +870,7 @@ Get api_username.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -889,7 +889,7 @@ Return api_url_root value.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -930,7 +930,7 @@ Initialize the class.
 **Arguments**:
 
 - `error_exception` - Exception object
-  
+
 
 **Returns**:
 
@@ -949,7 +949,7 @@ Extend the re_raise method.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -978,7 +978,7 @@ Initialize the class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -997,7 +997,7 @@ Return logger for file IO.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1016,7 +1016,7 @@ Return logger for terminal IO.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1036,7 +1036,7 @@ Log message to STDOUT only and die.
 
 - `code` - Message code
 - `message` - Message text
-  
+
 
 **Returns**:
 
@@ -1056,7 +1056,7 @@ Log message to STDOUT only and die.
 
 - `code` - Message code
 - `message` - Message text
-  
+
 
 **Returns**:
 
@@ -1076,7 +1076,7 @@ Log warning message to file only, but don't die.
 
 - `code` - Message code
 - `message` - Message text
-  
+
 
 **Returns**:
 
@@ -1096,7 +1096,7 @@ Log debug message to file only, but don't die.
 
 - `code` - Message code
 - `message` - Message text
-  
+
 
 **Returns**:
 
@@ -1116,7 +1116,7 @@ Log status message to file only, but don't die.
 
 - `code` - Message code
 - `message` - Message text
-  
+
 
 **Returns**:
 
@@ -1136,7 +1136,7 @@ Log message to file and STDOUT, but don't die.
 
 - `code` - Message code
 - `message` - Message text
-  
+
 
 **Returns**:
 
@@ -1156,7 +1156,7 @@ Log to STDOUT and file, then die.
 
 - `code` - Error number
 - `message` - Descriptive error string
-  
+
 
 **Returns**:
 
@@ -1177,7 +1177,7 @@ Log trace message to file and STDOUT, but don't die.
 - `code` - Message code
 - `sys_exc_info` - Tuple from exception from sys.exc_info
 - `message` - Descriptive error string
-  
+
 
 **Returns**:
 
@@ -1199,7 +1199,7 @@ Log trace message to file and STDOUT, but don't die.
 - `sys_exc_info` - Tuple from exception from sys.exc_info
 - `message` - Message to log
 - `die` - Die if True
-  
+
 
 **Returns**:
 
@@ -1218,7 +1218,7 @@ Check environmental variables. Die if incorrect.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1237,7 +1237,7 @@ Determine the root directory in which switchmap is installed.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1262,7 +1262,7 @@ Remove all 'edges' and 'node' keys from graphene results.
 **Arguments**:
 
 - `data` - Dict of graphene results
-  
+
 
 **Returns**:
 
@@ -1281,7 +1281,7 @@ Strip the 'node' key from a list of graphene nodes.
 **Arguments**:
 
 - `_nodes` - List of graphene node dicts
-  
+
 
 **Returns**:
 
@@ -1320,7 +1320,7 @@ Initialize the class.
 **Arguments**:
 
 - `agent` - Agent object
-  
+
 
 **Returns**:
 
@@ -1339,7 +1339,7 @@ Delete the PID file.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1358,7 +1358,7 @@ Delete the skip file.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1377,7 +1377,7 @@ Delete the lock file.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1396,7 +1396,7 @@ Start the daemon.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1415,7 +1415,7 @@ Stop the daemon by deleting the lock file first.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1434,7 +1434,7 @@ Stop the daemon.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1453,7 +1453,7 @@ Restart the daemon.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1472,7 +1472,7 @@ Get daemon status.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1495,7 +1495,7 @@ be overridden in derived classes to add actual daemon functionality.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1530,7 +1530,7 @@ Initialize the class.
 
 - `agent` - Agent object
 - `timeout` - Timeout for graceful shutdown
-  
+
 
 **Returns**:
 
@@ -1549,7 +1549,7 @@ Initializes the wrapper with the callback function `fn`.
 **Arguments**:
 
 - `callback` - callback method
-  
+
 
 **Returns**:
 
@@ -1571,7 +1571,7 @@ processing data or making use of a resource.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1593,7 +1593,7 @@ processing data or making use of a resource.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1620,7 +1620,7 @@ Create a UTF encoded SHA hash string.
 - `string` - String to hash
 - `sha` - Length of SHA hash
 - `utf8` - Return utf8 encoded string if true
-  
+
 
 **Returns**:
 
@@ -1639,7 +1639,7 @@ Convert NamedTuple to dict.
 **Arguments**:
 
 - `data` - NamedTuple
-  
+
 
 **Returns**:
 
@@ -1664,7 +1664,7 @@ Check to make sure the user environment is correct.
 **Arguments**:
 
 - `config` - Config object
-  
+
 
 **Returns**:
 
@@ -1683,7 +1683,7 @@ Check user isn't running as sudo.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1702,7 +1702,7 @@ Remove multiple whitespaces and linefeeds from string.
 **Arguments**:
 
 - `data` - String to process
-  
+
 
 **Returns**:
 
@@ -1721,7 +1721,7 @@ Convert SNMP OCTETSTR to string.
 **Arguments**:
 
 - `bytes_string` - Binary value to convert
-  
+
 
 **Returns**:
 
@@ -1740,7 +1740,7 @@ Create a random Hex hash.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1759,7 +1759,7 @@ Convert MAC address to a standardized format.
 **Arguments**:
 
 - `_mac` - MAC address
-  
+
 
 **Returns**:
 
@@ -1778,7 +1778,7 @@ Determine the root directory in which switchmap is installed.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -1797,7 +1797,7 @@ Validate an IP address.
 **Arguments**:
 
 - `_ip` - IP address
-  
+
 
 **Returns**:
 
@@ -1816,7 +1816,7 @@ Create a boolean version of the argument.
 **Arguments**:
 
 - `result` - Object to transform
-  
+
 
 **Returns**:
 
@@ -1835,7 +1835,7 @@ Convert dict keys to ints if possible.
 **Arguments**:
 
 - `_data` - Multidimensional dict
-  
+
 
 **Returns**:
 
@@ -1857,7 +1857,7 @@ identify-groups-of-consecutive-numbers-in-a-list
 **Arguments**:
 
 - `data` - list
-  
+
 
 **Returns**:
 
@@ -1882,7 +1882,7 @@ get-human-readable-version-of-file-size
 - `suffix` - The suffix for the human readable output
 - `storage` - Use binary 1024 for evaluating storage
   otherwise use regular decimal.
-  
+
 
 **Returns**:
 
@@ -1903,7 +1903,7 @@ Create a padded list of list.
 - `data` - List to process
 - `width` - Width of the list of lists
 - `pad` - Value to pad the last row of the list of lists with
-  
+
 
 **Returns**:
 
@@ -1931,7 +1931,7 @@ Create URI for datacenter RRD and oid_id data.
 - `data` - Data to post
 - `config` - ConfitAPIClient object
 - `server` - Posting to a server if True, API if False
-  
+
 
 **Returns**:
 
@@ -1953,7 +1953,7 @@ Get data fro URI from API server.
 - `config` - ConfigAPIClient object
 - `server` - True if getting data from an database API server
 - `die` - Die if the connection fails if True
-  
+
 
 **Returns**:
 
@@ -1974,7 +1974,7 @@ Get data fro URI from API server.
 - `query` - Query string from GraphQL server
 - `config` - ConfigAPIClient object
 - `die` - Die if the connection fails if True
-  
+
 
 **Returns**:
 
@@ -2009,7 +2009,7 @@ Initialize the class.
 **Arguments**:
 
 - `config` - Config object
-  
+
 
 **Returns**:
 
@@ -2028,7 +2028,7 @@ Define the system pid directory.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2047,7 +2047,7 @@ Define the system lock directory.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2066,7 +2066,7 @@ Define the system snmp directory.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2095,7 +2095,7 @@ Initialize the class.
 **Arguments**:
 
 - `config` - Config object
-  
+
 
 **Returns**:
 
@@ -2114,7 +2114,7 @@ Define the pid file.
 **Arguments**:
 
 - `prefix` - Prefix of file
-  
+
 
 **Returns**:
 
@@ -2133,7 +2133,7 @@ Define the lock file.
 **Arguments**:
 
 - `prefix` - Prefix of file
-  
+
 
 **Returns**:
 
@@ -2152,7 +2152,7 @@ Define the skip file.
 **Arguments**:
 
 - `prefix` - Prefix of file
-  
+
 
 **Returns**:
 
@@ -2172,7 +2172,7 @@ Define the system snmp directory.
 
 - `prefix` - Prefix of file
 - `create` - Create file if True
-  
+
 
 **Returns**:
 
@@ -2192,7 +2192,7 @@ Move all yaml files from source to destination directory.
 
 - `src` - Source directory
 - `dst` - Destination directory
-  
+
 
 **Returns**:
 
@@ -2211,7 +2211,7 @@ Read the contents of all yaml files in a directory.
 **Arguments**:
 
 - `directories` - List of directory names with configuration files
-  
+
 
 **Returns**:
 
@@ -2232,7 +2232,7 @@ Read the contents of a YAML file.
 - `filepath` - Path to file to be read
 - `as_string` - Return a string if True
 - `die` - Die if there is an error
-  
+
 
 **Returns**:
 
@@ -2251,7 +2251,7 @@ Create a directory if it doesn't already exist.
 **Arguments**:
 
 - `directory` - Directory name
-  
+
 
 **Returns**:
 
@@ -2271,7 +2271,7 @@ Get the pidfile for an agent.
 
 - `agent_name` - Agent name
 - `config` - Config object
-  
+
 
 **Returns**:
 
@@ -2291,7 +2291,7 @@ Get the lockfile for an agent.
 
 - `agent_name` - Agent name
 - `config` - Config object
-  
+
 
 **Returns**:
 
@@ -2311,7 +2311,7 @@ Get the skip file for an agent.
 
 - `agent_name` - Agent name
 - `config` - Config object
-  
+
 
 **Returns**:
 
@@ -2331,7 +2331,7 @@ Get the snmpfile for an agent.
 
 - `hostname` - hostname
 - `config` - Config object
-  
+
 
 **Returns**:
 
@@ -2351,7 +2351,7 @@ Run the command UNIX CLI command and record output.
 
 - `command` - CLI command to execute
 - `die` - Die if errors found
-  
+
 
 **Returns**:
 
@@ -2370,7 +2370,7 @@ Get the configuration filename.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2406,7 +2406,7 @@ Initialize the class.
 
 - `ip_bind_port` - ip_bind_port
 - `ip_listen_address` - TCP/IP address on which the API is listening.
-  
+
 
 **Returns**:
 
@@ -2425,7 +2425,7 @@ Return a representation of the attributes of the class.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
@@ -2440,9 +2440,8 @@ Define the switchmap.core package.
 **Arguments**:
 
   None
-  
+
 
 **Returns**:
 
   None
-

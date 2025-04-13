@@ -85,4 +85,3 @@ There will be no visible output when the ``Poller`` is running. The ``Poller`` l
 ::
 
     $ tail -f etc/switchmap.log
-
