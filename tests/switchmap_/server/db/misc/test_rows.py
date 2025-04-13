@@ -159,7 +159,7 @@ class TestRowsMethods(unittest.TestCase):
                 self.assertEqual(
                     actual_value,
                     expected_value,
-                    f"Mismatch for attribute '{key}'",
+                    f"[1091] Mismatch for attribute '{key}'",
                 )
 
     def test_device(self):
