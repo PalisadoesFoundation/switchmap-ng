@@ -103,6 +103,7 @@ jobs:
             yaml.lock
             package.json
             package-lock.json
+            .pre-commit-config.yaml
           )
 
           # Get changed/added/modified/renamed files and deleted files
