@@ -154,11 +154,7 @@ class TestRowsMethods(unittest.TestCase):
                 expected_value = expected_value.decode()
 
             with self.subTest(attribute=key):
-                self.assertEqual(
-                    actual_value,
-                    expected_value,
-                    f"1091, Mismatch for attribute '{key}'",
-                )
+                self.assertEqual(actual_value, expected_value)
 
     def test_device(self):
         """Test the device() function for correct tuple conversion.
