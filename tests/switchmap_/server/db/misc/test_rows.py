@@ -39,6 +39,7 @@ from switchmap.server.db.models import (
     Event,
     Ip,
     IpPort,
+    L1Interface,
     Mac,
     MacIp,
     MacPort,
@@ -49,9 +50,6 @@ from switchmap.server.db.models import (
     Zone,
 )
 
-# Renaming L1Interface model as LOneInterface
-# as error.py is throwing error for L1Interface
-from switchmap.server.db.models import L1Interface as LOneInterface
 from switchmap.server.db import SCOPED_SESSION
 from tests.testlib_ import setup
 from tests.testlib_ import db
@@ -159,7 +157,7 @@ class TestRowsMethods(unittest.TestCase):
                 self.assertEqual(
                     actual_value,
                     expected_value,
-                    f"[1091] Mismatch for attribute '{key}'",
+                    f"1091, Mismatch for attribute '{key}'",
                 )
 
     def test_device(self):
@@ -213,7 +211,7 @@ class TestRowsMethods(unittest.TestCase):
         Verifies that the function returns a tuple of length 25
         when given an L1Interface row from the database.
         """
-        row = self.session.query(LOneInterface).first()
+        row = self.session.query(L1Interface).first()
         self.assertIsNotNone(
             row, "No L1Interface row found in the test database."
         )
