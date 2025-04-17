@@ -223,7 +223,7 @@ def _codes(filename, to_find):
 
     """
     # Initalize key variables
-    digits = re.compile(r"^.*?(\d+).*?$")
+    digits = re.compile(r"^.*?(\d+),.*?$")
     metadata = []
     Metadata = collections.namedtuple(
         "Metadata", "filename, line, number, code"
