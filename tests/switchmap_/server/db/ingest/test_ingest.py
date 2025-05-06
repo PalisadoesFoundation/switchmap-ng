@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
-"""Test the topology module."""
+"""Test the ingest module."""
 
-from collections import namedtuple
 import io
 import os
 import shutil
-from sqlite3 import IntegrityError
 import sys
-import tempfile
 import unittest
 from copy import deepcopy
-from xml.sax import handler
 import logging
 from sqlalchemy import select
 
@@ -65,7 +61,6 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.poller.update import device
-from switchmap.server.db.ingest.update import device as device_update
 from switchmap.server.db.ingest.update import zone as zone_update
 from switchmap.server.db.ingest import ingest
 from switchmap.server.db.table import zone
@@ -73,8 +68,7 @@ from switchmap.server.db.table import oui
 from switchmap.server.db.table import event
 from switchmap.server.db import db
 from switchmap.server.db import models
-from switchmap.server.db.models import BASE, IpPort, Mac
-from switchmap.server.db.table import RIpPort
+from switchmap.server.db.models import Mac
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IOui
 from switchmap.server.db.table import ip as _ip
@@ -89,7 +83,6 @@ from switchmap.server.db.ingest.ingest import (
     _filepaths,
     _get_arguments,
     _get_zone,
-    insert_arptable,
     insert_macips,
 )
 from switchmap.server import (
@@ -126,7 +119,7 @@ def _reset_db():
         None
 
     Returns:
-        result: List of
+        result, row, _zone
 
     """
     # Initialize key variables
@@ -186,7 +179,7 @@ class FullConfig:
         return "/tmp"
 
     def purge_after_ingest(self):
-        return False  # or True if you want to test purge logic
+        return False
 
     def agent_subprocesses(self):
         return 1
@@ -295,36 +288,8 @@ class TestFunctions(unittest.TestCase):
             "Ingest directory should be empty after successful processing",
         )
 
-    def test_process_full_flow(self):
-        # Make sure no lock file exists
-        if os.path.exists(self.test_lock_file):
-            os.remove(self.test_lock_file)
-
-        # Optional: Add minimal setup for setup_success.zones and event
-        self.ingest_instance._test = False  # Let it run normally
-
-        self.ingest_instance.process()
-
-    # def test_process_skip_polling(self):
-    #     # Get the actual lock file path that will be used by ingest.process()
-    #     lock_file_path = files.lock_file(
-    #         AGENT_INGESTER, self.ingest_instance._config
-    #     )
-
-    #     # Simulate the presence of the lock file
-    #     with open(lock_file_path, "w") as f:
-    #         f.write("lock")
-
-    #     self.ingest_instance._test = False  # Not in test mode
-    #     self.ingest_instance.process()
-
-    #     log_message = f"Poller lock file {lock_file_path} exists."
-    #     logs = self.capture_logs()
-    #     self.assertIsNotNone(logs)
-    #     self.assertIn(log_message, logs)
-
     def capture_logs(self):
-        """Helper method to capture logs. Adjust based on how you handle logging in your code."""
+        """Helper method to capture logs."""
         return self.log_stream.getvalue()
 
     def test_zone_function(self):
@@ -352,23 +317,11 @@ class TestFunctions(unittest.TestCase):
             ]
         ]
 
-        # Test with valid arguments
-        # success = ingest_instance.zone(argument)
-        # self.assertTrue(success, "zone() should return True for valid input")
-
         # Test with empty input
         empty_success = ingest_instance.zone([])
         self.assertFalse(
             empty_success, "zone() should return False for empty input"
         )
-
-        # # Test if subprocesses are being utilized (with multiprocessing enabled)
-        # ingest_instance = Ingest(config, test=True, multiprocessing=True)
-        # success_multiprocessing = ingest_instance.zone(argument)
-        # self.assertTrue(
-        #     success_multiprocessing,
-        #     "zone() should return True for valid input with multiprocessing",
-        # )
 
     def test_device_function(self):
         """Test that the device function processes arguments correctly."""
@@ -416,7 +369,6 @@ class TestFunctions(unittest.TestCase):
         self.cleanup_instance.cleanup(self.event)
 
         # Verify that no database operations occurred (root table not updated, no purge)
-        # You should check the actual database to confirm that no updates were made.
 
     def test_cleanup_skip_file_absent(self):
         """Test that cleanup updates the root table when skip file does not exist."""
@@ -563,12 +515,19 @@ class TestFunctions(unittest.TestCase):
 
     def test_insert_arptable_avoids_duplicates(self):
         """Test insert_arptable function avoids duplicates."""
+        # insert_arptable function is called in the setup function
+        # Check if the database has been populated with the expected data
 
-        # First insert with mock data
         self.assertIsInstance(self.pairmacips, list)
         self.assertTrue(
             all(isinstance(item, PairMacIp) for item in self.pairmacips)
         )
+
+    def test_insert_arptable_passing_list(self):
+        """Ensure insert_arptable handles empty list input gracefully."""
+        result = ingest.insert_arptable([])
+        self.assertIsInstance(result, list)
+        self.assertEqual(len(result), 0)
 
     def test_insert_macips_adds_records(self):
         insert_macips(self.pairmacips, test=True)
@@ -580,6 +539,17 @@ class TestFunctions(unittest.TestCase):
             self.assertTrue(ip)
             macip = _macip.exists(mac.idx_mac, ip.idx_ip)
             self.assertTrue(macip)
+
+    def test_insert_macips_single_item(self):
+        single_item = self.pairmacips[0]  # Not a list
+        insert_macips(single_item, test=True)
+
+        mac = _mac.exists(single_item.idx_zone, single_item.mac)
+        ip = _ip.exists(single_item.idx_zone, single_item.ip)
+        self.assertTrue(mac)
+        self.assertTrue(ip)
+        macip = _macip.exists(mac.idx_mac, ip.idx_ip)
+        self.assertTrue(macip)
 
     def test_filepaths_returns_only_yaml(self):
         print("Running test_filepaths_with_yaml_files...")
