@@ -395,6 +395,10 @@ class TestFunctions(unittest.TestCase):
         )
 
     # Test fails in test mode
+    # TODO: Fix this test. It currently fails because
+    # event is not deleted in when test is true.
+    # Expected behavior: event should be deleted after cleanup
+    # Actual behavior: event is not deleted
 
     # def test_cleanup(self):
     #     self.cleanup_instance._test = True
