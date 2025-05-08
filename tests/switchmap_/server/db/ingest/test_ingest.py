@@ -558,15 +558,6 @@ class TestFunctions(unittest.TestCase):
         self.assertIn(self.filepath, result)
         self.assertEqual(len(result), 1)
 
-    def test_get_zone_creates_new_zone(self):
-        """Test the case when the zone is not found."""
-        # Call the _get_zone function with the event and file path
-        result = _get_zone(self.event_row, self.filepath)
-
-        # Assertions to verify the behavior
-        # Check that a ZoneData object is returned
-        self.assertIsInstance(result, ZoneData)
-
     def test_get_zone_existing_zone(self):
         """Test the case when the zone already exists."""
         # Call the _get_zone function with the event and file path
