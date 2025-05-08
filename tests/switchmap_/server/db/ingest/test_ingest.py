@@ -5,6 +5,7 @@ import io
 import os
 import shutil
 import sys
+import tempfile
 import unittest
 from copy import deepcopy
 import logging
@@ -272,31 +273,33 @@ class TestFunctions(unittest.TestCase):
         cls.cleanup_instance = Ingest(cls.config)
         cls.cleanup_instance._config = cls.config
         # Set up directories and files for the test
-        cls.test_cache_dir = "/tmp/test_cache"
-        cls.test_ingest_dir = "/tmp/test_ingest"
-        cls.test_lock_file = "/tmp/test_lock_file"
-        cls.test_temp_dir = "/tmp/test_temp"
+        # Use TemporaryDirectory for test directories
+        cls.test_cache_dir = tempfile.TemporaryDirectory()
+        cls.test_ingest_dir = tempfile.TemporaryDirectory()
+        cls.test_temp_dir = tempfile.TemporaryDirectory()
 
-        # Create test directories
-        os.makedirs(cls.test_cache_dir, exist_ok=True)
-        os.makedirs(cls.test_ingest_dir, exist_ok=True)
-        os.makedirs(cls.test_temp_dir, exist_ok=True)
+        # Use NamedTemporaryFile for the lock file
+        cls.test_lock_file = tempfile.NamedTemporaryFile(delete=False)
 
         # Simulate the presence of a poller lock file for certain tests
-        with open(cls.test_lock_file, "w") as f:
+        with open(cls.test_lock_file.name, "w") as f:
             f.write("lock")
 
         # Create a file in the cache directory to move
-        with open(os.path.join(cls.test_temp_dir, "test_file.yml"), "w") as f:
+        with open(
+            os.path.join(cls.test_temp_dir.name, "test_file.yml"), "w"
+        ) as f:
             f.write("test data")
 
         # Initialize the ingest instance
         cls.ingest_instance = Ingest(cls.config)
-        cls.ingest_instance._config.cache_directory = lambda: cls.test_cache_dir
-        cls.ingest_instance._config.ingest_directory = (
-            lambda: cls.test_ingest_dir
+        cls.ingest_instance._config.cache_directory = (
+            lambda: cls.test_cache_dir.name
         )
-        cls.ingest_instance._test_cache_directory = cls.test_temp_dir
+        cls.ingest_instance._config.ingest_directory = (
+            lambda: cls.test_ingest_dir.name
+        )
+        cls.ingest_instance._test_cache_directory = cls.test_temp_dir.name
         cls.ingest_instance._test = True
         cls.ingest_instance._dns = False
 
@@ -307,30 +310,32 @@ class TestFunctions(unittest.TestCase):
         database = dblib.Database()
         database.drop()
 
-        # Cleanup the
+        # Cleanup the configuration
         CONFIG.cleanup()
 
+        # Remove skip file if it exists
         skip_file_path = files.skip_file(
             AGENT_INGESTER, cls.cleanup_instance._config
         )
         if os.path.isfile(skip_file_path):
             os.remove(skip_file_path)
-        # Clean up files after each test
-        if os.path.isdir(cls.test_cache_dir):
-            shutil.rmtree(cls.test_cache_dir)
-        if os.path.isdir(cls.test_ingest_dir):
-            shutil.rmtree(cls.test_ingest_dir)
-        if os.path.isfile(cls.test_lock_file):
-            os.remove(cls.test_lock_file)
+
+        # Clean up temporary directories and files
+        cls.test_cache_dir.cleanup()
+        cls.test_ingest_dir.cleanup()
+        cls.test_temp_dir.cleanup()
+        # Check if the lock file exists before removing it
+        if os.path.exists(cls.test_lock_file.name):
+            os.remove(cls.test_lock_file.name)
 
     def test_process(self):
         """Test full ingest process when lock file is absent."""
         # Ensure lock file is removed
-        if os.path.exists(self.test_lock_file):
-            os.remove(self.test_lock_file)
+        if os.path.exists(self.test_lock_file.name):
+            os.remove(self.test_lock_file.name)
 
         # Ensure test file exists before processing
-        test_file_path = os.path.join(self.test_temp_dir, "test_file.yml")
+        test_file_path = os.path.join(self.test_temp_dir.name, "test_file.yml")
         self.assertTrue(
             os.path.isfile(test_file_path),
             "Test file should exist before processing",
@@ -343,7 +348,7 @@ class TestFunctions(unittest.TestCase):
             self.fail(f"process() raised an exception unexpectedly: {e}")
 
         # Verify temp dir is now empty (file was moved)
-        remaining_files = os.listdir(self.test_ingest_dir)
+        remaining_files = os.listdir(self.test_ingest_dir.name)
         self.assertEqual(
             remaining_files,
             [],
