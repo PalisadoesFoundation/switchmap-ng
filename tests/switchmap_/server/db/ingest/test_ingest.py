@@ -74,6 +74,8 @@ from switchmap.server.db.table import IOui
 from switchmap.server.db.table import ip as _ip
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import macip as _macip
+from switchmap.server.db.table import event as _event
+
 
 from tests.testlib_ import db as dblib
 from tests.testlib_ import data as datalib
@@ -241,10 +243,6 @@ class TestFunctions(unittest.TestCase):
         cls.ingest_instance._test_cache_directory = cls.test_temp_dir
         cls.ingest_instance._test = True
         cls.ingest_instance._dns = False
-        cls.log_stream = io.StringIO()
-        cls.log_handler = logging.StreamHandler(cls.log_stream)
-        cls.log_handler.setLevel(logging.INFO)
-        logging.getLogger().addHandler(cls.log_handler)
 
     @classmethod
     def tearDown(cls):
@@ -268,31 +266,33 @@ class TestFunctions(unittest.TestCase):
             shutil.rmtree(cls.test_ingest_dir)
         if os.path.isfile(cls.test_lock_file):
             os.remove(cls.test_lock_file)
-        logging.getLogger().removeHandler(cls.log_handler)
-        cls.log_stream.close()
 
     def test_process(self):
-        # Remove lock file if present
+        """Test full ingest process when lock file is absent."""
+        # Ensure lock file is removed
         if os.path.exists(self.test_lock_file):
             os.remove(self.test_lock_file)
 
-        # Run the ingest process
+        # Ensure test file exists before processing
+        test_file_path = os.path.join(self.test_temp_dir, "test_file.yml")
+        self.assertTrue(
+            os.path.isfile(test_file_path),
+            "Test file should exist before processing",
+        )
+
+        # Run the process
         try:
             self.ingest_instance.process()
         except Exception as e:
             self.fail(f"process() raised an exception unexpectedly: {e}")
 
-        # Assert ingest temp directory is empty (processed and deleted)
-        temp_files = os.listdir(self.test_ingest_dir)
+        # Verify temp dir is now empty (file was moved)
+        remaining_files = os.listdir(self.test_ingest_dir)
         self.assertEqual(
-            temp_files,
+            remaining_files,
             [],
-            "Ingest directory should be empty after successful processing",
+            "Ingest directory should be empty after processing",
         )
-
-    def capture_logs(self):
-        """Helper method to capture logs."""
-        return self.log_stream.getvalue()
 
     def test_zone_function(self):
         """Test that the zone function processes arguments correctly."""
@@ -301,27 +301,11 @@ class TestFunctions(unittest.TestCase):
             self.config, test=True
         )  # test=True → runs sequentially
 
-        # Create an IngestArgument object
-        arguments = [
-            [
-                IngestArgument(
-                    idx_zone=self.idx_zone,
-                    data=_polled_data(),
-                    filepath="dummy.yml",
-                    config=self.config,
-                    dns=False,
-                )
-            ]
-        ]
-
         # Test with empty input
         empty_success = ingest_instance.zone([])
         self.assertFalse(
             empty_success, "zone() should return False for empty input"
         )
-        # # Test with valid arguments
-        # success = ingest_instance.zone(arguments)
-        # self.assertTrue(success, "zone() should return True for valid input")
 
     def test_device_function(self):
         """Test that the device function processes arguments correctly."""
@@ -351,74 +335,20 @@ class TestFunctions(unittest.TestCase):
             empty_success, "device() should return False for empty input"
         )
 
-    # def test_cleanup_skip_file_exists(self):
-    #     """Test that cleanup does nothing if the skip file exists."""
-    #     skip_file_path = files.skip_file(
-    #         AGENT_INGESTER, self.cleanup_instance._config
-    #     )
+    # Test fails in test mode
 
-    #     # Create a skip file to simulate the condition
-    #     with open(skip_file_path, "w") as f:
-    #         f.write("Skip file to prevent processing.")
-
-    #     # Call the cleanup function
-    #     self.cleanup_instance.cleanup(self.event)
-
-    #     # Verify that no database operations occurred (root table not updated, no purge)
-
-    # def test_cleanup_skip_file_absent(self):
+    # def test_cleanup(self):
     #     """Test that cleanup updates the root table when skip file does not exist."""
-    #     skip_file_path = files.skip_file(
-    #         AGENT_INGESTER, self.cleanup_instance._config
-    #     )
 
-    #     # Ensure skip file is absent
-    #     if os.path.isfile(skip_file_path):
-    #         os.remove(skip_file_path)
-
-    #     # Call the cleanup function
+    #     self.cleanup_instance._test = True
+    #     # Call the cleanup function (with test=True)
     #     self.cleanup_instance.cleanup(self.event)
 
-    #     # Check if the root table was updated by verifying the database state
-    #     # For example, check if the event pointer was updated in the root table
-
-    # def test_cleanup_purge_after_ingest(self):
-    #     """Test that cleanup purges the database when configured to do so."""
-    #     skip_file_path = files.skip_file(
-    #         AGENT_INGESTER, self.cleanup_instance._config
+    #     # Verify that the event is deleted after cleanup
+    #     self.assertIsNone(
+    #         _event.exists(self.event.name),
+    #         "Event should be deleted after cleanup",
     #     )
-
-    #     # Ensure skip file is absent
-    #     if os.path.isfile(skip_file_path):
-    #         os.remove(skip_file_path)
-
-    #     # Set purge configuration to True
-    #     self.cleanup_instance._config.purge_after_ingest = (
-    #         lambda: True
-    #     )  # Set config
-
-    #     # Call the cleanup function
-    #     self.cleanup_instance.cleanup(self.event)
-
-    #     # Verify that purge has happened (check if the event was purged from the database)
-
-    # def test_cleanup_test_mode(self):
-    #     """Test that cleanup deletes the event in test mode."""
-    #     self.cleanup_instance._test = True  # Set test mode to True
-
-    #     skip_file_path = files.skip_file(
-    #         AGENT_INGESTER, self.cleanup_instance._config
-    #     )
-
-    #     # Ensure skip file is absent
-    #     if os.path.isfile(skip_file_path):
-    #         os.remove(skip_file_path)
-
-    #     # Call the cleanup function
-    #     self.cleanup_instance.cleanup(self.event)
-
-    #     # Check if the event was deleted from the database in test mode
-    #     # You should verify if the event does not exist in the database anymore.
 
     def test_process_zone_returns_rows(self):
         """Test that process_zone returns ZoneObjects rows."""
