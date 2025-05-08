@@ -121,8 +121,10 @@ def _reset_db():
         None
 
     Returns:
-        result, row, _zone
-
+        tuple: A tuple containing:
+            - result (list): The result of the ARP table insertion.
+            - row (object): The event row created in the database.
+            - _zone (object): The ZoneData object created for the test.
     """
     # Initialize key variables
     idx_zone = 1
@@ -179,6 +181,9 @@ class FullConfig:
 
         Args:
             base_config: The base configuration object to wrap.
+
+        Returns:
+            None
         """
         self._config = base_config
 
@@ -189,12 +194,15 @@ class FullConfig:
             name: The name of the attribute to access.
 
         Returns:
-            The value of the requested attribute from the base configuration.
+            Any: The value of the requested attribute.
         """
         return getattr(self._config, name)
 
     def system_directory(self):
         """Return the system directory for the test environment.
+
+        Args:
+            None
 
         Returns:
             str: The path to the system directory (e.g., '/tmp').
@@ -204,6 +212,9 @@ class FullConfig:
     def daemon_directory(self):
         """Return the daemon directory for the test environment.
 
+        Args:
+            None
+
         Returns:
             str: The path to the daemon directory (e.g., '/tmp').
         """
@@ -212,6 +223,9 @@ class FullConfig:
     def purge_after_ingest(self):
         """Indicate whether to purge data after ingestion.
 
+        Args:
+            None
+
         Returns:
             bool: Always returns False for testing purposes.
         """
@@ -219,6 +233,9 @@ class FullConfig:
 
     def agent_subprocesses(self):
         """Return the number of agent subprocesses to use.
+
+        Args:
+            None
 
         Returns:
             int: Always returns 1 for testing purposes.
@@ -240,7 +257,7 @@ class TestFunctions(unittest.TestCase):
     def setUp(cls):
         """Execute these steps before starting tests."""
         # Reset the database
-        cls.pairmacips, cls.event, cls.zone = _reset_db()
+        cls.pairmacips, cls.event_row, cls.zone_obj = _reset_db()
         cls.filepath = "tests/testdata_/device-01.yaml"
         _device = device.Device(_polled_data())
         device_data = _device.process()
@@ -475,8 +492,8 @@ class TestFunctions(unittest.TestCase):
         self.assertIsInstance(result, EventObjects)
         self.assertTrue(len(result.zones) > 0)
         for zone_item in result.zones:
-            self.assertIsInstance(zone, ZoneDevice)
-            self.assertTrue(zone.filepath.endswith(".yaml"))
+            self.assertIsInstance(zone_item, ZoneDevice)
+            self.assertTrue(zone_item.filepath.endswith(".yaml"))
 
     def test_insert_arptable(self):
         """Test insert_arptable function avoids duplicates."""
@@ -535,7 +552,7 @@ class TestFunctions(unittest.TestCase):
     def test_get_zone_creates_new_zone(self):
         """Test the case when the zone is not found."""
         # Call the _get_zone function with the event and file path
-        result = _get_zone(self.event, self.filepath)
+        result = _get_zone(self.event_row, self.filepath)
 
         # Assertions to verify the behavior
         # Check that a ZoneData object is returned
@@ -544,7 +561,7 @@ class TestFunctions(unittest.TestCase):
     def test_get_zone_existing_zone(self):
         """Test the case when the zone already exists."""
         # Call the _get_zone function with the event and file path
-        result = _get_zone(self.event, self.filepath)
+        result = _get_zone(self.event_row, self.filepath)
 
         # Assertions to verify the behavior
         # Check that a ZoneData object is returned
