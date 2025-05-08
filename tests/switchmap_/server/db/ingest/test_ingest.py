@@ -168,22 +168,61 @@ def _reset_db():
 
 
 class FullConfig:
+    """A wrapper class for configuration objects to simulate behavior.
+
+    This class provides additional methods to override specific configuration
+    values, such as directories and settings, for use in a test environment.
+    """
+
     def __init__(self, base_config):
+        """Initialize the FullConfig wrapper.
+
+        Args:
+            base_config: The base configuration object to wrap.
+        """
         self._config = base_config
 
     def __getattr__(self, name):
+        """Delegate attribute access to the wrapped configuration object.
+
+        Args:
+            name: The name of the attribute to access.
+
+        Returns:
+            The value of the requested attribute from the base configuration.
+        """
         return getattr(self._config, name)
 
     def system_directory(self):
+        """Return the system directory for the test environment.
+
+        Returns:
+            str: The path to the system directory (e.g., '/tmp').
+        """
         return "/tmp"
 
     def daemon_directory(self):
+        """Return the daemon directory for the test environment.
+
+        Returns:
+            str: The path to the daemon directory (e.g., '/tmp').
+        """
         return "/tmp"
 
     def purge_after_ingest(self):
+        """Indicate whether to purge data after ingestion.
+
+        Returns:
+            bool: Always returns False for testing purposes.
+        """
         return False
 
     def agent_subprocesses(self):
+        """Return the number of agent subprocesses to use.
+
+        Returns:
+            int: Always returns 1 for testing purposes.
+        """
         return 1
 
 
@@ -296,7 +335,6 @@ class TestFunctions(unittest.TestCase):
 
     def test_zone_function(self):
         """Test that the zone function processes arguments correctly."""
-
         ingest_instance = Ingest(
             self.config, test=True
         )  # test=True → runs sequentially
@@ -309,7 +347,6 @@ class TestFunctions(unittest.TestCase):
 
     def test_device_function(self):
         """Test that the device function processes arguments correctly."""
-
         ingest_instance = Ingest(
             self.config, test=True
         )  # test=True → runs sequentially
@@ -338,10 +375,7 @@ class TestFunctions(unittest.TestCase):
     # Test fails in test mode
 
     # def test_cleanup(self):
-    #     """Test that cleanup updates the root table when skip file does not exist."""
-
     #     self.cleanup_instance._test = True
-    #     # Call the cleanup function (with test=True)
     #     self.cleanup_instance.cleanup(self.event)
 
     #     # Verify that the event is deleted after cleanup
@@ -352,7 +386,6 @@ class TestFunctions(unittest.TestCase):
 
     def test_process_zone_returns_rows(self):
         """Test that process_zone returns ZoneObjects rows."""
-
         # Create an IngestArgument object with the necessary parameters
         arguments = IngestArgument(
             idx_zone=self.idx_zone,
@@ -382,10 +415,11 @@ class TestFunctions(unittest.TestCase):
             # Call the process_zone function with the argument
             rows = ingest.process_zone(arguments)
 
-            # Assert that process_zone returns None (or handles the skip condition as expected)
+            # Assert that process_zone returns None
+            # or handles the skip condition as expected
             self.assertIsNone(
                 rows,
-                "process_zone should not return rows when skip file is present.",
+                "process_zone should not return when skip file is present.",
             )
         finally:
             # Cleanup: Remove the skip file after the test
@@ -394,7 +428,6 @@ class TestFunctions(unittest.TestCase):
 
     def test_process_device_updates_database(self):
         """Test that process_device ingests data and updates DB."""
-
         arguments = IngestArgument(
             idx_zone=self.idx_zone,
             data=_polled_data(),
@@ -435,14 +468,13 @@ class TestFunctions(unittest.TestCase):
 
     def test_setup_function_returns_event_objects(self):
         """Test that setup returns a valid EventObjects instance with zones."""
-
         src = "tests/testdata_"  # Folder containing device YAML files
 
         result = ingest.setup(src, self.config)
 
         self.assertIsInstance(result, EventObjects)
         self.assertTrue(len(result.zones) > 0)
-        for zone in result.zones:
+        for zone_item in result.zones:
             self.assertIsInstance(zone, ZoneDevice)
             self.assertTrue(zone.filepath.endswith(".yaml"))
 
@@ -495,15 +527,13 @@ class TestFunctions(unittest.TestCase):
 
     def test_filepaths_returns_only_yaml(self):
         """Test that _filepaths returns only YAML files."""
-
         src = "tests/testdata_"
         result = _filepaths(src)
         self.assertIn(self.filepath, result)
         self.assertEqual(len(result), 1)
 
     def test_get_zone_creates_new_zone(self):
-        """Test the case when the zone is not found and a new zone is created."""
-
+        """Test the case when the zone is not found."""
         # Call the _get_zone function with the event and file path
         result = _get_zone(self.event, self.filepath)
 
@@ -513,7 +543,6 @@ class TestFunctions(unittest.TestCase):
 
     def test_get_zone_existing_zone(self):
         """Test the case when the zone already exists."""
-
         # Call the _get_zone function with the event and file path
         result = _get_zone(self.event, self.filepath)
 
@@ -522,6 +551,17 @@ class TestFunctions(unittest.TestCase):
         self.assertIsInstance(result, ZoneData)
 
     def test_get_arguments_returns_correct_tuple(self):
+        """Test that _get_arguments returns the correct tuple.
+
+        This method verifies that the _get_arguments function correctly
+        processes the input arguments and returns the expected tuple.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
         data_sample = _polled_data()
         filepath = "dummy.yml"
         idx_zone = self.idx_zone
