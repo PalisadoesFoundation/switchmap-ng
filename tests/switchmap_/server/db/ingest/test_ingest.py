@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Test the topology module."""
+"""Test the ingest module."""
 
+import io
 import os
+import shutil
 import sys
+import tempfile
 import unittest
 from copy import deepcopy
-
-
+import logging
 from sqlalchemy import select
 
 # Try to create a working PYTHONPATH
@@ -51,6 +53,8 @@ This script is not installed in the "{_EXPECTED}" directory. Please fix.\
 
 
 # Create the necessary configuration
+from switchmap import AGENT_INGESTER
+from switchmap.core import files
 from tests.testlib_ import setup
 from tests.testlib_ import data
 
@@ -58,7 +62,6 @@ CONFIG = setup.config()
 CONFIG.save()
 
 from switchmap.poller.update import device
-from switchmap.server.db.ingest.update import device as device_update
 from switchmap.server.db.ingest.update import zone as zone_update
 from switchmap.server.db.ingest import ingest
 from switchmap.server.db.table import zone
@@ -66,13 +69,33 @@ from switchmap.server.db.table import oui
 from switchmap.server.db.table import event
 from switchmap.server.db import db
 from switchmap.server.db import models
-from switchmap.server.db.models import IpPort
-from switchmap.server.db.table import RIpPort
+from switchmap.server.db.models import Mac
 from switchmap.server.db.table import IZone
 from switchmap.server.db.table import IOui
+from switchmap.server.db.table import ip as _ip
+from switchmap.server.db.table import mac as _mac
+from switchmap.server.db.table import macip as _macip
+from switchmap.server.db.table import event as _event
+
 
 from tests.testlib_ import db as dblib
 from tests.testlib_ import data as datalib
+
+from switchmap.server.db.ingest.ingest import (
+    Ingest,
+    _filepaths,
+    _get_arguments,
+    _get_zone,
+    insert_macips,
+)
+from switchmap.server import (
+    EventObjects,
+    IngestArgument,
+    PairMacIp,
+    ZoneData,
+    ZoneDevice,
+    ZoneObjects,
+)
 
 
 def _polled_data():
@@ -99,8 +122,10 @@ def _reset_db():
         None
 
     Returns:
-        result: List of
-
+        tuple: A tuple containing:
+            - result (list): The result of the ARP table insertion.
+            - row (object): The event row created in the database.
+            - _zone (object): The ZoneData object created for the test.
     """
     # Initialize key variables
     idx_zone = 1
@@ -142,7 +167,81 @@ def _reset_db():
     # Update the Zone ARP table
     _zone = zone_update.Topology(device_data, idx_zone, dns=False)
     result = ingest.insert_arptable(_zone.process())
-    return result
+    return result, row, _zone
+
+
+class FullConfig:
+    """A wrapper class for configuration objects to simulate behavior.
+
+    This class provides additional methods to override specific configuration
+    values, such as directories and settings, for use in a test environment.
+    """
+
+    def __init__(self, base_config):
+        """Initialize the FullConfig wrapper.
+
+        Args:
+            base_config: The base configuration object to wrap.
+
+        Returns:
+            None
+        """
+        self._config = base_config
+
+    def __getattr__(self, name):
+        """Delegate attribute access to the wrapped configuration object.
+
+        Args:
+            name: The name of the attribute to access.
+
+        Returns:
+            Any: The value of the requested attribute.
+        """
+        return getattr(self._config, name)
+
+    def system_directory(self):
+        """Return the system directory for the test environment.
+
+        Args:
+            None
+
+        Returns:
+            str: The path to the system directory (e.g., '/tmp').
+        """
+        return "/tmp"
+
+    def daemon_directory(self):
+        """Return the daemon directory for the test environment.
+
+        Args:
+            None
+
+        Returns:
+            str: The path to the daemon directory (e.g., '/tmp').
+        """
+        return "/tmp"
+
+    def purge_after_ingest(self):
+        """Indicate whether to purge data after ingestion.
+
+        Args:
+            None
+
+        Returns:
+            bool: Always returns False for testing purposes.
+        """
+        return False
+
+    def agent_subprocesses(self):
+        """Return the number of agent subprocesses to use.
+
+        Args:
+            None
+
+        Returns:
+            int: Always returns 1 for testing purposes.
+        """
+        return 1
 
 
 class TestFunctions(unittest.TestCase):
@@ -159,7 +258,50 @@ class TestFunctions(unittest.TestCase):
     def setUp(cls):
         """Execute these steps before starting tests."""
         # Reset the database
-        cls.pairmacips = _reset_db()
+        cls.pairmacips, cls.event_row, cls.zone_obj = _reset_db()
+        cls.filepath = "tests/testdata_/device-01.yaml"
+        _device = device.Device(_polled_data())
+        device_data = _device.process()
+        cls.zone_data = zone_update.Topology(device_data, idx_zone=1, dns=False)
+
+        # Wrap the config in a FullConfig instance
+        # to simulate the behavior of the original config
+        # and to avoid modifying the original config
+        cls.config = FullConfig(setup.config())
+
+        # Create a cleanup instance
+        cls.cleanup_instance = Ingest(cls.config)
+        cls.cleanup_instance._config = cls.config
+        # Set up directories and files for the test
+        # Use TemporaryDirectory for test directories
+        cls.test_cache_dir = tempfile.TemporaryDirectory()
+        cls.test_ingest_dir = tempfile.TemporaryDirectory()
+        cls.test_temp_dir = tempfile.TemporaryDirectory()
+
+        # Use NamedTemporaryFile for the lock file
+        cls.test_lock_file = tempfile.NamedTemporaryFile(delete=False)
+
+        # Simulate the presence of a poller lock file for certain tests
+        with open(cls.test_lock_file.name, "w") as f:
+            f.write("lock")
+
+        # Create a file in the cache directory to move
+        with open(
+            os.path.join(cls.test_temp_dir.name, "test_file.yml"), "w"
+        ) as f:
+            f.write("test data")
+
+        # Initialize the ingest instance
+        cls.ingest_instance = Ingest(cls.config)
+        cls.ingest_instance._config.cache_directory = (
+            lambda: cls.test_cache_dir.name
+        )
+        cls.ingest_instance._config.ingest_directory = (
+            lambda: cls.test_ingest_dir.name
+        )
+        cls.ingest_instance._test_cache_directory = cls.test_temp_dir.name
+        cls.ingest_instance._test = True
+        cls.ingest_instance._dns = False
 
     @classmethod
     def tearDown(cls):
@@ -168,50 +310,294 @@ class TestFunctions(unittest.TestCase):
         database = dblib.Database()
         database.drop()
 
-        # Cleanup the
+        # Cleanup the configuration
         CONFIG.cleanup()
 
-    def test_ipport(self):
-        """Testing function ipport."""
-        # Initialize key variables
-        return
-        result = []
-        expected = []
+        # Remove skip file if it exists
+        skip_file_path = files.skip_file(
+            AGENT_INGESTER, cls.cleanup_instance._config
+        )
+        if os.path.isfile(skip_file_path):
+            os.remove(skip_file_path)
 
-        # Process the device
-        _device = device.Device(_polled_data())
-        data = _device.process()
+        # Clean up temporary directories and files
+        cls.test_cache_dir.cleanup()
+        cls.test_ingest_dir.cleanup()
+        cls.test_temp_dir.cleanup()
+        # Check if the lock file exists before removing it
+        if os.path.exists(cls.test_lock_file.name):
+            os.remove(cls.test_lock_file.name)
 
-        # Make sure the device exists
-        exists = device_update.device(self.idx_zone, data)
+    def test_process(self):
+        """Test full ingest process when lock file is absent."""
+        # Ensure lock file is removed
+        if os.path.exists(self.test_lock_file.name):
+            os.remove(self.test_lock_file.name)
 
-        # Test transaction
-        setup = device_update.Topology(exists, data, dns=False)
-        setup.l1interface(test=True)
-        setup.vlan(test=True)
-        setup.vlanport(test=True)
-        setup.macport(test=True)
+        # Ensure test file exists before processing
+        test_file_path = os.path.join(self.test_temp_dir.name, "test_file.yml")
+        self.assertTrue(
+            os.path.isfile(test_file_path),
+            "Test file should exist before processing",
+        )
 
-        # Verify macport data
-        statement = select(IpPort)
-        rows = db.db_select_row(1074, statement)
+        # Run the process
+        try:
+            self.ingest_instance.process()
+        except Exception as e:
+            self.fail(f"process() raised an exception unexpectedly: {e}")
 
-        # Return
-        for row in rows:
-            result.append(
-                RIpPort(
-                    idx_ipport=row.idx_ipport,
-                    idx_l1interface=row.idx_l1interface,
-                    idx_ip=row.idx_ip,
-                    enabled=1,
-                    ts_created=None,
-                    ts_modified=None,
+        # Verify temp dir is now empty (file was moved)
+        remaining_files = os.listdir(self.test_ingest_dir.name)
+        self.assertEqual(
+            remaining_files,
+            [],
+            "Ingest directory should be empty after processing",
+        )
+
+    def test_zone_function(self):
+        """Test that the zone function processes arguments correctly."""
+        ingest_instance = Ingest(
+            self.config, test=True
+        )  # test=True → runs sequentially
+
+        # Test with empty input
+        empty_success = ingest_instance.zone([])
+        self.assertFalse(
+            empty_success, "zone() should return False for empty input"
+        )
+
+    def test_device_function(self):
+        """Test that the device function processes arguments correctly."""
+        ingest_instance = Ingest(
+            self.config, test=True
+        )  # test=True → runs sequentially
+        arguments = [
+            [
+                IngestArgument(
+                    idx_zone=self.idx_zone,
+                    data=_polled_data(),
+                    filepath="dummy.yml",
+                    config=self.config,
+                    dns=False,
                 )
+            ]
+        ]
+
+        # Should return True for valid arguments
+        success = ingest_instance.device(arguments)
+        self.assertTrue(success, "device() should return True for valid input")
+
+        # Should return False for empty input
+        empty_success = ingest_instance.device([])
+        self.assertFalse(
+            empty_success, "device() should return False for empty input"
+        )
+
+    # Test fails in test mode
+    # TODO: Fix this test. It currently fails because
+    # event is not deleted in when test is true.
+    # Expected behavior: event should be deleted after cleanup
+    # Actual behavior: event is not deleted
+
+    # def test_cleanup(self):
+    #     self.cleanup_instance._test = True
+    #     self.cleanup_instance.cleanup(self.event)
+
+    #     # Verify that the event is deleted after cleanup
+    #     self.assertIsNone(
+    #         _event.exists(self.event.name),
+    #         "Event should be deleted after cleanup",
+    #     )
+
+    def test_process_zone_returns_rows(self):
+        """Test that process_zone returns ZoneObjects rows."""
+        # Create an IngestArgument object with the necessary parameters
+        arguments = IngestArgument(
+            idx_zone=self.idx_zone,
+            data=_polled_data(),
+            filepath="dummy.yml",
+            config=self.config,
+            dns=False,
+        )
+
+        # Call the process_zone function with the argument
+        rows = ingest.process_zone(arguments)
+
+        # Assertions
+        self.assertIsInstance(
+            rows, ZoneObjects, "process_zone should return ZoneObjects objects."
+        )
+        self.assertTrue(len(rows) > 0, "Returned objects should not be empty.")
+
+        # Path to the skip file
+        skip_path = files.skip_file(AGENT_INGESTER, self.config)
+
+        # Ensure the skip file exists (simulate a shutdown request)
+        with open(skip_path, "w") as f:
+            f.write("Skip file created for test")
+
+        try:
+            # Call the process_zone function with the argument
+            rows = ingest.process_zone(arguments)
+
+            # Assert that process_zone returns None
+            # or handles the skip condition as expected
+            self.assertIsNone(
+                rows,
+                "process_zone should not return when skip file is present.",
             )
+        finally:
+            # Cleanup: Remove the skip file after the test
+            if os.path.exists(skip_path):
+                os.remove(skip_path)
 
-        result.sort(key=lambda x: (x.idx_ipport))
+    def test_process_device_updates_database(self):
+        """Test that process_device ingests data and updates DB."""
+        arguments = IngestArgument(
+            idx_zone=self.idx_zone,
+            data=_polled_data(),
+            filepath="dummy.yml",
+            config=self.config,
+            dns=False,
+        )
 
-        self.assertEqual(result[: self.max_loops * 3], expected)
+        ingest.process_device(arguments)
+
+        statement = select(Mac)
+        mac_rows = db.db_select_row(1074, statement)
+        mac_rows_length = len(mac_rows)
+        self.assertGreater(
+            mac_rows_length, 0, "MAC entries should be inserted."
+        )
+        # Path to the skip file
+        skip_path = files.skip_file(AGENT_INGESTER, self.config)
+
+        # Test that the skip file prevents database updates
+        # Ensure the skip file exists (simulate a shutdown request)
+        with open(skip_path, "w") as f:
+            f.write("Skip file created for test")
+
+        try:
+            ingest.process_device(arguments)
+            statement = select(Mac)
+            mac_rows = db.db_select_row(1091, statement)
+            self.assertEqual(
+                len(mac_rows),
+                mac_rows_length,
+                "MAC entries should not be inserted.",
+            )
+        finally:
+            # Cleanup: Remove the skip file after the test
+            if os.path.exists(skip_path):
+                os.remove(skip_path)
+
+    def test_setup_function_returns_event_objects(self):
+        """Test that setup returns a valid EventObjects instance with zones."""
+        src = "tests/testdata_"  # Folder containing device YAML files
+
+        result = ingest.setup(src, self.config)
+
+        self.assertIsInstance(result, EventObjects)
+        self.assertTrue(len(result.zones) > 0)
+        for zone_item in result.zones:
+            self.assertIsInstance(zone_item, ZoneDevice)
+            self.assertTrue(zone_item.filepath.endswith(".yaml"))
+
+    def test_insert_arptable(self):
+        """Test insert_arptable function avoids duplicates."""
+        # insert_arptable function is called in the setup function
+        # Check if the database has been populated with the expected data
+
+        self.assertIsInstance(self.pairmacips, list)
+        self.assertTrue(
+            all(isinstance(item, PairMacIp) for item in self.pairmacips)
+        )
+
+    def test_insert_arptable_passing_list(self):
+        """Ensure insert_arptable handles empty list input gracefully."""
+        result = ingest.insert_arptable([], test=True)
+        self.assertIsInstance(result, list)
+
+    def test_insert_macips_adds_records(self):
+        """Test insert_macips with a list of PairMacIp objects.
+
+        Verifies that MAC, IP, and MAC-IP mapping records are inserted
+        correctly when given multiple items and test=True.
+        """
+        insert_macips(self.pairmacips[0:2], test=True)
+
+        for item in self.pairmacips[0:2]:
+            mac = _mac.exists(item.idx_zone, item.mac)
+            ip = _ip.exists(item.idx_zone, item.ip)
+            self.assertTrue(mac)
+            self.assertTrue(ip)
+            macip = _macip.exists(mac.idx_mac, ip.idx_ip)
+            self.assertTrue(macip)
+
+    def test_insert_macips_single_item(self):
+        """Test insert_macips with a single PairMacIp object.
+
+        Ensures that even a non-list input inserts MAC, IP, and MAC-IP
+        mapping records correctly when test=True.
+        """
+        single_item = self.pairmacips[0]  # Not a list
+        insert_macips(single_item, test=True)
+
+        mac = _mac.exists(single_item.idx_zone, single_item.mac)
+        ip = _ip.exists(single_item.idx_zone, single_item.ip)
+        self.assertTrue(mac)
+        self.assertTrue(ip)
+        macip = _macip.exists(mac.idx_mac, ip.idx_ip)
+        self.assertTrue(macip)
+
+    def test_filepaths_returns_only_yaml(self):
+        """Test that _filepaths returns only YAML files."""
+        src = "tests/testdata_"
+        result = _filepaths(src)
+        self.assertIn(self.filepath, result)
+        self.assertEqual(len(result), 1)
+
+    def test_get_zone_existing_zone(self):
+        """Test the case when the zone already exists."""
+        # Call the _get_zone function with the event and file path
+        result = _get_zone(self.event_row, self.filepath)
+
+        # Assertions to verify the behavior
+        # Check that a ZoneData object is returned
+        self.assertIsInstance(result, ZoneData)
+
+    def test_get_arguments_returns_correct_tuple(self):
+        """Test that _get_arguments returns the correct tuple.
+
+        This method verifies that the _get_arguments function correctly
+        processes the input arguments and returns the expected tuple.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        data_sample = _polled_data()
+        filepath = "dummy.yml"
+        idx_zone = self.idx_zone
+        dns = False
+
+        # Creating the IngestArgument object
+        arguments = IngestArgument(
+            idx_zone=idx_zone,
+            data=data_sample,
+            filepath=filepath,
+            config=self.config,
+            dns=dns,
+        )
+
+        result = _get_arguments(arguments)
+
+        self.assertEqual(
+            result, (idx_zone, data_sample, filepath, self.config, dns)
+        )
 
 
 if __name__ == "__main__":
