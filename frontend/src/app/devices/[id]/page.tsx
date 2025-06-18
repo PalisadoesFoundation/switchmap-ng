@@ -1,7 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { FiHome } from "react-icons/fi";
+import { FiArrowLeft } from "react-icons/fi";
 
 const tabs = [
   { label: "Device Overview", content: "Device Overview" },
@@ -10,6 +12,7 @@ const tabs = [
 ];
 
 export default function DevicePage() {
+  const params = useParams();
   const [activeTab, setActiveTab] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
@@ -29,6 +32,7 @@ export default function DevicePage() {
           padding: "8px 0",
         }}
       >
+        {/* Sidebar Toggle */}
         <button
           onClick={() => setSidebarOpen((open) => !open)}
           style={{
@@ -37,6 +41,7 @@ export default function DevicePage() {
             border: "none",
             cursor: "pointer",
             fontSize: "1.2rem",
+            alignSelf: "flex-end",
           }}
           aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
         >
@@ -44,7 +49,9 @@ export default function DevicePage() {
         </button>
         {sidebarOpen && (
           <>
-            <div style={{ margin: "16px", fontWeight: 600 }}>Sidebar</div>
+            <div style={{ margin: "16px", fontWeight: 600 }}>
+              <h1>Device {params.id}</h1>
+            </div>
             <div style={{ width: "100%" }}>
               {tabs.map((tab, idx) => (
                 <button
