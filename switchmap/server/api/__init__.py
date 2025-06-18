@@ -6,6 +6,7 @@ Contains all routes that the Flask API uses
 
 # Pip imports
 from flask import Flask
+from flask_cors import CORS
 
 # Do remaining switchmap importations
 from switchmap.server.api.routes.graphql import API_GRAPHQL
@@ -16,6 +17,11 @@ from switchmap import API_PREFIX
 # Make sure the static URL path is under the SITE_PREFIX.
 API = Flask(
     __name__,
+)
+CORS(
+    API,
+    resources={r"/switchmap/api/graphql": {"origins": "http://localhost:3000"}},
+    supports_credentials=True,
 )
 
 # Register Blueprints
