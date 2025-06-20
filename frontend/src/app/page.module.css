@@ -1,0 +1,15 @@
+.sidebar{
+        top: 0;
+        left: 0;
+        width: 240px;
+        height: 100vh;
+        padding: 2rem 1rem;
+        border-right: 1px solid #e0e0e0;
+        position: sticky;
+}
+.container {
+        display: flex;
+        flex-direction: row;
+        height: 100vh;
+        overflow-y: hidden;
+}

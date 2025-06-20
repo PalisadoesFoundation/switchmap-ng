@@ -1,32 +1,25 @@
+"useclient";
+
 import Link from "next/link";
+import ThemeToggle from "./theme-toggle";
 import styles from "./page.module.css";
 
 export default function Home() {
   return (
-    <div style={{ marginLeft: "240px", display: "flex", minHeight: "100vh" }}>
+    <div className={styles.container}>
       {/* Sidebar */}
-      <aside
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "240px",
-          height: "100vh",
-          background: "#f5f5f5",
-          padding: "2rem 1rem",
-          borderRight: "1px solid #e0e0e0",
-        }}
-      >
+      <aside className={styles.sidebar}>
         <nav style={{ position: "sticky", top: 0 }}>
-          <h2 style={{ marginBottom: "1.5rem" }}>SwitchMap-NG</h2>
-          <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+          <h2>SwitchMap-NG</h2>
+          <ThemeToggle />
+          <ul style={{ listStyle: "none" }}>
             <li>
               <strong>Dashboard</strong>
-              <ul style={{ listStyle: "none", padding: "1rem" }}>
-                <li style={{ marginBottom: "1.5rem" }}>
+              <ul style={{ listStyle: "none" }}>
+                <li>
                   <Link href="#network-topology">Network Topology</Link>
                 </li>
-                <li style={{ marginBottom: "1.5rem" }}>
+                <li>
                   <Link href="#devices-overview">Devices Overview</Link>
                 </li>
               </ul>
@@ -41,7 +34,7 @@ export default function Home() {
         </nav>
       </aside>
       {/* Main Content */}
-      <main style={{ flex: 1 }}>
+      <main style={{ overflowY: "auto", flex: 1 }}>
         <div
           id="network-topology"
           style={{ height: "100vh", marginBottom: "2rem", padding: "2rem" }}
