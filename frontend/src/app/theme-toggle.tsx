@@ -1,27 +1,26 @@
 "use client";
+
 import { useTheme } from "next-themes";
-import React from "react";
+import { useEffect, useState } from "react";
+import { FiSun, FiMoon } from "react-icons/fi";
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
 
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null; // prevent SSR mismatch
 
   return (
     <button
-      onClick={toggleTheme}
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       aria-label="Toggle theme"
-      style={{
-        padding: "0.5rem 1rem",
-        borderRadius: "0.5rem",
-        border: "1px solid #ccc",
-        background: "none",
-        cursor: "pointer",
-      }}
+      className="theme-toggle-button"
     >
-      {theme === "dark" ? "🌙 Dark" : "☀️ Light"}
+      {theme === "dark" ? <FiSun /> : <FiMoon />}
     </button>
   );
 }

@@ -2,13 +2,26 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
-import { FiHome } from "react-icons/fi";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
+import ThemeToggle from "@/app/theme-toggle";
+import styles from "./devices.module.css";
 
 const tabs = [
-  { label: "Device Overview", content: "Device Overview" },
-  { label: "Connection Details", content: "Connection Details" },
-  { label: "Connection Charts", content: "Connection Charts" },
+  {
+    label: "Device Overview",
+    content: "Device Overview",
+    icon: <FiMonitor />,
+  },
+  {
+    label: "Connection Details",
+    content: "Connection Details",
+    icon: <FiLink />,
+  },
+  {
+    label: "Connection Charts",
+    content: "Connection Charts",
+    icon: <FiBarChart2 />,
+  },
 ];
 
 export default function DevicePage() {
@@ -18,111 +31,60 @@ export default function DevicePage() {
   const router = useRouter();
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
+    <div className={styles.devicePage}>
       {/* Sidebar */}
       <div
+        className={styles.sidebar}
         style={{
-          width: sidebarOpen ? 220 : 48,
-          background: "#f3f4f6",
-          transition: "width 0.2s",
-          borderRight: "1px solid #e5e7eb",
-          display: "flex",
-          flexDirection: "column",
+          width: sidebarOpen ? "220px" : "48px",
           alignItems: sidebarOpen ? "flex-start" : "center",
-          padding: "8px 0",
         }}
       >
-        {/* Sidebar Toggle */}
-        <button
-          onClick={() => setSidebarOpen((open) => !open)}
-          style={{
-            margin: "8px",
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: "1.2rem",
-            alignSelf: "flex-end",
-          }}
-          aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+        <div
+          className={
+            sidebarOpen ? styles.sidebarHeader : styles.sidebarHeaderCollapsed
+          }
         >
-          {sidebarOpen ? "⏴" : "⏵"}
-        </button>
-        {sidebarOpen && (
-          <>
-            <div style={{ margin: "16px", fontWeight: 600 }}>
-              <h1>Device {params.id}</h1>
-            </div>
-            <div style={{ width: "100%" }}>
-              {tabs.map((tab, idx) => (
-                <button
-                  key={tab.label}
-                  onClick={() => setActiveTab(idx)}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    padding: "12px 24px",
-                    background: activeTab === idx ? "#e0e7ff" : "none",
-                    border: "none",
-                    borderLeft:
-                      activeTab === idx
-                        ? "4px solid #2563eb"
-                        : "4px solid transparent",
-                    color: activeTab === idx ? "#2563eb" : "#374151",
-                    fontWeight: activeTab === idx ? 600 : 400,
-                    cursor: "pointer",
-                    outline: "none",
-                    textAlign: "left",
-                    fontSize: "1rem",
-                  }}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </>
-        )}
+          {/* Sidebar Toggle */}
+          <button
+            className={styles.sidebarToggle}
+            onClick={() => setSidebarOpen((open) => !open)}
+            aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          >
+            {sidebarOpen ? "⏴" : "⏵"}
+          </button>
+          <ThemeToggle />
+        </div>
+        {sidebarOpen && <h1>Device {params.id}</h1>}
+        <div className={styles.tabs}>
+          {tabs.map((tab, idx) => (
+            <button
+              key={tab.label}
+              onClick={() => setActiveTab(idx)}
+              className={`${styles.tabButton} ${
+                activeTab === idx ? styles.activeTab : ""
+              }`}
+            >
+              <span className={styles.tabContent}>
+                {tab.icon}
+                {sidebarOpen && <span>{tab.label}</span>}
+              </span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Main Content */}
-      <div
-        style={{
-          flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          position: "relative",
-        }}
-      >
+      <div className={styles.mainContent}>
         {/* Home Icon at Top Right */}
         <button
           onClick={() => router.push("/")}
           aria-label="Go to home"
-          style={{
-            position: "absolute",
-            top: 16,
-            right: 24,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            fontSize: "2rem",
-            color: "#374151",
-            zIndex: 1,
-          }}
+          className={styles.homeButton}
         >
           <FiHome />
         </button>
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "2rem",
-            color: "#6b7280",
-            background: "#fff",
-          }}
-        >
-          {tabs[activeTab].content}
-        </div>
+        <div className={styles.tabSection}>{tabs[activeTab].content}</div>
       </div>
     </div>
   );
