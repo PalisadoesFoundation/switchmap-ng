@@ -4,23 +4,23 @@ import { useRouter } from "next/navigation";
 import { useParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import ThemeToggle from "@/app/theme-toggle";
-import styles from "./devices.module.css";
+import styles from "./Devices.module.css";
 
 const tabs = [
   {
     label: "Device Overview",
     content: "Device Overview",
-    icon: <FiMonitor />,
+    icon: <FiMonitor className="icon" />,
   },
   {
     label: "Connection Details",
     content: "Connection Details",
-    icon: <FiLink />,
+    icon: <FiLink className="icon" />,
   },
   {
     label: "Connection Charts",
     content: "Connection Charts",
-    icon: <FiBarChart2 />,
+    icon: <FiBarChart2 className="icon" />,
   },
 ];
 
@@ -55,7 +55,9 @@ export default function DevicePage() {
           </button>
           <ThemeToggle />
         </div>
-        {sidebarOpen && <h1>Device {params.id}</h1>}
+        {sidebarOpen && (
+          <h1 className={styles.deviceName}>Device {params.id}</h1>
+        )}
         <div className={styles.tabs}>
           {tabs.map((tab, idx) => (
             <button

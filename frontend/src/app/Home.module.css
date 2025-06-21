@@ -1,4 +1,4 @@
-.sidebar{
+.sidebar {
         top: 0;
         left: 0;
         width: 240px;
@@ -7,26 +7,29 @@
         position: sticky;
         border-right: 1px solid var(--border-color);
 }
-.dashboard-link{
+
+.dashboardLink {
         display: flex;
         flex-direction: row;
         align-items: center;
         gap: 0.5rem;
 }
-.title-container{
+
+.titleContainer {
         display: flex;
         flex-direction: row;
         gap: 1rem;
 }
 
-.container {
+.pageContainer {
         display: flex;
         flex-direction: row;
         height: 100vh;
         overflow-y: hidden;
 }
-.device-section{
-         height: 100vh;
-         margin-bottom: 2rem;
-         padding: 2rem;
+
+.deviceSection {
+        height: 100vh;
+        margin-bottom: 2rem;
+        padding: 2rem;
 }

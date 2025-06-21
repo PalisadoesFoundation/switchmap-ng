@@ -2,23 +2,23 @@
 
 import Link from "next/link";
 import ThemeToggle from "./theme-toggle";
-import styles from "./page.module.css";
+import styles from "./Home.module.css";
 import { FiClock, FiLayout, FiSettings } from "react-icons/fi";
 
 export default function Home() {
   return (
-    <div className={styles.container}>
+    <div className={styles.pageContainer}>
       {/* Sidebar */}
       <aside className={styles.sidebar}>
-        <nav style={{ position: "sticky", top: 0 }}>
-          <div className={styles["title-container"]}>
+        <nav>
+          <div className={styles.titleContainer}>
             <h2>SwitchMap-NG</h2>
             <ThemeToggle />
           </div>
 
           <ul style={{ listStyle: "none" }}>
             <li>
-              <div className={styles["dashboard-link"]}>
+              <div className={styles.dashboardLink}>
                 <FiLayout className="icon" />
                 <p>Dashboard</p>
               </div>
@@ -33,13 +33,13 @@ export default function Home() {
               </ul>
             </li>
             <li>
-              <div className={styles["dashboard-link"]}>
+              <div className={styles.dashboardLink}>
                 <FiClock className="icon" />
                 <Link href="/history">History</Link>
               </div>
             </li>
             <li>
-              <div className={styles["dashboard-link"]}>
+              <div className={styles.dashboardLink}>
                 <FiSettings className="icon" />
                 <Link href="/settings">Settings</Link>
               </div>
@@ -49,11 +49,11 @@ export default function Home() {
       </aside>
       {/* Main Content */}
       <main style={{ overflowY: "auto", flex: 1 }}>
-        <div id="network-topology" className={styles["device-section"]}>
-          <p>Network Topology</p>
+        <div id="network-topology" className={styles.deviceSection}>
+          <h2>Network Topology</h2>
         </div>
-        <div id="devices-overview" className={styles["device-section"]}>
-          <p>Devices Overview</p>
+        <div id="devices-overview" className={styles.deviceSection}>
+          <h2>Devices Overview</h2>
           <table>
             <thead>
               <tr>
