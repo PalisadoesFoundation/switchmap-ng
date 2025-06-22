@@ -1,11 +1,20 @@
-"useclient";
+"use client";
 
 import Link from "next/link";
 import ThemeToggle from "./theme-toggle";
 import styles from "./Home.module.css";
 import { FiClock, FiLayout, FiSettings } from "react-icons/fi";
+import DevicesOverview from "@/components/DevicesOverview";
+import { useEffect } from "react";
 
 export default function Home() {
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) el.scrollIntoView({ behavior: "smooth" });
+    }
+  }, []);
   return (
     <div className={styles.pageContainer}>
       {/* Sidebar */}
@@ -53,62 +62,7 @@ export default function Home() {
           <h2>Network Topology</h2>
         </div>
         <div id="devices-overview" className={styles.deviceSection}>
-          <h2>Devices Overview</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Device Name</th>
-                <th>IP Address</th>
-                <th>Device Type</th>
-                <th>Active Port</th>
-                <th>Uptime</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Example static data, replace with dynamic data as needed */}
-              {[
-                {
-                  id: "1",
-                  name: "Switch Alpha",
-                  ip: "192.168.1.10",
-                  type: "Layer 2 Switch",
-                  activePort: "4/4",
-                  uptime: "12d 4h",
-                },
-                {
-                  id: "2",
-                  name: "Router Beta",
-                  ip: "192.168.1.1",
-                  type: "Router",
-                  activePort: "2/4",
-                  uptime: "7d 18h",
-                },
-                {
-                  id: "3",
-                  name: "Switch Gamma",
-                  ip: "192.168.1.11",
-                  type: "Layer 3 Switch",
-                  activePort: "3/4",
-                  uptime: "22d 2h",
-                },
-              ].map((device) => (
-                <tr key={device.id}>
-                  <td
-                    style={{
-                      padding: "0.5rem",
-                      borderBottom: "1px solid #eee",
-                    }}
-                  >
-                    <Link href={`/devices/${device.id}`}>{device.name}</Link>
-                  </td>
-                  <td>{device.ip}</td>
-                  <td>{device.type}</td>
-                  <td>{device.activePort}</td>
-                  <td>{device.uptime}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <DevicesOverview />
         </div>
       </main>
     </div>

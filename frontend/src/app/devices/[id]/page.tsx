@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import ThemeToggle from "@/app/theme-toggle";
 import styles from "./Devices.module.css";
@@ -25,7 +25,9 @@ const tabs = [
 ];
 
 export default function DevicePage() {
-  const params = useParams();
+  const searchParams = useSearchParams();
+  const sysName = searchParams.get("sysName");
+  const hostname = searchParams.get("hostname");
   const [activeTab, setActiveTab] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
@@ -55,9 +57,9 @@ export default function DevicePage() {
           </button>
           <ThemeToggle />
         </div>
-        {sidebarOpen && (
-          <h1 className={styles.deviceName}>Device {params.id}</h1>
-        )}
+        <h1 className={styles.deviceName}>
+          {sysName || hostname || "Unnamed Device"}
+        </h1>
         <div className={styles.tabs}>
           {tabs.map((tab, idx) => (
             <button
