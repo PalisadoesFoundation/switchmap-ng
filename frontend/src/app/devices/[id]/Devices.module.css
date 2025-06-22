@@ -35,6 +35,10 @@
 .deviceName{
     padding: 12px 15px;
     font-size: 1.2rem;
+    width: 80%;
+    word-break: normal;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 .tabs{
     width: 100%;
