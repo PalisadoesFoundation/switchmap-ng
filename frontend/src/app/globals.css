@@ -1,0 +1,90 @@
+:root {
+  --bg-color: #e6e6e6;
+  --text-color: #081028;
+  --link-color: #081028;
+  --button-bg: #e0e0e0;
+  --button-text: #081028;
+  --heading-color: #081028;
+  --border-color: rgba(162, 162, 162, 0.1);
+  --icon-color: #323232;
+  --hover-bg: #0B1A47;
+  --select-bg: #c4c4c4;
+
+}
+
+.dark {
+  --bg-color: #081028;
+  --text-color: #AEB9E1;
+  --link-color: #AEB9E1;
+  --button-bg: #333333;
+  --button-text: #AEB9E1;
+  --heading-color: #ddd;
+  --border-color: #0B1739;
+  --icon-color: #8C09BC;
+  --hover-bg: #0B1A47;
+  --select-bg: #0B1A47;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  margin: 0;
+  padding: 0;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow: hidden;
+  
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  cursor: pointer;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--heading-color);
+  font-weight: 600;
+  margin: 0rem;
+}
+p{
+  margin: 0rem;
+}
+li{
+  margin-top: 0.5rem ;
+  padding-top:  0.5rem;
+}
+
+.themeToggleButton{
+        background: none;
+        font-size: 1.4rem;
+        display: flex;
+        align-self: center;
+}
+
+.icon{
+  color: var(--icon-color);
+  font-size: 1rem;
+}
+table{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+th{
+  border-bottom: 1px solid #ccc;
+  text-align: left;
+  padding: 0.5rem;
+}
+td{
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+}
