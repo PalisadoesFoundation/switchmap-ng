@@ -1,57 +1,28 @@
-@import "tailwindcss";
-
-@theme {
-  --color-bg: var(--bg-color);
-  --color-content-bg: var(--content-bg);
-  --color-text: var(--text-color);
-  --color-link: var(--link-color);
-  --color-button-bg: var(--button-bg);
-  --color-button-text: var(--button-text);
-  --color-heading: var(--heading-color);
-  --color-border: var(--border-color);
-  --color-bottom-border: var(--bottom-border-color);
-  --color-icon: var(--icon-color);
-  --color-hover-bg: var(--hover-bg);
-  --color-select-bg: var(--select-bg);
-}
-
-
 :root {
-  --bg-color: white;
-  --content-bg: white;
+  --bg-color: #e6e6e6;
   --text-color: #081028;
   --link-color: #081028;
   --button-bg: #e0e0e0;
   --button-text: #081028;
   --heading-color: #081028;
   --border-color: rgba(162, 162, 162, 0.1);
-  --bottom-border-color: #081028;
-  --hover-bg: rgba(140, 9, 188, 0.1);
-  --select-bg: rgba(140, 9, 188, 0.2);
-  --h1-color: #8C09BC;
-  --edge-color-light: #bbb;
-  --node-color-light: #1e90ff;
-  --font-color-light: black;
+  --icon-color: #323232;
+  --hover-bg: #0B1A47;
+  --select-bg: #c4c4c4;
 
 }
 
 .dark {
   --bg-color: #081028;
-  --content-bg: #0B1739;
   --text-color: #AEB9E1;
   --link-color: #AEB9E1;
   --button-bg: #333333;
   --button-text: #AEB9E1;
   --heading-color: #ddd;
   --border-color: #0B1739;
-  --bottom-border-color: #e6e6e6;
-  --hover-bg:rgb(59, 65, 85);
+  --icon-color: #8C09BC;
+  --hover-bg: #0B1A47;
   --select-bg: #0B1A47;
-  --h1-color:  #ddd;
-  --edge-color-dark: white;
-  --node-color-dark: #4a90e2;
-  --font-color-dark: white;
-  --border-subtle: #343B4F;
 }
 
 body {
@@ -73,16 +44,16 @@ a {
 }
 
 button {
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
   cursor: pointer;
 }
 
-h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6 {
   color: var(--heading-color);
   font-weight: 600;
-}
-h1 {
-  color: var(--h1-color);
-  font-weight: 600;
+  margin: 0rem;
 }
 p{
   margin: 0rem;
@@ -92,10 +63,15 @@ li{
   padding-top:  0.5rem;
 }
 
-
+.themeToggleButton{
+        background: none;
+        font-size: 1.4rem;
+        display: flex;
+        align-self: center;
+}
 
 .icon{
-  color: #8C09BC;
+  color: var(--icon-color);
   font-size: 1rem;
 }
 table{
@@ -104,31 +80,11 @@ table{
   margin-top: 1rem;
 }
 th{
-  border-bottom: 1px solid var(--bottom-border-color);
+  border-bottom: 1px solid #ccc;
   text-align: left;
   padding: 0.5rem;
 }
 td{
   padding: 0.5rem;
-  border-bottom: 1px solid var(--bottom-border-color);
-}
-
-.reset-button{
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-.vis-tooltip {
-  background: linear-gradient(to right, #8C09BC 27%, #59098B 71%) !important;
-  color: white !important;
-  font-size: 14px !important;
-  border-radius: 8px !important;
-  padding: 10px !important;
-  border: none !important;
-  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3) !important;
-  white-space: normal !important;
-  max-width: 300px !important;
+  border-bottom: 1px solid #eee;
 }

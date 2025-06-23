@@ -1,0 +1,9 @@
+.detailsTable{
+    margin-top: 5rem;
+    width: 100%;
+    overflow-x: auto;
+    
+}
+.container{
+    width: 100%;
+}
