@@ -4,7 +4,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import ThemeToggle from "@/app/theme-toggle";
-import styles from "./Devices.module.css";
 import ConnectionDetails from "@/app/components/ConnectionDetails";
 
 export default function DevicePage() {
@@ -37,10 +36,10 @@ export default function DevicePage() {
   const router = useRouter();
 
   return (
-    <div className={styles.devicePage}>
+    <div className="flex h-screen">
       {/* Sidebar */}
       <div
-        className={styles.sidebar}
+        className="transition-width duration-200 border-r border-[var(--border-color)] flex flex-col gap-4 py-2"
         style={{
           width: sidebarOpen ? "220px" : "48px",
           alignItems: sidebarOpen ? "flex-start" : "center",
@@ -48,12 +47,14 @@ export default function DevicePage() {
       >
         <div
           className={
-            sidebarOpen ? styles.sidebarHeader : styles.sidebarHeaderCollapsed
+            sidebarOpen
+              ? "flex flex-row-reverse justify-between w-[95%] self-end mb-8"
+              : "flex flex-col gap-4 mb-8"
           }
         >
           {/* Sidebar Toggle */}
           <button
-            className={styles.sidebarToggle}
+            className="my-2 px-0 bg-transparent text-[1.2rem] self-center"
             onClick={() => setSidebarOpen((open) => !open)}
             aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
@@ -62,22 +63,20 @@ export default function DevicePage() {
           <ThemeToggle />
         </div>
         <h1
-          className={`${styles.deviceName} ${
-            !sidebarOpen ? styles.deviceNameCollapsed : ""
-          }`}
+          className={`className="px-4 py-3 text-[1.2rem] w-4/5 break-normal"
+ ${!sidebarOpen ? "hidden" : ""}`}
         >
           {sysName || hostname || "Unnamed Device"}
         </h1>
-        <div className={styles.tabs}>
+        <div className="w-full flex flex-col">
           {tabs.map((tab, idx) => (
             <button
               key={tab.label}
               onClick={() => setActiveTab(idx)}
-              className={`${styles.tabButton} ${
-                activeTab === idx ? styles.activeTab : ""
-              }`}
+              className={`$className="bg-transparent px-4 py-3 font-normal text-left text-base"
+ ${activeTab === idx ? "bg-[var(--select-bg)]" : ""}`}
             >
-              <span className={styles.tabContent}>
+              <span className="flex flex-row gap-4">
                 {tab.icon}
                 {sidebarOpen && <span>{tab.label}</span>}
               </span>
@@ -87,16 +86,18 @@ export default function DevicePage() {
       </div>
 
       {/* Main Content */}
-      <div className={styles.mainContent}>
+      <div className="flex-1 flex flex-col relative">
         {/* Home Icon at Top Right */}
         <button
           onClick={() => router.push("/")}
           aria-label="Go to home"
-          className={styles.homeButton}
+          className="absolute top-4 right-6 bg-transparent text-[1.2rem]"
         >
           <FiHome />
         </button>
-        <div className={styles.tabSection}>{tabs[activeTab].content}</div>
+        <div className="flex items-center justify-center w-full">
+          {tabs[activeTab].content}
+        </div>
       </div>
     </div>
   );
