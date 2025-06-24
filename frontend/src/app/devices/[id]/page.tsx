@@ -1,33 +1,37 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import ThemeToggle from "@/app/theme-toggle";
 import styles from "./Devices.module.css";
-
-const tabs = [
-  {
-    label: "Device Overview",
-    content: "Device Overview",
-    icon: <FiMonitor className="icon" />,
-  },
-  {
-    label: "Connection Details",
-    content: "Connection Details",
-    icon: <FiLink className="icon" />,
-  },
-  {
-    label: "Connection Charts",
-    content: "Connection Charts",
-    icon: <FiBarChart2 className="icon" />,
-  },
-];
+import ConnectionDetails from "@/app/components/ConnectionDetails";
 
 export default function DevicePage() {
   const searchParams = useSearchParams();
   const sysName = searchParams.get("sysName");
   const hostname = searchParams.get("hostname");
+  const params = useParams();
+  // Ensure id is always a string
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
+
+  const tabs = [
+    {
+      label: "Device Overview",
+      content: <div>Device Overview</div>,
+      icon: <FiMonitor className="icon" />,
+    },
+    {
+      label: "Connection Details",
+      content: <ConnectionDetails deviceId={id || ""} />,
+      icon: <FiLink className="icon" />,
+    },
+    {
+      label: "Connection Charts",
+      content: <div>Connection Charts</div>,
+      icon: <FiBarChart2 className="icon" />,
+    },
+  ];
   const [activeTab, setActiveTab] = useState(0);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
@@ -57,7 +61,11 @@ export default function DevicePage() {
           </button>
           <ThemeToggle />
         </div>
-        <h1 className={styles.deviceName}>
+        <h1
+          className={`${styles.deviceName} ${
+            !sidebarOpen ? styles.deviceNameCollapsed : ""
+          }`}
+        >
           {sysName || hostname || "Unnamed Device"}
         </h1>
         <div className={styles.tabs}>

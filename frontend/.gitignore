@@ -16,6 +16,8 @@
 # next.js
 /.next/
 /out/
+.next/
+/out/
 
 # production
 /build
@@ -32,6 +34,10 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # vercel
 .vercel
@@ -39,3 +45,91 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# logs
+logs
+*.log
+logs/*
+*.log.*
+
+# OS
+Thumbs.db
+ehthumbs.db
+Icon?
+Desktop.ini
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Mac system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# npm package lock
+package-lock.json
+yarn.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Parcel-bundler cache (if used)
+.cache
+
+# SASS cache
+.sass-cache
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Next.js build output
+.next/
+out/
+
+# Static exported files
+out/
+
+# Build output
+build/
+
+# Storybook build outputs
+.out/
+storybook-static/
+
+# VSCode settings
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# Local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Misc
+*.swp
+*.swo
+*.bak
+*.tmp
+*.temp
+*.orig
+*.rej
+*.sublime-workspace
+*.sublime-project

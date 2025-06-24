@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import ThemeToggle from "./theme-toggle";
+import ThemeToggle from "@/app/theme-toggle";
 import styles from "./Home.module.css";
 import { FiClock, FiLayout, FiSettings } from "react-icons/fi";
-import DevicesOverview from "@/components/DevicesOverview";
+import DevicesOverview from "@/app/components/DevicesOverview";
 import { useEffect } from "react";
 
 export default function Home() {
