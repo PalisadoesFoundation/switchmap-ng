@@ -45,7 +45,6 @@ a {
 }
 
 button {
-  background-color: var(--button-bg);
   color: var(--button-text);
   border: none;
   cursor: pointer;

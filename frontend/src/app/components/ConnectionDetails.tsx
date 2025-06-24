@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import styles from "./ConnectionDetails.module.css";
 
 const QUERY = `
   query Device($id: ID!) {

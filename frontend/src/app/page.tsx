@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import ThemeToggle from "@/app/theme-toggle";
-import styles from "./Home.module.css";
 import { FiClock, FiLayout, FiSettings } from "react-icons/fi";
 import DevicesOverview from "@/app/components/DevicesOverview";
 import { useEffect } from "react";
@@ -42,13 +41,13 @@ export default function Home() {
               </ul>
             </li>
             <li>
-              <div className={styles.dashboardLink}>
+              <div className="flex flex-row items-center gap-2">
                 <FiClock className="icon" />
                 <Link href="/history">History</Link>
               </div>
             </li>
             <li>
-              <div className={styles.dashboardLink}>
+              <div className="flex flex-row items-center gap-2">
                 <FiSettings className="icon" />
                 <Link href="/settings">Settings</Link>
               </div>
