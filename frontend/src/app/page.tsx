@@ -16,18 +16,18 @@ export default function Home() {
     }
   }, []);
   return (
-    <div className={styles.pageContainer}>
+    <div className="flex flex-row h-screen overflow-y-hidden">
       {/* Sidebar */}
-      <aside className={styles.sidebar}>
+      <aside className="sticky top-0 left-0 w-60 h-screen py-8 px-4 border-r border-[var(--border-color)]">
         <nav>
-          <div className={styles.titleContainer}>
+          <div className="flex flex-row gap-4">
             <h2>SwitchMap-NG</h2>
             <ThemeToggle />
           </div>
 
           <ul style={{ listStyle: "none" }}>
             <li>
-              <div className={styles.dashboardLink}>
+              <div className="flex flex-row items-center gap-2">
                 <FiLayout className="icon" />
                 <p>Dashboard</p>
               </div>
@@ -58,10 +58,10 @@ export default function Home() {
       </aside>
       {/* Main Content */}
       <main style={{ overflowY: "auto", flex: 1 }}>
-        <div id="network-topology" className={styles.deviceSection}>
+        <div id="network-topology" className="h-screen mb-8 p-8">
           <h2>Network Topology</h2>
         </div>
-        <div id="devices-overview" className={styles.deviceSection}>
+        <div id="devices-overview" className="h-screen mb-8 p-8">
           <DevicesOverview />
         </div>
       </main>
