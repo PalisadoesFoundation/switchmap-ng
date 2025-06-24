@@ -40,6 +40,9 @@
     overflow-wrap: break-word;
     white-space: normal;
 }
+.deviceNameCollapsed{
+    display: none;
+}
 .tabs{
     width: 100%;
     display: flex;
@@ -76,9 +79,8 @@
 }
 
 .tabSection {
-    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    width: 100%;
 }
