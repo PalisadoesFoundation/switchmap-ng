@@ -64,12 +64,7 @@ li{
   padding-top:  0.5rem;
 }
 
-.themeToggleButton{
-        background: none;
-        font-size: 1.4rem;
-        display: flex;
-        align-self: center;
-}
+
 
 .icon{
   color: var(--icon-color);

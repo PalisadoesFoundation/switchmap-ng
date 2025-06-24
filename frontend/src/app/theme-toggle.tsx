@@ -18,7 +18,7 @@ export default function ThemeToggle() {
     <button
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
       aria-label="Toggle theme"
-      className="themeToggleButton"
+      className="bg-transparent text-[1.4rem] flex self-center"
     >
       {theme === "dark" ? <FiSun /> : <FiMoon />}
     </button>
