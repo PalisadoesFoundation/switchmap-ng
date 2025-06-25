@@ -21,7 +21,7 @@ env:
 
 jobs:
   Deploy-Docusaurus:
-    name: Deploy https://docs-legacy.switchmap-ng.io website
+    name: Deploy https://docs.switchmap-ng.io website
     runs-on: ubuntu-latest
     # Run only if the develop branch and not dependabot
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.base.ref == 'develop' }}
