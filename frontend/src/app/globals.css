@@ -1,4 +1,18 @@
 @import "tailwindcss";
+@theme {
+  --color-bg: var(--bg-color);
+  --color-text: var(--text-color);
+  --color-link: var(--link-color);
+  --color-button-bg: var(--button-bg);
+  --color-button-text: var(--button-text);
+  --color-heading: var(--heading-color);
+  --color-border: var(--border-color);
+  --color-icon: var(--icon-color);
+  --color-hover-bg: var(--hover-bg);
+  --color-select-bg: var(--select-bg);
+}
+
+
 :root {
   --bg-color: #e6e6e6;
   --text-color: #081028;
@@ -53,7 +67,6 @@ button {
 h1, h2, h3, h4, h5, h6 {
   color: var(--heading-color);
   font-weight: 600;
-  margin: 0rem;
 }
 p{
   margin: 0rem;

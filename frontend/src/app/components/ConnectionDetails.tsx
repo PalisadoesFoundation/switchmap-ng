@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import styles from "./ConnectionDetails.module.css";
 
 const QUERY = `
   query Device($id: ID!) {
@@ -86,9 +87,9 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   );
 
   return (
-    <div className="w-full">
-      <h2>Connection Details</h2>
-      <table className="mt-20 w-full overflow-x-auto border border-gray-200 rounded-lg shadow-sm">
+    <div className={styles.container}>
+      <h2 className={styles.title}>Connection Details</h2>
+      <table className={styles.detailsTable}>
         <thead>
           <tr>
             {[
