@@ -1,13 +1,12 @@
 "use client";
 
-import Link from "next/link";
-import ThemeToggle from "@/app/theme-toggle";
-import styles from "./Home.module.css";
-import { FiClock, FiLayout, FiSettings } from "react-icons/fi";
-import DevicesOverview from "@/components/DevicesOverview";
-import { useEffect } from "react";
+import DevicesOverview from "@/app/components/DevicesOverview";
+import ZoneDropdown from "@/app/components/ZoneDropdown";
+import { useEffect, useState } from "react";
+import Sidebar from "@/app/components/Sidebar";
 
 export default function Home() {
+  const [zoneId, setZoneId] = useState("Wm9uZTox");
   useEffect(() => {
     const hash = window.location.hash;
     if (hash) {
@@ -16,53 +15,20 @@ export default function Home() {
     }
   }, []);
   return (
-    <div className={styles.pageContainer}>
+    <div className="flex flex-row h-screen overflow-y-hidden">
       {/* Sidebar */}
-      <aside className={styles.sidebar}>
-        <nav>
-          <div className={styles.titleContainer}>
-            <h2>SwitchMap-NG</h2>
-            <ThemeToggle />
-          </div>
-
-          <ul style={{ listStyle: "none" }}>
-            <li>
-              <div className={styles.dashboardLink}>
-                <FiLayout className="icon" />
-                <p>Dashboard</p>
-              </div>
-
-              <ul style={{ listStyle: "none" }}>
-                <li>
-                  <Link href="#network-topology">Network Topology</Link>
-                </li>
-                <li>
-                  <Link href="#devices-overview">Devices Overview</Link>
-                </li>
-              </ul>
-            </li>
-            <li>
-              <div className={styles.dashboardLink}>
-                <FiClock className="icon" />
-                <Link href="/history">History</Link>
-              </div>
-            </li>
-            <li>
-              <div className={styles.dashboardLink}>
-                <FiSettings className="icon" />
-                <Link href="/settings">Settings</Link>
-              </div>
-            </li>
-          </ul>
-        </nav>
-      </aside>
+      <Sidebar />
       {/* Main Content */}
       <main style={{ overflowY: "auto", flex: 1 }}>
-        <div id="network-topology" className={styles.deviceSection}>
-          <h2>Network Topology</h2>
+        <div className="sticky top-0 z-10 bg-blend-soft-light flex justify-end p-4 shadow">
+          <ZoneDropdown selectedZoneId={zoneId} onChange={setZoneId} />
         </div>
-        <div id="devices-overview" className={styles.deviceSection}>
-          <DevicesOverview />
+
+        <div id="network-topology" className="h-screen mb-8 p-8">
+          <h2 className="text-2xl font-bold mb-4">Network Topology</h2>
+        </div>
+        <div id="devices-overview" className="h-screen mb-8 p-8">
+          <DevicesOverview zoneId={zoneId} />
         </div>
       </main>
     </div>
