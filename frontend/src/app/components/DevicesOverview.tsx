@@ -168,15 +168,15 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
       <h3 className="text-sm font-semibold mt-8 mb-2">
         DEVICES MONITORED BY SWITCHMAP
       </h3>
-      <table className="w-full text-left border border-collapse">
+      <table className="w-full text-left">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b">
+            <tr key={headerGroup.id} className="border-b border-gray-200">
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  className="cursor-pointer px-4 py-2 border"
+                  className="cursor-pointer px-4 py-2"
                 >
                   {flexRender(
                     header.column.columnDef.header,
@@ -214,12 +214,9 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className="border-b hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
+            <tr key={row.id} className="hover:hover-bg">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-4 py-2 border">
+                <td key={cell.id} className="px-4 py-2">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -230,12 +227,12 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
       <h3 className="text-sm font-semibold mt-8 mb-2">
         DEVICES NOT MONITORED BY SWITCHMAP
       </h3>
-      <table className="w-full text-left border border-collapse">
+      <table className="w-full text-left">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b">
+            <tr key={headerGroup.id} className="border-b border-gray-200">
               {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-4 py-2 border">
+                <th key={header.id} className="px-4 py-2">
                   {flexRender(
                     header.column.columnDef.header,
                     header.getContext()
@@ -249,7 +246,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
           <tr>
             <td
               colSpan={columns.length}
-              className="px-4 py-2 border text-center text-gray-400"
+              className="px-4 py-2 text-center text-gray-400"
             >
               No data
             </td>

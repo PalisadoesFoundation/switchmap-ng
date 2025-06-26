@@ -22,7 +22,7 @@
   --heading-color: #081028;
   --border-color: rgba(162, 162, 162, 0.1);
   --icon-color: #323232;
-  --hover-bg: #0B1A47;
+  --hover-bg:rgb(198, 213, 255);
   --select-bg: #c4c4c4;
 
 }
@@ -36,7 +36,7 @@
   --heading-color: #ddd;
   --border-color: #0B1739;
   --icon-color: #8C09BC;
-  --hover-bg: #0B1A47;
+  --hover-bg:rgb(59, 65, 85);
   --select-bg: #0B1A47;
 }
 
