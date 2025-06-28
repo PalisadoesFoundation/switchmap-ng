@@ -188,6 +188,43 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
       .filter((node) => node && node.idxL1interface !== undefined)
       .map((node) => [node.idxL1interface, node])
   );
+  type IpNode = {
+    idxMac: number;
+    ips?: IpEntry[];
+    macs?: { idxMac: number }[];
+  };
+
+  const ipNodesByMacIdx = new Map<number, IpNode>(
+    (macipsData?.macips?.edges ?? []).map(({ node }: { node: IpNode }) => [
+      node.idxMac,
+      node,
+    ])
+  );
+
+  type MacportNode = {
+    idxL1interface: number;
+    idxMac: number;
+    macs?: {
+      mac: string;
+      oui?: {
+        organization?: string;
+      };
+    };
+  };
+  type IpEntry = {
+    address: string;
+    hostname?: string;
+  };
+
+  const macportsNodes: MacportNode[] = macportsData.macports.edges.map(
+    ({ node }: { node: MacportNode }) => node
+  );
+
+  const macportsNodesByIdx = new Map(
+    macportsNodes
+      .filter((node) => node && node.idxL1interface !== undefined)
+      .map((node) => [node.idxL1interface, node])
+  );
 
   return (
     <div className="w-[87%] h-[80vh]">
