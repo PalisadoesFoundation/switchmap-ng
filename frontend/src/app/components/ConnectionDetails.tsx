@@ -37,12 +37,32 @@ const MACPORTS_QUERY = (ids: number[]) => `
       edges {
         node {
           id
+          idxMac
           idxL1interface
           macs {
             mac
             oui {
               organization
             }
+          }
+        }
+      }
+    }
+  }
+`;
+const MACIPS_QUERY = (ids: number[]) => `
+  {
+    macips(filter: { idxMac: { in: [${ids.join(",")}] } }) {
+      edges {
+        node {
+          id
+          idxMac
+          ips {
+            address
+            hostname
+          }
+          macs {
+            idxMac
           }
         }
       }
@@ -62,6 +82,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
 
   const [deviceData, setDeviceData] = useState<any>(null);
   const [macportsData, setMacportsData] = useState<any>(null);
+  const [macipsData, setMacipsData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -87,16 +108,12 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
         const idxL1interfaces = deviceJson.data.device.l1interfaces.edges.map(
           (edge: any) => edge.node.idxL1interface
         );
-        console.log("Fetching MAC/IP for interfaces:", idxL1interfaces);
 
         if (idxL1interfaces.length === 0) {
           setMacportsData({ macports: { edges: [] } });
           return null;
         }
-        console.log("Sending MACPORTS query with ids:", idxL1interfaces);
         const query = MACPORTS_QUERY(idxL1interfaces.map(Number));
-
-        console.log("MACPORTS inline query:\n", query);
 
         return fetch("http://localhost:7000/switchmap/api/graphql", {
           method: "POST",
@@ -111,7 +128,6 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
       })
       .then((macportsJson) => {
         if (!macportsJson) return;
-        console.log("MAC/IP fetched data:", macportsJson);
         if (macportsJson.errors)
           throw new Error(macportsJson.errors[0].message);
         setMacportsData(macportsJson.data);
@@ -119,8 +135,42 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [id]);
+  console.log("Setting up second useEffect — macportsData:", macportsData);
 
-  console.log("Macports Data:", macportsData);
+  useEffect(() => {
+    if (!macportsData) {
+      console.log("macportsData is null or undefined — skipping IP fetch");
+      return;
+    }
+
+    console.log("macportsData available:", macportsData);
+
+    const macIds = macportsData.macports.edges
+      .map((edge: any) => edge.node.idxMac)
+      .filter((id: any) => id !== undefined && id !== null);
+
+    console.log("MAC IDs for IP fetch:", macIds);
+
+    if (macIds.length === 0) {
+      console.log("No MACs found, skipping IP query.");
+      return;
+    }
+
+    const query = MACIPS_QUERY(macIds.map(Number));
+
+    fetch("http://localhost:7000/switchmap/api/graphql", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+    })
+      .then((res) => res.json())
+      .then((macipsJson) => {
+        setMacipsData(macipsJson.data);
+        console.log("MAC-IP data fetched:", macipsJson.data);
+      })
+      .catch((err) => console.error("MAC-IP fetch error:", err));
+  }, [macportsData]);
+
   if (!id) return <p>Error: No device ID provided.</p>;
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -131,15 +181,32 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const interfaces = deviceData.device.l1interfaces.edges.map(
     ({ node }: any) => node
   );
+  type IpNode = {
+    idxMac: number;
+    ips?: IpEntry[];
+    macs?: { idxMac: number }[];
+  };
+
+  const ipNodesByMacIdx = new Map<number, IpNode>(
+    (macipsData?.macips?.edges ?? []).map(({ node }: { node: IpNode }) => [
+      node.idxMac,
+      node,
+    ])
+  );
 
   type MacportNode = {
     idxL1interface: number;
+    idxMac: number;
     macs?: {
       mac: string;
       oui?: {
         organization?: string;
       };
     };
+  };
+  type IpEntry = {
+    address: string;
+    hostname?: string;
   };
 
   const macportsNodes: MacportNode[] = macportsData.macports.edges.map(
@@ -184,6 +251,11 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
             const mac = macport?.macs?.mac ?? "—";
             const manufacturer = macport?.macs?.oui?.organization ?? "—";
 
+            // Get IP info from ipNodesByMacIdx using idxMac
+            const ipInfo = macport ? ipNodesByMacIdx.get(macport.idxMac) : null;
+            const ip = ipInfo?.ips?.[0]?.address ?? "—";
+            const dns = ipInfo?.ips?.[0]?.hostname ?? "—";
+
             return (
               <tr key={`${iface.idxL1interface}-${iface.ifname}`}>
                 <td>{iface.ifname || "N/A"}</td>
@@ -198,6 +270,8 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                 <td>{iface.lldpremportdesc || ""}</td>
                 <td>{mac}</td>
                 <td>{manufacturer}</td>
+                <td>{ip}</td>
+                <td>{dns}</td>
               </tr>
             );
           })}
