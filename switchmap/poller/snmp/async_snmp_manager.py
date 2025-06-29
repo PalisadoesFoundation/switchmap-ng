@@ -240,15 +240,20 @@ class Interact:
             validity: True if exist
         """
 
-        validity = False
-
-        (_,validity, results) = await self.query(
+        (_,_, results) = await self.query(
             oid_to_get,
             get= False,
             check_reachability = True,
             context_name = context_name,
-            check_existence
+            check_existence = True
         )
+
+        # If we get no result, then override validity 
+        if isinstance(results,dict) is True:
+            for value in results.values():
+                if value is not None:
+                    return True 
+        return False
 
 class Session:
     """Class to create a SNMP session with a device. """
@@ -339,7 +344,141 @@ class Session:
     async def _do_async_get(self, oid, auth_data,transport_target, context_data):
         """ Pure async SNMP GET using pysnmp """
 
-        error_indication,error_status,error_index,var_binds = await getCmd(self._engine)
+        error_indication,error_status,error_index,var_binds = await getCmd(
+            self._engine,
+            auth_data,
+            transport_target,
+            context_data,
+            ObjectType(ObjectIdentity(oid))
+        )
+
+        if error_indication:
+            raise PySnmpError(f"SNMP GET error: {error_indication}")
+        elif error_status:
+            raise PySnmpError(f"SNMP GET error status: {error_status}")
+        
+        # Return in object format expected by _format_results
+        results = []
+        for var_bind in var_binds:
+            oid_str = str(var_bind[0])
+            value = var_bind[1]
+            results.append((oid_str,value))
+        
+        return results
+    
+    async def _do_async_walk(self,oid_prefix,auth_data,transport_target,context_data):
+        """ Pure async SNMP WALK using pysnmp async capabilities. """
+
+        results = []
+
+        #Use correct walk method based on SNMP version
+        if hasattr(auth_data, "mpModel") and auth_data.mpModel == 0:
+            # SNMPv1 - use nextCMD
+            results = await self._async
+    
+    async def _async_walk_v1(self,oid_prefix, auth_data,transport_target,context_data):
+        """Pure async walk for SNMPv1 using nextCmd. """
+        results = []
+        current_oid = oid_prefix
+
+        async for (error_indication, error_status, error_index, var_binds) in nextCmd(
+            self._engine,
+            auth_data,
+            transport_target,
+            context_data,
+            ObjectType(ObjectIdentity(oid_prefix)),
+            lexicographicMode= False
+        ):
+            #! better error handling 
+            if error_indication or error_status:
+                break
+
+            for oid,value in var_binds:
+                oid_str = str(oid)
+                if not oid_str.startswith(oid_prefix):
+                    #! should we just return only till last case or also send a msg that last oid reached
+                    return results
+                results.append((oid_str,value))
+            
+        return results
+    
+    async def _async_walk_v2(self,oid_prefix,auth_data, transport_target,context_data):
+        """Async walk for SNMPv2c/v3 using bulkCmd"""
+
+        results = []
+        current_oids = ObjectType(ObjectIdentity(oid_prefix))
+
+        try:
+            max_iterations = 100
+            iterations = 0
+
+            while iterations < max_iterations:
+                iterations += 1
+                # non-repeaters = 0 , max_repetitions = 25
+                error_indication, error_status, error_index, var_bind_table = await bulkCmd(
+                    self._engine,
+                    auth_data,
+                    transport_target,
+                    context_data,
+                    0, 25,
+                    *current_oids
+                )
+                
+                #! adding more speficic logs here
+                if error_indication:
+                    print(f"BULK error indication: {error_indication}")
+                    break
+                elif error_status:
+                    print(f" BULK error status: {error_status.prettyPrint()} at {error_index}")
+                    break
+                
+                #Check if we got any response
+                if not var_bind_table:
+                    print(f"No more data")
+                    break
+
+                #Process the response
+                next_oids= []
+                found_valid_data = False
+
+                for var_bind in var_bind_table:
+                    for oid,value in var_bind:
+
+                        #Check for end of MIB 
+                        if isinstance(value, EndOfMibView):
+                            continue 
+                        
+                        #! little doubt over time complexity 
+                        #Check if we are still within our desired OID prefix
+                        if not str(oid).startswith(oid_prefix):
+                            continue 
+                        
+                        results.append((str(oid),value))
+                        next_oids.append(ObjectType(ObjectIdentity(oid)))
+                        found_valid_data = True
+
+                
+                if not found_valid_data:
+                    print(f"BULK walk: No more valid data for prefix {oid_prefix}")
+                    break
+
+                current_oids = [next_oids[-1]] if next_oids else []
+
+        except Exception as e:
+            print(f"BULK walk error: {e}")
+            return await self._async_walk_v1(oid_prefix, auth_data, transport_target, context_data)
+
+        return results
+
+
+
+
+
+        
+
+
+
+
 
 
                 
