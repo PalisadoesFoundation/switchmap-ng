@@ -2,6 +2,7 @@
 
 import os
 import sys
+import asyncio
 
 
 #import project libraries
@@ -9,6 +10,18 @@ from switchmap.core import log
 from switchmap.core import files
 from switchmap.poller import POLL 
 from switchmap.poller.configuration import ConfigPoller
+
+from pysnmp.hlapi.asyncio import (
+    SnmpEngine, CommunityData, UdpTransportTarget, ContextData, 
+    ObjectType, ObjectIdentity, getCmd, nextCmd, bulkCmd, 
+    UsmUserData, usmHMACMD5AuthProtocol, usmHMACSHAAuthProtocol,
+    usmDESPrivProtocol,usmAesCfb128Protocol, usmAesCfb192Protocol,
+    usmAesCfb256Protocol
+)
+
+from pysnmp.proto.errind import RequestTimedOut
+from pysnmp.error import PySnmpError
+from pysnmp.proto.rfc1905 import EndOfMibView, NoSuchInstance, NoSuchObject
 
 
 class Validate: 
@@ -173,7 +186,173 @@ class Interact:
         validity = False
 
         # Validate OID
+        if await self._oid_exists_get(oid_to_get,context_name=context_name) is True:
+            validity = True 
+        if validity is False:
+            if await self._oid_exists_walk(oid_to_get, context_name=context_name) is True:
+                validity = True
         
+        return validity
+    
+    async def _oid_exists_get(self, oid_to_get,context_name=""):
+        """Determine existence of OID on device.
+
+        Args:
+            oid_to_get: OID to get
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
+
+        Returns:
+            validity: True if exists
+
+        """
+        validity = False 
+        
+        #! check the validity arg in query
+        (_,validity,result) = await self.query(
+            oid_to_get,
+            context_name = context_name,
+            get = True,
+            check_reachability = True,
+            check_existence = True
+        )
+
+        # If we get no result, then override validity
+        if bool(result) is False:
+            validity = False
+        elif isinstance(result, dict) is True:
+            if result[oid_to_get] is None:
+                validity = False
+        
+        return validity;
+
+    async def _oid_exists_walk(self,oid_to_get, context_name=""):
+        """Check OID existence on device using WALK.
+
+         Args:
+            oid_to_get: OID to get
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
+
+        Returns:
+            validity: True if exist
+        """
+
+        validity = False
+
+        (_,validity, results) = await self.query(
+            oid_to_get,
+            get= False,
+            check_reachability = True,
+            context_name = context_name,
+            check_existence
+        )
+
+class Session:
+    """Class to create a SNMP session with a device. """
+
+    def _init__(self,_poll,context_name=""):
+        """Initialize the _Session class.
+
+        Args:
+            _poll: POLL object containing SNMP configuration
+            context_name: String containing SNMPv3 context name.
+                Default is empty string.
+
+        Returns:
+            session: SNMP session
+        """
+        #Assign variables
+        self.context_name = context_name
+        self._poll = _poll
+        self._engine = SnmpEngine()
+
+        
+        #! dont hardcore the ratelimit (change it later)
+        #Rate limiting 
+        self._semaphore = asyncio.Semaphore(10)
+
+        #Fail if there is no authentication
+        if bool(self._poll.authorization) is False:
+            log_message = (
+                "SNMP parameters provided are blank. None existent host? "
+            )
+            log.log2die(1046, log_message)
+        
+        #Create SNMP session 
+        self.session = self._session
+
+    async def _session(self):
+        """ Create SNMP session parameters based on configuration.
+
+        Returns:
+            Tuple of (auth_data, transport_target)
+        """
+
+        auth = self._poll.authorization
+
+        #Create transport target
+        transport_target = UdpTransportTarget(
+            (self._poll.hostname, auth.port),
+            timeout=10,
+            retries= 3
+        )
+
+        #Create authentication data based on SNMP version
+        if auth.version == 3:
+            #SNMPv3 with USM
+            #If authprotocol/privprotocol is None/False/Empty, leave them as None 
+            auth_protocol = None
+            priv_protocol = None 
+
+            #Set auth protocol only if authprotocol is specified
+            if auth.authprotocol:
+                if auth.authprotocol.lower() == 'md5':
+                    auth_protocol = usmHMACMD5AuthProtocol
+                else:
+                    auth_protocol = usmHMACSHAAuthProtocol
+            
+            #Set privacy protocol only if privprotocol is specified
+            #Also if we have authentication (privacy require authentication)
+            if auth.privprotocol and auth_protocol is not None:
+                if auth.privprotocol.lower() == 'des':
+                    priv_protocol = usmDESPrivProtocol
+                else:
+                    priv_protocol = usmAesCfb128Protocol
+            
+            auth_data = UsmUserData(
+                userName= auth.secname,
+                authKey=auth.authpassword,
+                privKey=auth.privpassword,
+                authProtocol=auth_protocol,
+                privProtocol=priv_protocol
+            )
+        else:
+            #SNMPv1/v2c with community
+            mp_model = 0 if auth.version == 1 else 1
+            auth_data = CommunityData(auth.community, mpModel=mp_model)
+
+        return auth_data, transport_target
+    
+    async def _do_async_get(self, oid, auth_data,transport_target, context_data):
+        """ Pure async SNMP GET using pysnmp """
+
+        error_indication,error_status,error_index,var_binds = await getCmd(self._engine)
+
+
+                
+
+
+
+    
+
+    
+    
+
+
+
 
        
 
