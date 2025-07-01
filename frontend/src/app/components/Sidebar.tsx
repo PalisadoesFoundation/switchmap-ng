@@ -26,8 +26,8 @@ export default function Sidebar() {
 
   // Sidebar content (shared)
   const sidebarContent = (
-    <nav className="p-4 space-y-6">
-      <div className="flex flex-row items-center justify-between">
+    <nav className="space-y-6">
+      <div className="flex flex-row items-center justify-between gap-2">
         <h2 className="text-xl font-semibold">SwitchMap-NG</h2>
         <ThemeToggle />
       </div>
