@@ -15,19 +15,19 @@ export default function Home() {
     }
   }, []);
   return (
-    <div className="flex flex-row h-screen overflow-y-hidden">
+    <div className="flex h-screen">
       {/* Sidebar */}
       <Sidebar />
       {/* Main Content */}
-      <main style={{ overflowY: "auto", flex: 1 }}>
-        <div className="sticky top-0 z-10 bg-blend-soft-light flex justify-end p-4 shadow">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="sticky top-0 z-10 bg-bg lg:bg-blend-soft-light flex justify-end p-4">
           <ZoneDropdown selectedZoneId={zoneId} onChange={setZoneId} />
         </div>
 
         <div id="network-topology" className="h-screen mb-8 p-8">
           <h2 className="text-2xl font-bold mb-4">Network Topology</h2>
         </div>
-        <div id="devices-overview" className="h-screen mb-8 p-8">
+        <div id="devices-overview" className="h-screen p-8">
           <DevicesOverview zoneId={zoneId} />
         </div>
       </main>

@@ -157,7 +157,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-2">Devices Overview</h2>
+      <h2 className="text-2xl font-bold mb-4">Devices Overview</h2>
 
       <input
         value={globalFilter}
@@ -171,7 +171,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
       <table className="w-full text-left">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b border-gray-200">
+            <tr key={headerGroup.id} className="border-b border-bottom-border">
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}

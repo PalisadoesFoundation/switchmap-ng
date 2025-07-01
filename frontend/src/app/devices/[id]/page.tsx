@@ -62,12 +62,15 @@ export default function DevicePage() {
           </button>
           <ThemeToggle />
         </div>
-        <h1
-          className={`className="px-4 py-3 text-[1.2rem] w-4/5 break-normal"
+        <div className="flex flex-col items-center">
+          <h1
+            className={`className="px-4 py-3 text-[1.2rem] w-4/5 max-w-[150px] break-all whitespace-normal overflow-hidden"
+
  ${!sidebarOpen ? "hidden" : ""}`}
-        >
-          {sysName || hostname || "Unnamed Device"}
-        </h1>
+          >
+            {sysName || hostname || "Unnamed Device"}
+          </h1>
+        </div>
         <div className="w-full flex flex-col">
           {tabs.map((tab, idx) => (
             <button
@@ -86,7 +89,7 @@ export default function DevicePage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-1 flex flex-col relative" style={{ width: "80vw" }}>
         {/* Home Icon at Top Right */}
         <button
           onClick={() => router.push("/")}
@@ -95,7 +98,7 @@ export default function DevicePage() {
         >
           <FiHome />
         </button>
-        <div className="flex items-center justify-center w-full">
+        <div className="max-w-full flex items-center justify-center w-full">
           {tabs[activeTab].content}
         </div>
       </div>

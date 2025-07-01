@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "tailwindcss/preflight";
+@tailwind utilities;
+
 @theme {
   --color-bg: var(--bg-color);
   --color-text: var(--text-color);
@@ -7,6 +10,7 @@
   --color-button-text: var(--button-text);
   --color-heading: var(--heading-color);
   --color-border: var(--border-color);
+  --color-bottom-border: var(--bottom-border-color);
   --color-icon: var(--icon-color);
   --color-hover-bg: var(--hover-bg);
   --color-select-bg: var(--select-bg);
@@ -21,6 +25,7 @@
   --button-text: #081028;
   --heading-color: #081028;
   --border-color: rgba(162, 162, 162, 0.1);
+  --bottom-border-color: #081028;
   --icon-color: #323232;
   --hover-bg:rgb(198, 213, 255);
   --select-bg: #c4c4c4;
@@ -35,6 +40,7 @@
   --button-text: #AEB9E1;
   --heading-color: #ddd;
   --border-color: #0B1739;
+  --bottom-border-color: #e6e6e6;
   --icon-color: #8C09BC;
   --hover-bg:rgb(59, 65, 85);
   --select-bg: #0B1A47;
@@ -88,11 +94,11 @@ table{
   margin-top: 1rem;
 }
 th{
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--bottom-border-color);
   text-align: left;
   padding: 0.5rem;
 }
 td{
   padding: 0.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--bottom-border-color);
 }

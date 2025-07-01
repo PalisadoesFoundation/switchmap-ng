@@ -220,63 +220,70 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   );
 
   return (
-    <div className="w-full">
+    <div className="w-[87%] h-[80vh] mt-16">
       <h2>Connection Details</h2>
-      <table className="mt-20 w-full overflow-x-auto border border-gray-200 rounded-lg shadow-sm">
-        <thead>
-          <tr>
-            {[
-              "Port",
-              "VLAN",
-              "State",
-              "Days Inactive",
-              "Speed",
-              "Duplex",
-              "Port Label",
-              "Trunk",
-              "CDP",
-              "LLDP",
-              "Mac Address",
-              "Manufacturer",
-              "IP Address",
-              "DNS Name",
-            ].map((title) => (
-              <th key={title}>{title}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {interfaces.map((iface: any) => {
-            const macport = macportsNodesByIdx.get(iface.idxL1interface);
-            const mac = macport?.macs?.mac ?? "—";
-            const manufacturer = macport?.macs?.oui?.organization ?? "—";
+      <div className="w-full h-full overflow-auto border border-gray-200 ">
+        <table
+          className="w-full h-full border border-gray-200 rounded-lg shadow-sm"
+          style={{ marginTop: "0rem" }}
+        >
+          <thead>
+            <tr className="sticky top-0 bg-bg z-10 border-gray-200">
+              {[
+                "Port",
+                "VLAN",
+                "State",
+                "Days Inactive",
+                "Speed",
+                "Duplex",
+                "Port Label",
+                "Trunk",
+                "CDP",
+                "LLDP",
+                "Mac Address",
+                "Manufacturer",
+                "IP Address",
+                "DNS Name",
+              ].map((title) => (
+                <th key={title}>{title}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {interfaces.map((iface: any) => {
+              const macport = macportsNodesByIdx.get(iface.idxL1interface);
+              const mac = macport?.macs?.mac ?? "—";
+              const manufacturer = macport?.macs?.oui?.organization ?? "—";
 
-            // Get IP info from ipNodesByMacIdx using idxMac
-            const ipInfo = macport ? ipNodesByMacIdx.get(macport.idxMac) : null;
-            const ip = ipInfo?.ips?.[0]?.address ?? "—";
-            const dns = ipInfo?.ips?.[0]?.hostname ?? "—";
+              // Get IP info from ipNodesByMacIdx using idxMac
+              const ipInfo = macport
+                ? ipNodesByMacIdx.get(macport.idxMac)
+                : null;
+              const ip = ipInfo?.ips?.[0]?.address ?? "—";
+              const dns = ipInfo?.ips?.[0]?.hostname ?? "—";
 
-            return (
-              <tr key={`${iface.idxL1interface}-${iface.ifname}`}>
-                <td>{iface.ifname || "N/A"}</td>
-                <td>{iface.nativevlan ?? "N/A"}</td>
-                <td>{iface.ifoperstatus ?? "N/A"}</td>
-                <td>{iface.tsIdle ?? "N/A"}</td>
-                <td>{iface.ifspeed ?? "N/A"}</td>
-                <td>{iface.duplex ?? "N/A"}</td>
-                <td>{iface.ifalias || "N/A"}</td>
-                <td>{iface.trunk ? "Yes" : "No"}</td>
-                <td>{iface.cdpcachedeviceid || ""}</td>
-                <td>{iface.lldpremportdesc || ""}</td>
-                <td>{mac}</td>
-                <td>{manufacturer}</td>
-                <td>{ip}</td>
-                <td>{dns}</td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+              return (
+                <tr key={`${iface.idxL1interface}-${iface.ifname}`}>
+                  <td>{iface.ifname || "N/A"}</td>
+                  <td>{iface.nativevlan ?? "N/A"}</td>
+                  <td>{iface.ifoperstatus ?? "N/A"}</td>
+                  <td>{iface.tsIdle ?? "N/A"}</td>
+                  <td>{iface.ifspeed ?? "N/A"}</td>
+                  <td>{iface.duplex ?? "N/A"}</td>
+                  <td>{iface.ifalias || "N/A"}</td>
+                  <td>{iface.trunk ? "Yes" : "No"}</td>
+                  <td>{iface.cdpcachedeviceid || ""}</td>
+                  <td>{iface.lldpremportdesc || ""}</td>
+                  <td>{mac}</td>
+                  <td>{manufacturer}</td>
+                  <td>{ip}</td>
+                  <td>{dns}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
