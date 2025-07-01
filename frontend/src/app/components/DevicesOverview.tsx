@@ -168,91 +168,98 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
       <h3 className="text-sm font-semibold mt-8 mb-2">
         DEVICES MONITORED BY SWITCHMAP
       </h3>
-      <table className="w-full text-left">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b border-bottom-border">
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  onClick={header.column.getToggleSortingHandler()}
-                  className="cursor-pointer px-4 py-2"
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                  <span
-                    className="float-right text-center text-[0.5rem] "
-                    style={{ userSelect: "none" }}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left min-w-full">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr
+                key={headerGroup.id}
+                className="border-b border-bottom-border"
+              >
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                    className="cursor-pointer px-4 py-2"
                   >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                     <span
-                      style={{ display: "block" }}
-                      className={
-                        header.column.getIsSorted() === "asc"
-                          ? "text-blue-600"
-                          : "text-gray-400"
-                      }
+                      className="float-right text-center text-[0.5rem] "
+                      style={{ userSelect: "none" }}
                     >
-                      ⯅
+                      <span
+                        style={{ display: "block" }}
+                        className={
+                          header.column.getIsSorted() === "asc"
+                            ? "text-blue-600"
+                            : "text-gray-400"
+                        }
+                      >
+                        ⯅
+                      </span>
+                      <span
+                        style={{ display: "block" }}
+                        className={
+                          header.column.getIsSorted() === "desc"
+                            ? "text-blue-600"
+                            : "text-gray-400"
+                        }
+                      >
+                        ⯆
+                      </span>
                     </span>
-                    <span
-                      style={{ display: "block" }}
-                      className={
-                        header.column.getIsSorted() === "desc"
-                          ? "text-blue-600"
-                          : "text-gray-400"
-                      }
-                    >
-                      ⯆
-                    </span>
-                  </span>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:hover-bg">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-4 py-2">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="hover:hover-bg">
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <h3 className="text-sm font-semibold mt-8 mb-2">
         DEVICES NOT MONITORED BY SWITCHMAP
       </h3>
-      <table className="w-full text-left">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b border-gray-200">
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-4 py-2">
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </th>
-              ))}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left min-w-full">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id} className="border-b border-gray-200">
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="px-4 py-2 text-center text-gray-400"
+              >
+                No data
+              </td>
             </tr>
-          ))}
-        </thead>
-        <tbody>
-          <tr>
-            <td
-              colSpan={columns.length}
-              className="px-4 py-2 text-center text-gray-400"
-            >
-              No data
-            </td>
-          </tr>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
