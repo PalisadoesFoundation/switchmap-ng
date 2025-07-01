@@ -86,7 +86,7 @@ export default function Sidebar() {
       </button>
 
       {/* Sidebar for large screens */}
-      <aside className="hidden lg:block sticky top-0 left-0 w-60 h-screen border-r border-border">
+      <aside className="hidden lg:block sticky top-0 left-0 w-60 h-screen border-r border-border lg:p-4">
         {sidebarContent}
       </aside>
 

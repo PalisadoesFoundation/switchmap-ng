@@ -67,7 +67,7 @@ export default function ZoneDropdown({
         onClick={() => setOpen(!open)}
         className="inline-flex justify-between items-center w-48 px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
       >
-        Zone {selected?.idxZone || "Select Zone"}
+        Zone {selected?.idxZone || ""}
         <svg
           className={`ml-2 h-5 w-5 transition-transform duration-200 ${
             open ? "rotate-180" : ""
