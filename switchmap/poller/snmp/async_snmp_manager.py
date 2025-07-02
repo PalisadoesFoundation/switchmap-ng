@@ -14,9 +14,14 @@ from switchmap.poller.configuration import ConfigPoller
 from pysnmp.hlapi.asyncio import (
     SnmpEngine, CommunityData, UdpTransportTarget, ContextData, 
     ObjectType, ObjectIdentity, getCmd, nextCmd, bulkCmd, 
-    UsmUserData, usmHMACMD5AuthProtocol, usmHMACSHAAuthProtocol,
-    usmDESPrivProtocol,usmAesCfb128Protocol, usmAesCfb192Protocol,
-    usmAesCfb256Protocol
+    UsmUserData, 
+    # Authentication protocols
+    usmHMACMD5AuthProtocol, usmHMACSHAAuthProtocol,
+    usmHMAC128SHA224AuthProtocol, usmHMAC192SHA256AuthProtocol,
+    usmHMAC256SHA384AuthProtocol, usmHMAC384SHA512AuthProtocol,
+    # Privacy protocols
+    usmDESPrivProtocol, usmAesCfb128Protocol, 
+    usmAesCfb192Protocol, usmAesCfb256Protocol
 )
 
 from pysnmp.proto.errind import RequestTimedOut
@@ -106,6 +111,9 @@ class Interact:
         """
         # Initialize key variables
         self._poll = _poll
+
+        #Rate Limiting 
+        self._semaphore =  asyncio.Semaphore(10)
 
         # Fail if there is no authentication
         if bool(self._poll.authorization) is False:
@@ -254,11 +262,143 @@ class Interact:
                 if value is not None:
                     return True 
         return False
+    
+    async def get(
+        self,
+        oid_to_get,
+        check_reachability=False,
+        check_existence = False,
+        normalized = False,
+        context_name="",
+    ):
+        """Do an SNMPget.
+
+        Args:
+            oid_to_get: OID to get
+            check_reachability: Set if testing for connectivity. Some session
+                errors are ignored so that a null result is returned
+            check_existence: Set if checking for the existence of the OID
+            normalized: If True, then return results as a dict keyed by
+                only the last node of an OID, otherwise return results
+                keyed by the entire OID string. Normalization is useful
+                when trying to create multidimensional dicts where the
+                primary key is a universal value such as IF-MIB::ifIndex
+                or BRIDGE-MIB::dot1dBasePort
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
+
+        Returns:
+           result: Dictionary of {OID: value} pairs
+
+        """
+        (_, _, result) = await self.query(
+            oid_to_get,
+            get=True,
+            check_reachability=check_reachability,
+            check_existence=check_existence,
+            normalized=normalized,
+            context_name=context_name,
+        )
+        return result
+    
+    async def query(
+        self,
+        oid_to_get,
+        get=False,
+        check_reachability=False,
+        check_existence=False,
+        normalized= False,
+        context_name="",
+        safe=False
+    ):
+        """Do an SNMP query.
+
+        Args:
+            oid_to_get: OID to walk
+            get: Flag determining whether to do a GET or WALK
+            check_reachability: Set if testing for connectivity. Some session
+                errors are ignored so that a null result is returned
+            check_existence: Set if checking for the existence of the OID
+            normalized: If True, then return results as a dict keyed by
+                only the last node of an OID, otherwise return results
+                keyed by the entire OID string. Normalization is useful
+                when trying to create multidimensional dicts where the
+                primary key is a universal value such as IF-MIB::ifIndex
+                or BRIDGE-MIB::dot1dBasePort
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
+            safe: Safe query if true. If there is an exception, then return\
+                blank values.
+
+        Returns:
+            return_value: Tuple of (_contactable, exists, values)
+
+        """
+        # Initialize variables
+        _contactable = True
+        exists = True
+        results = []
+
+        # Check if OID is valid
+        if _oid_valid_format(oid_to_get) is False:
+            log_message = "OID {} has an invalid format".format(oid_to_get)
+            log.log2die(1057, log_message)
+
+        # Get session parameters
+        async with self._semaphore:
+            try:
+                #Create SNMP session
+                session = Session(self._poll, context_name=context_name)
+                auth_data,transport_target = session._session()
+                context_data = ContextData(contextName=context_name)
+
+                # Perform the SNMP operation
+                if get is True:
+                    results = await session._do_async_get(oid_to_get,auth_data,transport_target,context_data)
+                else:
+                    results = await session._do_async_walk(oid_to_get, auth_data, transport_target, context_data)
+
+                #! Format results similar to sync version
+                
+
+            except PySnmpError as exception_error:
+                # Handle PySNMP errors similar to sync version
+                if check_reachability is True:
+                    _contactable = False
+                    exists = False
+                elif check_existence is True:
+                    exists = False
+                elif safe is True:
+                    _contactable = None
+                    exists = None
+                    log_message = f"Async SNMP error for {self._poll.hostname}: {exception_error}"
+                    log.log2info(1209, log_message)
+                else:
+                    log_message = f"Async SNMP error for {self._poll.hostname}: {exception_error}"
+                    log.log2die(1003, log_message)
+
+            except Exception as exception_error:
+                # Handle unexpected errors
+                if safe is True:
+                    _contactable = None
+                    exists = None
+                    log_message = f"Unexpected async SNMP error for {self._poll.hostname}: {exception_error}"
+                    log.log2info(1209, log_message)
+                else:
+                    log_message = f"Unexpected async SNMP error for {self._poll.hostname}: {exception_error}"
+                    log.log2die(1003, log_message)
+
+        # Return
+        return (_contactable, exists, results)
+        
+
 
 class Session:
     """Class to create a SNMP session with a device. """
 
-    def _init__(self,_poll,context_name=""):
+    def __init__(self, _poll, context_name=""):
         """Initialize the _Session class.
 
         Args:
@@ -302,7 +442,7 @@ class Session:
         transport_target = UdpTransportTarget(
             (self._poll.hostname, auth.port),
             timeout=10,
-            retries= 3
+            retries=3
         )
 
         #Create authentication data based on SNMP version
@@ -314,21 +454,41 @@ class Session:
 
             #Set auth protocol only if authprotocol is specified
             if auth.authprotocol:
-                if auth.authprotocol.lower() == 'md5':
+                auth_proto = auth.authprotocol.lower()
+                if auth_proto == 'md5':
                     auth_protocol = usmHMACMD5AuthProtocol
-                else:
+                elif auth_proto == 'sha1' or auth_proto == 'sha':
                     auth_protocol = usmHMACSHAAuthProtocol
+                elif auth_proto == 'sha224':
+                    auth_protocol = usmHMAC128SHA224AuthProtocol
+                elif auth_proto == 'sha256':
+                    auth_protocol = usmHMAC192SHA256AuthProtocol
+                elif auth_proto == 'sha384':
+                    auth_protocol = usmHMAC256SHA384AuthProtocol
+                elif auth_proto == 'sha512':
+                    auth_protocol = usmHMAC384SHA512AuthProtocol
+                else:
+                    # Default to SHA-256 for better security
+                    auth_protocol = usmHMAC192SHA256AuthProtocol
             
             #Set privacy protocol only if privprotocol is specified
-            #Also if we have authentication (privacy require authentication)
+            #Also if we have authentication (privacy requires authentication)
             if auth.privprotocol and auth_protocol is not None:
-                if auth.privprotocol.lower() == 'des':
+                priv_proto = auth.privprotocol.lower()
+                if priv_proto == 'des':
                     priv_protocol = usmDESPrivProtocol
-                else:
+                elif priv_proto == 'aes128' or priv_proto == 'aes':
                     priv_protocol = usmAesCfb128Protocol
+                elif priv_proto == 'aes192':
+                    priv_protocol = usmAesCfb192Protocol
+                elif priv_proto == 'aes256':
+                    priv_protocol = usmAesCfb256Protocol
+                else:
+                    # Default to AES-256 for best security
+                    priv_protocol = usmAesCfb256Protocol
             
             auth_data = UsmUserData(
-                userName= auth.secname,
+                userName=auth.secname,
                 authKey=auth.authpassword,
                 privKey=auth.privpassword,
                 authProtocol=auth_protocol,
@@ -341,10 +501,10 @@ class Session:
 
         return auth_data, transport_target
     
-    async def _do_async_get(self, oid, auth_data,transport_target, context_data):
+    async def _do_async_get(self, oid, auth_data, transport_target, context_data):
         """ Pure async SNMP GET using pysnmp """
 
-        error_indication,error_status,error_index,var_binds = await getCmd(
+        error_indication, error_status, error_index, var_binds = await getCmd(
             self._engine,
             auth_data,
             transport_target,
@@ -362,11 +522,12 @@ class Session:
         for var_bind in var_binds:
             oid_str = str(var_bind[0])
             value = var_bind[1]
-            results.append((oid_str,value))
+            results.append((oid_str, value))
         
         return results
     
-    async def _do_async_walk(self,oid_prefix,auth_data,transport_target,context_data):
+    #!come back to this after implementing query method
+    async def _do_async_walk(self, oid_prefix, auth_data, transport_target, context_data):
         """ Pure async SNMP WALK using pysnmp async capabilities. """
 
         results = []
@@ -374,9 +535,14 @@ class Session:
         #Use correct walk method based on SNMP version
         if hasattr(auth_data, "mpModel") and auth_data.mpModel == 0:
             # SNMPv1 - use nextCMD
-            results = await self._async
+            results = await self._async_walk_v1(oid_prefix, auth_data, transport_target, context_data)
+        else:
+            # SNMPv2c/v3 - use bulkCmd
+            results = await self._async_walk_v2(oid_prefix, auth_data, transport_target, context_data)
+
+        return results
     
-    async def _async_walk_v1(self,oid_prefix, auth_data,transport_target,context_data):
+    async def _async_walk_v1(self, oid_prefix, auth_data, transport_target, context_data):
         """Pure async walk for SNMPv1 using nextCmd. """
         results = []
         current_oid = oid_prefix
@@ -387,13 +553,13 @@ class Session:
             transport_target,
             context_data,
             ObjectType(ObjectIdentity(oid_prefix)),
-            lexicographicMode= False
+            lexicographicMode=False
         ):
             #! better error handling 
             if error_indication or error_status:
                 break
 
-            for oid,value in var_binds:
+            for oid, value in var_binds:
                 oid_str = str(oid)
                 if not oid_str.startswith(oid_prefix):
                     #! should we just return only till last case or also send a msg that last oid reached
@@ -402,7 +568,7 @@ class Session:
             
         return results
     
-    async def _async_walk_v2(self,oid_prefix,auth_data, transport_target,context_data):
+    async def _async_walk_v2(self, oid_prefix, auth_data, transport_target, context_data):
         """Async walk for SNMPv2c/v3 using bulkCmd"""
 
         results = []
@@ -471,38 +637,45 @@ class Session:
         return results
 
 
+def _oid_valid_format(oid):
+    """ Validate OID string format matching sync version.
 
+    Args:
+       oid: String containing OID to validate
 
+    Returns: 
+       bool: True if OID format is valid, False otherwise
+    """
 
-        
-
-
-
-
-
-
-                
-
-
-
+    # oid cannot be numeric 
+    if isinstance(oid, str) is False:
+        return False 
     
-
+    #Make sure that oid is not blank
+    stripped_oid = oid.strip()
+    if not stripped_oid:
+        return False
     
-    
+    # Must start with a '.'
+    if oid[0] != ".":
+        return False
 
+    # Must not end with a '.'
+    if oid[-1] == ".":
+        return False
 
+    # Test each octet to be numeric
+    octets = oid.split(".")
 
+    # Remove the first element of the list
+    octets.pop(0)
+    for value in octets:
+        try:
+            int(value)
+        except:
+            return False
 
-       
-
-       
-    
-
-    
-    
-    
-
-
-    
+    # Otherwise valid
+    return True
 
         
