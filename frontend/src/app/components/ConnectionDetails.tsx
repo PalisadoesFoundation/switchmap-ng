@@ -104,7 +104,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   );
 
   return (
-    <div className="w-[87%] h-[80vh] mt-16">
+    <div className="w-[87%] h-[80vh]">
       <h2>Connection Details</h2>
       <div className="w-full h-full overflow-auto border border-border rounded-lg shadow-sm">
         <table
@@ -202,11 +202,11 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                             .filter(Boolean);
                         })
                         .join(", ")
-                    : "N/A"}
+                    : ""}
                 </td>
                 {/* Placeholders for IP Address and DNS Name */}
-                <td>N/A</td>
-                <td>N/A</td>
+                <td></td>
+                <td></td>
               </tr>
             ))}
           </tbody>

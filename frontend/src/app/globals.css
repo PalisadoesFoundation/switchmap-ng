@@ -24,8 +24,8 @@
   --heading-color: #081028;
   --border-color: rgba(162, 162, 162, 0.1);
   --bottom-border-color: #081028;
-  --hover-bg:rgb(198, 213, 255);
-  --select-bg: #c4c4c4;
+  --hover-bg: rgba(140, 9, 188, 0.1);
+  --select-bg: rgba(140, 9, 188, 0.2);
   --h1-color: #8C09BC;
 
 }
