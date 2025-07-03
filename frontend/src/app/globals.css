@@ -24,9 +24,9 @@
   --heading-color: #081028;
   --border-color: rgba(162, 162, 162, 0.1);
   --bottom-border-color: #081028;
-  --icon-color: #323232;
   --hover-bg:rgb(198, 213, 255);
   --select-bg: #c4c4c4;
+  --h1-color: #8C09BC;
 
 }
 
@@ -39,9 +39,9 @@
   --heading-color: #ddd;
   --border-color: #0B1739;
   --bottom-border-color: #e6e6e6;
-  --icon-color: #8C09BC;
   --hover-bg:rgb(59, 65, 85);
   --select-bg: #0B1A47;
+  --h1-color:  #ddd;
 }
 
 body {
@@ -68,8 +68,12 @@ button {
   cursor: pointer;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h2, h3, h4, h5, h6 {
   color: var(--heading-color);
+  font-weight: 600;
+}
+h1 {
+  color: var(--h1-color);
   font-weight: 600;
 }
 p{
@@ -83,7 +87,7 @@ li{
 
 
 .icon{
-  color: var(--icon-color);
+  color: #8C09BC;
   font-size: 1rem;
 }
 table{
