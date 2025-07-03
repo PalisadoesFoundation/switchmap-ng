@@ -103,14 +103,20 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   // Fetch device data when ID changes
   useEffect(() => {
     if (!id) return;
+
     setLoading(true);
     setError(null);
     const globalId = id && typeof id === "string" ? btoa(`Device:${id}`) : id;
 
     fetch("http://localhost:7000/switchmap/api/graphql", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ query: QUERY, variables: { id: globalId } }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        query: QUERY,
+        variables: { id: globalId },
+      }),
     })
       .then((res) => {
         if (!res.ok) throw new Error(`Network error: ${res.status}`);
@@ -160,8 +166,8 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   if (!id) return <p>Error: No device ID provided.</p>;
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
-  if (!deviceData || !macportsData) return null;
-  if (!deviceData.device || !deviceData.device.l1interfaces)
+  if (!data) return null;
+  if (!data.device || !data.device.l1interfaces)
     return <p>No interface data available.</p>;
 
   // Extract interface list
@@ -177,43 +183,6 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
         organization?: string;
       };
     };
-  };
-
-  const macportsNodes: MacportNode[] = macportsData.macports.edges.map(
-    ({ node }: { node: MacportNode }) => node
-  );
-
-  const macportsNodesByIdx = new Map(
-    macportsNodes
-      .filter((node) => node && node.idxL1interface !== undefined)
-      .map((node) => [node.idxL1interface, node])
-  );
-  type IpNode = {
-    idxMac: number;
-    ips?: IpEntry[];
-    macs?: { idxMac: number }[];
-  };
-
-  const ipNodesByMacIdx = new Map<number, IpNode>(
-    (macipsData?.macips?.edges ?? []).map(({ node }: { node: IpNode }) => [
-      node.idxMac,
-      node,
-    ])
-  );
-
-  type MacportNode = {
-    idxL1interface: number;
-    idxMac: number;
-    macs?: {
-      mac: string;
-      oui?: {
-        organization?: string;
-      };
-    };
-  };
-  type IpEntry = {
-    address: string;
-    hostname?: string;
   };
 
   const macportsNodes: MacportNode[] = macportsData.macports.edges.map(
