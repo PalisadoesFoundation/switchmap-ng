@@ -105,7 +105,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
 
   return (
     <div className="w-[87%] h-[80vh]">
-      <h2 className="my-4">Connection Details</h2>
+      <h2 className="mb-4">Connection Details</h2>
       <div className="w-full h-full overflow-auto border border-border rounded-lg shadow-sm">
         <table
           className="w-full h-full border border-border rounded-lg shadow-sm"
