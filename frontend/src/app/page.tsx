@@ -20,7 +20,7 @@ export default function Home() {
       <Sidebar />
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="sticky top-0 z-10 bg-bg lg:bg-blend-soft-light flex justify-end p-4">
+        <div className="sticky top-0 z-10 bg-transparent lg:bg-blend-soft-light flex justify-end p-4">
           <ZoneDropdown selectedZoneId={zoneId} onChange={setZoneId} />
         </div>
 

@@ -61,11 +61,14 @@ export default function ZoneDropdown({
   const selected = zones.find((z) => z.id === selectedZoneId);
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div
+      className="relative inline-block text-left rounded-md"
+      ref={dropdownRef}
+    >
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="inline-flex justify-between items-center w-48 px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
+        className="inline-flex justify-between items-center bg-bg w-48 px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
       >
         Zone {selected?.idxZone || ""}
         <svg
@@ -87,7 +90,7 @@ export default function ZoneDropdown({
       </button>
 
       {open && (
-        <div className="absolute mt-1 w-48 rounded-md shadow-lg border border-gray-200 z-10 max-h-60 overflow-auto">
+        <div className="absolute bg-bg mt-1 w-48 rounded-md shadow-lg border border-color z-10 max-h-60 overflow-auto">
           {zones.map((zone) => (
             <button
               key={zone.id}
@@ -95,7 +98,7 @@ export default function ZoneDropdown({
                 onChange(zone.id);
                 setOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 hover:bg-blue-950 focus:outline-none"
+              className="block w-full text-left px-4 py-2 hover:bg-hover-bg focus:outline-none"
             >
               Zone {zone.idxZone}
             </button>

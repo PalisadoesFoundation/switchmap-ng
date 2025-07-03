@@ -34,17 +34,20 @@ export default function Sidebar() {
 
       <ul className="list-none space-y-4">
         <li>
-          <div className="flex items-center gap-2 font-medium">
+          <Link
+            href="/"
+            className="flex items-center gap-2 font-medium hover:text-primary transition-colors"
+          >
             <FiLayout className="icon" />
             <p>Dashboard</p>
-          </div>
+          </Link>
           <ul className="pl-6 mt-2 space-y-1 text-sm text-muted-foreground">
-            <li>
+            <li className="hover:text-primary">
               <Link href="#network-topology" onClick={() => setOpen(false)}>
                 Network Topology
               </Link>
             </li>
-            <li>
+            <li className="hover:text-primary">
               <Link href="#devices-overview" onClick={() => setOpen(false)}>
                 Devices Overview
               </Link>
@@ -54,7 +57,7 @@ export default function Sidebar() {
         <li>
           <Link
             href="/history"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:text-primary"
             onClick={() => setOpen(false)}
           >
             <FiClock className="icon" />
@@ -64,7 +67,7 @@ export default function Sidebar() {
         <li>
           <Link
             href="/settings"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:text-primary"
             onClick={() => setOpen(false)}
           >
             <FiSettings className="icon" />
