@@ -12,6 +12,7 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 
+// Device type definition
 type Device = {
   idxDevice: string;
   id: string;
@@ -24,6 +25,7 @@ type Device = {
   };
 };
 
+// Format uptime from hundredths of seconds to readable string
 const formatUptime = (hundredths: number) => {
   const seconds = Math.floor(hundredths / 100);
   const days = Math.floor(seconds / 86400);
@@ -39,6 +41,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
+  // Fetch devices for the selected zone
   useEffect(() => {
     const fetchDevices = async () => {
       try {
@@ -95,6 +98,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
 
   const columnHelper = createColumnHelper<any>();
 
+  // Prepare table data from devices
   const data = useMemo(() => {
     return devices.map((device) => {
       const interfaces = device.l1interfaces.edges.map((e) => e.node);
@@ -116,6 +120,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
     });
   }, [devices]);
 
+  // Table columns definition
   const columns = [
     columnHelper.accessor("name", {
       header: "Device Name",
@@ -139,6 +144,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
     }),
   ];
 
+  // Create table instance
   const table = useReactTable({
     data,
     columns,
@@ -159,6 +165,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
     <div>
       <h2 className="text-2xl font-bold mb-4">Devices Overview</h2>
 
+      {/* Global search filter */}
       <input
         value={globalFilter}
         onChange={(e) => setGlobalFilter(e.target.value)}
@@ -217,15 +224,29 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
             ))}
           </thead>
           <tbody>
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="hover:hover-bg">
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="px-4 py-2">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+            {table.getRowModel().rows.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="px-4 py-2 text-center text-gray-400"
+                >
+                  No data
+                </td>
               </tr>
-            ))}
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="hover:hover-bg">
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-4 py-2">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
