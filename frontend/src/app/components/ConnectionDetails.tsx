@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
+// GraphQL query to fetch device interface details
 const QUERY = `
   query Device($id: ID!) {
     device(id: $id) {
@@ -26,17 +27,17 @@ const QUERY = `
             lldpremsysdesc
             lldpremsyscapenabled
             macports{
-      edges{
-        node{
-          macs{
-            mac
-             oui{
-              organization
+              edges{
+                node{
+                  macs{
+                    mac
+                    oui{
+                      organization
+                    }
+                  }
+                }
+              }
             }
-          }
-}
-      }
-    }
           }
         }
       }
@@ -46,6 +47,7 @@ const QUERY = `
 
 function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const params = useParams();
+  // Determine device ID from props or URL params
   const id =
     deviceId ??
     (typeof params?.id === "string"
@@ -58,6 +60,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Fetch device data when ID changes
   useEffect(() => {
     if (!id) return;
 
@@ -87,6 +90,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
       .finally(() => setLoading(false));
   }, [id]);
 
+  // Handle loading, error, and missing data states
   if (!id) return <p>Error: No device ID provided.</p>;
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -94,6 +98,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   if (!data.device || !data.device.l1interfaces)
     return <p>No interface data available.</p>;
 
+  // Extract interface list
   const interfaces = data.device.l1interfaces.edges.map(
     ({ node }: any) => node
   );
@@ -130,17 +135,36 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
           </thead>
           <tbody>
             {interfaces.map((iface: any) => (
-              <tr key={iface.idxDevice + iface.ifname}>
+              <tr
+                key={iface.idxDevice + iface.ifname}
+                className={`
+                  ${
+                    iface.ifoperstatus === 1
+                      ? "bg-[#0072B2]/10 dark:bg-[#56B4E9]/10"
+                      : iface.ifoperstatus === 2
+                      ? "bg-[#E69F00]/10 dark:bg-[#F0E442]/10"
+                      : "bg-gray-100/10 dark:bg-gray-700/10"
+                  }
+                  transition-colors duration-300
+  `}
+              >
                 <td>{iface.ifname || "N/A"}</td>
                 <td>{iface.nativevlan ?? "N/A"}</td>
-                <td>{iface.ifoperstatus ?? "N/A"}</td>
+                <td>
+                  {iface.ifoperstatus == 1
+                    ? "Active"
+                    : iface.ifoperstatus == 2
+                    ? "Disabled"
+                    : "N/A"}
+                </td>
                 <td>{iface.tsIdle ?? "N/A"}</td>
                 <td>{iface.ifspeed ?? "N/A"}</td>
                 <td>{iface.duplex ?? "N/A"}</td>
                 <td>{iface.ifalias || "N/A"}</td>
-                <td>{iface.trunk ? "Yes" : "No"}</td>
+                <td>{iface.trunk ? "Trunk" : ""}</td>
                 <td>{iface.cdpcachedeviceid || ""}</td>
                 <td>{iface.lldpremportdesc || ""}</td>
+                {/* Render MAC addresses */}
                 <td>
                   {Array.isArray(iface.macports?.edges) &&
                   iface.macports.edges.length > 0
@@ -157,9 +181,9 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                             .filter(Boolean);
                         })
                         .join(", ")
-                    : "N/A"}
+                    : ""}
                 </td>
-
+                {/* Render MAC manufacturers */}
                 <td>
                   {Array.isArray(iface.macports?.edges) &&
                   iface.macports.edges.length > 0
@@ -173,19 +197,16 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                             : [];
                           return macList
                             .map(
-                              (macObj: any) =>
-                                macObj?.oui?.organization || "N/A"
+                              (macObj: any) => macObj?.oui?.organization || ""
                             )
                             .filter(Boolean);
                         })
                         .join(", ")
                     : "N/A"}
                 </td>
-
+                {/* Placeholders for IP Address and DNS Name */}
                 <td>N/A</td>
-                {/* Placeholder for IP Address */}
                 <td>N/A</td>
-                {/* Placeholder for DNS Name */}
               </tr>
             ))}
           </tbody>
