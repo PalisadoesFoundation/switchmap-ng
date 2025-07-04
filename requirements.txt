@@ -40,3 +40,7 @@ black
 #Document Generation
 pydoc-markdown
 pre-commit
+
+# CORS and SQLAlchemy extensions
+flask-cors
+SQLAlchemy
