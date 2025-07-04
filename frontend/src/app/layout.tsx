@@ -19,7 +19,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SwitchMap-NG",
+  title: "Switchmap-NG",
   description: "A Modern Network Monitoring and Analysis Tool",
 };
 
