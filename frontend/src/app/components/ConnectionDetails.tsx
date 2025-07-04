@@ -2,6 +2,50 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
+interface MacAddress {
+  mac: string;
+  oui?: {
+    organization: string;
+  };
+}
+
+interface L1Interface {
+  idxL1interface: string;
+  idxDevice: string;
+  ifname: string;
+  nativevlan?: number;
+  ifoperstatus: number;
+  tsIdle?: number;
+  ifspeed?: number;
+  duplex?: string;
+  ifalias?: string;
+  trunk?: boolean;
+  cdpcachedeviceid?: string;
+  cdpcachedeviceport?: string;
+  cdpcacheplatform?: string;
+  lldpremportdesc?: string;
+  lldpremsysname?: string;
+  lldpremsysdesc?: string;
+  lldpremsyscapenabled?: string;
+  macports?: {
+    edges: {
+      node: {
+        macs: MacAddress[];
+      };
+    }[];
+  };
+}
+
+interface DeviceData {
+  device: {
+    l1interfaces: {
+      edges: {
+        node: L1Interface;
+      }[];
+    };
+  };
+}
+
 // GraphQL query to fetch device interface details
 const QUERY = `
   query Device($id: ID!) {
@@ -52,11 +96,11 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
     deviceId ??
     (typeof params?.id === "string"
       ? decodeURIComponent(params.id)
-      : Array.isArray(params?.id)
+      : Array.isArray(params?.id) && params.id.length > 0
       ? decodeURIComponent(params.id[0])
       : undefined);
 
-  const [data, setData] = useState<any>(null);
+  const [data, setData] = useState<DeviceData | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
