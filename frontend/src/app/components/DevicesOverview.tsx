@@ -47,11 +47,14 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
       try {
         setLoading(true);
 
-        const res = await fetch("http://localhost:7000/switchmap/api/graphql", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: `
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_URL ||
+            "http://localhost:7000/switchmap/api/graphql",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: `
             query GetZoneDevices($id: ID!) {
               zone(id: $id) {
                 devices {
@@ -75,11 +78,12 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
               }
             }
           `,
-            variables: {
-              id: zoneId,
-            },
-          }),
-        });
+              variables: {
+                id: zoneId,
+              },
+            }),
+          }
+        );
 
         const json = await res.json();
         const rawDevices =
