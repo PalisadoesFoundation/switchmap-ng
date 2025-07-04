@@ -64,9 +64,9 @@ export default function DevicePage() {
         </div>
         <div className="flex flex-col items-center">
           <h1
-            className={`className="px-4 py-3 text-[1.2rem] w-4/5 max-w-[150px] break-all whitespace-normal overflow-hidden"
-
- ${!sidebarOpen ? "hidden" : ""}`}
+            className={`px-4 py-3 text-[1.2rem] w-4/5 max-w-[150px] break-all whitespace-normal overflow-hidden ${
+              !sidebarOpen ? "hidden" : ""
+            }`}
           >
             {sysName || hostname || "Unnamed Device"}
           </h1>
