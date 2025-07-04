@@ -40,12 +40,13 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  // Fetch devices for the selected zone
   useEffect(() => {
     const fetchDevices = async () => {
       try {
         setLoading(true);
+        setError(null); // reset error before fetch
 
         const res = await fetch(
           process.env.NEXT_PUBLIC_API_URL ||
@@ -55,20 +56,21 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               query: `
-            query GetZoneDevices($id: ID!) {
-              zone(id: $id) {
-                devices {
-                  edges {
-                    node {
-                      idxDevice
-                      sysObjectid
-                      sysUptime
-                      sysName
-                      hostname
-                      l1interfaces {
-                        edges {
-                          node {
-                            ifoperstatus
+              query GetZoneDevices($id: ID!) {
+                zone(id: $id) {
+                  devices {
+                    edges {
+                      node {
+                        idxDevice
+                        sysObjectid
+                        sysUptime
+                        sysName
+                        hostname
+                        l1interfaces {
+                          edges {
+                            node {
+                              ifoperstatus
+                            }
                           }
                         }
                       }
@@ -76,21 +78,31 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
                   }
                 }
               }
-            }
-          `,
-              variables: {
-                id: zoneId,
-              },
+            `,
+              variables: { id: zoneId },
             }),
           }
         );
 
+        if (!res.ok) {
+          throw new Error(`Network response was not ok: ${res.statusText}`);
+        }
+
         const json = await res.json();
+
+        if (json.errors) {
+          throw new Error(json.errors.map((e: any) => e.message).join(", "));
+        }
+
         const rawDevices =
           json.data?.zone?.devices?.edges?.map((edge: any) => edge.node) || [];
         setDevices(rawDevices);
-      } catch (err) {
-        console.error("Error fetching devices:", err);
+      } catch (err: any) {
+        console.error("Error fetching devices:", err?.message || err);
+        setDevices([]); // clear old data
+        setError(
+          "Failed to load devices. Please check your network or try again."
+        );
       } finally {
         setLoading(false);
       }
@@ -163,6 +175,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
   });
 
   if (loading) return <p>Loading...</p>;
+  if (error) return <p className="text-red-500">{error}</p>;
 
   return (
     <div>
@@ -190,7 +203,16 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
                   <th
                     key={header.id}
                     onClick={header.column.getToggleSortingHandler()}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        header.column.getToggleSortingHandler()?.(e);
+                      }
+                    }}
                     className="cursor-pointer px-4 py-2"
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Sort by ${header.column.columnDef.header}`}
                   >
                     {flexRender(
                       header.column.columnDef.header,
