@@ -43,6 +43,12 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!zoneId) {
+      setDevices([]);
+      setLoading(false);
+      setError("Waiting for zone selection to load devices.");
+      return;
+    }
     const fetchDevices = async () => {
       try {
         setLoading(true);
