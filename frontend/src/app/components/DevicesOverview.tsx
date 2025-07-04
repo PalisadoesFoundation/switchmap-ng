@@ -42,7 +42,6 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
   const [globalFilter, setGlobalFilter] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch devices for the selected zone
   useEffect(() => {
     if (!zoneId) {
       setDevices([]);
