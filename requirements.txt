@@ -42,5 +42,4 @@ pydoc-markdown
 pre-commit
 
 # CORS and SQLAlchemy extensions
-flask-cors
-SQLAlchemy
+flask-cors==4.0.0  
