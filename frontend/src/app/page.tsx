@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/app/components/Sidebar";
 
 export default function Home() {
-  const [zoneId, setZoneId] = useState("Wm9uZTox");
+  const [zoneId, setZoneId] = useState<string>("");
   useEffect(() => {
     const hash = window.location.hash;
     if (hash) {

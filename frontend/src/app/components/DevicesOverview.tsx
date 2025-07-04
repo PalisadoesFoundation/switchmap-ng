@@ -82,9 +82,8 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
         });
 
         const json = await res.json();
-        const rawDevices = json.data.zone.devices.edges.map(
-          (edge: any) => edge.node
-        );
+        const rawDevices =
+          json.data?.zone?.devices?.edges?.map((edge: any) => edge.node) || [];
         setDevices(rawDevices);
       } catch (err) {
         console.error("Error fetching devices:", err);

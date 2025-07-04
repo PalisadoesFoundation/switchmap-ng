@@ -76,7 +76,7 @@ export default function DevicePage() {
             <button
               key={tab.label}
               onClick={() => setActiveTab(idx)}
-              className={`$className="bg-transparent px-4 py-3 font-normal text-left text-base"
+              className={`bg-transparent px-4 py-3 font-normal text-left text-base
  ${activeTab === idx ? "bg-[var(--select-bg)]" : ""}`}
             >
               <span className="flex flex-row gap-4">

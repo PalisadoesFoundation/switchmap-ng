@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 type Zone = { idxZone: string; id: string };
 
 type ZoneDropdownProps = {
-  selectedZoneId: string;
+  selectedZoneId: string | null;
   onChange: (zoneId: string) => void;
 };
 
@@ -58,7 +58,22 @@ export default function ZoneDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selected = zones.find((z) => z.id === selectedZoneId);
+  // If selectedZoneId is null, pick the first zone (if available)
+  const selected =
+    (selectedZoneId && zones.find((z) => z.id === selectedZoneId)) ||
+    (zones.length > 0 ? zones[0] : undefined);
+
+  // If selectedZoneId is null and zones are loaded, notify parent
+  useEffect(() => {
+    if (zones.length > 0) {
+      // Always call onChange with the first zone if selectedZoneId is null or not found in zones
+      const found = zones.find((z) => z.id === selectedZoneId);
+      if (!found) {
+        onChange(zones[0].id);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zones, selectedZoneId]);
 
   return (
     <div
