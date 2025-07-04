@@ -7,27 +7,25 @@ import Sidebar from "@/app/components/Sidebar";
 
 export default function Home() {
   const [zoneId, setZoneId] = useState("");
-  const [zoneDropdownMounted, setZoneDropdownMounted] = useState(false);
+  const [zoneSelected, setZoneSelected] = useState(false);
   useEffect(() => {
-    const savedZoneId = localStorage.getItem("zoneId") || "";
-    setZoneId(savedZoneId);
-  }, []);
-  useEffect(() => {
-    if (zoneId) {
-      localStorage.setItem("zoneId", zoneId);
-    }
-  }, [zoneId]);
-  // This effect just tracks the mount
-  useEffect(() => {
-    // Mark that dropdown has been rendered once
-    setZoneDropdownMounted(true);
+    // Load zoneId from localStorage on mount
+    setZoneId(localStorage.getItem("zoneId") || "");
 
+    // Scroll if URL has a hash
     const hash = window.location.hash;
     if (hash) {
       const el = document.querySelector(hash);
       if (el) el.scrollIntoView({ behavior: "smooth" });
     }
   }, []);
+
+  useEffect(() => {
+    if (zoneId) {
+      localStorage.setItem("zoneId", zoneId);
+      setZoneSelected(!!zoneId);
+    }
+  }, [zoneId]);
 
   return (
     <div className="flex h-screen">
@@ -42,7 +40,7 @@ export default function Home() {
         </div>
 
         <div id="devices-overview" className="h-screen p-8">
-          {zoneDropdownMounted && <DevicesOverview zoneId={zoneId} />}
+          {zoneSelected && <DevicesOverview zoneId={zoneId} />}
         </div>
       </main>
     </div>
