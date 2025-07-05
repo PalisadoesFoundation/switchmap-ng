@@ -64,6 +64,12 @@ class Validate:
         
         if cache_exists is False:
             authentication = self.validation()
+        
+        #Save credentials if successful
+        if bool(authentication):
+            _update_cache(filename, authentication.group)
+        
+        
     
     async def validation(self, group=None):
         """Determine valid SNMP authorization for a host.
@@ -121,6 +127,8 @@ class Interact:
                 "SNMP parameters provided are either blank or missing." "Non existent host?"
             )
             log.log2die(1045, log_message)
+    
+
         
     async def contactable(self): 
         """Check if device is reachable via SNMP.
@@ -361,6 +369,7 @@ class Interact:
                     results = await session._do_async_walk(oid_to_get, auth_data, transport_target, context_data)
 
                 #! Format results similar to sync version
+                formatted_result = _format_results(results,oid_to_get,normalized=normalized)
                 
 
             except PySnmpError as exception_error:
@@ -389,9 +398,10 @@ class Interact:
                 else:
                     log_message = f"Unexpected async SNMP error for {self._poll.hostname}: {exception_error}"
                     log.log2die(1003, log_message)
-
+            
         # Return
-        return (_contactable, exists, results)
+        values = (_contactable,exists,formatted_result)
+        return values
         
 
 
@@ -678,4 +688,121 @@ def _oid_valid_format(oid):
     # Otherwise valid
     return True
 
+def _convert(value):
+    """Convert SNMP value from pysnmp object to Python type.
+
+    Args:
+        result: pysnmp value object
+
+    Returns:
+        converted: Value converted to appropriate Python type (bytes or int),
+            or None for null/empty values
+    """
+
+    # Handle pysnmp exception values
+    if isinstance(value, NoSuchObject):
+        return None 
+    if isinstance(value, NoSuchInstance):
+        return None
+    if isinstance(value, EndOfMibView):
+        return None 
+    
+    if hasattr(value, 'prettyPrint'):
+        value_str = value.prettyPrint()
+
+        #Determine type based on pysnmp object type
+        value_type = type(value).__name__ 
+
+        # Handle string-like types - Convert to types for MIB compatibility 
+        if any(t in value_type for t in ['OctetString','DisplayString','Opaque','Bits','IpAddress','ObjectIdentifier']):
+            # For objectID, convert to string first then to bytes
+            if 'ObjectIdentifier' in value_type:
+                return bytes(str(value_str), 'utf-8')
+            else:
+                return bytes(value_str,'utf-8')
         
+        #Handle integer types
+        elif any(t in value_type for t in ['Integer','Counter','Gauge','TimeTicks','Unsigned']):
+            try:
+                return int(value_str)
+            except ValueError:
+                #! clear on this once again
+                #! approach 1
+                # Direct int conversion of the obj if prettyPrint fails
+                if hasattr(value, '__int__'):
+                    try:
+                        return int(value)
+                    except (ValueError, TypeError):
+                        pass 
+
+                #! appraoch 2 
+                # Accessing .value attr directly
+                if hasattr(value, 'value'):
+                    try:
+                       return int(value.value)
+                    except (ValueError, TypeError):
+                        pass 
+                
+                log_message = f"Failed to convert pysnmp integer valye: {value_type}, prettyPrint'{value_str}"
+                log.log2warning(1059, log_message)
+                return None
+    
+    # Handle direct access to value (for objects without prettyPrint)
+    if hasattr(value, 'value'):
+        try:
+            return int(value.value)
+        except (ValueError, TypeError):
+            return bytes(str(value.value), 'utf-8')
+        
+    #! will check this as well (if we need it ??)
+    # Default Fallback - convert to string then to bytes 
+    try:
+        return bytes(str(value), 'utf-8')
+    except Exception:
+        return None 
+    
+
+def _format_results(results,mock_filter, normalized = False):
+    """Normalized and format SNMP results
+
+    Args:
+        results: List of (OID, value) tuples from pysnmp
+        mock_filter: The original OID to get. Facilitates unittesting by
+            filtering Mock values.
+        normalized: If True, then return results as a dict keyed by
+            only the last node of an OID, otherwise return results
+            keyed by the entire OID string. Normalization is useful
+            when trying to create multidimensional dicts where the
+            primary key is a universal value such as IF-MIB::ifIndex
+            or BRIDGE-MIB::dot1dBasePort
+
+    Returns:
+        dict: Formatted results as OID-value pairs
+    
+    """
+
+    formatted = {}
+
+    for oid_str,value in results:
+
+        # Defensive: Double-check OID filtering for edge cases, testing and library quirks
+        # Our walk methods already filter, but this catches unusual scenarios
+
+        if mock_filter and mock_filter not in oid_str:
+            continue 
+
+        #convert value using proper type conversion
+        converted_value = _convert(value=value)
+
+        if normalized is True:
+            #use only the last node of the OID
+            key = oid_str.split('.')[-1]
+        else:
+            key = oid_str
+
+        formatted[key] = converted_value
+    
+    return formatted
+
+
+
