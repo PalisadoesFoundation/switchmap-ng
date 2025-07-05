@@ -11,6 +11,8 @@ from switchmap.core import files
 from switchmap.poller import POLL 
 from switchmap.poller.configuration import ConfigPoller
 
+from . import iana_enterprise
+
 from pysnmp.hlapi.asyncio import (
     SnmpEngine, CommunityData, UdpTransportTarget, ContextData, 
     ObjectType, ObjectIdentity, getCmd, nextCmd, bulkCmd, 
@@ -64,12 +66,30 @@ class Validate:
         
         if cache_exists is False:
             authentication = self.validation()
+
+            #Save credentials if successful
+            if bool(authentication):
+               _update_cache(filename, authentication.group) 
+        else:
+            # Read credentials from cache
+            if os.path.isfile(filename):
+                with open(filename) as f_handle:
+                    group = f_handle.readline().strip()
+
+            # Get Credentials
+            authentication = self.validation(group)
+
+            # Try the rest if the credentials fail
+            if bool(authentication) is False:
+                authentication = await self.validation()
+            
+            #! case of credentials fails, check for output again
+            #update cache if found
+            if bool(authentication):
+                _update_cache(filename, authentication.group)
         
-        #Save credentials if successful
-        if bool(authentication):
-            _update_cache(filename, authentication.group)
-        
-        
+        return authentication
+
     
     async def validation(self, group=None):
         """Determine valid SNMP authorization for a host.
@@ -92,6 +112,7 @@ class Validate:
             if bool(authorization.enabled) is False:
                 continue
             
+            #!this is every auth groups credentials present in the config
             # Setup contact with the remote device
             device = Interact(
                 POLL(
@@ -99,9 +120,17 @@ class Validate:
                     authorization=authorization
                 )
             )
-            # Try successive groups
-
-
+            # Try successive groups check if device is contactable
+            if group is None:
+                if await device.contactable() is True:
+                    result = authorization
+                    break
+            else:
+                if authorization.group == group:
+                    if await device.contactable() is True:
+                        result = authorization
+        
+        return result
 
 class Interact:
     """Class Gets SNMP data."""
@@ -127,6 +156,24 @@ class Interact:
                 "SNMP parameters provided are either blank or missing." "Non existent host?"
             )
             log.log2die(1045, log_message)
+
+    async def enterprise_number(self):
+        """Get SNMP enterprise number for the device.
+        
+        Args:
+            None
+        
+        Returns:
+            int: SNMP enterprise number identifying the device vendor
+        """
+        # Get the sysObjectID.0 value of the device
+        sysid = await self.sysobjectID()
+
+        # Get the vendor ID
+        enterprise_obj = iana_enterprise.Query(sysobjectid=sysid)
+        enterprise = enterprise_obj.enterprise()
+
+        return enterprise
     
 
         
@@ -805,4 +852,20 @@ def _format_results(results,mock_filter, normalized = False):
     return formatted
 
 
+def _update_cache(filename, group):
+    """Update SNMP credentials cache file.
+
+    Args:
+        filename: String containing path to cache file
+        group: String containing SNMP group name to cache
+
+    Returns:
+        None
+    """
+    try:
+        with open(filename,"w+") as f_handle:
+            f_handle.write(group)
+    except Exception as e:
+        log_message = f"Failed to update cache file {filename}: {e}"
+        log.log2warning(1049,log_message)
 
