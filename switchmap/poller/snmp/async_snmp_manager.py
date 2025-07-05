@@ -602,7 +602,6 @@ class Session:
     async def _async_walk_v1(self, oid_prefix, auth_data, transport_target, context_data):
         """Pure async walk for SNMPv1 using nextCmd. """
         results = []
-        current_oid = oid_prefix
 
         async for (error_indication, error_status, error_index, var_binds) in nextCmd(
             self._engine,
@@ -850,7 +849,6 @@ def _format_results(results,mock_filter, normalized = False):
         formatted[key] = converted_value
     
     return formatted
-
 
 def _update_cache(filename, group):
     """Update SNMP credentials cache file.
