@@ -221,7 +221,7 @@ class Interact:
         
         return contactable
     
-    async def sysobjectID(self, check_reachability=False):
+    async def sysobjectid(self, check_reachability=False):
         """Get the sysObjectID of the device.
 
         Args:
@@ -235,7 +235,7 @@ class Interact:
         oid = ".1.3.6.1.2.1.1.2.0"
         object_id = None 
         
-        #Get sysObjectID
+        #Get sysObjectid
         results = await self.get(oid, check_reachability)
         # Pysnmp already returns out value as value unlike easysnmp
         if bool(results) is True:
@@ -416,7 +416,7 @@ class Interact:
             try:
                 #Create SNMP session
                 session = Session(self._poll, context_name=context_name)
-                auth_data,transport_target = session._session()
+                auth_data,transport_target = await session._session()
                 context_data = ContextData(contextName=context_name)
 
                 # Perform the SNMP operation
@@ -444,6 +444,8 @@ class Interact:
                 else:
                     log_message = f"Async SNMP error for {self._poll.hostname}: {exception_error}"
                     log.log2die(1003, log_message)
+                # Ensure formatted_result is set for exception cases
+                formatted_result = {}
 
             except Exception as exception_error:
                 # Handle unexpected errors
@@ -455,6 +457,8 @@ class Interact:
                 else:
                     log_message = f"Unexpected async SNMP error for {self._poll.hostname}: {exception_error}"
                     log.log2die(1003, log_message)
+                # Ensure formatted_result is set for exception cases
+                formatted_result = {}
             
         # Return
         values = (_contactable,exists,formatted_result)
@@ -635,7 +639,7 @@ class Session:
         """Async walk for SNMPv2c/v3 using bulkCmd"""
 
         results = []
-        current_oids = ObjectType(ObjectIdentity(oid_prefix))
+        current_oids = [ObjectType(ObjectIdentity(oid_prefix))]
 
         try:
             max_iterations = 100
