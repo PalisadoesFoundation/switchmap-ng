@@ -1079,8 +1079,14 @@ def _format_results(results,mock_filter, normalized = False):
         # Defensive: Double-check OID filtering for edge cases, testing and library quirks
         # Our walk methods already filter, but this catches unusual scenarios
 
-        if mock_filter and mock_filter not in oid_str:
-            continue 
+        # FIX: Normalize both OIDs for comparison to handle leading dot mismatch
+        if mock_filter:
+            # Remove leading dots for comparison
+            filter_normalized = mock_filter.lstrip('.')
+            oid_normalized = oid_str.lstrip('.')
+            
+            if filter_normalized not in oid_normalized:
+                continue 
 
         #convert value using proper type conversion
         converted_value = _convert(value=value)
