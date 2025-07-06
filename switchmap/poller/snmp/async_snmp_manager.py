@@ -235,11 +235,19 @@ class Interact:
         oid = ".1.3.6.1.2.1.1.2.0"
         object_id = None 
         
-        #Get sysObjectid
+        #Get sysObjectID
         results = await self.get(oid, check_reachability)
         # Pysnmp already returns out value as value unlike easysnmp
         if bool(results) is True:
-            object_id = results[oid]
+            # Both formats: with and without leading dot
+            object_id = results.get(oid) 
+            if object_id is None:
+                oid_without_dot = oid.lstrip('.')
+                object_id = results.get(oid_without_dot)
+            
+            # Convert bytes to string if needed
+            if isinstance(object_id, bytes):
+                object_id = object_id.decode('utf-8')
         
         return object_id
     
