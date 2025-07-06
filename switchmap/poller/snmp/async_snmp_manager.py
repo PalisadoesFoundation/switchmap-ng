@@ -65,7 +65,7 @@ class Validate:
             cache_exists= True
         
         if cache_exists is False:
-            authentication = self.validation()
+            authentication = await self.validation()
 
             #Save credentials if successful
             if bool(authentication):
@@ -77,7 +77,7 @@ class Validate:
                     group = f_handle.readline().strip()
 
             # Get Credentials
-            authentication = self.validation(group)
+            authentication = await self.validation(group)
 
             # Try the rest if the credentials fail
             if bool(authentication) is False:
@@ -107,7 +107,7 @@ class Validate:
         result = None
         
          # Probe device with all SNMP options
-        for authorization in self._options.authorizations():
+        for authorization in self._options.authorizations:
             #Only process enabled SNMP values
             if bool(authorization.enabled) is False:
                 continue
@@ -167,7 +167,7 @@ class Interact:
             int: SNMP enterprise number identifying the device vendor
         """
         # Get the sysObjectID.0 value of the device
-        sysid = await self.sysobjectID()
+        sysid = await self.sysobjectid()
 
         # Get the vendor ID
         enterprise_obj = iana_enterprise.Query(sysobjectid=sysid)
@@ -175,8 +175,17 @@ class Interact:
 
         return enterprise
     
+    def hostname(self):
+        """Get SNMP hostname for the interaction.
 
-        
+        Args:
+            None
+
+        Returns:
+            str: Hostname of the target device
+        """
+        return self._poll.hostname
+
     async def contactable(self): 
         """Check if device is reachable via SNMP.
         
@@ -195,7 +204,7 @@ class Interact:
         try:
             # Test if we can poll the SNMP sysObjectID
             # if true, then the device is contactable
-            result = await self.sysobjectID(check_reachability=True)
+            result = await self.sysobjectid(check_reachability=True)
             if bool(result) is True:
                 contactable = True
         
@@ -395,6 +404,7 @@ class Interact:
         _contactable = True
         exists = True
         results = []
+        formatted_result = {}  # Initialize formatted_result to avoid undefined variable error
 
         # Check if OID is valid
         if _oid_valid_format(oid_to_get) is False:
@@ -482,9 +492,6 @@ class Session:
                 "SNMP parameters provided are blank. None existent host? "
             )
             log.log2die(1046, log_message)
-        
-        #Create SNMP session 
-        self.session = self._session
 
     async def _session(self):
         """ Create SNMP session parameters based on configuration.
@@ -834,8 +841,14 @@ def _format_results(results,mock_filter, normalized = False):
         # Defensive: Double-check OID filtering for edge cases, testing and library quirks
         # Our walk methods already filter, but this catches unusual scenarios
 
-        if mock_filter and mock_filter not in oid_str:
-            continue 
+        # FIX: Normalize both OIDs for comparison to handle leading dot mismatch
+        if mock_filter:
+            # Remove leading dots for comparison
+            filter_normalized = mock_filter.lstrip('.')
+            oid_normalized = oid_str.lstrip('.')
+            
+            if filter_normalized not in oid_normalized:
+                continue 
 
         #convert value using proper type conversion
         converted_value = _convert(value=value)
@@ -866,4 +879,3 @@ def _update_cache(filename, group):
     except Exception as e:
         log_message = f"Failed to update cache file {filename}: {e}"
         log.log2warning(1049,log_message)
-
