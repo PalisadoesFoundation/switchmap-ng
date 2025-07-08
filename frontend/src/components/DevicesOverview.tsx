@@ -12,6 +12,7 @@ import {
   SortingState,
 } from "@tanstack/react-table";
 
+// Device type definition
 type Device = {
   idxDevice: string;
   id: string;
@@ -23,7 +24,13 @@ type Device = {
     edges: { node: { ifoperstatus: number } }[];
   };
 };
+interface DevicesOverviewProps {
+  devices: any[]; // adapt type as needed
+  loading: boolean;
+  error: string | null;
+}
 
+// Format uptime from hundredths of seconds to readable string
 const formatUptime = (hundredths: number) => {
   const seconds = Math.floor(hundredths / 100);
   const days = Math.floor(seconds / 86400);
@@ -33,68 +40,13 @@ const formatUptime = (hundredths: number) => {
   return `${days}d ${hrs}h ${mins}m ${secs}s`;
 };
 
-export default function DevicesOverview({ zoneId }: { zoneId: string }) {
-  const [devices, setDevices] = useState<Device[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function DevicesOverview({ devices, loading, error }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
-  useEffect(() => {
-    const fetchDevices = async () => {
-      try {
-        setLoading(true);
-
-        const res = await fetch("http://localhost:7000/switchmap/api/graphql", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: `
-            query GetZoneDevices($id: ID!) {
-              zone(id: $id) {
-                devices {
-                  edges {
-                    node {
-                      idxDevice
-                      sysObjectid
-                      sysUptime
-                      sysName
-                      hostname
-                      l1interfaces {
-                        edges {
-                          node {
-                            ifoperstatus
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          `,
-            variables: {
-              id: zoneId,
-            },
-          }),
-        });
-
-        const json = await res.json();
-        const rawDevices = json.data.zone.devices.edges.map(
-          (edge: any) => edge.node
-        );
-        setDevices(rawDevices);
-      } catch (err) {
-        console.error("Error fetching devices:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDevices();
-  }, [zoneId]);
-
   const columnHelper = createColumnHelper<any>();
 
+  // Prepare table data from devices
   const data = useMemo(() => {
     return devices.map((device) => {
       const interfaces = device.l1interfaces.edges.map((e) => e.node);
@@ -116,6 +68,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
     });
   }, [devices]);
 
+  // Table columns definition
   const columns = [
     columnHelper.accessor("name", {
       header: "Device Name",
@@ -139,6 +92,7 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
     }),
   ];
 
+  // Create table instance
   const table = useReactTable({
     data,
     columns,
@@ -153,12 +107,15 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <p>Loading devices...</p>;
+  if (error) return <p>Error loading devices: {error}</p>;
+  if (!devices.length) return <p>No devices found.</p>;
 
   return (
     <div>
-      <h2 className="text-xl font-semibold mb-2">Devices Overview</h2>
+      <h2 className="text-2xl font-bold mb-4">Devices Overview</h2>
 
+      {/* Global search filter */}
       <input
         value={globalFilter}
         onChange={(e) => setGlobalFilter(e.target.value)}
@@ -168,94 +125,121 @@ export default function DevicesOverview({ zoneId }: { zoneId: string }) {
       <h3 className="text-sm font-semibold mt-8 mb-2">
         DEVICES MONITORED BY SWITCHMAP
       </h3>
-      <table className="w-full text-left border border-collapse">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b">
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  onClick={header.column.getToggleSortingHandler()}
-                  className="cursor-pointer px-4 py-2 border"
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                  <span
-                    className="float-right text-center text-[0.5rem] "
-                    style={{ userSelect: "none" }}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left min-w-full">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr
+                key={headerGroup.id}
+                className="border-b border-bottom-border"
+              >
+                {headerGroup.headers.map((header) => (
+                  <th
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        header.column.getToggleSortingHandler()?.(e);
+                      }
+                    }}
+                    className="cursor-pointer px-4 py-2"
+                    tabIndex={0}
+                    role="button"
+                    aria-label={`Sort by ${header.column.columnDef.header}`}
                   >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
                     <span
-                      style={{ display: "block" }}
-                      className={
-                        header.column.getIsSorted() === "asc"
-                          ? "text-blue-600"
-                          : "text-gray-400"
-                      }
+                      className="float-right text-center text-[0.5rem] "
+                      style={{ userSelect: "none" }}
                     >
-                      ⯅
+                      <span
+                        style={{ display: "block" }}
+                        className={
+                          header.column.getIsSorted() === "asc"
+                            ? "text-blue-600"
+                            : "text-gray-400"
+                        }
+                      >
+                        ⯅
+                      </span>
+                      <span
+                        style={{ display: "block" }}
+                        className={
+                          header.column.getIsSorted() === "desc"
+                            ? "text-blue-600"
+                            : "text-gray-400"
+                        }
+                      >
+                        ⯆
+                      </span>
                     </span>
-                    <span
-                      style={{ display: "block" }}
-                      className={
-                        header.column.getIsSorted() === "desc"
-                          ? "text-blue-600"
-                          : "text-gray-400"
-                      }
-                    >
-                      ⯆
-                    </span>
-                  </span>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className="border-b hover:bg-gray-100 dark:hover:bg-gray-800"
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-4 py-2 border">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.length === 0 ? (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="px-4 py-2 text-center text-gray-400"
+                >
+                  No data
                 </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </tr>
+            ) : (
+              table.getRowModel().rows.map((row) => (
+                <tr key={row.id} className="hover:hover-bg">
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="px-4 py-2">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
       <h3 className="text-sm font-semibold mt-8 mb-2">
         DEVICES NOT MONITORED BY SWITCHMAP
       </h3>
-      <table className="w-full text-left border border-collapse">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="border-b">
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} className="px-4 py-2 border">
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </th>
-              ))}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left min-w-full">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id} className="border-b border-gray-200">
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="px-4 py-2">
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="px-4 py-2 text-center text-gray-400"
+              >
+                No data
+              </td>
             </tr>
-          ))}
-        </thead>
-        <tbody>
-          <tr>
-            <td
-              colSpan={columns.length}
-              className="px-4 py-2 border text-center text-gray-400"
-            >
-              No data
-            </td>
-          </tr>
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
