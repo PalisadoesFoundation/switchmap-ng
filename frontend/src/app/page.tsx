@@ -1,10 +1,10 @@
 "use client";
 
-import DevicesOverview from "@/app/components/DevicesOverview";
-import ZoneDropdown from "@/app/components/ZoneDropdown";
+import DevicesOverview from "@/components/DevicesOverview";
+import ZoneDropdown from "@/components/ZoneDropdown";
 import { useEffect, useState } from "react";
-import Sidebar from "@/app/components/Sidebar";
-import TopologyChart from "./components/TopologyChart";
+import Sidebar from "@/components/Sidebar";
+import TopologyChart from "@/components/TopologyChart";
 
 export default function Home() {
   const [zoneId, setZoneId] = useState("");
