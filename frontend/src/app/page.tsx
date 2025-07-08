@@ -4,31 +4,130 @@ import DevicesOverview from "@/app/components/DevicesOverview";
 import ZoneDropdown from "@/app/components/ZoneDropdown";
 import { useEffect, useState } from "react";
 import Sidebar from "@/app/components/Sidebar";
+import TopologyChart from "./components/TopologyChart";
 
 export default function Home() {
-  const [zoneId, setZoneId] = useState("Wm9uZTox");
+  const [zoneId, setZoneId] = useState("");
+  const [zoneSelected, setZoneSelected] = useState(false);
+
+  // Add these states for device data
+  const [devices, setDevices] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
+    setZoneId(localStorage.getItem("zoneId") || "");
     const hash = window.location.hash;
     if (hash) {
       const el = document.querySelector(hash);
       if (el) el.scrollIntoView({ behavior: "smooth" });
     }
   }, []);
+
+  useEffect(() => {
+    if (zoneId) {
+      localStorage.setItem("zoneId", zoneId);
+      setZoneSelected(!!zoneId);
+    }
+  }, [zoneId]);
+
+  // New: fetch devices when zoneId changes
+  useEffect(() => {
+    if (!zoneId) {
+      setDevices([]);
+      setLoading(false);
+      setError("Waiting for zone selection to load devices.");
+      return;
+    }
+
+    const fetchDevices = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_URL ||
+            "http://localhost:7000/switchmap/api/graphql",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: `
+                query GetZoneDevices($id: ID!) {
+                  zone(id: $id) {
+                    devices {
+                      edges {
+                        node {
+                          idxDevice
+                          sysObjectid
+                          sysUptime
+                          sysName
+                          hostname
+                          l1interfaces {
+                            edges {
+                              node {
+                                ifoperstatus
+                                cdpcachedeviceid
+                                cdpcachedeviceport
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `,
+              variables: { id: zoneId },
+            }),
+          }
+        );
+
+        if (!res.ok)
+          throw new Error(`Network response was not ok: ${res.statusText}`);
+
+        const json = await res.json();
+        if (json.errors)
+          throw new Error(json.errors.map((e: any) => e.message).join(", "));
+
+        const rawDevices =
+          json.data?.zone?.devices?.edges?.map((edge: any) => edge.node) || [];
+        setDevices(rawDevices);
+      } catch (err: any) {
+        console.error("Error fetching devices:", err?.message || err);
+        setDevices([]);
+        setError(
+          "Failed to load devices. Please check your network or try again."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDevices();
+  }, [zoneId]);
+
   return (
-    <div className="flex flex-row h-screen overflow-y-hidden">
-      {/* Sidebar */}
+    <div className="flex h-screen">
       <Sidebar />
-      {/* Main Content */}
-      <main style={{ overflowY: "auto", flex: 1 }}>
-        <div className="sticky top-0 z-10 bg-blend-soft-light flex justify-end p-4 shadow">
+      <main className="flex-1 overflow-y-auto overflow-x-hidden">
+        <div className="sticky top-0 z-10 bg-transparent lg:bg-blend-soft-light flex justify-end p-4">
           <ZoneDropdown selectedZoneId={zoneId} onChange={setZoneId} />
         </div>
 
         <div id="network-topology" className="h-screen mb-8 p-8">
-          <h2 className="text-2xl font-bold mb-4">Network Topology</h2>
+          {zoneSelected && (
+            <TopologyChart devices={devices} loading={loading} error={error} />
+          )}
         </div>
-        <div id="devices-overview" className="h-screen mb-8 p-8">
-          <DevicesOverview zoneId={zoneId} />
+
+        <div id="devices-overview" className="h-screen p-8">
+          {zoneSelected && (
+            <DevicesOverview
+              devices={devices}
+              loading={loading}
+              error={error}
+            />
+          )}
         </div>
       </main>
     </div>
