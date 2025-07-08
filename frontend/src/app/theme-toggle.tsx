@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { FiSun, FiMoon } from "react-icons/fi";
 
 export default function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
+
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -16,11 +17,11 @@ export default function ThemeToggle() {
 
   return (
     <button
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       aria-label="Toggle theme"
-      className="themeToggleButton"
+      className="bg-transparent text-[1.4rem] flex self-center"
     >
-      {theme === "dark" ? <FiSun /> : <FiMoon />}
+      {resolvedTheme === "dark" ? <FiSun /> : <FiMoon />}
     </button>
   );
 }

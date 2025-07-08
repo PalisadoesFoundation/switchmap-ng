@@ -1,14 +1,32 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: var(--bg-color);
+  --color-text: var(--text-color);
+  --color-link: var(--link-color);
+  --color-button-bg: var(--button-bg);
+  --color-button-text: var(--button-text);
+  --color-heading: var(--heading-color);
+  --color-border: var(--border-color);
+  --color-bottom-border: var(--bottom-border-color);
+  --color-icon: var(--icon-color);
+  --color-hover-bg: var(--hover-bg);
+  --color-select-bg: var(--select-bg);
+}
+
+
 :root {
-  --bg-color: #e6e6e6;
+  --bg-color: white;
   --text-color: #081028;
   --link-color: #081028;
   --button-bg: #e0e0e0;
   --button-text: #081028;
   --heading-color: #081028;
   --border-color: rgba(162, 162, 162, 0.1);
-  --icon-color: #323232;
-  --hover-bg: #0B1A47;
-  --select-bg: #c4c4c4;
+  --bottom-border-color: #081028;
+  --hover-bg: rgba(140, 9, 188, 0.1);
+  --select-bg: rgba(140, 9, 188, 0.2);
+  --h1-color: #8C09BC;
 
 }
 
@@ -20,9 +38,10 @@
   --button-text: #AEB9E1;
   --heading-color: #ddd;
   --border-color: #0B1739;
-  --icon-color: #8C09BC;
-  --hover-bg: #0B1A47;
+  --bottom-border-color: #e6e6e6;
+  --hover-bg:rgb(59, 65, 85);
   --select-bg: #0B1A47;
+  --h1-color:  #ddd;
 }
 
 body {
@@ -44,16 +63,18 @@ a {
 }
 
 button {
-  background-color: var(--button-bg);
   color: var(--button-text);
   border: none;
   cursor: pointer;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h2, h3, h4, h5, h6 {
   color: var(--heading-color);
   font-weight: 600;
-  margin: 0rem;
+}
+h1 {
+  color: var(--h1-color);
+  font-weight: 600;
 }
 p{
   margin: 0rem;
@@ -63,15 +84,10 @@ li{
   padding-top:  0.5rem;
 }
 
-.themeToggleButton{
-        background: none;
-        font-size: 1.4rem;
-        display: flex;
-        align-self: center;
-}
+
 
 .icon{
-  color: var(--icon-color);
+  color: #8C09BC;
   font-size: 1rem;
 }
 table{
@@ -80,11 +96,11 @@ table{
   margin-top: 1rem;
 }
 th{
-  border-bottom: 1px solid #ccc;
+  border-bottom: 1px solid var(--bottom-border-color);
   text-align: left;
   padding: 0.5rem;
 }
 td{
   padding: 0.5rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--bottom-border-color);
 }
