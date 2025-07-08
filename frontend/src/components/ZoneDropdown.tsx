@@ -5,7 +5,7 @@ import { useEffect, useState, useRef } from "react";
 type Zone = { idxZone: string; id: string };
 
 type ZoneDropdownProps = {
-  selectedZoneId: string;
+  selectedZoneId: string | null;
   onChange: (zoneId: string) => void;
 };
 
@@ -16,30 +16,46 @@ export default function ZoneDropdown({
   const [zones, setZones] = useState<Zone[]>([]);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchZones = async () => {
-      const res = await fetch("http://localhost:7000/switchmap/api/graphql", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: `
-            {
-              zones {
-                edges {
-                  node {
-                    idxZone
-                    id
-                  }
-                }
-              }
-            }
-          `,
-        }),
-      });
-      const json = await res.json();
-      const rawZones = json.data.zones.edges.map((edge: any) => edge.node);
-      setZones(rawZones);
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("http://localhost:7000/switchmap/api/graphql", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: `  
+              {  
+                zones {  
+                  edges {  
+                    node {  
+                      idxZone  
+                      id  
+                    }  
+                  }  
+                }  
+              }  
+            `,
+          }),
+        });
+        if (!res.ok) {
+          throw new Error(`Network error: ${res.status}`);
+        }
+        const json = await res.json();
+        if (json.errors) {
+          throw new Error(json.errors[0].message);
+        }
+        const rawZones = json.data.zones.edges.map((edge: any) => edge.node);
+        setZones(rawZones);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch zones");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchZones();
@@ -58,16 +74,36 @@ export default function ZoneDropdown({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const selected = zones.find((z) => z.id === selectedZoneId);
+  // If selectedZoneId is null, pick the first zone (if available)
+  const selected =
+    (selectedZoneId && zones.find((z) => z.id === selectedZoneId)) ||
+    (zones.length > 0 ? zones[0] : undefined);
+
+  // If selectedZoneId is null and zones are loaded, notify parent
+  useEffect(() => {
+    if (zones.length > 0) {
+      // Always call onChange with the first zone if selectedZoneId is null or not found in zones
+      const found = zones.find((z) => z.id === selectedZoneId);
+      if (!found) {
+        onChange(zones[0].id);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zones, selectedZoneId]);
 
   return (
-    <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div
+      className="relative inline-block text-left rounded-md"
+      ref={dropdownRef}
+    >
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="inline-flex justify-between items-center w-48 px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
+        className="inline-flex justify-between items-center bg-bg w-48 px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
       >
-        Zone {selected?.idxZone || "Select Zone"}
+        Zone {selected?.idxZone || ""}
+        {loading && " (Loading...)"}
+        {error && " (Error)"}
         <svg
           className={`ml-2 h-5 w-5 transition-transform duration-200 ${
             open ? "rotate-180" : ""
@@ -87,20 +123,27 @@ export default function ZoneDropdown({
       </button>
 
       {open && (
-        <div className="absolute mt-1 w-48 rounded-md shadow-lg border border-gray-200 z-10 max-h-60 overflow-auto">
-          {zones.map((zone) => (
-            <button
-              key={zone.id}
-              onClick={() => {
-                onChange(zone.id);
-                setOpen(false);
-              }}
-              className="block w-full text-left px-4 py-2 hover:bg-blue-950 focus:outline-none"
-            >
-              Zone {zone.idxZone}
-            </button>
-          ))}
-        </div>
+        <>
+          {error && (
+            <div className="absolute bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded mt-1 w-48 z-10">
+              Error: {error}
+            </div>
+          )}
+          <div className="absolute bg-bg mt-1 w-48 rounded-md shadow-lg border border-color z-10 max-h-60 overflow-auto">
+            {zones.map((zone) => (
+              <button
+                key={zone.id}
+                onClick={() => {
+                  onChange(zone.id);
+                  setOpen(false);
+                }}
+                className="block w-full text-left px-4 py-2 hover:bg-hover-bg focus:outline-none"
+              >
+                Zone {zone.idxZone}
+              </button>
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

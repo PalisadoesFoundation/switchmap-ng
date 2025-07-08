@@ -40,7 +40,11 @@ const formatUptime = (hundredths: number) => {
   return `${days}d ${hrs}h ${mins}m ${secs}s`;
 };
 
-export default function DevicesOverview({ devices, loading, error }) {
+export default function DevicesOverview({
+  devices,
+  loading,
+  error,
+}: DevicesOverviewProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -49,9 +53,9 @@ export default function DevicesOverview({ devices, loading, error }) {
   // Prepare table data from devices
   const data = useMemo(() => {
     return devices.map((device) => {
-      const interfaces = device.l1interfaces.edges.map((e) => e.node);
+      const interfaces = device.l1interfaces.edges.map((e: any) => e.node);
       const total = interfaces.length;
-      const active = interfaces.filter((p) => p.ifoperstatus === 1).length;
+      const active = interfaces.filter((p: any) => p.ifoperstatus === 1).length;
 
       return {
         id: device.id,
