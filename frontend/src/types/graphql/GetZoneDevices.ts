@@ -25,14 +25,26 @@ export type DeviceNode = {
 export type DeviceEdge = {
   node: DeviceNode;
 };
+export type ZoneNode = {
+  devices: Devices;
+};
+
+export type ZoneEdge = {
+  node: ZoneNode;
+};
 
 export type Devices = {
   edges: DeviceEdge[];
 };
 
+export type Zones = {
+  edges: ZoneEdge[];
+};
+
 export type Zone = {
   devices: Devices;
 };
+
 
 export type GetZoneDevicesData = {
   data: {
