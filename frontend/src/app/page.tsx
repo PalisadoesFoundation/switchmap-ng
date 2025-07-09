@@ -5,14 +5,15 @@ import ZoneDropdown from "@/components/ZoneDropdown";
 import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import TopologyChart from "@/components/TopologyChart";
+import { DeviceNode, GetZoneDevicesData } from "@/types/graphql/GetZoneDevices";
 
 export default function Home() {
-  const [zoneId, setZoneId] = useState("");
-  const [zoneSelected, setZoneSelected] = useState(false);
+  const [zoneId, setZoneId] = useState<string>("");
+  const [zoneSelected, setZoneSelected] = useState<boolean>(false);
 
   // Add these states for device data
-  const [devices, setDevices] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [devices, setDevices] = useState<DeviceNode[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -85,19 +86,27 @@ export default function Home() {
         if (!res.ok)
           throw new Error(`Network response was not ok: ${res.statusText}`);
 
-        const json = await res.json();
+        const json: GetZoneDevicesData = await res.json();
         if (json.errors)
           throw new Error(json.errors.map((e: any) => e.message).join(", "));
 
-        const rawDevices =
-          json.data?.zone?.devices?.edges?.map((edge: any) => edge.node) || [];
-        setDevices(rawDevices);
-      } catch (err: any) {
-        console.error("Error fetching devices:", err?.message || err);
-        setDevices([]);
-        setError(
-          "Failed to load devices. Please check your network or try again."
+        const rawDevices = json.data.zone.devices.edges.map(
+          (edge) => edge.node
         );
+        setDevices(rawDevices);
+      } catch (err: unknown) {
+        let errorMessage =
+          "Failed to load devices. Please check your network or try again.";
+
+        if (err instanceof Error) {
+          console.error("Error fetching devices:", err.message);
+          errorMessage = err.message;
+        } else {
+          console.error("Unknown error", err);
+        }
+
+        setDevices([]);
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
