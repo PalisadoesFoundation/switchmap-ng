@@ -7,24 +7,28 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import ThemeToggle from "@/app/theme-toggle";
 
 export default function Sidebar() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   // Close sidebar on outside click
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        sidebarRef.current &&
-        !sidebarRef.current.contains(e.target as Node)
-      ) {
+    const handleClickOutside = (e: MouseEvent): void => {
+      const target = e.target as Node;
+      if (sidebarRef.current && !sidebarRef.current.contains(target)) {
         setOpen(false);
       }
+    };
+
+    if (open) {
+      document.addEventListener("mousedown", handleClickOutside);
     }
-    if (open) document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, [open]);
 
-  // Sidebar content (shared)
+  // Sidebar content
   const sidebarContent = (
     <nav className="space-y-6">
       <div className="flex flex-row items-center justify-between gap-2">
@@ -80,20 +84,21 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Hamburger button (only visible on small screens) */}
+      {/* Hamburger button */}
       <button
         className="p-3 text-2xl lg:hidden fixed top-4 left-4 z-50 bg-bg border border-border rounded"
         onClick={() => setOpen(true)}
+        aria-label="Open sidebar"
       >
         <RxHamburgerMenu />
       </button>
 
-      {/* Sidebar for large screens */}
+      {/* Static sidebar for large screens */}
       <aside className="hidden lg:block sticky top-0 left-0 w-60 h-screen border-r border-border lg:p-4">
         {sidebarContent}
       </aside>
 
-      {/* Slide-in Sidebar for small/medium screens */}
+      {/* Slide-in sidebar for small/medium screens */}
       {open && (
         <>
           <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" />
