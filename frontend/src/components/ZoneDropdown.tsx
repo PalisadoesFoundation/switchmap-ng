@@ -1,5 +1,6 @@
 "use client";
 
+import { ZoneEdge } from "@/types/graphql/GetZoneDevices";
 import { useEffect, useState, useRef } from "react";
 
 type Zone = { idxZone: string; id: string };
@@ -14,9 +15,9 @@ export default function ZoneDropdown({
   onChange,
 }: ZoneDropdownProps) {
   const [zones, setZones] = useState<Zone[]>([]);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -49,7 +50,9 @@ export default function ZoneDropdown({
         if (json.errors) {
           throw new Error(json.errors[0].message);
         }
-        const rawZones = json.data.zones.edges.map((edge: any) => edge.node);
+        const rawZones = json.data.zones.edges.map(
+          (edge: ZoneEdge) => edge.node
+        );
         setZones(rawZones);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch zones");
