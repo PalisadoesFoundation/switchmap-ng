@@ -1,5 +1,6 @@
 "use client";
 
+import { DeviceNode } from "@/types/graphql/GetZoneDevices";
 import React, { useState, useEffect, useRef } from "react";
 import {
   Network,
@@ -10,16 +11,16 @@ import {
 } from "vis-network/standalone/esm/vis-network";
 
 interface TopologyChartProps {
-  devices: any[];
+  devices: DeviceNode[];
   loading: boolean;
   error: string | null;
 }
 
-const TopologyChart: React.FC<TopologyChartProps> = ({
+export default function TopologyChart({
   devices,
   loading,
   error,
-}) => {
+}: TopologyChartProps) {
   const [graph, setGraph] = useState<{ nodes: Node[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
@@ -86,7 +87,7 @@ const TopologyChart: React.FC<TopologyChartProps> = ({
     });
 
     const nodesArray: Node[] = devices.map((device) => ({
-      id: device.sysName ?? "", // use sysName as the node ID (to match edge `cdpcachedeviceid`)
+      id: device.sysName ?? "",
       label: device.sysName ?? device.idxDevice?.toString() ?? "",
       color: "#1E90FF",
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
@@ -214,6 +215,4 @@ const TopologyChart: React.FC<TopologyChartProps> = ({
       />
     </div>
   );
-};
-
-export default TopologyChart;
+}
