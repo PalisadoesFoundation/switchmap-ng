@@ -1,5 +1,5 @@
 export type InterfaceNode = {
-  ifoperstatus: string;
+  ifoperstatus: number;
   cdpcachedeviceid: string;
   cdpcachedeviceport: string;
 };
@@ -13,6 +13,7 @@ export type L1Interfaces = {
 };
 
 export type DeviceNode = {
+  id: string;
   idxDevice: number;
   sysObjectid: string;
   sysUptime: number;

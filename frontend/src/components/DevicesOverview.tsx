@@ -11,27 +11,29 @@ import {
   createColumnHelper,
   SortingState,
 } from "@tanstack/react-table";
+import {
+  DeviceNode,
+  InterfaceEdge,
+  InterfaceNode,
+  L1Interfaces,
+} from "@/types/graphql/GetZoneDevices";
 
-// Device type definition
-type Device = {
-  idxDevice: string;
-  id: string;
-  sysName: string | null;
-  hostname: string | null;
-  sysObjectid: string | null;
-  sysUptime: number;
-  l1interfaces: {
-    edges: { node: { ifoperstatus: number } }[];
-  };
-};
 interface DevicesOverviewProps {
-  devices: any[]; // adapt type as needed
+  devices: DeviceNode[];
   loading: boolean;
   error: string | null;
 }
 
+interface DeviceRow {
+  name: string;
+  hostname: string;
+  ports: string;
+  uptime: string;
+  link: string;
+}
+
 // Format uptime from hundredths of seconds to readable string
-const formatUptime = (hundredths: number) => {
+const formatUptime = (hundredths: number): string => {
   const seconds = Math.floor(hundredths / 100);
   const days = Math.floor(seconds / 86400);
   const hrs = Math.floor((seconds % 86400) / 3600);
@@ -46,16 +48,20 @@ export default function DevicesOverview({
   error,
 }: DevicesOverviewProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [globalFilter, setGlobalFilter] = useState<string>("");
 
-  const columnHelper = createColumnHelper<any>();
+  const columnHelper = createColumnHelper<DeviceRow>();
 
   // Prepare table data from devices
   const data = useMemo(() => {
     return devices.map((device) => {
-      const interfaces = device.l1interfaces.edges.map((e: any) => e.node);
+      const interfaces = device.l1interfaces.edges.map(
+        (e: InterfaceEdge) => e.node
+      );
       const total = interfaces.length;
-      const active = interfaces.filter((p: any) => p.ifoperstatus === 1).length;
+      const active = interfaces.filter(
+        (p: InterfaceNode) => p.ifoperstatus === 1
+      ).length;
 
       return {
         id: device.id,
