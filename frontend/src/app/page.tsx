@@ -61,6 +61,7 @@ export default function Home() {
                           idxDevice
                           sysObjectid
                           sysUptime
+                          sysDescription
                           sysName
                           hostname
                           l1interfaces {

@@ -84,12 +84,24 @@ const TopologyChart: React.FC<TopologyChartProps> = ({
         }
       );
     });
+    const truncateTwoLines = (str: string, max = 100) => {
+      // Approximate split into two halves to simulate 2 lines
+      if (!str) return "N/A";
+      if (str.length <= max) return str;
+      return str.slice(0, max / 2) + "\n" + str.slice(max / 2, max) + "...";
+    };
 
     const nodesArray: Node[] = devices.map((device) => ({
       id: device.sysName ?? "", // use sysName as the node ID (to match edge `cdpcachedeviceid`)
       label: device.sysName ?? device.idxDevice?.toString() ?? "",
       color: "#1E90FF",
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
+      title: `
+    ${device.sysName ?? "Unknown"}
+    Description: ${truncateTwoLines(device.sysDescription ?? "N/A")}
+    Hostname: ${device.hostname ?? "N/A"}
+    Uptime: ${formatUptime(device.sysUptime)}
+  `.trim(), // ✅ Tooltip content (HTML-safe string)
     }));
 
     setGraph({ nodes: nodesArray, edges: edgesArray });
