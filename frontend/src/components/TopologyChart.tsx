@@ -10,6 +10,7 @@ import {
   Options,
 } from "vis-network/standalone/esm/vis-network";
 import { useTheme } from "next-themes";
+import { formatUptime } from "@/utils/time";
 
 interface TopologyChartProps {
   devices: DeviceNode[];
@@ -37,6 +38,7 @@ export default function TopologyChart({
     edges: [],
   });
   const options: Options = {
+    clickToUse: true,
     layout: { hierarchical: false },
     physics: {
       enabled: true,
@@ -97,6 +99,11 @@ export default function TopologyChart({
       label: device.sysName ?? device.idxDevice?.toString() ?? "",
       color: "#1E90FF",
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
+      title: `
+    ${device.sysName ?? "Unknown"}
+    Hostname: ${device.hostname ?? "N/A"}
+    Uptime: ${formatUptime(device.sysUptime)}
+  `.trim(), // ✅ Tooltip content (HTML-safe string)
     }));
 
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
