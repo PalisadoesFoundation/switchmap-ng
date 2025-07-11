@@ -30,7 +30,10 @@ export default function TopologyChart({
   const networkRef = useRef<Network | null>(null);
   const nodesData = useRef<DataSet<Node> | null>(null);
   const edgesData = useRef<DataSet<Edge> | null>(null);
-
+  const initialGraph = React.useRef<{ nodes: Node[]; edges: Edge[] }>({
+    nodes: [],
+    edges: [],
+  });
   const options: Options = {
     layout: { hierarchical: false },
     physics: {
@@ -38,12 +41,12 @@ export default function TopologyChart({
       solver: "barnesHut",
       stabilization: { iterations: 100, updateInterval: 25 },
     },
-    edges: { color: "#BBBBBB", width: 2 },
+    edges: { color: "text-text", width: 2 },
     nodes: {
       shape: "dot",
       size: 15,
-      color: "#1E90FF",
-      font: { size: 12, color: "black" },
+      color: "text-text",
+      font: { size: 12, color: "text-text" },
     },
     interaction: {
       hover: true,
@@ -78,9 +81,10 @@ export default function TopologyChart({
             edgesArray.push({
               from: sysName,
               to: target,
-              label: port,
+              label: "",
+              title: String(port ?? ""),
               color: "#BBBBBB",
-            });
+            } as Edge);
           }
         }
       );
@@ -93,6 +97,7 @@ export default function TopologyChart({
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
     }));
 
+    initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
   }, [devices]);
 
@@ -149,8 +154,6 @@ export default function TopologyChart({
         });
       });
     });
-
-    // Reset highlight on deselect
     networkRef.current.on("deselectNode", () => {
       if (!nodesData.current || !edgesData.current) return;
 
@@ -195,6 +198,35 @@ export default function TopologyChart({
       });
     });
   }, [searchTerm]);
+  const handleReset = () => {
+    setSearchTerm("");
+    setGraph(initialGraph.current);
+
+    if (!networkRef.current || !nodesData.current || !edgesData.current) return;
+
+    // Clear selection
+    networkRef.current.unselectAll();
+
+    // Reset nodes color/font
+    nodesData.current.forEach((node) => {
+      nodesData.current!.update({
+        id: node.id,
+        color: { background: "#1E90FF", border: "#555" },
+        font: { color: "black" },
+      });
+    });
+
+    // Reset edges color
+    edgesData.current.forEach((edge) => {
+      edgesData.current!.update({
+        id: edge.id,
+        color: "#BBBBBB",
+      });
+    });
+
+    // Reset view
+    networkRef.current.fit();
+  };
 
   if (loading) return <p>Loading topology...</p>;
   if (error) return <p>Error loading topology: {error}</p>;
@@ -202,13 +234,21 @@ export default function TopologyChart({
   return (
     <div>
       <h2 className="text-xl font-semibold mb-2">Network Topology</h2>
-      <input
-        className="border p-2 rounded mb-4 w-full max-w-sm"
-        type="text"
-        placeholder="Search node ID..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="flex items-center justify-between mb-4 w-full">
+        <input
+          className="border p-2 rounded mb-4 w-full max-w-sm"
+          type="text"
+          placeholder="Search node ID..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button
+          onClick={handleReset}
+          className="mb-4 ml-2 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          Reset
+        </button>
+      </div>
       <div
         ref={containerRef}
         className="w-full h-[70vh] border rounded shadow"
