@@ -261,6 +261,17 @@ export default function TopologyChart({
     networkRef.current.fit();
   };
 
+  const handleExportImage = () => {
+    const canvas = containerRef.current?.getElementsByTagName("canvas")[0];
+    if (!canvas) return;
+
+    const image = canvas.toDataURL("image/png");
+    const link = document.createElement("a");
+    link.href = image;
+    link.download = "topology.png";
+    link.click();
+  };
+
   if (loading) return <p>Loading topology...</p>;
   if (error) return <p>Error loading topology: {error}</p>;
 
@@ -271,13 +282,22 @@ export default function TopologyChart({
         <input
           className="border p-2 rounded mb-4 w-full max-w-sm"
           type="text"
-          placeholder="Search node ID..."
+          placeholder="Search device..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button onClick={handleReset} className="reset-button">
-          Reset
-        </button>
+        <div>
+          <button onClick={handleReset} className="reset-button">
+            Reset
+          </button>
+          <button
+            onClick={handleExportImage}
+            className="text-white rounded ml-4 px-4 py-2 rounded cursor-pointer transition-colors duration-300"
+            style={{ backgroundColor: "#CB3CFF" }}
+          >
+            Export
+          </button>
+        </div>
       </div>
       <div
         ref={containerRef}
