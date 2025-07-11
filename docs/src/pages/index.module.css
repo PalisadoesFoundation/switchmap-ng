@@ -10,14 +10,18 @@
   overflow: hidden;
 }
 
+
+.button{
+  margin: 1rem;
+}
+.home-wrapper{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
   }
-}
-
-.buttons {
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }

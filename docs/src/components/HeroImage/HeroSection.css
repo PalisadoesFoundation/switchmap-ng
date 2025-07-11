@@ -1,0 +1,29 @@
+
+.heroBanner_qdFl{
+  background-color: transparent;
+}
+
+.header-image{
+ max-height: 60vh;
+ margin: auto;
+ padding: 0;
+}
+
+.Hero, .heroBanner_qdFl{
+  padding: 0 !important;
+  margin-bottom: 3rem;
+}
+
+.hero-image-section {
+  display: flex;
+  justify-content: center;
+  padding-top:2rem;
+  width: 40vw;
+}
+
+.hero-image {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 88vh;
+}
