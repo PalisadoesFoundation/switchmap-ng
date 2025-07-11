@@ -37,6 +37,7 @@ export default function TopologyChart({
     nodes: [],
     edges: [],
   });
+  const isDark = theme === "dark";
   const options: Options = {
     clickToUse: true,
     layout: { hierarchical: false },
@@ -45,12 +46,12 @@ export default function TopologyChart({
       solver: "barnesHut",
       stabilization: { iterations: 100, updateInterval: 25 },
     },
-    edges: { color: theme === "dark" ? "#888" : "#BBB", width: 2 },
+    edges: { color: isDark ? "#888" : "#BBB", width: 2 },
     nodes: {
       shape: "dot",
       size: 15,
-      color: theme === "dark" ? "#4A90E2" : "#1E90FF",
-      font: { size: 12, color: theme === "dark" ? "#fff" : "black" },
+      color: isDark ? "#4A90E2" : "#1E90FF",
+      font: { size: 12, color: isDark ? "#fff" : "black" },
     },
     interaction: {
       hover: true,
@@ -143,14 +144,25 @@ export default function TopologyChart({
       if (!nodesData.current || !edgesData.current) return;
 
       nodesData.current.forEach((node) => {
+        const isSelected = node.id === selected;
         nodesData.current!.update({
           id: node.id,
           color: {
-            background: node.id === selected ? "#FF6347" : "#D3D3D3",
-            border: "#555",
+            background: isSelected
+              ? "#FF6347" // selected highlight
+              : isDark
+              ? "#2c2c2c"
+              : "#D3D3D3",
+            border: isDark ? "#999" : "#555",
           },
           font: {
-            color: node.id === selected ? "black" : "#A9A9A9",
+            color: isSelected
+              ? isDark
+                ? "#fff"
+                : "black"
+              : isDark
+              ? "#aaa"
+              : "#A9A9A9",
           },
         });
       });
@@ -159,25 +171,37 @@ export default function TopologyChart({
         const connected = edge.from === selected || edge.to === selected;
         edgesData.current!.update({
           id: edge.id,
-          color: connected ? "#555" : "#DDD",
+          color: connected
+            ? isDark
+              ? "#888"
+              : "#555"
+            : isDark
+            ? "#333"
+            : "#DDD",
         });
       });
     });
+
     networkRef.current.on("deselectNode", () => {
       if (!nodesData.current || !edgesData.current) return;
 
       nodesData.current.forEach((node) => {
         nodesData.current!.update({
           id: node.id,
-          color: { background: "#1E90FF", border: "#555" },
-          font: { color: "black" },
+          color: {
+            background: isDark ? "#4A90E2" : "#1E90FF",
+            border: isDark ? "#999" : "#555",
+          },
+          font: {
+            color: isDark ? "#fff" : "black",
+          },
         });
       });
 
       edgesData.current.forEach((edge) => {
         edgesData.current!.update({
           id: edge.id,
-          color: "#BBBBBB",
+          color: isDark ? "#444" : "#BBBBBB",
         });
       });
     });
