@@ -9,6 +9,7 @@ import {
   Edge,
   Options,
 } from "vis-network/standalone/esm/vis-network";
+import { useTheme } from "next-themes";
 
 interface TopologyChartProps {
   devices: DeviceNode[];
@@ -30,6 +31,7 @@ export default function TopologyChart({
   const networkRef = useRef<Network | null>(null);
   const nodesData = useRef<DataSet<Node> | null>(null);
   const edgesData = useRef<DataSet<Edge> | null>(null);
+  const { theme } = useTheme();
   const initialGraph = React.useRef<{ nodes: Node[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
@@ -41,12 +43,12 @@ export default function TopologyChart({
       solver: "barnesHut",
       stabilization: { iterations: 100, updateInterval: 25 },
     },
-    edges: { color: "text-text", width: 2 },
+    edges: { color: theme === "dark" ? "#888" : "#BBB", width: 2 },
     nodes: {
       shape: "dot",
       size: 15,
-      color: "text-text",
-      font: { size: 12, color: "text-text" },
+      color: theme === "dark" ? "#4A90E2" : "#1E90FF",
+      font: { size: 12, color: theme === "dark" ? "#fff" : "black" },
     },
     interaction: {
       hover: true,
@@ -172,7 +174,7 @@ export default function TopologyChart({
         });
       });
     });
-  }, [graph]);
+  }, [graph, theme]);
 
   useEffect(() => {
     if (!searchTerm || !nodesData.current || !networkRef.current) return;
