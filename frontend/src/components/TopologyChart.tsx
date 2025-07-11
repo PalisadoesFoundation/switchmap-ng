@@ -201,13 +201,18 @@ const TopologyChart: React.FC<TopologyChartProps> = ({
   return (
     <div>
       <h2 className="text-xl font-semibold mb-2">Network Topology</h2>
-      <input
-        className="border p-2 rounded mb-4 w-full max-w-sm"
-        type="text"
-        placeholder="Search node ID..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
+      <div className="flex items-center justify-between mb-4 w-full">
+        <input
+          className="border p-2 rounded mb-4 w-full max-w-sm"
+          type="text"
+          placeholder="Search node ID..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <button onClick={handleReset} className="reset-button">
+          Reset
+        </button>
+      </div>
       <div
         ref={containerRef}
         className="w-full h-[70vh] border rounded shadow"

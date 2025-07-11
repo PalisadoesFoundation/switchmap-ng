@@ -104,3 +104,12 @@ td{
   padding: 0.5rem;
   border-bottom: 1px solid var(--bottom-border-color);
 }
+
+.reset-button{
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
