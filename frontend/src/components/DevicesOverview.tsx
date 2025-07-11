@@ -17,6 +17,7 @@ import {
   InterfaceNode,
   L1Interfaces,
 } from "@/types/graphql/GetZoneDevices";
+import { formatUptime } from "@/utils/time";
 
 interface DevicesOverviewProps {
   devices: DeviceNode[];
@@ -31,16 +32,6 @@ interface DeviceRow {
   uptime: string;
   link: string;
 }
-
-// Format uptime from hundredths of seconds to readable string
-const formatUptime = (hundredths: number): string => {
-  const seconds = Math.floor(hundredths / 100);
-  const days = Math.floor(seconds / 86400);
-  const hrs = Math.floor((seconds % 86400) / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  return `${days}d ${hrs}h ${mins}m ${secs}s`;
-};
 
 export default function DevicesOverview({
   devices,
