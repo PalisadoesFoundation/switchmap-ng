@@ -275,10 +275,7 @@ export default function TopologyChart({
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <button
-          onClick={handleReset}
-          className="mb-4 ml-2 px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-        >
+        <button onClick={handleReset} className="reset-button">
           Reset
         </button>
       </div>
