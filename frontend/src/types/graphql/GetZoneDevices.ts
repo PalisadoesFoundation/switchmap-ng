@@ -13,6 +13,7 @@ export type L1Interfaces = {
 };
 
 export type DeviceNode = {
+  sysDescription: string;
   id: string;
   idxDevice: number;
   sysObjectid: string;
