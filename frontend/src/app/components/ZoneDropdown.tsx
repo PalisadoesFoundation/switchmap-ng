@@ -24,11 +24,14 @@ export default function ZoneDropdown({
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("http://localhost:7000/switchmap/api/graphql", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            query: `  
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_API_URL ||
+            "http://localhost:7000/switchmap/api/graphql",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query: `  
               {  
                 zones {  
                   edges {  
@@ -40,8 +43,9 @@ export default function ZoneDropdown({
                 }  
               }  
             `,
-          }),
-        });
+            }),
+          }
+        );
         if (!res.ok) {
           throw new Error(`Network error: ${res.status}`);
         }
