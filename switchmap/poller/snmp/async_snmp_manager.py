@@ -1026,7 +1026,7 @@ def _convert(value):
                     except (ValueError, TypeError):
                         pass 
 
-                #! appraoch 2 
+                #! approach 2 
                 # Accessing .value attr directly
                 if hasattr(value, 'value'):
                     try:
@@ -1045,7 +1045,7 @@ def _convert(value):
         except (ValueError, TypeError):
             return bytes(str(value.value), 'utf-8')
         
-    #! will check this as well (if we need it ??)
+    #! will check this as well (if we need it ??) ask peter or dominic sir
     # Default Fallback - convert to string then to bytes 
     try:
         return bytes(str(value), 'utf-8')
@@ -1076,10 +1076,7 @@ def _format_results(results,mock_filter, normalized = False):
 
     for oid_str,value in results:
 
-        # Defensive: Double-check OID filtering for edge cases, testing and library quirks
-        # Our walk methods already filter, but this catches unusual scenarios
-
-        # FIX: Normalize both OIDs for comparison to handle leading dot mismatch
+        # Normalize both OIDs for comparison to handle leading dot mismatch
         if mock_filter:
             # Remove leading dots for comparison
             filter_normalized = mock_filter.lstrip('.')
