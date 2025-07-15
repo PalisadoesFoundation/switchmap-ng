@@ -5,6 +5,7 @@ import {
   InterfaceEdge,
   InterfaceNode,
   Mac,
+  MacPorts,
   MacsEdge,
 } from "../../../types/graphql/GetDeviceInterfaces";
 import { DeviceNode } from "../../../types/graphql/GetZoneDevices";
@@ -70,6 +71,34 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const [data, setData] = useState<DeviceResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Helper functions for MAC address processing
+  const extractMacAddresses = (macports?: MacPorts): string => {
+    if (!Array.isArray(macports?.edges) || macports.edges.length === 0)
+      return "";
+
+    return macports.edges
+      .flatMap((edge) => {
+        const macs = edge?.node?.macs;
+        const macList = Array.isArray(macs) ? macs : macs ? [macs] : [];
+        return macList.map((macObj) => macObj?.mac).filter(Boolean);
+      })
+      .join(", ");
+  };
+
+  const extractManufacturers = (macports?: MacPorts): string => {
+    if (!Array.isArray(macports?.edges) || macports.edges.length === 0)
+      return "";
+
+    return macports.edges
+      .flatMap((edge) => {
+        const macs = edge?.node?.macs;
+        const macList = Array.isArray(macs) ? macs : macs ? [macs] : [];
+        return macList
+          .map((macObj) => macObj?.oui?.organization || "")
+          .filter(Boolean);
+      })
+      .join(", ");
+  };
 
   // Fetch device data when ID changes
   useEffect(() => {
@@ -172,49 +201,13 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                 <td>{iface.ifspeed ?? "N/A"}</td>
                 <td>{iface.duplex ?? "N/A"}</td>
                 <td>{iface.ifalias || "N/A"}</td>
-                <td>{iface.trunk ? "Trunk" : ""}</td>
-                <td>{iface.cdpcachedeviceid || ""}</td>
-                <td>{iface.lldpremportdesc || ""}</td>
+                <td>{iface.trunk ? "Trunk" : "-"}</td>
+                <td>{iface.cdpcachedeviceid || "-"}</td>
+                <td>{iface.lldpremportdesc || "-"}</td>
                 {/* Render MAC addresses */}
-                <td>
-                  {Array.isArray(iface.macports?.edges) &&
-                  iface.macports.edges.length > 0
-                    ? iface.macports.edges
-                        .flatMap((edge: MacsEdge) => {
-                          const macs = edge?.node?.macs;
-                          const macList = Array.isArray(macs)
-                            ? macs
-                            : macs
-                            ? [macs]
-                            : [];
-                          return macList
-                            .map((macObj: Mac) => macObj?.mac)
-                            .filter(Boolean);
-                        })
-                        .join(", ")
-                    : ""}
-                </td>
+                <td>{extractMacAddresses(iface.macports)}</td>
                 {/* Render MAC manufacturers */}
-                <td>
-                  {Array.isArray(iface.macports?.edges) &&
-                  iface.macports.edges.length > 0
-                    ? iface.macports.edges
-                        .flatMap((edge: MacsEdge) => {
-                          const macs = edge?.node?.macs;
-                          const macList = Array.isArray(macs)
-                            ? macs
-                            : macs
-                            ? [macs]
-                            : [];
-                          return macList
-                            .map(
-                              (macObj: Mac) => macObj?.oui?.organization || ""
-                            )
-                            .filter(Boolean);
-                        })
-                        .join(", ")
-                    : ""}
-                </td>
+                <td>{extractManufacturers(iface.macports)}</td>
                 {/* Placeholders for IP Address and DNS Name */}
                 <td></td>
                 <td></td>
