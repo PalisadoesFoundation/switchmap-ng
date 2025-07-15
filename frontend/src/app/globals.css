@@ -12,6 +12,7 @@
   --color-icon: var(--icon-color);
   --color-hover-bg: var(--hover-bg);
   --color-select-bg: var(--select-bg);
+  --color-icon: #8C09BC;
 }
 
 
@@ -27,6 +28,7 @@
   --hover-bg: rgba(140, 9, 188, 0.1);
   --select-bg: rgba(140, 9, 188, 0.2);
   --h1-color: #8C09BC;
+  
 
 }
 
@@ -87,7 +89,7 @@ li{
 
 
 .icon{
-  color: #8C09BC;
+  color: var(--color-icon);
   font-size: 1rem;
 }
 table{

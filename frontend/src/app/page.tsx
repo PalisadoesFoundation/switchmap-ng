@@ -10,7 +10,11 @@ export default function Home() {
   const [zoneSelected, setZoneSelected] = useState(false);
   useEffect(() => {
     // Load zoneId from localStorage on mount
-    setZoneId(localStorage.getItem("zoneId") || "");
+    try {
+      setZoneId(localStorage.getItem("zoneId") || "");
+    } catch (error) {
+      console.warn("Failed to access localStorage:", error);
+    }
 
     // Scroll if URL has a hash
     const hash = window.location.hash;

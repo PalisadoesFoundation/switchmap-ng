@@ -1,50 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import {
+  InterfaceEdge,
+  InterfaceNode,
+  Mac,
+  MacsEdge,
+} from "../../../types/graphql/GetDeviceInterfaces";
+import { DeviceNode } from "../../../types/graphql/GetZoneDevices";
 
-interface MacAddress {
-  mac: string;
-  oui?: {
-    organization: string;
-  };
-}
-
-interface L1Interface {
-  idxL1interface: string;
-  idxDevice: string;
-  ifname: string;
-  nativevlan?: number;
-  ifoperstatus: number;
-  tsIdle?: number;
-  ifspeed?: number;
-  duplex?: string;
-  ifalias?: string;
-  trunk?: boolean;
-  cdpcachedeviceid?: string;
-  cdpcachedeviceport?: string;
-  cdpcacheplatform?: string;
-  lldpremportdesc?: string;
-  lldpremsysname?: string;
-  lldpremsysdesc?: string;
-  lldpremsyscapenabled?: string;
-  macports?: {
-    edges: {
-      node: {
-        macs: MacAddress[];
-      };
-    }[];
-  };
-}
-
-interface DeviceData {
-  device: {
-    l1interfaces: {
-      edges: {
-        node: L1Interface;
-      }[];
-    };
-  };
-}
+type DeviceResponse = {
+  device: DeviceNode | null;
+};
 
 // GraphQL query to fetch device interface details
 const QUERY = `
@@ -100,7 +67,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
       ? decodeURIComponent(params.id[0])
       : undefined);
 
-  const [data, setData] = useState<DeviceData | null>(null);
+  const [data, setData] = useState<DeviceResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -144,7 +111,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
 
   // Extract interface list
   const interfaces = data.device.l1interfaces.edges.map(
-    ({ node }: any) => node
+    ({ node }: InterfaceEdge) => node
   );
 
   return (
@@ -178,7 +145,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
             </tr>
           </thead>
           <tbody>
-            {interfaces.map((iface: any) => (
+            {interfaces.map((iface: InterfaceNode) => (
               <tr
                 key={iface.idxDevice + iface.ifname}
                 className={`
@@ -213,7 +180,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                   {Array.isArray(iface.macports?.edges) &&
                   iface.macports.edges.length > 0
                     ? iface.macports.edges
-                        .flatMap((edge: any) => {
+                        .flatMap((edge: MacsEdge) => {
                           const macs = edge?.node?.macs;
                           const macList = Array.isArray(macs)
                             ? macs
@@ -221,7 +188,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                             ? [macs]
                             : [];
                           return macList
-                            .map((macObj: any) => macObj?.mac)
+                            .map((macObj: Mac) => macObj?.mac)
                             .filter(Boolean);
                         })
                         .join(", ")
@@ -232,7 +199,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                   {Array.isArray(iface.macports?.edges) &&
                   iface.macports.edges.length > 0
                     ? iface.macports.edges
-                        .flatMap((edge: any) => {
+                        .flatMap((edge: MacsEdge) => {
                           const macs = edge?.node?.macs;
                           const macList = Array.isArray(macs)
                             ? macs
@@ -241,7 +208,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                             : [];
                           return macList
                             .map(
-                              (macObj: any) => macObj?.oui?.organization || ""
+                              (macObj: Mac) => macObj?.oui?.organization || ""
                             )
                             .filter(Boolean);
                         })
