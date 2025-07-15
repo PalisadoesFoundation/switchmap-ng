@@ -112,7 +112,6 @@ class Validate:
             if bool(authorization.enabled) is False:
                 continue
             
-            #!this is every auth groups credentials present in the config
             # Setup contact with the remote device
             device = Interact(
                 POLL(
@@ -305,7 +304,7 @@ class Interact:
             if result[oid_to_get] is None:
                 validity = False
         
-        return validity;
+        return validity
 
     async def _oid_exists_walk(self,oid_to_get, context_name=""):
         """Check OID existence on device using WALK.
@@ -374,6 +373,67 @@ class Interact:
         )
         return result
     
+    async def walk(self, oid_to_get, normalized=False, check_reachability=False, check_existence=False, context_name="",safe=False):
+        """Do an async SNMPwalk
+        
+
+        Args:
+            oid_to_get: OID to walk
+            normalized: If True, then return results as a dict keyed by
+                only the last node of an OID, otherwise return results
+                keyed by the entire OID string. Normalization is useful
+                when trying to create multidimensional dicts where the
+                primary key is a universal value such as IF-MIB::ifIndex
+                or BRIDGE-MIB::dot1dBasePort
+            check_reachability:
+                Set if testing for connectivity. Some session
+                errors are ignored so that a null result is returned
+            check_existence:
+                Set if checking for the existence of the OID
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
+            safe: Safe query if true. If there is an exception, then return \
+                blank values.
+
+        Returns:
+            result: Dictionary of tuples (OID, value)
+        
+        """
+
+        (_,_,result) = await self.query(oid_to_get,get=False, check_reachability=check_reachability,check_existence=check_existence, normalized=normalized,context_name=context_name,safe=safe)
+
+        return result
+
+    async def swalk(self, oid_to_get, normalized=False, context_name=""):
+        """Perform a safe async SNMPwalk that handles errors gracefully.
+
+        Args:
+            oid_to_get: OID to get
+            normalized: If True, then return results as a dict keyed by
+                only the last node of an OID, otherwise return results
+                keyed by the entire OID string. Normalization is useful
+                when trying to create multidimensional dicts where the
+                primary key is a universal value such as IF-MIB::ifIndex
+                or BRIDGE-MIB::dot1dBasePort
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
+
+        Returns:
+            dict: Results of SNMP walk as OID-value pairs
+        """
+        # Process data
+        return await self.walk(
+            oid_to_get,
+            normalized=normalized,
+            check_reachability=True,
+            check_existence=True,
+            context_name=context_name,
+            safe=True,
+        )
+
+    
     async def query(
         self,
         oid_to_get,
@@ -433,7 +493,6 @@ class Interact:
                 else:
                     results = await session._do_async_walk(oid_to_get, auth_data, transport_target, context_data)
 
-                #! Format results similar to sync version
                 formatted_result = _format_results(results,oid_to_get,normalized=normalized)
                 
 
@@ -494,7 +553,7 @@ class Session:
         self._engine = SnmpEngine()
 
         
-        #! dont hardcore the ratelimit (change it later)
+        #! dont hardcode the ratelimit (change it later)
         #Rate limiting 
         self._semaphore = asyncio.Semaphore(10)
 
@@ -665,7 +724,7 @@ class Session:
                     *current_oids
                 )
                 
-                #! adding more speficic logs here
+                #! adding more specific logs here
                 if error_indication:
                     print(f"BULK error indication: {error_indication}")
                     break
@@ -689,7 +748,7 @@ class Session:
                         if isinstance(value, EndOfMibView):
                             continue 
                         
-                        #! little doubt over time complexity 
+                        #! check over time complexity 
                         #Check if we are still within our desired OID prefix
                         if not str(oid).startswith(oid_prefix):
                             continue 
@@ -800,7 +859,7 @@ def _convert(value):
                     except (ValueError, TypeError):
                         pass 
 
-                #! appraoch 2 
+                #! approach 2 
                 # Accessing .value attr directly
                 if hasattr(value, 'value'):
                     try:
@@ -819,7 +878,7 @@ def _convert(value):
         except (ValueError, TypeError):
             return bytes(str(value.value), 'utf-8')
         
-    #! will check this as well (if we need it ??)
+    #! will check this as well (if we need it ??) ask peter or dominic sir
     # Default Fallback - convert to string then to bytes 
     try:
         return bytes(str(value), 'utf-8')
@@ -850,10 +909,7 @@ def _format_results(results,mock_filter, normalized = False):
 
     for oid_str,value in results:
 
-        # Defensive: Double-check OID filtering for edge cases, testing and library quirks
-        # Our walk methods already filter, but this catches unusual scenarios
-
-        # FIX: Normalize both OIDs for comparison to handle leading dot mismatch
+        # Normalize both OIDs for comparison to handle leading dot mismatch
         if mock_filter:
             # Remove leading dots for comparison
             filter_normalized = mock_filter.lstrip('.')
