@@ -1,8 +1,4 @@
-export type InterfaceNode = {
-  ifoperstatus: number;
-  cdpcachedeviceid: string;
-  cdpcachedeviceport: string;
-};
+import { InterfaceNode } from "./GetDeviceInterfaces";
 
 export type InterfaceEdge = {
   node: InterfaceNode;
