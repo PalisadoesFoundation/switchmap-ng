@@ -163,7 +163,9 @@ h1.docTitle_node_modules-\@docusaurus-theme-classic-src-theme-DocItem- {
 .dropdown__link {
   color: var(--ifm-navbar-link-color);
 }
-
+.button--primary {
+  color: white;
+}
 .header-github-link:hover {
   opacity: 0.7;
 }
@@ -242,7 +244,7 @@ h1.docTitle_node_modules-\@docusaurus-theme-classic-src-theme-DocItem- {
 }
 
 .footer--dark {
-  --ifm-footer-background-color: #111927;
+  --ifm-footer-background-color: #161f36;
 }
 
 .footer--dark li {

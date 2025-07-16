@@ -53,11 +53,12 @@ const config: Config = {
     },
     navbar: {
       title: "Switchmap-NG",
-      logo: {
-        alt: "Palisadoes logo",
-        src: "img/icons/favicon_palisadoes.ico",
-        className: "LogoAnimation",
-      },
+      //To Do: Update the logo when available
+      // logo: {
+      //   alt: "Palisadoes logo",
+      //   src: "img/icons/favicon_palisadoes.ico",
+      //   className: "LogoAnimation",
+      // },
       items: [
         {
           label: "Docs",
