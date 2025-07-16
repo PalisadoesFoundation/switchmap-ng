@@ -20,5 +20,12 @@ for folder in $CHANGED_FOLDERS; do
     fi
 done
 
+# Check if frontend files changed at sibling folder level
+if git diff --name-only --cached | grep -q '^frontend/'; then
+    echo "Generating frontend docs"
+    npx typedoc --out docs/docs/auto-docs/frontend frontend
+    git add docs/docs/auto-docs/frontend
+fi
+
 # Add generated files to the commit
 git add docs/docs/auto-docs/*.md
