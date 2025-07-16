@@ -1,0 +1,8 @@
+{
+  "entryPoints": ["src"],
+  "out": "../docs/docs/frontend", 
+  "plugin": ["typedoc-plugin-markdown"],
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": true
+}

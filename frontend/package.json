@@ -25,6 +25,8 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.4",
     "tailwindcss": "^4",
+    "typedoc": "^0.28.7",
+    "typedoc-plugin-markdown": "^4.7.0",
     "typescript": "^5"
   }
 }
