@@ -18,10 +18,16 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
+  flex-wrap: wrap;
+  min-height:calc(100vh - 80px);
+  align-items: center;
 }
 
 @media screen and (max-width: 996px) {
   .heroBanner {
     padding: 2rem;
+  }
+  .home-wrapper{
+    margin-bottom: 2rem;
   }
 }

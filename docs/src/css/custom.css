@@ -130,7 +130,7 @@ h1.docTitle_node_modules-\@docusaurus-theme-classic-src-theme-DocItem- {
   background-color: var(--sidebar-bg-color);
   box-shadow: var(--ifm-navbar-shadow);
   padding: 24px 48px;
-  height: fit-content;
+  height: 80px;
   z-index: 1000;
 }
 

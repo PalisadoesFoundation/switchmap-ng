@@ -42,9 +42,7 @@ export default function Home() {
     >
       <div className={styles["home-wrapper"]}>
         <HomepageHeader />
-        <main>
-          <HeroSection />
-        </main>
+        <HeroSection />
       </div>
     </Layout>
   );

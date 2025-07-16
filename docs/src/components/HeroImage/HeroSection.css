@@ -17,13 +17,23 @@
 .hero-image-section {
   display: flex;
   justify-content: center;
-  padding-top:2rem;
-  width: 40vw;
+  width: 50%;
 }
 
 .hero-image {
   display: flex;
   align-items: center;
-  width: 100%;
-  height: 88vh;
+  width: 80%;
+  max-width: 800px;
+}
+
+@media screen and (max-width: 996px) {
+  .hero-image-section{
+    width:100%;
+  }
+}
+@media screen and (max-width: 479px){
+  .hero-image-section {
+  display: none;
+}
 }
