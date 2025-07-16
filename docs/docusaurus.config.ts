@@ -62,7 +62,7 @@ const config: Config = {
         {
           label: "Docs",
           position: "left",
-          to: "/",
+          to: "/docs",
           target: "_self",
         },
         

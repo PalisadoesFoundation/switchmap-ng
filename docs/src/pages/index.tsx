@@ -16,9 +16,9 @@ function HomepageHeader() {
           <a
             className={`${styles.button} button button--primary button--lg`}
             href="/docs/installation"
-            aria-label="Installation"
+            aria-label="Get started with Switchmap-NG"
           >
-            Installation
+            Get Started
           </a>
           <a
             className={`${styles.button} button button--secondary button--lg`}
