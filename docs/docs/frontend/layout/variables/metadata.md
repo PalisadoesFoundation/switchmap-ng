@@ -8,4 +8,4 @@
 
 > `const` **metadata**: `Metadata`
 
-Defined in: [src/app/layout.tsx:21](https://github.com/Abhi-MS/switchmap-ng/blob/3d05147cf1d99c7e4af292bb29aa2578337011b2/frontend/src/app/layout.tsx#L21)
+Defined in: [layout.tsx:21](https://github.com/Abhi-MS/switchmap-ng/blob/e018e2d63f554a82a5d7fef619f98deaa2cc42a7/frontend/src/app/layout.tsx#L21)
