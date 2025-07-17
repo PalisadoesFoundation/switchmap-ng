@@ -57,8 +57,6 @@ const QUERY = `
   }
 `;
 
-//Testing for auto docs
-
 function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const params = useParams();
   // Determine device ID from props or URL params
