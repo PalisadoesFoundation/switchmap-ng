@@ -58,7 +58,15 @@ export default function TopologyChart({
       solver: "barnesHut",
       stabilization: { iterations: 100, updateInterval: 25 },
     },
-    edges: { color: isDark ? "#888" : "#BBB", width: 2 },
+    edges: {
+      color: isDark ? "#888" : "#BBB",
+      width: 1,
+      arrows: {
+        to: {
+          enabled: false, // Disable arrows by default
+        },
+      },
+    },
     nodes: {
       shape: "dot",
       size: 15,
@@ -265,6 +273,25 @@ export default function TopologyChart({
         });
       });
     });
+    // Show arrow on hover
+    networkRef.current.on("hoverEdge", (params) => {
+      if (!edgesData.current) return;
+
+      edgesData.current.update({
+        id: params.edge,
+        arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+      });
+    });
+
+    // Hide arrow on blur
+    networkRef.current.on("blurEdge", (params) => {
+      if (!edgesData.current) return;
+
+      edgesData.current.update({
+        id: params.edge,
+        arrows: { to: false },
+      });
+    });
   }, [graph, theme]);
 
   useEffect(() => {
@@ -291,6 +318,7 @@ export default function TopologyChart({
       });
     });
   }, [searchTerm]);
+
   const handleReset = () => {
     setSearchTerm("");
     setGraph(initialGraph.current);
