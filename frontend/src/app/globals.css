@@ -27,6 +27,9 @@
   --hover-bg: rgba(140, 9, 188, 0.1);
   --select-bg: rgba(140, 9, 188, 0.2);
   --h1-color: #8C09BC;
+  --edge-color-light: #bbb;
+  --node-color-light: #1e90ff;
+  --font-color-light: black;
 
 }
 
@@ -42,6 +45,9 @@
   --hover-bg:rgb(59, 65, 85);
   --select-bg: #0B1A47;
   --h1-color:  #ddd;
+  --edge-color-dark: white;
+  --node-color-dark: #4a90e2;
+  --font-color-dark: white;
 }
 
 body {
