@@ -119,7 +119,7 @@ export default function TopologyChart({
               from: sysName,
               to: targetCDP,
               label: "",
-              title: String(portCDP ?? ""),
+              title: String("CDP " + (portCDP ?? "")),
               color: "#BBBBBB",
             } as Edge);
           }
@@ -131,8 +131,8 @@ export default function TopologyChart({
               from: sysName,
               to: targetLLDP,
               label: "",
-              title: String(portLLDP ?? ""),
-              color: "#BBBBBB",
+              title: String("LLDP " + (portLLDP ?? "")),
+              color: "#6f6f6fff",
             } as Edge);
           }
         }
