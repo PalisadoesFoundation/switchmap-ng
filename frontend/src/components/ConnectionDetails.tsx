@@ -202,8 +202,27 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                 <td>{iface.duplex ?? "N/A"}</td>
                 <td>{iface.ifalias || "N/A"}</td>
                 <td>{iface.trunk ? "Trunk" : "-"}</td>
-                <td>{iface.cdpcachedeviceid || "-"}</td>
-                <td>{iface.lldpremportdesc || "-"}</td>
+                <td>
+                  {iface.cdpcachedeviceid ? (
+                    <>
+                      <div>{iface.cdpcachedeviceid}</div>
+                      <div>{iface.cdpcachedeviceport}</div>
+                    </>
+                  ) : (
+                    "-"
+                  )}
+                </td>
+                <td>
+                  {iface.lldpremsysname ? (
+                    <>
+                      <div>{iface.lldpremsysname}</div>
+                      <div>{iface.lldpremportdesc}</div>
+                    </>
+                  ) : (
+                    "-"
+                  )}
+                </td>
+
                 {/* Render MAC addresses */}
                 <td>{extractMacAddresses(iface.macports)}</td>
                 {/* Render MAC manufacturers */}

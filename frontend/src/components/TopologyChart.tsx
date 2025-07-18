@@ -106,18 +106,32 @@ export default function TopologyChart({
 
       (device.l1interfaces?.edges ?? []).forEach(
         ({ node: iface }: { node: any }) => {
-          const target = iface?.cdpcachedeviceid;
-          const port = iface?.cdpcachedeviceport;
+          const targetCDP = iface?.cdpcachedeviceid;
+          const portCDP = iface?.cdpcachedeviceport;
+          const targetLLDP = iface?.cdpcachedeviceid;
+          const portLLDP = iface?.cdpcachedeviceport;
 
-          if (target) {
-            if (!nodesSet.has(target)) {
-              extraNodesSet.add(target);
+          if (targetCDP) {
+            if (!nodesSet.has(targetCDP)) {
+              extraNodesSet.add(targetCDP);
             }
             edgesArray.push({
               from: sysName,
-              to: target,
+              to: targetCDP,
               label: "",
-              title: String(port ?? ""),
+              title: String(portCDP ?? ""),
+              color: "#BBBBBB",
+            } as Edge);
+          }
+          if (targetLLDP) {
+            if (!nodesSet.has(targetLLDP)) {
+              extraNodesSet.add(targetLLDP);
+            }
+            edgesArray.push({
+              from: sysName,
+              to: targetLLDP,
+              label: "",
+              title: String(portLLDP ?? ""),
               color: "#BBBBBB",
             } as Edge);
           }
