@@ -23,20 +23,32 @@ export default function TopologyChart({
   loading,
   error,
 }: TopologyChartProps) {
+  // React state to hold current graph structure: array of nodes and edges
   const [graph, setGraph] = useState<{ nodes: Node[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
   });
+  // State to track the current search input (used for node filtering/highlighting)
   const [searchTerm, setSearchTerm] = useState("");
+  // Reference to the DOM element where the network will be rendered
   const containerRef = useRef<HTMLDivElement | null>(null);
+  // Reference to the actual vis-network instance (used for calling methods like focus, fit, etc.)
   const networkRef = useRef<Network | null>(null);
+  // DataSets are vis-network's internal reactive data structures for nodes and edges
+  // These allow you to dynamically add, update, or remove nodes/edges without recreating the network
   const nodesData = useRef<DataSet<Node> | null>(null);
   const edgesData = useRef<DataSet<Edge> | null>(null);
+  // Theme context to determine if dark mode is enabled
   const { theme } = useTheme();
+  // Stores the original, unmodified graph (used for resets, filtering, etc.)
   const initialGraph = React.useRef<{ nodes: Node[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
   });
+
+  // Determine if current theme is dark to set graph colors accordingly.
+  // Note: vis-network options are initialized once and do not auto-update on theme change.
+  // To support dynamic theme switching, update network options manually when `theme` changes.
   const isDark = theme === "dark";
   const options: Options = {
     clickToUse: true,
@@ -62,19 +74,35 @@ export default function TopologyChart({
   };
 
   useEffect(() => {
+    /**
+     * When the `devices` array updates, this effect builds the graph structure
+     * (nodes and edges) to render a topology network using vis-network.
+     *
+     * - Each device becomes a node.
+     * - If a device has interfaces with a CDP (Cisco Discovery Protocol) target,
+     *   those relationships become edges.
+     *
+     * Custom `title` (tooltip) and `idxDevice` are added to nodes for UX features
+     * like tooltips and click navigation.
+     */
     if (!devices || devices.length === 0) {
       setGraph({ nodes: [], edges: [] });
       return;
     }
 
     const nodesSet = new Set<string>();
+    const extraNodesSet = new Set<string>();
     const edgesArray: Edge[] = [];
 
     devices.forEach((device) => {
       const sysName = device?.sysName;
       if (!sysName) return;
-
-      nodesSet.add(sysName);
+      if (extraNodesSet.has(sysName)) {
+        // If device is in the current zone, skip adding it
+        extraNodesSet.delete(sysName);
+        nodesSet.add(sysName);
+      }
+      nodesSet.add(device.sysName);
 
       (device.l1interfaces?.edges ?? []).forEach(
         ({ node: iface }: { node: any }) => {
@@ -82,7 +110,9 @@ export default function TopologyChart({
           const port = iface?.cdpcachedeviceport;
 
           if (target) {
-            nodesSet.add(target);
+            if (!nodesSet.has(target)) {
+              extraNodesSet.add(target);
+            }
             edgesArray.push({
               from: sysName,
               to: target,
@@ -113,6 +143,15 @@ export default function TopologyChart({
     Uptime: ${formatUptime(device.sysUptime)}
   `.trim(), // ✅ Tooltip content (HTML-safe string)
     }));
+    // Add extra nodes that are not in the current zone
+    extraNodesSet.forEach((sysName) => {
+      nodesArray.push({
+        id: sysName,
+        label: sysName,
+        color: "#383e44ff",
+        title: "Device not in current zone",
+      });
+    });
 
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
