@@ -70,7 +70,7 @@ class If64Query(Query):
 
         super().__init__(snmp_object, test_oid, tags=["system", "layer1"])
 
-    def system(self):
+    async def system(self):
         """Get system data from device.
 
         Args:

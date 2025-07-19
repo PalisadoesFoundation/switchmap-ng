@@ -68,7 +68,7 @@ class IfQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["system", "layer1"])
 
-    def system(self):
+    async def system(self):
         """Get system data from device.
 
         Args:
@@ -82,7 +82,7 @@ class IfQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Return
-        final["IF-MIB"]["ifStackStatus"] = self.ifstackstatus()
+        final["IF-MIB"]["ifStackStatus"] = await self.ifstackstatus()
         return final
 
     def layer1(self):
@@ -625,7 +625,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifstackstatus(self, oidonly=False):
+    async def ifstackstatus(self, oidonly=False):
         """Return dict of IFMIB ifStackStatus for each ifIndex for device.
 
         Args:
@@ -693,7 +693,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key in results.keys():
             # Get higher and lower layer index values
             nodes = key.split(".")
