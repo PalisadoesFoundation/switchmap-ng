@@ -261,17 +261,24 @@ class Interact:
         Returns:
             bool: True if OID exists, False otherwise
         """
-        # Initialize key 
-        validity = False
+        try:
+            # Initialize key 
+            validity = False
 
-        # Validate OID
-        if await self._oid_exists_get(oid_to_get,context_name=context_name) is True:
-            validity = True 
-        if validity is False:
-            if await self._oid_exists_walk(oid_to_get, context_name=context_name) is True:
-                validity = True
+            # Validate OID
+            if await self._oid_exists_get(oid_to_get,context_name=context_name) is True:
+                validity = True 
+            if validity is False:
+                if await self._oid_exists_walk(oid_to_get, context_name=context_name) is True:
+                    validity = True
         
-        return validity
+            return validity
+        except Exception as e:
+            #! add better logs here
+            print(f"Oid Existence check failed for {oid_to_get}: {e}")
+            return False
+        
+    
     
     async def _oid_exists_get(self, oid_to_get,context_name=""):
         """Determine existence of OID on device.
@@ -286,25 +293,32 @@ class Interact:
             validity: True if exists
 
         """
-        validity = False 
-        
-        #! check the validity arg in query
-        (_,validity,result) = await self.query(
-            oid_to_get,
-            context_name = context_name,
-            get = True,
-            check_reachability = True,
-            check_existence = True
-        )
-
-        # If we get no result, then override validity
-        if bool(result) is False:
+        try: 
             validity = False
-        elif isinstance(result, dict) is True:
-            if result[oid_to_get] is None:
-                validity = False
-        
-        return validity
+
+            (_,exists,result) = await self.query(
+                oid_to_get,
+                get=True,
+                check_reachability=True,
+                check_existence=True,
+                context_name=context_name
+            )
+
+            if exists and bool(result):
+                # Make sure the OID key exists in result
+                if isinstance(result, dict) and oid_to_get in result:
+                    if result[oid_to_get] is not None:
+                        validity = True
+                elif isinstance(result,dict) and result:
+                    #! considering this case as well for confirming oid exists
+                    # If result has data but not exact OID, still consider it valid
+                    validity = True 
+            
+            return validity
+        except Exception as e:
+            #! add logs
+            print(f"GET existence check failed for {oid_to_get}:{e}")
+            return False
 
     async def _oid_exists_walk(self,oid_to_get, context_name=""):
         """Check OID existence on device using WALK.
@@ -319,20 +333,25 @@ class Interact:
             validity: True if exist
         """
 
-        (_,_, results) = await self.query(
-            oid_to_get,
-            get= False,
-            check_reachability = True,
-            context_name = context_name,
-            check_existence = True
-        )
-
-        # If we get no result, then override validity 
-        if isinstance(results,dict) is True:
-            for value in results.values():
-                if value is not None:
-                    return True 
-        return False
+        try:
+            (_, exists, results) = await self.query(
+                oid_to_get,
+                get=False,
+                check_existence=True,
+                context_name=context_name,
+                check_reachability=True
+            )
+            #! our oid is valid if it returns out any valid data ??
+            # Check if we get valid results 
+            if exists and isinstance(results,dict) and results:
+                for value in results.values():
+                    if value is None:
+                        return True
+            return False
+        except Exception as e:
+            #! add logs
+            print(f"Walk instance fail for {oid_to_get}:{e}")
+            return False
     
     async def get(
         self,
@@ -484,7 +503,9 @@ class Interact:
             try:
                 #Create SNMP session
                 session = Session(self._poll, context_name=context_name)
-                auth_data,transport_target = await session._session()
+                #! this is for the case if our bulkCmd get stuck maybe due to device overwhelming or maybe wrong prefix
+                # Use shorter timeouts for walk operations
+                auth_data,transport_target = await session._session(walk_operation=(not get))
                 context_data = ContextData(contextName=context_name)
 
                 # Perform the SNMP operation
@@ -564,7 +585,7 @@ class Session:
             )
             log.log2die(1046, log_message)
 
-    async def _session(self):
+    async def _session(self, walk_operation = False):
         """ Create SNMP session parameters based on configuration.
 
         Returns:
@@ -573,11 +594,22 @@ class Session:
 
         auth = self._poll.authorization
 
+        # Use shorter timeouts for walk operations to prevent hanging 
+        if walk_operation:
+            timeout = 3
+            retries = 1
+        else:
+            # Normal timeout for GET operations
+            timeout = 10
+            retries = 3
+        
+
+
         #Create transport target
         transport_target = UdpTransportTarget(
             (self._poll.hostname, auth.port),
-            timeout=10,
-            retries=3
+            timeout=timeout,
+            retries=retries
         )
 
         #Create authentication data based on SNMP version
@@ -661,7 +693,6 @@ class Session:
         
         return results
     
-    #!come back to this after implementing query method
     async def _do_async_walk(self, oid_prefix, auth_data, transport_target, context_data):
         """ Pure async SNMP WALK using pysnmp async capabilities. """
 
@@ -673,8 +704,17 @@ class Session:
             results = await self._async_walk_v1(oid_prefix, auth_data, transport_target, context_data)
         else:
             # SNMPv2c/v3 - use bulkCmd
-            results = await self._async_walk_v2(oid_prefix, auth_data, transport_target, context_data)
 
+            try:
+                results = await asyncio.wait_for(
+                   self._async_walk_v2(oid_prefix, auth_data, transport_target, context_data),
+                   timeout=60.0
+                )
+            except asyncio.TimeoutError:
+                print(f"bulk walk timeout after 60s for prefix {oid_prefix}")
+                # Fallback to SNMPv1 walk which would be more reliable
+                results = await self._async_walk_v1(oid_prefix, auth_data, transport_target, context_data)
+            
         return results
     
     async def _async_walk_v1(self, oid_prefix, auth_data, transport_target, context_data):
@@ -709,10 +749,15 @@ class Session:
         current_oids = [ObjectType(ObjectIdentity(oid_prefix))]
 
         try:
-            max_iterations = 100
+            #! checking for 50, 100 would be too long to prevent from hanging
+            max_iterations = 50
             iterations = 0
+            consecutive_empty_responses = 0
+            # Stop after 3 consecutive empty responses
+            max_empty_responses = 3 
 
-            while iterations < max_iterations:
+
+            while current_oids  and iterations < max_iterations:
                 iterations += 1
                 # non-repeaters = 0 , max_repetitions = 25
                 error_indication, error_status, error_index, var_bind_table = await bulkCmd(
@@ -734,35 +779,59 @@ class Session:
                 
                 #Check if we got any response
                 if not var_bind_table:
-                    print(f"No more data")
-                    break
+                    consecutive_empty_responses += 1
+                    print(f" attempt {consecutive_empty_responses}/{max_empty_responses}")
+                    if consecutive_empty_responses >= max_empty_responses:
+                        break
+                    continue
+                else:
+                    consecutive_empty_responses = 0
 
                 #Process the response
                 next_oids= []
                 found_valid_data = False
 
                 for var_bind in var_bind_table:
-                    for oid,value in var_bind:
+                    if not var_bind or len(var_bind) == 0:
+                        continue
 
-                        #Check for end of MIB 
-                        if isinstance(value, EndOfMibView):
-                            continue 
-                        
-                        #! check over time complexity 
-                        #Check if we are still within our desired OID prefix
-                        if not str(oid).startswith(oid_prefix):
-                            continue 
-                        
-                        results.append((str(oid),value))
-                        next_oids.append(ObjectType(ObjectIdentity(oid)))
-                        found_valid_data = True
+                    # Get the ObjectType from the list
+                    obj_type = var_bind[0]
 
+                    # Extract OID and value from ObjectType
+                    oid = obj_type[0]
+                    value = obj_type[1]
+
+                    #Check for end of MIB
+                    if isinstance(value, EndOfMibView):
+                        continue
+
+                    #Check if we are still within our desired OID prefix
+                    oid_str = str(oid)
+
+                    # Remove leading dot for comparison
+                    prefix_normalized = str(oid_prefix).lstrip('.')
+                    oid_normalized = oid_str.lstrip('.')
+
+                    if not oid_normalized.startswith(prefix_normalized):
+                        continue 
+
+                    results.append((oid_str,value))
+                    next_oids.append(ObjectType(ObjectIdentity(oid)))
+                    found_valid_data = True
                 
                 if not found_valid_data:
-                    print(f"BULK walk: No more valid data for prefix {oid_prefix}")
+                    #! add logs
+                    print(f"No more valid data for prefix {oid_prefix}, iterations: {iterations}")
                     break
 
-                current_oids = [next_oids[-1]] if next_oids else []
+                current_oids = next_oids 
+
+                #! in case, we get too many results 
+                #! ask peter or dominic sir on this take 
+                if len(results) > 10000:
+                    print(f"Stopping after collecting {len(results)} results (safety limit)")
+                    break
 
         except Exception as e:
             print(f"BULK walk error: {e}")

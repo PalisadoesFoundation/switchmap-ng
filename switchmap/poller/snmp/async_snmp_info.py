@@ -93,7 +93,6 @@ class Query:
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
-        hostname = self.snmp_object.hostname()
 
         print(f"data to visualize: {data}")
 
