@@ -11,6 +11,7 @@ import {
 } from "vis-network/standalone/esm/vis-network";
 import { useTheme } from "next-themes";
 import { formatUptime } from "@/utils/time";
+import { truncateLines } from "@/utils/stringUtils";
 
 interface TopologyChartProps {
   devices: DeviceNode[];
@@ -87,28 +88,34 @@ export default function TopologyChart({
      * (nodes and edges) to render a topology network using vis-network.
      *
      * - Each device becomes a node.
-     * - If a device has interfaces with a CDP (Cisco Discovery Protocol) target,
+     * - If a device has interfaces with a CDP (Cisco Discovery Protocol) or
+     *   LLDP(Link Layer Discovery Protocol) relationship,
      *   those relationships become edges.
      *
      * Custom `title` (tooltip) and `idxDevice` are added to nodes for UX features
      * like tooltips and click navigation.
      */
+    // If no devices are available, reset the graph to empty state
     if (!devices || devices.length === 0) {
       setGraph({ nodes: [], edges: [] });
       return;
     }
-
+    // Create sets to track unique nodes and edges
+    // `nodesSet` tracks nodes already in the graph
+    // `extraNodesSet` tracks nodes that are not in the current zone
+    // This helps avoid duplicates and manage relationships correctly
     const nodesSet = new Set<string>();
     const extraNodesSet = new Set<string>();
     const edgesArray: Edge[] = [];
-
+    // Iterate over each device to build nodes and edges
+    // We use `sysName` as the unique identifier for each device
     devices.forEach((device) => {
       const sysName = device?.sysName;
       if (!sysName) return;
+      // If the device is already in the current zone, remove it from `extraNodesSet`
+      // This ensures we only add devices that are not in the current zone to `extraNodesSet`
       if (extraNodesSet.has(sysName)) {
-        // If device is in the current zone, skip adding it
         extraNodesSet.delete(sysName);
-        nodesSet.add(sysName);
       }
       nodesSet.add(device.sysName);
 
@@ -118,7 +125,7 @@ export default function TopologyChart({
           const portCDP = iface?.cdpcachedeviceport;
           const targetLLDP = iface?.cdpcachedeviceid;
           const portLLDP = iface?.cdpcachedeviceport;
-
+          // Create edges for CDP or LLDP relationships
           if (targetCDP) {
             if (!nodesSet.has(targetCDP)) {
               extraNodesSet.add(targetCDP);
@@ -146,13 +153,9 @@ export default function TopologyChart({
         }
       );
     });
-    const truncateTwoLines = (str: string, max = 100) => {
-      // Approximate split into two halves to simulate 2 lines
-      if (!str) return "N/A";
-      if (str.length <= max) return str;
-      return str.slice(0, max / 2) + "\n" + str.slice(max / 2, max) + "...";
-    };
 
+    // Create nodes array from devices
+    // Each node has an `id`, `label`, `color`, and custom `title
     const nodesArray: Node[] = devices.map((device) => ({
       id: device.sysName ?? "",
       label: device.sysName ?? device.idxDevice?.toString() ?? "",
@@ -160,12 +163,14 @@ export default function TopologyChart({
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
       title: `
     ${device.sysName ?? "Unknown"}
-    Description: ${truncateTwoLines(device.sysDescription ?? "N/A")}
+    Description: ${truncateLines(device.sysDescription ?? "N/A")}
     Hostname: ${device.hostname ?? "N/A"}
     Uptime: ${formatUptime(device.sysUptime)}
-  `.trim(), // ✅ Tooltip content (HTML-safe string)
+  `.trim(), // Tooltip content (HTML-safe string)
     }));
     // Add extra nodes that are not in the current zone
+    // These nodes are added with a different color and a tooltip
+    // indicating they are not in the current zone
     extraNodesSet.forEach((sysName) => {
       nodesArray.push({
         id: sysName,
@@ -174,12 +179,13 @@ export default function TopologyChart({
         title: "Device not in current zone",
       });
     });
-
+    // Set the initial graph state with nodes and edges
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
   }, [devices]);
 
   useEffect(() => {
+    // If no graph data is available, do not render the network
     if (!containerRef.current || graph.nodes.length === 0) return;
 
     nodesData.current = new DataSet<Node>(graph.nodes);
