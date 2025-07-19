@@ -88,21 +88,32 @@ class Poll:
             None
 
         Returns:
-            None
+            dict: Polled data or None if failed
 
         """
         # Initialize key variables
         _data = None
 
-        #! query only if snmp_object is valid 
+        #Only query if the device is contactable
+        if bool(self._snmp_object) is False:
+            #! may add a log here, for better reading
+            print(f"No valid SNMP object for {self._hostname} ")
+            return _data 
+        
+        # Get data 
+        log_message = """\
+Querying topology data from host: {}.""".format(self._hostname)
+        
+        log.log2info(1078, log_message)
 
-        #! create query instance then call everything 
-        #! return the final polled data back to poll.py (for now we will just print and check)
+        status = async_snmp_info.Query(snmp_object=self._snmp_object)
+
+        _data = await status.everything()
+
+        print(f"ALl the data broo: {_data}")
+
+        return _data 
     
-
-    
-
-
 
 def _do_poll(authorization):
     """Determine whether doing a poll is valid.

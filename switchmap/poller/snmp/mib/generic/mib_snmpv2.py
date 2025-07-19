@@ -93,6 +93,8 @@ class Snmpv2Query(Query):
         key = 0
 
         # Process
+        #! after checking every sys n layers working in async (work on major improvements)
+        #! use gather intead of going seqeuncial
         oidroot = ".1.3.6.1.2.1.1"
         for node in range(1, 7):
             oid = "{}.{}.0".format(oidroot, node)
