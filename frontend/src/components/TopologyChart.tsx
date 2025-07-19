@@ -72,7 +72,12 @@ export default function TopologyChart({
       shape: "dot",
       size: 15,
       color: isDark ? "#4A90E2" : "#1E90FF",
-      font: { size: 12, color: isDark ? "#fff" : "black" },
+      font: {
+        size: 12,
+        color: isDark ? "#fff" : "black",
+        strokeColor: isDark ? "#081028" : "white",
+        strokeWidth: 2,
+      },
     },
     interaction: {
       hover: true,
@@ -222,11 +227,7 @@ export default function TopologyChart({
         nodesData.current!.update({
           id: node.id,
           color: {
-            background: isSelected
-              ? "#FF6347" // selected highlight
-              : isDark
-              ? "#2c2c2c"
-              : "#D3D3D3",
+            background: isDark ? "#939393ff" : "#D3D3D3",
             border: isDark ? "#999" : "#555",
           },
           font: {
@@ -240,22 +241,15 @@ export default function TopologyChart({
           },
         });
       });
-
+      // Update edges connected to the selected node
       edgesData.current.forEach((edge) => {
         const connected = edge.from === selected || edge.to === selected;
         edgesData.current!.update({
           id: edge.id,
-          color: connected
-            ? isDark
-              ? "#888"
-              : "#555"
-            : isDark
-            ? "#333"
-            : "#DDD",
         });
       });
     });
-
+    // Reset node selection highlighting
     networkRef.current.on("deselectNode", () => {
       if (!nodesData.current || !edgesData.current) return;
 
@@ -271,7 +265,7 @@ export default function TopologyChart({
           },
         });
       });
-
+      // Reset edges color
       edgesData.current.forEach((edge) => {
         edgesData.current!.update({
           id: edge.id,
@@ -300,6 +294,9 @@ export default function TopologyChart({
     });
   }, [graph, theme]);
 
+  // Effect to handle search term changes
+  // When the search term changes, it highlights the matching node and focuses the network view on it.
+  // If the node is not found, it logs a warning.
   useEffect(() => {
     if (!searchTerm || !nodesData.current || !networkRef.current) return;
 
