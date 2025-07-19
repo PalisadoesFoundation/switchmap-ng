@@ -226,8 +226,8 @@ export default function TopologyChart({
         const isSelected = node.id === selected;
         nodesData.current!.update({
           id: node.id,
+          opacity: isSelected ? 1 : 0.6,
           color: {
-            background: isDark ? "#939393ff" : "#D3D3D3",
             border: isDark ? "#999" : "#555",
           },
           font: {
@@ -256,8 +256,8 @@ export default function TopologyChart({
       nodesData.current.forEach((node) => {
         nodesData.current!.update({
           id: node.id,
+          opacity: 1,
           color: {
-            background: isDark ? "#4A90E2" : "#1E90FF",
             border: isDark ? "#999" : "#555",
           },
           font: {
@@ -301,10 +301,8 @@ export default function TopologyChart({
     if (!searchTerm || !nodesData.current || !networkRef.current) return;
 
     const node = nodesData.current.get(searchTerm);
-    if (!node) {
-      console.warn(`Node "${searchTerm}" not found.`);
-      return;
-    }
+    // Avoid doing anything if the searchTerm is empty or partial
+    if (!searchTerm || !node) return;
 
     networkRef.current.focus(searchTerm, { scale: 1.5, animation: true });
 
@@ -316,7 +314,14 @@ export default function TopologyChart({
           border: "#555",
         },
         font: {
-          color: n.id === searchTerm ? "black" : "#A9A9A9",
+          color:
+            n.id === searchTerm
+              ? isDark
+                ? "#fff"
+                : "black"
+              : isDark
+              ? "#aaa"
+              : "#A9A9A9",
         },
       });
     });
