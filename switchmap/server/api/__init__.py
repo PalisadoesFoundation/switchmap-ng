@@ -22,10 +22,9 @@ API = Flask(
 )
 CORS(
     API,
-    resources={r"/switchmap/api/*": {"origins": "http://localhost:3000"}},
+    resources={r"/switchmap/api/graphql": {"origins": "http://localhost:3000"}},
     supports_credentials=True,
 )
-
 
 # Register Blueprints
 API.register_blueprint(API_GRAPHQL, url_prefix=API_PREFIX)
