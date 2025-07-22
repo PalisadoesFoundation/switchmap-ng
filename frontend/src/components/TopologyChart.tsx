@@ -30,7 +30,12 @@ export default function TopologyChart({
     edges: [],
   });
   // State to track the current search input (used for node filtering/highlighting)
+  const [inputTerm, setInputTerm] = useState("");
+  // State to hold the search term for highlighting nodes
   const [searchTerm, setSearchTerm] = useState("");
+  // State to track the search result
+  const [searchResult, setSearchResult] = useState("");
+
   // Reference to the DOM element where the network will be rendered
   const containerRef = useRef<HTMLDivElement | null>(null);
   // Reference to the actual vis-network instance (used for calling methods like focus, fit, etc.)
@@ -241,13 +246,6 @@ export default function TopologyChart({
           },
         });
       });
-      // Update edges connected to the selected node
-      edgesData.current.forEach((edge) => {
-        const connected = edge.from === selected || edge.to === selected;
-        edgesData.current!.update({
-          id: edge.id,
-        });
-      });
     });
     // Reset node selection highlighting
     networkRef.current.on("deselectNode", () => {
@@ -301,35 +299,41 @@ export default function TopologyChart({
     if (!searchTerm || !nodesData.current || !networkRef.current) return;
 
     const node = nodesData.current.get(searchTerm);
-    // Avoid doing anything if the searchTerm is empty or partial
-    if (!searchTerm || !node) return;
+    if (!node) {
+      setSearchResult("No results found");
+      return;
+    } else {
+      // Highlight the node and focus the network
+      setSearchResult("Showing results for: " + searchTerm);
 
-    networkRef.current.focus(searchTerm, { scale: 1.5, animation: true });
+      networkRef.current.focus(searchTerm, { scale: 1.5, animation: true });
 
-    nodesData.current.get().forEach((n) => {
-      nodesData.current!.update({
-        id: n.id,
-        color: {
-          background: n.id === searchTerm ? "#FF6347" : "#D3D3D3",
-          border: "#555",
-        },
-        font: {
-          color:
-            n.id === searchTerm
-              ? isDark
-                ? "#fff"
-                : "black"
-              : isDark
-              ? "#aaa"
-              : "#A9A9A9",
-        },
+      nodesData.current.get().forEach((n) => {
+        nodesData.current!.update({
+          id: n.id,
+          color: {
+            background: n.id === searchTerm ? "#FF6347" : "#D3D3D3",
+            border: "#555",
+          },
+          font: {
+            color:
+              n.id === searchTerm
+                ? isDark
+                  ? "#fff"
+                  : "black"
+                : isDark
+                ? "#aaa"
+                : "#A9A9A9",
+          },
+        });
       });
-    });
+    }
   }, [searchTerm]);
 
   const handleReset = () => {
-    setSearchTerm("");
+    setInputTerm("");
     setGraph(initialGraph.current);
+    setSearchResult("");
 
     if (!networkRef.current || !nodesData.current || !edgesData.current) return;
 
@@ -341,7 +345,7 @@ export default function TopologyChart({
       nodesData.current!.update({
         id: node.id,
         color: { background: "#1E90FF", border: "#555" },
-        font: { color: "black" },
+        font: { color: isDark ? "#fff" : "black" },
       });
     });
 
@@ -374,14 +378,26 @@ export default function TopologyChart({
   return (
     <div>
       <h2 className="text-xl font-semibold mb-2">Network Topology</h2>
-      <div className="flex items-center justify-between mb-4 w-full">
-        <input
-          className="border p-2 rounded mb-4 w-full max-w-sm"
-          type="text"
-          placeholder="Search device..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+      <div className="flex items-center mb-2 justify-between w-full">
+        <div className="flex items-center flex-row gap-4">
+          <input
+            className="border p-2 rounded w-full max-w-sm"
+            type="text"
+            placeholder="Search device..."
+            value={inputTerm}
+            onChange={(e) => setInputTerm(e.target.value)}
+          />
+          <button
+            className="!border border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit"
+            onClick={() => {
+              setSearchTerm(inputTerm);
+              setInputTerm("");
+            }}
+          >
+            Search
+          </button>
+        </div>
+
         <div>
           <button onClick={handleReset} className="reset-button">
             Reset
@@ -395,6 +411,10 @@ export default function TopologyChart({
           </button>
         </div>
       </div>
+      <p className="mt-2 mb-2 text-sm text-gray-600 min-h-[1.5rem] h-[1.5rem]">
+        {searchResult || ""}
+      </p>
+
       <div
         ref={containerRef}
         className="w-full h-[70vh] border rounded shadow"
