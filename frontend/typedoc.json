@@ -2,6 +2,7 @@
   "entryPoints": ["src"],
   "out": "../docs/docs/frontend", 
   "plugin": ["typedoc-plugin-markdown"],
+  "exclude": ["**/node_modules/**"], 
   "excludeExternals": true,
   "excludePrivate": true,
   "excludeProtected": true
