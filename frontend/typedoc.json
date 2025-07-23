@@ -1,10 +1,14 @@
 {
   "entryPoints": ["src"],
+  "entryPointStrategy": "resolve",
   "out": "../docs/docs/frontend", 
   "plugin": ["typedoc-plugin-markdown"],
   "exclude": ["**/node_modules/**"], 
   "excludeExternals": true,
   "excludePrivate": true,
   "excludeProtected": true,
-  "readme": "none"
+  "readme": "none",
+  "hideBreadcrumbs": true,
+  "hideInPageTOC": true,
+  "hideSources": true
 }

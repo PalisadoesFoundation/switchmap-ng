@@ -5,7 +5,7 @@ import ZoneDropdown from "@/app/components/ZoneDropdown";
 import { useEffect, useState } from "react";
 import Sidebar from "@/app/components/Sidebar";
 
-export default function Home() {
+function Home() {
   const [zoneId, setZoneId] = useState("");
   const [zoneSelected, setZoneSelected] = useState(false);
   useEffect(() => {
@@ -50,3 +50,5 @@ export default function Home() {
     </div>
   );
 }
+
+export default Home;

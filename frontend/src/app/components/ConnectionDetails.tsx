@@ -57,7 +57,7 @@ const QUERY = `
   }
 `;
 
-export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
+function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const params = useParams();
   // Determine device ID from props or URL params
   const id =
@@ -219,3 +219,5 @@ export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
     </div>
   );
 }
+
+export default ConnectionDetails;

@@ -6,7 +6,7 @@ import { FiLayout, FiClock, FiSettings } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import ThemeToggle from "@/app/theme-toggle";
 
-export default function Sidebar() {
+function Sidebar() {
   const [open, setOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
@@ -108,3 +108,5 @@ export default function Sidebar() {
     </>
   );
 }
+
+export default Sidebar;

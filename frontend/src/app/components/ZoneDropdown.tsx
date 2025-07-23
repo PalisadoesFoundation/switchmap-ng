@@ -9,10 +9,7 @@ type ZoneDropdownProps = {
   onChange: (zoneId: string) => void;
 };
 
-export default function ZoneDropdown({
-  selectedZoneId,
-  onChange,
-}: ZoneDropdownProps) {
+function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
   const [zones, setZones] = useState<Zone[]>([]);
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -152,3 +149,4 @@ export default function ZoneDropdown({
     </div>
   );
 }
+export default ZoneDropdown;
