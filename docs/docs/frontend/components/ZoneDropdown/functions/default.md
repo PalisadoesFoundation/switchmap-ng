@@ -8,7 +8,7 @@
 
 > **default**(`__namedParameters`): `Element`
 
-Defined in: [components/ZoneDropdown.tsx:12](https://github.com/Abhi-MS/switchmap-ng/blob/4d2ab3a334357f824d68adf958619cb2ba911929/frontend/src/app/components/ZoneDropdown.tsx#L12)
+Defined in: [components/ZoneDropdown.tsx:12](https://github.com/Abhi-MS/switchmap-ng/blob/87da140659e893a6f90df2557dc16b00247d8ab8/frontend/src/app/components/ZoneDropdown.tsx#L12)
 
 ## Parameters
 

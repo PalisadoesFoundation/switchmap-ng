@@ -8,7 +8,7 @@
 
 > **default**(`__namedParameters`): `null` \| `Element`
 
-Defined in: [components/ConnectionDetails.tsx:60](https://github.com/Abhi-MS/switchmap-ng/blob/4d2ab3a334357f824d68adf958619cb2ba911929/frontend/src/app/components/ConnectionDetails.tsx#L60)
+Defined in: [components/ConnectionDetails.tsx:60](https://github.com/Abhi-MS/switchmap-ng/blob/87da140659e893a6f90df2557dc16b00247d8ab8/frontend/src/app/components/ConnectionDetails.tsx#L60)
 
 ## Parameters
 
