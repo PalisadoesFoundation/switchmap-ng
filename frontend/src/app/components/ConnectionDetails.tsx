@@ -15,6 +15,7 @@ type DeviceResponse = {
 };
 
 // GraphQL query to fetch device interface details
+// Testing docs generation
 const QUERY = `
   query Device($id: ID!) {
     device(id: $id) {
