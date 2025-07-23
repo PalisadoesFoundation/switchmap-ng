@@ -28,10 +28,12 @@ if [[ "$FRONTEND_CHANGED" == "yes" ]]; then
     echo "Generating frontend docs"
     (cd frontend && npx typedoc src \
       --plugin typedoc-plugin-markdown \
-      --exclude "**/node_modules/**/*" \
+      --exclude "**/node_modules/**" \
       --entryPointStrategy expand \
       --out ../docs/docs/frontend)
 fi
 
 # Add generated files to the commit
-git add docs/docs/*.md
+git add docs/docs/
+
+
