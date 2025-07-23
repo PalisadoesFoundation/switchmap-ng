@@ -2,10 +2,6 @@
 
 ***
 
-[frontend](../../../README.md) / types/graphql/GetZoneDevices
-
-# types/graphql/GetZoneDevices
-
 ## Type Aliases
 
 - [DeviceEdge](type-aliases/DeviceEdge.md)

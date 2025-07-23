@@ -2,21 +2,13 @@
 
 ***
 
-[frontend](../../../../README.md) / [types/graphql/GetDeviceInterfaces](../README.md) / GetDeviceInterfacesData
-
-# Type Alias: GetDeviceInterfacesData
-
 > **GetDeviceInterfacesData** = `object`
-
-Defined in: [types/graphql/GetDeviceInterfaces.ts:51](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L51)
 
 ## Properties
 
 ### data
 
 > **data**: `object`
-
-Defined in: [types/graphql/GetDeviceInterfaces.ts:52](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L52)
 
 #### device
 
@@ -31,8 +23,6 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:52](https://github.com/Abhi-MS
 ### errors?
 
 > `optional` **errors**: `object`[]
-
-Defined in: [types/graphql/GetDeviceInterfaces.ts:57](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L57)
 
 #### message
 

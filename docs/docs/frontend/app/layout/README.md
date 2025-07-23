@@ -2,10 +2,6 @@
 
 ***
 
-[frontend](../../README.md) / app/layout
-
-# app/layout
-
 ## Variables
 
 - [metadata](variables/metadata.md)

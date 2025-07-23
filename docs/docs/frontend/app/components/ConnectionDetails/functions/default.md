@@ -2,16 +2,16 @@
 
 ***
 
-> **default**(`__namedParameters`): `Element`
+> **default**(`__namedParameters`): `null` \| `Element`
 
 ## Parameters
 
 ### \_\_namedParameters
 
-#### zoneId
+#### deviceId?
 
 `string`
 
 ## Returns
 
-`Element`
+`null` \| `Element`

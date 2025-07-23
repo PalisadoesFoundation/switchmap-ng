@@ -2,10 +2,6 @@
 
 ***
 
-[frontend](../../../README.md) / types/graphql/GetDeviceInterfaces
-
-# types/graphql/GetDeviceInterfaces
-
 ## Type Aliases
 
 - [GetDeviceInterfacesData](type-aliases/GetDeviceInterfacesData.md)

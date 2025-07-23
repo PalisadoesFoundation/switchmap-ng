@@ -2,8 +2,6 @@
 
 ***
 
-# frontend
-
 ## Modules
 
 - [app/components/ConnectionDetails](app/components/ConnectionDetails/README.md)

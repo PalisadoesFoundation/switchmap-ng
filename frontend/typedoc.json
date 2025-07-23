@@ -9,6 +9,7 @@
   "excludeProtected": true,
   "readme": "none",
   "hideBreadcrumbs": true,
-  "hideInPageTOC": true,
-  "hideSources": true
+  "hidePageTitle": true,
+  "disableSources": true
+
 }
