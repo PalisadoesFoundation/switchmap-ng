@@ -11,6 +11,7 @@ function DevicePage() {
   const sysName = searchParams.get("sysName");
   const hostname = searchParams.get("hostname");
   const params = useParams();
+  // Testing docs generation
   // Ensure id is always a string
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
