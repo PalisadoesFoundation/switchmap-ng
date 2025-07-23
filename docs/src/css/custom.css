@@ -322,7 +322,15 @@ html[data-theme="dark"] .header-github-link:before {
 html[data-theme="dark"] .header-youtube-link:before {
   background: url(/img/icons/youtube-white.svg) no-repeat;
 }
-
+.theme-doc-sidebar-menu *{
+  padding-left: 0rem !important;
+  margin-left: 0rem !important;
+  margin-right: 0rem !important;
+}
+.margin__list, .menu__list-item-collapsible{
+    margin-bottom: 1.25rem !important;
+    margin-top: 0rem !important;
+}
 @media (max-width: 996px) {
   .navbar__item.github-button {
     display: none;

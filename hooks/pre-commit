@@ -26,11 +26,7 @@ done
 # Check if frontend files changed at sibling folder level
 if [[ "$FRONTEND_CHANGED" == "yes" ]]; then
     echo "Generating frontend docs"
-    (cd frontend && npx typedoc src \
-      --plugin typedoc-plugin-markdown \
-      --exclude "**/node_modules/**" \
-      --entryPointStrategy expand \
-      --out ../docs/docs/frontend)
+    (cd frontend && npx typedoc src --options typedoc.json --out ../docs/docs/frontend)
 fi
 
 # Add generated files to the commit

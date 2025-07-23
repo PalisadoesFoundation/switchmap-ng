@@ -1,14 +1,15 @@
 {
   "entryPoints": ["src"],
-  "entryPointStrategy": "resolve",
+  "entryPointStrategy": "expand",
   "out": "../docs/docs/frontend", 
   "plugin": ["typedoc-plugin-markdown"],
   "exclude": ["**/node_modules/**"], 
   "excludeExternals": true,
   "excludePrivate": true,
   "excludeProtected": true,
-  "readme": "none",
-  "hideBreadcrumbs": true,
-  "hidePageTitle": true,
-  "indexFormat": "Table"
+  "router": "module"
+  // "hidePageTitle": true,
+  // "mergeReadme": true,
+  // "flattenOutputFiles": true,
+  // "readme": "none",
 }

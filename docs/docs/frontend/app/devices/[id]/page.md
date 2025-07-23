@@ -12,7 +12,7 @@
 
 > **DevicePage**(): `Element`
 
-Defined in: [app/devices/\[id\]/page.tsx:9](https://github.com/Abhi-MS/switchmap-ng/blob/73b0dd152b71b57dca1c6ac3d3c1622d2a321709/frontend/src/app/devices/[id]/page.tsx#L9)
+Defined in: [app/devices/\[id\]/page.tsx:9](https://github.com/Abhi-MS/switchmap-ng/blob/f156cedc8b1286b763c927a578f3daf084576a49/frontend/src/app/devices/[id]/page.tsx#L9)
 
 #### Returns
 
