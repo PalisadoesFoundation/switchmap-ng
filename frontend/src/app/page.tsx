@@ -1,11 +1,11 @@
 "use client";
 
-import DevicesOverview from "@/app/components/DevicesOverview";
-import ZoneDropdown from "@/app/components/ZoneDropdown";
+import { DevicesOverview } from "@/app/components/DevicesOverview";
+import { ZoneDropdown } from "@/app/components/ZoneDropdown";
 import { useEffect, useState } from "react";
 import Sidebar from "@/app/components/Sidebar";
 
-function Home() {
+export function Home() {
   const [zoneId, setZoneId] = useState("");
   const [zoneSelected, setZoneSelected] = useState(false);
   useEffect(() => {
@@ -50,5 +50,3 @@ function Home() {
     </div>
   );
 }
-
-export default Home;

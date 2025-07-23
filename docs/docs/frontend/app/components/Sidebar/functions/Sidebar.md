@@ -2,7 +2,7 @@
 
 ***
 
-> **default**(): `Element`
+> **Sidebar**(): `Element`
 
 ## Returns
 

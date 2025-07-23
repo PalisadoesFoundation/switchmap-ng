@@ -4,4 +4,4 @@
 
 ## Functions
 
-- [default](functions/default.md)
+- [Home](functions/Home.md)

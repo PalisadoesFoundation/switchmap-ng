@@ -4,4 +4,10 @@
 
 ## Functions
 
-- [default](functions/default.md)
+- [Sidebar](functions/Sidebar.md)
+
+## References
+
+### default
+
+Renames and re-exports [Sidebar](functions/Sidebar.md)

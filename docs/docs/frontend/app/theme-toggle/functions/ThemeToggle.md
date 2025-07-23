@@ -2,7 +2,7 @@
 
 ***
 
-> **default**(): `null` \| `Element`
+> **ThemeToggle**(): `null` \| `Element`
 
 ## Returns
 

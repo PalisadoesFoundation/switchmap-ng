@@ -2,13 +2,15 @@
 
 ***
 
-> **default**(`__namedParameters`): `Element`
+> **DevicesOverview**(`__namedParameters`): `Element`
 
 ## Parameters
 
 ### \_\_namedParameters
 
-`ZoneDropdownProps`
+#### zoneId
+
+`string`
 
 ## Returns
 

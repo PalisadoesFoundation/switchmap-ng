@@ -2,7 +2,7 @@
 
 ***
 
-> **default**(): `Element`
+> **Home**(): `Element`
 
 ## Returns
 

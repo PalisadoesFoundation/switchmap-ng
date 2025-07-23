@@ -2,7 +2,7 @@
 
 ***
 
-> **default**(`__namedParameters`): `Element`
+> **RootLayout**(`__namedParameters`): `Element`
 
 ## Parameters
 

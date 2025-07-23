@@ -4,4 +4,4 @@
 
 ## Functions
 
-- [default](functions/default.md)
+- [ConnectionDetails](functions/ConnectionDetails.md)

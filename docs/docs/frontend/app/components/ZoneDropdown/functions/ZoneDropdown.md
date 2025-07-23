@@ -2,15 +2,13 @@
 
 ***
 
-> **default**(`__namedParameters`): `Element`
+> **ZoneDropdown**(`__namedParameters`): `Element`
 
 ## Parameters
 
 ### \_\_namedParameters
 
-#### zoneId
-
-`string`
+`ZoneDropdownProps`
 
 ## Returns
 

@@ -2,7 +2,7 @@
 
 ***
 
-> **default**(`__namedParameters`): `null` \| `Element`
+> **ConnectionDetails**(`__namedParameters`): `null` \| `Element`
 
 ## Parameters
 

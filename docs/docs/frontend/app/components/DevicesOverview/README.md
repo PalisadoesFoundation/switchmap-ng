@@ -4,4 +4,4 @@
 
 ## Functions
 
-- [default](functions/default.md)
+- [DevicesOverview](functions/DevicesOverview.md)

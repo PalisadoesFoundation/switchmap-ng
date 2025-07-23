@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description: "A Modern Network Monitoring and Analysis Tool",
 };
 
-export default function RootLayout({
+export function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

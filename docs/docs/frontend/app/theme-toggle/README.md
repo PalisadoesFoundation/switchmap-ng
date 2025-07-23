@@ -4,4 +4,4 @@
 
 ## Functions
 
-- [default](functions/default.md)
+- [ThemeToggle](functions/ThemeToggle.md)

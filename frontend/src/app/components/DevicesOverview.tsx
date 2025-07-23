@@ -35,7 +35,7 @@ const formatUptime = (hundredths: number) => {
   return `${days}d ${hrs}h ${mins}m ${secs}s`;
 };
 
-function DevicesOverview({ zoneId }: { zoneId: string }) {
+export function DevicesOverview({ zoneId }: { zoneId: string }) {
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -315,4 +315,3 @@ function DevicesOverview({ zoneId }: { zoneId: string }) {
     </div>
   );
 }
-export default DevicesOverview;

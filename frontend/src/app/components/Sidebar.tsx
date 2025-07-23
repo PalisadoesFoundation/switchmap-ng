@@ -4,9 +4,9 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { FiLayout, FiClock, FiSettings } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
-import ThemeToggle from "@/app/theme-toggle";
+import { ThemeToggle } from "@/app/theme-toggle";
 
-function Sidebar() {
+export function Sidebar() {
   const [open, setOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 

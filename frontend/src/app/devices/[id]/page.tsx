@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
-import ThemeToggle from "@/app/theme-toggle";
-import ConnectionDetails from "@/app/components/ConnectionDetails";
+import { ThemeToggle } from "@/app/theme-toggle";
+import { ConnectionDetails } from "@/app/components/ConnectionDetails";
 
-function DevicePage() {
+export function DevicePage() {
   const searchParams = useSearchParams();
   const sysName = searchParams.get("sysName");
   const hostname = searchParams.get("hostname");
@@ -105,5 +105,3 @@ function DevicePage() {
     </div>
   );
 }
-
-export default DevicePage;

@@ -2,7 +2,7 @@
 
 ***
 
-> **default**(): `Element`
+> **DevicePage**(): `Element`
 
 ## Returns
 
