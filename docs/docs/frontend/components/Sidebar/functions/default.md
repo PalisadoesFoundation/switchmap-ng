@@ -8,7 +8,7 @@
 
 > **default**(): `Element`
 
-Defined in: [components/Sidebar.tsx:9](https://github.com/Abhi-MS/switchmap-ng/blob/e018e2d63f554a82a5d7fef619f98deaa2cc42a7/frontend/src/app/components/Sidebar.tsx#L9)
+Defined in: [components/Sidebar.tsx:9](https://github.com/Abhi-MS/switchmap-ng/blob/ba3f06d72593b2bf8d47788153d1ade0485c9eb6/frontend/src/app/components/Sidebar.tsx#L9)
 
 ## Returns
 
