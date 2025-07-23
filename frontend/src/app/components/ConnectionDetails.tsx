@@ -13,7 +13,6 @@ import { DeviceNode } from "../../types/graphql/GetZoneDevices";
 type DeviceResponse = {
   device: DeviceNode | null;
 };
-// Testing docs generation
 
 // GraphQL query to fetch device interface details
 const QUERY = `

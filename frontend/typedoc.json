@@ -10,6 +10,5 @@
   "readme": "none",
   "hideBreadcrumbs": true,
   "hidePageTitle": true,
-  "disableSources": true
-
+  "indexFile": ""
 }
