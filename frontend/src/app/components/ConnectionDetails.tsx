@@ -7,8 +7,8 @@ import {
   Mac,
   MacPorts,
   MacsEdge,
-} from "../../graphql/GetDeviceInterfaces";
-import { DeviceNode } from "../../graphql/GetZoneDevices";
+} from "../../types/graphql/GetDeviceInterfaces";
+import { DeviceNode } from "../../types/graphql/GetZoneDevices";
 
 type DeviceResponse = {
   device: DeviceNode | null;
