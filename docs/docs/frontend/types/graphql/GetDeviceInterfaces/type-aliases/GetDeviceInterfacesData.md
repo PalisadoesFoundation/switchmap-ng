@@ -8,7 +8,7 @@
 
 > **GetDeviceInterfacesData** = `object`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:51](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L51)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:51](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L51)
 
 ## Properties
 
@@ -16,7 +16,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:51](https://github.com/Abhi-MS
 
 > **data**: `object`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:52](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L52)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:52](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L52)
 
 #### device
 
@@ -32,7 +32,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:52](https://github.com/Abhi-MS
 
 > `optional` **errors**: `object`[]
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:57](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L57)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:57](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L57)
 
 #### message
 

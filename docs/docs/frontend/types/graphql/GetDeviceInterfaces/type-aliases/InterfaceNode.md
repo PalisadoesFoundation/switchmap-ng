@@ -8,7 +8,7 @@
 
 > **InterfaceNode** = `object`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:22](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L22)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:22](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L22)
 
 ## Properties
 
@@ -16,7 +16,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:22](https://github.com/Abhi-MS
 
 > **cdpcachedeviceid**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:33](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L33)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:33](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L33)
 
 ***
 
@@ -24,7 +24,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:33](https://github.com/Abhi-MS
 
 > **cdpcachedeviceport**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:34](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L34)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:34](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L34)
 
 ***
 
@@ -32,7 +32,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:34](https://github.com/Abhi-MS
 
 > **cdpcacheplatform**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:35](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L35)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:35](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L35)
 
 ***
 
@@ -40,7 +40,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:35](https://github.com/Abhi-MS
 
 > **duplex**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:30](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L30)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:30](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L30)
 
 ***
 
@@ -48,7 +48,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:30](https://github.com/Abhi-MS
 
 > **idxDevice**: `number`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:24](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L24)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:24](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L24)
 
 ***
 
@@ -56,7 +56,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:24](https://github.com/Abhi-MS
 
 > **idxL1interface**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:23](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L23)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:23](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L23)
 
 ***
 
@@ -64,7 +64,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:23](https://github.com/Abhi-MS
 
 > **ifalias**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:31](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L31)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:31](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L31)
 
 ***
 
@@ -72,7 +72,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:31](https://github.com/Abhi-MS
 
 > **ifname**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:25](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L25)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:25](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L25)
 
 ***
 
@@ -80,7 +80,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:25](https://github.com/Abhi-MS
 
 > **ifoperstatus**: `number`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:27](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L27)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:27](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L27)
 
 ***
 
@@ -88,7 +88,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:27](https://github.com/Abhi-MS
 
 > **ifspeed**: `number`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:29](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L29)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:29](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L29)
 
 ***
 
@@ -96,7 +96,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:29](https://github.com/Abhi-MS
 
 > **lldpremportdesc**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:36](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L36)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:36](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L36)
 
 ***
 
@@ -104,7 +104,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:36](https://github.com/Abhi-MS
 
 > **lldpremsyscapenabled**: `string`[]
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:39](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L39)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:39](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L39)
 
 ***
 
@@ -112,7 +112,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:39](https://github.com/Abhi-MS
 
 > **lldpremsysdesc**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:38](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L38)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:38](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L38)
 
 ***
 
@@ -120,7 +120,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:38](https://github.com/Abhi-MS
 
 > **lldpremsysname**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:37](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L37)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:37](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L37)
 
 ***
 
@@ -128,7 +128,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:37](https://github.com/Abhi-MS
 
 > **macports**: [`MacPorts`](MacPorts.md)
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:40](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L40)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:40](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L40)
 
 ***
 
@@ -136,7 +136,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:40](https://github.com/Abhi-MS
 
 > **nativevlan**: `number`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:26](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L26)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:26](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L26)
 
 ***
 
@@ -144,7 +144,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:26](https://github.com/Abhi-MS
 
 > **trunk**: `boolean`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:32](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L32)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:32](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L32)
 
 ***
 
@@ -152,4 +152,4 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:32](https://github.com/Abhi-MS
 
 > **tsIdle**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:28](https://github.com/Abhi-MS/switchmap-ng/blob/98c1d49c2d6e65839ccaf1821f777ce7e47b00eb/frontend/src/types/graphql/GetDeviceInterfaces.ts#L28)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:28](https://github.com/Abhi-MS/switchmap-ng/blob/cf90d900845f9445b67583cbdcfd2641092499e7/frontend/src/types/graphql/GetDeviceInterfaces.ts#L28)

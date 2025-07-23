@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import ThemeToggle from "@/app/theme-toggle";
-import ConnectionDetails from "@/app/components/ConnectionDetails";
+import { ConnectionDetails } from "@/app/components/ConnectionDetails";
 
 export default function DevicePage() {
   const searchParams = useSearchParams();
