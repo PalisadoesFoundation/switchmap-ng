@@ -12,7 +12,7 @@
 
 > **Sidebar**(): `Element`
 
-Defined in: [app/components/Sidebar.tsx:27](https://github.com/Abhi-MS/switchmap-ng/blob/e3f3cee2a7bf54269767383c79698e3c0a861e46/frontend/src/app/components/Sidebar.tsx#L27)
+Defined in: [app/components/Sidebar.tsx:27](https://github.com/Abhi-MS/switchmap-ng/blob/541e84ce7b8b339a438f8adc6def2b02b4cae6cf/frontend/src/app/components/Sidebar.tsx#L27)
 
 Sidebar component provides navigation links and a theme toggle button.
 It supports both large screens (desktop) and small screens (mobile).

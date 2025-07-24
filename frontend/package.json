@@ -28,5 +28,9 @@
     "typedoc": "^0.28.7",
     "typedoc-plugin-markdown": "^4.7.0",
     "typescript": "^5"
-  }
+  },
+  "repository": {
+  "type": "git",
+  "url": "https://github.com/PalisadoesFoundation/switchmap-ng"
+}
 }
