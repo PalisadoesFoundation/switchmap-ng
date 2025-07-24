@@ -12,10 +12,11 @@
 
 > **Sidebar**(): `Element`
 
-Defined in: [app/components/Sidebar.tsx:28](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/Sidebar.tsx#L28)
+Defined in: [app/components/Sidebar.tsx:29](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/Sidebar.tsx#L29)
 
 Sidebar component provides navigation links and a theme toggle button.
 It supports both large screens (desktop) and small screens (mobile).
+It includes a hamburger menu for mobile view and a slide-in sidebar.
 
 #### Returns
 

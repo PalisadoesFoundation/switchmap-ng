@@ -8,6 +8,7 @@ import { ThemeToggle } from "@/app/theme-toggle";
 /**
  * Sidebar component provides navigation links and a theme toggle button.
  * It supports both large screens (desktop) and small screens (mobile).
+ * It includes a hamburger menu for mobile view and a slide-in sidebar.
  *
  * @remarks
  * This component is designed for client-side use only because it relies on
