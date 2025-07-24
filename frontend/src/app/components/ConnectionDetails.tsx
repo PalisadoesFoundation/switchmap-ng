@@ -55,6 +55,26 @@ const QUERY = `
     }
   }
 `;
+/**
+ * ConnectionDetails component fetches and displays detailed information about a device's interfaces.
+ * It includes MAC addresses, manufacturers, and other relevant data.
+ *
+ * @remarks
+ * This component is designed for client-side use only because it relies on the `useParams` hook
+ * to retrieve the device ID from the URL. It also handles loading and error states.
+ *
+ * @param deviceId - The ID of the device to fetch details for. If not provided, it will use the ID from URL params.
+ *
+ * @returns The rendered connection details table or an error message if data is unavailable.
+ *
+ * @see useParams for retrieving the device ID from URL parameters.
+ * @see DeviceResponse for the structure of the device data.
+ * @see QUERY for the GraphQL query used to fetch device interfaces.
+ * @see InterfaceEdge and InterfaceNode for the structure of interface data.
+ * @see MacPorts and MacsEdge for the structure of MAC address data.
+ * @see extractMacAddresses and extractManufacturers for helper functions to process MAC data.
+ * @see DeviceNode for the structure of the device node.
+ */
 
 export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const params = useParams();

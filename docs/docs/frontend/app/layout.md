@@ -12,7 +12,7 @@
 
 > `const` **metadata**: `Metadata`
 
-Defined in: [app/layout.tsx:16](https://github.com/Abhi-MS/switchmap-ng/blob/9fe8d4a0f80ad32d2d4df5e7beea90d8b3d2deb3/frontend/src/app/layout.tsx#L16)
+Defined in: [app/layout.tsx:36](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/app/layout.tsx#L36)
 
 ## Functions
 
@@ -20,7 +20,7 @@ Defined in: [app/layout.tsx:16](https://github.com/Abhi-MS/switchmap-ng/blob/9fe
 
 > **RootLayout**(`__namedParameters`): `Element`
 
-Defined in: [app/layout.tsx:21](https://github.com/Abhi-MS/switchmap-ng/blob/9fe8d4a0f80ad32d2d4df5e7beea90d8b3d2deb3/frontend/src/app/layout.tsx#L21)
+Defined in: [app/layout.tsx:41](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/app/layout.tsx#L41)
 
 #### Parameters
 

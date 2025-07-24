@@ -5,6 +5,27 @@ import { useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import { ThemeToggle } from "@/app/theme-toggle";
 import { ConnectionDetails } from "@/app/components/ConnectionDetails";
+/**
+ * Renders the DevicePage component, showing detailed information about a specific device.
+ *
+ * Includes a sidebar for navigation and tabbed sections for various device data,
+ * such as overview, connection details, and connection charts.
+ *
+ * @remarks
+ * - Designed for client-side rendering only, as it relies on `useParams` and `useSearchParams`.
+ * - Uses a responsive layout that adjusts based on sidebar visibility.
+ * - Handles active tab state and sidebar toggle logic.
+ * - Icons from `react-icons` visually represent each tab.
+ * - Includes a Home button for quick navigation.
+ *
+ * @returns The rendered device detail page.
+ *
+ * @see useParams and useSearchParams — to retrieve URL parameters.
+ * @see useRouter — for navigation handling.
+ * @see ConnectionDetails — for displaying connection info.
+ * @see ThemeToggle — for dark/light mode toggle.
+ * @see FiHome, FiMonitor, FiLink, FiBarChart2 — icons used in the sidebar.
+ */
 
 export function DevicePage() {
   const searchParams = useSearchParams();

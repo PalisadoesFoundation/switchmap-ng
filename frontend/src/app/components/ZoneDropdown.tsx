@@ -8,6 +8,22 @@ type ZoneDropdownProps = {
   selectedZoneId: string | null;
   onChange: (zoneId: string) => void;
 };
+/**
+ * ZoneDropdown component allows users to select a zone from a dropdown list.
+ * It fetches the available zones from the API and manages the selected zone state.
+ *
+ * @remarks
+ * This component is designed for client-side use only because it relies on
+ * the `useEffect` hook for fetching data and managing state.
+ * It also handles click events outside the dropdown to close it.
+ *
+ * @returns The rendered component.
+ *
+ * @see Zone for the structure of zone data.
+ * @see useEffect for fetching zones from the API.
+ * @see useState for managing the dropdown state.
+ * @see useRef for handling click outside events.
+ */
 
 export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
   const [zones, setZones] = useState<Zone[]>([]);

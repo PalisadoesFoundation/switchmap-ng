@@ -5,6 +5,24 @@ import Link from "next/link";
 import { FiLayout, FiClock, FiSettings } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { ThemeToggle } from "@/app/theme-toggle";
+/**
+ * Sidebar component provides navigation links and a theme toggle button.
+ * It supports both large screens (desktop) and small screens (mobile).
+ *
+ * @remarks
+ * This component is designed for client-side use only because it relies on
+ * the `useState` and `useEffect` hooks for managing state and handling events.
+ * It also includes responsive design features to adapt to different screen sizes.
+ *
+ * @returns The rendered sidebar component.
+ *
+ * @see ThemeToggle for the theme switching functionality.
+ * @see Link for navigation links.
+ * @see useState for managing the open/close state of the sidebar.
+ * @see useEffect for handling click events outside the sidebar to close it.
+ * @see FiLayout, FiClock, FiSettings for the icons used in the sidebar.
+ *
+ */
 
 export function Sidebar() {
   const [open, setOpen] = useState(false);
