@@ -44,4 +44,4 @@ to retrieve the device ID from the URL. It also handles loading and error states
  - DeviceResponse for the structure of the device data.
  - QUERY for the GraphQL query used to fetch device details.
  - [InterfaceEdge](../../types/graphql/GetDeviceInterfaces.md#interfaceedge) and [InterfaceNode](../../types/graphql/GetDeviceInterfaces.md#interfacenode) for the structure of interface data.
- - [Mac](../../types/graphql/GetDeviceInterfaces.md#mac) and MacPorts for handling MAC address data.
+ - [Mac](../../types/graphql/GetDeviceInterfaces.md#mac) and [MacPort](../../types/graphql/GetDeviceInterfaces.md#macport) for the structure of MAC address data.

@@ -70,7 +70,7 @@ const QUERY = `
  * @see {@link DeviceResponse} for the structure of the device data.
  * @see {@link QUERY} for the GraphQL query used to fetch device details.
  * @see {@link InterfaceEdge} and {@link InterfaceNode} for the structure of interface data.
- * @see {@link Mac} and {@link MacPorts} for handling MAC address data.
+ * @see {@link Mac} and {@link MacPort} for the structure of MAC address data.
  */
 
 export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
