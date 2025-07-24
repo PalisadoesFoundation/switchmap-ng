@@ -168,7 +168,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:59](https://github.com/Palisad
 
 ##### macports
 
-> **macports**: [`MacPorts`](#macports-1)
+> **macports**: [`MacPort`](#macport)
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:62](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/types/graphql/GetDeviceInterfaces.ts#L62)
 
@@ -224,15 +224,15 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:28](https://github.com/Palisad
 
 ##### oui
 
-> **oui**: [`Oui`](#oui-1) \| `null`
+> **oui**: [`OrganizationOui`](#organizationoui) \| `null`
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:29](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/types/graphql/GetDeviceInterfaces.ts#L29)
 
 ***
 
-### MacPorts
+### MacPort
 
-> **MacPorts** = `object`
+> **MacPort** = `object`
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:40](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/types/graphql/GetDeviceInterfaces.ts#L40)
 
@@ -278,9 +278,9 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:33](https://github.com/Palisad
 
 ***
 
-### Oui
+### OrganizationOui
 
-> **Oui** = `object`
+> **OrganizationOui** = `object`
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:23](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/types/graphql/GetDeviceInterfaces.ts#L23)
 

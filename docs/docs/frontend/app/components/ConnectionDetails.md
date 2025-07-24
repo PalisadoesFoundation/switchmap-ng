@@ -12,7 +12,7 @@
 
 > **ConnectionDetails**(`deviceId`): `null` \| `Element`
 
-Defined in: [app/components/ConnectionDetails.tsx:77](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ConnectionDetails.tsx#L77)
+Defined in: [app/components/ConnectionDetails.tsx:76](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ConnectionDetails.tsx#L76)
 
 ConnectionDetails component fetches and displays detailed information about a device's interfaces.
 It includes MAC addresses, manufacturers, and other relevant data.
@@ -44,4 +44,4 @@ to retrieve the device ID from the URL. It also handles loading and error states
  - DeviceResponse for the structure of the device data.
  - QUERY for the GraphQL query used to fetch device details.
  - [InterfaceEdge](../../types/graphql/GetDeviceInterfaces.md#interfaceedge) and [InterfaceNode](../../types/graphql/GetDeviceInterfaces.md#interfacenode) for the structure of interface data.
- - [Mac](../../types/graphql/GetDeviceInterfaces.md#mac) and [MacPorts](../../types/graphql/GetDeviceInterfaces.md#macports-1) for handling MAC address data.
+ - [Mac](../../types/graphql/GetDeviceInterfaces.md#mac) and MacPorts for handling MAC address data.

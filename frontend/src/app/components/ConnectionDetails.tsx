@@ -5,8 +5,7 @@ import {
   InterfaceEdge,
   InterfaceNode,
   Mac,
-  MacPorts,
-  MacsEdge,
+  MacPort,
 } from "../../types/graphql/GetDeviceInterfaces";
 import { DeviceNode } from "../../types/graphql/GetZoneDevices";
 
@@ -89,7 +88,7 @@ export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Helper functions for MAC address processing
-  const extractMacAddresses = (macports?: MacPorts): string => {
+  const extractMacAddresses = (macports?: MacPort): string => {
     if (!Array.isArray(macports?.edges) || macports.edges.length === 0)
       return "";
 
@@ -102,7 +101,7 @@ export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
       .join(", ");
   };
 
-  const extractManufacturers = (macports?: MacPorts): string => {
+  const extractManufacturers = (macports?: MacPort): string => {
     if (!Array.isArray(macports?.edges) || macports.edges.length === 0)
       return "";
 

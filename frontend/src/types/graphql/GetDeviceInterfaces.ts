@@ -20,13 +20,13 @@
  * The `GetDeviceInterfacesVars` type defines the variables required for the GraphQL query,
  * specifically the device ID.
  */
-export type Oui = {
+export type OrganizationOui = {
   organization: string;
 };
 
 export type Mac = {
   mac: string;
-  oui: Oui | null;
+  oui: OrganizationOui | null;
 };
 
 export type MacsNode = {
@@ -37,7 +37,7 @@ export type MacsEdge = {
   node: MacsNode;
 };
 
-export type MacPorts = {
+export type MacPort = {
   edges: MacsEdge[];
 };
 
@@ -59,7 +59,7 @@ export type InterfaceNode = {
   lldpremsysname: string;  
   lldpremsysdesc: string;  
   lldpremsyscapenabled: string[];  
-  macports: MacPorts;  
+  macports: MacPort;  
 };  
 
 export type InterfaceEdge = {
