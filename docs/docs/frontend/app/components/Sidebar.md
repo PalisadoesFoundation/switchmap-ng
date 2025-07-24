@@ -12,7 +12,7 @@
 
 > **Sidebar**(): `Element`
 
-Defined in: [app/components/Sidebar.tsx:27](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/Sidebar.tsx#L27)
+Defined in: [app/components/Sidebar.tsx:28](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/Sidebar.tsx#L28)
 
 Sidebar component provides navigation links and a theme toggle button.
 It supports both large screens (desktop) and small screens (mobile).
@@ -28,6 +28,7 @@ The rendered sidebar component.
 This component is designed for client-side use only because it relies on
 the `useState` and `useEffect` hooks for managing state and handling events.
 It also includes responsive design features to adapt to different screen sizes.
+The sidebar contains links to the dashboard, history, and settings pages,
 
 #### See
 

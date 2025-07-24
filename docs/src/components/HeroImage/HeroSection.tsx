@@ -3,13 +3,17 @@ import React, { useEffect } from "react";
 
 export default function HeroSection() {
   useEffect(() => {
+    if (document.querySelector('script[src="/js/lottie-player.js"]')) return;
+
     const script = document.createElement("script");
-    script.src =
-      "https://unpkg.com/@lottiefiles/lottie-player@2.0.8/dist/lottie-player.js";
+    script.src = "/js/lottie-player.js";
     script.async = true;
+    script.onerror = () =>
+      console.error("Failed to load local Lottie player script");
+
     document.body.appendChild(script);
     return () => {
-      document.body.removeChild(script);
+      if (document.body.contains(script)) document.body.removeChild(script);
     };
   }, []);
 
