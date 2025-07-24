@@ -17,6 +17,8 @@ import { Sidebar } from "@/app/components/Sidebar";
  * It initializes the zone ID from localStorage and updates it
  * whenever the user selects a different zone.
  * It also handles scrolling to elements based on the URL hash.
+ * It uses the `Sidebar` component for navigation and the `ZoneDropdown`
+ * component for selecting zones.
  *
  * @returns The rendered component.
  *
