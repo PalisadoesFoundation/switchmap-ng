@@ -10,15 +10,27 @@ This folder contains the modern frontend for SwitchMap-NG, responsible for rende
 
 ## Getting Started
 
-Make sure the backend server is running before starting the frontend.
+> **Make sure the backend API server is running before starting the frontend.**  
+> Refer to the [Installation Guide](_media/installation.md) for backend setup instructions.
+> Set up the pre-commit hook to automatically generate documentation when committing changes:
 
-1. **Install dependencies:**
+```bash
+python ../scripts/setup_hooks.py
+
+```
+1. **Navigate to the frontend directory:**
+```bash
+cd frontend
+
+```
+
+2. **Install dependencies:**
 
 ```bash
 npm install
 
 ```
-2. **Start the development server:**
+3. **Start the development server:**
 
 ```bash
 npm run dev
@@ -44,4 +56,4 @@ This frontend interfaces with the SwitchMap-NG backend (Flask + GraphQL) to pres
 - Fetch API for backend GraphQL communication
 
 ## Directory Structure
-<pre> ``` frontend/ ├── .next/ # Next.js build output (auto-generated) ├── node_modules/ # Installed dependencies ├── src/ │ └── app/ │ ├── components/ # UI components │ ├── devices/ # Device-related pages and components │ ├── globals.css # Global styles and theming │ ├── layout.tsx # Root layout component │ ├── page.tsx # Main entry page │ └── theme-toggle.tsx # Theme toggle component ├── .env.local # Local environment variables (gitignored) ├── package.json # Project metadata and scripts ├── next.config.ts # Next.js configuration ├── tsconfig.json # TypeScript configuration ├── tailwind.config.js # Tailwind CSS configuration ├── postcss.config.mjs # PostCSS configuration ├── README.md # Frontend-specific documentation ``` </pre>
+<pre> ```text frontend/ ├── .next/ # Next.js build output (auto-generated) ├── node_modules/ # Installed dependencies ├── src/ │ └── app/ │ ├── components/ # UI components │ ├── devices/ # Device-related pages and components │ ├── globals.css # Global styles and theming │ ├── layout.tsx # Root layout component │ ├── page.tsx # Main entry page │ └── theme-toggle.tsx# Theme toggle component ├── .env.local # Local environment variables (gitignored) ├── package.json # Project metadata and scripts ├── next.config.ts # Next.js configuration ├── tsconfig.json # TypeScript configuration ├── tailwind.config.js # Tailwind CSS configuration ├── postcss.config.mjs # PostCSS configuration ├── README.md # Frontend-specific documentation ``` </pre>
