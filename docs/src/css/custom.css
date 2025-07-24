@@ -66,7 +66,7 @@ html[data-theme="dark"] {
   --primary-neutral-800: #c9c9cc;
   --ifm-button-background-color: #25c2a0;
   --ifm-button-background-color-dark: #2e8555;
-  --ifm-navbar-link-color: #9da4ae;
+  --ifm-navbar-link-color: #c6d6ff;
   --brand-color: white;
   --primary-neutral-600: #c4c4c4;
   --next-prev-border-color: #293441;
@@ -129,8 +129,9 @@ h1.docTitle_node_modules-\@docusaurus-theme-classic-src-theme-DocItem- {
 .navbar {
   background-color: var(--sidebar-bg-color);
   box-shadow: var(--ifm-navbar-shadow);
-  padding: 24px 48px;
+  padding: 24px 24px;
   height: 80px;
+  min-height: fit-content;
   z-index: 1000;
 }
 
@@ -150,6 +151,9 @@ h1.docTitle_node_modules-\@docusaurus-theme-classic-src-theme-DocItem- {
 
 .navbar__items--right > .navbar__item:not(:first-of-type) {
   margin-left: 0.25px;
+}
+.navbar__items{
+  gap: 1rem;
 }
 
 .dropdown__link:hover {
