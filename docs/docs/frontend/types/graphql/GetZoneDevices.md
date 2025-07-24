@@ -12,7 +12,7 @@
 
 > **DeviceEdge** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:22](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L22)
+Defined in: [types/graphql/GetZoneDevices.ts:49](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L49)
 
 #### Properties
 
@@ -20,7 +20,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:22](https://github.com/Abhi-MS/swit
 
 > **node**: [`DeviceNode`](#devicenode)
 
-Defined in: [types/graphql/GetZoneDevices.ts:23](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L23)
+Defined in: [types/graphql/GetZoneDevices.ts:50](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L50)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:23](https://github.com/Abhi-MS/swit
 
 > **DeviceNode** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:11](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L11)
+Defined in: [types/graphql/GetZoneDevices.ts:38](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L38)
 
 #### Properties
 
@@ -36,49 +36,49 @@ Defined in: [types/graphql/GetZoneDevices.ts:11](https://github.com/Abhi-MS/swit
 
 > **hostname**: `string`
 
-Defined in: [types/graphql/GetZoneDevices.ts:18](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L18)
+Defined in: [types/graphql/GetZoneDevices.ts:45](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L45)
 
 ##### id
 
 > **id**: `string`
 
-Defined in: [types/graphql/GetZoneDevices.ts:13](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L13)
+Defined in: [types/graphql/GetZoneDevices.ts:40](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L40)
 
 ##### idxDevice
 
 > **idxDevice**: `number`
 
-Defined in: [types/graphql/GetZoneDevices.ts:14](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L14)
+Defined in: [types/graphql/GetZoneDevices.ts:41](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L41)
 
 ##### l1interfaces
 
 > **l1interfaces**: [`L1Interfaces`](#l1interfaces-1)
 
-Defined in: [types/graphql/GetZoneDevices.ts:19](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L19)
+Defined in: [types/graphql/GetZoneDevices.ts:46](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L46)
 
 ##### sysDescription
 
 > **sysDescription**: `string`
 
-Defined in: [types/graphql/GetZoneDevices.ts:12](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L12)
+Defined in: [types/graphql/GetZoneDevices.ts:39](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L39)
 
 ##### sysName
 
 > **sysName**: `string`
 
-Defined in: [types/graphql/GetZoneDevices.ts:17](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L17)
+Defined in: [types/graphql/GetZoneDevices.ts:44](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L44)
 
 ##### sysObjectid
 
 > **sysObjectid**: `string`
 
-Defined in: [types/graphql/GetZoneDevices.ts:15](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L15)
+Defined in: [types/graphql/GetZoneDevices.ts:42](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L42)
 
 ##### sysUptime
 
 > **sysUptime**: `number`
 
-Defined in: [types/graphql/GetZoneDevices.ts:16](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L16)
+Defined in: [types/graphql/GetZoneDevices.ts:43](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L43)
 
 ***
 
@@ -86,7 +86,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:16](https://github.com/Abhi-MS/swit
 
 > **Devices** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:33](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L33)
+Defined in: [types/graphql/GetZoneDevices.ts:60](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L60)
 
 #### Properties
 
@@ -94,7 +94,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:33](https://github.com/Abhi-MS/swit
 
 > **edges**: [`DeviceEdge`](#deviceedge)[]
 
-Defined in: [types/graphql/GetZoneDevices.ts:34](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L34)
+Defined in: [types/graphql/GetZoneDevices.ts:61](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L61)
 
 ***
 
@@ -102,7 +102,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:34](https://github.com/Abhi-MS/swit
 
 > **GetZoneDevicesData** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:46](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L46)
+Defined in: [types/graphql/GetZoneDevices.ts:73](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L73)
 
 #### Properties
 
@@ -110,7 +110,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:46](https://github.com/Abhi-MS/swit
 
 > **data**: `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:47](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L47)
+Defined in: [types/graphql/GetZoneDevices.ts:74](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L74)
 
 ###### zone
 
@@ -120,7 +120,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:47](https://github.com/Abhi-MS/swit
 
 > `optional` **errors**: `object`[]
 
-Defined in: [types/graphql/GetZoneDevices.ts:50](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L50)
+Defined in: [types/graphql/GetZoneDevices.ts:77](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L77)
 
 ###### message
 
@@ -132,7 +132,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:50](https://github.com/Abhi-MS/swit
 
 > **GetZoneDevicesVars** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:53](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L53)
+Defined in: [types/graphql/GetZoneDevices.ts:80](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L80)
 
 #### Properties
 
@@ -140,7 +140,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:53](https://github.com/Abhi-MS/swit
 
 > **id**: `string`
 
-Defined in: [types/graphql/GetZoneDevices.ts:54](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L54)
+Defined in: [types/graphql/GetZoneDevices.ts:81](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L81)
 
 ***
 
@@ -148,7 +148,38 @@ Defined in: [types/graphql/GetZoneDevices.ts:54](https://github.com/Abhi-MS/swit
 
 > **InterfaceEdge** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:3](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L3)
+Defined in: [types/graphql/GetZoneDevices.ts:30](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L30)
+
+This file defines the types used in the GraphQL query for fetching devices in a zone.
+It includes types for devices, interfaces, and their relationships. 
+These types are used to ensure type safety when working with the data returned from the API.
+The `DeviceNode` type represents a device with various properties, including its description, ID
+and interfaces.
+The `InterfaceNode` type represents a device interface with various properties,
+including its name, status, speed, and associated MAC addresses.
+The `InterfaceEdge` type represents an edge in the list of interfaces,
+and the `L1Interfaces` type represents a collection of these edges.
+The `DeviceEdge` type represents an edge in the list of devices,
+and the `Devices` type represents a collection of these edges.
+The `ZoneNode` type represents a zone containing devices,
+and the `ZoneEdge` type represents an edge in the list of zones.
+The `Zones` type represents a collection of zones.
+The `GetZoneDevicesData` type represents the overall structure of the data returned
+from the GraphQL query for zone devices, including any potential errors.
+The `GetZoneDevicesVars` type defines the variables required for the GraphQL query,
+specifically the zone ID.
+
+#### Remarks
+
+This file is part of the Switchmap-NG project, a modern network monitoring and analysis tool.
+It is designed to provide a type-safe interface for working with GraphQL data in TypeScript.
+The types defined here are used throughout the application to ensure that the data structures
+are consistent and correctly typed, reducing the risk of runtime errors
+and improving developer experience.
+
+#### See
+
+[InterfaceNode](GetDeviceInterfaces.md#interfacenode) for the structure of a device interface.
 
 #### Properties
 
@@ -156,7 +187,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:3](https://github.com/Abhi-MS/switc
 
 > **node**: [`InterfaceNode`](GetDeviceInterfaces.md#interfacenode)
 
-Defined in: [types/graphql/GetZoneDevices.ts:4](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L4)
+Defined in: [types/graphql/GetZoneDevices.ts:31](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L31)
 
 ***
 
@@ -164,7 +195,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:4](https://github.com/Abhi-MS/switc
 
 > **L1Interfaces** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:7](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L7)
+Defined in: [types/graphql/GetZoneDevices.ts:34](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L34)
 
 #### Properties
 
@@ -172,7 +203,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:7](https://github.com/Abhi-MS/switc
 
 > **edges**: [`InterfaceEdge`](#interfaceedge)[]
 
-Defined in: [types/graphql/GetZoneDevices.ts:8](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L8)
+Defined in: [types/graphql/GetZoneDevices.ts:35](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L35)
 
 ***
 
@@ -180,7 +211,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:8](https://github.com/Abhi-MS/switc
 
 > **Zone** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:41](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L41)
+Defined in: [types/graphql/GetZoneDevices.ts:68](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L68)
 
 #### Properties
 
@@ -188,7 +219,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:41](https://github.com/Abhi-MS/swit
 
 > **devices**: [`Devices`](#devices)
 
-Defined in: [types/graphql/GetZoneDevices.ts:42](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L42)
+Defined in: [types/graphql/GetZoneDevices.ts:69](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L69)
 
 ***
 
@@ -196,7 +227,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:42](https://github.com/Abhi-MS/swit
 
 > **ZoneEdge** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:29](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L29)
+Defined in: [types/graphql/GetZoneDevices.ts:56](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L56)
 
 #### Properties
 
@@ -204,7 +235,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:29](https://github.com/Abhi-MS/swit
 
 > **node**: [`ZoneNode`](#zonenode)
 
-Defined in: [types/graphql/GetZoneDevices.ts:30](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L30)
+Defined in: [types/graphql/GetZoneDevices.ts:57](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L57)
 
 ***
 
@@ -212,7 +243,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:30](https://github.com/Abhi-MS/swit
 
 > **ZoneNode** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:25](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L25)
+Defined in: [types/graphql/GetZoneDevices.ts:52](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L52)
 
 #### Properties
 
@@ -220,7 +251,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:25](https://github.com/Abhi-MS/swit
 
 > **devices**: [`Devices`](#devices)
 
-Defined in: [types/graphql/GetZoneDevices.ts:26](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L26)
+Defined in: [types/graphql/GetZoneDevices.ts:53](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L53)
 
 ***
 
@@ -228,7 +259,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:26](https://github.com/Abhi-MS/swit
 
 > **Zones** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:37](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L37)
+Defined in: [types/graphql/GetZoneDevices.ts:64](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L64)
 
 #### Properties
 
@@ -236,4 +267,4 @@ Defined in: [types/graphql/GetZoneDevices.ts:37](https://github.com/Abhi-MS/swit
 
 > **edges**: [`ZoneEdge`](#zoneedge)[]
 
-Defined in: [types/graphql/GetZoneDevices.ts:38](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/types/graphql/GetZoneDevices.ts#L38)
+Defined in: [types/graphql/GetZoneDevices.ts:65](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/types/graphql/GetZoneDevices.ts#L65)

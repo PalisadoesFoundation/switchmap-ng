@@ -19,10 +19,11 @@ type ZoneDropdownProps = {
  *
  * @returns The rendered component.
  *
- * @see Zone for the structure of zone data.
- * @see useEffect for fetching zones from the API.
- * @see useState for managing the dropdown state.
- * @see useRef for handling click outside events.
+ * @see {@link Zone} for the structure of a zone.
+ * @see {@link ZoneDropdownProps} for the props used by the component.
+ * @see {@link useState} for managing the selected zone state.
+ * @see {@link useEffect} for fetching zones and handling side effects.
+ * @see {@link useRef} for managing the dropdown reference to handle outside clicks.
  */
 
 export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {

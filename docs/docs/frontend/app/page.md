@@ -12,7 +12,7 @@
 
 > **Home**(): `Element`
 
-Defined in: [app/page.tsx:28](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/app/page.tsx#L28)
+Defined in: [app/page.tsx:28](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/app/page.tsx#L28)
 
 Main entry point for the application.
 
@@ -35,6 +35,6 @@ It also handles scrolling to elements based on the URL hash.
 
 #### See
 
- - Sidebar
- - DevicesOverview
- - ZoneDropdown
+ - [Sidebar](components/Sidebar.md#sidebar) for the sidebar component.
+ - [ZoneDropdown](components/ZoneDropdown.md#zonedropdown) for the zone selection dropdown.
+ - [DevicesOverview](components/DevicesOverview.md#devicesoverview) for displaying devices in the selected zone.

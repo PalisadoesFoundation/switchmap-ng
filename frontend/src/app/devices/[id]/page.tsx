@@ -20,11 +20,8 @@ import { ConnectionDetails } from "@/app/components/ConnectionDetails";
  *
  * @returns The rendered device detail page.
  *
- * @see useParams and useSearchParams — to retrieve URL parameters.
- * @see useRouter — for navigation handling.
- * @see ConnectionDetails — for displaying connection info.
- * @see ThemeToggle — for dark/light mode toggle.
- * @see FiHome, FiMonitor, FiLink, FiBarChart2 — icons used in the sidebar.
+ * @see {@link ConnectionDetails} for displaying device interface details.
+ * @see {@link ThemeToggle} for the theme switching functionality.
  */
 
 export function DevicePage() {

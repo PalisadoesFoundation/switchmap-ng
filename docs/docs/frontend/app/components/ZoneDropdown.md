@@ -12,7 +12,7 @@
 
 > **ZoneDropdown**(`__namedParameters`): `Element`
 
-Defined in: [app/components/ZoneDropdown.tsx:28](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/app/components/ZoneDropdown.tsx#L28)
+Defined in: [app/components/ZoneDropdown.tsx:29](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/app/components/ZoneDropdown.tsx#L29)
 
 ZoneDropdown component allows users to select a zone from a dropdown list.
 It fetches the available zones from the API and manages the selected zone state.
@@ -37,7 +37,8 @@ It also handles click events outside the dropdown to close it.
 
 #### See
 
- - Zone for the structure of zone data.
- - useEffect for fetching zones from the API.
- - useState for managing the dropdown state.
- - useRef for handling click outside events.
+ - Zone for the structure of a zone.
+ - ZoneDropdownProps for the props used by the component.
+ - useState for managing the selected zone state.
+ - useEffect for fetching zones and handling side effects.
+ - useRef for managing the dropdown reference to handle outside clicks.

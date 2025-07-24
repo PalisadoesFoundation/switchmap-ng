@@ -12,7 +12,7 @@
 
 > **ConnectionDetails**(`deviceId`): `null` \| `Element`
 
-Defined in: [app/components/ConnectionDetails.tsx:79](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/app/components/ConnectionDetails.tsx#L79)
+Defined in: [app/components/ConnectionDetails.tsx:77](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/app/components/ConnectionDetails.tsx#L77)
 
 ConnectionDetails component fetches and displays detailed information about a device's interfaces.
 It includes MAC addresses, manufacturers, and other relevant data.
@@ -42,8 +42,6 @@ to retrieve the device ID from the URL. It also handles loading and error states
 
  - useParams for retrieving the device ID from URL parameters.
  - DeviceResponse for the structure of the device data.
- - QUERY for the GraphQL query used to fetch device interfaces.
- - InterfaceEdge and InterfaceNode for the structure of interface data.
- - MacPorts and MacsEdge for the structure of MAC address data.
- - extractMacAddresses and extractManufacturers for helper functions to process MAC data.
- - DeviceNode for the structure of the device node.
+ - QUERY for the GraphQL query used to fetch device details.
+ - [InterfaceEdge](../../types/graphql/GetDeviceInterfaces.md#interfaceedge) and [InterfaceNode](../../types/graphql/GetDeviceInterfaces.md#interfacenode) for the structure of interface data.
+ - [Mac](../../types/graphql/GetDeviceInterfaces.md#mac) and [MacPorts](../../types/graphql/GetDeviceInterfaces.md#macports-1) for handling MAC address data.

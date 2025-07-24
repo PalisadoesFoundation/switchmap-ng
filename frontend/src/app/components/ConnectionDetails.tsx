@@ -67,13 +67,11 @@ const QUERY = `
  *
  * @returns The rendered connection details table or an error message if data is unavailable.
  *
- * @see useParams for retrieving the device ID from URL parameters.
- * @see DeviceResponse for the structure of the device data.
- * @see QUERY for the GraphQL query used to fetch device interfaces.
- * @see InterfaceEdge and InterfaceNode for the structure of interface data.
- * @see MacPorts and MacsEdge for the structure of MAC address data.
- * @see extractMacAddresses and extractManufacturers for helper functions to process MAC data.
- * @see DeviceNode for the structure of the device node.
+ * @see {@link useParams} for retrieving the device ID from URL parameters.
+ * @see {@link DeviceResponse} for the structure of the device data.
+ * @see {@link QUERY} for the GraphQL query used to fetch device details.
+ * @see {@link InterfaceEdge} and {@link InterfaceNode} for the structure of interface data.
+ * @see {@link Mac} and {@link MacPorts} for handling MAC address data.
  */
 
 export function ConnectionDetails({ deviceId }: { deviceId?: string }) {

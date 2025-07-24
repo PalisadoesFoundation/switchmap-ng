@@ -12,7 +12,7 @@
 
 > **DevicePage**(): `Element`
 
-Defined in: [app/devices/\[id\]/page.tsx:30](https://github.com/Abhi-MS/switchmap-ng/blob/a1bd92914ced2250744e395a896ab3e110b2eb61/frontend/src/app/devices/[id]/page.tsx#L30)
+Defined in: [app/devices/\[id\]/page.tsx:27](https://github.com/Abhi-MS/switchmap-ng/blob/0b476abc2d57c1ee976a5c61d2c9e2070484df73/frontend/src/app/devices/[id]/page.tsx#L27)
 
 Renders the DevicePage component, showing detailed information about a specific device.
 
@@ -35,8 +35,5 @@ The rendered device detail page.
 
 #### See
 
- - useParams and useSearchParams — to retrieve URL parameters.
- - useRouter — for navigation handling.
- - ConnectionDetails — for displaying connection info.
- - ThemeToggle — for dark/light mode toggle.
- - FiHome, FiMonitor, FiLink, FiBarChart2 — icons used in the sidebar.
+ - [ConnectionDetails](../../components/ConnectionDetails.md#connectiondetails) for displaying device interface details.
+ - [ThemeToggle](../../theme-toggle.md#themetoggle) for the theme switching functionality.

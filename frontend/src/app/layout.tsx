@@ -19,8 +19,10 @@ import { ThemeProvider } from "next-themes";
  *
  * @returns The rendered component.
  *
- * @see ThemeProvider for managing themes in Next.js.
- * @see Geist and Geist_Mono for the fonts used in the layout.
+ * @see {@link ThemeProvider} for managing themes in Next.js.
+ * @see {@link Geist} and {@link Geist_Mono} for the fonts used in the layout.
+ * @see {@link Metadata} for defining the page metadata.
+ *
  */
 
 const geistSans = Geist({

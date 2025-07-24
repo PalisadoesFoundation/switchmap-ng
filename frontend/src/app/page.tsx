@@ -20,9 +20,9 @@ import Sidebar from "@/app/components/Sidebar";
  *
  * @returns The rendered component.
  *
- * @see Sidebar
- * @see DevicesOverview
- * @see ZoneDropdown
+ * @see {@link Sidebar} for the sidebar component.
+ * @see {@link ZoneDropdown} for the zone selection dropdown.
+ * @see {@link DevicesOverview} for displaying devices in the selected zone.
  */
 
 export function Home() {

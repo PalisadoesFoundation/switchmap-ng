@@ -16,8 +16,8 @@ import { FiSun, FiMoon } from "react-icons/fi";
  *
  * @returns The rendered component.
  *
- * @see useTheme for managing themes in Next.js.
- * @see FiSun and FiMoon for the icons used in the toggle button.
+ * @see {@link useTheme} for managing themes in Next.js.
+ * @see {@link FiSun} and {@link FiMoon} for the icons used in the toggle button.
  */
 
 export function ThemeToggle() {

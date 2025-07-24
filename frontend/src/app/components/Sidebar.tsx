@@ -16,11 +16,11 @@ import { ThemeToggle } from "@/app/theme-toggle";
  *
  * @returns The rendered sidebar component.
  *
- * @see ThemeToggle for the theme switching functionality.
- * @see Link for navigation links.
- * @see useState for managing the open/close state of the sidebar.
- * @see useEffect for handling click events outside the sidebar to close it.
- * @see FiLayout, FiClock, FiSettings for the icons used in the sidebar.
+ * @see {@link ThemeToggle} for the theme switching functionality.
+ * @see {@link Link} for navigation links.
+ * @see {@link useState} for managing the open/close state of the sidebar.
+ * @see {@link useEffect} for handling side effects like closing the sidebar on outside clicks.
+ * @see {@link FiLayout}, {@link FiClock}, {@link FiSettings}, {@link RxHamburgerMenu} for the icons used in the sidebar.
  *
  */
 
