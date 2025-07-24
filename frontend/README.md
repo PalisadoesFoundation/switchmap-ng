@@ -7,7 +7,7 @@ This folder contains the modern frontend for SwitchMap-NG, responsible for rende
 ## Getting Started
 
 > **Make sure the backend API server is running before starting the frontend.**  
-> Refer to the [Installation Guide](../docs/docs/installation.md) for backend setup instructions.
+> Refer to the [Installation Guide](/docs/installation) for backend setup instructions.
 > Set up the pre-commit hook to automatically generate documentation when committing changes:
 
 ```bash
@@ -53,7 +53,27 @@ This frontend interfaces with the SwitchMap-NG backend (Flask + GraphQL) to pres
 - Theming using CSS custom properties and next-themes
 - Fetch API for backend GraphQL communication
 
-## Directory Structure
-<pre> ```text frontend/ ├── .next/ # Next.js build output (auto-generated) ├── node_modules/ # Installed dependencies ├── src/ │ └── app/ │ ├── components/ # UI components │ ├── devices/ # Device-related pages and components │ ├── globals.css # Global styles and theming │ ├── layout.tsx # Root layout component │ ├── page.tsx # Main entry page │ └── theme-toggle.tsx# Theme toggle component ├── .env.local # Local environment variables (gitignored) ├── package.json # Project metadata and scripts ├── next.config.ts # Next.js configuration ├── tsconfig.json # TypeScript configuration ├── tailwind.config.js # Tailwind CSS configuration ├── postcss.config.mjs # PostCSS configuration ├── README.md # Frontend-specific documentation ``` </pre>
+### Directory Structure
+
+```txt
+frontend/
+├── .next/                  # Next.js build output (auto-generated)
+├── node_modules/           # Installed dependencies
+├── src/
+│   └── app/
+│       ├── components/         # UI components
+│       ├── devices/            # Device-related pages and components
+│       ├── globals.css         # Global styles and theming
+│       ├── layout.tsx          # Root layout component
+│       ├── page.tsx            # Main entry page
+│       └── theme-toggle.tsx    # Theme toggle component
+├── .env.local              # Local environment variables (gitignored)
+├── package.json            # Project metadata and scripts
+├── next.config.ts          # Next.js configuration
+├── tsconfig.json           # TypeScript configuration
+├── tailwind.config.js      # Tailwind CSS configuration
+├── postcss.config.mjs      # PostCSS configuration
+└── README.md               # Frontend-specific documentation
+```
 
 
