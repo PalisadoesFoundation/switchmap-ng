@@ -12,7 +12,7 @@
 
 > **ConnectionDetails**(`deviceId`): `null` \| `Element`
 
-Defined in: [app/components/ConnectionDetails.tsx:77](https://github.com/Abhi-MS/switchmap-ng/blob/541e84ce7b8b339a438f8adc6def2b02b4cae6cf/frontend/src/app/components/ConnectionDetails.tsx#L77)
+Defined in: [app/components/ConnectionDetails.tsx:77](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ConnectionDetails.tsx#L77)
 
 ConnectionDetails component fetches and displays detailed information about a device's interfaces.
 It includes MAC addresses, manufacturers, and other relevant data.

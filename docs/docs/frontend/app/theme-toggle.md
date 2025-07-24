@@ -12,7 +12,7 @@
 
 > **ThemeToggle**(): `null` \| `Element`
 
-Defined in: [app/theme-toggle.tsx:23](https://github.com/Abhi-MS/switchmap-ng/blob/541e84ce7b8b339a438f8adc6def2b02b4cae6cf/frontend/src/app/theme-toggle.tsx#L23)
+Defined in: [app/theme-toggle.tsx:23](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/theme-toggle.tsx#L23)
 
 ThemeToggle component allows users to switch between light and dark themes.
 It uses the Next.js `useTheme` hook to manage the theme state.

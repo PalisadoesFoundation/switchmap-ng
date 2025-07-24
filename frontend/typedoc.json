@@ -7,9 +7,9 @@
   "excludeExternals": true,
   "excludePrivate": true,
   "excludeProtected": true,
-  "router": "module"
-  // "hidePageTitle": true,
-  // "mergeReadme": true,
-  // "flattenOutputFiles": true,
-  // "readme": "none",
+  "router": "module",
+  "githubPages": false,
+  "gitRemote": "upstream",
+  "gitRevision": "develop"
+
 }

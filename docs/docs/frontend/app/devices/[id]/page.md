@@ -12,7 +12,7 @@
 
 > **DevicePage**(): `Element`
 
-Defined in: [app/devices/\[id\]/page.tsx:27](https://github.com/Abhi-MS/switchmap-ng/blob/541e84ce7b8b339a438f8adc6def2b02b4cae6cf/frontend/src/app/devices/[id]/page.tsx#L27)
+Defined in: [app/devices/\[id\]/page.tsx:27](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/devices/[id]/page.tsx#L27)
 
 Renders the DevicePage component, showing detailed information about a specific device.
 
