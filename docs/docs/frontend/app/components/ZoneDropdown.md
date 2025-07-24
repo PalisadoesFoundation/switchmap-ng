@@ -12,7 +12,7 @@
 
 > **ZoneDropdown**(`__namedParameters`): `Element`
 
-Defined in: [app/components/ZoneDropdown.tsx:29](https://github.com/Abhi-MS/switchmap-ng/blob/493238fec07c48222665c03900f50396c1033854/frontend/src/app/components/ZoneDropdown.tsx#L29)
+Defined in: [app/components/ZoneDropdown.tsx:29](https://github.com/Abhi-MS/switchmap-ng/blob/e3f3cee2a7bf54269767383c79698e3c0a861e46/frontend/src/app/components/ZoneDropdown.tsx#L29)
 
 ZoneDropdown component allows users to select a zone from a dropdown list.
 It fetches the available zones from the API and manages the selected zone state.

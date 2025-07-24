@@ -12,7 +12,7 @@
 
 > **DevicesOverview**(`__namedParameters`): `Element`
 
-Defined in: [app/components/DevicesOverview.tsx:64](https://github.com/Abhi-MS/switchmap-ng/blob/493238fec07c48222665c03900f50396c1033854/frontend/src/app/components/DevicesOverview.tsx#L64)
+Defined in: [app/components/DevicesOverview.tsx:64](https://github.com/Abhi-MS/switchmap-ng/blob/e3f3cee2a7bf54269767383c79698e3c0a861e46/frontend/src/app/components/DevicesOverview.tsx#L64)
 
 DevicesOverview component fetches and displays a list of devices in a table format.
 It supports sorting and filtering of device data.

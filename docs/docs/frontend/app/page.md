@@ -12,7 +12,7 @@
 
 > **Home**(): `Element`
 
-Defined in: [app/page.tsx:28](https://github.com/Abhi-MS/switchmap-ng/blob/493238fec07c48222665c03900f50396c1033854/frontend/src/app/page.tsx#L28)
+Defined in: [app/page.tsx:28](https://github.com/Abhi-MS/switchmap-ng/blob/e3f3cee2a7bf54269767383c79698e3c0a861e46/frontend/src/app/page.tsx#L28)
 
 Main entry point for the application.
 
