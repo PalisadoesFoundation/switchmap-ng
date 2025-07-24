@@ -3,7 +3,7 @@
 import { DevicesOverview } from "@/app/components/DevicesOverview";
 import { ZoneDropdown } from "@/app/components/ZoneDropdown";
 import { useEffect, useState } from "react";
-import Sidebar from "@/app/components/Sidebar";
+import { Sidebar } from "@/app/components/Sidebar";
 
 /**
  * Main entry point for the application.

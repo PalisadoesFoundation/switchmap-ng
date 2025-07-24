@@ -36,9 +36,3 @@ It also includes responsive design features to adapt to different screen sizes.
  - useState for managing the open/close state of the sidebar.
  - useEffect for handling side effects like closing the sidebar on outside clicks.
  - FiLayout, FiClock, FiSettings, RxHamburgerMenu for the icons used in the sidebar.
-
-## References
-
-### default
-
-Renames and re-exports [Sidebar](#sidebar)

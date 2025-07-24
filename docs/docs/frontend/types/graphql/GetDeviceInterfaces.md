@@ -82,9 +82,9 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:44](https://github.com/Palisad
 
 #### Properties
 
-##### cdpcachedeviceid
+##### cdpcachedeviceid?
 
-> **cdpcachedeviceid**: `string`
+> `optional` **cdpcachedeviceid**: `string` \| `null`
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:55](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/types/graphql/GetDeviceInterfaces.ts#L55)
 
@@ -118,9 +118,9 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:46](https://github.com/Palisad
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:45](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/types/graphql/GetDeviceInterfaces.ts#L45)
 
-##### ifalias
+##### ifalias?
 
-> **ifalias**: `string`
+> `optional` **ifalias**: `string` \| `null`
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:53](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/types/graphql/GetDeviceInterfaces.ts#L53)
 

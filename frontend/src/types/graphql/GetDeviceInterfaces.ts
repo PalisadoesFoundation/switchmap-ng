@@ -41,26 +41,26 @@ export type MacPorts = {
   edges: MacsEdge[];
 };
 
-export type InterfaceNode = {
-  idxL1interface: string;
-  idxDevice: number;
-  ifname: string;
-  nativevlan: number;
-  ifoperstatus: number;
-  tsIdle: string;
-  ifspeed: number;
-  duplex: string;
-  ifalias: string;
-  trunk: boolean;
-  cdpcachedeviceid: string;
-  cdpcachedeviceport: string;
-  cdpcacheplatform: string;
-  lldpremportdesc: string;
-  lldpremsysname: string;
-  lldpremsysdesc: string;
-  lldpremsyscapenabled: string[];
-  macports: MacPorts;
-};
+export type InterfaceNode = {  
+  idxL1interface: string;  
+  idxDevice: number;  
+  ifname: string;  
+  nativevlan: number;  
+  ifoperstatus: number;  
+  tsIdle: string;  
+  ifspeed: number;  
+  duplex: string;  
+  ifalias?: string | null;  
+  trunk: boolean;  
+  cdpcachedeviceid?: string | null;  
+  cdpcachedeviceport: string;  
+  cdpcacheplatform: string;  
+  lldpremportdesc: string;  
+  lldpremsysname: string;  
+  lldpremsysdesc: string;  
+  lldpremsyscapenabled: string[];  
+  macports: MacPorts;  
+};  
 
 export type InterfaceEdge = {
   node: InterfaceNode;
