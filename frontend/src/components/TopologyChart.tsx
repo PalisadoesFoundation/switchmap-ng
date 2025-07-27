@@ -119,25 +119,28 @@ const TopologyChart: React.FC<TopologyChartProps> = ({
         }
       );
     });
-    const truncateTwoLines = (str: string, max = 100) => {
-      // Approximate split into two halves to simulate 2 lines
-      if (!str) return "N/A";
-      if (str.length <= max) return str;
-      return str.slice(0, max / 2) + "\n" + str.slice(max / 2, max) + "...";
-    };
-
+    function htmlTitle(html: string) {
+      const container = document.createElement("div");
+      container.innerHTML = html;
+      return container;
+    }
+    // Create nodes array from devices
+    // Each node has an `id`, `label`, `color`, and custom `title
     const nodesArray: Node[] = devices.map((device) => ({
       id: device.sysName ?? "", // use sysName as the node ID (to match edge `cdpcachedeviceid`)
       label: device.sysName ?? device.idxDevice?.toString() ?? "",
       color: "#1E90FF",
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
-      title: `
-    ${device.sysName ?? "Unknown"}
-    Description: ${truncateTwoLines(device.sysDescription ?? "N/A")}
-    Hostname: ${device.hostname ?? "N/A"}
-    Uptime: ${formatUptime(device.sysUptime)}
-  `.trim(), // ✅ Tooltip content (HTML-safe string)
+      title: htmlTitle(
+        `
+    ${device.sysName ?? "Unknown"}<br>
+    Hostname: ${device.hostname ?? "N/A"}<br><br>
+    
+    <h1>${formatUptime(device.sysUptime) ?? "N/A"}</h1> Uptime
+  `.trim()
+      ), // Tooltip content (HTML-safe string)
     }));
+    // To add descirption to nodes, we can use  Description: ${truncateLines(device.sysDescription ?? "N/A")}
     // Add extra nodes that are not in the current zone
     extraNodesSet.forEach((sysName) => {
       nodesArray.push({
@@ -226,6 +229,54 @@ const TopologyChart: React.FC<TopologyChartProps> = ({
     });
   }, [graph]);
 
+      edgesData.current.update({
+        id: params.edge,
+        arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+      });
+      // const tooltip = document.querySelector(".vis-tooltip") as HTMLElement;
+      // if (tooltip) {
+      //   tooltip.style.background = "transparent !important";
+      // }
+    });
+
+    networkRef.current.on("blurEdge", (params) => {
+      if (!edgesData.current || !networkRef.current) return;
+
+      const selectedEdges = networkRef.current.getSelectedEdges();
+
+      if (!selectedEdges.includes(params.edge)) {
+        edgesData.current.update({
+          id: params.edge,
+          arrows: { to: false },
+        });
+      }
+    });
+
+    networkRef.current.on("selectEdge", (params) => {
+      if (!edgesData.current) return;
+
+      edgesData.current.update({
+        id: params.edges[0], // handles single selection
+        arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+      });
+    });
+
+    networkRef.current.on("deselectEdge", (params) => {
+      if (!edgesData.current) return;
+
+      initialGraph.current.edges.forEach((originalEdge) => {
+        edgesData.current!.update({
+          id: originalEdge.id,
+          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"), // fallback if color missing
+          arrows: { to: false }, // reset arrow visibility
+        });
+      });
+    });
+  }, [graph, theme]);
+
+  // Effect to handle search term changes
+  // When the search term changes, it highlights the matching node and focuses the network view on it.
+  // If the node is not found, it logs a warning.
   useEffect(() => {
     if (!searchTerm || !nodesData.current || !networkRef.current) return;
 

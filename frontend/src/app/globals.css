@@ -118,3 +118,19 @@ td{
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+.vis-tooltip {
+  background: linear-gradient(to right, #8C09BC 27%, #59098B 71%) !important;
+  color: white !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  border: none !important;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3) !important;
+  white-space: normal !important;
+  max-width: 300px !important;
+}
+
+.vis-tooltip h1 {
+  font-size: 20px !important;
+  color: white !important;
+}
