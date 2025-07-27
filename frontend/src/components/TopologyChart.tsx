@@ -89,6 +89,7 @@ export default function TopologyChart({
       tooltipDelay: 100,
       dragNodes: true,
       zoomView: true,
+      selectConnectedEdges: false,
     },
   };
 
@@ -283,13 +284,37 @@ export default function TopologyChart({
       });
     });
 
-    // Hide arrow on blur
     networkRef.current.on("blurEdge", (params) => {
+      if (!edgesData.current || !networkRef.current) return;
+
+      const selectedEdges = networkRef.current.getSelectedEdges();
+
+      if (!selectedEdges.includes(params.edge)) {
+        edgesData.current.update({
+          id: params.edge,
+          arrows: { to: false },
+        });
+      }
+    });
+
+    networkRef.current.on("selectEdge", (params) => {
       if (!edgesData.current) return;
 
       edgesData.current.update({
-        id: params.edge,
-        arrows: { to: false },
+        id: params.edges[0], // handles single selection
+        arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+      });
+    });
+
+    networkRef.current.on("deselectEdge", (params) => {
+      if (!edgesData.current) return;
+
+      initialGraph.current.edges.forEach((originalEdge) => {
+        edgesData.current!.update({
+          id: originalEdge.id,
+          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"), // fallback if color missing
+          arrows: { to: false }, // reset arrow visibility
+        });
       });
     });
   }, [graph, theme]);
