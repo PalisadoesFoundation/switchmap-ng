@@ -134,8 +134,8 @@ export default function TopologyChart({
         ({ node: iface }: { node: any }) => {
           const targetCDP = iface?.cdpcachedeviceid;
           const portCDP = iface?.cdpcachedeviceport;
-          const targetLLDP = iface?.cdpcachedeviceid;
-          const portLLDP = iface?.cdpcachedeviceport;
+          const targetLLDP = iface?.lldpcachedeviceid;
+          const portLLDP = iface?.lldpcachedeviceport;
           // Create edges for CDP or LLDP relationships
           if (targetCDP) {
             if (!nodesSet.has(targetCDP)) {
@@ -145,11 +145,10 @@ export default function TopologyChart({
               from: sysName,
               to: targetCDP,
               label: "",
-              title: String("CDP " + (portCDP ?? "")),
+              title: portCDP,
               color: "#BBBBBB",
             } as Edge);
-          }
-          if (targetLLDP) {
+          } else if (targetLLDP) {
             if (!nodesSet.has(targetLLDP)) {
               extraNodesSet.add(targetLLDP);
             }
@@ -157,8 +156,8 @@ export default function TopologyChart({
               from: sysName,
               to: targetLLDP,
               label: "",
-              title: String("LLDP " + (portLLDP ?? "")),
-              color: "#6f6f6fff",
+              title: portLLDP,
+              color: "#BBBBBB",
             } as Edge);
           }
         }
