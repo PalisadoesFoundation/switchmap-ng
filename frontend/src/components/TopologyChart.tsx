@@ -332,30 +332,23 @@ export default function TopologyChart({
 
   const handleReset = () => {
     setInputTerm("");
-    setGraph(initialGraph.current);
     setSearchResult("");
+    setGraph(initialGraph.current);
 
     if (!networkRef.current || !nodesData.current || !edgesData.current) return;
 
     // Clear selection
     networkRef.current.unselectAll();
 
-    // Reset nodes color/font
-    nodesData.current.forEach((node) => {
-      nodesData.current!.update({
-        id: node.id,
-        color: { background: "#1E90FF", border: "#555" },
-        font: { color: isDark ? "#fff" : "black" },
-      });
-    });
+    // Instead of clear + add, do update
+    const originalNodes = initialGraph.current.nodes;
+    const originalEdges = initialGraph.current.edges;
 
-    // Reset edges color
-    edgesData.current.forEach((edge) => {
-      edgesData.current!.update({
-        id: edge.id,
-        color: "#BBBBBB",
-      });
-    });
+    nodesData.current.clear();
+    edgesData.current.clear();
+
+    nodesData.current.add(originalNodes);
+    edgesData.current.add(originalEdges);
 
     // Reset view
     networkRef.current.fit();
