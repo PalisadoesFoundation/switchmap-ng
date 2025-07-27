@@ -163,7 +163,11 @@ export default function TopologyChart({
         }
       );
     });
-
+    function htmlTitle(html: string) {
+      const container = document.createElement("div");
+      container.innerHTML = html;
+      return container;
+    }
     // Create nodes array from devices
     // Each node has an `id`, `label`, `color`, and custom `title
     const nodesArray: Node[] = devices.map((device) => ({
@@ -171,13 +175,16 @@ export default function TopologyChart({
       label: device.sysName ?? device.idxDevice?.toString() ?? "",
       color: "#1E90FF",
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
-      title: `
-    ${device.sysName ?? "Unknown"}
-    Description: ${truncateLines(device.sysDescription ?? "N/A")}
-    Hostname: ${device.hostname ?? "N/A"}
-    Uptime: ${formatUptime(device.sysUptime)}
-  `.trim(), // Tooltip content (HTML-safe string)
+      title: htmlTitle(
+        `
+    ${device.sysName ?? "Unknown"}<br>
+    Hostname: ${device.hostname ?? "N/A"}<br><br>
+    
+    <h1>${formatUptime(device.sysUptime) ?? "N/A"}</h1> Uptime
+  `.trim()
+      ), // Tooltip content (HTML-safe string)
     }));
+    // To add descirption to nodes, we can use  Description: ${truncateLines(device.sysDescription ?? "N/A")}
     // Add extra nodes that are not in the current zone
     // These nodes are added with a different color and a tooltip
     // indicating they are not in the current zone
@@ -281,6 +288,10 @@ export default function TopologyChart({
         id: params.edge,
         arrows: { to: { enabled: true, scaleFactor: 0.5 } },
       });
+      // const tooltip = document.querySelector(".vis-tooltip") as HTMLElement;
+      // if (tooltip) {
+      //   tooltip.style.background = "transparent !important";
+      // }
     });
 
     networkRef.current.on("blurEdge", (params) => {
