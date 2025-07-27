@@ -191,20 +191,6 @@ export default function TopologyChart({
   ${formatUptime(device.sysUptime) ?? "N/A"}
   <span style="font-size: 0.4em; font-weight: normal;">Uptime</span>
 </h1>
-<div style="text-align: right;">
-<button onclick="window.location.href='/device/${device.id}'"
-    style="
-      font-size: 0.9em;
-      border: none;
-      border-radius: 4px;
-      color: #00C2FF;
-      font-style: underline;
-      cursor: pointer;
-      margin-right: 0.75rem;
-    ">
-    View Device →
-  </button>
-  </div>
 
   `.trim()
       ), // Tooltip content (HTML-safe string)
@@ -239,22 +225,27 @@ export default function TopologyChart({
       },
       options
     );
-    // networkRef.current.on("click", (params) => {
-    //   if (params.nodes.length === 1) {
-    //     const nodeId = params.nodes[0];
-    //     const nodeData = nodesData.current?.get(nodeId);
-    //     const node = Array.isArray(nodeData) ? nodeData[0] : nodeData;
-    //     const idxDevice = (node as any)?.idxDevice ?? nodeId;
-    //     const sysName = (node as any)?.label ?? "";
-    //     window.location.href = `/devices/${encodeURIComponent(
-    //       idxDevice
-    //     )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
-    //   }
-    // });
+
+    // Double-click event to navigate to device details
+    // When a node is double-clicked, it navigates to the device details page
+    networkRef.current.on("doubleClick", (params) => {
+      if (params.nodes.length === 1) {
+        const nodeId = params.nodes[0];
+        const nodeData = nodesData.current?.get(nodeId);
+        const node = Array.isArray(nodeData) ? nodeData[0] : nodeData;
+        const idxDevice = (node as any)?.idxDevice ?? nodeId;
+        const sysName = (node as any)?.label ?? "";
+        const url = `/devices/${encodeURIComponent(
+          idxDevice
+        )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
+        window.location.href = url;
+      }
+    });
 
     // Node selection highlighting
     // When a node is selected, it highlights the node and dims others
     // It also updates the edges to have a different color
+
     networkRef.current.on("selectNode", ({ nodes }) => {
       const selected = nodes[0];
       if (!nodesData.current || !edgesData.current) return;
@@ -475,6 +466,9 @@ export default function TopologyChart({
         ref={containerRef}
         className="w-full h-[70vh] border rounded shadow"
       />
+      <div style={{ margin: "0.25rem", fontSize: "0.85rem", color: "#666" }}>
+        Single-click to select nodes, double-click to open device details.
+      </div>
     </div>
   );
 }
