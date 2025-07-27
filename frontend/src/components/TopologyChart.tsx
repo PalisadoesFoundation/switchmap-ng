@@ -176,7 +176,7 @@ export default function TopologyChart({
       color: "#1E90FF",
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
       title: htmlTitle(
-        `<div style="display: flex; align-items: left; gap: 2rem;"><div>
+        `<div style="display: flex; align-items: left; gap: 1rem;"><div>
     ${device.sysName ?? "Unknown"}<br>
     ${device.hostname ?? "N/A"}
     </div>
@@ -191,6 +191,20 @@ export default function TopologyChart({
   ${formatUptime(device.sysUptime) ?? "N/A"}
   <span style="font-size: 0.4em; font-weight: normal;">Uptime</span>
 </h1>
+<div style="text-align: right;">
+<button onclick="window.location.href='/device/${device.id}'"
+    style="
+      font-size: 0.9em;
+      border: none;
+      border-radius: 4px;
+      color: #00C2FF;
+      font-style: underline;
+      cursor: pointer;
+      margin-right: 0.75rem;
+    ">
+    View Device →
+  </button>
+  </div>
 
   `.trim()
       ), // Tooltip content (HTML-safe string)
