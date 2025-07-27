@@ -51,6 +51,9 @@ export default function TopologyChart({
     nodes: [],
     edges: [],
   });
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  const [allNodeLabels, setAllNodeLabels] = useState<string[]>([]);
 
   // Determine if current theme is dark to set graph colors accordingly.
   // Note: vis-network options are initialized once and do not auto-update on theme change.
@@ -343,7 +346,27 @@ export default function TopologyChart({
         });
       });
     });
+    const labels =
+      nodesData.current
+        ?.get()
+        ?.map((node: any) => node.label)
+        .filter(Boolean) || [];
+
+    setAllNodeLabels(labels);
   }, [graph, theme]);
+
+  useEffect(() => {
+    if (!inputTerm || inputTerm.trim() === "") {
+      setSuggestions([]);
+      return;
+    }
+
+    const filtered = allNodeLabels
+      .filter((label) => label.toLowerCase().includes(inputTerm.toLowerCase()))
+      .slice(0, 5); // limit to top 5
+
+    setSuggestions(filtered);
+  }, [inputTerm, allNodeLabels]);
 
   // Effect to handle search term changes
   // When the search term changes, it highlights the matching node and focuses the network view on it.
@@ -424,40 +447,76 @@ export default function TopologyChart({
   return (
     <div>
       <h2 className="text-xl font-semibold mb-2">Network Topology</h2>
-      <div className="flex items-center mb-2 justify-between w-full">
-        <form
-          className="flex items-center flex-row gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSearchTerm(inputTerm);
-            setInputTerm("");
-          }}
-        >
-          <input
-            className="border p-2 rounded w-full max-w-sm"
-            type="text"
-            placeholder="Search device..."
-            value={inputTerm}
-            onChange={(e) => setInputTerm(e.target.value)}
-          />
-          <button className="!border border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit">
-            Search
-          </button>
-        </form>
+      <div className="flex mb-2 w-full gap-4 flex-wrap justify-between">
+        {/* Wrap form and dropdown in relative container */}
+        <div className="relative max-w-sm flex-grow">
+          <form
+            className="flex items-center gap-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setSearchTerm(inputTerm);
+              setInputTerm("");
+            }}
+          >
+            <input
+              className="border p-2 rounded w-full"
+              type="text"
+              placeholder="Search device..."
+              value={inputTerm}
+              onChange={(e) => {
+                const value = e.target.value;
+                setInputTerm(value);
+                if (value.trim() === "") {
+                  setSuggestions([]);
+                  return;
+                }
+                const filtered = allNodeLabels
+                  .filter((label) =>
+                    label.toLowerCase().includes(value.toLowerCase())
+                  )
+                  .slice(0, 5);
+                setSuggestions(filtered);
+              }}
+            />
+            <button className="!border border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit">
+              Search
+            </button>
+          </form>
 
-        <div>
+          {suggestions.length > 0 && (
+            <ul className="absolute bg-white dark:bg-neutral-800 shadow-md mt-1 rounded border w-full z-50">
+              {suggestions.map((suggestion, index) => (
+                <li
+                  key={index}
+                  onClick={() => {
+                    setSearchTerm(suggestion);
+                    setInputTerm("");
+                    setSuggestions([]);
+                  }}
+                  className="cursor-pointer px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                >
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Reset and Export buttons on the same line */}
+        <div className="flex items-center gap-4">
           <button onClick={handleReset} className="reset-button">
             Reset
           </button>
           <button
             onClick={handleExportImage}
-            className="text-white rounded ml-4 px-4 py-2 rounded cursor-pointer transition-colors duration-300"
+            className="text-white rounded px-4 py-2 cursor-pointer transition-colors duration-300"
             style={{ backgroundColor: "#CB3CFF" }}
           >
             Export
           </button>
         </div>
       </div>
+
       <p className="mt-2 mb-2 text-sm text-gray-600 min-h-[1.5rem] h-[1.5rem]">
         {searchResult || ""}
       </p>
