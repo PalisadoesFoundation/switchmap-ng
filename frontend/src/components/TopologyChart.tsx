@@ -197,10 +197,8 @@ export default function TopologyChart({
   useEffect(() => {
     // If no graph data is available, do not render the network
     if (!containerRef.current || graph.nodes.length === 0) return;
-
     nodesData.current = new DataSet<Node>(graph.nodes);
     edgesData.current = new DataSet<Edge>(graph.edges);
-
     networkRef.current = new Network(
       containerRef.current,
       {
@@ -223,6 +221,8 @@ export default function TopologyChart({
     // });
 
     // Node selection highlighting
+    // When a node is selected, it highlights the node and dims others
+    // It also updates the edges to have a different color
     networkRef.current.on("selectNode", ({ nodes }) => {
       const selected = nodes[0];
       if (!nodesData.current || !edgesData.current) return;
@@ -248,6 +248,8 @@ export default function TopologyChart({
       });
     });
     // Reset node selection highlighting
+    // When a node is deselected, it resets the opacity and color of all nodes
+    // It also resets the edges color to default
     networkRef.current.on("deselectNode", () => {
       if (!nodesData.current || !edgesData.current) return;
 
@@ -264,10 +266,10 @@ export default function TopologyChart({
         });
       });
       // Reset edges color
-      edgesData.current.forEach((edge) => {
+      initialGraph.current.edges.forEach((originalEdge) => {
         edgesData.current!.update({
-          id: edge.id,
-          color: isDark ? "#444" : "#BBBBBB",
+          id: originalEdge.id,
+          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"), // fallback if color missing
         });
       });
     });
