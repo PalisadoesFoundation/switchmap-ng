@@ -300,7 +300,7 @@ export default function TopologyChart({
 
     const node = nodesData.current.get(searchTerm);
     if (!node) {
-      setSearchResult("No results found");
+      setSearchResult("No results found for: " + searchTerm);
       return;
     } else {
       // Highlight the node and focus the network
@@ -379,7 +379,14 @@ export default function TopologyChart({
     <div>
       <h2 className="text-xl font-semibold mb-2">Network Topology</h2>
       <div className="flex items-center mb-2 justify-between w-full">
-        <div className="flex items-center flex-row gap-4">
+        <form
+          className="flex items-center flex-row gap-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSearchTerm(inputTerm);
+            setInputTerm("");
+          }}
+        >
           <input
             className="border p-2 rounded w-full max-w-sm"
             type="text"
@@ -387,16 +394,10 @@ export default function TopologyChart({
             value={inputTerm}
             onChange={(e) => setInputTerm(e.target.value)}
           />
-          <button
-            className="!border border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit"
-            onClick={() => {
-              setSearchTerm(inputTerm);
-              setInputTerm("");
-            }}
-          >
+          <button className="!border border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit">
             Search
           </button>
-        </div>
+        </form>
 
         <div>
           <button onClick={handleReset} className="reset-button">
