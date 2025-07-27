@@ -484,7 +484,7 @@ export default function TopologyChart({
           </form>
 
           {suggestions.length > 0 && (
-            <ul className="absolute bg-white dark:bg-neutral-800 shadow-md mt-1 rounded border w-full z-50">
+            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50">
               {suggestions.map((suggestion, index) => (
                 <li
                   key={index}
@@ -493,7 +493,7 @@ export default function TopologyChart({
                     setInputTerm("");
                     setSuggestions([]);
                   }}
-                  className="cursor-pointer px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700"
+                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
                 >
                   {suggestion}
                 </li>
