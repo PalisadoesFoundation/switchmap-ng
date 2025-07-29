@@ -11,9 +11,9 @@ import {
   createColumnHelper,
   SortingState,
 } from "@tanstack/react-table";
-import { DeviceNode, InterfaceEdge } from "@/types/graphql/GetZoneDevices";
+import { DeviceNode, InterfaceEdge } from "@/app/types/graphql/GetZoneDevices";
 import { formatUptime } from "@/app/utils/time";
-import { InterfaceNode } from "@/types/graphql/GetDeviceInterfaces";
+import { InterfaceNode } from "@/app/types/graphql/GetDeviceInterfaces";
 
 /** * DevicesOverview component fetches and displays a list of devices in a table format.
  * It supports sorting and filtering of device data.
