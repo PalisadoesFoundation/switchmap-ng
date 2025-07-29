@@ -1,5 +1,6 @@
 "use client";
 
+import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
 import React, { useState, useEffect, useRef } from "react";
 import {
   Network,

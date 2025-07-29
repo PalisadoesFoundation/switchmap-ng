@@ -7,8 +7,8 @@ import {
   Mac,
   MacPort,
   MacsEdge,
-} from "../../types/graphql/GetDeviceInterfaces";
-import { DeviceNode } from "../../types/graphql/GetZoneDevices";
+} from "@/app/types/graphql/GetDeviceInterfaces";
+import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
 /**
  * ConnectionDetails component fetches and displays detailed information about a device's interfaces.
  * It includes MAC addresses, manufacturers, and other relevant data.

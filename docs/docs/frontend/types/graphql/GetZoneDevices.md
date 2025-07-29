@@ -12,7 +12,7 @@
 
 > **DeviceEdge** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:50](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L50)
+Defined in: [types/graphql/GetZoneDevices.ts:49](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L49)
 
 #### Properties
 
@@ -20,7 +20,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:50](https://github.com/PalisadoesFo
 
 > **node**: [`DeviceNode`](#devicenode)
 
-Defined in: [types/graphql/GetZoneDevices.ts:51](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L51)
+Defined in: [types/graphql/GetZoneDevices.ts:50](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L50)
 
 ***
 
@@ -56,12 +56,6 @@ Defined in: [types/graphql/GetZoneDevices.ts:41](https://github.com/PalisadoesFo
 
 Defined in: [types/graphql/GetZoneDevices.ts:46](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L46)
 
-##### lastPolled
-
-> **lastPolled**: `number` \| `null`
-
-Defined in: [types/graphql/GetZoneDevices.ts:47](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L47)
-
 ##### sysDescription
 
 > **sysDescription**: `string`
@@ -92,7 +86,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:43](https://github.com/PalisadoesFo
 
 > **Devices** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:61](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L61)
+Defined in: [types/graphql/GetZoneDevices.ts:60](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L60)
 
 #### Properties
 
@@ -100,7 +94,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:61](https://github.com/PalisadoesFo
 
 > **edges**: [`DeviceEdge`](#deviceedge)[]
 
-Defined in: [types/graphql/GetZoneDevices.ts:62](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L62)
+Defined in: [types/graphql/GetZoneDevices.ts:61](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L61)
 
 ***
 
@@ -108,7 +102,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:62](https://github.com/PalisadoesFo
 
 > **GetZoneDevicesData** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:74](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L74)
+Defined in: [types/graphql/GetZoneDevices.ts:73](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L73)
 
 #### Properties
 
@@ -116,7 +110,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:74](https://github.com/PalisadoesFo
 
 > **data**: `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:75](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L75)
+Defined in: [types/graphql/GetZoneDevices.ts:74](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L74)
 
 ###### zone
 
@@ -126,7 +120,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:75](https://github.com/PalisadoesFo
 
 > `optional` **errors**: `object`[]
 
-Defined in: [types/graphql/GetZoneDevices.ts:78](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L78)
+Defined in: [types/graphql/GetZoneDevices.ts:77](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L77)
 
 ###### message
 
@@ -138,7 +132,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:78](https://github.com/PalisadoesFo
 
 > **GetZoneDevicesVars** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:81](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L81)
+Defined in: [types/graphql/GetZoneDevices.ts:80](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L80)
 
 #### Properties
 
@@ -146,7 +140,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:81](https://github.com/PalisadoesFo
 
 > **id**: `string`
 
-Defined in: [types/graphql/GetZoneDevices.ts:82](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L82)
+Defined in: [types/graphql/GetZoneDevices.ts:81](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L81)
 
 ***
 
@@ -217,7 +211,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:35](https://github.com/PalisadoesFo
 
 > **Zone** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:69](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L69)
+Defined in: [types/graphql/GetZoneDevices.ts:68](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L68)
 
 #### Properties
 
@@ -225,7 +219,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:69](https://github.com/PalisadoesFo
 
 > **devices**: [`Devices`](#devices)
 
-Defined in: [types/graphql/GetZoneDevices.ts:70](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L70)
+Defined in: [types/graphql/GetZoneDevices.ts:69](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L69)
 
 ***
 
@@ -233,7 +227,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:70](https://github.com/PalisadoesFo
 
 > **ZoneEdge** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:57](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L57)
+Defined in: [types/graphql/GetZoneDevices.ts:56](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L56)
 
 #### Properties
 
@@ -241,7 +235,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:57](https://github.com/PalisadoesFo
 
 > **node**: [`ZoneNode`](#zonenode)
 
-Defined in: [types/graphql/GetZoneDevices.ts:58](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L58)
+Defined in: [types/graphql/GetZoneDevices.ts:57](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L57)
 
 ***
 
@@ -249,7 +243,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:58](https://github.com/PalisadoesFo
 
 > **ZoneNode** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:53](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L53)
+Defined in: [types/graphql/GetZoneDevices.ts:52](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L52)
 
 #### Properties
 
@@ -257,7 +251,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:53](https://github.com/PalisadoesFo
 
 > **devices**: [`Devices`](#devices)
 
-Defined in: [types/graphql/GetZoneDevices.ts:54](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L54)
+Defined in: [types/graphql/GetZoneDevices.ts:53](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L53)
 
 ***
 
@@ -265,7 +259,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:54](https://github.com/PalisadoesFo
 
 > **Zones** = `object`
 
-Defined in: [types/graphql/GetZoneDevices.ts:65](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L65)
+Defined in: [types/graphql/GetZoneDevices.ts:64](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L64)
 
 #### Properties
 
@@ -273,4 +267,4 @@ Defined in: [types/graphql/GetZoneDevices.ts:65](https://github.com/PalisadoesFo
 
 > **edges**: [`ZoneEdge`](#zoneedge)[]
 
-Defined in: [types/graphql/GetZoneDevices.ts:66](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L66)
+Defined in: [types/graphql/GetZoneDevices.ts:65](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L65)

@@ -1,6 +1,6 @@
 "use client";
 
-import { ZoneEdge } from "@/types/graphql/GetZoneDevices";
+import { ZoneEdge } from "@/app/types/graphql/GetZoneDevices";
 import { useEffect, useState, useRef } from "react";
 /**
  * ZoneDropdown component allows users to select a zone from a dropdown list.

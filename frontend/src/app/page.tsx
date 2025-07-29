@@ -5,7 +5,10 @@ import { ZoneDropdown } from "@/app/components/ZoneDropdown";
 import { useEffect, useState } from "react";
 import { Sidebar } from "@/app/components/Sidebar";
 import { TopologyChart } from "@/app/components/TopologyChart";
-import { DeviceNode, GetZoneDevicesData } from "@/types/graphql/GetZoneDevices";
+import {
+  DeviceNode,
+  GetZoneDevicesData,
+} from "@/app/types/graphql/GetZoneDevices";
 
 /**
  * Main entry point for the application.

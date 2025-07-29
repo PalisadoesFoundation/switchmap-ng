@@ -12,7 +12,7 @@
 
 > **TopologyChart**(`__namedParameters`): `Element`
 
-Defined in: [components/TopologyChart.tsx:34](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/TopologyChart.tsx#L34)
+Defined in: [components/TopologyChart.tsx:22](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/TopologyChart.tsx#L22)
 
 #### Parameters
 
