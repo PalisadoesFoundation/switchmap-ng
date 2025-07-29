@@ -10,8 +10,8 @@ import {
   Options,
 } from "vis-network/standalone/esm/vis-network";
 import { useTheme } from "next-themes";
-import { formatUptime } from "@/utils/time";
-import { truncateLines } from "@/utils/stringUtils";
+import { formatUptime } from "@/app/utils/time";
+import { truncateLines } from "@/app/utils/stringUtils";
 
 interface TopologyChartProps {
   devices: DeviceNode[];
@@ -19,11 +19,7 @@ interface TopologyChartProps {
   error: string | null;
 }
 
-export default function TopologyChart({
-  devices,
-  loading,
-  error,
-}: TopologyChartProps) {
+export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   // React state to hold current graph structure: array of nodes and edges
   const [graph, setGraph] = useState<{ nodes: Node[]; edges: Edge[] }>({
     nodes: [],
