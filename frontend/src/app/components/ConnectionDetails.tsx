@@ -5,15 +5,13 @@ import {
   InterfaceEdge,
   InterfaceNode,
   Mac,
-  MacPorts,
-  MacsEdge,
-} from "../../../types/graphql/GetDeviceInterfaces";
-import { DeviceNode } from "../../../types/graphql/GetZoneDevices";
+  MacPort,
+} from "../../types/graphql/GetDeviceInterfaces";
+import { DeviceNode } from "../../types/graphql/GetZoneDevices";
 
 type DeviceResponse = {
   device: DeviceNode | null;
 };
-
 // GraphQL query to fetch device interface details
 const QUERY = `
   query Device($id: ID!) {
@@ -56,8 +54,26 @@ const QUERY = `
     }
   }
 `;
+/**
+ * ConnectionDetails component fetches and displays detailed information about a device's interfaces.
+ * It includes MAC addresses, manufacturers, and other relevant data.
+ *
+ * @remarks
+ * This component is designed for client-side use only because it relies on the `useParams` hook
+ * to retrieve the device ID from the URL. It also handles loading and error states.
+ *
+ * @param deviceId - The ID of the device to fetch details for. If not provided, it will use the ID from URL params.
+ *
+ * @returns The rendered connection details table or an error message if data is unavailable.
+ *
+ * @see {@link useParams} for retrieving the device ID from URL parameters.
+ * @see {@link DeviceResponse} for the structure of the device data.
+ * @see {@link QUERY} for the GraphQL query used to fetch device details.
+ * @see {@link InterfaceEdge} and {@link InterfaceNode} for the structure of interface data.
+ * @see {@link Mac} and {@link MacPort} for the structure of MAC address data.
+ */
 
-function ConnectionDetails({ deviceId }: { deviceId?: string }) {
+export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const params = useParams();
   // Determine device ID from props or URL params
   const id =
@@ -72,7 +88,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   // Helper functions for MAC address processing
-  const extractMacAddresses = (macports?: MacPorts): string => {
+  const extractMacAddresses = (macports?: MacPort): string => {
     if (!Array.isArray(macports?.edges) || macports.edges.length === 0)
       return "";
 
@@ -85,7 +101,7 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
       .join(", ");
   };
 
-  const extractManufacturers = (macports?: MacPorts): string => {
+  const extractManufacturers = (macports?: MacPort): string => {
     if (!Array.isArray(macports?.edges) || macports.edges.length === 0)
       return "";
 
@@ -219,5 +235,3 @@ function ConnectionDetails({ deviceId }: { deviceId?: string }) {
     </div>
   );
 }
-
-export default ConnectionDetails;

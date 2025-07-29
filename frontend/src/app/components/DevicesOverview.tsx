@@ -24,7 +24,16 @@ type Device = {
     edges: { node: { ifoperstatus: number } }[];
   };
 };
-
+/** Converts uptime from hundredths of seconds to a readable string format.
+ * @param hundredths - Uptime in hundredths of seconds.
+ * @remarks
+ * This function calculates the number of days, hours, minutes, and seconds
+ * from the given uptime value and formats it into a string.
+ * It is used to display device uptime in a user-friendly format.
+ * @returns A string representing the uptime in days, hours, minutes, and seconds.
+ * @see {@link Device} for the structure of device data.
+ * @see {@link DevicesOverview} for the component that uses this function.
+ */
 // Format uptime from hundredths of seconds to readable string
 const formatUptime = (hundredths: number) => {
   const seconds = Math.floor(hundredths / 100);
@@ -34,8 +43,25 @@ const formatUptime = (hundredths: number) => {
   const secs = seconds % 60;
   return `${days}d ${hrs}h ${mins}m ${secs}s`;
 };
+/** * DevicesOverview component fetches and displays a list of devices in a table format.
+ * It supports sorting and filtering of device data.
+ * @remarks
+ * This component is designed for client-side use only because it relies on the `useEffect`
+ * hook for fetching data and managing state.
+ * It also uses the `useReactTable` hook from `@tanstack/react-table`
+ * for table management.
+ * @returns The rendered component.
+ * @see Device for the structure of device data.
+ * @see useEffect for fetching devices from the API.
+ * @see useState for managing the component state.
+ * @see useReactTable for table management.
+ * @see formatUptime for converting uptime from hundredths of seconds to a readable string.
+ * @see createColumnHelper for creating table columns.
+ * @see SortingState for managing sorting state in the table.
+ * @see getCoreRowModel, getFilteredRowModel, getSortedRowModel for table row models.
+ */
 
-export default function DevicesOverview({ zoneId }: { zoneId: string }) {
+export function DevicesOverview({ zoneId }: { zoneId: string }) {
   const [devices, setDevices] = useState<Device[]>([]);
   const [loading, setLoading] = useState(true);
   const [sorting, setSorting] = useState<SortingState>([]);

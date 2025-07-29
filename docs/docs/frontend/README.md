@@ -1,3 +1,7 @@
+**frontend**
+
+***
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 # SwitchMap-NG Frontend
@@ -33,8 +37,6 @@ npm run dev
 
 ```
 The frontend will be available at http://localhost:3000.
-
-
 
 ## Project Overview
 
@@ -77,5 +79,3 @@ frontend/
 ├── package-lock.json
 └── README.md                   # Frontend Read Me file
 ```
-
-

@@ -1,20 +1,20 @@
-import { themes as prismThemes } from 'prism-react-renderer';
-import type { Config } from '@docusaurus/types';
+import {themes as prismThemes} from 'prism-react-renderer';
+import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
-  title: 'Legacy SwitchMap-NG Documentation',
-  tagline: 'Start your open source journey here',
-  favicon: 'img/favicon.ico',
+  title: "Switchmap-NG",
+  tagline: "Inventory, Status & Visualization of Your Network Devices.",
+  favicon: 'img/icons/favicon_palisadoes.ico',
 
-  url: 'https://docs-legacy.switchmap-ng.io',
+  url: "https://docs.switchmap-ng.io/",
   baseUrl: '/',
-  deploymentBranch: 'gh-pages',
+  deploymentBranch: "gh-pages",
 
-  organizationName: 'PalisadoesFoundation', // GitHub org
-  projectName: 'switchmap-ng', // repo name
+  organizationName: "PalisadoesFoundation", // GitHub org
+  projectName: "switchmap-ng-docs", // repo name
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -35,7 +35,10 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/PalisadoesFoundation/switchmap-ng/blob/main/docs/',        },
+          editUrl:
+            'https://github.com/PalisadoesFoundation/switchmap-ng/tree/develop/docs/',
+          exclude: ['**/node_modules/**'],
+        },
         theme: {
           customCss: './src/css/custom.css',
         },
@@ -44,64 +47,97 @@ const config: Config = {
   ],
 
   themeConfig: {
-    // Replace with your project's social card
-    image: 'img/docusaurus-social-card.jpg',
-    navbar: {
-      title: 'SwitchMap-NG Documentation',
-      logo: {
-        alt: 'My Site Logo',
-        src: 'img/logo.svg',
+    docs: {
+      sidebar: {
+        hideable: false,
       },
+    },
+    navbar: {
+      title: "Switchmap-NG",
+      //To Do: Update the logo when available
+      // logo: {
+      //   alt: "Palisadoes logo",
+      //   src: "img/icons/favicon_palisadoes.ico",
+      //   className: "LogoAnimation",
+      // },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'mainSidebar',
-          position: 'left',
-          label: 'Docs',
+          label: "Docs",
+          position: "left",
+          to: "/docs",
+          target: "_self",
         },
+        
         {
-          href: 'https://github.com/PalisadoesFoundation/switchmap-ng',
-          label: 'GitHub',
-          position: 'right',
+          to: "https://github.com/PalisadoesFoundation",
+          position: "right",
+          className: "header-github-link",
+          "aria-label": "GitHub repository",
+        },
+        
+        {
+          to: "https://www.youtube.com/@PalisadoesOrganization",
+          position: "right",
+          className: "header-youtube-link",
+          "aria-label": "Palisadoes Youtube channel",
         },
       ],
     },
+    colorMode: {
+      defaultMode: "light",
+      disableSwitch: false,
+      respectPrefersColorScheme: false,
+    },
     footer: {
-      style: 'dark',
+      style: "dark",
       links: [
         {
-          title: 'Docs',
+          title: "Community",
           items: [
             {
-              label: 'Docs',
-              to: '/docs',
+              label: " Slack",
+              to: "https://github.com/PalisadoesFoundation",
+              className: "footer__icon footer__slack",
+            },
+            {
+              label: " News",
+              to: "https://www.palisadoes.org/news/",
+              className: "footer__icon footer__news",
+            },
+            {
+              label: " Contact Us",
+              to: "https://www.palisadoes.org/contact/",
+              className: "footer__icon footer__contact",
             },
           ],
         },
         {
-          title: 'Community',
+          title: "Social Media",
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://github.com/PalisadoesFoundation',
+              label: " Twitter",
+              to: "https://twitter.com/palisadoesorg?lang=en",
+              className: "footer__icon footer__twitter",
             },
             {
-              label: ' Contact Us',
-              to: 'https://www.palisadoes.org/contact/',
-              className: 'footer__icon footer__contact',
+              label: " Facebook",
+              to: "https://www.facebook.com/palisadoesproject/",
+              className: "footer__icon footer__facebook",
             },
             {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: " Instagram",
+              to: "https://www.instagram.com/palisadoes/?hl=en",
+              className: "footer__icon footer__instagram",
             },
           ],
         },
         {
-          title: 'More',
+          title: "Development",
           items: [
             {
-              label: 'GitHub',
-              href: 'https://github.com/PalisadoesFoundation/switchmap-ng',
+              label: " GitHub",
+              to: "https://github.com/PalisadoesFoundation",
+              className: "footer__icon footer__github",
             },
           ],
         },
@@ -112,7 +148,7 @@ const config: Config = {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
     },
-  } satisfies Preset.ThemeConfig,
+  },
 };
 
 export default config;

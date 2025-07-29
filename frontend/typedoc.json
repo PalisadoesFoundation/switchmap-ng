@@ -1,0 +1,15 @@
+{
+  "entryPoints": ["src"],
+  "entryPointStrategy": "expand",
+  "out": "../docs/docs/frontend", 
+  "plugin": ["typedoc-plugin-markdown"],
+  "exclude": ["**/node_modules/**"], 
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "router": "module",
+  "githubPages": false,
+  "gitRemote": "upstream",
+  "gitRevision": "develop"
+
+}
