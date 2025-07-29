@@ -11,7 +11,6 @@ import {
 } from "vis-network/standalone/esm/vis-network";
 import { useTheme } from "next-themes";
 import { formatUptime } from "@/app/utils/time";
-// import { truncateLines } from "@/app/utils/stringUtils";
 /**
  * Renders a network topology chart using vis-network based on the given devices.
  *
@@ -47,7 +46,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   // Reference to the actual vis-network instance (used for calling methods like focus, fit, etc.)
   const networkRef = useRef<Network | null>(null);
   // DataSets are vis-network's internal reactive data structures for nodes and edges
-  // These allow you to dynamically add, update, or remove nodes/edges without recreating the network
+  // These allow to dynamically add, update, or remove nodes/edges without recreating the network
   const nodesData = useRef<DataSet<Node> | null>(null);
   const edgesData = useRef<DataSet<Edge> | null>(null);
   // Theme context to determine if dark mode is enabled
@@ -187,11 +186,13 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
       title: htmlTitle(
         `<div style="display: flex; align-items: left; gap: 1rem;"><div>
     ${device.sysName ?? "Unknown"}<br>
-    ${device.hostname ?? "N/A"}
+    Hostname: ${device.hostname ?? "N/A"}
     </div>
     <h1>
   <span style="display: inline-block; font-size: 2em;">
-    ${device.sysUptime && device.sysUptime > 0 ? "🟢" : "🔴"}
+    ${
+      typeof device.sysUptime === "number" && device.sysUptime > 0 ? "🟢" : "🔴"
+    }
   </span>
 </h1>
 
@@ -204,7 +205,6 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   `.trim()
       ), // Tooltip content (HTML-safe string)
     }));
-    // To add descirption to nodes, we can use  Description: ${truncateLines(device.sysDescription ?? "N/A")}
     // Add extra nodes that are not in the current zone
     // These nodes are added with a different color and a tooltip
     // indicating they are not in the current zone
@@ -313,10 +313,6 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         id: params.edge,
         arrows: { to: { enabled: true, scaleFactor: 0.5 } },
       });
-      // const tooltip = document.querySelector(".vis-tooltip") as HTMLElement;
-      // if (tooltip) {
-      //   tooltip.style.background = "transparent !important";
-      // }
     });
 
     networkRef.current.on("blurEdge", (params) => {
@@ -454,7 +450,6 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
     <div>
       <h2 className="text-xl font-semibold mb-2">Network Topology</h2>
       <div className="flex mb-2 w-full gap-4 flex-wrap justify-between">
-        {/* Wrap form and dropdown in relative container */}
         <div className="relative max-w-sm flex-grow">
           <form
             className="flex items-center gap-4"
@@ -507,8 +502,6 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
             </ul>
           )}
         </div>
-
-        {/* Reset and Export buttons on the same line */}
         <div className="flex items-center gap-4">
           <button onClick={handleReset} className="reset-button">
             Reset
@@ -523,7 +516,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         </div>
       </div>
 
-      <p className="mt-2 mb-2 text-sm text-gray-600 min-h-[1.5rem] h-[1.5rem]">
+      <p className="mt-2 mb-2 text-sm text-gray-600 h-fit">
         {searchResult || ""}
       </p>
 
