@@ -11,7 +11,17 @@ import {
 } from "vis-network/standalone/esm/vis-network";
 import { useTheme } from "next-themes";
 import { formatUptime } from "@/app/utils/time";
-import { truncateLines } from "@/app/utils/stringUtils";
+// import { truncateLines } from "@/app/utils/stringUtils";
+/**
+ * Renders a network topology chart using vis-network based on the given devices.
+ *
+ * @param {TopologyChartProps} props - The properties for the topology chart.
+ * @param {Device[]} props.devices - Array of device objects representing nodes.
+ * @param {boolean} props.loading - Loading state flag.
+ * @param {Error | null} props.error - Error state, if any.
+ *
+ * @returns {JSX.Element} A React component rendering the network graph visualization.
+ */
 
 interface TopologyChartProps {
   devices: any[];
@@ -330,15 +340,63 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   return (
     <div>
       <h2 className="text-xl font-semibold mb-2">Network Topology</h2>
-      <div className="flex items-center justify-between mb-4 w-full">
-        <input
-          className="border p-2 rounded mb-4 w-full max-w-sm"
-          type="text"
-          placeholder="Search device..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <div>
+      <div className="flex mb-2 w-full gap-4 flex-wrap justify-between">
+        {/* Wrap form and dropdown in relative container */}
+        <div className="relative max-w-sm flex-grow">
+          <form
+            className="flex items-center gap-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              setSearchTerm(inputTerm);
+              setInputTerm("");
+            }}
+          >
+            <input
+              className="border p-2 rounded w-full"
+              type="text"
+              placeholder="Search device..."
+              value={inputTerm}
+              onChange={(e) => {
+                const value = e.target.value;
+                setInputTerm(value);
+                if (value.trim() === "") {
+                  setSuggestions([]);
+                  return;
+                }
+                const filtered = allNodeLabels
+                  .filter((label) =>
+                    label.toLowerCase().includes(value.toLowerCase())
+                  )
+                  .slice(0, 5);
+                setSuggestions(filtered);
+              }}
+            />
+            <button className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit">
+              Search
+            </button>
+          </form>
+
+          {suggestions.length > 0 && (
+            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50">
+              {suggestions.map((suggestion, index) => (
+                <li
+                  key={index}
+                  onClick={() => {
+                    setSearchTerm(suggestion);
+                    setInputTerm("");
+                    setSuggestions([]);
+                  }}
+                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
+                >
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* Reset and Export buttons on the same line */}
+        <div className="flex items-center gap-4">
           <button onClick={handleReset} className="reset-button">
             Reset
           </button>
