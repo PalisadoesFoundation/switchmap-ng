@@ -1,12 +1,33 @@
 "use client";
 
-import DevicesOverview from "@/components/DevicesOverview";
-import ZoneDropdown from "@/components/ZoneDropdown";
+import { DevicesOverview } from "@/app/components/DevicesOverview";
+import { ZoneDropdown } from "@/app/components/ZoneDropdown";
 import { useEffect, useState } from "react";
-import Sidebar from "@/components/Sidebar";
-import TopologyChart from "@/components/TopologyChart";
+import { Sidebar } from "@/app/components/Sidebar";
+import { TopologyChart } from "@/app/components/TopologyChart";
 import { DeviceNode, GetZoneDevicesData } from "@/types/graphql/GetZoneDevices";
 
+/**
+ * Main entry point for the application.
+ *
+ * This component renders the sidebar and main content area,
+ * including the network topology and devices overview sections.
+ * It also manages the selected zone state and persists it in localStorage.
+ *
+ * @remarks
+ * This component is the main page of the application.
+ * It initializes the zone ID from localStorage and updates it
+ * whenever the user selects a different zone.
+ * It also handles scrolling to elements based on the URL hash.
+ * It uses the `Sidebar` component for navigation and the `ZoneDropdown`
+ * component for selecting zones.
+ *
+ * @returns The rendered component.
+ *
+ * @see {@link Sidebar} for the sidebar component.
+ * @see {@link ZoneDropdown} for the zone selection dropdown.
+ * @see {@link DevicesOverview} for displaying devices in the selected zone.
+ */
 export default function Home() {
   const [zoneId, setZoneId] = useState<string>("");
   const [zoneSelected, setZoneSelected] = useState<boolean>(false);

@@ -1,6 +1,6 @@
 "use client";
 
-import { ZoneEdge } from "@/app/types/graphql/GetZoneDevices";
+import { ZoneEdge } from "@/types/graphql/GetZoneDevices";
 import { useEffect, useState, useRef } from "react";
 /**
  * ZoneDropdown component allows users to select a zone from a dropdown list.
@@ -20,11 +20,7 @@ import { useEffect, useState, useRef } from "react";
  * @see {@link useRef} for managing the dropdown reference to handle outside clicks.
  */
 
-type Zone = {
-  name: string;
-  idxZone: string;
-  id: string;
-};
+type Zone = { idxZone: string; id: string };
 
 type ZoneDropdownProps = {
   selectedZoneId: string | null;
@@ -43,35 +39,24 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(
-          process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-            "http://localhost:7000/switchmap/api/graphql",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              query: `  
-               {
-      events(last: 1) {
-        edges {
-          node {
-            zones {
-              edges {
-                node {
-                  id
-                  idxZone
-                  name
-                }
-              }
-            }
-          }
-        }
-      }
-    }
+        const res = await fetch("http://localhost:7000/switchmap/api/graphql", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: `  
+              {  
+                zones {  
+                  edges {  
+                    node {  
+                      idxZone  
+                      id  
+                    }  
+                  }  
+                }  
+              }  
             `,
-            }),
-          }
-        );
+          }),
+        });
         if (!res.ok) {
           throw new Error(`Network error: ${res.status}`);
         }
@@ -79,10 +64,9 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
         if (json.errors) {
           throw new Error(json.errors[0].message);
         }
-        const rawZones =
-          json?.data?.events?.edges?.[0]?.node?.zones?.edges?.map(
-            (edge: ZoneEdge) => edge.node
-          ) ?? [];
+        const rawZones = json.data.zones.edges.map(
+          (edge: ZoneEdge) => edge.node
+        );
         setZones(rawZones);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch zones");
