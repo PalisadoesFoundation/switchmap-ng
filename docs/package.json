@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "docusaurus": "docusaurus",
-    "start": "docusaurus start",
+    "start": "docusaurus start --port 3001",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
@@ -28,6 +28,8 @@
     "@docusaurus/module-type-aliases": "3.6.3",
     "@docusaurus/tsconfig": "3.6.3",
     "@docusaurus/types": "3.6.3",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
     "typescript": "~5.6.2"
   },
   "browserslist": {

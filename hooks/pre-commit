@@ -6,8 +6,11 @@ source venv/bin/activate
 # Get first-level changed subfolders inside switchmap/
 CHANGED_FOLDERS=$(git diff --name-only --cached | awk -F'/' '/^switchmap\// {print $2}' | sort -u)
 
+# Check if frontend files changed
+FRONTEND_CHANGED=$(git diff --name-only --cached | grep -q '^frontend/' && echo "yes" || echo "no")
+
 # Exit if no relevant files changed
-if [[ -z "$CHANGED_FOLDERS" ]]; then
+if [[ -z "$CHANGED_FOLDERS" && "$FRONTEND_CHANGED" == "no" ]]; then
  echo "No files changed"
     exit 0
 fi
@@ -16,9 +19,17 @@ fi
 for folder in $CHANGED_FOLDERS; do
     if [[ -d "switchmap/$folder" ]]; then
         echo "Generating docs for: $folder"
-        pydoc-markdown -I "switchmap/$folder" > "docs/docs/auto-docs/${folder^}.md"
+        pydoc-markdown -I "switchmap/$folder" > "docs/docs/backend/${folder^}.md"
     fi
 done
 
+# Check if frontend files changed at sibling folder level
+if [[ "$FRONTEND_CHANGED" == "yes" ]]; then
+    echo "Generating frontend docs"
+    (cd frontend && npx typedoc src --options typedoc.json --out ../docs/docs/frontend)
+fi
+
 # Add generated files to the commit
-git add docs/docs/auto-docs/*.md
+git add docs/docs/
+
+
