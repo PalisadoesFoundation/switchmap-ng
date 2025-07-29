@@ -11,7 +11,17 @@ import {
 } from "vis-network/standalone/esm/vis-network";
 import { useTheme } from "next-themes";
 import { formatUptime } from "@/app/utils/time";
-import { truncateLines } from "@/app/utils/stringUtils";
+// import { truncateLines } from "@/app/utils/stringUtils";
+/**
+ * Renders a network topology chart using vis-network based on the given devices.
+ *
+ * @param {TopologyChartProps} props - The properties for the topology chart.
+ * @param {Device[]} props.devices - Array of device objects representing nodes.
+ * @param {boolean} props.loading - Loading state flag.
+ * @param {Error | null} props.error - Error state, if any.
+ *
+ * @returns {JSX.Element} A React component rendering the network graph visualization.
+ */
 
 interface TopologyChartProps {
   devices: DeviceNode[];
@@ -474,7 +484,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
                 setSuggestions(filtered);
               }}
             />
-            <button className="!border border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit">
+            <button className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit">
               Search
             </button>
           </form>
