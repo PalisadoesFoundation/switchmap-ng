@@ -126,16 +126,20 @@ export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
     setError(null);
     const globalId = id && typeof id === "string" ? btoa(`Device:${id}`) : id;
 
-    fetch("http://localhost:7000/switchmap/api/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: QUERY,
-        variables: { id: globalId },
-      }),
-    })
+    fetch(
+      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+        "http://localhost:7000/switchmap/api/graphql",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: QUERY,
+          variables: { id: globalId },
+        }),
+      }
+    )
       .then((res) => {
         if (!res.ok) throw new Error(`Network error: ${res.status}`);
         return res.json();
