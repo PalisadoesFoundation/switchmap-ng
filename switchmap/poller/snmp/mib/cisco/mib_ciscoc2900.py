@@ -67,7 +67,7 @@ class CiscoC2900Query(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -81,19 +81,21 @@ class CiscoC2900Query(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface c2900PortDuplexStatus data
-        values = self.c2900portduplexstatus()
+        values = await self.c2900portduplexstatus()
         for key, value in values.items():
             final[key]["c2900PortDuplexStatus"] = value
 
         # Get interface c2900PortLinkbeatStatus data
-        values = self.c2900portlinkbeatstatus()
+        values = await self.c2900portlinkbeatstatus()
         for key, value in values.items():
             final[key]["c2900PortLinkbeatStatus"] = value
+
+        print(f"ciscoc2900 data: ", final)
 
         # Return
         return final
 
-    def c2900portlinkbeatstatus(self, oidonly=False):
+    async def c2900portlinkbeatstatus(self, oidonly=False):
         """Return dict of CISCO-C2900-MIB c2900PortLinkbeatStatus per port.
 
         Args:
@@ -113,14 +115,17 @@ class CiscoC2900Query(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
+        print(f"Debug: Raw SNMP results for {oid}: {results}")
         for key, value in results.items():
             data_dict[int(key)] = value
+            
+        print(f"Debug: Processed data_dict: {data_dict}")
 
         # Return the interface descriptions
         return data_dict
 
-    def c2900portduplexstatus(self, oidonly=False):
+    async def c2900portduplexstatus(self, oidonly=False):
         """Return dict of CISCO-C2900-MIB c2900PortDuplexStatus for each port.
 
         Args:
@@ -140,7 +145,7 @@ class CiscoC2900Query(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 

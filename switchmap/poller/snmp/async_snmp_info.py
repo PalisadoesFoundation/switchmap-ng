@@ -49,12 +49,13 @@ class Query:
         print(f"start async everything() for {hostname}")
         
         # Append data 
-        data["misc"] = await self.misc()
+        #! Pass
+        # data["misc"] = await self.misc()
 
-        data["system"] = await self.system()
+        # data["system"] = await self.system()
 
         #! empty for now (will enable as MIBs are converted)
-        data["layer1"] = {}
+        data["layer1"] = await self.layer1()
 
         data["layer2"] = {}
 
@@ -149,15 +150,22 @@ class Query:
 
         layer1_queries = get_queries("layer1")
 
+        print(f"layer 1 level MIBs", layer1_queries)
+
         # Process MIB queries sequentially
         for i, Query in enumerate(layer1_queries):
             item = Query(self.snmp_object)
             mib_name = item.__class__.__name__ 
+            print(f"polling for MIB_name: {mib_name}")
 
                 # Check if supported 
             if await item.supported():
                 processed = True 
                 old_keys = list(data.keys())
+
+                #! chck if the MIB are suppoerted
+                print(f"{mib_name} is supported")
+
 
                 data = await _add_layer1(item, data)
 
@@ -189,7 +197,7 @@ class Query:
         hostname = self.snmp_object.hostname() 
 
         # Get layer2 information from MIB classes
-        layer2_queries = get_queries("leyer2")
+        layer2_queries = get_queries("layer2")
         #! chek layer2 queries how its functions to resolve the issue
         for i,Query in enumerate(layer2_queries):
             item = Query(self.snmp_object)
@@ -260,11 +268,8 @@ class Query:
             print(f"No layer3 MIBs supported for {hostname}")
             
 
-
-
-
 #! understand this as well
-def _add_data(source, target):
+async def _add_data(source, target):
     """Add data from source to target dict. Both dicts must have two keys.
 
     Args:
@@ -355,16 +360,17 @@ async def _add_layer1(query,data):
         #! if yes, then have to remove and check if htis works also without this(after laeyr 1 migraiton to async)
         result = None 
         if asyncio.iscoroutinefunction(query.layer1):
+            #! check if this pass 
+            print(f"before polling")
             result = await query.layer1()
+            print(f"after polling c heck if mib2900 is passing")
         else:
-            #! what is this, like explain in deatil for this case
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(None, query.layer1)
         
         if result:
             print(f"{mib_name} returned layer1 data")
-            #! what does _add_data do like in detail (is this approach is best)
-            data = _add_data(result, data)
+            data = await _add_data(result, data)
             print(f"Successfully added layer1 data for {mib_name}")
         else:
             print(f" No layer1 data returned for {mib_name}")
@@ -373,6 +379,7 @@ async def _add_layer1(query,data):
     
     except Exception as e:
         print(f" Error in _add_layer1: {e}")
+        return data 
 
 async def _add_layer2(query,data):
     """
@@ -389,19 +396,17 @@ async def _add_layer2(query,data):
 
     try:
         mib_name = query.__class__.__name__ 
-
         result = None 
         if asyncio.iscoroutinefunction(query.layer2):
             result = await query.layer2() 
         else:
-            #! what is this, like explain in deatil for this case
+           
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(None, query.layer2)
         
         if result:
             print(f"{mib_name} returned layer2 data")
-            #! what does _add_data do like in detail (is this approach is best)
-            data = _add_data(result, data)
+            data = await _add_data(result, data)
             print(f"Successfully added layer2 data for {mib_name}")
         else:
             print(f" No layer2 data returned for {mib_name}")
@@ -428,7 +433,7 @@ async def _add_layer3(query,data):
         mib_name = query.__class__.__name__ 
 
         result = None 
-        if asyncio.iscoroutinefunction(query.layer2):
+        if asyncio.iscoroutinefunction(query.layer3):
             result = await query.layer3() 
         else:
             #! what is this, like explain in deatil for this case
@@ -436,9 +441,9 @@ async def _add_layer3(query,data):
             result = await loop.run_in_executor(None, query.layer3)
         
         if result:
-            print(f"{mib_name} returned layer2 data")
+            print(f"{mib_name} returned layer3 data")
             #! what does _add_data do like in detail (is this approach is best)
-            data = _add_data(result, data)
+            data = await _add_data(result, data)
             print(f"Successfully added layer3 data for {mib_name}")
         else:
             print(f" No layer3 data returned for {mib_name}")
