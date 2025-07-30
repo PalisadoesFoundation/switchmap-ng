@@ -90,6 +90,8 @@ class CiscoC2900Query(Query):
         for key, value in values.items():
             final[key]["c2900PortLinkbeatStatus"] = value
 
+        print(f"ciscoc2900 data: ", final)
+
         # Return
         return final
 
@@ -116,6 +118,8 @@ class CiscoC2900Query(Query):
         results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
+            
+        print(f"Debug: Processed data_dict: {data_dict}")
 
         # Return the interface descriptions
         return data_dict
