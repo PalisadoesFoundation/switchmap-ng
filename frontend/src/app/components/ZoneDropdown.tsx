@@ -58,8 +58,9 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
                 }  
               }  
             `,
-          }),
-        });
+            }),
+          }
+        );
         if (!res.ok) {
           throw new Error(`Network error: ${res.status}`);
         }
