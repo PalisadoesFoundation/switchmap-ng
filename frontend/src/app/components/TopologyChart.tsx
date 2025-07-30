@@ -1,7 +1,7 @@
 "use client";
 
 import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   Network,
   DataSet,
@@ -11,6 +11,7 @@ import {
 } from "vis-network/standalone/esm/vis-network";
 import { useTheme } from "next-themes";
 import { formatUptime } from "@/app/utils/time";
+import { useRouter } from "next/navigation";
 /**
  * Renders a network topology chart using vis-network based on the given devices.
  *
@@ -34,6 +35,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
     nodes: [],
     edges: [],
   });
+  const router = useRouter();
   // State to track the current search input (used for node filtering/highlighting)
   const [inputTerm, setInputTerm] = useState("");
   // State to hold the search term for highlighting nodes
@@ -64,42 +66,45 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   // Note: vis-network options are initialized once and do not auto-update on theme change.
   // To support dynamic theme switching, update network options manually when `theme` changes.
   const isDark = theme === "dark";
-  const options: Options = {
-    clickToUse: true,
-    layout: { hierarchical: false },
-    physics: {
-      enabled: true,
-      solver: "barnesHut",
-      stabilization: { iterations: 100, updateInterval: 25 },
-    },
-    edges: {
-      color: isDark ? "#888" : "#BBB",
-      width: 1,
-      arrows: {
-        to: {
-          enabled: false, // Disable arrows by default
+  const options: Options = useMemo(
+    () => ({
+      clickToUse: true,
+      layout: { hierarchical: false },
+      physics: {
+        enabled: true,
+        solver: "barnesHut",
+        stabilization: { iterations: 100, updateInterval: 25 },
+      },
+      edges: {
+        color: isDark ? "#888" : "#BBB",
+        width: 1,
+        arrows: {
+          to: {
+            enabled: false, // Disable arrows by default
+          },
         },
       },
-    },
-    nodes: {
-      shape: "dot",
-      size: 15,
-      color: isDark ? "#4A90E2" : "#1E90FF",
-      font: {
-        size: 12,
-        color: isDark ? "#fff" : "black",
-        strokeColor: isDark ? "#081028" : "white",
-        strokeWidth: 2,
+      nodes: {
+        shape: "dot",
+        size: 15,
+        color: isDark ? "#4A90E2" : "#1E90FF",
+        font: {
+          size: 12,
+          color: isDark ? "#fff" : "black",
+          strokeColor: isDark ? "#081028" : "white",
+          strokeWidth: 2,
+        },
       },
-    },
-    interaction: {
-      hover: true,
-      tooltipDelay: 100,
-      dragNodes: true,
-      zoomView: true,
-      selectConnectedEdges: false,
-    },
-  };
+      interaction: {
+        hover: true,
+        tooltipDelay: 100,
+        dragNodes: true,
+        zoomView: true,
+        selectConnectedEdges: false,
+      },
+    }),
+    [isDark]
+  );
 
   useEffect(() => {
     /**
@@ -171,11 +176,12 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         }
       );
     });
-    function htmlTitle(html: string) {
+    function htmlTitle(html: string): HTMLElement {
       const container = document.createElement("div");
       container.innerHTML = html;
       return container;
     }
+
     // Create nodes array from devices
     // Each node has an `id`, `label`, `color`, and custom `title
     const nodesArray: Node[] = devices.map((device) => ({
@@ -184,26 +190,26 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
       color: "#1E90FF",
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
       title: htmlTitle(
-        `<div style="display: flex; align-items: left; gap: 1rem;"><div>
-    ${device.sysName ?? "Unknown"}<br>
-    Hostname: ${device.hostname ?? "N/A"}
+        `
+    <div style="display: flex; align-items: flex-start; gap: 1rem;">
+      <div>
+        ${device.sysName ?? "Unknown"}<br>
+        Hostname: ${device.hostname ?? "N/A"}
+      </div>
+      <div style="font-size: 2em;">
+        ${
+          typeof device.sysUptime === "number" && device.sysUptime > 0
+            ? "🟢"
+            : "🔴"
+        }
+      </div>
     </div>
-    <h1>
-  <span style="display: inline-block; font-size: 2em;">
-    ${
-      typeof device.sysUptime === "number" && device.sysUptime > 0 ? "🟢" : "🔴"
-    }
-  </span>
-</h1>
-
-    </div><br>
-    <h1 style="margin: 0; font-size: 1.2em; font-weight: bold; color: white;">
-  ${formatUptime(device.sysUptime) ?? "N/A"}
-  <span style="font-size: 0.4em; font-weight: normal;">Uptime</span>
-</h1>
-
+    <div style="margin-top: 0.5rem; font-size: 1.2em; font-weight: bold; color: white;">
+      ${formatUptime(device.sysUptime) ?? "N/A"}
+      <span style="font-size: 0.4em; font-weight: normal;">Uptime</span>
+    </div>
   `.trim()
-      ), // Tooltip content (HTML-safe string)
+      ),
     }));
     // Add extra nodes that are not in the current zone
     // These nodes are added with a different color and a tooltip
@@ -216,7 +222,26 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         title: "Device not in current zone",
       });
     });
-    // Set the initial graph state with nodes and edges
+    // Clean up DOM elements in node titles
+    initialGraph.current?.nodes?.forEach((node) => {
+      if (
+        node.title instanceof HTMLElement &&
+        typeof node.title.remove === "function"
+      ) {
+        node.title.remove();
+      }
+    });
+    // Clean up DOM elements in edge titles
+    initialGraph.current?.edges?.forEach((edge) => {
+      if (
+        edge.title instanceof HTMLElement &&
+        typeof edge.title.remove === "function"
+      ) {
+        edge.title.remove();
+      }
+    });
+
+    // Set the new graph
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
   }, [devices]);
@@ -247,7 +272,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         const url = `/devices/${encodeURIComponent(
           idxDevice
         )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
-        window.location.href = url;
+        router.push(url);
       }
     });
 
