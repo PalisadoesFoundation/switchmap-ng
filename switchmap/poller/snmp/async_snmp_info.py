@@ -268,15 +268,22 @@ class Query:
 
         layer1_queries = get_queries("layer1")
 
+        print(f"layer 1 level MIBs", layer1_queries)
+
         # Process MIB queries sequentially
         for i, Query in enumerate(layer1_queries):
             item = Query(self.snmp_object)
             mib_name = item.__class__.__name__ 
+            print(f"polling for MIB_name: {mib_name}")
 
                 # Check if supported 
             if await item.supported():
                 processed = True 
                 old_keys = list(data.keys())
+
+                #! chck if the MIB are suppoerted
+                print(f"{mib_name} is supported")
+
 
                 data = await _add_layer1(item, data)
 
@@ -308,7 +315,7 @@ class Query:
         hostname = self.snmp_object.hostname() 
 
         # Get layer2 information from MIB classes
-        layer2_queries = get_queries("leyer2")
+        layer2_queries = get_queries("layer2")
         #! chek layer2 queries how its functions to resolve the issue
         for i,Query in enumerate(layer2_queries):
             item = Query(self.snmp_object)
@@ -378,9 +385,6 @@ class Query:
         else:
             print(f"No layer3 MIBs supported for {hostname}")
             
-
-
-
 
     async def layer3(self):
         """Get all layer3 information from device.
@@ -517,7 +521,10 @@ async def _add_layer1(query, data):
 
         result = None
         if asyncio.iscoroutinefunction(query.layer1):
+            #! check if this pass 
+            print(f"before polling")
             result = await query.layer1()
+            print(f"after polling c heck if mib2900 is passing")
         else:
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(None, query.layer1)
