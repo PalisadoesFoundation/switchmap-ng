@@ -57,6 +57,34 @@ export default function Home() {
   }, [zoneId]);
 
   // New: fetch devices when zoneId changes
+  const GET_ZONE_DEVICES = `
+  query GetZoneDevices($id: ID!) {
+    zone(id: $id) {
+      devices {
+        edges {
+          node {
+            idxDevice
+            sysObjectid
+            sysUptime
+            sysDescription
+            sysName
+            hostname
+            l1interfaces {
+              edges {
+                node {
+                  ifoperstatus
+                  cdpcachedeviceid
+                  cdpcachedeviceport
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
   useEffect(() => {
     if (!zoneId) {
       setDevices([]);
@@ -65,7 +93,7 @@ export default function Home() {
       return;
     }
 
-    const fetchDevices = async () => {
+    const fetchDevices = async (retryCount = 0) => {
       try {
         setLoading(true);
         setError(null);
@@ -76,33 +104,7 @@ export default function Home() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              query: `
-                query GetZoneDevices($id: ID!) {
-                  zone(id: $id) {
-                    devices {
-                      edges {
-                        node {
-                          idxDevice
-                          sysObjectid
-                          sysUptime
-                          sysDescription
-                          sysName
-                          hostname
-                          l1interfaces {
-                            edges {
-                              node {
-                                ifoperstatus
-                                cdpcachedeviceid
-                                cdpcachedeviceport
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              `,
+              query: GET_ZONE_DEVICES,
               variables: { id: zoneId },
             }),
           }
@@ -120,6 +122,14 @@ export default function Home() {
         );
         setDevices(rawDevices);
       } catch (err: unknown) {
+        if (retryCount < 2) {
+          setTimeout(
+            () => fetchDevices(retryCount + 1),
+            1000 * (retryCount + 1)
+          );
+          return;
+        }
+
         let errorMessage =
           "Failed to load devices. Please check your network or try again.";
 
