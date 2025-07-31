@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import { ThemeToggle } from "@/app/theme-toggle";
 import { ConnectionDetails } from "@/app/components/ConnectionDetails";
+import { DeviceDetails } from "@/app/components/DeviceDetails";
 /**
  * Renders the DevicePage component, showing detailed information about a specific device.
  *
@@ -41,7 +42,7 @@ export default function DevicePage() {
   const tabs: TabItem[] = [
     {
       label: "Device Overview",
-      content: <div>Device Overview</div>,
+      content: <DeviceDetails />,
       icon: <FiMonitor className="icon" />,
     },
     {
