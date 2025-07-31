@@ -5,7 +5,24 @@ import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import { ThemeToggle } from "@/app/theme-toggle";
 import { ConnectionDetails } from "@/app/components/ConnectionDetails";
 import { DeviceDetails } from "@/app/components/DeviceDetails";
-import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
+/**
+ * Renders the DevicePage component, showing detailed information about a specific device.
+ *
+ * Includes a sidebar for navigation and tabbed sections for various device data,
+ * such as overview, connection details, and connection charts.
+ *
+ * @remarks
+ * - Designed for client-side rendering only, as it relies on `useParams` and `useSearchParams`.
+ * - Uses a responsive layout that adjusts based on sidebar visibility.
+ * - Handles active tab state and sidebar toggle logic.
+ * - Icons from `react-icons` visually represent each tab.
+ * - Includes a Home button for quick navigation.
+ *
+ * @returns The rendered device detail page.
+ *
+ * @see {@link ConnectionDetails} for displaying device interface details.
+ * @see {@link ThemeToggle} for the theme switching functionality.
+ */
 
 /** * Represents a tab item with label, content, and icon.
  * @remarks
@@ -140,15 +157,7 @@ export default function DevicePage() {
   const tabs: TabItem[] = [
     {
       label: "Device Overview",
-      content: loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : device ? (
-        <DeviceDetails device={device} />
-      ) : (
-        <p>No device data.</p>
-      ),
+      content: <DeviceDetails />,
       icon: <FiMonitor className="icon" />,
     },
     {
