@@ -21,15 +21,15 @@ interface HistoricalChartProps {
   unit?: string;
 }
 
-const HistoricalChart: React.FC<HistoricalChartProps> = ({
+function HistoricalChart({
   data,
   title,
   color = "#8884d8",
   unit = "",
-}) => {
+}: HistoricalChartProps) {
   return (
-    <div style={{ width: "100%", height: "300px" }}>
-      <h2 style={{ marginBottom: "0.5rem" }}>{title}</h2>
+    <div className="w-full h-72">
+      <h2 className="mb-2 text-lg font-semibold">{title}</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
@@ -44,6 +44,6 @@ const HistoricalChart: React.FC<HistoricalChartProps> = ({
       </ResponsiveContainer>
     </div>
   );
-};
+}
 
 export default HistoricalChart;
