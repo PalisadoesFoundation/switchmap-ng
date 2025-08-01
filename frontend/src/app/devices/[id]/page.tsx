@@ -1,29 +1,11 @@
 "use client";
-import React, { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import { ThemeToggle } from "@/app/theme-toggle";
 import { ConnectionDetails } from "@/app/components/ConnectionDetails";
 import { DeviceDetails } from "@/app/components/DeviceDetails";
-/**
- * Renders the DevicePage component, showing detailed information about a specific device.
- *
- * Includes a sidebar for navigation and tabbed sections for various device data,
- * such as overview, connection details, and connection charts.
- *
- * @remarks
- * - Designed for client-side rendering only, as it relies on `useParams` and `useSearchParams`.
- * - Uses a responsive layout that adjusts based on sidebar visibility.
- * - Handles active tab state and sidebar toggle logic.
- * - Icons from `react-icons` visually represent each tab.
- * - Includes a Home button for quick navigation.
- *
- * @returns The rendered device detail page.
- *
- * @see {@link ConnectionDetails} for displaying device interface details.
- * @see {@link ThemeToggle} for the theme switching functionality.
- */
+import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
 
 interface TabItem {
   label: string;
@@ -42,12 +24,28 @@ export default function DevicePage() {
   const tabs: TabItem[] = [
     {
       label: "Device Overview",
-      content: <DeviceDetails />,
+      content: loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : device ? (
+        <DeviceDetails device={device} />
+      ) : (
+        <p>No device data.</p>
+      ),
       icon: <FiMonitor className="icon" />,
     },
     {
       label: "Connection Details",
-      content: <ConnectionDetails deviceId={id || ""} />,
+      content: loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : device ? (
+        <ConnectionDetails device={device} />
+      ) : (
+        <p>No device data.</p>
+      ),
       icon: <FiLink className="icon" />,
     },
     {
@@ -77,7 +75,6 @@ export default function DevicePage() {
               : "flex flex-col gap-4 mb-8"
           }
         >
-          {/* Sidebar Toggle */}
           <button
             className="my-2 px-0 bg-transparent text-[1.2rem] self-center"
             onClick={() => setSidebarOpen((open) => !open)}
@@ -89,9 +86,9 @@ export default function DevicePage() {
         </div>
         <div className="flex flex-col items-center">
           <h1
-            className={`px-4 py-3 text-[1.2rem] max-w-[150px] break-all whitespace-normal overflow-hidden
-  
- ${!sidebarOpen ? "hidden" : ""}`}
+            className={`px-4 py-3 text-[1.2rem] max-w-[150px] break-all whitespace-normal overflow-hidden ${
+              !sidebarOpen ? "hidden" : ""
+            }`}
           >
             {sysName || hostname || "Unnamed Device"}
           </h1>
@@ -101,8 +98,9 @@ export default function DevicePage() {
             <button
               key={tab.label}
               onClick={() => setActiveTab(idx)}
-              className={`bg-transparent px-4 py-3 font-normal text-left text-base
- ${activeTab === idx ? "bg-[var(--select-bg)]" : ""}`}
+              className={`bg-transparent px-4 py-3 font-normal text-left text-base ${
+                activeTab === idx ? "bg-[var(--select-bg)]" : ""
+              }`}
             >
               <span className="flex flex-row gap-4">
                 {tab.icon}
@@ -115,7 +113,6 @@ export default function DevicePage() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col relative" style={{ width: "80vw" }}>
-        {/* Home Icon at Top Right */}
         <button
           onClick={() => router.push("/")}
           aria-label="Go to home"

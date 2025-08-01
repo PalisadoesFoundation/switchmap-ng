@@ -1,6 +1,7 @@
 import React from "react";
 import HistoricalChart from "./HistoricalChart";
 import { TopologyChart } from "./TopologyChart";
+import { DeviceNode } from "../types/graphql/GetZoneDevices";
 
 const uptimeData = [
   { timestamp: "2025-07-29 00:00", value: 99.98 },
@@ -29,9 +30,10 @@ const memoryUsageData = [
   { timestamp: "2025-07-29 05:00", value: 50.1 },
 ];
 
-export function DeviceDetails() {
+export function DeviceDetails({ device }: { device: DeviceNode }) {
   return (
     <div className="p-4 w-full flex flex-col gap-4">
+      <TopologyChart devices={[device]} loading={false} error={null} />
       <div className="p-4 w-full flex flex-row">
         <HistoricalChart
           title="Uptime (%)"
