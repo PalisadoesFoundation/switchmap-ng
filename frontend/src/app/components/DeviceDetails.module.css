@@ -16,3 +16,7 @@
 .deviceChartWrapper{
     overflow: hidden;
 }
+.tableCustom *{
+  border: none ;
+  border-width: 0 ;
+}

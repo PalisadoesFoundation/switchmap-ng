@@ -459,7 +459,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
 
       <div
         ref={containerRef}
-        className="w-full h-[70vh] border rounded shadow topology-network-canvas"
+        className="w-full h-[70vh] border rounded topology-network-canvas"
       />
       <div
         className="topology-instructions"
