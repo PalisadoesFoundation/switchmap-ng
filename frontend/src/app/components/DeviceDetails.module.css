@@ -1,0 +1,18 @@
+.deviceChartWrapper h2,
+.deviceChartWrapper form,
+.deviceChartWrapper input,
+.deviceChartWrapper :global(.topology-instructions) {
+  display: none;
+}
+
+.deviceChartWrapper :global(.topology-network-canvas) {
+  width: 50vh;
+  height: 40vw;
+}
+.deviceChartWrapper :global(.topology-chart-container) {
+  display: flex;
+  flex-direction: column-reverse;
+}
+.deviceChartWrapper{
+    overflow: hidden;
+}
