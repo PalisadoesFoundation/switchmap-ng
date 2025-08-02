@@ -27,9 +27,17 @@ interface TopologyChartProps {
   devices: DeviceNode[];
   loading: boolean;
   error: string | null;
+  zoomView?: boolean;
+  clickToUse?: boolean;
 }
 
-export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
+export function TopologyChart({
+  devices,
+  loading,
+  error,
+  zoomView,
+  clickToUse,
+}: TopologyChartProps) {
   // React state to hold current graph structure: array of nodes and edges
   const [graph, setGraph] = useState<{ nodes: Node[]; edges: Edge[] }>({
     nodes: [],
@@ -68,7 +76,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   const isDark = theme === "dark";
   const options: Options = useMemo(
     () => ({
-      clickToUse: true,
+      clickToUse: clickToUse ?? true, // Use passed clickToUse prop or default to true
       layout: { hierarchical: false },
       physics: {
         enabled: true,
@@ -99,7 +107,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         hover: true,
         tooltipDelay: 100,
         dragNodes: true,
-        zoomView: true,
+        zoomView: zoomView ?? true, // Use passed interaction options or default to true
         selectConnectedEdges: false,
       },
     }),
@@ -219,7 +227,6 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         id: sysName,
         label: sysName,
         color: "#383e44ff",
-        title: "Device not in current zone",
       });
     });
     // Clean up DOM elements in node titles
@@ -244,6 +251,25 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
     // Set the new graph
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
+    requestAnimationFrame(() => {
+      if (networkRef.current) {
+        networkRef.current.fit({
+          animation: {
+            duration: 300,
+            easingFunction: "easeInOutQuad",
+          },
+        });
+      }
+    });
+
+    if (networkRef.current) {
+      networkRef.current.fit();
+      networkRef.current.moveTo({
+        position: { x: 0, y: 0 },
+        scale: 1,
+        animation: true,
+      });
+    }
   }, [devices]);
 
   useEffect(() => {

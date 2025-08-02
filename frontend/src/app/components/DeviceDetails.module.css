@@ -1,6 +1,6 @@
 .deviceChartWrapper h2,
 .deviceChartWrapper form,
-.deviceChartWrapper input,
+.deviceChartWrapper button,
 .deviceChartWrapper :global(.topology-instructions) {
   display: none;
 }
@@ -8,6 +8,7 @@
 .deviceChartWrapper :global(.topology-network-canvas) {
   width: 50vh;
   height: 40vw;
+  border-width: 0;
 }
 .deviceChartWrapper :global(.topology-chart-container) {
   display: flex;
