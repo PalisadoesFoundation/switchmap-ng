@@ -379,12 +379,14 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   if (error) return <p>Error loading topology: {error}</p>;
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Network Topology</h2>
-      <div className="flex mb-2 w-full gap-4 flex-wrap justify-between">
-        <div className="relative max-w-sm flex-grow">
+    <div className="topology-chart-container">
+      <h2 className="text-xl font-semibold mb-2 topology-title">
+        Network Topology
+      </h2>
+      <div className="flex mb-2 w-full gap-4 flex-wrap justify-between topology-controls">
+        <div className="relative max-w-sm flex-grow topology-search-container">
           <form
-            className="flex items-center gap-4"
+            className="flex items-center gap-4 topology-search-form"
             onSubmit={(e) => {
               e.preventDefault();
               setSearchTerm(inputTerm);
@@ -392,7 +394,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
             }}
           >
             <input
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full topology-search-input"
               type="text"
               placeholder="Search device..."
               value={inputTerm}
@@ -411,13 +413,13 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
                 setSuggestions(filtered);
               }}
             />
-            <button className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit">
+            <button className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit topology-search-btn">
               Search
             </button>
           </form>
 
           {suggestions.length > 0 && (
-            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50">
+            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50 topology-suggestions-list">
               {suggestions.map((suggestion, index) => (
                 <li
                   key={index}
@@ -426,7 +428,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
                     setInputTerm("");
                     setSuggestions([]);
                   }}
-                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
+                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg topology-suggestion-item"
                 >
                   {suggestion}
                 </li>
@@ -434,13 +436,16 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
             </ul>
           )}
         </div>
-        <div className="flex items-center gap-4">
-          <button onClick={handleReset} className="reset-button">
+        <div className="flex items-center gap-4 topology-action-buttons">
+          <button
+            onClick={handleReset}
+            className="reset-button topology-reset-btn"
+          >
             Reset
           </button>
           <button
             onClick={handleExportImage}
-            className="text-white rounded ml-4 px-4 py-2 rounded cursor-pointer transition-colors duration-300"
+            className="text-white rounded px-4 py-2 cursor-pointer transition-colors duration-300 topology-export-btn"
             style={{ backgroundColor: "#CB3CFF" }}
           >
             Export
@@ -448,14 +453,20 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         </div>
       </div>
 
-      <p className="mt-2 mb-2 text-sm text-gray-600 h-fit">
+      <p className="mt-2 mb-2 text-sm text-gray-600 h-fit topology-search-result">
         {searchResult || ""}
       </p>
 
       <div
         ref={containerRef}
-        className="w-full h-[70vh] border rounded shadow"
+        className="w-full h-[70vh] border rounded shadow topology-network-canvas"
       />
+      <div
+        className="topology-instructions"
+        style={{ margin: "0.25rem", fontSize: "0.85rem", color: "#666" }}
+      >
+        Single-click to select nodes, double-click to open device details.
+      </div>
     </div>
   );
 };

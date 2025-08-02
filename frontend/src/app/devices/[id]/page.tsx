@@ -17,7 +17,12 @@ const QUERY = `
   query Device($id: ID!) {
     device(id: $id) {
       id
+      idxDevice
+      sysObjectid
+      sysUptime
+      sysDescription
       sysName
+      hostname
       l1interfaces {
         edges {
           node {
