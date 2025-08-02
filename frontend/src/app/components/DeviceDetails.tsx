@@ -37,14 +37,14 @@ function MetadataRow({ label, value }: { label: string; value: string }) {
   return (
     <tr>
       <th className="py-2 pr-4 w-40">{label}</th>
-      <td className="py-2 border-b">{value}</td>
+      <td className="py-2">{value}</td>
     </tr>
   );
 }
 
 export function DeviceDetails({ device }: { device: DeviceNode }) {
   return (
-    <div className="p-4 w-full flex flex-col gap-4 h-full">
+    <div className="p-4 w-[85vw] flex flex-col gap-4 h-full">
       <h2 className="text-xl font-semibold mb-2">Device Overview</h2>
       <div
         className={`h-[45vh] flex flex-row gap-2 ${styles.deviceChartWrapper}`}
@@ -56,13 +56,18 @@ export function DeviceDetails({ device }: { device: DeviceNode }) {
           zoomView={false}
           clickToUse={false}
         />
-        <div className="max-w-[60vw] items-center justify-center">
-          <table className="table-auto w-fit! m-top-0 text-left border-collapse">
-            <tbody className="text-xs md:text-base">
+        <div className="max-w-full p-5 mr-5 bg-content-bg items-center justify-center border border-border-subtle rounded-lg">
+          <table
+            className={`table-auto w-fit m-top-0 text-left ${styles.tableCustom}`}
+          >
+            <tbody className="text-xs md:text-sm">
               <MetadataRow label="Device Name" value={device.sysName} />
               <MetadataRow
                 label="Description"
-                value={truncateLines(device.sysDescription)}
+                value={truncateLines(device.sysDescription, {
+                  lines: 3,
+                  maxLength: 60,
+                })}
               />
               <MetadataRow label="Hostname" value={device.hostname} />
               <MetadataRow
