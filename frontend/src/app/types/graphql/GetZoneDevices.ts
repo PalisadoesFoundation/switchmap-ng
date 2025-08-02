@@ -44,7 +44,7 @@ export type DeviceNode = {
   sysName: string;
   hostname: string;
   l1interfaces: L1Interfaces;
-  lastPolled: number | null;
+  lastPolled: string | null;
 };
 
 export type DeviceEdge = {
