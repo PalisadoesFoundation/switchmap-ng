@@ -251,9 +251,25 @@ export function TopologyChart({
     // Set the new graph
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
+    requestAnimationFrame(() => {
+      if (networkRef.current) {
+        networkRef.current.fit({
+          animation: {
+            duration: 300,
+            easingFunction: "easeInOutQuad",
+          },
+        });
+      }
+    });
 
-    // (Lines 255–262 have been removed; the fit()/moveTo() reset now lives
-    // in the Network-creation useEffect so it always runs on a fresh instance.)
+    if (networkRef.current) {
+      networkRef.current.fit();
+      networkRef.current.moveTo({
+        position: { x: 0, y: 0 },
+        scale: 1,
+        animation: true,
+      });
+    }
   }, [devices]);
 
   useEffect(() => {
