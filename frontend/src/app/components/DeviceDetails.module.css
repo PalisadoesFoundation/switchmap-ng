@@ -6,8 +6,8 @@
 }
 
 .deviceChartWrapper :global(.topology-network-canvas) {
-  width: 50vh;
-  height: 40vw;
+  width: 100%;
+  height: 100%;
   border-width: 0;
 }
 .deviceChartWrapper :global(.topology-chart-container) {

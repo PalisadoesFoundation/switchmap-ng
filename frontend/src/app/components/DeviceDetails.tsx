@@ -36,7 +36,7 @@ export function DeviceDetails({ device }: { device: DeviceNode }) {
     <div className="p-4 w-full flex flex-col gap-4 h-full">
       <h2 className="text-xl font-semibold mb-2">Device Overview</h2>
       <div
-        className={`w-[50vw] h-[50vh] flex flex-row gap-2 ${styles.deviceChartWrapper}`}
+        className={`w-full h-[45vh] flex flex-row gap-2 ${styles.deviceChartWrapper}`}
       >
         <TopologyChart
           devices={[device]}
@@ -45,6 +45,7 @@ export function DeviceDetails({ device }: { device: DeviceNode }) {
           zoomView={false}
           clickToUse={false}
         />
+        <div className="w-1/2"></div>
       </div>
       <div className="p-4 w-full flex flex-row">
         <HistoricalChart
