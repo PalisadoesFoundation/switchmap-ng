@@ -23,6 +23,7 @@ const QUERY = `
       sysDescription
       sysName
       hostname
+      lastPolled
       l1interfaces {
         edges {
           node {
