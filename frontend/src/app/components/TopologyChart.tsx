@@ -251,16 +251,6 @@ export function TopologyChart({
     // Set the new graph
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
-    requestAnimationFrame(() => {
-      if (networkRef.current) {
-        networkRef.current.fit({
-          animation: {
-            duration: 300,
-            easingFunction: "easeInOutQuad",
-          },
-        });
-      }
-    });
 
     if (networkRef.current) {
       networkRef.current.fit();
