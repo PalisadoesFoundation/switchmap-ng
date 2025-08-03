@@ -4,6 +4,7 @@ from collections import defaultdict
 
 from switchmap.poller.snmp.base_query import Query
 from switchmap.core import general
+import asyncio
 
 
 def get_query():
@@ -85,7 +86,7 @@ class IfQuery(Query):
         final["IF-MIB"]["ifStackStatus"] = await self.ifstackstatus()
         return final
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device using Layer 1 OIDs.
 
         Args:
@@ -98,58 +99,60 @@ class IfQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
-        # Get interface ifDescr data
-        _get_data("ifDescr", self.ifdescr, final)
+        #! might adjust later
+        # Limit concurrent SNMP queries
+        semaphore = asyncio.Semaphore(8)
 
-        # Get interface ifAlias data
-        _get_data("ifAlias", self.ifalias, final)
+        async def limited_query(method,name):
+            """Rate limit SNMP query. """
 
-        # Get interface ifSpeed data
-        _get_data("ifSpeed", self.ifspeed, final)
+            async with semaphore:
+                try:
+                    return name, await method()
+                except Exception as e:
+                    print(f"Error in {name}: {e}")
+                    return name, {}
+        
 
-        # Get interface ifOperStatus data
-        _get_data("ifOperStatus", self.ifoperstatus, final)
+        queries = [  
+            (self.ifdescr, "ifDescr"),
+            (self.ifalias, "ifAlias"),
+            (self.ifspeed, "ifSpeed"),
+            (self.ifoperstatus, "ifOperStatus"),
+            (self.ifadminstatus, "ifAdminStatus"),
+            (self.iftype, "ifType"),
+            (self.ifname, "ifName"),
+            (self.ifindex, "ifIndex"),
+            (self.ifphysaddress, "ifPhysAddress"),
+            (self.ifinoctets, "ifInOctets"),
+            (self.ifoutoctets, "ifOutOctets"),
+            (self.ifinbroadcastpkts, "ifInBroadcastPkts"),
+            (self.ifoutbroadcastpkts, "ifOutBroadcastPkts"),
+            (self.ifinmulticastpkts, "ifInMulticastPkts"),
+            (self.ifoutmulticastpkts, "ifOutMulticastPkts"),
+            (self.iflastchange, "ifLastChange"),
+        ]
 
-        # Get interface ifAdminStatus data
-        _get_data("ifAdminStatus", self.ifadminstatus, final)
+        # Execute all queries concurrently with rate limit
+        results = await asyncio.gather(
+            *[limited_query(method,name) for method, name in queries],
+            return_exceptions=True
+        )
 
-        # Get interface ifType data
-        _get_data("ifType", self.iftype, final)
+        # Process results 
+        for result in results:
+            if isinstance(result,Exception):
+                print(f"query failed: {result}")
+                continue
 
-        # Get interface ifName data
-        _get_data("ifName", self.ifname, final)
+            method_name, values = result 
 
-        # Get interface ifIndex data
-        _get_data("ifIndex", self.ifindex, final)
+            for key,value in values.items():
+                final[key][method_name] = value 
 
-        # Get interface ifPhysAddress data
-        _get_data("ifPhysAddress", self.ifphysaddress, final)
-
-        # Get interface ifInOctets data
-        _get_data("ifInOctets", self.ifinoctets, final)
-
-        # Get interface ifOutOctets data
-        _get_data("ifOutOctets", self.ifoutoctets, final)
-
-        # Get interface ifInBroadcastPkts data
-        _get_data("ifInBroadcastPkts", self.ifinbroadcastpkts, final)
-
-        # Get interface ifOutBroadcastPkts data
-        _get_data("ifOutBroadcastPkts", self.ifoutbroadcastpkts, final)
-
-        # Get interface ifInMulticastPkts data
-        _get_data("ifInMulticastPkts", self.ifinmulticastpkts, final)
-
-        # Get interface ifOutMulticastPkts data
-        _get_data("ifOutMulticastPkts", self.ifoutmulticastpkts, final)
-
-        # Get interface ifLastChange data
-        _get_data("ifLastChange", self.iflastchange, final)
-
-        # Return
         return final
 
-    def iflastchange(self, oidonly=False):
+    async def iflastchange(self, oidonly=False):
         """Return dict of IFMIB ifLastChange for each ifIndex for device.
 
         Args:
@@ -170,7 +173,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -178,7 +181,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifinoctets(self, safe=False, oidonly=False):
+    async def ifinoctets(self, safe=False, oidonly=False):
         """Return dict of IFMIB ifInOctets for each ifIndex for device.
 
         Args:
@@ -201,9 +204,9 @@ class IfQuery(Query):
 
         # Process results
         if safe is False:
-            results = self.snmp_object.swalk(oid, normalized=True)
+            results = await self.snmp_object.swalk(oid, normalized=True)
         else:
-            results = self.snmp_object.swalk(oid, normalized=True)
+            results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -211,7 +214,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifoutoctets(self, safe=False, oidonly=False):
+    async def ifoutoctets(self, safe=False, oidonly=False):
         """Return dict of IFMIB ifOutOctets for each ifIndex for device.
 
         Args:
@@ -234,9 +237,9 @@ class IfQuery(Query):
 
         # Process results
         if safe is False:
-            results = self.snmp_object.swalk(oid, normalized=True)
+            results = await self.snmp_object.swalk(oid, normalized=True)
         else:
-            results = self.snmp_object.swalk(oid, normalized=True)
+            results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -244,7 +247,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifdescr(self, safe=False, oidonly=False):
+    async def ifdescr(self, safe=False, oidonly=False):
         """Return dict of IFMIB ifDescr for each ifIndex for device.
 
         Args:
@@ -267,9 +270,9 @@ class IfQuery(Query):
 
         # Process results
         if safe is False:
-            results = self.snmp_object.swalk(oid, normalized=True)
+            results = await self.snmp_object.swalk(oid, normalized=True)
         else:
-            results = self.snmp_object.swalk(oid, normalized=True)
+            results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8")
@@ -277,7 +280,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def iftype(self, oidonly=False):
+    async def iftype(self, oidonly=False):
         """Return dict of IFMIB ifType for each ifIndex for device.
 
         Args:
@@ -298,7 +301,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -306,7 +309,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifspeed(self, oidonly=False):
+    async def ifspeed(self, oidonly=False):
         """Return dict of IFMIB ifSpeed for each ifIndex for device.
 
         Args:
@@ -327,7 +330,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -335,7 +338,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifadminstatus(self, oidonly=False):
+    async def ifadminstatus(self, oidonly=False):
         """Return dict of IFMIB ifAdminStatus for each ifIndex for device.
 
         Args:
@@ -356,7 +359,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -364,7 +367,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifoperstatus(self, oidonly=False):
+    async def ifoperstatus(self, oidonly=False):
         """Return dict of IFMIB ifOperStatus for each ifIndex for device.
 
         Args:
@@ -385,7 +388,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -393,7 +396,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifalias(self, oidonly=False):
+    async def ifalias(self, oidonly=False):
         """Return dict of IFMIB ifAlias for each ifIndex for device.
 
         Args:
@@ -414,7 +417,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8")
@@ -422,7 +425,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifname(self, oidonly=False):
+    async def ifname(self, oidonly=False):
         """Return dict of IFMIB ifName for each ifIndex for device.
 
         Args:
@@ -443,7 +446,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8")
@@ -451,7 +454,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifindex(self, oidonly=False):
+    async def ifindex(self, oidonly=False):
         """Return dict of IFMIB ifindex for each ifIndex for device.
 
         Args:
@@ -472,7 +475,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -480,7 +483,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifphysaddress(self, oidonly=False):
+    async def ifphysaddress(self, oidonly=False):
         """Return dict of IFMIB ifPhysAddress for each ifIndex for device.
 
         Args:
@@ -501,7 +504,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID to get MAC address
             data_dict[int(key)] = general.octetstr_2_string(value)
@@ -509,7 +512,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifinmulticastpkts(self, oidonly=False):
+    async def ifinmulticastpkts(self, oidonly=False):
         """Return dict of IFMIB ifInMulticastPkts for each ifIndex for device.
 
         Args:
@@ -530,7 +533,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -538,7 +541,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifoutmulticastpkts(self, oidonly=False):
+    async def ifoutmulticastpkts(self, oidonly=False):
         """Return dict of IFMIB ifOutMulticastPkts for each ifIndex for device.
 
         Args:
@@ -559,7 +562,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -567,7 +570,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifinbroadcastpkts(self, oidonly=False):
+    async def ifinbroadcastpkts(self, oidonly=False):
         """Return dict of IFMIB ifInBroadcastPkts for each ifIndex for device.
 
         Args:
@@ -588,7 +591,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -596,7 +599,7 @@ class IfQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def ifoutbroadcastpkts(self, oidonly=False):
+    async def ifoutbroadcastpkts(self, oidonly=False):
         """Return dict of IFMIB ifOutBroadcastPkts for each ifIndex for device.
 
         Args:
@@ -617,7 +620,7 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -715,21 +718,21 @@ class IfQuery(Query):
         return final
 
 
-def _get_data(title, func, dest):
-    """Populate dest with data from the given function.
+# def _get_data(title, func, dest):
+#     """Populate dest with data from the given function.
 
-    Args:
-        title: The name of the data
-        func: The function which will return the data
-        dest: a dict which will store the data
+#     Args:
+#         title: The name of the data
+#         func: The function which will return the data
+#         dest: a dict which will store the data
 
-    Returns:
-        dest: The modified destination dict
+#     Returns:
+#         dest: The modified destination dict
 
-    """
-    # Get interface data
-    values = func()
-    for key, value in values.items():
-        dest[key][title] = value
+#     """
+#     # Get interface data
+#     values = func()
+#     for key, value in values.items():
+#         dest[key][title] = value
 
-    return dest
+#     return dest

@@ -67,7 +67,7 @@ class CiscoVlanIftableRelationshipQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -81,14 +81,14 @@ class CiscoVlanIftableRelationshipQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface cviRoutedVlanIfIndex data
-        values = self.cviroutedvlanifindex()
+        values = await self.cviroutedvlanifindex()
         for key, value in values.items():
             final[key]["cviRoutedVlanIfIndex"] = value
 
         # Return
         return final
 
-    def cviroutedvlanifindex(self, oidonly=False):
+    async def cviroutedvlanifindex(self, oidonly=False):
         """Return dictionary of CISCO-VLAN-IFTABLE-RELATIONSHIP-MIB.
 
         Keyed by OID cviRoutedVlanIfIndex for each VLAN.
@@ -112,7 +112,7 @@ class CiscoVlanIftableRelationshipQuery(Query):
             return oid
 
         # Process data
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for oid, ifindex in results.items():
             nodes = oid.split(".")
             vlan = int(nodes[-2])

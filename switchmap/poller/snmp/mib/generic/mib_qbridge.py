@@ -62,7 +62,7 @@ class QbridgeQuery(Query):
 
         """
         # Define query object
-        self.snmp_object = snmp_object
+        self._snmp_object = snmp_object
 
         # Get one OID entry in MIB (dot1qPvid)
         test_oid = ".1.3.6.1.2.1.17.7.1.4.5.1.1"
@@ -70,10 +70,19 @@ class QbridgeQuery(Query):
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
         # Get a mapping of dot1dbaseport values to the corresponding ifindex
-        bridge_mib = BridgeQuery(self.snmp_object)
-        self.baseportifindex = bridge_mib.dot1dbaseport_2_ifindex()
+        self.baseportifindex = None 
 
-    def layer1(self):
+    async def _get_bridge_data(self):
+        """Load bridge data only when needed. """
+        if self.baseportifindex is None:
+            self.bridge_mib = BridgeQuery(self._snmp_object)
+
+            if await self.supported() and await self.bridge_mib.supported():
+                self.baseportifindex = await self.bridge_mib.dot1dbaseport_2_ifindex()
+            else:
+                self.baseportifindex = {}
+
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -86,8 +95,10 @@ class QbridgeQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
+        await self._get_bridge_data()
+
         # Get interface dot1qPvid data
-        values = self.dot1qpvid()
+        values = await self.dot1qpvid()
         for key, value in values.items():
             final[key]["dot1qPvid"] = value
 
@@ -115,7 +126,7 @@ class QbridgeQuery(Query):
         # Return
         return final
 
-    def dot1qpvid(self, oidonly=False):
+    async def dot1qpvid(self, oidonly=False):
         """Return dict of Q-BRIDGE-MIB dot1qPvid per port.
 
         Args:
@@ -135,9 +146,9 @@ class QbridgeQuery(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self._snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
-            ifindex = self.baseportifindex[int(key)]
+            ifindex = self.baseportifindex.get(int(key))
             data_dict[ifindex] = value
 
         # Return
@@ -163,7 +174,7 @@ class QbridgeQuery(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = self._snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[key] = str(bytes(value), encoding="utf-8")
 

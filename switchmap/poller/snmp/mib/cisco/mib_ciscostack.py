@@ -67,7 +67,7 @@ class CiscoStackQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -81,14 +81,14 @@ class CiscoStackQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface portDuplex data
-        values = self.portduplex()
+        values = await self.portduplex()
         for key, value in values.items():
             final[key]["portDuplex"] = value
 
         # Return
         return final
 
-    def portduplex(self, oidonly=False):
+    async def portduplex(self, oidonly=False):
         """Return dict of CISCO-STACK-MIB portDuplex for each port.
 
         Args:
@@ -100,7 +100,7 @@ class CiscoStackQuery(Query):
         """
         # Initialize key variables
         data_dict = defaultdict(dict)
-        dot1dbaseport = self._portifindex()
+        dot1dbaseport = await self._portifindex()
 
         # Process OID
         oid = ".1.3.6.1.4.1.9.5.1.4.1.1.10"
@@ -109,7 +109,7 @@ class CiscoStackQuery(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Assign duplex value to ifindex key
             ifindex = dot1dbaseport[int(key)]
@@ -118,7 +118,7 @@ class CiscoStackQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def _portifindex(self, oidonly=False):
+    async def _portifindex(self, oidonly=False):
         """Return dict of CISCO-STACK-MIB portIfIndex for each port.
 
         Args:
@@ -138,7 +138,7 @@ class CiscoStackQuery(Query):
         if oidonly is True:
             return oid
 
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 

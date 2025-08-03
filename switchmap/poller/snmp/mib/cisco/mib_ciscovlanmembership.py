@@ -67,7 +67,7 @@ class CiscoVlanMembershipQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -81,19 +81,19 @@ class CiscoVlanMembershipQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface vmVlan data
-        values = self.vmvlan()
+        values = await self.vmvlan()
         for key, value in values.items():
             final[key]["vmVlan"] = value
 
         # Get interface vmPortStatus data
-        values = self.vmportstatus()
+        values = await self.vmportstatus()
         for key, value in values.items():
             final[key]["vmPortStatus"] = value
 
         # Return
         return final
 
-    def vmvlan(self, oidonly=False):
+    async def vmvlan(self, oidonly=False):
         """Return dict of CISCO-VLAN-MEMBERSHIP-MIB vmVlan for each VLAN.
 
         Args:
@@ -114,14 +114,14 @@ class CiscoVlanMembershipQuery(Query):
             return oid
 
         # Process data
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 
         # Return the interface descriptions
         return data_dict
 
-    def vmportstatus(self, oidonly=False):
+    async def vmportstatus(self, oidonly=False):
         """Return dict of CISCO-VLAN-MEMBERSHIP-MIB vmPortStatus for each VLAN.
 
         Args:
@@ -142,7 +142,7 @@ class CiscoVlanMembershipQuery(Query):
             return oid
 
         # Process data
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 

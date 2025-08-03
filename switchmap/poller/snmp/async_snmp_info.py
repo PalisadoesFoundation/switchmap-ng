@@ -179,7 +179,6 @@ class Query:
             print(f"Layer1 data collected successfully for {hostname}")
         else:
             print(f"No layer1 MIBs supported for {hostname}")
-    
         return data 
     
     async def layer2(self):
@@ -354,24 +353,22 @@ async def _add_layer1(query,data):
     try:
         mib_name = query.__class__.__name__
         print(f"Processing layer1 data: {mib_name}")
-        #! so, are getting data file wise (like yuo know better understand this better)
 
-        #! so, does are we checking before if the function is async or not
-        #! if yes, then have to remove and check if htis works also without this(after laeyr 1 migraiton to async)
+        #! after complete async migration remove check for coroutines
         result = None 
         if asyncio.iscoroutinefunction(query.layer1):
             #! check if this pass 
             print(f"before polling")
             result = await query.layer1()
-            print(f"after polling c heck if mib2900 is passing")
         else:
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(None, query.layer1)
         
         if result:
-            print(f"{mib_name} returned layer1 data")
+            print(f"Return data before processing {mib_name}: {result}")
             data = await _add_data(result, data)
             print(f"Successfully added layer1 data for {mib_name}")
+            print(f"Return data After processing {mib_name}: {data}")
         else:
             print(f" No layer1 data returned for {mib_name}")
         
@@ -436,13 +433,11 @@ async def _add_layer3(query,data):
         if asyncio.iscoroutinefunction(query.layer3):
             result = await query.layer3() 
         else:
-            #! what is this, like explain in deatil for this case
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(None, query.layer3)
         
         if result:
             print(f"{mib_name} returned layer3 data")
-            #! what does _add_data do like in detail (is this approach is best)
             data = await _add_data(result, data)
             print(f"Successfully added layer3 data for {mib_name}")
         else:
