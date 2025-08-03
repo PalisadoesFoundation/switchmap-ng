@@ -70,15 +70,17 @@ class QbridgeQuery(Query):
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
         # Get a mapping of dot1dbaseport values to the corresponding ifindex
-        self.baseportifindex = None 
+        self.baseportifindex = None
 
     async def _get_bridge_data(self):
-        """Load bridge data only when needed. """
+        """Load bridge data only when needed."""
         if self.baseportifindex is None:
             self.bridge_mib = BridgeQuery(self._snmp_object)
 
             if await self.supported() and await self.bridge_mib.supported():
-                self.baseportifindex = await self.bridge_mib.dot1dbaseport_2_ifindex()
+                self.baseportifindex = (
+                    await self.bridge_mib.dot1dbaseport_2_ifindex()
+                )
             else:
                 self.baseportifindex = {}
 

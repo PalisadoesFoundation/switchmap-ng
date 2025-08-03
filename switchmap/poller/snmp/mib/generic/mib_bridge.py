@@ -111,7 +111,9 @@ class BridgeQuery(Query):
         # Check if Juniper VLANS are supported
         if done is False:
             oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
-            oid_exists = await self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
+            oid_exists = await self._snmp_object.oid_exists(
+                oid_dot1qvlanstaticname
+            )
             if bool(oid_exists) is True:
                 final = await self._macaddresstable_juniper()
 
@@ -161,13 +163,13 @@ class BridgeQuery(Query):
                 if int(state) == 1 and int(vtpvlantype[vlan]) == 1:
                     cisco_context = _cisco_vlan_context(vlan, context_style)
                     context_names.append(cisco_context)
-        
+
         tasks = [
             self._dot1dtpfdbaddress(context_names=context_names),
-            self._dot1dtpfdbport(context_names=context_names), 
-            self.dot1dbaseport_2_ifindex()
+            self._dot1dtpfdbport(context_names=context_names),
+            self.dot1dbaseport_2_ifindex(),
         ]
-    
+
         macs, dot1dtpfdbport, baseportifindex = await asyncio.gather(*tasks)
 
         # Create a dict keyed by ifIndex
@@ -310,7 +312,9 @@ class BridgeQuery(Query):
             oid = ".1.3.6.1.2.1.17.7.1.2.2.1.2"
             for vlan in vlans:
                 new_oid = "{}.{}".format(oid, vlan)
-                results = await self._snmp_object.swalk(new_oid, normalized=False)
+                results = await self._snmp_object.swalk(
+                    new_oid, normalized=False
+                )
                 for key, value in results.items():
                     new_key = key[len(oid) :]
                     data_dict[new_key] = value
@@ -365,8 +369,8 @@ class BridgeQuery(Query):
         data_dict = defaultdict(dict)
 
         # Get ifindex data directly
-        oid = ".1.3.6.1.2.1.2.2.1.1" 
-        ifindex_results = await self._snmp_object.swalk(oid, normalized = True)
+        oid = ".1.3.6.1.2.1.2.2.1.1"
+        ifindex_results = await self._snmp_object.swalk(oid, normalized=True)
         ifindex_data = {int(k): v for k, v in ifindex_results.items()}
         # Get the difference between ifIndex and dot1dBasePortIfIndex
         oid = ".1.3.6.1.2.1.17.1.4.1.2"

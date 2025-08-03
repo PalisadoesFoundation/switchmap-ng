@@ -81,7 +81,7 @@ class EtherlikeQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface dot3StatsDuplexStatus data
-        values =await self.dot3statsduplexstatus()
+        values = await self.dot3statsduplexstatus()
         for key, value in values.items():
             final[key]["dot3StatsDuplexStatus"] = value
 

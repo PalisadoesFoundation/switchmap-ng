@@ -4,7 +4,7 @@ from collections import defaultdict
 import binascii
 
 from switchmap.poller.snmp.base_query import Query
-import asyncio 
+import asyncio
 
 
 def get_query():
@@ -118,7 +118,7 @@ class CiscoVtpQuery(Query):
 
         # Can Limit concurrent SNMP queries (can adjust according to need)
         semaphore = asyncio.Semaphore(5)
-       
+
         async def limited_query(method, name):
             """Rate limit SNMP query."""
 
@@ -127,35 +127,36 @@ class CiscoVtpQuery(Query):
                     return name, await method()
                 except Exception as e:
                     print(f"error in {name}: {e}")
-                    return name, {} 
-                
-        
+                    return name, {}
+
         queries = [
-            ( self.vlantrunkportdynamicstate, "vlanTrunkPortDynamicState"),
-            ( self.vlantrunkportdynamicstatus,"vlanTrunkPortDynamicStatus"),
-            ( self.vlantrunkportnativevlan, "vlanTrunkPortNativeVlan"),
-            ( self.vlantrunkportencapsulationtype, "vlanTrunkPortEncapsulationType"),
-            ( self.vlantrunkportvlansenabled, "vlanTrunkPortVlansEnabled")
+            (self.vlantrunkportdynamicstate, "vlanTrunkPortDynamicState"),
+            (self.vlantrunkportdynamicstatus, "vlanTrunkPortDynamicStatus"),
+            (self.vlantrunkportnativevlan, "vlanTrunkPortNativeVlan"),
+            (
+                self.vlantrunkportencapsulationtype,
+                "vlanTrunkPortEncapsulationType",
+            ),
+            (self.vlantrunkportvlansenabled, "vlanTrunkPortVlansEnabled"),
         ]
 
-        # Execute all queries concurrently 
+        # Execute all queries concurrently
         results = await asyncio.gather(
             *[limited_query(method, name) for method, name in queries],
-            return_exceptions=True
+            return_exceptions=True,
         )
 
         for result in results:
             if isinstance(result, Exception):
                 print(f"query failed: {result}")
-                continue 
+                continue
 
             method_name, values = result
 
-            for key,value in values.items():
+            for key, value in values.items():
                 final[key][method_name] = value
-        
-        return final
 
+        return final
 
     async def vlantrunkportencapsulationtype(self, oidonly=False):
         """Return CISCO-VTP-MIB vlanTrunkPortEncapsulationType per ifIndex.
@@ -182,7 +183,7 @@ class CiscoVtpQuery(Query):
         results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
-        
+
         print(f"result: {results}")
         # Return the interface descriptions
         return data_dict
@@ -389,7 +390,7 @@ class CiscoVtpQuery(Query):
         for key, value in results.items():
             # Get the ifindex value
             ifindex = int(key)
-            
+
             #! is this needed in pysnmp, have to check it throughly
             # Convert hex value to right justified 1024 character binary string
             vlans_hex = binascii.hexlify(value).decode("utf-8")

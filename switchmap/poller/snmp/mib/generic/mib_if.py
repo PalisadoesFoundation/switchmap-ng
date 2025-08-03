@@ -103,8 +103,8 @@ class IfQuery(Query):
         # Limit concurrent SNMP queries
         semaphore = asyncio.Semaphore(8)
 
-        async def limited_query(method,name):
-            """Rate limit SNMP query. """
+        async def limited_query(method, name):
+            """Rate limit SNMP query."""
 
             async with semaphore:
                 try:
@@ -112,9 +112,8 @@ class IfQuery(Query):
                 except Exception as e:
                     print(f"Error in {name}: {e}")
                     return name, {}
-        
 
-        queries = [  
+        queries = [
             (self.ifdescr, "ifDescr"),
             (self.ifalias, "ifAlias"),
             (self.ifspeed, "ifSpeed"),
@@ -135,20 +134,20 @@ class IfQuery(Query):
 
         # Execute all queries concurrently with rate limit
         results = await asyncio.gather(
-            *[limited_query(method,name) for method, name in queries],
-            return_exceptions=True
+            *[limited_query(method, name) for method, name in queries],
+            return_exceptions=True,
         )
 
-        # Process results 
+        # Process results
         for result in results:
-            if isinstance(result,Exception):
+            if isinstance(result, Exception):
                 print(f"query failed: {result}")
                 continue
 
-            method_name, values = result 
+            method_name, values = result
 
-            for key,value in values.items():
-                final[key][method_name] = value 
+            for key, value in values.items():
+                final[key][method_name] = value
 
         return final
 

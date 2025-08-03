@@ -69,26 +69,27 @@ class LldpQuery(Query):
         self._snmp_object = snmp_object
         self._use_ifindex = None
         self._baseportifindex = None
-        self._bridge_mib = None 
+        self._bridge_mib = None
 
         # Get one OID entry in MIB (lldpRemSysName)
         test_oid = ".1.0.8802.1.1.2.1.4.1.1.9"
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-
     async def _ensure_bridge_data(self):
         """Lazy load bridge data when needed."""
         if self._baseportifindex is None:
-            # Create bridge MIB and check if it's supported 
+            # Create bridge MIB and check if it's supported
             self._bridge_mib = BridgeQuery(self._snmp_object)
 
             if await self.supported() and await self._bridge_mib.supported():
-                self._baseportifindex = await self._bridge_mib.dot1dbaseport_2_ifindex()
-                self._use_ifindex = await self._use_ifindex_check() 
+                self._baseportifindex = (
+                    await self._bridge_mib.dot1dbaseport_2_ifindex()
+                )
+                self._use_ifindex = await self._use_ifindex_check()
             else:
                 self._baseportifindex = {}
-                self._use_ifindex = False 
+                self._use_ifindex = False
 
     async def layer1(self):
         """Get layer 1 data from device.
@@ -103,33 +104,37 @@ class LldpQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
-        # Ensure dependencies are loaded 
+        # Ensure dependencies are loaded
         await self._ensure_bridge_data()
 
-        # Run all LLDP queries concurrently 
+        # Run all LLDP queries concurrently
 
         results = await asyncio.gather(
             self.lldpremsysname(),
             self.lldpremsysdesc(),
             self.lldpremportdesc(),
             self.lldpremsyscapenabled(),
-            return_exceptions= True 
+            return_exceptions=True,
         )
 
-        method_names = ["lldpRemSysName", "lldpRemSysDesc", "lldpRemPortDesc", "lldpRemSysCapEnabled"]
+        method_names = [
+            "lldpRemSysName",
+            "lldpRemSysDesc",
+            "lldpRemPortDesc",
+            "lldpRemSysCapEnabled",
+        ]
         final = defaultdict(lambda: defaultdict(dict))
 
         for i, (method_name, values) in enumerate(zip(method_names, results)):
             if isinstance(values, Exception):
                 print(f"Error in {method_name}: {values}")
                 continue
-            
-            if values: 
-                for key,value in values.items():
-                    final[key][method_name] = value 
-        
-        return final
 
+            if values:
+                for key, value in values.items():
+                    final[key][method_name] = value
+
+        return final
 
     async def lldpremsysname(self, oidonly=False):
         """Return dict of LLDP-MIB lldpRemSysName for each port.
@@ -342,7 +347,6 @@ class LldpQuery(Query):
         if_query = mib_if.IfQuery(self._snmp_object)
         ifdescr = await if_query.ifdescr()
 
-
         # Use the well known lldplocportdesc OID that must be supported
         oid = ".1.0.8802.1.1.2.1.3.7.1.4"
 
@@ -373,7 +377,6 @@ class LldpQuery(Query):
         """
         # Ensure bridge data is loaded
         await self._ensure_bridge_data()
-
 
         # Initialize key variables
         ifindex = None
