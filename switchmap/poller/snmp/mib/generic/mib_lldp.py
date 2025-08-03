@@ -127,7 +127,6 @@ class LldpQuery(Query):
 
         for i, (method_name, values) in enumerate(zip(method_names, results)):
             if isinstance(values, Exception):
-                print(f"Error in {method_name}: {values}")
                 continue
 
             if values:
