@@ -126,7 +126,6 @@ class CiscoVtpQuery(Query):
                 try:
                     return name, await method()
                 except Exception as e:
-                    print(f"error in {name}: {e}")
                     return name, {}
 
         queries = [
@@ -148,7 +147,6 @@ class CiscoVtpQuery(Query):
 
         for result in results:
             if isinstance(result, Exception):
-                print(f"query failed: {result}")
                 continue
 
             method_name, values = result
@@ -184,7 +182,6 @@ class CiscoVtpQuery(Query):
         for key, value in results.items():
             data_dict[int(key)] = value
 
-        print(f"result: {results}")
         # Return the interface descriptions
         return data_dict
 

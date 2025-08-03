@@ -50,17 +50,17 @@ class Query:
         print(f"start async everything() for {hostname}")
 
         # Append data
-        #! Pass
-        # data["misc"] = await self.misc()
+        data["misc"] = await self.misc()
 
-        # data["system"] = await self.system()
+        data["system"] = await self.system()
 
-        #! empty for now (will enable as MIBs are converted)
         data["layer1"] = await self.layer1()
 
         data["layer2"] = {}
 
         data["layer3"] = {}
+
+        print(f"Final data: {data}")
 
         # Return
         return data
@@ -104,32 +104,36 @@ class Query:
         system_queries = get_queries("system")
         print(f"system queries: {system_queries}, len: {len(system_queries)}")
 
-        #! think of async way or something that can reduce polling time
-        # Process MIB queries
-        for i, Query in enumerate(system_queries):
-            item = Query(self.snmp_object)
-            mib_name = item.__class__.__name__
+        # Create all query instances
+        query_items = [
+            (query_class(self.snmp_object), query_class.__name__)
+            for query_class in system_queries
+        ]
 
-            print(f"item: {item}, mib_name: {mib_name}")
+        # Check if supported
+        support_results = await asyncio.gather(
+            *[item.supported() for item, _ in query_items]
+        )
 
-            print(f"Testing MIB {i+1}/{len(system_queries)}")
+        supported_items = [
+            (item, name)
+            for (item, name), supported in zip(query_items, support_results)
+            if supported
+        ]
 
-            # Check if supported
-            if await item.supported():
+        if supported_items:
+            results = await asyncio.gather(
+                *[
+                    _add_system(item, defaultdict(lambda: defaultdict(dict)))
+                    for item, _ in supported_items
+                ]
+            )
 
-                processed = True
-                old_keys = list(data.keys())
-
-                print(f"oid Keys: {old_keys}")
-
-                data = await _add_system(item, data)
-
-                print(f"data check bro: {data}")
-
-                new_keys = list(data.keys())
-
-                added_keys = set(new_keys) - set(old_keys)
-                print(f"added_keys: {added_keys}")
+            # Merge results
+            for result in results:
+                for key, value in result.items():
+                    data[key].update(value)
+            processed = True
 
         if processed is True:
             return data
@@ -165,8 +169,6 @@ class Query:
             if await item.supported():
                 processed = True
                 old_keys = list(data.keys())
-
-                #! chck if the MIB are suppoerted
                 print(f"{mib_name} is supported")
 
                 data = await _add_layer1(item, data)
@@ -221,6 +223,7 @@ class Query:
             print(f"layer2 data collected successfully for {hostname}")
         else:
             print(f"No layer2 mibs supported for {hostname}")
+        return data
 
     async def layer3(self):
         """
@@ -269,9 +272,9 @@ class Query:
             print(f"Layer3 data collected successfully for {hostname}")
         else:
             print(f"No layer3 MIBs supported for {hostname}")
+        return data
 
 
-#! understand this as well
 async def _add_data(source, target):
     """Add data from source to target dict. Both dicts must have two keys.
 
@@ -284,7 +287,6 @@ async def _add_data(source, target):
 
     """
     # Process data
-    #! visualize this one
     for primary in source.keys():
         print(f"primary: {primary}")
         for secondary, value in source[primary].items():

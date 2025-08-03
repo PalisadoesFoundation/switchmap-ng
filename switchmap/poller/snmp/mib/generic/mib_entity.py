@@ -3,6 +3,7 @@
 from collections import defaultdict
 
 from switchmap.poller.snmp.base_query import Query
+import asyncio
 
 
 def get_query():
@@ -88,16 +89,26 @@ class EntityQuery(Query):
         data_dict = defaultdict(lambda: defaultdict(dict))
         final = {}
 
-        #! here, also have to use asyncio gather to poll them asynchronously
         # Get data
-        hw_rev = await self.entphysicalhardwarerev()
-        fw_rev = await self.entphysicalfirmwarerev()
-        sw_rev = await self.entphysicalsoftwarerev()
-        name = await self.entphysicalname()
-        model = await self.entphysicalmodelname()
-        serial = await self.entphysicalserialnum()
-        classtype = await self.entphysicalclass()
-        description = await self.entphysicaldescr()
+        (
+            hw_rev,
+            fw_rev,
+            sw_rev,
+            name,
+            model,
+            serial,
+            classtype,
+            description,
+        ) = await asyncio.gather(
+            self.entphysicalhardwarerev(),
+            self.entphysicalfirmwarerev(),
+            self.entphysicalsoftwarerev(),
+            self.entphysicalname(),
+            self.entphysicalmodelname(),
+            self.entphysicalserialnum(),
+            self.entphysicalclass(),
+            self.entphysicaldescr(),
+        )
 
         # Only process if a serial number is found
         count = 0
