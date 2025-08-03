@@ -979,6 +979,7 @@ def _oid_valid_format(oid):
     # Otherwise valid
     return True
 
+
 def _convert(value):
     """Convert SNMP value from pysnmp object to Python type.
 
@@ -992,68 +993,81 @@ def _convert(value):
 
     # Handle pysnmp exception values
     if isinstance(value, NoSuchObject):
-        return None 
+        return None
     if isinstance(value, NoSuchInstance):
         return None
     if isinstance(value, EndOfMibView):
-        return None 
-    
-    if hasattr(value, 'prettyPrint'):
+        return None
+
+    if hasattr(value, "prettyPrint"):
         value_str = value.prettyPrint()
 
-        #Determine type based on pysnmp object type
-        value_type = type(value).__name__ 
+        # Determine type based on pysnmp object type
+        value_type = type(value).__name__
 
-        # Handle string-like types - Convert to types for MIB compatibility 
-        if any(t in value_type for t in ['OctetString','DisplayString','Opaque','Bits','IpAddress','ObjectIdentifier']):
+        # Handle string-like types - Convert to types for MIB compatibility
+        if any(
+            t in value_type
+            for t in [
+                "OctetString",
+                "DisplayString",
+                "Opaque",
+                "Bits",
+                "IpAddress",
+                "ObjectIdentifier",
+            ]
+        ):
             # For objectID, convert to string first then to bytes
-            if 'ObjectIdentifier' in value_type:
-                return bytes(str(value_str), 'utf-8')
+            if "ObjectIdentifier" in value_type:
+                return bytes(str(value_str), "utf-8")
             else:
-                return bytes(value_str,'utf-8')
-        
-        #Handle integer types
-        elif any(t in value_type for t in ['Integer','Counter','Gauge','TimeTicks','Unsigned']):
+                return bytes(value_str, "utf-8")
+
+        # Handle integer types
+        elif any(
+            t in value_type
+            for t in ["Integer", "Counter", "Gauge", "TimeTicks", "Unsigned"]
+        ):
             try:
                 return int(value_str)
             except ValueError:
                 #! clear on this once again
                 #! approach 1
                 # Direct int conversion of the obj if prettyPrint fails
-                if hasattr(value, '__int__'):
+                if hasattr(value, "__int__"):
                     try:
                         return int(value)
                     except (ValueError, TypeError):
-                        pass 
+                        pass
 
-                #! approach 2 
+                #! approach 2
                 # Accessing .value attr directly
-                if hasattr(value, 'value'):
+                if hasattr(value, "value"):
                     try:
-                       return int(value.value)
+                        return int(value.value)
                     except (ValueError, TypeError):
-                        pass 
-                
+                        pass
+
                 log_message = f"Failed to convert pysnmp integer valye: {value_type}, prettyPrint'{value_str}"
                 log.log2warning(1059, log_message)
                 return None
-    
+
     # Handle direct access to value (for objects without prettyPrint)
-    if hasattr(value, 'value'):
+    if hasattr(value, "value"):
         try:
             return int(value.value)
         except (ValueError, TypeError):
-            return bytes(str(value.value), 'utf-8')
-        
-    #! will check this as well (if we need it ??) ask peter or dominic sir
-    # Default Fallback - convert to string then to bytes 
-    try:
-        return bytes(str(value), 'utf-8')
-    except Exception:
-        return None 
-    
+            return bytes(str(value.value), "utf-8")
 
-def _format_results(results,mock_filter, normalized = False):
+    #! will check this as well (if we need it ??) ask peter or dominic sir
+    # Default Fallback - convert to string then to bytes
+    try:
+        return bytes(str(value), "utf-8")
+    except Exception:
+        return None
+
+
+def _format_results(results, mock_filter, normalized=False):
     """Normalized and format SNMP results
 
     Args:
@@ -1069,33 +1083,33 @@ def _format_results(results,mock_filter, normalized = False):
 
     Returns:
         dict: Formatted results as OID-value pairs
-    
+
     """
 
     formatted = {}
 
-    for oid_str,value in results:
+    for oid_str, value in results:
 
         # Normalize both OIDs for comparison to handle leading dot mismatch
         if mock_filter:
             # Remove leading dots for comparison
-            filter_normalized = mock_filter.lstrip('.')
-            oid_normalized = oid_str.lstrip('.')
-            
-            if filter_normalized not in oid_normalized:
-                continue 
+            filter_normalized = mock_filter.lstrip(".")
+            oid_normalized = oid_str.lstrip(".")
 
-        #convert value using proper type conversion
+            if filter_normalized not in oid_normalized:
+                continue
+
+        # convert value using proper type conversion
         converted_value = _convert(value=value)
 
         if normalized is True:
-            #use only the last node of the OID
-            key = oid_str.split('.')[-1]
+            # use only the last node of the OID
+            key = oid_str.split(".")[-1]
         else:
             key = oid_str
 
         formatted[key] = converted_value
-    
+
     return formatted
 
 

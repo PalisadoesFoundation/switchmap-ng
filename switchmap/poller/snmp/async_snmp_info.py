@@ -250,21 +250,21 @@ class Query:
             return data
         else:
             return None
-        
+
     async def layer1(self):
         """
         Get all layer 1 information from device.
 
-        Args: 
+        Args:
             None
-    
+
         Returns:
             data: Aggregated layer1 data
         """
-         # Initialize key values 
+        # Initialize key values
         data = defaultdict(lambda: defaultdict(dict))
-        processed = False 
-        hostname = self.snmp_object.hostname() 
+        processed = False
+        hostname = self.snmp_object.hostname()
 
         layer1_queries = get_queries("layer1")
 
@@ -273,17 +273,16 @@ class Query:
         # Process MIB queries sequentially
         for i, Query in enumerate(layer1_queries):
             item = Query(self.snmp_object)
-            mib_name = item.__class__.__name__ 
+            mib_name = item.__class__.__name__
             print(f"polling for MIB_name: {mib_name}")
 
-                # Check if supported 
+            # Check if supported
             if await item.supported():
-                processed = True 
+                processed = True
                 old_keys = list(data.keys())
 
                 #! chck if the MIB are suppoerted
                 print(f"{mib_name} is supported")
-
 
                 data = await _add_layer1(item, data)
 
@@ -291,36 +290,36 @@ class Query:
                 added_keys = set(new_keys) - set(old_keys)
             else:
                 print(f" MIB {mib_name} is NOT supported for {hostname}")
-        
-        # Return 
+
+        # Return
         if processed:
             print(f"Layer1 data collected successfully for {hostname}")
         else:
             print(f"No layer1 MIBs supported for {hostname}")
-        return data 
-    
+        return data
+
     async def layer2(self):
         """
-        Args: 
-            None 
-        
-        Returns: 
+        Args:
+            None
+
+        Returns:
             data: Aggregated layer2 data
 
         """
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
-        processed = False 
-        hostname = self.snmp_object.hostname() 
+        processed = False
+        hostname = self.snmp_object.hostname()
 
         # Get layer2 information from MIB classes
         layer2_queries = get_queries("layer2")
         #! chek layer2 queries how its functions to resolve the issue
-        for i,Query in enumerate(layer2_queries):
+        for i, Query in enumerate(layer2_queries):
             item = Query(self.snmp_object)
-            mib_name = item.__class__.__name__ 
+            mib_name = item.__class__.__name__
 
-            # Check if supported 
+            # Check if supported
             if await item.supported():
                 processed = True
                 old_keys = list(data.keys())
@@ -331,13 +330,13 @@ class Query:
                 added_keys = set(new_keys) - set(old_keys)
             else:
                 print(f"MIB {mib_name} is not supported for {hostname}")
-        
-        # Return 
+
+        # Return
         if processed:
             print(f"layer2 data collected successfully for {hostname}")
         else:
             print(f"No layer2 mibs supported for {hostname}")
-        
+
     async def layer3(self):
         """
         Get all layer3 information from device.
@@ -346,24 +345,26 @@ class Query:
             None
 
         Returns:
-           data: Aggregated layer3 data 
+           data: Aggregated layer3 data
         """
 
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
-        processed = False 
-        hostname = self.snmp_object.hostname() 
+        processed = False
+        hostname = self.snmp_object.hostname()
 
         # Get layer3 information from MIB classes
         layer3_queries = get_queries("layer3")
 
         for i, Query in enumerate(layer3_queries):
             item = Query(self.snmp_object)
-            mib_name = item.__class__.__name__ 
+            mib_name = item.__class__.__name__
 
-            print(f"Testing MIB {i+1}/{len(layer3_queries)}: {mib_name} for {hostname}")
+            print(
+                f"Testing MIB {i+1}/{len(layer3_queries)}: {mib_name} for {hostname}"
+            )
 
-            # Check if supported 
+            # Check if supported
             if await item.supported():
                 print(f"MIB {mib_name} is supported for {hostname}")
                 processed = True
@@ -377,13 +378,13 @@ class Query:
                 print(f"MIB {mib_name} added: {list(added_keys)}")
             else:
                 print(f"MIB {mib_name} is not supported for {hostname}")
-        
-        # Return 
+
+        # Return
         if processed:
             print(f"Layer3 data collected successfully for {hostname}")
         else:
             print(f"No layer3 MIBs supported for {hostname}")
-            
+
 
     async def layer3(self):
         """Get all layer3 information from device.
@@ -520,7 +521,7 @@ async def _add_layer1(query, data):
 
         result = None
         if asyncio.iscoroutinefunction(query.layer1):
-            #! check if this pass 
+            #! check if this pass
             print(f"before polling")
             result = await query.layer1()
         else:
