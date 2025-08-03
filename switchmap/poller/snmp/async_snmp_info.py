@@ -280,8 +280,6 @@ class Query:
             if await item.supported():
                 processed = True
                 old_keys = list(data.keys())
-
-                #! chck if the MIB are suppoerted
                 print(f"{mib_name} is supported")
 
                 data = await _add_layer1(item, data)
@@ -336,6 +334,7 @@ class Query:
             print(f"layer2 data collected successfully for {hostname}")
         else:
             print(f"No layer2 mibs supported for {hostname}")
+        return data
 
     async def layer3(self):
         """
@@ -384,6 +383,7 @@ class Query:
             print(f"Layer3 data collected successfully for {hostname}")
         else:
             print(f"No layer3 MIBs supported for {hostname}")
+        return data
 
 
     async def layer3(self):
