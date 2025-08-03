@@ -187,7 +187,8 @@ class CiscoVtpQuery(Query):
         results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
-
+        
+        print(f"result: {results}")
         # Return the interface descriptions
         return data_dict
 
@@ -401,7 +402,8 @@ class CiscoVtpQuery(Query):
         for key, value in results.items():
             # Get the ifindex value
             ifindex = int(key)
-
+            
+            #! is this needed in pysnmp, have to check it throughly
             # Convert hex value to right justified 1024 character binary string
             vlans_hex = binascii.hexlify(value).decode("utf-8")
             binary_string = bin(int(vlans_hex, base))[2:].zfill(length_in_bits)
