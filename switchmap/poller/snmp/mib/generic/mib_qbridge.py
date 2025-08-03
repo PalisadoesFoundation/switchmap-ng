@@ -62,7 +62,7 @@ class QbridgeQuery(Query):
 
         """
         # Define query object
-        self.snmp_object = snmp_object
+        self._snmp_object = snmp_object
 
         # Get one OID entry in MIB (dot1qPvid)
         test_oid = ".1.3.6.1.2.1.17.7.1.4.5.1.1"

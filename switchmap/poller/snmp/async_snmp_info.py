@@ -297,7 +297,6 @@ class Query:
             print(f"Layer1 data collected successfully for {hostname}")
         else:
             print(f"No layer1 MIBs supported for {hostname}")
-    
         return data 
     
     async def layer2(self):
@@ -524,7 +523,6 @@ async def _add_layer1(query, data):
             #! check if this pass 
             print(f"before polling")
             result = await query.layer1()
-            print(f"after polling c heck if mib2900 is passing")
         else:
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(None, query.layer1)
