@@ -188,7 +188,6 @@ class CiscoVtpQuery(Query):
         for key, value in results.items():
             data_dict[int(key)] = value
 
-        print(f"result: {results}")
         # Return the interface descriptions
         return data_dict
 

@@ -89,7 +89,6 @@ class EntityQuery(Query):
         data_dict = defaultdict(lambda: defaultdict(dict))
         final = {}
 
-        #! here, also have to use asyncio gather to poll them asynchronously
         # Get data
         (
             hw_rev,
