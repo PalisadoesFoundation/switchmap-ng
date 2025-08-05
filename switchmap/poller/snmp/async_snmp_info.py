@@ -270,7 +270,7 @@ class Query:
 
         print(f"layer 1 level MIBs", layer1_queries)
 
-        # Process MIB queries sequentially
+        #! Process MIB queries sequentially
         for i, Query in enumerate(layer1_queries):
             item = Query(self.snmp_object)
             mib_name = item.__class__.__name__
@@ -312,7 +312,8 @@ class Query:
 
         # Get layer2 information from MIB classes
         layer2_queries = get_queries("layer2")
-        #! chek layer2 queries how its functions to resolve the issue
+
+        # !Process layer2 MIBs sequentially fn
         for i, Query in enumerate(layer2_queries):
             item = Query(self.snmp_object)
             mib_name = item.__class__.__name__
@@ -321,6 +322,7 @@ class Query:
             if await item.supported():
                 processed = True
                 old_keys = list(data.keys())
+                print(f"{mib_name} is supported")
 
                 data = await _add_layer2(item, data)
 
@@ -354,7 +356,9 @@ class Query:
 
         # Get layer3 information from MIB classes
         layer3_queries = get_queries("layer3")
-
+        print(f"layer3 level MIBs", layer3_queries)
+        
+        #! currently polling mibs sequencially
         for i, Query in enumerate(layer3_queries):
             item = Query(self.snmp_object)
             mib_name = item.__class__.__name__
@@ -521,7 +525,6 @@ async def _add_layer1(query, data):
 
         result = None
         if asyncio.iscoroutinefunction(query.layer1):
-            #! check if this pass
             print(f"before polling")
             result = await query.layer1()
         else:
