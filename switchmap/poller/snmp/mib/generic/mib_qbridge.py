@@ -30,7 +30,6 @@ def init_query(snmp_object):
     """
     return QbridgeQuery(snmp_object)
 
-
 class QbridgeQuery(Query):
     """Class interacts with Q-BRIDGE-MIB.
 
@@ -74,6 +73,7 @@ class QbridgeQuery(Query):
 
     async def _get_bridge_data(self):
         """Load bridge data only when needed."""
+        
         if self.baseportifindex is None:
             self.bridge_mib = BridgeQuery(self.snmp_object)
 
