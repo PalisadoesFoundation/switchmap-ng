@@ -123,7 +123,6 @@ class LldpQuery(Query):
             "lldpRemPortDesc",
             "lldpRemSysCapEnabled",
         ]
-        final = defaultdict(lambda: defaultdict(dict))
 
         for i, (method_name, values) in enumerate(zip(method_names, results)):
             if isinstance(values, Exception):

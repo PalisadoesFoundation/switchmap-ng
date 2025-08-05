@@ -72,7 +72,7 @@ class CiscoVtpQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1", "layer2"])
 
-    def layer2(self):
+    async def layer2(self):
         """Get layer 2 data from device.
 
         Args:
@@ -85,22 +85,29 @@ class CiscoVtpQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
-        # Get interface vtpVlanName data
-        values = self.vtpvlanname()
-        for key, value in values.items():
-            final[key]["vtpVlanName"] = value
+        # Run all the Vtp queries concurrently 
 
-        # Get interface vtpVlanType data
-        values = self.vtpvlantype()
-        for key, value in values.items():
-            final[key]["vtpVlanType"] = value
+        results = await asyncio.gather(
+            self.vtpvlanname(),
+            self.vtpvlanstate(),
+            self.vtpvlantype(),
+            return_exceptions= True
+        )
 
-        # Get interface vtpVlanState data
-        values = self.vtpvlanstate()
-        for key, value in values.items():
-            final[key]["vtpVlanState"] = value
+        method_names = [
+            "vtpVlanName",
+            "vtpVlanType",
+            "vtpVlanState"
+        ]
 
-        # Return
+        for i, (method_name, values) in enumerate(zip(method_names, results)):
+            if isinstance(values, Exception):
+                continue 
+
+            if values: 
+                for key, value in values.items():
+                    final[key][method_name] = value 
+        
         return final
 
     async def layer1(self):
@@ -272,7 +279,7 @@ class CiscoVtpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def vtpvlanname(self, oidonly=False):
+    async def vtpvlanname(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vtpVlanName for each VLAN.
 
         Args:
@@ -293,14 +300,14 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
 
-    def vtpvlantype(self, oidonly=False):
+    async def vtpvlantype(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vtpVlanType for each VLAN.
 
         Args:
@@ -321,14 +328,14 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 
         # Return the interface descriptions
         return data_dict
 
-    def vtpvlanstate(self, oidonly=False):
+    async def vtpvlanstate(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vtpVlanState for each VLAN.
 
         Args:
@@ -349,7 +356,7 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 

@@ -30,7 +30,6 @@ def init_query(snmp_object):
     """
     return QbridgeQuery(snmp_object)
 
-
 class QbridgeQuery(Query):
     """Class interacts with Q-BRIDGE-MIB.
 
@@ -74,6 +73,7 @@ class QbridgeQuery(Query):
 
     async def _get_bridge_data(self):
         """Load bridge data only when needed."""
+        
         if self.baseportifindex is None:
             self.bridge_mib = BridgeQuery(self._snmp_object)
 
@@ -107,7 +107,7 @@ class QbridgeQuery(Query):
         # Return
         return final
 
-    def layer2(self):
+    async def layer2(self):
         """Get layer 2 data from device.
 
         Args:
@@ -121,7 +121,7 @@ class QbridgeQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface dot1qVlanStaticName data
-        values = self.dot1qvlanstaticname()
+        values = await self.dot1qvlanstaticname()
         for key, value in values.items():
             final[key]["dot1qVlanStaticName"] = value
 
@@ -156,7 +156,7 @@ class QbridgeQuery(Query):
         # Return
         return data_dict
 
-    def dot1qvlanstaticname(self, oidonly=False):
+    async def dot1qvlanstaticname(self, oidonly=False):
         """Return dict of Q-BRIDGE-MIB dot1qVlanStaticName per port.
 
         Args:
@@ -176,7 +176,7 @@ class QbridgeQuery(Query):
         if oidonly is True:
             return oid
 
-        results = self._snmp_object.swalk(oid, normalized=True)
+        results = await self._snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[key] = str(bytes(value), encoding="utf-8")
 

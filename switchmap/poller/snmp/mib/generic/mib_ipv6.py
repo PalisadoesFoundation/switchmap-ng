@@ -61,14 +61,14 @@ class Ipv6Query(Query):
 
         """
         # Define query object
-        self.snmp_object = snmp_object
+        self._snmp_object = snmp_object
 
         # Get one OID entry in MIB (ipv6Forwarding)
         test_oid = ".1.3.6.1.2.1.55.1.1"
 
         super().__init__(snmp_object, test_oid, tags=["layer3"])
 
-    def layer3(self):
+    async def layer3(self):
         """Get layer 3 data from device.
 
         Args:
@@ -82,14 +82,14 @@ class Ipv6Query(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface ifDescr data
-        values = self.ipv6nettomediaphysaddress()
+        values = await self.ipv6nettomediaphysaddress()
         for key, value in values.items():
             final["ipv6NetToMediaPhysAddress"][key] = value
 
         # Return
         return final
 
-    def ipv6nettomediaphysaddress(self):
+    async def ipv6nettomediaphysaddress(self):
         """Return dict of the device's ipv6NetToMediaPhysAddress ARP table.
 
         Args:
@@ -104,7 +104,7 @@ class Ipv6Query(Query):
         oid = ".1.3.6.1.2.1.55.1.12.1.2"
 
         # Get results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self._snmp_object.swalk(oid, normalized=False)
         for key, mac_value in results.items():
             # Get IP address, first 12 characters
             macaddress = general.octetstr_2_string(mac_value)

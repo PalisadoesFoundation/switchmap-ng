@@ -61,11 +61,11 @@ class IpQuery(Query):
 
         """
         # Define query object
-        self.snmp_object = snmp_object
+        self._snmp_object = snmp_object
 
         super().__init__(snmp_object, "", tags=["layer3"])
 
-    def supported(self):
+    async def supported(self):
         """Return device's support for the MIB.
 
         Args:
@@ -81,7 +81,7 @@ class IpQuery(Query):
         # Return
         return validity
 
-    def layer3(self):
+    async def layer3(self):
         """Get layer 3 data from device.
 
         Args:
@@ -95,19 +95,19 @@ class IpQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface ipNetToMediaTable data
-        values = self.ipnettomediatable()
+        values = await self.ipnettomediatable()
         for key, value in values.items():
             final["ipNetToMediaTable"][key] = value
 
         # Get interface ipNetToPhysicalPhysAddress data
-        values = self.ipnettophysicalphysaddress()
+        values = await self.ipnettophysicalphysaddress()
         for key, value in values.items():
             final["ipNetToPhysicalPhysAddress"][key] = value
 
         # Return
         return final
 
-    def ipnettomediatable(self, oidonly=False):
+    async def ipnettomediatable(self, oidonly=False):
         """Return dict of ipNetToMediaTable, the device's ARP table.
 
         Args:
@@ -128,7 +128,7 @@ class IpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self._snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Determine IP address
             nodes = key.split(".")
@@ -144,7 +144,7 @@ class IpQuery(Query):
         # Return data
         return data_dict
 
-    def ipnettophysicalphysaddress(self, oidonly=False):
+    async def ipnettophysicalphysaddress(self, oidonly=False):
         """Return dict of the device's ipNetToPhysicalPhysAddress ARP table.
 
         Args:
@@ -163,7 +163,7 @@ class IpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self._snmp_object.swalk(oid, normalized=False)
         for key, mac_value in results.items():
             # Get IP address, first 12 characters
             macaddress = general.octetstr_2_string(mac_value)
