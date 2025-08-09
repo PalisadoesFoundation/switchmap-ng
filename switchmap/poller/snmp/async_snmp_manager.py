@@ -1031,8 +1031,6 @@ def _convert(value):
             try:
                 return int(value_str)
             except ValueError:
-                #! clear on this once again
-                #! approach 1
                 # Direct int conversion of the obj if prettyPrint fails
                 if hasattr(value, "__int__"):
                     try:
@@ -1040,7 +1038,6 @@ def _convert(value):
                     except (ValueError, TypeError):
                         pass
 
-                #! approach 2
                 # Accessing .value attr directly
                 if hasattr(value, "value"):
                     try:
@@ -1059,7 +1056,6 @@ def _convert(value):
         except (ValueError, TypeError):
             return bytes(str(value.value), "utf-8")
 
-    #! will check this as well (if we need it ??) ask peter or dominic sir
     # Default Fallback - convert to string then to bytes
     try:
         return bytes(str(value), "utf-8")

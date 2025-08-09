@@ -264,37 +264,50 @@ class Query:
         # Initialize key values
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
-        hostname = self.snmp_object.hostname()
 
         layer1_queries = get_queries("layer1")
 
-        print(f"layer 1 level MIBs", layer1_queries)
+        query_items = [
+            (query_class(self.snmp_object), query_class.__name__)
+            for query_class in layer1_queries
+        ]
 
-        #! Process MIB queries sequentially
-        for i, Query in enumerate(layer1_queries):
-            item = Query(self.snmp_object)
-            mib_name = item.__class__.__name__
-            print(f"polling for MIB_name: {mib_name}")
+        # Concurrent support check
+        support_results = await asyncio.gather(
+            *[item.supported() for item, _ in query_items]
+        )
 
-            # Check if supported
-            if await item.supported():
-                processed = True
-                old_keys = list(data.keys())
-                print(f"{mib_name} is supported")
+        supported_items = [
+            (item, name)
+            for (item, name), supported in zip(query_items, support_results)
+            if supported
+        ]
 
-                data = await _add_layer1(item, data)
+        if supported_items:
+            results = await asyncio.gather(
+                *[
+                    _add_layer1(item, defaultdict(lambda: defaultdict(dict)))
+                    for item, _ in supported_items
+                ],
+                return_exceptions=True,
+            )
 
-                new_keys = list(data.keys())
-                added_keys = set(new_keys) - set(old_keys)
-            else:
-                print(f" MIB {mib_name} is NOT supported for {hostname}")
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    item_name = supported_items[i][1]
+                    log.log2exception(1005, f"Error in {item_name}: {result}")
+                    continue
+
+                for key, value in result.items():
+                    data[key].update(value)
+
+            processed = True
 
         # Return
-        if processed:
-            print(f"Layer1 data collected successfully for {hostname}")
+        if processed is True:
+            return data
         else:
-            print(f"No layer1 MIBs supported for {hostname}")
-        return data
+            return None
 
     async def layer2(self):
         """
@@ -308,35 +321,52 @@ class Query:
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
-        hostname = self.snmp_object.hostname()
 
         # Get layer2 information from MIB classes
         layer2_queries = get_queries("layer2")
 
-        # !Process layer2 MIBs sequentially fn
-        for i, Query in enumerate(layer2_queries):
-            item = Query(self.snmp_object)
-            mib_name = item.__class__.__name__
+        query_items = [
+            (query_class(self.snmp_object), query_class.__name__)
+            for query_class in layer2_queries
+        ]
 
-            # Check if supported
-            if await item.supported():
-                processed = True
-                old_keys = list(data.keys())
-                print(f"{mib_name} is supported")
+        support_results = await asyncio.gather(
+            *[item.supported() for item, _ in query_items]
+        )
 
-                data = await _add_layer2(item, data)
+        # Filter supported MIBs
+        supported_items = [
+            (item, name)
+            for (item, name), supported in zip(query_items, support_results)
+            if supported
+        ]
 
-                new_keys = list(data.keys())
-                added_keys = set(new_keys) - set(old_keys)
-            else:
-                print(f"MIB {mib_name} is not supported for {hostname}")
+        if supported_items:
+            # Concurrent processing
+            results = await asyncio.gather(
+                *[
+                    _add_layer2(item, defaultdict(lambda: defaultdict(dict)))
+                    for item, _ in supported_items
+                ],
+                return_exceptions=True,
+            )
+
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    continue
+
+                # Merge this MIB's complete results
+                for key, value in result.items():
+                    data[key].update(value)
+
+            processed = True
 
         # Return
-        if processed:
-            print(f"layer2 data collected successfully for {hostname}")
+
+        if processed is True:
+            return data
         else:
-            print(f"No layer2 mibs supported for {hostname}")
-        return data
+            return None
 
     async def layer3(self):
         """
@@ -352,7 +382,6 @@ class Query:
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
-        hostname = self.snmp_object.hostname()
 
         # Get layer3 information from MIB classes
         layer3_queries = get_queries("layer3")
@@ -525,7 +554,6 @@ async def _add_layer1(query, data):
 
         result = None
         if asyncio.iscoroutinefunction(query.layer1):
-            print(f"before polling")
             result = await query.layer1()
         else:
             loop = asyncio.get_event_loop()
