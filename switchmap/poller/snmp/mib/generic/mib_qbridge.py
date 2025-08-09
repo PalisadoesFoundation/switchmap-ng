@@ -30,6 +30,7 @@ def init_query(snmp_object):
     """
     return QbridgeQuery(snmp_object)
 
+
 class QbridgeQuery(Query):
     """Class interacts with Q-BRIDGE-MIB.
 
@@ -73,7 +74,7 @@ class QbridgeQuery(Query):
 
     async def _get_bridge_data(self):
         """Load bridge data only when needed."""
-        
+
         if self.baseportifindex is None:
             self.bridge_mib = BridgeQuery(self._snmp_object)
 
@@ -151,7 +152,8 @@ class QbridgeQuery(Query):
         results = await self._snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             ifindex = self.baseportifindex.get(int(key))
-            data_dict[ifindex] = value
+            if ifindex is not None:
+                data_dict[ifindex] = value
 
         # Return
         return data_dict

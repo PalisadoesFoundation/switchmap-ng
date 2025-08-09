@@ -9,18 +9,17 @@ from switchmap.core import log
 
 
 class Poll:
-    """Switchmap-NG agent that gathers data.
+    """Asynchronous SNMP poller for switchmap-ng that gathers network device data.
+
+    This class manages SNMP credential validation and data querying for network devices
+    using asynchronous operations for improved performance and scalability.
 
     Args:
-        None
+        hostname (str): The hostname or IP address of the device to poll
 
-    Returns:
-        None
-
-    Functions:
-        __init__:
-        populate:
-        post:
+    Methods:
+        initialize_snmp(): Validates SNMP credentials and initializes SNMP interaction
+        query(): Queries the device for topology data asynchronously
     """
 
     def __init__(self, hostname):

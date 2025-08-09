@@ -42,9 +42,6 @@ class Poll:
         self._hostname = hostname
         self._snmp_object = None
 
-        print(f"Initialize snmp poller for {hostname}")
-
-    #! maybe add a better method name
     async def initialize_snmp(self):
         """Initialize SNMP connection asynchronously.
 
@@ -62,10 +59,6 @@ class Poll:
         # Get credentials asynchronously
         authorization = await validate.credentials()
 
-        print(
-            f"check creds for hostname: {self._hostname}, creds: {authorization}"
-        )
-
         # Create an SNMP object for querying
         if _do_poll(authorization) is True:
             self._snmp_object = async_snmp_manager.Interact(
@@ -73,7 +66,6 @@ class Poll:
             )
             return True
         else:
-            print(f"cannot create SNMP object for {self._hostname}")
             log_message = (
                 "Uncontactable or disabled host {}, or no valid SNMP "
                 "credentials found in it.".format(self._hostname)
@@ -96,8 +88,7 @@ class Poll:
 
         # Only query if the device is contactable
         if bool(self._snmp_object) is False:
-            #! may add a log here, for better reading
-            print(f"No valid SNMP object for {self._hostname} ")
+            log.log2die(1001, f"No valid SNMP object for {self._hostname} ")
             return _data
 
         # Get data
@@ -111,8 +102,6 @@ Querying topology data from host: {}.""".format(
         status = async_snmp_info.Query(snmp_object=self._snmp_object)
 
         _data = await status.everything()
-
-        print(f"ALl the data broo: {_data}")
 
         return _data
 

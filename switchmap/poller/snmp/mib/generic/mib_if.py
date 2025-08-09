@@ -3,7 +3,7 @@
 from collections import defaultdict
 
 from switchmap.poller.snmp.base_query import Query
-from switchmap.core import general
+from switchmap.core import general,log
 import asyncio
 
 
@@ -110,7 +110,7 @@ class IfQuery(Query):
                 try:
                     return name, await method()
                 except Exception as e:
-                    print(f"Error in {name}: {e}")
+                    log.log2warning(1301, f"Error in {name}: {e}")
                     return name, {}
 
         queries = [
@@ -141,7 +141,6 @@ class IfQuery(Query):
         # Process results
         for result in results:
             if isinstance(result, Exception):
-                print(f"query failed: {result}")
                 continue
 
             method_name, values = result
@@ -202,10 +201,8 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        if safe is False:
-            results = await self.snmp_object.swalk(oid, normalized=True)
-        else:
-            results = await self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
+
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -268,10 +265,8 @@ class IfQuery(Query):
             return oid
 
         # Process results
-        if safe is False:
-            results = await self.snmp_object.swalk(oid, normalized=True)
-        else:
-            results = await self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
+
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8")

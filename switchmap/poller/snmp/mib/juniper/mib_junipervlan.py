@@ -71,27 +71,29 @@ class JuniperVlanQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1", "layer2"])
 
-        self.vlan_map = None 
+        self.vlan_map = None
 
         # Get a mapping of dot1dbaseport values to the corresponding ifindex
         self.baseportifindex = None
-    
+
     async def _get_vlan_map(self):
         """
-           Get mapping of the VLAN's dot1dbaseport ID value to its jnxExVlanTag.
-           Do this only once instead of every time we invoke a method.
+        Get mapping of the VLAN's dot1dbaseport ID value to its jnxExVlanTag.
+        Do this only once instead of every time we invoke a method.
         """
         if await self.supported() is True:
             self.vlan_map = await self._vlanid2tag()
-    
+
     async def _get_bridge_data(self):
-        """load bridge data only when needed.  """
+        """load bridge data only when needed."""
 
         if self.baseportifindex is None:
             self.bridge_mib = BridgeQuery(self._snmp_object)
 
             if await self.supported() and await self.bridge_mib.supported():
-                self.baseportifindex = await self.bridge_mib.dot1dbaseport_2_ifindex()
+                self.baseportifindex = (
+                    await self.bridge_mib.dot1dbaseport_2_ifindex()
+                )
             else:
                 self.baseportifindex = {}
 
@@ -107,7 +109,7 @@ class JuniperVlanQuery(Query):
         """
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
-        
+
         # setup dependencies
         await self._get_vlan_map()
         await self._get_bridge_data()
@@ -165,8 +167,9 @@ class JuniperVlanQuery(Query):
         oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.7.1.5"
         results = await self._snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
-            ifindex = self.baseportifindex[int(key)]
-            data_dict[ifindex] = value
+            ifindex = self.baseportifindex.get(int(key))
+            if ifindex is not None:
+                data_dict[ifindex] = value
 
         # Return
         return data_dict

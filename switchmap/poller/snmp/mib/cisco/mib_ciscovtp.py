@@ -85,29 +85,25 @@ class CiscoVtpQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
-        # Run all the Vtp queries concurrently 
+        # Run all the Vtp queries concurrently
 
         results = await asyncio.gather(
             self.vtpvlanname(),
             self.vtpvlanstate(),
             self.vtpvlantype(),
-            return_exceptions= True
+            return_exceptions=True,
         )
 
-        method_names = [
-            "vtpVlanName",
-            "vtpVlanType",
-            "vtpVlanState"
-        ]
+        method_names = ["vtpVlanName", "vtpVlanType", "vtpVlanState"]
 
         for i, (method_name, values) in enumerate(zip(method_names, results)):
             if isinstance(values, Exception):
-                continue 
+                continue
 
-            if values: 
+            if values:
                 for key, value in values.items():
-                    final[key][method_name] = value 
-        
+                    final[key][method_name] = value
+
         return final
 
     async def layer1(self):

@@ -6,7 +6,7 @@ import binascii
 # Import project libraries
 from switchmap.poller.snmp.base_query import Query
 from switchmap.poller.snmp import BridgeQuery
-from switchmap.core import general
+from switchmap.core import general, log
 from . import mib_if
 import asyncio
 
@@ -124,8 +124,9 @@ class LldpQuery(Query):
             "lldpRemSysCapEnabled",
         ]
 
-        for i, (method_name, values) in enumerate(zip(method_names, results)):
+        for method_name, values in enumerate(zip(method_names, results)):
             if isinstance(values, Exception):
+                log.log2warning(1301, f"Error in {method_name}: {values}")
                 continue
 
             if values:
