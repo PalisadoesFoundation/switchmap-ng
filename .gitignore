@@ -243,10 +243,3 @@ dmypy.json
 cython_debug/
 
 # End of https://www.toptal.com/developers/gitignore/api/python,jupyternotebooks
-
-# temp (remove after async implementation)
-improvements.md
-snmp_test.py
-progress_work.md
-switchmap_poller_new_mibs.md
-switchmap_schema_new_metrics.md
