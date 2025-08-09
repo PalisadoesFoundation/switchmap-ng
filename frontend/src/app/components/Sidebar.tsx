@@ -85,7 +85,7 @@ export function Sidebar() {
             onClick={() => setOpen(false)}
           >
             <FiClock className="icon" />
-            <span>History</span>
+            History
           </Link>
         </li>
         <li>
