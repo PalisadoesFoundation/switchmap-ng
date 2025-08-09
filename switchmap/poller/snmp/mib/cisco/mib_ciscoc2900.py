@@ -117,7 +117,6 @@ class CiscoC2900Query(Query):
         for key, value in results.items():
             data_dict[int(key)] = value
 
-
         # Return the interface descriptions
         return data_dict
 

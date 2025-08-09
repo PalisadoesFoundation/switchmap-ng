@@ -6,6 +6,11 @@ import sys
 import traceback
 import time
 
+<<<<<<< HEAD
+=======
+sys.path.insert(0, ".")
+
+>>>>>>> 1512d43 (chore: lint resolved & add test script for polling)
 from switchmap.poller.snmp.async_snmp_info import Query
 from switchmap.poller.snmp import async_snmp_manager
 from switchmap.poller.configuration import ConfigPoller
@@ -48,6 +53,10 @@ async def test_everything():
 
         print(f"device {hostname} is contactable!")
 
+<<<<<<< HEAD
+=======
+        # Get basic device info
+>>>>>>> 1512d43 (chore: lint resolved & add test script for polling)
         sysobjectid = await snmp_object.sysobjectid()
         enterprise_no = await snmp_object.enterprise_number()
         print(f"Device info:")
