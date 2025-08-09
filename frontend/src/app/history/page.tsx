@@ -1,21 +1,14 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 import { Sidebar } from "../components/Sidebar";
-import { LineChartWrapper } from "../components/LineChartWrapper";
-/**
- * DeviceHistoryChart component fetches and visualizes the historical movement and status changes of devices within the network.
- * It includes search functionality, time range filtering, and displays charts for zone and sysName history.
- * It handles loading and error states, and provides a user-friendly interface for exploring device history.
- *
- * @remarks
- * This component is designed for client-side use only because it relies on the `useState` and `useEffect` hooks
- * to manage state and handle side effects like data fetching. It also includes interactive elements like
- * search input and dropdowns that require client-side rendering.
- * @returns A React component that renders the device history chart interface.
- * @see {@link Sidebar} for the sidebar component.
- * @see {@link LineChartWrapper} for the chart rendering component.
- */
 
 const QUERY = `
   query ZonesWithDevices {
@@ -30,7 +23,7 @@ const QUERY = `
                 idxDevice
                 hostname
                 sysName
-                lastPolled
+                tsCreated
               }
             }
           }
@@ -45,42 +38,9 @@ type DeviceNode = {
   hostname: string;
   sysName: string;
   zone?: string;
-  lastPolled?: number | null;
-  lastPolledMs?: number | null;
+  lastPolled?: number;
+  tsCreated: string;
 };
-
-type ZoneEdge = {
-  node: {
-    idxZone: number;
-    name: string;
-    devices: {
-      edges: { node: DeviceNode }[];
-    };
-  };
-};
-
-type GraphQLResponse = {
-  data?: {
-    zones: {
-      edges: ZoneEdge[];
-    };
-  };
-  errors?: { message: string }[];
-};
-function toMs(value: number | string | null | undefined): number | null {
-  if (value == null) return null;
-  if (typeof value === "number") {
-    // treat < 1e12 as seconds
-    return value < 1e12 ? value * 1000 : value;
-  }
-  const ms = Date.parse(value);
-  return Number.isNaN(ms) ? null : ms;
-}
-// Parse a YYYY-MM-DD string as a local Date (avoids UTC parsing pitfalls)
-function parseDateOnlyLocal(yyyyMmDd: string): Date {
-  const [y, m, d] = yyyyMmDd.split("-").map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1);
-}
 
 export default function DeviceHistoryChart() {
   const [allDevices, setAllDevices] = useState<DeviceNode[]>([]);
@@ -89,126 +49,51 @@ export default function DeviceHistoryChart() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [range, setRange] = useState("1w");
-  const [customStart, setCustomStart] = useState("");
-  const [customEnd, setCustomEnd] = useState("");
-  const [open, setOpen] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const now = new Date();
-  let startDate: Date | null = null;
-  const ranges = [
-    { label: "Past 1 day", value: "1d" },
-    { label: "Past 1 week", value: "1w" },
-    { label: "Past 1 month", value: "1m" },
-    { label: "Past 6 months", value: "6m" },
-    { label: "Custom range", value: "custom" },
-  ];
 
   useEffect(() => {
-    if (range === "custom" && (!customStart || !customEnd)) return;
-
-    let isMounted = true;
-
     async function fetchDevices() {
       setLoading(true);
       setError(null);
       try {
-        const endpoint =
+        const res = await fetch(
           process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-          "http://localhost:7000/switchmap/api/graphql";
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: QUERY }),
-        });
+            "http://localhost:7000/switchmap/api/graphql",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query: QUERY }),
+          }
+        );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json: GraphQLResponse = await res.json();
+        const json = await res.json();
+        if (json.errors) throw new Error(json.errors[0].message);
 
-        if (json.errors?.length) throw new Error(json.errors[0].message);
-
-        const zones = json.data?.zones?.edges || [];
-        let devicesWithZones: DeviceNode[] = [];
-
-        zones.forEach((zoneEdge) => {
-          const zone = zoneEdge.node;
-          const deviceEdges = zone?.devices?.edges ?? [];
-          deviceEdges.forEach((deviceEdge) => {
-            const device = deviceEdge.node;
-            if (device?.hostname && device?.idxDevice) {
-              devicesWithZones.push({
-                ...device,
-                zone: zone.name,
-                lastPolledMs: toMs(device.lastPolled ?? null),
-              });
-            }
+        // Flatten zones and devices, adding zone name to device
+        const zones = json.data.zones.edges;
+        const devicesWithZones: DeviceNode[] = [];
+        zones.forEach(({ node: zone }: any) => {
+          zone.devices.edges.forEach(({ node: device }: any) => {
+            devicesWithZones.push({
+              ...device,
+              zone: zone.name,
+            });
           });
         });
 
-        // Time range filtering
-        const now = new Date();
-        let filteredDevices = devicesWithZones;
+        setAllDevices(devicesWithZones);
 
-        if (range === "custom") {
-          const start = parseDateOnlyLocal(customStart!);
-          start.setHours(0, 0, 0, 0);
-          const end = parseDateOnlyLocal(customEnd!);
-          end.setHours(23, 59, 59, 999);
-
-          filteredDevices = devicesWithZones.filter((d) => {
-            if (typeof d.lastPolledMs !== "number") return false;
-            const t = d.lastPolledMs;
-            return t >= start.getTime() && t <= end.getTime();
-          });
-        } else {
-          let startDate: Date | null = null;
-          switch (range) {
-            case "1d":
-              startDate = new Date(now);
-              startDate.setDate(now.getDate() - 1);
-              break;
-            case "1w":
-              startDate = new Date(now);
-              startDate.setDate(now.getDate() - 7);
-              break;
-            case "1m":
-              startDate = new Date(now);
-              startDate.setMonth(now.getMonth() - 1);
-              break;
-            case "6m":
-              startDate = new Date(now);
-              startDate.setMonth(now.getMonth() - 6);
-              break;
-          }
-
-          if (startDate) {
-            const startMs = startDate.getTime();
-            filteredDevices = devicesWithZones.filter((d) => {
-              if (typeof d.lastPolledMs !== "number") return false;
-              return d.lastPolledMs >= startMs;
-            });
-          }
-        }
-
-        if (isMounted) {
-          setAllDevices(filteredDevices);
-          if (!searchTerm && filteredDevices.length > 0) {
-            setSearchTerm(filteredDevices[0].hostname);
-          }
+        // Set first device by default
+        if (devicesWithZones.length > 0) {
+          setSearchTerm(devicesWithZones[0].hostname);
         }
       } catch (err: any) {
-        if (isMounted) setError(err.message || "Error fetching devices");
+        setError(err.message || "Unknown error");
       } finally {
-        if (isMounted) setLoading(false);
+        setLoading(false);
       }
     }
-
     fetchDevices();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [range, customStart, customEnd]);
+  }, []);
 
   const uniqueHostnames = useMemo(() => {
     return Array.from(new Set(allDevices.map((d) => d.hostname)));
@@ -233,12 +118,12 @@ export default function DeviceHistoryChart() {
     setSuggestions([]);
   }
 
-  // Sort using lastPolled (converted to ms)
   const history = allDevices
-    .filter(
-      (d) => d.hostname === searchTerm && typeof d.lastPolledMs === "number"
-    )
-    .sort((a, b) => (a.lastPolledMs ?? 0) - (b.lastPolledMs ?? 0));
+    .filter((d) => d.hostname === searchTerm)
+    .sort(
+      (a, b) =>
+        new Date(a.tsCreated).getTime() - new Date(b.tsCreated).getTime()
+    );
 
   // SysName data
   const sysNameCategories = Array.from(new Set(history.map((h) => h.sysName)));
@@ -247,7 +132,7 @@ export default function DeviceHistoryChart() {
     sysNameMap[name] = i + 1;
   });
   const sysNameChartData = history.map((h) => ({
-    timestamp: new Date(h.lastPolledMs ?? 0).toISOString(),
+    timestamp: h.tsCreated,
     sysNameNum: sysNameMap[h.sysName],
     sysName: h.sysName,
   }));
@@ -263,316 +148,154 @@ export default function DeviceHistoryChart() {
   const zoneChartData = history
     .filter((h) => h.zone)
     .map((h) => ({
-      timestamp: new Date(h.lastPolledMs ?? 0).toISOString(),
+      timestamp: h.tsCreated,
       zoneNum: zoneMap[h.zone || ""],
       zoneName: h.zone || "",
     }));
 
-  // Fallback UI
-  const renderFallback = () => {
-    if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64">
-          <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-4"></span>
-          <p className="text-gray-500">Loading devices...</p>
-        </div>
-      );
-    }
-    if (error) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64">
-          <p className="text-red-600 font-semibold mb-2">Error</p>
-          <p className="text-gray-700">{error}</p>
-          <button
-            className="mt-4 px-4 py-2 rounded bg-blue-600 text-white"
-            onClick={() => window.location.reload()}
-          >
-            Retry
-          </button>
-        </div>
-      );
-    }
-    if (allDevices.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64">
-          <p className="text-gray-700">No results found.</p>
-        </div>
-      );
-    }
-    if (searchTerm && history.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64">
-          <p className="text-gray-700">
-            No history found for{" "}
-            <span className="font-semibold">{searchTerm}</span>.
-          </p>
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
-    <div className="flex h-screen max-w-full">
-      {/* Centralized error alert */}
-      {errorMsg && (
-        <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
-          <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
-            {errorMsg}
-          </div>
-        </div>
-      )}
-      <div className="flex h-screen md:m-8 overflow-y-auto">
-        <Sidebar />
-        <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full overflow-y-auto mx-10">
-          <div className="m-4 md:ml-0">
-            <h2 className="text-xl font-semibold">Device History</h2>
-            <p className="text-sm pt-2 text-gray-600">
-              Visualizing the historical movement and status changes of devices
-              within the network.
-            </p>
-          </div>
+    <div className="flex h-screen">
+      <Sidebar />
+      <div className="p-4 w-full flex flex-col gap-6 h-full overflow-auto">
+        <h2 className="text-xl font-semibold mb-2">Device History</h2>
 
-          <div className="relative flex flex-col xl:flex-row gap-10 justify-between w-full">
-            <form
-              className="flex flex-col gap-4 md:flex-row md:items-center"
-              onSubmit={onSubmit}
+        <div className="relative max-w-sm flex-grow topology-search-container">
+          <form
+            className="flex items-center gap-4 topology-search-form"
+            onSubmit={onSubmit}
+          >
+            <input
+              className="border p-2 rounded w-full topology-search-input"
+              type="text"
+              placeholder="Search device hostname..."
+              value={inputTerm}
+              onChange={(e) => setInputTerm(e.target.value)}
+              autoComplete="off"
+            />
+            <button
+              type="submit"
+              className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit topology-search-btn"
             >
-              <div className="relative">
-                <input
-                  className="border p-2 rounded w-full"
-                  type="text"
-                  placeholder="Search device hostname..."
-                  value={inputTerm}
-                  onChange={(e) => setInputTerm(e.target.value)}
-                  autoComplete="off"
-                  disabled={loading}
-                />
-                {suggestions.length > 0 && (
-                  <ul className="absolute top-full left-0 mt-1 bg-bg shadow-md rounded border w-full z-50 ">
-                    {suggestions.map((suggestion, i) => (
-                      <li
-                        key={i}
-                        onClick={() => {
-                          setSearchTerm(suggestion);
-                          setInputTerm("");
-                          setSuggestions([]);
-                        }}
-                        className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
-                      >
-                        {suggestion}
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-              <button
-                type="submit"
-                className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit"
-                disabled={loading}
-              >
-                Search
-              </button>
-            </form>
+              Search
+            </button>
+          </form>
 
-            <div className="flex flex-row-reverse xl:flex-row gap-4 text-left justify-end xl:items-center">
-              {range === "custom" && (
-                <div className="flex flex-row gap-2 items-start">
-                  <input
-                    type="date"
-                    className="border p-2 rounded"
-                    value={customStart}
-                    onChange={(e) => {
-                      const start = parseDateOnlyLocal(e.target.value);
-                      start.setHours(0, 0, 0, 0);
-                      const end = customEnd
-                        ? parseDateOnlyLocal(customEnd)
-                        : null;
-                      if (end) end.setHours(23, 59, 59, 999);
-                      if (end && start > end) {
-                        setErrorMsg("Start date must be before end date.");
-                        setTimeout(() => setErrorMsg(""), 3000);
-                        return;
-                      }
-
-                      if (
-                        end &&
-                        (end.getTime() - start.getTime()) /
-                          (1000 * 60 * 60 * 24) >
-                          180
-                      ) {
-                        setErrorMsg("Custom range cannot exceed 180 days.");
-                        setTimeout(() => setErrorMsg(""), 3000);
-                        return;
-                      }
-
-                      setCustomStart(e.target.value);
-                    }}
-                  />
-                  <span className="flex items-center justify-center h-full px-2 my-auto">
-                    to
-                  </span>
-                  <input
-                    type="date"
-                    className="border p-2 rounded"
-                    value={customEnd}
-                    onChange={(e) => {
-                      const start = customStart
-                        ? parseDateOnlyLocal(customStart)
-                        : null;
-                      if (start) start.setHours(0, 0, 0, 0);
-                      const end = parseDateOnlyLocal(e.target.value);
-                      end.setHours(23, 59, 59, 999);
-                      if (start && end < start) {
-                        setErrorMsg("End date must be after start date.");
-                        setTimeout(() => setErrorMsg(""), 3000);
-                        return;
-                      }
-
-                      if (
-                        start &&
-                        (end.getTime() - start.getTime()) /
-                          (1000 * 60 * 60 * 24) >
-                          180
-                      ) {
-                        setErrorMsg("Custom range cannot exceed 180 days.");
-                        setTimeout(() => setErrorMsg(""), 3000);
-                        return;
-                      }
-
-                      setCustomEnd(e.target.value);
-                    }}
-                  />
-                </div>
-              )}
-
-              <div className="relative">
-                <button
-                  type="button"
-                  className="flex justify-between items-center border rounded px-4 py-2 w-48"
-                  onClick={() => setOpen(!open)}
+          {suggestions.length > 0 && (
+            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50 topology-suggestions-list">
+              {suggestions.map((suggestion, i) => (
+                <li
+                  key={i}
+                  onClick={() => {
+                    setSearchTerm(suggestion);
+                    setInputTerm("");
+                    setSuggestions([]);
+                  }}
+                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg topology-suggestion-item"
                 >
-                  {ranges.find((r) => r.value === range)?.label}
-                  <svg
-                    className={`ml-2 h-5 w-5 transition-transform ${
-                      open ? "rotate-180" : ""
-                    }`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </button>
-
-                {open && (
-                  <div className="absolute mt-1 w-48 bg-bg border rounded shadow z-10">
-                    {ranges.map((r) => (
-                      <button
-                        key={r.value}
-                        className="w-full text-left px-4 py-2 hover:bg-hover-bg"
-                        onClick={() => {
-                          setRange(r.value);
-                          setOpen(false);
-                        }}
-                      >
-                        {r.label}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-          {searchTerm && (
-            <p className="mt-2 text-gray-700">
-              Showing results for Hostname:{" "}
-              <span className="font-semibold">{searchTerm}</span>
-            </p>
+                  {suggestion}
+                </li>
+              ))}
+            </ul>
           )}
 
-          <div className="flex-1">
-            <div className="gap-8 w-[70vw] min-w-[600px] items-stretch p-4 mx-auto flex flex-col xl:flex-row xl:text-left text-center h-full">
-              {renderFallback() || (
-                <>
-                  {/* Zone Chart */}
-                  {zoneChartData.length > 0 && (
-                    <LineChartWrapper
-                      data={zoneChartData}
-                      xAxisKey="timestamp"
-                      lines={[
-                        {
-                          dataKey: "zoneNum",
-                          stroke: "#16a34a",
-                          type: "stepAfter",
-                          dot: false,
-                        },
-                      ]}
-                      yAxisConfig={{
-                        type: "number",
-                        domain: [0, zoneCategories.length + 1],
-                        ticks: Object.values(zoneMap),
-                        tickFormatter: (v) =>
-                          zoneCategories.find((z) => zoneMap[z] === v) || "",
-                        width: 100,
-                        tick: { textAnchor: "end" },
-                      }}
-                      title="Zone History"
-                      tooltipFormatter={(_, __, props) => {
-                        const value = props.payload.zoneNum;
-                        const label =
-                          zoneCategories.find((z) => zoneMap[z] === value) ||
-                          value;
-                        return [label, "Zone"];
-                      }}
-                    />
-                  )}
-                  {/* SysName Chart */}
-                  {sysNameChartData.length > 0 && (
-                    <LineChartWrapper
-                      data={sysNameChartData}
-                      xAxisKey="timestamp"
-                      lines={[
-                        {
-                          dataKey: "sysNameNum",
-                          stroke: "#3b82f6",
-                          type: "stepAfter",
-                          dot: false,
-                        },
-                      ]}
-                      yAxisConfig={{
-                        type: "number",
-                        domain: [0, sysNameCategories.length + 1],
-                        ticks: Object.values(sysNameMap),
-                        tickFormatter: (v) =>
-                          sysNameCategories.find(
-                            (name) => sysNameMap[name] === v
-                          ) || "",
-                        width: 200,
-                        tick: { textAnchor: "end" },
-                      }}
-                      title="SysName History"
-                      tooltipFormatter={(_, __, props) => {
-                        const value = props.payload.sysNameNum;
-                        const label =
-                          sysNameCategories.find(
-                            (name) => sysNameMap[name] === value
-                          ) || value;
-                        return [label, "SysName"];
-                      }}
-                    />
-                  )}
-                </>
-              )}
-            </div>
-          </div>
+          {loading && (
+            <p className="mt-2 text-sm text-gray-500">Loading devices...</p>
+          )}
+          {error && <p className="mt-2 text-sm text-red-600">Error: {error}</p>}
         </div>
+
+        <div className="grid grid-cols-2 grid-rows-2 gap-8 w-full min-h-[32rem] items-stretch justify-items-center p-4">
+          {/* SysName Chart */}
+          <div className="col-span-1 row-span-1 w-full h-64 pl-6 flex flex-col">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={sysNameChartData} margin={{ right: 20 }}>
+                <XAxis
+                  dataKey="timestamp"
+                  tickFormatter={(t) =>
+                    new Date(t).toLocaleDateString(undefined, {
+                      month: "short",
+                      day: "numeric",
+                    })
+                  }
+                />
+                <YAxis
+                  type="number"
+                  domain={[0, sysNameCategories.length + 1]}
+                  ticks={Object.values(sysNameMap)}
+                  tickFormatter={(v) =>
+                    sysNameCategories.find((name) => sysNameMap[name] === v) ||
+                    ""
+                  }
+                  width={100}
+                  tick={{ textAnchor: "end" }}
+                />
+                <Tooltip
+                  labelFormatter={(label) => new Date(label).toLocaleString()}
+                  formatter={(_, __, props) => [
+                    props.payload.sysName,
+                    "SysName",
+                  ]}
+                />
+                <Line
+                  type="stepAfter"
+                  dataKey="sysNameNum"
+                  stroke="#3b82f6"
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Zone Chart */}
+          <div className="col-span-1 row-span-1 w-full h-64 pl-6 flex flex-col">
+            {zoneChartData.length > 0 && (
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={zoneChartData} margin={{ right: 20 }}>
+                  <XAxis
+                    dataKey="timestamp"
+                    tickFormatter={(t) =>
+                      new Date(t).toLocaleDateString(undefined, {
+                        month: "short",
+                        day: "numeric",
+                      })
+                    }
+                  />
+                  <YAxis
+                    type="number"
+                    domain={[0, zoneCategories.length + 1]}
+                    ticks={Object.values(zoneMap)}
+                    tickFormatter={(v) =>
+                      zoneCategories.find((zone) => zoneMap[zone] === v) || ""
+                    }
+                    width={100}
+                    tick={{ textAnchor: "end" }}
+                  />
+                  <Tooltip
+                    labelFormatter={(label) => new Date(label).toLocaleString()}
+                    formatter={(_, __, props) => [
+                      props.payload.zoneName,
+                      "Zone",
+                    ]}
+                  />
+                  <Line
+                    type="stepAfter"
+                    dataKey="zoneNum"
+                    stroke="#16a34a"
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </div>
+
+          {/* Empty grid cells for future charts or spacing */}
+          <div className="col-span-1 row-span-1" />
+          <div className="col-span-1 row-span-1" />
+        </div>
+
+        {searchTerm && sysNameChartData.length === 0 && (
+          <p className="mt-4">No history data available for {searchTerm}</p>
+        )}
       </div>
     </div>
   );
