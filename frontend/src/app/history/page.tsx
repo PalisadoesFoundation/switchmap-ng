@@ -23,7 +23,7 @@ const QUERY = `
                 idxDevice
                 hostname
                 sysName
-                tsCreated
+                lastPolled
               }
             }
           }
@@ -38,8 +38,7 @@ type DeviceNode = {
   hostname: string;
   sysName: string;
   zone?: string;
-  lastPolled?: number;
-  tsCreated: string;
+  lastPolled?: number; // UNIX timestamp in seconds
 };
 
 export default function DeviceHistoryChart() {
@@ -118,12 +117,10 @@ export default function DeviceHistoryChart() {
     setSuggestions([]);
   }
 
+  // Sort using lastPolled (converted to ms)
   const history = allDevices
-    .filter((d) => d.hostname === searchTerm)
-    .sort(
-      (a, b) =>
-        new Date(a.tsCreated).getTime() - new Date(b.tsCreated).getTime()
-    );
+    .filter((d) => d.hostname === searchTerm && d.lastPolled)
+    .sort((a, b) => (a.lastPolled ?? 0) * 1000 - (b.lastPolled ?? 0) * 1000);
 
   // SysName data
   const sysNameCategories = Array.from(new Set(history.map((h) => h.sysName)));
@@ -132,7 +129,7 @@ export default function DeviceHistoryChart() {
     sysNameMap[name] = i + 1;
   });
   const sysNameChartData = history.map((h) => ({
-    timestamp: h.tsCreated,
+    timestamp: new Date((h.lastPolled ?? 0) * 1000).toISOString(),
     sysNameNum: sysNameMap[h.sysName],
     sysName: h.sysName,
   }));
@@ -148,7 +145,7 @@ export default function DeviceHistoryChart() {
   const zoneChartData = history
     .filter((h) => h.zone)
     .map((h) => ({
-      timestamp: h.tsCreated,
+      timestamp: new Date((h.lastPolled ?? 0) * 1000).toISOString(),
       zoneNum: zoneMap[h.zone || ""],
       zoneName: h.zone || "",
     }));
