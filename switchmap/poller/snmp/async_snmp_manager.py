@@ -1,7 +1,6 @@
 """Async SNMP manager class"""
 
 import os
-import sys
 import asyncio
 
 
@@ -38,7 +37,6 @@ from pysnmp.hlapi.asyncio import (
     usmAesCfb256Protocol,
 )
 
-from pysnmp.proto.errind import RequestTimedOut
 from pysnmp.error import PySnmpError
 from pysnmp.proto.rfc1905 import EndOfMibView, NoSuchInstance, NoSuchObject
 
@@ -95,7 +93,6 @@ class Validate:
             if bool(authentication) is False:
                 authentication = await self.validation()
 
-            #! case of credentials fails, check for output again
             # update cache if found
             if bool(authentication):
                 _update_cache(filename, authentication.group)
@@ -295,8 +292,9 @@ class Interact:
 
             return validity
         except Exception as e:
-            #! add better logs here
-            print(f"Oid Existence check failed for {oid_to_get}: {e}")
+            log.log2warning(
+                1305, f"OID existence check failed for {oid_to_get}: {e}"
+            )
             return False
 
     async def _oid_exists_get(self, oid_to_get, context_name=""):
@@ -329,14 +327,14 @@ class Interact:
                     if result[oid_to_get] is not None:
                         validity = True
                 elif isinstance(result, dict) and result:
-                    #! considering this case as well for confirming oid exists
                     # If result has data but not exact OID, still consider it valid
                     validity = True
 
             return validity
         except Exception as e:
-            #! add logs
-            print(f"GET existence check failed for {oid_to_get}:{e}")
+            log.log2warning(
+                1305, f"OID existence check failed for {oid_to_get}: {e}"
+            )
             return False
 
     async def _oid_exists_walk(self, oid_to_get, context_name=""):
@@ -360,7 +358,6 @@ class Interact:
                 context_name=context_name,
                 check_reachability=True,
             )
-            #! our oid is valid if it returns out any valid data ??
             # Check if we get valid results
             if exists and isinstance(results, dict) and results:
                 for value in results.values():
@@ -368,8 +365,7 @@ class Interact:
                         return True
             return False
         except Exception as e:
-            #! add logs
-            print(f"Walk instance fail for {oid_to_get}:{e}")
+            log.log2die(1306, f"Walk instance fail for {oid_to_get}:{e}")
             return False
 
     async def get(
@@ -583,7 +579,7 @@ class Interact:
                     _contactable = None
                     exists = None
                     log_message = f"Unexpected async SNMP error for {self._poll.hostname}: {exception_error}"
-                    log.log2info(1209, log_message)
+                    log.log2info(1210, log_message)
                 else:
                     log_message = f"Unexpected async SNMP error for {self._poll.hostname}: {exception_error}"
                     log.log2die(1003, log_message)
@@ -613,10 +609,6 @@ class Session:
         self.context_name = context_name
         self._poll = _poll
         self._engine = SnmpEngine()
-
-        #! dont hardcode the ratelimit (change it later)
-        # Rate limiting
-        self._semaphore = asyncio.Semaphore(10)
 
         # Fail if there is no authentication
         if bool(self._poll.authorization) is False:
@@ -755,7 +747,9 @@ class Session:
                     timeout=60.0,
                 )
             except asyncio.TimeoutError:
-                print(f"bulk walk timeout after 60s for prefix {oid_prefix}")
+                log.log2info(
+                    1011, f"bulk walk timeout after 60s for prefix {oid_prefix}"
+                )
                 # Fallback to SNMPv1 walk which would be more reliable
                 results = await self._async_walk_v1(
                     oid_prefix, auth_data, transport_target, context_data
@@ -826,22 +820,21 @@ class Session:
                     )
                 )
 
-                #! adding more specific logs here
                 if error_indication:
-                    print(f"BULK error indication: {error_indication}")
+                    log.log2info(
+                        1211, f"BULK error indication: {error_indication}"
+                    )
                     break
                 elif error_status:
-                    print(
-                        f" BULK error status: {error_status.prettyPrint()} at {error_index}"
+                    log.log2info(
+                        1212,
+                        f"BULK error status: {error_status.prettyPrint()} at {error_index}",
                     )
                     break
 
                 # Check if we got any response
                 if not var_bind_table:
                     consecutive_empty_responses += 1
-                    print(
-                        f" attempt {consecutive_empty_responses}/{max_empty_responses}"
-                    )
                     if consecutive_empty_responses >= max_empty_responses:
                         break
                     continue
@@ -882,24 +875,24 @@ class Session:
                     found_valid_data = True
 
                 if not found_valid_data:
-                    #! add logs
-                    print(
-                        f"No more valid data for prefix {oid_prefix}, iterations: {iterations}"
+                    log.log2info(
+                        1213,
+                        f"BULK walk: No more valid data for prefix {oid_prefix}",
                     )
                     break
 
                 current_oids = next_oids
 
-                #! in case, we get too many results
-                #! ask peter or dominic sir on this take
+                # In case, we get too many results
                 if len(results) > 10000:
-                    print(
-                        f"Stopping after collecting {len(results)} results (safety limit)"
+                    log.log2warning(
+                        1214,
+                        f"Stopping after collecting {len(results)} results (safety limit)",
                     )
                     break
 
         except Exception as e:
-            print(f"BULK walk error: {e}")
+            log.log2warning(1215, f"BULK walk error: {e}")
             return await self._async_walk_v1(
                 oid_prefix, auth_data, transport_target, context_data
             )
@@ -942,7 +935,7 @@ def _oid_valid_format(oid):
     for value in octets:
         try:
             int(value)
-        except:
+        except ValueError:
             return False
 
     # Otherwise valid
@@ -1000,8 +993,6 @@ def _convert(value):
             try:
                 return int(value_str)
             except ValueError:
-                #! clear on this once again
-                #! approach 1
                 # Direct int conversion of the obj if prettyPrint fails
                 if hasattr(value, "__int__"):
                     try:
@@ -1009,7 +1000,6 @@ def _convert(value):
                     except (ValueError, TypeError):
                         pass
 
-                #! approach 2
                 # Accessing .value attr directly
                 if hasattr(value, "value"):
                     try:
@@ -1028,7 +1018,6 @@ def _convert(value):
         except (ValueError, TypeError):
             return bytes(str(value.value), "utf-8")
 
-    #! will check this as well (if we need it ??) ask peter or dominic sir
     # Default Fallback - convert to string then to bytes
     try:
         return bytes(str(value), "utf-8")
