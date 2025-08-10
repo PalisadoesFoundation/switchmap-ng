@@ -246,7 +246,7 @@ class Query:
         # Get layer3 information from MIB classes
         layer3_queries = get_queries("layer3")
         print(f"layer3 level MIBs", layer3_queries)
-        
+
         #! currently polling mibs sequencially
         for i, Query in enumerate(layer3_queries):
             item = Query(self.snmp_object)
