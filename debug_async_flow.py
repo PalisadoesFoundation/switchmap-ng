@@ -12,7 +12,7 @@ sys.path.insert(0,'/Users/imexyyyyy/files/gsoc/switchmap-ng');
 # once i make polling async then will update this according to that to check if devices are being polled asynchronously
 #for now for testing using cli_device to poll single device for debugging
 
-from switchmap.poller import poll
+from switchmap.poller import async_poll
 
 def main():
     print("Switchmap polling flow debugger")
@@ -22,11 +22,10 @@ def main():
         hostname= "162.249.37.218"
         print(f"starting debug poll for hostname: {hostname}")
 
-        poll.cli_device(hostname=hostname)
+        async_poll.run_cli_device(hostname=hostname)
     
     except Exception as e:
         print(f"Error duing polling: {e}")
 
 if __name__ == "__main__":
     main()
-
