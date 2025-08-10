@@ -219,13 +219,6 @@ class Interact:
             # Not Contactable
             contactable = False
 
-        except:
-            # Log the error message
-            log_message = "Unexpected SNMP error for device {}" "".format(
-                self._poll.hostname
-            )
-            log.log2die(1008, log_message)
-
         return contactable
 
     async def sysobjectid(self, check_reachability=False):
@@ -360,12 +353,10 @@ class Interact:
             )
             # Check if we get valid results
             if exists and isinstance(results, dict) and results:
-                for value in results.values():
-                    if value is None:
-                        return True
+                return True
             return False
         except Exception as e:
-            log.log2die(1306, f"Walk instance fail for {oid_to_get}:{e}")
+            log.log2warning(1306, f"Walk existence check failed for {oid_to_get}: {e}")
             return False
 
     async def get(

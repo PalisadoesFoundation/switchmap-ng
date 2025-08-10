@@ -124,7 +124,7 @@ class LldpQuery(Query):
             "lldpRemSysCapEnabled",
         ]
 
-        for method_name, values in enumerate(zip(method_names, results)):
+        for method_name, values in zip(method_names, results):
             if isinstance(values, Exception):
                 log.log2warning(1301, f"Error in {method_name}: {values}")
                 continue
