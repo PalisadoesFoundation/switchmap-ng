@@ -351,7 +351,7 @@ class Query:
                 return_exceptions=True,
             )
 
-            for i, result in enumerate(results):
+            for result in enumerate(results):
                 if isinstance(result, Exception):
                     continue
 
@@ -491,7 +491,7 @@ async def _add_data(source, target):
         target: Aggregated data
     """
     # Process data
-    for primary in source.keys():
+    for primary in source:
         for secondary, value in source[primary].items():
             target[primary][secondary] = value
 
