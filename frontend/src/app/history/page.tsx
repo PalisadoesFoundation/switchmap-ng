@@ -155,14 +155,15 @@ export default function DeviceHistoryChart() {
       <Sidebar />
       <div className="p-4 w-full flex flex-col gap-6 h-full overflow-auto">
         <h2 className="text-xl font-semibold mb-2">Device History</h2>
+        <p className="text-sm text-gray-600 mb-4">
+          Visualizing the historical movement and status changes of devices
+          within the network.
+        </p>
 
-        <div className="relative max-w-sm flex-grow topology-search-container">
-          <form
-            className="flex items-center gap-4 topology-search-form"
-            onSubmit={onSubmit}
-          >
+        <div className="relative max-w-sm flex-grow ">
+          <form className="flex items-center gap-4" onSubmit={onSubmit}>
             <input
-              className="border p-2 rounded w-full topology-search-input"
+              className="border p-2 rounded w-full"
               type="text"
               placeholder="Search device hostname..."
               value={inputTerm}
@@ -171,14 +172,14 @@ export default function DeviceHistoryChart() {
             />
             <button
               type="submit"
-              className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit topology-search-btn"
+              className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit"
             >
               Search
             </button>
           </form>
 
           {suggestions.length > 0 && (
-            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50 topology-suggestions-list">
+            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50">
               {suggestions.map((suggestion, i) => (
                 <li
                   key={i}
@@ -187,7 +188,7 @@ export default function DeviceHistoryChart() {
                     setInputTerm("");
                     setSuggestions([]);
                   }}
-                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg topology-suggestion-item"
+                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
                 >
                   {suggestion}
                 </li>
