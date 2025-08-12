@@ -151,7 +151,7 @@ export default function DeviceHistoryChart() {
     }));
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen p-4">
       <Sidebar />
       <div className="p-4 w-full flex flex-col gap-6 h-full overflow-auto">
         <h2 className="text-xl font-semibold mb-2">Device History</h2>
@@ -200,10 +200,17 @@ export default function DeviceHistoryChart() {
           )}
           {error && <p className="mt-2 text-sm text-red-600">Error: {error}</p>}
         </div>
+        {searchTerm && (
+          <p className="mt-2 text-gray-700">
+            Showing results for Hostname:{" "}
+            <span className="font-semibold">{searchTerm}</span>
+          </p>
+        )}
 
-        <div className="grid grid-cols-2 grid-rows-2 gap-8 w-full min-h-[32rem] items-stretch justify-items-center p-4">
+        <div className="grid grid-cols-1 grid-columns-4 gap-8 w-[50vw] min-h-[32rem] items-stretch justify-items-center p-4">
           {/* SysName Chart */}
           <div className="col-span-1 row-span-1 w-full h-64 pl-6 flex flex-col">
+            <h2 className="text-lg font-semibold mb-4">SysName History</h2>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={sysNameChartData} margin={{ right: 20 }}>
                 <XAxis
@@ -223,7 +230,7 @@ export default function DeviceHistoryChart() {
                     sysNameCategories.find((name) => sysNameMap[name] === v) ||
                     ""
                   }
-                  width={100}
+                  width={200}
                   tick={{ textAnchor: "end" }}
                 />
                 <Tooltip
@@ -245,6 +252,7 @@ export default function DeviceHistoryChart() {
 
           {/* Zone Chart */}
           <div className="col-span-1 row-span-1 w-full h-64 pl-6 flex flex-col">
+            <h2 className="text-lg font-semibold mb-4">Zone History</h2>
             {zoneChartData.length > 0 && (
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={zoneChartData} margin={{ right: 20 }}>
@@ -264,7 +272,7 @@ export default function DeviceHistoryChart() {
                     tickFormatter={(v) =>
                       zoneCategories.find((zone) => zoneMap[zone] === v) || ""
                     }
-                    width={100}
+                    width={200}
                     tick={{ textAnchor: "end" }}
                   />
                   <Tooltip
@@ -289,10 +297,6 @@ export default function DeviceHistoryChart() {
           <div className="col-span-1 row-span-1" />
           <div className="col-span-1 row-span-1" />
         </div>
-
-        {searchTerm && sysNameChartData.length === 0 && (
-          <p className="mt-4">No history data available for {searchTerm}</p>
-        )}
       </div>
     </div>
   );
