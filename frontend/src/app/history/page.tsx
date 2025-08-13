@@ -73,9 +73,26 @@ export default function DeviceHistoryChart() {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [range, setRange] = useState("1w");
+  const [customStart, setCustomStart] = useState("");
+  const [customEnd, setCustomEnd] = useState("");
+  const [open, setOpen] = useState(false);
+
+  const now = new Date();
+  let startDate: Date | null = null;
+  const ranges = [
+    { label: "Past 1 day", value: "1d" },
+    { label: "Past 1 week", value: "1w" },
+    { label: "Past 1 month", value: "1m" },
+    { label: "Past 6 months", value: "6m" },
+    { label: "Custom range", value: "custom" },
+  ];
 
   useEffect(() => {
+    if (range === "custom" && (!customStart || !customEnd)) return;
+
     let isMounted = true;
+
     async function fetchDevices() {
       setLoading(true);
       setError(null);
@@ -91,60 +108,83 @@ export default function DeviceHistoryChart() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json: GraphQLResponse = await res.json();
 
-        if (json.errors && json.errors.length > 0)
-          throw new Error(json.errors[0].message);
+        if (json.errors?.length) throw new Error(json.errors[0].message);
 
-        if (
-          !json.data ||
-          !json.data.zones ||
-          !Array.isArray(json.data.zones.edges)
-        ) {
-          throw new Error("Malformed data received from server.");
-        }
+        const zones = json.data?.zones?.edges || [];
+        let devicesWithZones: DeviceNode[] = [];
 
-        // Flatten zones and devices, adding zone name to device
-        const zones = json.data.zones.edges;
-        const devicesWithZones: DeviceNode[] = [];
         zones.forEach((zoneEdge) => {
           const zone = zoneEdge.node;
-          if (zone && zone.devices && Array.isArray(zone.devices.edges)) {
-            zone.devices.edges.forEach((deviceEdge) => {
-              const device = deviceEdge.node;
-              if (device && device.hostname && device.idxDevice) {
-                devicesWithZones.push({
-                  ...device,
-                  zone: zone.name,
-                });
-              }
-            });
-          }
+          zone.devices.edges.forEach((deviceEdge) => {
+            const device = deviceEdge.node;
+            if (device?.hostname && device?.idxDevice) {
+              devicesWithZones.push({ ...device, zone: zone.name });
+            }
+          });
         });
 
-        if (isMounted) {
-          setAllDevices(devicesWithZones);
+        // Time range filtering
+        const now = new Date();
+        let filteredDevices = devicesWithZones;
 
-          // Set first device by default
-          if (devicesWithZones.length > 0) {
-            setSearchTerm(devicesWithZones[0].hostname);
+        if (range === "custom") {
+          const startDate = new Date(customStart!);
+          const endDate = new Date(customEnd!);
+
+          filteredDevices = devicesWithZones.filter((d) => {
+            if (!d.lastPolled) return false;
+            const date = new Date(d.lastPolled * 1000);
+            return date >= startDate && date <= endDate;
+          });
+        } else {
+          let startDate: Date | null = null;
+          switch (range) {
+            case "1d":
+              startDate = new Date(now);
+              startDate.setDate(now.getDate() - 1);
+              break;
+            case "1w":
+              startDate = new Date(now);
+              startDate.setDate(now.getDate() - 7);
+              break;
+            case "1m":
+              startDate = new Date(now);
+              startDate.setMonth(now.getMonth() - 1);
+              break;
+            case "6m":
+              startDate = new Date(now);
+              startDate.setMonth(now.getMonth() - 6);
+              break;
+          }
+
+          if (startDate) {
+            filteredDevices = devicesWithZones.filter((d) => {
+              if (!d.lastPolled) return false;
+              const date = new Date(d.lastPolled * 1000);
+              return date >= startDate!;
+            });
+          }
+        }
+
+        if (isMounted) {
+          setAllDevices(filteredDevices);
+          if (filteredDevices.length > 0) {
+            setSearchTerm(filteredDevices[0].hostname);
           }
         }
       } catch (err: any) {
-        if (isMounted) {
-          setError(
-            err?.message
-              ? `Failed to load devices: ${err.message}`
-              : "Unknown error occurred while loading devices."
-          );
-        }
+        if (isMounted) setError(err.message || "Error fetching devices");
       } finally {
         if (isMounted) setLoading(false);
       }
     }
+
     fetchDevices();
+
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [range, customStart, customEnd]);
 
   const uniqueHostnames = useMemo(() => {
     return Array.from(new Set(allDevices.map((d) => d.hostname)));
@@ -231,7 +271,7 @@ export default function DeviceHistoryChart() {
     if (allDevices.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center h-64">
-          <p className="text-gray-700">No devices found.</p>
+          <p className="text-gray-700">No results found.</p>
         </div>
       );
     }
@@ -260,13 +300,13 @@ export default function DeviceHistoryChart() {
           </p>
         </div>
 
-        <div className="relative max-w-sm">
+        <div className="relative flex fle-row gap-10 justify-between w-[90%]">
           <form
             className="flex flex-col gap-4 md:flex-row md:items-center"
             onSubmit={onSubmit}
           >
             <input
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded"
               type="text"
               placeholder="Search device hostname..."
               value={inputTerm}
@@ -282,6 +322,69 @@ export default function DeviceHistoryChart() {
               Search
             </button>
           </form>
+
+          <div className="flex flex-row gap-4 text-left items-center">
+            {range === "custom" && (
+              <div className="flex gap-2 items-center">
+                <input
+                  type="date"
+                  className="border p-2 rounded"
+                  value={customStart}
+                  onChange={(e) => setCustomStart(e.target.value)}
+                />
+                <span>to</span>
+                <input
+                  type="date"
+                  className="border p-2 rounded"
+                  value={customEnd}
+                  onChange={(e) => setCustomEnd(e.target.value)}
+                />
+              </div>
+            )}
+
+            <div className="relative">
+              <button
+                type="button"
+                className="flex justify-between items-center border rounded px-4 py-2 w-48"
+                onClick={() => setOpen(!open)}
+              >
+                {ranges.find((r) => r.value === range)?.label}
+                <svg
+                  className={`ml-2 h-5 w-5 transition-transform ${
+                    open ? "rotate-180" : ""
+                  }`}
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
+
+              {open && (
+                <div className="absolute mt-1 w-48 bg-bg border rounded shadow z-10">
+                  {ranges.map((r) => (
+                    <button
+                      key={r.value}
+                      className="w-full text-left px-4 py-2 hover:bg-hover-bg"
+                      onClick={() => {
+                        setRange(r.value);
+                        setOpen(false);
+                      }}
+                    >
+                      {r.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
 
           {suggestions.length > 0 && (
             <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50">
