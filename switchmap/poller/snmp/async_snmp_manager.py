@@ -1092,7 +1092,7 @@ def _format_results(results, mock_filter, normalized=False):
             filter_normalized = mock_filter.lstrip(".")
             oid_normalized = oid_str.lstrip(".")
 
-            if filter_normalized not in oid_normalized:
+            if not oid_normalized.startswith(filter_normalized):
                 continue
 
         # convert value using proper type conversion
