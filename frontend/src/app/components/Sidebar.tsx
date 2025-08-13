@@ -114,7 +114,7 @@ export function Sidebar() {
       </button>
 
       {/* Static sidebar for large screens */}
-      <aside className="hidden lg:block sticky top-0 left-0 w-60 h-screen border-r border-border lg:p-4">
+      <aside className="hidden lg:block sticky top-0 left-0 w-60 h-screen border-r border-border lg:p-4 flex-shrink-0">
         {sidebarContent}
       </aside>
 
