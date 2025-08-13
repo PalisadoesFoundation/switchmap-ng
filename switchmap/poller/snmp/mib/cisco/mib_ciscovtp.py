@@ -94,7 +94,7 @@ class CiscoVtpQuery(Query):
             return_exceptions=True,
         )
 
-        method_names = ["vtpVlanName",  "vtpVlanState", "vtpVlanType"]
+        method_names = ["vtpVlanName", "vtpVlanState", "vtpVlanType"]
 
         for method_name, values in zip(method_names, results):
             if isinstance(values, Exception):
