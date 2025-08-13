@@ -67,12 +67,12 @@ export function Sidebar() {
           </Link>
           <ul className="pl-6 mt-2 space-y-1 text-sm text-muted-foreground">
             <li className="hover:text-primary">
-              <Link href="#network-topology" onClick={() => setOpen(false)}>
+              <Link href="/#network-topology" onClick={() => setOpen(false)}>
                 Network Topology
               </Link>
             </li>
             <li className="hover:text-primary">
-              <Link href="#devices-overview" onClick={() => setOpen(false)}>
+              <Link href="/#devices-overview" onClick={() => setOpen(false)}>
                 Devices Overview
               </Link>
             </li>
