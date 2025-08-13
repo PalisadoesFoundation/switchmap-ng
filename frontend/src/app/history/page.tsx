@@ -300,12 +300,12 @@ export default function DeviceHistoryChart() {
           </p>
         </div>
 
-        <div className="relative flex fle-row gap-10 justify-between w-full">
+        <div className="relative flex flex-col xl:flex-row gap-10 justify-between w-full">
           <form
             className="flex flex-col gap-4 md:flex-row md:items-center"
             onSubmit={onSubmit}
           >
-            <div className="relative w-[12rem]">
+            <div className="relative">
               <input
                 className="border p-2 rounded w-full"
                 type="text"
@@ -342,9 +342,9 @@ export default function DeviceHistoryChart() {
             </button>
           </form>
 
-          <div className="flex flex-row gap-4 text-left items-center">
+          <div className="flex flex-col flex-row-reverse xl:flex-row gap-4 text-left justify-end xl:items-center">
             {range === "custom" && (
-              <div className="flex gap-2 items-center">
+              <div className="flex flex-col sm:flex-row gap-2 items-center">
                 <input
                   type="date"
                   className="border p-2 rounded"
@@ -354,7 +354,7 @@ export default function DeviceHistoryChart() {
                 <span>to</span>
                 <input
                   type="date"
-                  className="border p-2 rounded"
+                  className="border p-2 rounded w-full"
                   value={customEnd}
                   onChange={(e) => setCustomEnd(e.target.value)}
                 />
