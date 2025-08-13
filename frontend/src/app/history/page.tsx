@@ -291,7 +291,7 @@ export default function DeviceHistoryChart() {
   return (
     <div className="flex h-screen max-w-full">
       <Sidebar />
-      <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full overflow-y-auto ml-10">
+      <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full overflow-y-auto mx-10">
         <div className="m-4 md:ml-0">
           <h2 className="text-xl font-semibold">Device History</h2>
           <p className="text-sm pt-2 text-gray-600">
@@ -300,20 +300,39 @@ export default function DeviceHistoryChart() {
           </p>
         </div>
 
-        <div className="relative flex fle-row gap-10 justify-between w-[90%]">
+        <div className="relative flex fle-row gap-10 justify-between w-full">
           <form
             className="flex flex-col gap-4 md:flex-row md:items-center"
             onSubmit={onSubmit}
           >
-            <input
-              className="border p-2 rounded"
-              type="text"
-              placeholder="Search device hostname..."
-              value={inputTerm}
-              onChange={(e) => setInputTerm(e.target.value)}
-              autoComplete="off"
-              disabled={loading}
-            />
+            <div className="relative w-[12rem]">
+              <input
+                className="border p-2 rounded w-full"
+                type="text"
+                placeholder="Search device hostname..."
+                value={inputTerm}
+                onChange={(e) => setInputTerm(e.target.value)}
+                autoComplete="off"
+                disabled={loading}
+              />
+              {suggestions.length > 0 && (
+                <ul className="absolute top-full left-0 mt-1 bg-bg shadow-md rounded border w-full z-50 ">
+                  {suggestions.map((suggestion, i) => (
+                    <li
+                      key={i}
+                      onClick={() => {
+                        setSearchTerm(suggestion);
+                        setInputTerm("");
+                        setSuggestions([]);
+                      }}
+                      className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
+                    >
+                      {suggestion}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <button
               type="submit"
               className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit"
@@ -385,24 +404,6 @@ export default function DeviceHistoryChart() {
               )}
             </div>
           </div>
-
-          {suggestions.length > 0 && (
-            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50">
-              {suggestions.map((suggestion, i) => (
-                <li
-                  key={i}
-                  onClick={() => {
-                    setSearchTerm(suggestion);
-                    setInputTerm("");
-                    setSuggestions([]);
-                  }}
-                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
-                >
-                  {suggestion}
-                </li>
-              ))}
-            </ul>
-          )}
         </div>
         {searchTerm && (
           <p className="mt-2 text-gray-700">
@@ -411,8 +412,8 @@ export default function DeviceHistoryChart() {
           </p>
         )}
 
-        <div className="overflow-auto">
-          <div className="gap-8 w-[70vw] min-w-[600px] items-stretch p-4 mx-auto flex flex-col xl:flex-row xl:text-left text-center ">
+        <div className="overflow-auto flex-1">
+          <div className="gap-8 w-[70vw] min-w-[600px] items-stretch p-4 mx-auto flex flex-col xl:flex-row xl:text-left text-center h-full">
             {renderFallback() || (
               <>
                 {/* Zone Chart */}
