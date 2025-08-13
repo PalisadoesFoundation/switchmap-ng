@@ -80,9 +80,9 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
           throw new Error(json.errors[0].message);
         }
         const rawZones =
-          json?.data?.events?.edges?.[0]?.node?.zones?.edges?.map(
+          json.data.events.edges[0]?.node.zones.edges.map(
             (edge: ZoneEdge) => edge.node
-          ) ?? [];
+          ) || [];
         setZones(rawZones);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch zones");
