@@ -20,7 +20,11 @@ import { useEffect, useState, useRef } from "react";
  * @see {@link useRef} for managing the dropdown reference to handle outside clicks.
  */
 
-type Zone = { idxZone: string; id: string };
+type Zone = {
+  name: string;
+  idxZone: string;
+  id: string;
+};
 
 type ZoneDropdownProps = {
   selectedZoneId: string | null;
@@ -47,16 +51,23 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               query: `  
-              {  
-                zones {  
-                  edges {  
-                    node {  
-                      idxZone  
-                      id  
-                    }  
-                  }  
-                }  
-              }  
+               {
+      events(last: 1) {
+        edges {
+          node {
+            zones {
+              edges {
+                node {
+                  id
+                  idxZone
+                  name
+                }
+              }
+            }
+          }
+        }
+      }
+    }
             `,
             }),
           }
@@ -68,9 +79,10 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
         if (json.errors) {
           throw new Error(json.errors[0].message);
         }
-        const rawZones = json.data.zones.edges.map(
-          (edge: ZoneEdge) => edge.node
-        );
+        const rawZones =
+          json.data.events.edges[0]?.node.zones.edges.map(
+            (edge: ZoneEdge) => edge.node
+          ) || [];
         setZones(rawZones);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch zones");
@@ -122,7 +134,8 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
         onClick={() => setOpen(!open)}
         className="inline-flex justify-between items-center bg-bg w-48 px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
       >
-        Zone {selected?.idxZone || ""}
+        {selected?.name || `Zone ${selected?.idxZone || ""}`}
+
         {loading && " (Loading...)"}
         {error && " (Error)"}
         <svg
@@ -160,7 +173,7 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
                 }}
                 className="block w-full text-left px-4 py-2 hover:bg-hover-bg focus:outline-none"
               >
-                Zone {zone.idxZone}
+                {zone.name || `Zone ${zone.idxZone}`}
               </button>
             ))}
           </div>
