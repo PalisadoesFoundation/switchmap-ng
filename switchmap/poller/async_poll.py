@@ -17,11 +17,12 @@ from switchmap import AGENT_POLLER
 _META = namedtuple("_META", "zone hostname config")
 
 
-async def devices(max_concurrent_devices=10):
+async def devices(max_concurrent_devices=None):
     """Poll all devices asynchronously.
 
     Args:
-        max_concurrent_devices: Maximum number of devices to poll concurrently
+        max_concurrent_devices: Maximum number of devices to poll concurrently.
+                               If None, uses config.agent_subprocesses()
 
     Returns:
         None
@@ -32,6 +33,10 @@ async def devices(max_concurrent_devices=10):
 
     # Get configuration
     config = ConfigPoller()
+    
+    # Use config value if not provided
+    if max_concurrent_devices is None:
+        max_concurrent_devices = config.agent_subprocesses()
 
     # Create a list of polling objects
     zones = sorted(config.zones())
@@ -207,8 +212,13 @@ async def cli_device(hostname):
         log.log2see(1413, log_message)
 
 
-def run_devices(max_concurrent_devices=10):
+def run_devices(max_concurrent_devices=None):
     """Run device polling - main entry point."""
+    # Use config if not specified
+    if max_concurrent_devices is None:
+        config = ConfigPoller()
+        max_concurrent_devices = config.agent_subprocesses()
+    
     asyncio.run(devices(max_concurrent_devices))
 
 
