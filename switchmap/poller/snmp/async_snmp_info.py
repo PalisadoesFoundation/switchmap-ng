@@ -228,8 +228,12 @@ class Query:
                 return_exceptions=True,
             )
 
-            for result in enumerate(results):
+            for i, result in enumerate(results):
                 if isinstance(result, Exception):
+                    item_name = supported_items[i][1]
+                    log.log2exception(
+                        1007, f"Layer2 error in {item_name}: {result}"
+                    )
                     continue
 
                 # Merge this MIB's complete results
@@ -320,7 +324,7 @@ async def _add_data(source, target):
 
     """
     # Process data
-    for primary in source:
+    for primary in source.keys():
         for secondary, value in source[primary].items():
             target[primary][secondary] = value
 
@@ -438,6 +442,7 @@ async def _add_layer2(query, data):
 
     except Exception as e:
         log.log2warning(1308, f" Error in _add_layer2 for {mib_name}: {e}")
+        return data
 
 
 async def _add_layer3(query, data):
@@ -472,3 +477,4 @@ async def _add_layer3(query, data):
 
     except Exception as e:
         log.log2warning(1308, f" Error in _add_layer3: {e}")
+        return data

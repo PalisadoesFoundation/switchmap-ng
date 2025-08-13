@@ -1,10 +1,12 @@
 """Asynchronous SNMP Poller module for switchmap-ng."""
+
 # Switchmap imports
 from switchmap.poller.configuration import ConfigPoller
 from switchmap.poller import POLLING_OPTIONS, SNMP, POLL
 from . import async_snmp_manager
 from . import async_snmp_info
 from switchmap.core import log
+
 
 class Poll:
     """Asynchronous SNMP poller for switchmap-ng that gathers network device data.

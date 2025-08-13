@@ -356,7 +356,9 @@ class Interact:
                 return True
             return False
         except Exception as e:
-            log.log2warning(1306, f"Walk existence check failed for {oid_to_get}: {e}")
+            log.log2warning(
+                1306, f"Walk existence check failed for {oid_to_get}: {e}"
+            )
             return False
 
     async def get(
@@ -754,31 +756,62 @@ class Session:
         """Pure async walk for SNMPv1 using nextCmd."""
         results = []
 
-        async for (
-            error_indication,
-            error_status,
-            error_index,
-            var_binds,
-        ) in nextCmd(
-            self._engine,
-            auth_data,
-            transport_target,
-            context_data,
-            ObjectType(ObjectIdentity(oid_prefix)),
-            lexicographicMode=False,
-        ):
-            #! better error handling
-            if error_indication or error_status:
-                break
+        try:
+            async for (
+                error_indication,
+                error_status,
+                error_index,
+                var_binds,
+            ) in nextCmd(
+                self._engine,
+                auth_data,
+                transport_target,
+                context_data,
+                ObjectType(ObjectIdentity(oid_prefix)),
+                lexicographicMode=False,
+            ):
+                # Handle errors first
+                if error_indication:
+                    log.log2warning(
+                        1216,
+                        f"SNMP v1 walk network error for {oid_prefix}: {error_indication}.",
+                    )
+                    break
 
-            for oid, value in var_binds:
-                oid_str = str(oid)
-                if not oid_str.startswith(oid_prefix):
-                    #! should we just return only till last case or also send a msg that last oid reached
-                    return results
-                results.append((oid_str, value))
+                elif error_status:
+                    log.log2info(
+                        1217,
+                        f"SNMP v1 walk protocol error for {oid_prefix}: {error_status} at index {error_index}",
+                    )
 
-        return results
+                    # Handle specific SNMP errors
+                    error_msg = error_status.prettyPrint()
+                    if error_msg == "noSuchName":
+                        # This OID doesn't exist, try next
+                        continue
+                    else:
+                        # Other errors are usually fatal
+                        break
+
+                # Process successful response
+                for oid, value in var_binds:
+                    oid_str = str(oid)
+                    if not oid_str.startswith(oid_prefix):
+                        log.log2debug(
+                            1220,
+                            f"Reached end of OID tree for prefix {oid_prefix}",
+                        )
+                        return results
+                    results.append((oid_str, value))
+
+            # Return results after the loop completes
+            return results
+
+        except Exception as e:
+            log.log2warning(
+                1222, f"Unexpected error in SNMP v1 walk for {oid_prefix}: {e}."
+            )
+            return results
 
     async def _async_walk_v2(
         self, oid_prefix, auth_data, transport_target, context_data
