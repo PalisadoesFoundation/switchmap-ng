@@ -342,19 +342,21 @@ export default function DeviceHistoryChart() {
             </button>
           </form>
 
-          <div className="flex flex-col flex-row-reverse xl:flex-row gap-4 text-left justify-end xl:items-center">
+          <div className="flex flex-col-reverse md:flex-row-reverse xl:flex-row gap-4 text-left justify-end xl:items-center">
             {range === "custom" && (
-              <div className="flex flex-col sm:flex-row gap-2 items-center">
+              <div className="flex flex-col sm:flex-row gap-2 items-start">
                 <input
                   type="date"
                   className="border p-2 rounded"
                   value={customStart}
                   onChange={(e) => setCustomStart(e.target.value)}
                 />
-                <span>to</span>
+                <span className="flex items-center justify-center h-full px-2 my-auto">
+                  to
+                </span>
                 <input
                   type="date"
-                  className="border p-2 rounded w-full"
+                  className="border p-2 rounded"
                   value={customEnd}
                   onChange={(e) => setCustomEnd(e.target.value)}
                 />
