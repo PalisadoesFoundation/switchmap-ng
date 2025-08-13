@@ -1,6 +1,4 @@
-"use client";
 import React from "react";
-import type { AxisDomain } from "recharts/types/util/types";
 import {
   ResponsiveContainer,
   LineChart,
@@ -9,60 +7,28 @@ import {
   Tooltip,
   Line,
 } from "recharts";
-
-interface LineConfig {
-  dataKey: string;
-  stroke: string;
-  type?: "monotone" | "linear" | "stepAfter" | "stepBefore";
-  dot?:
-    | boolean
-    | object
-    | React.ReactElement<SVGElement>
-    | ((props: any) => React.ReactNode);
-  isAnimationActive?: boolean;
-  strokeWidth?: number;
-}
-
-interface YAxisConfig {
-  type?: "number" | "category";
-  domain?: AxisDomain;
-  ticks?: Array<number | string>;
-  tickFormatter?: (value: any, index: number) => string;
-  width?: number;
-  tick?:
-    | boolean
-    | object
-    | React.ReactElement<SVGElement>
-    | ((props: any) => React.ReactElement<SVGElement>);
-}
-
-interface LineChartWrapperProps<T = Record<string, unknown>> {
-  data: T[];
-  xAxisKey: keyof T;
-  lines: LineConfig[];
-  yAxisConfig?: YAxisConfig;
+interface LineChartWrapperProps {
+  data: any[];
+  xAxisKey: string;
+  lines: {
+    dataKey: string;
+    stroke: string;
+    type?: "monotone" | "linear" | "stepAfter" | "stepBefore";
+    dot?: boolean | object;
+  }[];
+  yAxisConfig?: {
+    type?: "number" | "category";
+    domain?: [number, number];
+    ticks?: number[];
+    tickFormatter?: (value: any) => string;
+    width?: number;
+    tick?: object;
+  };
   title?: string;
   height?: number;
-  tooltipFormatter?: (
-    value: unknown,
-    name: string,
-    props: any
-  ) => React.ReactNode | [React.ReactNode, string];
+  tooltipFormatter?: (value: any, name: string, props: any) => [any, string];
 }
 
-/** * LineChartWrapper is a reusable component for rendering line charts with Recharts.
- * It abstracts the common configuration for line charts, including axes, tooltips, and lines.
- * This allows for consistent styling and behavior across different charts in the application.
- * @remarks
- * This component is designed to be flexible and reusable, allowing developers to pass in data,
- * x-axis keys, line configurations, and y-axis settings.
- * It supports custom tooltips and titles, making it suitable for various charting needs.
- *
- * @returns The rendered line chart component.
- *
- * @see {@link ResponsiveContainer} for responsive layout.
- * @see {@link LineChart}, {@link XAxis}, {@link YAxis}, {@link Tooltip}, {@link Line} from Recharts for chart rendering.
- * **/
 export function LineChartWrapper({
   data,
   xAxisKey,
@@ -88,13 +54,7 @@ export function LineChartWrapper({
           <YAxis {...yAxisConfig} />
           <Tooltip
             labelFormatter={(label) => new Date(label).toLocaleString()}
-            formatter={
-              tooltipFormatter as (
-                value: unknown,
-                name: string,
-                props: any
-              ) => React.ReactNode | [React.ReactNode, string]
-            }
+            formatter={tooltipFormatter}
           />
           {lines.map((line) => (
             <Line
@@ -103,8 +63,6 @@ export function LineChartWrapper({
               stroke={line.stroke}
               type={line.type || "linear"}
               dot={line.dot ?? true}
-              isAnimationActive={line.isAnimationActive}
-              strokeWidth={line.strokeWidth}
             />
           ))}
         </LineChart>
