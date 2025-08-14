@@ -990,7 +990,6 @@ def _convert(value):
         converted: Value converted to appropriate Python type (bytes or int),
             or None for null/empty values
     """
-
     # Handle pysnmp exception values
     if isinstance(value, NoSuchObject):
         return None
@@ -1045,7 +1044,7 @@ def _convert(value):
                     except (ValueError, TypeError):
                         pass
 
-                log_message = f"Failed to convert pysnmp integer valye: {value_type}, prettyPrint'{value_str}"
+                log_message = f"Failed to convert pysnmp integer value: {value_type}, prettyPrint'{value_str}"
                 log.log2warning(1059, log_message)
                 return None
 
@@ -1064,7 +1063,7 @@ def _convert(value):
 
 
 def _format_results(results, mock_filter, normalized=False):
-    """Normalized and format SNMP results
+    """Normalize and format SNMP results.
 
     Args:
         results: List of (OID, value) tuples from pysnmp

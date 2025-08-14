@@ -252,8 +252,7 @@ class Query:
             return None
 
     async def layer1(self):
-        """
-        Get all layer 1 information from device.
+        """Get all layer 1 information from device.
 
         Args:
             None
@@ -354,7 +353,7 @@ class Query:
             for i, result in enumerate(results):
                 if isinstance(result, Exception):
                     item_name = supported_items[i][1]
-                    log.log2exception(
+                    log.log2warning(
                         1007, f"Layer2 error in {item_name}: {result}"
                     )
                     continue
@@ -382,7 +381,6 @@ class Query:
         Returns:
            data: Aggregated layer3 data
         """
-
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
