@@ -984,7 +984,7 @@ def _convert(value):
     """Convert SNMP value from pysnmp object to Python type.
 
     Args:
-        result: pysnmp value object
+        value: pysnmp value object
 
     Returns:
         converted: Value converted to appropriate Python type (bytes or int),
