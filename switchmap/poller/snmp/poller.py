@@ -9,16 +9,18 @@ from switchmap.core import log
 
 
 class Poll:
-    """Asynchronous SNMP poller for switchmap-ng that gathers network device data.
+    """Asynchronous SNMP poller for switchmap-ng that gathers network data.
 
-    This class manages SNMP credential validation and data querying for network devices
-    using asynchronous operations for improved performance and scalability.
+    This class manages SNMP credential validation and data querying for
+    network devices using asynchronous operations for improved performance
+    and scalability.
 
     Args:
         hostname (str): The hostname or IP address of the device to poll
 
     Methods:
-        initialize_snmp(): Validates SNMP credentials and initializes SNMP interaction
+        initialize_snmp(): Validates SNMP credentials and initializes SNMP
+           interaction
         query(): Queries the device for topology data asynchronously
     """
 

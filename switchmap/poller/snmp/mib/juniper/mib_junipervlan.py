@@ -86,7 +86,6 @@ class JuniperVlanQuery(Query):
 
     async def _get_bridge_data(self):
         """Load bridge data only when needed."""
-
         if self.baseportifindex is None:
             self.bridge_mib = BridgeQuery(self.snmp_object)
 

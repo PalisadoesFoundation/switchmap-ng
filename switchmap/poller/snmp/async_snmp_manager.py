@@ -317,7 +317,7 @@ class Interact:
                     if result[oid_to_get] is not None:
                         validity = True
                 elif isinstance(result, dict) and result:
-                    # If result has data but not exact OID, still consider it valid
+                    # If result has data but not exact OID, still consider valid
                     validity = True
 
             return validity
@@ -405,7 +405,7 @@ class Interact:
         safe=False,
     ):
         """Do an async SNMPwalk.
-        
+
         Args:
             oid_to_get: OID to walk
             normalized: If True, then return results as a dict keyed by
@@ -551,10 +551,16 @@ class Interact:
                 elif safe is True:
                     _contactable = None
                     exists = None
-                    log_message = f"Async SNMP error for {self._poll.hostname}: {exception_error}"
+                    log_message = (
+                        f"Async SNMP error for {self._poll.hostname}: "
+                        f"{exception_error}"
+                    )
                     log.log2info(1209, log_message)
                 else:
-                    log_message = f"Async SNMP error for {self._poll.hostname}: {exception_error}"
+                    log_message = (
+                        f"Async SNMP error for {self._poll.hostname}: "
+                        f"{exception_error}"
+                    )
                     log.log2die(1003, log_message)
                 # Ensure formatted_result is set for exception cases
                 formatted_result = {}
@@ -564,10 +570,16 @@ class Interact:
                 if safe is True:
                     _contactable = None
                     exists = None
-                    log_message = f"Unexpected async SNMP error for {self._poll.hostname}: {exception_error}"
+                    log_message = (
+                        f"Unexpected async SNMP error for "
+                        f"{self._poll.hostname}: {exception_error}"
+                    )
                     log.log2info(1210, log_message)
                 else:
-                    log_message = f"Unexpected async SNMP error for {self._poll.hostname}: {exception_error}"
+                    log_message = (
+                        f"Unexpected async SNMP error for "
+                        f"{self._poll.hostname}: {exception_error}"
+                    )
                     log.log2die(1003, log_message)
                 # Ensure formatted_result is set for exception cases
                 formatted_result = {}
@@ -629,7 +641,7 @@ class Session:
         # Create authentication data based on SNMP version
         if auth.version == 3:
             # SNMPv3 with USM
-            # If authprotocol/privprotocol is None/False/Empty, leave them as None
+            # If authprotocol/privprotocol is None/False/Empty, leave as None
             auth_protocol = None
             priv_protocol = None
 
@@ -767,14 +779,16 @@ class Session:
                 if error_indication:
                     log.log2warning(
                         1216,
-                        f"SNMP v1 walk network error for {oid_prefix}: {error_indication}.",
+                        f"SNMP v1 walk network error for {oid_prefix}: "
+                        f"{error_indication}.",
                     )
                     break
 
                 elif error_status:
                     log.log2info(
                         1217,
-                        f"SNMP v1 walk protocol error for {oid_prefix}: {error_status} at index {error_index}",
+                        f"SNMP v1 walk protocol error for {oid_prefix}: "
+                        f"{error_status} at index {error_index}",
                     )
 
                     # Handle specific SNMP errors
@@ -847,7 +861,8 @@ class Session:
                 elif error_status:
                     log.log2info(
                         1212,
-                        f"BULK error status: {error_status.prettyPrint()} at {error_index}",
+                        f"BULK error status: {error_status.prettyPrint()} "
+                        f"at {error_index}",
                     )
                     break
 
@@ -898,7 +913,8 @@ class Session:
                 if not found_valid_data:
                     log.log2info(
                         1213,
-                        f"BULK walk: No more valid data for prefix {oid_prefix}",
+                        f"BULK walk: No more valid data for prefix "
+                        f"{oid_prefix}",
                     )
                     break
 
@@ -908,7 +924,8 @@ class Session:
                 if len(results) > 10000:
                     log.log2warning(
                         1214,
-                        f"Stopping after collecting {len(results)} results (safety limit)",
+                        f"Stopping after collecting {len(results)} results "
+                        f"(safety limit)",
                     )
                     break
 
@@ -1026,7 +1043,10 @@ def _convert(value):
                     except (ValueError, TypeError):
                         pass
 
-                log_message = f"Failed to convert pysnmp integer value: {value_type}, prettyPrint'{value_str}"
+                log_message = (
+                    f"Failed to convert pysnmp integer value: "
+                    f"{value_type}, prettyPrint'{value_str}"
+                )
                 log.log2warning(1059, log_message)
                 return None
 
