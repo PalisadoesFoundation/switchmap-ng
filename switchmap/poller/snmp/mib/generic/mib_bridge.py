@@ -62,7 +62,7 @@ class BridgeQuery(Query):
 
         """
         # Assign SNMP object
-        self._snmp_object = snmp_object
+        self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (dot1dBasePortIfIndex)
         test_oid = ".1.3.6.1.2.1.17.4.3.1.2"
@@ -103,7 +103,7 @@ class BridgeQuery(Query):
 
         # Check if Cisco VLANS are supported
         oid_vtpvlanstate = ".1.3.6.1.4.1.9.9.46.1.3.1.1.2"
-        oid_exists = await self._snmp_object.oid_exists(oid_vtpvlanstate)
+        oid_exists = await self.snmp_object.oid_exists(oid_vtpvlanstate)
         if bool(oid_exists) is True:
             final = await self._macaddresstable_cisco()
             done = True
@@ -111,7 +111,7 @@ class BridgeQuery(Query):
         # Check if Juniper VLANS are supported
         if done is False:
             oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
-            oid_exists = await self._snmp_object.oid_exists(
+            oid_exists = await self.snmp_object.oid_exists(
                 oid_dot1qvlanstaticname
             )
             if bool(oid_exists) is True:
@@ -138,16 +138,16 @@ class BridgeQuery(Query):
 
         # Check if Cisco VLANS are supported
         oid_vtpvlanstate = ".1.3.6.1.4.1.9.9.46.1.3.1.1.2"
-        oid_exists = await self._snmp_object.oid_exists(oid_vtpvlanstate)
+        oid_exists = await self.snmp_object.oid_exists(oid_vtpvlanstate)
         if bool(oid_exists) is True:
             # Get the vlantype
             oid_vtpvlantype = ".1.3.6.1.4.1.9.9.46.1.3.1.1.3"
-            vtpvlantype = await self._snmp_object.swalk(
+            vtpvlantype = await self.snmp_object.swalk(
                 oid_vtpvlantype, normalized=True
             )
 
             # Get VLANs and their states
-            vtpvlanstate = await self._snmp_object.swalk(
+            vtpvlanstate = await self.snmp_object.swalk(
                 oid_vtpvlanstate, normalized=True
             )
 
@@ -219,7 +219,7 @@ class BridgeQuery(Query):
 
         # Check if Juniper VLANS are supported
         oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
-        oid_exists = await self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
+        oid_exists = await self.snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
             # Create a dict of MAC addresses found
             mac_dict = await self._dot1qtpfdbport()
@@ -270,7 +270,7 @@ class BridgeQuery(Query):
         # Process values
         oid = ".1.3.6.1.2.1.17.4.3.1.2"
         for context_name in context_names:
-            results = await self._snmp_object.swalk(
+            results = await self.snmp_object.swalk(
                 oid, normalized=False, context_name=context_name
             )
             for key, value in results.items():
@@ -298,9 +298,9 @@ class BridgeQuery(Query):
 
         # Process dot1qvlanstaticname OID
         oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
-        oid_exists = await self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
+        oid_exists = await self.snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
-            results = await self._snmp_object.swalk(
+            results = await self.snmp_object.swalk(
                 oid_dot1qvlanstaticname, normalized=True
             )
             for key, value in results.items():
@@ -312,7 +312,7 @@ class BridgeQuery(Query):
             oid = ".1.3.6.1.2.1.17.7.1.2.2.1.2"
             for vlan in vlans:
                 new_oid = "{}.{}".format(oid, vlan)
-                results = await self._snmp_object.swalk(
+                results = await self.snmp_object.swalk(
                     new_oid, normalized=False
                 )
                 for key, value in results.items():
@@ -341,7 +341,7 @@ class BridgeQuery(Query):
         # Process values
         oid = ".1.3.6.1.2.1.17.4.3.1.1"
         for context_name in context_names:
-            results = await self._snmp_object.swalk(
+            results = await self.snmp_object.swalk(
                 oid, normalized=False, context_name=context_name
             )
             for key, mac_value in results.items():
@@ -370,11 +370,11 @@ class BridgeQuery(Query):
 
         # Get ifindex data directly
         oid = ".1.3.6.1.2.1.2.2.1.1"
-        ifindex_results = await self._snmp_object.swalk(oid, normalized=True)
+        ifindex_results = await self.snmp_object.swalk(oid, normalized=True)
         ifindex_data = {int(k): v for k, v in ifindex_results.items()}
         # Get the difference between ifIndex and dot1dBasePortIfIndex
         oid = ".1.3.6.1.2.1.17.1.4.1.2"
-        results = await self._snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for _bridge_index, ifindex in results.items():
             bridge_index = int(_bridge_index)
             offset = int(ifindex) - bridge_index

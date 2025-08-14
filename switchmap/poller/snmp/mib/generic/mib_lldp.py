@@ -66,7 +66,7 @@ class LldpQuery(Query):
 
         """
         # Define query object
-        self._snmp_object = snmp_object
+        self.snmp_object = snmp_object
         self._use_ifindex = None
         self._baseportifindex = None
         self._bridge_mib = None
@@ -80,7 +80,7 @@ class LldpQuery(Query):
         """Lazy load bridge data when needed."""
         if self._baseportifindex is None:
             # Create bridge MIB and check if it's supported
-            self._bridge_mib = BridgeQuery(self._snmp_object)
+            self._bridge_mib = BridgeQuery(self.snmp_object)
 
             if await self.supported() and await self._bridge_mib.supported():
                 self._baseportifindex = (
@@ -156,7 +156,7 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = await self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             ifindex = await self._ifindex(key)
@@ -193,7 +193,7 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = await self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             ifindex = await self._ifindex(key)
@@ -234,7 +234,7 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = await self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             ifindex = await self._ifindex(key)
@@ -270,7 +270,7 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = await self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             ifindex = await self._ifindex(key)
@@ -306,7 +306,7 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = await self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             key_index = int(key.split(".")[-1])
@@ -343,14 +343,14 @@ class LldpQuery(Query):
         # Initialize key variables
         use_ifindex = False
 
-        if_query = mib_if.IfQuery(self._snmp_object)
+        if_query = mib_if.IfQuery(self.snmp_object)
         ifdescr = await if_query.ifdescr()
 
         # Use the well known lldplocportdesc OID that must be supported
         oid = ".1.0.8802.1.1.2.1.3.7.1.4"
 
         # Process results
-        lldpdescr = await self._snmp_object.swalk(oid, normalized=False)
+        lldpdescr = await self.snmp_object.swalk(oid, normalized=False)
         for oid_key in sorted(lldpdescr.keys()):
             # Check if this OID is indexed using iFindex or dot1dBasePort
             lldp_key = int(oid_key.split(".")[-1])

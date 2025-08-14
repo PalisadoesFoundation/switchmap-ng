@@ -61,7 +61,7 @@ class IpQuery(Query):
 
         """
         # Define query object
-        self._snmp_object = snmp_object
+        self.snmp_object = snmp_object
 
         super().__init__(snmp_object, "", tags=["layer3"])
 
@@ -128,7 +128,7 @@ class IpQuery(Query):
             return oid
 
         # Process results
-        results = await self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Determine IP address
             nodes = key.split(".")
@@ -163,7 +163,7 @@ class IpQuery(Query):
             return oid
 
         # Process results
-        results = await self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, mac_value in results.items():
             # Get IP address, first 12 characters
             macaddress = general.octetstr_2_string(mac_value)

@@ -17,7 +17,6 @@ class Query:
 
     Returns:
         None
-
     """
 
     def __init__(self, snmp_object):
@@ -28,7 +27,6 @@ class Query:
 
         Returns:
             None
-
         """
         # Define query object
         self.snmp_object = snmp_object
@@ -41,7 +39,6 @@ class Query:
 
         Returns:
             data: Aggregated data
-
         """
         # Initialize key variables
         data = {}
@@ -62,7 +59,6 @@ class Query:
 
     async def misc(self):
         """Provide miscellaneous information about the device and the poll."""
-
         # Initialize data
         data = defaultdict(lambda: defaultdict(data))
         data["timestamp"] = int(time.time())
@@ -83,7 +79,6 @@ class Query:
 
         Returns:
             data: Aggregated system data
-
         """
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
@@ -129,8 +124,7 @@ class Query:
             return None
 
     async def layer1(self):
-        """
-        Get all layer 1 information from device.
+        """Get all layer 1 information from device.
 
         Args:
             None
@@ -172,7 +166,7 @@ class Query:
             for i, result in enumerate(results):
                 if isinstance(result, Exception):
                     item_name = supported_items[i][1]
-                    log.log2exception(1005, f"Error in {item_name}: {result}")
+                    log.log2warning(1005, f"Layer1 error in {item_name}: {result}")
                     continue
 
                 for key, value in result.items():
@@ -187,13 +181,13 @@ class Query:
             return None
 
     async def layer2(self):
-        """
-        Args:
+        """Get all layer 2 information from device.
+
+        Args: 
             None
 
         Returns:
             data: Aggregated layer2 data
-
         """
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
@@ -231,7 +225,7 @@ class Query:
             for i, result in enumerate(results):
                 if isinstance(result, Exception):
                     item_name = supported_items[i][1]
-                    log.log2exception(
+                    log.log2warning(
                         1007, f"Layer2 error in {item_name}: {result}"
                     )
                     continue
@@ -250,8 +244,7 @@ class Query:
             return None
 
     async def layer3(self):
-        """
-        Get all layer3 information from device.
+        """Get all layer3 information from device.
 
         Args:
             None
@@ -259,7 +252,6 @@ class Query:
         Returns:
            data: Aggregated layer3 data
         """
-
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
@@ -296,7 +288,7 @@ class Query:
             for i, result in enumerate(results):
                 if isinstance(result, Exception):
                     item_name = supported_items[i][1]
-                    log.log2exception(
+                    log.log2warning(
                         1006, f"Layer3 error in {item_name}: {result}"
                     )
                     continue
@@ -321,7 +313,6 @@ async def _add_data(source, target):
 
     Returns:
         target: Aggregated data
-
     """
     # Process data
     for primary in source.keys():
@@ -341,9 +332,7 @@ async def _add_system(query, data):
 
     Returns:
         data: Aggregated data
-
     """
-
     try:
         result = None
 
@@ -371,23 +360,20 @@ async def _add_system(query, data):
 
         return data
     except Exception as e:
-        log.log2exception(1320, f"Error in _add_system: {e}")
+        log.log2warning(1320, f"Error in _add_system: {e}")
         return data
 
 
 async def _add_layer1(query, data):
-    """
-    Add data from successful layer1 MIB query to original data provided.
+    """Add data from successful layer1 MIB query to original data provided.
 
     Args:
-       query: MIB query object
-       data: dict of data
+        query: MIB query object
+        data: dict of data
 
     Returns:
         data: Aggregated data
-
     """
-
     try:
         mib_name = query.__class__.__name__
 
@@ -411,18 +397,15 @@ async def _add_layer1(query, data):
 
 
 async def _add_layer2(query, data):
-    """
-    Add data from successful layer2 MIB query to original data provided.
+    """Add data from successful layer2 MIB query to original data provided.
 
     Args:
-       query: MIB query object
-       data: dict of data
+        query: MIB query object
+        data: dict of data
 
     Returns:
         data: Aggregated data
-
     """
-
     try:
         mib_name = query.__class__.__name__
         result = None
@@ -446,18 +429,15 @@ async def _add_layer2(query, data):
 
 
 async def _add_layer3(query, data):
-    """
-    Add data from successful layer3 MIB query to original data provided.
+    """Add data from successful layer3 MIB query to original data provided.
 
     Args:
-       query: MIB query object
-       data: dict of data
+        query: MIB query object
+        data: dict of data
 
     Returns:
         data: Aggregated data
-
     """
-
     try:
         mib_name = query.__class__.__name__
 
@@ -476,5 +456,5 @@ async def _add_layer3(query, data):
         return data
 
     except Exception as e:
-        log.log2warning(1308, f" Error in _add_layer3: {e}")
+        log.log2warning(1310, f" Error in _add_layer3 for {mib_name}: {e}")
         return data

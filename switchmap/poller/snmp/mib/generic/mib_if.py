@@ -99,13 +99,12 @@ class IfQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
-        #! might adjust later
+        # TODO: adjust if global concurrency policy changes
         # Limit concurrent SNMP queries
-        semaphore = asyncio.Semaphore(8)
+        semaphore = asyncio.Semaphore(10)
 
         async def limited_query(method, name):
             """Rate limit SNMP query."""
-
             async with semaphore:
                 try:
                     return name, await method()

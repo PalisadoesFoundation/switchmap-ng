@@ -4,6 +4,7 @@ from collections import defaultdict
 import binascii
 
 from switchmap.poller.snmp.base_query import Query
+from switchmap.core import log
 import asyncio
 
 
@@ -120,15 +121,15 @@ class CiscoVtpQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Can Limit concurrent SNMP queries (can adjust according to need)
-        semaphore = asyncio.Semaphore(5)
+        semaphore = asyncio.Semaphore(10)
 
         async def limited_query(method, name):
             """Rate limit SNMP query."""
-
             async with semaphore:
                 try:
                     return name, await method()
                 except Exception as e:
+                    log.log2warning(1001,"CISCO-VTP layer1 query failed: %s: %r", name, e)
                     return name, {}
 
         queries = [
@@ -326,7 +327,13 @@ class CiscoVtpQuery(Query):
         # Process results
         results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
-            data_dict[int(key)] = value
+            try:
+                raw = value.asOctets() 
+            except AttributeError:
+                raw = value if isinstance(value, (bytes, bytearray)) else None
+            data_dict[int(key)] = (
+                raw.decode("utf-8", errors="replace") if raw is not None else str(value)
+            )
 
         # Return the interface descriptions
         return data_dict
@@ -391,7 +398,6 @@ class CiscoVtpQuery(Query):
             # Get the ifindex value
             ifindex = int(key)
 
-            #! is this needed in pysnmp, have to check it throughly
             # Convert hex value to right justified 1024 character binary string
             vlans_hex = binascii.hexlify(value).decode("utf-8")
             binary_string = bin(int(vlans_hex, base))[2:].zfill(length_in_bits)
