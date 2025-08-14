@@ -43,16 +43,23 @@ class Query:
         # Initialize key variables
         data = {}
 
-        # Append data
-        data["misc"] = await self.misc()
+        # Run all sections concurrently
+        results = await asyncio.gather(
+            self.misc(),
+            self.system(),
+            self.layer1(),
+            self.layer2(),
+            self.layer3(),
+            return_exceptions=True,
+        )
 
-        data["system"] = await self.system()
-
-        data["layer1"] = await self.layer1()
-
-        data["layer2"] = await self.layer2()
-
-        data["layer3"] = await self.layer3()
+        keys = ["misc", "system", "layer1", "layer2", "layer3"]
+        for key, result in zip(keys, results):
+            if isinstance(result, Exception):
+                log.warning(f"{key} failed: {result}")
+            elif result:
+                data[key] = result
+        print(f"Final Data: {data}")
 
         # Return
         return data
@@ -60,7 +67,7 @@ class Query:
     async def misc(self):
         """Provide miscellaneous information about the device and the poll."""
         # Initialize data
-        data = defaultdict(lambda: defaultdict(data))
+        data = defaultdict(lambda: defaultdict(dict))
         data["timestamp"] = int(time.time())
         data["host"] = self.snmp_object.hostname()
 
@@ -341,24 +348,23 @@ async def _add_system(query, data):
         if asyncio.iscoroutinefunction(query.system):
             result = await query.system()
         else:
-
             loop = asyncio.get_event_loop()
             result = await loop.run_in_executor(None, query.system)
 
-            # Add tag
-        for primary in result.keys():
-            if isinstance(result[primary], dict):
-                for secondary in result[primary].keys():
-                    if isinstance(result[primary][secondary], dict):
-                        for tertiary, value in result[primary][
-                            secondary
-                        ].items():
+        # Merge only if we have data
+        if not result:
+            return data
+        for primary, secondary_map in result.items():
+            if isinstance(secondary_map, dict):
+                for secondary, maybe_tertiary in secondary_map.items():
+                    if isinstance(maybe_tertiary, dict):
+                        for tertiary, value in maybe_tertiary.items():
                             data[primary][secondary][tertiary] = value
                     else:
-                        data[primary][secondary] = result[primary][secondary]
+                        data[primary][secondary] = maybe_tertiary
             else:
                 # Handle case where secondary level is not a dict
-                data[primary] = result[primary]
+                data[primary] = secondary_map
 
         return data
     except Exception as e:
