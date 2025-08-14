@@ -62,7 +62,7 @@ class Validate:
             None
 
         Returns:
-            authentication: SNMP authorization object containing valid 
+            authentication: SNMP authorization object containing valid
                 credentials, or None if no valid credentials found
         """
         # Initialize key variables
@@ -517,7 +517,9 @@ class Interact:
         async with self._semaphore:
             try:
                 # Create SNMP session
-                session = Session(self._poll, self._engine,context_name=context_name)
+                session = Session(
+                    self._poll, self._engine, context_name=context_name
+                )
 
                 # Use shorter timeouts for walk operations
                 auth_data, transport_target = await session._session(
@@ -578,7 +580,7 @@ class Interact:
 class Session:
     """Class to create a SNMP session with a device."""
 
-    def __init__(self, _poll, engine,context_name=""):
+    def __init__(self, _poll, engine, context_name=""):
         """Initialize the _Session class.
 
         Args:
@@ -877,10 +879,10 @@ class Session:
 
                         oid_normalized = oid_str.lstrip(".")
                         if not oid_normalized.startswith(prefix_normalized):
-                           continue
+                            continue
                         results.append((oid_str, value))
                         found_valid_data = True
-                
+
                 # Advance the walk using only the last row's OIDs
                 next_oids = []
                 if var_bind_table:
@@ -892,7 +894,6 @@ class Session:
                         oid_str = str(oid)
                         if oid_str.lstrip(".").startswith(prefix_normalized):
                             next_oids.append(ObjectType(ObjectIdentity(oid)))
-
 
                 if not found_valid_data:
                     log.log2info(
@@ -954,7 +955,7 @@ def _oid_valid_format(oid):
     for value in octets:
         try:
             int(value)
-        except (ValueError,TypeError):
+        except (ValueError, TypeError):
             return False
 
     # Otherwise valid

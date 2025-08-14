@@ -166,7 +166,9 @@ class Query:
             for i, result in enumerate(results):
                 if isinstance(result, Exception):
                     item_name = supported_items[i][1]
-                    log.log2warning(1005, f"Layer1 error in {item_name}: {result}")
+                    log.log2warning(
+                        1005, f"Layer1 error in {item_name}: {result}"
+                    )
                     continue
 
                 for key, value in result.items():
@@ -183,7 +185,7 @@ class Query:
     async def layer2(self):
         """Get all layer 2 information from device.
 
-        Args: 
+        Args:
             None
 
         Returns:

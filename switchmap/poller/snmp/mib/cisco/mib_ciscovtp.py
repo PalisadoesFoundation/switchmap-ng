@@ -129,7 +129,9 @@ class CiscoVtpQuery(Query):
                 try:
                     return name, await method()
                 except Exception as e:
-                    log.log2warning(1001,"CISCO-VTP layer1 query failed: %s: %r", name, e)
+                    log.log2warning(
+                        1001, "CISCO-VTP layer1 query failed: %s: %r", name, e
+                    )
                     return name, {}
 
         queries = [
@@ -328,11 +330,13 @@ class CiscoVtpQuery(Query):
         results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             try:
-                raw = value.asOctets() 
+                raw = value.asOctets()
             except AttributeError:
                 raw = value if isinstance(value, (bytes, bytearray)) else None
             data_dict[int(key)] = (
-                raw.decode("utf-8", errors="replace") if raw is not None else str(value)
+                raw.decode("utf-8", errors="replace")
+                if raw is not None
+                else str(value)
             )
 
         # Return the interface descriptions
