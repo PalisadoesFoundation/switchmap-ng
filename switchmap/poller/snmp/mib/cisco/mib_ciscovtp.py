@@ -130,7 +130,7 @@ class CiscoVtpQuery(Query):
                     return name, await method()
                 except Exception as e:
                     log.log2warning(
-                        1001, "CISCO-VTP layer1 query failed: %s: %r", name, e
+                        1001, f"CISCO-VTP layer1 query failed: {name}: {e}"
                     )
                     return name, {}
 
