@@ -59,7 +59,6 @@ class Query:
                 log.warning(f"{key} failed: {result}")
             elif result:
                 data[key] = result
-        print(f"Final Data: {data}")
 
         # Return
         return data
