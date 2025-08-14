@@ -1,4 +1,4 @@
-"""Async SNMP manager class"""
+"""Async SNMP manager class."""
 
 import os
 import asyncio
@@ -53,7 +53,6 @@ class Validate:
         Returns:
            None
         """
-
         self._options = options
 
     async def credentials(self):
@@ -63,16 +62,15 @@ class Validate:
             None
 
         Returns:
-            authentication: SNMP authorization object containing valid credentials,
-            or None if no valid credentials found
+            authentication: SNMP authorization object containing valid 
+                credentials, or None if no valid credentials found
         """
-
+        # Initialize key variables
         cache_exists = False
-
         filename = files.snmp_file(self._options.hostname, ConfigPoller())
-
         if os.path.exists(filename):
             cache_exists = True
+        group = None
 
         if cache_exists is False:
             authentication = await self.validation()
@@ -84,7 +82,7 @@ class Validate:
             # Read credentials from cache
             if os.path.isfile(filename):
                 with open(filename) as f_handle:
-                    group = f_handle.readline().strip()
+                    group = f_handle.readline().strip() or None
 
             # Get Credentials
             authentication = await self.validation(group)
@@ -110,7 +108,7 @@ class Validate:
             result: SNMP authorization object if valid credentials found,
                 None otherwise
         """
-
+        # Initialize key variables
         result = None
 
         # Probe device with all SNMP options
@@ -152,6 +150,7 @@ class Interact:
         """
         # Initialize key variables
         self._poll = _poll
+        self._engine = SnmpEngine()
 
         # Rate Limiting
         self._semaphore = asyncio.Semaphore(10)
@@ -201,7 +200,6 @@ class Interact:
 
         Returns:
            bool: True if device responds to SNMP queries, False otherwise
-
         """
         # key variables
         contactable = False
@@ -301,7 +299,6 @@ class Interact:
 
         Returns:
             validity: True if exists
-
         """
         try:
             validity = False
@@ -342,7 +339,6 @@ class Interact:
         Returns:
             validity: True if exist
         """
-
         try:
             (_, exists, results) = await self.query(
                 oid_to_get,
@@ -388,7 +384,6 @@ class Interact:
 
         Returns:
            result: Dictionary of {OID: value} pairs
-
         """
         (_, _, result) = await self.query(
             oid_to_get,
@@ -409,9 +404,8 @@ class Interact:
         context_name="",
         safe=False,
     ):
-        """Do an async SNMPwalk
+        """Do an async SNMPwalk.
         
-
         Args:
             oid_to_get: OID to walk
             normalized: If True, then return results as a dict keyed by
@@ -433,9 +427,7 @@ class Interact:
 
         Returns:
             result: Dictionary of tuples (OID, value)
-        
         """
-
         (_, _, result) = await self.query(
             oid_to_get,
             get=False,
@@ -508,7 +500,6 @@ class Interact:
 
         Returns:
             return_value: Tuple of (_contactable, exists, values)
-
         """
         # Initialize variables
         _contactable = True
@@ -526,7 +517,7 @@ class Interact:
         async with self._semaphore:
             try:
                 # Create SNMP session
-                session = Session(self._poll, context_name=context_name)
+                session = Session(self._poll, self._engine,context_name=context_name)
 
                 # Use shorter timeouts for walk operations
                 auth_data, transport_target = await session._session(
@@ -587,7 +578,7 @@ class Interact:
 class Session:
     """Class to create a SNMP session with a device."""
 
-    def __init__(self, _poll, context_name=""):
+    def __init__(self, _poll, engine,context_name=""):
         """Initialize the _Session class.
 
         Args:
@@ -601,7 +592,7 @@ class Session:
         # Assign variables
         self.context_name = context_name
         self._poll = _poll
-        self._engine = SnmpEngine()
+        self._engine = engine
 
         # Fail if there is no authentication
         if bool(self._poll.authorization) is False:
@@ -616,7 +607,7 @@ class Session:
         Returns:
             Tuple of (auth_data, transport_target)
         """
-
+        # Initialize key variables
         auth = self._poll.authorization
 
         # Use shorter timeouts for walk operations to prevent hanging
@@ -692,8 +683,7 @@ class Session:
     async def _do_async_get(
         self, oid, auth_data, transport_target, context_data
     ):
-        """Pure async SNMP GET using pysnmp"""
-
+        """Pure async SNMP GET using pysnmp."""
         error_indication, error_status, error_index, var_binds = await getCmd(
             self._engine,
             auth_data,
@@ -720,7 +710,7 @@ class Session:
         self, oid_prefix, auth_data, transport_target, context_data
     ):
         """Pure async SNMP WALK using pysnmp async capabilities."""
-
+        # Initialize key variables
         results = []
 
         # Use correct walk method based on SNMP version
@@ -754,6 +744,7 @@ class Session:
         self, oid_prefix, auth_data, transport_target, context_data
     ):
         """Pure async walk for SNMPv1 using nextCmd."""
+        # Initialize key variables
         results = []
 
         try:
@@ -796,7 +787,9 @@ class Session:
                 # Process successful response
                 for oid, value in var_binds:
                     oid_str = str(oid)
-                    if not oid_str.startswith(oid_prefix):
+                    prefix_normalized = str(oid_prefix).lstrip(".")
+                    oid_normalized = oid_str.lstrip(".")
+                    if not oid_normalized.startswith(prefix_normalized):
                         log.log2debug(
                             1220,
                             f"Reached end of OID tree for prefix {oid_prefix}",
@@ -816,13 +809,13 @@ class Session:
     async def _async_walk_v2(
         self, oid_prefix, auth_data, transport_target, context_data
     ):
-        """Async walk for SNMPv2c/v3 using bulkCmd"""
-
+        """Async walk for SNMPv2c/v3 using bulkCmd."""
+        # Initialize key variables
         results = []
         current_oids = [ObjectType(ObjectIdentity(oid_prefix))]
 
         try:
-            #! checking for 50, 100 would be too long to prevent from hanging
+            # !checking for 50, 100 would be too long to prevent from hanging
             max_iterations = 50
             iterations = 0
             consecutive_empty_responses = 0
@@ -866,37 +859,40 @@ class Session:
                     consecutive_empty_responses = 0
 
                 # Process the response
-                next_oids = []
                 found_valid_data = False
+                prefix_normalized = str(oid_prefix).lstrip(".")
 
                 for var_bind in var_bind_table:
                     if not var_bind or len(var_bind) == 0:
                         continue
 
                     # Get the ObjectType from the list
-                    obj_type = var_bind[0]
+                    for obj_type in var_bind:
+                        oid, value = obj_type[0], obj_type[1]
 
-                    # Extract OID and value from ObjectType
-                    oid = obj_type[0]
-                    value = obj_type[1]
+                        # Check for end of MIB
+                        if isinstance(value, EndOfMibView):
+                            continue
+                        oid_str = str(oid)
 
-                    # Check for end of MIB
-                    if isinstance(value, EndOfMibView):
-                        continue
+                        oid_normalized = oid_str.lstrip(".")
+                        if not oid_normalized.startswith(prefix_normalized):
+                           continue
+                        results.append((oid_str, value))
+                        found_valid_data = True
+                
+                # Advance the walk using only the last row's OIDs
+                next_oids = []
+                if var_bind_table:
+                    last_row = var_bind_table[-1]
+                    for obj_type in last_row:
+                        oid, value = obj_type[0], obj_type[1]
+                        if isinstance(value, EndOfMibView):
+                            continue
+                        oid_str = str(oid)
+                        if oid_str.lstrip(".").startswith(prefix_normalized):
+                            next_oids.append(ObjectType(ObjectIdentity(oid)))
 
-                    # Check if we are still within our desired OID prefix
-                    oid_str = str(oid)
-
-                    # Remove leading dot for comparison
-                    prefix_normalized = str(oid_prefix).lstrip(".")
-                    oid_normalized = oid_str.lstrip(".")
-
-                    if not oid_normalized.startswith(prefix_normalized):
-                        continue
-
-                    results.append((oid_str, value))
-                    next_oids.append(ObjectType(ObjectIdentity(oid)))
-                    found_valid_data = True
 
                 if not found_valid_data:
                     log.log2info(
@@ -933,7 +929,6 @@ def _oid_valid_format(oid):
     Returns:
        bool: True if OID format is valid, False otherwise
     """
-
     # oid cannot be numeric
     if isinstance(oid, str) is False:
         return False
@@ -959,7 +954,7 @@ def _oid_valid_format(oid):
     for value in octets:
         try:
             int(value)
-        except ValueError:
+        except (ValueError,TypeError):
             return False
 
     # Otherwise valid
@@ -976,7 +971,6 @@ def _convert(value):
         converted: Value converted to appropriate Python type (bytes or int),
             or None for null/empty values
     """
-
     # Handle pysnmp exception values
     if isinstance(value, NoSuchObject):
         return None
@@ -1031,7 +1025,7 @@ def _convert(value):
                     except (ValueError, TypeError):
                         pass
 
-                log_message = f"Failed to convert pysnmp integer valye: {value_type}, prettyPrint'{value_str}"
+                log_message = f"Failed to convert pysnmp integer value: {value_type}, prettyPrint'{value_str}"
                 log.log2warning(1059, log_message)
                 return None
 
@@ -1050,7 +1044,7 @@ def _convert(value):
 
 
 def _format_results(results, mock_filter, normalized=False):
-    """Normalized and format SNMP results
+    """Normalize and format SNMP results.
 
     Args:
         results: List of (OID, value) tuples from pysnmp
@@ -1065,9 +1059,8 @@ def _format_results(results, mock_filter, normalized=False):
 
     Returns:
         dict: Formatted results as OID-value pairs
-
     """
-
+    # Initialize key variables
     formatted = {}
 
     for oid_str, value in results:

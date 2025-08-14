@@ -61,7 +61,7 @@ class IpQuery(Query):
 
         """
         # Define query object
-        self._snmp_object = snmp_object
+        self.snmp_object = snmp_object
 
         super().__init__(snmp_object, "", tags=["layer3"])
 

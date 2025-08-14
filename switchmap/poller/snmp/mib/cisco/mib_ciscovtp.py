@@ -402,7 +402,6 @@ class CiscoVtpQuery(Query):
             # Get the ifindex value
             ifindex = int(key)
 
-            #! is this needed in pysnmp, have to check it throughly
             # Convert hex value to right justified 1024 character binary string
             vlans_hex = binascii.hexlify(value).decode("utf-8")
             binary_string = bin(int(vlans_hex, base))[2:].zfill(length_in_bits)

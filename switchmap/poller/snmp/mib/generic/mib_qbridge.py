@@ -62,7 +62,7 @@ class QbridgeQuery(Query):
 
         """
         # Define query object
-        self._snmp_object = snmp_object
+        self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (dot1qPvid)
         test_oid = ".1.3.6.1.2.1.17.7.1.4.5.1.1"
@@ -74,7 +74,6 @@ class QbridgeQuery(Query):
 
     async def _get_bridge_data(self):
         """Load bridge data only when needed."""
-
         if self.baseportifindex is None:
             self.bridge_mib = BridgeQuery(self.snmp_object)
 

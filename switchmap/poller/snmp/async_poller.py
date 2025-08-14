@@ -9,16 +9,18 @@ from switchmap.core import log
 
 
 class Poll:
-    """Asynchronous SNMP poller for switchmap-ng that gathers network device data.
+    """Asynchronous SNMP poller for switchmap-ng that gathers network data.
 
-    This class manages SNMP credential validation and data querying for network devices
-    using asynchronous operations for improved performance and scalability.
+    This class manages SNMP credential validation and data querying for
+    network devices using asynchronous operations for improved
+    performance and scalability.
 
     Args:
         hostname (str): The hostname or IP address of the device to poll
 
     Methods:
-        initialize_snmp(): Validates SNMP credentials and initializes SNMP interaction
+        initialize_snmp(): Validates SNMP credentials and
+           initializes SNMP interaction
         query(): Queries the device for topology data asynchronously
     """
 
@@ -30,13 +32,11 @@ class Poll:
 
         Returns:
             None
-
         """
-
         # Initialize key variables
         self._server_config = ConfigPoller()
         self._hostname = hostname
-        self._snmp_object = None
+        self.snmp_object = None
 
     async def initialize_snmp(self):
         """Initialize SNMP connection asynchronously.
@@ -57,7 +57,7 @@ class Poll:
 
         # Create an SNMP object for querying
         if _do_poll(authorization) is True:
-            self._snmp_object = async_snmp_manager.Interact(
+            self.snmp_object = async_snmp_manager.Interact(
                 POLL(hostname=self._hostname, authorization=authorization)
             )
             return True
@@ -77,13 +77,12 @@ class Poll:
 
         Returns:
             dict: Polled data or None if failed
-
         """
         # Initialize key variables
         _data = None
 
         # Only query if the device is contactable
-        if bool(self._snmp_object) is False:
+        if bool(self.snmp_object) is False:
             log.log2die(1001, f"No valid SNMP object for {self._hostname} ")
             return _data
 
@@ -95,7 +94,7 @@ Querying topology data from host: {}.""".format(
 
         log.log2info(1078, log_message)
 
-        status = async_snmp_info.Query(snmp_object=self._snmp_object)
+        status = async_snmp_info.Query(snmp_object=self.snmp_object)
 
         _data = await status.everything()
 
@@ -110,7 +109,6 @@ def _do_poll(authorization):
 
     Returns:
         poll: True if a poll should be done
-
     """
     # Initialize key variables
     poll = False
