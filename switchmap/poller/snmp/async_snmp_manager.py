@@ -1044,7 +1044,10 @@ def _convert(value):
                     except (ValueError, TypeError):
                         pass
 
-                log_message = f"Failed to convert pysnmp integer value: {value_type}, prettyPrint'{value_str}"
+                log_message = (
+                    f"Failed to convert pysnmp integer value: "
+                    f"{value_type}, prettyPrint'{value_str}"
+                )
                 log.log2warning(1059, log_message)
                 return None
 
