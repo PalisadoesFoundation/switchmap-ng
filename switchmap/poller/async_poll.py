@@ -33,13 +33,13 @@ async def devices(max_concurrent_devices=None):
 
     # Get configuration
     config = ConfigPoller()
-    
+
     # Use config value if not provided
     if max_concurrent_devices is None:
         max_concurrent_devices = config.agent_subprocesses()
 
     # Create a list of polling objects
-    zones = sorted(config.zones())
+    zones = sorted(config.zones(), key=lambda z: z.name)
 
     for zone in zones:
         arguments.extend(
@@ -218,7 +218,7 @@ def run_devices(max_concurrent_devices=None):
     if max_concurrent_devices is None:
         config = ConfigPoller()
         max_concurrent_devices = config.agent_subprocesses()
-    
+
     asyncio.run(devices(max_concurrent_devices))
 
 
