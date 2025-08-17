@@ -398,6 +398,9 @@ class DeviceAttribute:
         resolver=resolve_sys_uptime, description="System uptime"
     )
     last_polled = graphene.Int(description="Timestamp of last poll")
+    cpu_usage = graphene.Float(description="CPU usage percentage (0-100)")
+    memory_used = graphene.Float(description="Memory used in bytes")
+    memory_free = graphene.Float(description="Memory free in bytes")
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")

@@ -7,3 +7,4 @@ from .mib_ciscostack import CiscoStackQuery
 from .mib_ciscovlanmembership import CiscoVlanMembershipQuery
 from .mib_ciscovlaniftablerelationship import CiscoVlanIftableRelationshipQuery
 from .mib_ciscovtp import CiscoVtpQuery
+from .mib_ciscoprocess import CiscoProcessQuery

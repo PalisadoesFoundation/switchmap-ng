@@ -47,6 +47,55 @@ def process(data, idx_zone, dns=True):
     _topology.process()
 
 
+def _extract_cpu_memory_data(data):
+    """Extract CPU and memory data from device data.
+    
+    Args:
+        data: Device data (dict)
+        
+    Returns:
+        tuple: (cpu_usage, memory_used, memory_free)
+    """
+    cpu_usage = None
+    memory_used = None
+    memory_free = None
+    
+    system_data = data.get("system", {})
+    
+    # Try to extract Cisco CPU data
+    cisco_process = system_data.get("CISCO-PROCESS-MIB", {})
+    if cisco_process:
+        cpu_data = cisco_process.get("cpmCPUTotal5minRev", {})
+        if cpu_data:
+            # Get the first CPU value (usually index 1)
+            cpu_usage = next(iter(cpu_data.values()), None)
+    
+    # Try to extract Cisco memory data  
+    cisco_memory = system_data.get("CISCO-ENHANCED-MEMPOOL-MIB", {})
+    if cisco_memory:
+        memory_used_data = cisco_memory.get("cempMemPoolHCUsed", {})
+        memory_free_data = cisco_memory.get("cempMemPoolHCFree", {})
+        
+        if memory_used_data:
+            memory_used = next(iter(memory_used_data.values()), None)
+        if memory_free_data:
+            memory_free = next(iter(memory_free_data.values()), None)
+    
+    # Try to extract generic HOST-RESOURCES data as fallback
+    if cpu_usage is None:
+        host_resources = system_data.get("HOST-RESOURCES-MIB", {})
+        if host_resources:
+            hr_cpu_data = host_resources.get("hrProcessorLoad", {})
+            hr_memory_data = host_resources.get("hrStorageUsed", {})
+            
+            if hr_cpu_data:
+                cpu_usage = next(iter(hr_cpu_data.values()), None)
+            if hr_memory_data:
+                memory_used = next(iter(hr_memory_data.values()), None)
+    
+    return cpu_usage, memory_used, memory_free
+
+
 def device(idx_zone, data):
     """Update the Device DB table.
 
@@ -61,6 +110,10 @@ def device(idx_zone, data):
     # Initialize key variables
     exists = False
     hostname = data["misc"]["host"]
+    
+    # Extract CPU and memory data
+    cpu_usage, memory_used, memory_free = _extract_cpu_memory_data(data)
+    
     row = IDevice(
         idx_zone=idx_zone,
         hostname=hostname,
@@ -70,6 +123,9 @@ def device(idx_zone, data):
         sys_objectid=data["system"]["SNMPv2-MIB"]["sysObjectID"][0],
         sys_uptime=data["system"]["SNMPv2-MIB"]["sysUpTime"][0],
         last_polled=data["misc"]["timestamp"],
+        cpu_usage=cpu_usage,
+        memory_used=memory_used,
+        memory_free=memory_free,
         enabled=1,
     )
 

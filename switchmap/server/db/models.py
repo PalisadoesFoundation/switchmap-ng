@@ -179,6 +179,9 @@ class Device(BASE):
     sys_objectid = Column(VARBINARY(256), nullable=True, default=None)
     sys_uptime = Column(BIGINT(20, unsigned=True), default=None)
     last_polled = Column(BIGINT(20, unsigned=True), default=None)
+    cpu_usage = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    memory_used = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    memory_free = Column(BIGINT(unsigned=True), nullable=True, default=None)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,

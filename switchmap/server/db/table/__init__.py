@@ -35,12 +35,14 @@ RDevice = namedtuple(
     "RDevice",
     """idx_device idx_zone  sys_name hostname name \
 sys_description sys_objectid sys_uptime last_polled \
+cpu_usage memory_used memory_free \
 enabled ts_modified ts_created""",
 )
 IDevice = namedtuple(
     "IDevice",
     """idx_zone  sys_name hostname name \
-sys_description sys_objectid sys_uptime last_polled enabled""",
+sys_description sys_objectid sys_uptime last_polled \
+cpu_usage memory_used memory_free enabled""",
 )
 
 RL1Interface = namedtuple(
