@@ -14,12 +14,18 @@ import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.fields import BatchSQLAlchemyConnectionField
+from graphene.relay import Connection
+from graphene import ConnectionField
+from graphene_sqlalchemy import SQLAlchemyObjectType
+from graphene import ObjectType, String  # <- add String here
+
 
 # Import models
 from switchmap.server.db.models import (
     Event as EventModel,
     Root as RootModel,
     Device as DeviceModel,
+    DeviceMetricsHistory as DeviceMetricsModel,
     L1Interface as L1InterfaceModel,
     Zone as ZoneModel,
     MacIp as MacIpModel,
@@ -37,6 +43,7 @@ from switchmap.server.db.attributes import (
     EventAttribute,
     RootAttribute,
     DeviceAttribute,
+    DeviceMetricsAttribute,
     L1InterfaceAttribute,
     MacAttribute,
     MacIpAttribute,
@@ -82,6 +89,15 @@ class Device(SQLAlchemyObjectType, DeviceAttribute):
 
         model = DeviceModel
         interfaces = (graphene.relay.Node,)
+
+
+class DeviceMetrics(SQLAlchemyObjectType, DeviceMetricsAttribute):
+    """Device metrics node with decoded hostname."""
+
+    class Meta:
+        model = DeviceMetricsModel
+        interfaces = (graphene.relay.Node,)
+
 
 
 class Ip(SQLAlchemyObjectType, IpAttribute):
@@ -192,6 +208,22 @@ class Query(graphene.ObjectType):
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
     devices = BatchSQLAlchemyConnectionField(Device.connection)
+
+
+    # Replace SQLAlchemyConnectionField with BatchSQLAlchemyConnectionField
+    all_device_metrics = BatchSQLAlchemyConnectionField(DeviceMetrics.connection)
+
+    # Filtered by hostname
+    all_device_metrics_by_hostname = BatchSQLAlchemyConnectionField(
+        DeviceMetrics.connection,
+        hostname=String()
+    )
+
+    def resolve_all_device_metrics_by_hostname(self, info, hostname=None, **kwargs):
+        query = DeviceMetrics.get_query(info)
+        if hostname:
+            query = query.filter(DeviceMetricsModel.hostname == hostname)
+        return query
 
     # Results as a single entry filtered by 'id' and as a list
     l1interface = graphene.relay.Node.Field(L1Interface)

@@ -4,7 +4,14 @@
 import datetime
 
 # SQLalchemy imports
-from sqlalchemy import Column, DateTime, ForeignKey, text, UniqueConstraint
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.mysql import BIGINT, VARBINARY, BIT
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
@@ -200,6 +207,22 @@ class Device(BASE):
             passive_deletes=True,
         ),
     )
+
+
+class DeviceMetricsHistory(BASE):
+    """Database table for historical CPU, memory, uptime metrics."""
+
+    __tablename__ = "smap_device_metrics_history"
+    __table_args__ = {"mysql_engine": "InnoDB"}
+
+    id = Column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
+    hostname = Column(VARBINARY(256), nullable=False, default=None, index=True)
+    timestamp = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow, index=True
+    )
+    uptime = Column(BIGINT(unsigned=True), nullable=True)
+    cpu_utilization = Column(Float, nullable=True)
+    memory_utilization = Column(Float, nullable=True)
 
 
 class L1Interface(BASE):

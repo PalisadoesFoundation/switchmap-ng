@@ -145,4 +145,27 @@ class CiscoC2900Query(Query):
             data_dict[int(key)] = value
 
         # Return the interface descriptions
+
         return data_dict
+
+    def system(self):
+        from collections import defaultdict
+        final = defaultdict(lambda: defaultdict(dict))
+
+        # CPU OID
+        cpu_total_oid = ".1.3.6.1.4.1.9.9.109.1.1.1.1.10"
+        cpu_values = self.snmp_object.swalk(cpu_total_oid)
+        final["cpu"]["total"] = {"value": sum(cpu_values.values())}
+
+        # Memory OIDs (CISCO-MEMORY-POOL-MIB)
+        used_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.5"
+        free_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.6"
+        used = self.snmp_object.swalk(used_oid)
+        free = self.snmp_object.swalk(free_oid)
+
+        # Some devices return multiple pools → sum them up
+        final["memory"]["used"] = {"value": sum(used.values())}
+        final["memory"]["free"] = {"value": sum(free.values())}
+
+        return final
+

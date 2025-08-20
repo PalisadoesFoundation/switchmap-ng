@@ -1,5 +1,6 @@
 """Module for updating the database with topology data."""
 
+import datetime
 import time
 from collections import namedtuple
 from copy import deepcopy
@@ -10,6 +11,7 @@ from switchmap.core import log
 from switchmap.core import general
 from switchmap.server.db.ingest.query import device as _misc_device
 from switchmap.server.db.misc import interface as _historical
+from switchmap.server.db.models import DeviceMetricsHistory
 from switchmap.server.db.table import device as _device
 from switchmap.server.db.table import l1interface as _l1interface
 from switchmap.server.db.table import vlan as _vlan
@@ -18,6 +20,7 @@ from switchmap.server.db.table import vlanport as _vlanport
 from switchmap.server.db.table import ipport as _ipport
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import macip as _macip
+from switchmap.server.db.table import metrics as _metrics
 from switchmap.server.db.table import (
     IVlan,
     IDevice,
@@ -87,6 +90,30 @@ def device(idx_zone, data):
     # Log
     log_message = f"Updated Device table for host {hostname}"
     log.log2debug(1137, log_message)
+    # Insert metrics into historical table
+    cpu_value = data.get("system", {}).get("cpu", {}).get("total", {}).get("value")
+    memory_used = data.get("system", {}).get("memory", {}).get("used", {}).get("value", 0)
+    memory_free = data.get("system", {}).get("memory", {}).get("free", {}).get("value", 0)
+    memory_total = memory_used + memory_free
+
+    if memory_total > 0:
+        memory_value = (memory_used / memory_total) * 100
+    else:
+        memory_value = 0
+
+# save memory_percent instead of raw memory_used
+
+    metric_row = DeviceMetricsHistory(
+        hostname=hostname,
+        timestamp=datetime.datetime.utcnow(),
+        uptime=data["system"]["SNMPv2-MIB"]["sysUpTime"][0],
+        cpu_utilization=cpu_value,
+        memory_utilization=memory_value,
+    )
+    try:
+        _metrics.insert_row(metric_row)
+    except Exception as e:
+        log.log2debug(5000, f"Metrics insert failed: {e}")
 
     # Return
     return exists
