@@ -283,12 +283,16 @@ export function TopologyChart({
         const nodeId = params.nodes[0];
         const nodeData = nodesData.current?.get(nodeId);
         const node = Array.isArray(nodeData) ? nodeData[0] : nodeData;
-        const idxDevice = (node as any)?.idxDevice ?? nodeId;
-        const sysName = (node as any)?.label ?? "";
-        const url = `/devices/${encodeURIComponent(
-          idxDevice
-        )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
-        router.push(url);
+
+        // Only navigate if idxDevice exists
+        if ((node as any)?.idxDevice) {
+          const idxDevice = (node as any).idxDevice;
+          const sysName = (node as any)?.label ?? "";
+          const url = `/devices/${encodeURIComponent(
+            idxDevice
+          )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
+          router.push(url);
+        }
       }
     });
 

@@ -168,7 +168,7 @@ export default function DeviceHistoryChart() {
 
         if (isMounted) {
           setAllDevices(filteredDevices);
-          if (filteredDevices.length > 0) {
+          if (!searchTerm && filteredDevices.length > 0) {
             setSearchTerm(filteredDevices[0].hostname);
           }
         }
