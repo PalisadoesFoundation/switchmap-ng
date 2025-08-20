@@ -92,29 +92,9 @@ def device(idx_zone, data):
     log_message = f"Updated Device table for host {hostname}"
     log.log2debug(1137, log_message)
     # Insert metrics into historical table
-    raw_cpu = (
-        data.get("system", {}).get("cpu", {}).get("total", {}).get("value")
-    )
-    try:
-        cpu_value = None if raw_cpu is None else float(raw_cpu)
-    except (TypeError, ValueError):
-        cpu_value = None
-
-    raw_used = (
-        data.get("system", {}).get("memory", {}).get("used", {}).get("value", 0)
-    )
-    raw_free = (
-        data.get("system", {}).get("memory", {}).get("free", {}).get("value", 0)
-    )
-    try:
-        memory_used = float(raw_used)
-    except (TypeError, ValueError):
-        memory_used = 0.0
-    try:
-        memory_free = float(raw_free)
-    except (TypeError, ValueError):
-        memory_free = 0.0
-
+    cpu_value = data.get("system", {}).get("cpu", {}).get("total", {}).get("value")
+    memory_used = data.get("system", {}).get("memory", {}).get("used", {}).get("value", 0)
+    memory_free = data.get("system", {}).get("memory", {}).get("free", {}).get("value", 0)
     memory_total = memory_used + memory_free
 
     if memory_total > 0:
@@ -122,18 +102,18 @@ def device(idx_zone, data):
     else:
         memory_value = 0
 
-    # save memory_percent instead of raw memory_used
+# save memory_percent instead of raw memory_used
 
     metric_row = DeviceMetricsHistory(
         hostname=hostname,
-        last_polled=data["misc"]["timestamp"],
+        timestamp=datetime.datetime.utcnow(),
         uptime=data["system"]["SNMPv2-MIB"]["sysUpTime"][0],
         cpu_utilization=cpu_value,
         memory_utilization=memory_value,
     )
     try:
         _metrics.insert_row(metric_row)
-    except SQLAlchemyError as e:
+    except Exception as e:
         log.log2debug(5000, f"Metrics insert failed: {e}")
 
     # Return

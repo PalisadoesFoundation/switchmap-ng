@@ -148,44 +148,24 @@ class CiscoC2900Query(Query):
 
         return data_dict
 
-    def system(self, oidonly=False):
-        """Return dict of system CPU and memory stats for Cisco 2900 series.
-
-        Args:
-            oidonly: Return OID values only if True
-
-        Returns:
-            final: Nested dict with CPU and memory information
-        """
+    def system(self):
         from collections import defaultdict
-
         final = defaultdict(lambda: defaultdict(dict))
 
-        # CPU OID (CISCO-CPU-MIB)
+        # CPU OID
         cpu_total_oid = ".1.3.6.1.4.1.9.9.109.1.1.1.1.10"
-        # CPU & Memory OIDs
-        cpu_total_oid = ".1.3.6.1.4.1.9.9.109.1.1.1.1.10"  # CISCO-CPU-MIB
-        used_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.5"  # CISCO-MEMORY-POOL-MIB used
-        free_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.6"  # CISCO-MEMORY-POOL-MIB free
-        if oidonly:
-            return {
-                "cpu": {"total": cpu_total_oid},
-                "memory": {"used": used_oid, "free": free_oid},
-            }
+        cpu_values = self.snmp_object.swalk(cpu_total_oid)
+        final["cpu"]["total"] = {"value": sum(cpu_values.values())}
 
-        cpu_values = self.snmp_object.swalk(cpu_total_oid) or {}
-        vals = [int(v) for v in cpu_values.values() if v is not None]
-        avg_cpu = round(sum(vals) / max(len(vals), 1), 2) if vals else 0
-        final["cpu"]["total"] = {"value": avg_cpu}
-        # Memory (CISCO-MEMORY-POOL-MIB)
-        # ... (rest of memory polling and final["memory"] assignment) ...
-        used_values = self.snmp_object.swalk(used_oid) or {}
-        free_values = self.snmp_object.swalk(free_oid) or {}
+        # Memory OIDs (CISCO-MEMORY-POOL-MIB)
+        used_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.5"
+        free_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.6"
+        used = self.snmp_object.swalk(used_oid)
+        free = self.snmp_object.swalk(free_oid)
 
-        total_used = sum(int(v) for v in used_values.values() if v is not None)
-        total_free = sum(int(v) for v in free_values.values() if v is not None)
-
-        final["memory"]["used"] = {"value": total_used}
-        final["memory"]["free"] = {"value": total_free}
+        # Some devices return multiple pools → sum them up
+        final["memory"]["used"] = {"value": sum(used.values())}
+        final["memory"]["free"] = {"value": sum(free.values())}
 
         return final
+

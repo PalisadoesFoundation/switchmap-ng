@@ -9,7 +9,6 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
-    Index,
     text,
     UniqueConstraint,
 )
@@ -215,19 +214,14 @@ class DeviceMetricsHistory(BASE):
     """Database table for historical CPU, memory, uptime metrics."""
 
     __tablename__ = "smap_device_metrics_history"
-    __table_args__: ClassVar[tuple] = (
-        Index(
-            "ix_smap_device_metrics_history_hostname_last_polled",
-            "hostname",
-            "last_polled",
-        ),
-        {"mysql_engine": "InnoDB"},
-    )
+    __table_args__ = {"mysql_engine": "InnoDB"}
 
-    id = Column(BIGINT(20, unsigned=True), primary_key=True, autoincrement=True)
-    hostname = Column(VARBINARY(256), nullable=False)
-    last_polled = Column(BIGINT(20, unsigned=True), default=None)
-    uptime = Column(BIGINT(20, unsigned=True), nullable=True)
+    id = Column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
+    hostname = Column(VARBINARY(256), nullable=False, default=None, index=True)
+    timestamp = Column(
+        DateTime, nullable=False, default=datetime.datetime.utcnow, index=True
+    )
+    uptime = Column(BIGINT(unsigned=True), nullable=True)
     cpu_utilization = Column(Float, nullable=True)
     memory_utilization = Column(Float, nullable=True)
 
