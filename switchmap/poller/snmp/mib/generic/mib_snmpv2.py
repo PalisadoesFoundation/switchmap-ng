@@ -116,6 +116,23 @@ class Snmpv2Query(Query):
 
         cpu_values = self.snmp_object.swalk(cpu_oid) or {}
         if cpu_values:
+            data_dict["cpu"]["total"] = {
+                "value": sum(int(v) for v in cpu_values.values())
+            }
+
+        mem_used = self.snmp_object.swalk(mem_used_oid) or {}
+        mem_total = self.snmp_object.swalk(mem_total_oid) or {}
+        if mem_used and mem_total:
+            total_used = sum(int(v) for v in mem_used.values())
+            total_free = sum(
+                int(mem_total[k]) - int(mem_used[k])
+                for k in mem_total.keys() & mem_used.keys()
+            )
+            data_dict["memory"]["used"] = {"value": total_used}
+            data_dict["memory"]["free"] = {"value": total_free}
+
+        cpu_values = self.snmp_object.swalk(cpu_oid) or {}
+        if cpu_values:
             vals = [int(v) for v in cpu_values.values()]
             avg = sum(vals) / max(len(vals), 1)
             data_dict["cpu"]["total"] = {"value": round(avg, 2)}
