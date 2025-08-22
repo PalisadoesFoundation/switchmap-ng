@@ -77,6 +77,7 @@ export default function DeviceHistoryChart() {
   const [customStart, setCustomStart] = useState("");
   const [customEnd, setCustomEnd] = useState("");
   const [open, setOpen] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const now = new Date();
   let startDate: Date | null = null;
@@ -290,6 +291,14 @@ export default function DeviceHistoryChart() {
 
   return (
     <div className="flex h-screen max-w-full">
+      {/* Centralized error alert */}
+      {errorMsg && (
+        <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
+          <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
+            {errorMsg}
+          </div>
+        </div>
+      )}
       <Sidebar />
       <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full overflow-y-auto mx-10">
         <div className="m-4 md:ml-0">
@@ -349,7 +358,23 @@ export default function DeviceHistoryChart() {
                   type="date"
                   className="border p-2 rounded"
                   value={customStart}
-                  onChange={(e) => setCustomStart(e.target.value)}
+                  onChange={(e) => {
+                    const start = new Date(e.target.value);
+                    const end = customEnd ? new Date(customEnd) : null;
+
+                    if (
+                      end &&
+                      (end.getTime() - start.getTime()) /
+                        (1000 * 60 * 60 * 24) >
+                        180
+                    ) {
+                      setErrorMsg("Custom range cannot exceed 180 days.");
+                      setTimeout(() => setErrorMsg(""), 3000);
+                      return;
+                    }
+
+                    setCustomStart(e.target.value);
+                  }}
                 />
                 <span className="flex items-center justify-center h-full px-2 my-auto">
                   to
@@ -358,7 +383,23 @@ export default function DeviceHistoryChart() {
                   type="date"
                   className="border p-2 rounded"
                   value={customEnd}
-                  onChange={(e) => setCustomEnd(e.target.value)}
+                  onChange={(e) => {
+                    const start = customStart ? new Date(customStart) : null;
+                    const end = new Date(e.target.value);
+
+                    if (
+                      start &&
+                      (end.getTime() - start.getTime()) /
+                        (1000 * 60 * 60 * 24) >
+                        180
+                    ) {
+                      setErrorMsg("Custom range cannot exceed 180 days.");
+                      setTimeout(() => setErrorMsg(""), 3000);
+                      return;
+                    }
+
+                    setCustomEnd(e.target.value);
+                  }}
                 />
               </div>
             )}
