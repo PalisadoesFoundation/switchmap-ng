@@ -1,6 +1,5 @@
 """Switchmap-NG snmp package."""
 
-from .mib.juniper.mib_juniperdevice import JuniperDeviceQuery
 from .mib.generic.mib_bridge import BridgeQuery
 from .mib.generic.mib_entity import EntityQuery
 from .mib.generic.mib_essswitch import EssSwitchQuery
@@ -22,6 +21,7 @@ from .mib.cisco import CiscoVlanIftableRelationshipQuery
 from .mib.cisco import CiscoVtpQuery
 
 from .mib.juniper import JuniperVlanQuery
+from .mib.juniper import JuniperDeviceQuery
 
 
 __all__ = ("cisco", "juniper")
