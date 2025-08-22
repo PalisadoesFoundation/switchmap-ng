@@ -299,235 +299,237 @@ export default function DeviceHistoryChart() {
           </div>
         </div>
       )}
-      <Sidebar />
-      <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full overflow-y-auto mx-10">
-        <div className="m-4 md:ml-0">
-          <h2 className="text-xl font-semibold">Device History</h2>
-          <p className="text-sm pt-2 text-gray-600">
-            Visualizing the historical movement and status changes of devices
-            within the network.
-          </p>
-        </div>
+      <div className="flex h-screen md:m-8 overflow-y-auto">
+        <Sidebar />
+        <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full overflow-y-auto mx-10">
+          <div className="m-4 md:ml-0">
+            <h2 className="text-xl font-semibold">Device History</h2>
+            <p className="text-sm pt-2 text-gray-600">
+              Visualizing the historical movement and status changes of devices
+              within the network.
+            </p>
+          </div>
 
-        <div className="relative flex flex-col xl:flex-row gap-10 justify-between w-full">
-          <form
-            className="flex flex-col gap-4 md:flex-row md:items-center"
-            onSubmit={onSubmit}
-          >
-            <div className="relative">
-              <input
-                className="border p-2 rounded w-full"
-                type="text"
-                placeholder="Search device hostname..."
-                value={inputTerm}
-                onChange={(e) => setInputTerm(e.target.value)}
-                autoComplete="off"
-                disabled={loading}
-              />
-              {suggestions.length > 0 && (
-                <ul className="absolute top-full left-0 mt-1 bg-bg shadow-md rounded border w-full z-50 ">
-                  {suggestions.map((suggestion, i) => (
-                    <li
-                      key={i}
-                      onClick={() => {
-                        setSearchTerm(suggestion);
-                        setInputTerm("");
-                        setSuggestions([]);
-                      }}
-                      className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
-                    >
-                      {suggestion}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-            <button
-              type="submit"
-              className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit"
-              disabled={loading}
+          <div className="relative flex flex-col xl:flex-row gap-10 justify-between w-full">
+            <form
+              className="flex flex-col gap-4 md:flex-row md:items-center"
+              onSubmit={onSubmit}
             >
-              Search
-            </button>
-          </form>
-
-          <div className="flex flex-col-reverse md:flex-row-reverse xl:flex-row gap-4 text-left justify-end xl:items-center">
-            {range === "custom" && (
-              <div className="flex flex-col sm:flex-row gap-2 items-start">
+              <div className="relative">
                 <input
-                  type="date"
-                  className="border p-2 rounded"
-                  value={customStart}
-                  onChange={(e) => {
-                    const start = new Date(e.target.value);
-                    const end = customEnd ? new Date(customEnd) : null;
-
-                    if (
-                      end &&
-                      (end.getTime() - start.getTime()) /
-                        (1000 * 60 * 60 * 24) >
-                        180
-                    ) {
-                      setErrorMsg("Custom range cannot exceed 180 days.");
-                      setTimeout(() => setErrorMsg(""), 3000);
-                      return;
-                    }
-
-                    setCustomStart(e.target.value);
-                  }}
+                  className="border p-2 rounded w-full"
+                  type="text"
+                  placeholder="Search device hostname..."
+                  value={inputTerm}
+                  onChange={(e) => setInputTerm(e.target.value)}
+                  autoComplete="off"
+                  disabled={loading}
                 />
-                <span className="flex items-center justify-center h-full px-2 my-auto">
-                  to
-                </span>
-                <input
-                  type="date"
-                  className="border p-2 rounded"
-                  value={customEnd}
-                  onChange={(e) => {
-                    const start = customStart ? new Date(customStart) : null;
-                    const end = new Date(e.target.value);
-
-                    if (
-                      start &&
-                      (end.getTime() - start.getTime()) /
-                        (1000 * 60 * 60 * 24) >
-                        180
-                    ) {
-                      setErrorMsg("Custom range cannot exceed 180 days.");
-                      setTimeout(() => setErrorMsg(""), 3000);
-                      return;
-                    }
-
-                    setCustomEnd(e.target.value);
-                  }}
-                />
+                {suggestions.length > 0 && (
+                  <ul className="absolute top-full left-0 mt-1 bg-bg shadow-md rounded border w-full z-50 ">
+                    {suggestions.map((suggestion, i) => (
+                      <li
+                        key={i}
+                        onClick={() => {
+                          setSearchTerm(suggestion);
+                          setInputTerm("");
+                          setSuggestions([]);
+                        }}
+                        className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
+                      >
+                        {suggestion}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            )}
-
-            <div className="relative">
               <button
-                type="button"
-                className="flex justify-between items-center border rounded px-4 py-2 w-48"
-                onClick={() => setOpen(!open)}
+                type="submit"
+                className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit"
+                disabled={loading}
               >
-                {ranges.find((r) => r.value === range)?.label}
-                <svg
-                  className={`ml-2 h-5 w-5 transition-transform ${
-                    open ? "rotate-180" : ""
-                  }`}
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
+                Search
               </button>
+            </form>
 
-              {open && (
-                <div className="absolute mt-1 w-48 bg-bg border rounded shadow z-10">
-                  {ranges.map((r) => (
-                    <button
-                      key={r.value}
-                      className="w-full text-left px-4 py-2 hover:bg-hover-bg"
-                      onClick={() => {
-                        setRange(r.value);
-                        setOpen(false);
-                      }}
-                    >
-                      {r.label}
-                    </button>
-                  ))}
+            <div className="flex flex-row-reverse xl:flex-row gap-4 text-left justify-end xl:items-center">
+              {range === "custom" && (
+                <div className="flex flex-row gap-2 items-start">
+                  <input
+                    type="date"
+                    className="border p-2 rounded"
+                    value={customStart}
+                    onChange={(e) => {
+                      const start = new Date(e.target.value);
+                      const end = customEnd ? new Date(customEnd) : null;
+
+                      if (
+                        end &&
+                        (end.getTime() - start.getTime()) /
+                          (1000 * 60 * 60 * 24) >
+                          180
+                      ) {
+                        setErrorMsg("Custom range cannot exceed 180 days.");
+                        setTimeout(() => setErrorMsg(""), 3000);
+                        return;
+                      }
+
+                      setCustomStart(e.target.value);
+                    }}
+                  />
+                  <span className="flex items-center justify-center h-full px-2 my-auto">
+                    to
+                  </span>
+                  <input
+                    type="date"
+                    className="border p-2 rounded"
+                    value={customEnd}
+                    onChange={(e) => {
+                      const start = customStart ? new Date(customStart) : null;
+                      const end = new Date(e.target.value);
+
+                      if (
+                        start &&
+                        (end.getTime() - start.getTime()) /
+                          (1000 * 60 * 60 * 24) >
+                          180
+                      ) {
+                        setErrorMsg("Custom range cannot exceed 180 days.");
+                        setTimeout(() => setErrorMsg(""), 3000);
+                        return;
+                      }
+
+                      setCustomEnd(e.target.value);
+                    }}
+                  />
                 </div>
               )}
+
+              <div className="relative">
+                <button
+                  type="button"
+                  className="flex justify-between items-center border rounded px-4 py-2 w-48"
+                  onClick={() => setOpen(!open)}
+                >
+                  {ranges.find((r) => r.value === range)?.label}
+                  <svg
+                    className={`ml-2 h-5 w-5 transition-transform ${
+                      open ? "rotate-180" : ""
+                    }`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {open && (
+                  <div className="absolute mt-1 w-48 bg-bg border rounded shadow z-10">
+                    {ranges.map((r) => (
+                      <button
+                        key={r.value}
+                        className="w-full text-left px-4 py-2 hover:bg-hover-bg"
+                        onClick={() => {
+                          setRange(r.value);
+                          setOpen(false);
+                        }}
+                      >
+                        {r.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-        {searchTerm && (
-          <p className="mt-2 text-gray-700">
-            Showing results for Hostname:{" "}
-            <span className="font-semibold">{searchTerm}</span>
-          </p>
-        )}
+          {searchTerm && (
+            <p className="mt-2 text-gray-700">
+              Showing results for Hostname:{" "}
+              <span className="font-semibold">{searchTerm}</span>
+            </p>
+          )}
 
-        <div className="overflow-auto flex-1">
-          <div className="gap-8 w-[70vw] min-w-[600px] items-stretch p-4 mx-auto flex flex-col xl:flex-row xl:text-left text-center h-full">
-            {renderFallback() || (
-              <>
-                {/* Zone Chart */}
-                {zoneChartData.length > 0 && (
-                  <LineChartWrapper
-                    data={zoneChartData}
-                    xAxisKey="timestamp"
-                    lines={[
-                      {
-                        dataKey: "zoneNum",
-                        stroke: "#16a34a",
-                        type: "stepAfter",
-                        dot: false,
-                      },
-                    ]}
-                    yAxisConfig={{
-                      type: "number",
-                      domain: [0, zoneCategories.length + 1],
-                      ticks: Object.values(zoneMap),
-                      tickFormatter: (v) =>
-                        zoneCategories.find((z) => zoneMap[z] === v) || "",
-                      width: 100,
-                      tick: { textAnchor: "end" },
-                    }}
-                    title="Zone History"
-                    tooltipFormatter={(_, __, props) => {
-                      const value = props.payload.zoneNum;
-                      const label =
-                        zoneCategories.find((z) => zoneMap[z] === value) ||
-                        value;
-                      return [label, "Zone"];
-                    }}
-                  />
-                )}
-                {/* SysName Chart */}
-                {sysNameChartData.length > 0 && (
-                  <LineChartWrapper
-                    data={sysNameChartData}
-                    xAxisKey="timestamp"
-                    lines={[
-                      {
-                        dataKey: "sysNameNum",
-                        stroke: "#3b82f6",
-                        type: "stepAfter",
-                        dot: false,
-                      },
-                    ]}
-                    yAxisConfig={{
-                      type: "number",
-                      domain: [0, sysNameCategories.length + 1],
-                      ticks: Object.values(sysNameMap),
-                      tickFormatter: (v) =>
-                        sysNameCategories.find(
-                          (name) => sysNameMap[name] === v
-                        ) || "",
-                      width: 200,
-                      tick: { textAnchor: "end" },
-                    }}
-                    title="SysName History"
-                    tooltipFormatter={(_, __, props) => {
-                      const value = props.payload.sysNameNum;
-                      const label =
-                        sysNameCategories.find(
-                          (name) => sysNameMap[name] === value
-                        ) || value;
-                      return [label, "SysName"];
-                    }}
-                  />
-                )}
-              </>
-            )}
+          <div className="flex-1">
+            <div className="gap-8 w-[70vw] min-w-[600px] items-stretch p-4 mx-auto flex flex-col xl:flex-row xl:text-left text-center h-full">
+              {renderFallback() || (
+                <>
+                  {/* Zone Chart */}
+                  {zoneChartData.length > 0 && (
+                    <LineChartWrapper
+                      data={zoneChartData}
+                      xAxisKey="timestamp"
+                      lines={[
+                        {
+                          dataKey: "zoneNum",
+                          stroke: "#16a34a",
+                          type: "stepAfter",
+                          dot: false,
+                        },
+                      ]}
+                      yAxisConfig={{
+                        type: "number",
+                        domain: [0, zoneCategories.length + 1],
+                        ticks: Object.values(zoneMap),
+                        tickFormatter: (v) =>
+                          zoneCategories.find((z) => zoneMap[z] === v) || "",
+                        width: 100,
+                        tick: { textAnchor: "end" },
+                      }}
+                      title="Zone History"
+                      tooltipFormatter={(_, __, props) => {
+                        const value = props.payload.zoneNum;
+                        const label =
+                          zoneCategories.find((z) => zoneMap[z] === value) ||
+                          value;
+                        return [label, "Zone"];
+                      }}
+                    />
+                  )}
+                  {/* SysName Chart */}
+                  {sysNameChartData.length > 0 && (
+                    <LineChartWrapper
+                      data={sysNameChartData}
+                      xAxisKey="timestamp"
+                      lines={[
+                        {
+                          dataKey: "sysNameNum",
+                          stroke: "#3b82f6",
+                          type: "stepAfter",
+                          dot: false,
+                        },
+                      ]}
+                      yAxisConfig={{
+                        type: "number",
+                        domain: [0, sysNameCategories.length + 1],
+                        ticks: Object.values(sysNameMap),
+                        tickFormatter: (v) =>
+                          sysNameCategories.find(
+                            (name) => sysNameMap[name] === v
+                          ) || "",
+                        width: 200,
+                        tick: { textAnchor: "end" },
+                      }}
+                      title="SysName History"
+                      tooltipFormatter={(_, __, props) => {
+                        const value = props.payload.sysNameNum;
+                        const label =
+                          sysNameCategories.find(
+                            (name) => sysNameMap[name] === value
+                          ) || value;
+                        return [label, "SysName"];
+                      }}
+                    />
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
