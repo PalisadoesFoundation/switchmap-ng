@@ -149,7 +149,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
     <div className="p-8 w-[85vw] flex flex-col gap-4 h-full ">
       <h2 className="text-xl font-semibold mb-2">Device Overview</h2>
       <div
-        className={`flex flex-col md:flex-row gap-2 ${styles.deviceChartWrapper}`}
+        className={`flex flex-col md:flex-row md:self-center gap-2 ${styles.deviceChartWrapper}`}
       >
         <TopologyChart
           devices={[device]}
@@ -206,7 +206,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
       </div>
 
       {/* Time Range Dropdown */}
-      <div className="flex flex-col-reverse md:flex-row gap-4 text-left justify-start xl:items-center">
+      <div className="mt-8 md:mt-2 flex flex-col md:flex-row gap-4 text-left justify-start xl:items-center">
         <div className="relative">
           <button
             type="button"
@@ -274,7 +274,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         )}
       </div>
 
-      <div className="p-4 w-full flex flex-col xl:flex-row gap-4">
+      <div className="p-4 w-full min-w-[350px] flex flex-col xl:flex-row gap-4">
         <HistoricalChart
           title="Uptime (%)"
           data={filterByRange(uptimeData)}
