@@ -54,6 +54,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
   const [deviceMetrics, setDeviceMetrics] = useState<DeviceData | null>(null);
 
   const [selectedRange, setSelectedRange] = useState<number>(1);
+  const [errorMsg, setErrorMsg] = useState("");
   const [customRange, setCustomRange] = useState<{
     start: string;
     end: string;
@@ -203,6 +204,14 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
 
   return (
     <div className="p-8 w-[85vw] flex flex-col gap-4 h-full ">
+      {/* Centralized error alert */}
+      {errorMsg && (
+        <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
+          <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
+            {errorMsg}
+          </div>
+        </div>
+      )}
       <h2 className="text-xl font-semibold mb-2">Device Overview</h2>
       <div
         className={`flex flex-col md:flex-row md:self-center gap-2 ${styles.deviceChartWrapper}`}
@@ -260,9 +269,21 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
               type="date"
               className="border p-2 rounded"
               value={customRange.start}
-              onChange={(e) =>
-                setCustomRange({ ...customRange, start: e.target.value })
-              }
+              onChange={(e) => {
+                const start = new Date(e.target.value);
+                const end = customRange.end ? new Date(customRange.end) : null;
+                if (
+                  end &&
+                  (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
+                    180
+                ) {
+                  setErrorMsg("Custom range cannot exceed 90 days.");
+                  setTimeout(() => setErrorMsg(""), 3000);
+                  return;
+                }
+
+                setCustomRange({ ...customRange, start: e.target.value });
+              }}
             />
             <span className="flex items-center justify-center h-full px-2 my-auto">
               to
@@ -271,9 +292,25 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
               type="date"
               className="border p-2 rounded"
               value={customRange.end}
-              onChange={(e) =>
-                setCustomRange({ ...customRange, end: e.target.value })
-              }
+              onChange={(e) => {
+                const start = customRange.start
+                  ? new Date(customRange.start)
+                  : null;
+                const end = new Date(e.target.value);
+
+                if (
+                  start &&
+                  end &&
+                  (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
+                    180
+                ) {
+                  setErrorMsg("Custom range cannot exceed 90 days.");
+                  setTimeout(() => setErrorMsg(""), 3000);
+                  return;
+                }
+
+                setCustomRange({ ...customRange, end: e.target.value });
+              }}
             />
           </div>
         )}
