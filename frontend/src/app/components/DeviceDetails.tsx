@@ -277,7 +277,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
                   (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
                     180
                 ) {
-                  setErrorMsg("Custom range cannot exceed 90 days.");
+                  setErrorMsg("Custom range cannot exceed 180 days.");
                   setTimeout(() => setErrorMsg(""), 3000);
                   return;
                 }
@@ -304,7 +304,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
                   (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
                     180
                 ) {
-                  setErrorMsg("Custom range cannot exceed 90 days.");
+                  setErrorMsg("Custom range cannot exceed 180 days.");
                   setTimeout(() => setErrorMsg(""), 3000);
                   return;
                 }
