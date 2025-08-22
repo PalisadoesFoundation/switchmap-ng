@@ -120,7 +120,7 @@ export default function DevicePage() {
         >
           <FiHome />
         </button>
-        <div className="max-w-full flex items-center justify-center w-full h-full">
+        <div className="max-w-full flex items-center justify-center w-full h-full overflow-y-auto">
           {tabs[activeTab].content}
         </div>
       </div>
