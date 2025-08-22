@@ -47,7 +47,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
 
   const query = `
     query {
-      allDeviceMetrics {
+      deviceMetrics(hostname: "${device.hostname}") {
         edges {
           node {
             hostname
@@ -59,7 +59,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         }
       }
     }
-  `;
+    `;
 
   useEffect(() => {
     async function fetchData() {
@@ -71,23 +71,18 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         });
         const json = await res.json();
 
-        const devices: DeviceData[] = json.data.allDeviceMetrics.edges.map(
+        const hostMetrics: DeviceData[] = json.data.deviceMetrics.edges.map(
           ({ node }: { node: DeviceData }) => node
         );
 
-        // all records for this device
-        const hostMetrics = devices.filter(
-          (d) => d.hostname === device.hostname
-        );
         if (hostMetrics.length === 0) return;
 
-        // sort by timestamp (oldest → newest)
         hostMetrics.sort(
           (a, b) =>
             new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         );
 
-        setDeviceMetrics(hostMetrics[hostMetrics.length - 1]); // latest snapshot
+        setDeviceMetrics(hostMetrics[hostMetrics.length - 1]);
 
         setUptimeData(
           hostMetrics.map((m) => ({
@@ -110,7 +105,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           }))
         );
       } catch (error) {
-        console.error("Error fetching devices data:", error);
+        console.error("Error fetching device metrics:", error);
       }
     }
 
