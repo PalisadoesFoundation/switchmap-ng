@@ -28,8 +28,8 @@ const HistoricalChart: React.FC<HistoricalChartProps> = ({
   unit = "",
 }) => {
   return (
-    <div style={{ width: "100%", height: "300px" }}>
-      <h2 style={{ marginBottom: "0.5rem" }}>{title}</h2>
+    <div className="w-full h-64 m-2">
+      <h2 className="m-2 text-lg font-semibold">{title}</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
