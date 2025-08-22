@@ -9,7 +9,7 @@
   width: 100%;
   max-width: 800px;
   height: auto;
-  min-height: 400px;
+  min-height: 300px;
   border-width: 0;
 }
 .deviceChartWrapper :global(.topology-chart-container) {
@@ -20,6 +20,8 @@
 .deviceChartWrapper{
   height: 100%;
   max-height: 100vh;
+  width: fit-content;
+  min-width: 350px;
 }
 .tableCustom *{
   border: none ;
