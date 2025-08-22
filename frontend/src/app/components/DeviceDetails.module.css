@@ -7,15 +7,19 @@
 
 .deviceChartWrapper :global(.topology-network-canvas) {
   width: 100%;
-  height: 100%;
+  max-width: 800px;
+  height: auto;
+  min-height: 400px;
   border-width: 0;
 }
 .deviceChartWrapper :global(.topology-chart-container) {
   display: flex;
   flex-direction: column-reverse;
+  max-height: 500px;
 }
 .deviceChartWrapper{
-    overflow: hidden;
+  height: 100%;
+  max-height: 100vh;
 }
 .tableCustom *{
   border: none ;

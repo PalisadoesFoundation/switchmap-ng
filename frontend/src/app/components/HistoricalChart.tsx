@@ -28,8 +28,8 @@ function HistoricalChart({
   unit = "",
 }: HistoricalChartProps) {
   return (
-    <div className="w-full h-64">
-      <h2 className="mb-2 text-lg font-semibold">{title}</h2>
+    <div className="w-full h-64 m-2">
+      <h2 className="m-2 text-lg font-semibold">{title}</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
