@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import HistoricalChart from "./HistoricalChart";
 import { TopologyChart } from "./TopologyChart";
 import { DeviceNode } from "../types/graphql/GetZoneDevices";
@@ -59,6 +59,62 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
     end: string;
   }>({ start: "", end: "" });
   const [open, setOpen] = useState<boolean>(false);
+  const topologyChartMemo = useMemo(
+    () => (
+      <TopologyChart
+        devices={[device]}
+        loading={false}
+        error={null}
+        zoomView={false}
+        clickToUse={false}
+      />
+    ),
+    [device] // only re-render if device changes
+  );
+  const metadataTableMemo = useMemo(
+    () => (
+      <div className="max-w-full h-[400px] min-w-[300px] w-[50vw] p-5 bg-content-bg items-center justify-center border border-border-subtle rounded-lg lg:w-[50vw] xl:w-[35vw]">
+        <table
+          className={`table-auto w-fit m-top-0 text-left ${styles.tableCustom}`}
+        >
+          <tbody className="text-xs md:text-sm">
+            <MetadataRow label="Device Name" value={device.sysName ?? "-"} />
+            <MetadataRow
+              label="Description"
+              value={truncateLines(device.sysDescription ?? "", {
+                lines: 3,
+                maxLength: 60,
+              })}
+            />
+            <MetadataRow label="Hostname" value={device.hostname} />
+            <MetadataRow
+              label="Status"
+              value={
+                typeof device.sysUptime === "number" && device.sysUptime > 0
+                  ? "Up"
+                  : "Down"
+              }
+            />
+            <MetadataRow
+              label="Uptime"
+              value={
+                formatUptime(device.sysUptime ?? deviceMetrics?.uptime ?? 0) ??
+                "N/A"
+              }
+            />
+            <MetadataRow label="System ID" value={device.sysObjectid ?? "-"} />
+            <MetadataRow
+              label="Time Last Polled"
+              value={
+                deviceMetrics ? formatUnixTimestamp(device.lastPolled) : "-"
+              }
+            />
+          </tbody>
+        </table>
+      </div>
+    ),
+    [device, deviceMetrics] // only re-render if device or deviceMetrics change
+  );
 
   const query = `
     query {
@@ -151,60 +207,9 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
       <div
         className={`flex flex-col md:flex-row md:self-center gap-2 ${styles.deviceChartWrapper}`}
       >
-        <TopologyChart
-          devices={[device]}
-          loading={false}
-          error={null}
-          zoomView={false}
-          clickToUse={false}
-        />
-        <div className="max-w-full h-[400px] min-w-[300px] w-[50vw] p-5 bg-content-bg items-center justify-center border border-border-subtle rounded-lg lg:w-[50vw] xl:w-[35vw]">
-          <table
-            className={`table-auto w-fit m-top-0 text-left ${styles.tableCustom}`}
-          >
-            <tbody className="text-xs md:text-sm">
-              <MetadataRow label="Device Name" value={device.sysName ?? "-"} />
-              <MetadataRow
-                label="Description"
-                value={truncateLines(device.sysDescription ?? "", {
-                  lines: 3,
-                  maxLength: 60,
-                })}
-              />
-              <MetadataRow label="Hostname" value={device.hostname} />
-              <MetadataRow
-                label="Status"
-                value={
-                  typeof device.sysUptime === "number" && device.sysUptime > 0
-                    ? "Up"
-                    : "Down"
-                }
-              />
-              <MetadataRow
-                label="Uptime"
-                value={
-                  formatUptime(
-                    device.sysUptime ?? deviceMetrics?.uptime ?? 0
-                  ) ?? "N/A"
-                }
-              />
-              <MetadataRow
-                label="System ID"
-                value={device.sysObjectid ?? "-"}
-              />
-              <MetadataRow
-                label="Time Last Polled"
-                value={
-                  deviceMetrics
-                    ? formatUnixTimestamp(deviceMetrics.timestamp)
-                    : "-"
-                }
-              />
-            </tbody>
-          </table>
-        </div>
+        {topologyChartMemo}
+        {metadataTableMemo}
       </div>
-
       {/* Time Range Dropdown */}
       <div className="mt-8 md:mt-2 flex flex-col md:flex-row gap-4 text-left justify-start xl:items-center">
         <div className="relative">
