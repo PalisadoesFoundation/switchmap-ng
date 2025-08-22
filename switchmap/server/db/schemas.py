@@ -99,7 +99,6 @@ class DeviceMetrics(SQLAlchemyObjectType, DeviceMetricsAttribute):
         interfaces = (graphene.relay.Node,)
 
 
-
 class Ip(SQLAlchemyObjectType, IpAttribute):
     """Ip node."""
 
@@ -209,20 +208,16 @@ class Query(graphene.ObjectType):
     device = graphene.relay.Node.Field(Device)
     devices = BatchSQLAlchemyConnectionField(Device.connection)
 
-
-    # Replace SQLAlchemyConnectionField with BatchSQLAlchemyConnectionField
-    all_device_metrics = BatchSQLAlchemyConnectionField(DeviceMetrics.connection)
-
-    # Filtered by hostname
-    all_device_metrics_by_hostname = BatchSQLAlchemyConnectionField(
-        DeviceMetrics.connection,
-        hostname=String()
+    deviceMetrics = BatchSQLAlchemyConnectionField(
+        DeviceMetrics.connection, hostname=String()
     )
 
-    def resolve_all_device_metrics_by_hostname(self, info, hostname=None, **kwargs):
+    def resolve_deviceMetrics(self, info, hostname=None, **kwargs):
         query = DeviceMetrics.get_query(info)
         if hostname:
-            query = query.filter(DeviceMetricsModel.hostname == hostname)
+            query = query.filter(
+                DeviceMetricsModel.hostname == hostname.encode()
+            )
         return query
 
     # Results as a single entry filtered by 'id' and as a list
