@@ -33,8 +33,8 @@ class CiscoProcessQuery(Query):
         try:
             cpu_data, memory_used_data, memory_free_data = await asyncio.gather(
                 self.cpmcputotal5minrev(),
-                self.cempmempoolhcused(),
-                self.cempmempoolhcfree(),
+                self.memorypoolused(),
+                self.memorypoolfree(),
                 return_exceptions=True
             )
 
@@ -43,10 +43,10 @@ class CiscoProcessQuery(Query):
                 final["CISCO-PROCESS-MIB"]["cpmCPUTotal5minRev"] = cpu_data
             
             if memory_used_data and not isinstance(memory_used_data, Exception):
-                final["CISCO-ENHANCED-MEMPOOL-MIB"]["cempMemPoolHCUsed"] = memory_used_data
+                final["CISCO-MEMORY-POOL-MIB"]["ciscoMemoryPoolUsed"] = memory_used_data
             
             if memory_free_data and not isinstance(memory_free_data, Exception):
-                final["CISCO-ENHANCED-MEMPOOL-MIB"]["cempMemPoolHCFree"] = memory_free_data
+                final["CISCO-MEMORY-POOL-MIB"]["ciscoMemoryPoolFree"] = memory_free_data
 
         except Exception as e:
             print(f"Error in Cisco system queries: {e}")
@@ -69,6 +69,8 @@ class CiscoProcessQuery(Query):
 
         try:
             results = await self.snmp_object.swalk(oid, normalized=True) 
+            print(f"results: {results.items()}")
+            print(f"results: {results}")
             for key, value in results.items():
                 data_dict[int(key)] = value
         except Exception as e:
@@ -76,13 +78,22 @@ class CiscoProcessQuery(Query):
         
         return data_dict
     
-    async def cempmempoolhcused(self, oidonly=False):
-        """Return dict of CISCO-ENHANCED-MEMPOOL-MIB cempMemPoolHCUsed for device."""
+    async def memorypoolused(self, oidonly=False):
+        """Get total used memory from CISCO-MEMORY-POOL-MIB (ciscoMemoryPoolUsed).
+    
+        Args:
+            oidonly (bool): If True, return the OID string instead of querying.
+
+        Returns:
+            int | str | dict: Sum of used memory in bytes, 
+                              OID string if oidonly=True, 
+                              or empty dict on error.
+        """
         # Initialize key variables
         data_dict = defaultdict(dict)
         
         # Process OID - Enhanced memory pool used (high capacity)
-        oid = ".1.3.6.1.4.1.9.9.221.1.1.1.1.18"
+        oid = ".1.3.6.1.4.1.9.9.48.1.1.1.5"
 
         # Return OID value for unittests
         if oidonly is True:
@@ -90,20 +101,29 @@ class CiscoProcessQuery(Query):
         
         try:
             results = await self.snmp_object.swalk(oid, normalized=True)
-            for key, value in results.items():
-                data_dict[int(key)] = value
+            used_memory = sum(results.values())
+            
+            return used_memory
         except Exception as e:
-            print(f"Error querying Cisco Memory: {e}")
-        
-        return data_dict
+            print(f"Error querying Cisco MemoryPoolUsed: {e}")
+            return None
 
-    async def cempmempoolhcfree(self, oidonly=False):
-        """Return dict of CISCO-ENHANCED-MEMPOOL-MIB cempMemPoolHCFree for device."""
+    async def memorypoolfree(self, oidonly=False):
+        """Get total free memory from CISCO-MEMORY-POOL-MIB (ciscoMemoryPoolFree).
+    
+        Args:
+            oidonly (bool): If True, return the OID string instead of querying.
+
+        Returns:
+            int | str | dict: Sum of free memory in bytes, 
+                              OID string if oidonly=True, 
+                              or empty dict on error.
+        """
         # Initialize key variables
         data_dict = defaultdict(dict)
         
         # Process OID - Enhanced memory pool free (high capacity)
-        oid = ".1.3.6.1.4.1.9.9.221.1.1.1.1.20"
+        oid = ".1.3.6.1.4.1.9.9.48.1.1.1.6"
 
         # Return OID value for unittests
         if oidonly is True:
@@ -111,9 +131,10 @@ class CiscoProcessQuery(Query):
         
         try:
             results = await self.snmp_object.swalk(oid, normalized=True)
-            for key, value in results.items():
-                data_dict[int(key)] = value
+            free_memory = sum(results.values())
+
+            return free_memory
+           
         except Exception as e:
-            print(f"Error querying Cisco Memory Free: {e}")
-        
-        return data_dict
+            print(f"Error querying Cisco MemoryPoolFree: {e}")
+            return None

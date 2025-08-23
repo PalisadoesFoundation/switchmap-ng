@@ -47,7 +47,7 @@ QUERIES = [
     # EssSwitchQuery,
     # JuniperVlanQuery,
     # QbridgeQuery,
-    HostResourcesQuery
+    # HostResourcesQuery
 ]
 
 
