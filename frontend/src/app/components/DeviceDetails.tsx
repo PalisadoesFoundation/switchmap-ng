@@ -20,10 +20,9 @@ function MetadataRow({ label, value }: { label: string; value: string }) {
 type DeviceData = {
   hostname: string;
   uptime?: number;
-  sysUptime?: number;
   cpuUtilization: number;
   memoryUtilization: number;
-  timestamp: string; // ISO string from API
+  lastPolled: number;
   sysName?: string;
   sysDescription?: string;
   sysObjectid?: string;
@@ -43,13 +42,14 @@ const TIME_RANGES = [
 
 export function DeviceDetails({ device }: DeviceDetailsProps) {
   const [uptimeData, setUptimeData] = useState<
-    { timestamp: string; value: number }[]
+    { lastPolled: string; value: number }[]
   >([]);
+
   const [cpuUsageData, setCpuUsageData] = useState<
-    { timestamp: string; value: number }[]
+    { lastPolled: string; value: number }[]
   >([]);
   const [memoryUsageData, setMemoryUsageData] = useState<
-    { timestamp: string; value: number }[]
+    { lastPolled: string; value: number }[]
   >([]);
   const [deviceMetrics, setDeviceMetrics] = useState<DeviceData | null>(null);
 
@@ -126,7 +126,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
             uptime
             cpuUtilization
             memoryUtilization
-            timestamp
+            lastPolled
           }
         }
       }
@@ -151,28 +151,31 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
 
         hostMetrics.sort(
           (a, b) =>
-            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+            new Date(a.lastPolled).getTime() - new Date(b.lastPolled).getTime()
         );
 
         setDeviceMetrics(hostMetrics[hostMetrics.length - 1]);
 
         setUptimeData(
-          hostMetrics.map((m) => ({
-            timestamp: new Date(m.timestamp).toISOString(),
-            value: (m.sysUptime ?? m.uptime ?? 0) / 1000000,
-          }))
+          hostMetrics.map((m) => {
+            const uptime = Number(m.uptime);
+            return {
+              lastPolled: new Date(m.lastPolled * 1000).toISOString(), // convert UNIX seconds to ISO
+              value: Number.isFinite(uptime) && uptime > 0 ? 1 : 0,
+            };
+          })
         );
 
         setCpuUsageData(
           hostMetrics.map((m) => ({
-            timestamp: new Date(m.timestamp).toISOString(),
+            lastPolled: new Date(m.lastPolled * 1000).toISOString(),
             value: m.cpuUtilization,
           }))
         );
 
         setMemoryUsageData(
           hostMetrics.map((m) => ({
-            timestamp: new Date(m.timestamp).toISOString(),
+            lastPolled: new Date(m.lastPolled * 1000).toISOString(),
             value: m.memoryUtilization,
           }))
         );
@@ -184,7 +187,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
     fetchData();
   }, [device.hostname]);
 
-  const filterByRange = (data: { timestamp: string; value: number }[]) => {
+  const filterByRange = (data: { lastPolled: string; value: number }[]) => {
     const now = new Date();
     let startDate: Date;
 
@@ -193,12 +196,13 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
       const endDate = new Date(customRange.end);
       return data.filter(
         (d) =>
-          new Date(d.timestamp) >= startDate && new Date(d.timestamp) <= endDate
+          new Date(d.lastPolled) >= startDate &&
+          new Date(d.lastPolled) <= endDate
       );
     } else {
       startDate = new Date();
       startDate.setDate(now.getDate() - selectedRange);
-      return data.filter((d) => new Date(d.timestamp) >= startDate);
+      return data.filter((d) => new Date(d.lastPolled) >= startDate);
     }
   };
 
@@ -318,11 +322,19 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
 
       <div className="p-4 w-full min-w-[350px] flex flex-col xl:flex-row gap-4">
         <HistoricalChart
-          title="Uptime (%)"
+          title="System Status"
           data={filterByRange(uptimeData)}
           color="#00b894"
-          unit="%"
+          unit=""
+          yAxisConfig={{
+            domain: [0, 1],
+            ticks: [0, 1],
+            tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
+            allowDecimals: false,
+          }}
+          lineType="stepAfter"
         />
+
         <HistoricalChart
           title="CPU Usage (%)"
           data={filterByRange(cpuUsageData)}
