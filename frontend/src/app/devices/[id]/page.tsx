@@ -138,6 +138,13 @@ export default function DevicePage() {
 
   const [activeTab, setActiveTab] = useState<number>(0);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const handler = () => setSidebarOpen(media.matches);
+    handler(); // initial check
+    media.addEventListener("change", handler);
+    return () => media.removeEventListener("change", handler);
+  }, []);
 
   return (
     <div className="flex h-screen">
