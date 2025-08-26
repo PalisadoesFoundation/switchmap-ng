@@ -10,7 +10,7 @@ import {
 } from "recharts";
 
 type DataPoint = {
-  timestamp: string;
+  lastPolled: string;
   value: number;
 };
 
@@ -19,6 +19,13 @@ interface HistoricalChartProps {
   title: string;
   color?: string;
   unit?: string;
+  yAxisConfig?: {
+    domain?: [number, number];
+    ticks?: number[];
+    tickFormatter?: (v: number) => string;
+    allowDecimals?: boolean;
+  };
+  lineType?: "linear" | "monotone" | "step" | "stepAfter" | "stepBefore";
 }
 
 function HistoricalChart({
@@ -26,6 +33,8 @@ function HistoricalChart({
   title,
   color = "#8884d8",
   unit = "",
+  yAxisConfig,
+  lineType = "monotone",
 }: HistoricalChartProps) {
   return (
     <div className="w-full h-64 m-2">
@@ -33,8 +42,14 @@ function HistoricalChart({
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="timestamp" />
-          <YAxis />
+          <XAxis dataKey="lastPolled" />
+          <YAxis
+            domain={yAxisConfig?.domain}
+            ticks={yAxisConfig?.ticks}
+            tickFormatter={yAxisConfig?.tickFormatter}
+            allowDecimals={yAxisConfig?.allowDecimals}
+          />
+
           <Tooltip
             formatter={(value: number) => `${value}${unit}`}
             labelStyle={{ fontWeight: "bold" }}
