@@ -74,11 +74,11 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
   );
   const metadataTableMemo = useMemo(
     () => (
-      <div className="max-w-full h-[400px] min-w-[300px] w-[50vw] p-5 bg-content-bg items-center justify-center border border-border-subtle rounded-lg lg:w-[50vw] xl:w-[35vw]">
+      <div className="max-w-full min-h-[300px] h-auto min-w-[300px] w-auto md:w-[50vw] p-5 m-4 bg-content-bg items-center justify-center border border-border-subtle rounded-lg xl:w-[35vw]">
         <table
           className={`table-auto w-fit m-top-0 text-left ${styles.tableCustom}`}
         >
-          <tbody className="text-xs md:text-sm">
+          <tbody className="text-xs md:text-sm xl:text-lg">
             <MetadataRow label="Device Name" value={device.sysName ?? "-"} />
             <MetadataRow
               label="Description"
