@@ -92,9 +92,15 @@ def device(idx_zone, data):
     log_message = f"Updated Device table for host {hostname}"
     log.log2debug(1137, log_message)
     # Insert metrics into historical table
-    cpu_value = data.get("system", {}).get("cpu", {}).get("total", {}).get("value")
-    memory_used = data.get("system", {}).get("memory", {}).get("used", {}).get("value", 0)
-    memory_free = data.get("system", {}).get("memory", {}).get("free", {}).get("value", 0)
+    cpu_value = (
+        data.get("system", {}).get("cpu", {}).get("total", {}).get("value")
+    )
+    memory_used = (
+        data.get("system", {}).get("memory", {}).get("used", {}).get("value", 0)
+    )
+    memory_free = (
+        data.get("system", {}).get("memory", {}).get("free", {}).get("value", 0)
+    )
     memory_total = memory_used + memory_free
 
     if memory_total > 0:
@@ -102,11 +108,11 @@ def device(idx_zone, data):
     else:
         memory_value = 0
 
-# save memory_percent instead of raw memory_used
+    # save memory_percent instead of raw memory_used
 
     metric_row = DeviceMetricsHistory(
         hostname=hostname,
-        timestamp=datetime.datetime.utcnow(),
+        last_polled=data["misc"]["timestamp"],
         uptime=data["system"]["SNMPv2-MIB"]["sysUpTime"][0],
         cpu_utilization=cpu_value,
         memory_utilization=memory_value,
