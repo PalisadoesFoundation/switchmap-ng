@@ -402,18 +402,20 @@ class DeviceAttribute:
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
+
 class DeviceMetricsAttribute:
     """Descriptive attributes for DeviceMetricsHistory table."""
 
     hostname = graphene.String(
-        resolver=lambda obj, info: obj.hostname.decode() if obj.hostname else None,
+        resolver=lambda obj, info: (
+            obj.hostname.decode() if obj.hostname else None
+        ),
         description="System hostname",
     )
-    timestamp = graphene.DateTime(description="Timestamp of metric poll")
+    last_polled = graphene.Int(description="Timestamp of last poll")
     uptime = graphene.Float(description="System uptime")
     cpu_utilization = graphene.Float(description="CPU utilization")
     memory_utilization = graphene.Float(description="Memory utilization")
-
 
 
 class L1InterfaceAttribute:

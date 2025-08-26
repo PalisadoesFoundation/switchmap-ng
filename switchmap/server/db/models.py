@@ -217,9 +217,7 @@ class DeviceMetricsHistory(BASE):
 
     id = Column(BIGINT(unsigned=True), primary_key=True, autoincrement=True)
     hostname = Column(VARBINARY(256), nullable=False, default=None, index=True)
-    timestamp = Column(
-        DateTime, nullable=False, default=datetime.datetime.utcnow, index=True
-    )
+    last_polled = Column(BIGINT(20, unsigned=True), default=None)
     uptime = Column(BIGINT(unsigned=True), nullable=True)
     cpu_utilization = Column(Float, nullable=True)
     memory_utilization = Column(Float, nullable=True)
