@@ -191,6 +191,8 @@ export default function DevicePage() {
 
   if (sidebarOpen === null) return null;
 
+  if (sidebarOpen === null) return null;
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
@@ -230,7 +232,7 @@ export default function DevicePage() {
           {tabs.map((tab, idx) => (
             <button
               key={tab.label}
-              onClick={() => setActiveTab(idx)}
+              onClick={() => handleTabChange(idx)}
               className={`bg-transparent px-4 py-3 font-normal text-left text-base ${
                 activeTab === idx ? "bg-[var(--select-bg)]" : ""
               }`}
