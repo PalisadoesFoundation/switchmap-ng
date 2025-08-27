@@ -75,6 +75,14 @@ export default function DevicePage() {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
+  const handleTabChange = (idx: number) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", String(idx));
+    const hash = window.location.hash;
+    router.replace(`${window.location.pathname}?${params.toString()}${hash}`);
+    setActiveTab(idx);
+  };
+
   useEffect(() => {
     if (!id) return;
     const globalId = btoa(`Device:${id}`);
@@ -136,15 +144,21 @@ export default function DevicePage() {
     },
   ];
 
-  const [activeTab, setActiveTab] = useState<number>(0);
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(false);
+  const initialTab = Number(searchParams.get("tab") ?? 0);
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
+
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");
     const handler = () => setSidebarOpen(media.matches);
-    handler(); // initial check
+
+    handler();
     media.addEventListener("change", handler);
+
     return () => media.removeEventListener("change", handler);
   }, []);
+
+  if (sidebarOpen === null) return null;
 
   return (
     <div className="flex h-screen">
@@ -185,7 +199,7 @@ export default function DevicePage() {
           {tabs.map((tab, idx) => (
             <button
               key={tab.label}
-              onClick={() => setActiveTab(idx)}
+              onClick={() => handleTabChange(idx)}
               className={`bg-transparent px-4 py-3 font-normal text-left text-base ${
                 activeTab === idx ? "bg-[var(--select-bg)]" : ""
               }`}
