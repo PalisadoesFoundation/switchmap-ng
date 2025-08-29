@@ -21,7 +21,7 @@ interface HistoricalChartProps {
   unit?: string;
 }
 
-const HistoricalChart: React.FC<HistoricalChartProps> = ({
+export function HistoricalChart({
   data,
   title,
   color = "#8884d8",
@@ -44,6 +44,4 @@ const HistoricalChart: React.FC<HistoricalChartProps> = ({
       </ResponsiveContainer>
     </div>
   );
-};
-
-export default HistoricalChart;
+}
