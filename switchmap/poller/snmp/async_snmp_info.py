@@ -77,8 +77,8 @@ class Query:
             vendor = iana_enterprise.Query(sysobjectid=sysobjectid)
             data["IANAEnterpriseNumber"] = vendor.enterprise()
         else:
-            data["IANAEnterpriseNumber"] = None    
-        
+            data["IANAEnterpriseNumber"] = None
+
         return data
 
     async def system(self):
