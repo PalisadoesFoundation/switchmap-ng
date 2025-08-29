@@ -10,6 +10,7 @@ gunicorn==20.0.4
 
 # Posting
 requests
+aiohttp
 
 # Polling
 easysnmp==0.2.5

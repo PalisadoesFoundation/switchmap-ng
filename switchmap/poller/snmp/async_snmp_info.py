@@ -72,9 +72,12 @@ class Query:
 
         # Get vendor information
         sysobjectid = await self.snmp_object.sysobjectid()
-        vendor = iana_enterprise.Query(sysobjectid=sysobjectid)
-        data["IANAEnterpriseNumber"] = vendor.enterprise()
-
+        if sysobjectid:
+            vendor = iana_enterprise.Query(sysobjectid=sysobjectid)
+            data["IANAEnterpriseNumber"] = vendor.enterprise()
+        else:
+            data["IANAEnterpriseNumber"] = None    
+        
         return data
 
     async def system(self):

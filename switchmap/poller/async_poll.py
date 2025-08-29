@@ -5,6 +5,7 @@ from collections import namedtuple
 from pprint import pprint
 import os
 import time
+import aiohttp
 
 # Import app libraries
 from switchmap import API_POLLER_POST_URI
@@ -58,14 +59,14 @@ async def devices(max_concurrent_devices=None):
     # Semaphore to limit concurrent devices
     device_semaphore = asyncio.Semaphore(max_concurrent_devices)
 
-    tasks = [
-        device(argument, device_semaphore, post=True) for argument in arguments
-    ]
-
-    # Execute all devices concurrently
-    start_time = time.time()
-    results = await asyncio.gather(*tasks, return_exceptions=True)
-    end_time = time.time()
+    async with aiohttp.ClientSession() as session:
+         tasks = [
+            device(argument, device_semaphore, session, post=True) for argument in arguments
+        ]
+        # Execute all devices concurrently
+         start_time = time.time()
+         results = await asyncio.gather(*tasks, return_exceptions=True)
+         end_time = time.time()
 
     # Process results and log summary
     success_count = sum(1 for r in results if r is True)
@@ -83,7 +84,7 @@ async def devices(max_concurrent_devices=None):
             log.log2warning(1403, log_message)
 
 
-async def device(poll_meta, device_semaphore, post=True):
+async def device(poll_meta, device_semaphore, session,post=True):
     """Poll each device asynchoronously.
 
     Args:
@@ -137,13 +138,20 @@ async def device(poll_meta, device_semaphore, post=True):
                 data = _device.process()
                 data["misc"]["zone"] = zone
 
-                #! do a little research on aiohttp
                 if post:
-                    rest.post(API_POLLER_POST_URI, data, config)
-                    log_message = (
-                        f"Successfully polled and posted data for {hostname}"
-                    )
-                    log.log2debug(1407, log_message)
+                    try:
+                        async with session.post(API_POLLER_POST_URI, json=data) as res:
+                            if res.status == 200:
+                                log_message = f"Successfully polled and posted data for {hostname}"
+                                log.log2debug(1407, log_message)
+                            else:
+                                log_message = f"Failed to post data for {hostname}, status={res.status}"
+                                log.log2warning(1414, log_message)
+                    except aiohttp.ClientError as e:
+                        log_message = f"HTTP error posting data for {hostname}: {e}"
+                        log.log2exception(1415, log_message)
+                        return False
+
                 else:
                     pprint(data)
 
@@ -192,8 +200,9 @@ async def cli_device(hostname):
         log.log2info(1410, log_message)
 
         # Poll each zone occurrence
+        semaphore = asyncio.Semaphore(1)
         tasks = [
-            device(argument, asyncio.Semaphore(1), post=False)
+            device(argument, semaphore, post=False)
             for argument in arguments
         ]
         results = await asyncio.gather(*tasks, return_exceptions=True)
