@@ -248,7 +248,15 @@ async def cli_device(hostname):
 
 
 def run_devices(max_concurrent_devices=None):
-    """Run device polling - main entry point."""
+    """Run device polling - main entry point.
+
+    Args:
+        max_concurrent_devices (int, optional): Maximum number of devices to
+            poll concurrently. If None, uses config.agent_subprocesses().
+
+    Returns:
+        None
+    """
     # Use config if not specified
     if max_concurrent_devices is None:
         config = ConfigPoller()
@@ -258,5 +266,12 @@ def run_devices(max_concurrent_devices=None):
 
 
 def run_cli_device(hostname):
-    """Run CLI device polling - main entry point."""
+    """Run CLI device polling - main entry point.
+
+    Args:
+        hostname (str): The hostname of the device to poll.
+
+    Returns:
+        None
+    """
     asyncio.run(cli_device(hostname))
