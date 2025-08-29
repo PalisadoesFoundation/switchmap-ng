@@ -28,7 +28,6 @@ async def devices(max_concurrent_devices=None):
     Returns:
         None
     """
-
     # Initialize key variables
     arguments = []
 
@@ -53,29 +52,36 @@ async def devices(max_concurrent_devices=None):
         log.log2info(1400, log_message)
         return
 
-    log_message = f"Starting async polling of {len(arguments)} devices with max concurrency: {max_concurrent_devices}"
+    log_message = (
+        f"Starting async polling of {len(arguments)} devices "
+        f"with max concurrency: {max_concurrent_devices}"
+    )
     log.log2info(1401, log_message)
 
     # Semaphore to limit concurrent devices
     device_semaphore = asyncio.Semaphore(max_concurrent_devices)
 
     async with aiohttp.ClientSession() as session:
-         tasks = [
-            device(argument, device_semaphore, session, post=True) for argument in arguments
+        tasks = [
+            device(argument, device_semaphore, session, post=True)
+            for argument in arguments
         ]
         # Execute all devices concurrently
-         start_time = time.time()
-         results = await asyncio.gather(*tasks, return_exceptions=True)
-         end_time = time.time()
+        start_time = time.time()
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        end_time = time.time()
 
     # Process results and log summary
     success_count = sum(1 for r in results if r is True)
     error_count = sum(1 for r in results if isinstance(r, Exception))
     failed_count = len(results) - success_count - error_count
 
-    log_message = f"Polling completed in {end_time - start_time:.2f}s: {success_count} succeeded, {failed_count} failed, {error_count} errors"
+    log_message = (
+        f"Polling completed in {end_time - start_time:.2f}s: "
+        f"{success_count} succeeded, {failed_count} failed, "
+        f"{error_count} errors"
+    )
     log.log2info(1402, log_message)
-
     # Log specific errors
     for i, result in enumerate(results):
         if isinstance(result, Exception):
@@ -84,18 +90,18 @@ async def devices(max_concurrent_devices=None):
             log.log2warning(1403, log_message)
 
 
-async def device(poll_meta, device_semaphore, session,post=True):
-    """Poll each device asynchoronously.
+async def device(poll_meta, device_semaphore, session, post=True):
+    """Poll each device asynchronously.
 
     Args:
         poll_meta: _META object containing zone, hostname, config
         device_semaphore: Semaphore to limit concurrent devices
+        session: aiohttp ClientSession for HTTP requests
         post: Post the data if True, else just print it
 
     Returns:
         bool: True if successful, False otherwise
     """
-
     async with device_semaphore:
         # Initialize key variables
         hostname = poll_meta.hostname
@@ -105,7 +111,10 @@ async def device(poll_meta, device_semaphore, session,post=True):
         # Do nothing if the skip file exists
         skip_file = files.skip_file(AGENT_POLLER, config)
         if os.path.isfile(skip_file):
-            log_message = f"Skip file {skip_file} found. Aborting poll for {hostname} in zone '{zone}'"
+            log_message = (
+                f"Skip file {skip_file} found. Aborting poll for "
+                f"{hostname} in zone '{zone}'"
+            )
             log.log2debug(1404, log_message)
             return False
 
@@ -140,15 +149,25 @@ async def device(poll_meta, device_semaphore, session,post=True):
 
                 if post:
                     try:
-                        async with session.post(API_POLLER_POST_URI, json=data) as res:
+                        async with session.post(
+                            API_POLLER_POST_URI, json=data
+                        ) as res:
                             if res.status == 200:
-                                log_message = f"Successfully polled and posted data for {hostname}"
+                                log_message = (
+                                    f"Successfully polled and posted data "
+                                    f"for {hostname}"
+                                )
                                 log.log2debug(1407, log_message)
                             else:
-                                log_message = f"Failed to post data for {hostname}, status={res.status}"
+                                log_message = (
+                                    f"Failed to post data for {hostname}, "
+                                    f"status={res.status}"
+                                )
                                 log.log2warning(1414, log_message)
                     except aiohttp.ClientError as e:
-                        log_message = f"HTTP error posting data for {hostname}: {e}"
+                        log_message = (
+                            f"HTTP error posting data for {hostname}: {e}"
+                        )
                         log.log2exception(1415, log_message)
                         return False
 
@@ -157,7 +176,10 @@ async def device(poll_meta, device_semaphore, session,post=True):
 
                 return True
             else:
-                log_message = f"Device {hostname} returns no data. Check connectivity/SNMP configuration"
+                log_message = (
+                    f"Device {hostname} returns no data. Check "
+                    f"connectivity/SNMP configuration"
+                )
                 log.log2debug(1408, log_message)
                 return False
 
@@ -201,16 +223,20 @@ async def cli_device(hostname):
 
         # Poll each zone occurrence
         semaphore = asyncio.Semaphore(1)
-        tasks = [
-            device(argument, semaphore, post=False)
-            for argument in arguments
-        ]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
+        async with aiohttp.ClientSession() as session:
+            tasks = [
+                device(argument, semaphore, session, post=False)
+                for argument in arguments
+            ]
+            results = await asyncio.gather(*tasks, return_exceptions=True)
 
         # Check results
         success_count = sum(1 for r in results if r is True)
         if success_count > 0:
-            log_message = f"Successfully polled {hostname} from {success_count}/{len(results)} zone(s)"
+            log_message = (
+                f"Successfully polled {hostname} from "
+                f"{success_count}/{len(results)} zone(s)"
+            )
             log.log2info(1411, log_message)
         else:
             log_message = f"Failed to poll {hostname} from any configured zone"
