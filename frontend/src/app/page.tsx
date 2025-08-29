@@ -125,7 +125,7 @@ export default function Home() {
         if (retryCount < 2) {
           setTimeout(
             () => fetchDevices(retryCount + 1),
-            1000 * (retryCount + 1)
+            3000 * (retryCount + 1)
           );
           return;
         }
