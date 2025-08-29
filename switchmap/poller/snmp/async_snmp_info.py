@@ -1,6 +1,7 @@
 """Async module to aggregate query results."""
 
 import time
+import sys
 from collections import defaultdict
 from switchmap.core import log
 import asyncio
@@ -47,22 +48,19 @@ class Query:
         results = await asyncio.gather(
             self.misc(),
             self.system(),
-            # self.layer1(),
-            # self.layer2(),
-            # self.layer3(),
+            self.layer1(),
+            self.layer2(),
+            self.layer3(),
             return_exceptions=True,
         )
 
-        # keys = ["misc", "system", "layer1", "layer2", "layer3"]
-        keys = ["misc", "system",]
+        keys = ["misc", "system", "layer1", "layer2", "layer3"]
         for key, result in zip(keys, results):
             if isinstance(result, Exception):
-                log.warning(f"{key} failed: {result}")
+                log.log2warning(f"{key} failed: {result}")
             elif result:
                 data[key] = result
-        
-        print(f"Final data: {data}")
-
+        print(f"final data: {data}")
         # Return
         return data
 
@@ -95,8 +93,6 @@ class Query:
 
         # Get system information from various MIB classes
         system_queries = get_queries("system")
-
-        print(f"system_queries: {system_queries}")
 
         # Create all query instances
         query_items = [
