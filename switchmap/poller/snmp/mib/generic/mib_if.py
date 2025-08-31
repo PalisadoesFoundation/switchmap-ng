@@ -129,6 +129,10 @@ class IfQuery(Query):
             (self.ifinmulticastpkts, "ifInMulticastPkts"),
             (self.ifoutmulticastpkts, "ifOutMulticastPkts"),
             (self.iflastchange, "ifLastChange"),
+            (self.ifInUcastPkts,"ifInUcastPkts"),
+            (self.ifOutUcastPkts,"ifOutUcastPkts"),
+            (self.ifInErrors, "ifInErrors"),
+            (self.ifInDiscards, "ifInDiscards")
         ]
 
         # Execute all queries concurrently with rate limit
@@ -709,23 +713,105 @@ class IfQuery(Query):
 
         # Return the interface descriptions
         return final
+    
+    async def ifInUcastPkts(self, oidonly=False):
+        """Get inbound unicast packet counters for each interface.
+
+        Args:
+            oidonly: Return OID's value, not results, if True
+
+        Returns:
+            dict: Mapping of ifIndex → packet count.
+
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+
+        oid = ".1.3.6.1.2.1.2.2.1.11"
+
+        if oidonly is True: 
+            return oid 
+        
+        # Process results
+        results = await self.snmp_object.swalk(oid, normalized=True)
+        for key,value in results.items():
+            data_dict[int(key)] = value 
+        
+        return data_dict
+    
+    async def ifOutUcastPkts(self, oidonly=False):
+        """Get Outbound unicast packet counters for each interface.
+
+        Args:
+            oidonly: Return OID's value, not results, if True
+
+        Returns:
+            data_dict: Dict of ifOutUcastPkts. Key = OID's last node.
+
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+
+        oid = ".1.3.6.1.2.1.2.2.1.17"
+
+        if oidonly is True: 
+            return oid 
+        
+        # Process results
+        results = await self.snmp_object.swalk(oid, normalized=True)
+        for key,value in results.items():
+            data_dict[int(key)] = value 
+        
+        return data_dict
+    
+    async def ifInErrors(self, oidonly=False):
+        """Return dict of IFMIB ifInErrors for each ifIndex for device.
+
+        Args:
+            oidonly: Return OID's value, not results, if True
+
+        Returns:
+            data_dict: Dict of ifInErrors. Key = OID's last node.
+
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+
+        oid = ".1.3.6.1.2.1.2.2.1.14"
+
+        if oidonly is True: 
+            return oid 
+        
+        # Process results
+        results = await self.snmp_object.swalk(oid, normalized=True)
+        for key,value in results.items():
+            data_dict[int(key)] = value 
+        
+        return data_dict
+    
+    async def ifInDiscards(self, oidonly=False):
+        """Return dict of IFMIB ifInDiscards for each ifIndex for device.
+
+        Args:
+            oidonly: Return OID's value, not results, if True
+
+        Returns:
+            data_dict: Dict of ifInDiscards. Key = OID's last node.
+
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+
+        oid = ".1.3.6.1.2.1.2.2.1.13"
+
+        if oidonly is True: 
+            return oid 
+        
+        # Process results
+        results = await self.snmp_object.swalk(oid, normalized=True)
+        for key,value in results.items():
+            data_dict[int(key)] = value 
+        
+        return data_dict
 
 
-# def _get_data(title, func, dest):
-#     """Populate dest with data from the given function.
-
-#     Args:
-#         title: The name of the data
-#         func: The function which will return the data
-#         dest: a dict which will store the data
-
-#     Returns:
-#         dest: The modified destination dict
-
-#     """
-#     # Get interface data
-#     values = func()
-#     for key, value in values.items():
-#         dest[key][title] = value
-
-#     return dest

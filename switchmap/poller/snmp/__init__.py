@@ -11,7 +11,6 @@ from .mib.generic.mib_ipv6 import Ipv6Query
 from .mib.generic.mib_lldp import LldpQuery
 from .mib.generic.mib_qbridge import QbridgeQuery
 from .mib.generic.mib_snmpv2 import Snmpv2Query
-from .mib.generic.mib_hostresources import HostResourcesQuery
 
 from .mib.cisco import CiscoC2900Query
 from .mib.cisco import CiscoCdpQuery
@@ -23,31 +22,32 @@ from .mib.cisco import CiscoVtpQuery
 from .mib.cisco import CiscoProcessQuery
 
 from .mib.juniper import JuniperVlanQuery
+from .mib.juniper import JuniperProcessQuery
 
 
 __all__ = ("cisco", "juniper")
 
 QUERIES = [
-    # CiscoC2900Query,
-    # CiscoVtpQuery,
-    # CiscoIetfIpQuery,
-    # CiscoCdpQuery,
-    # CiscoStackQuery,
-    # CiscoVlanMembershipQuery,
-    # CiscoVlanIftableRelationshipQuery,
+    CiscoC2900Query,
+    CiscoVtpQuery,
+    CiscoIetfIpQuery,
+    CiscoCdpQuery,
+    CiscoStackQuery,
+    CiscoVlanMembershipQuery,
+    CiscoVlanIftableRelationshipQuery,
     CiscoProcessQuery,
-    # Snmpv2Query,
-    # IfQuery,
-    # BridgeQuery,
-    # IpQuery,
-    # Ipv6Query,
-    # EtherlikeQuery,
-    # EntityQuery,
-    # LldpQuery,
-    # EssSwitchQuery,
-    # JuniperVlanQuery,
-    # QbridgeQuery,
-    # HostResourcesQuery
+    Snmpv2Query,
+    IfQuery,
+    BridgeQuery,
+    IpQuery,
+    Ipv6Query,
+    EtherlikeQuery,
+    EntityQuery,
+    LldpQuery,
+    EssSwitchQuery,
+    JuniperVlanQuery,
+    QbridgeQuery,
+    JuniperProcessQuery
 ]
 
 

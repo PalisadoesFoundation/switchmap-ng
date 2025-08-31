@@ -3,6 +3,7 @@
 from collections import defaultdict
 from switchmap.poller.snmp.base_query import Query
 import asyncio
+from switchmap.core import log
 
 def get_query():
     """Return this module's Query class."""
@@ -50,8 +51,9 @@ class CiscoProcessQuery(Query):
 
         except Exception as e:
             print(f"Error in Cisco system queries: {e}")
-
-        print(f"Cisco Process data: {final}")
+            log.log2warning(1316, f" Error in Cisco Process MIB: {e}")
+            return final
+        
         
         return final 
     
@@ -89,9 +91,7 @@ class CiscoProcessQuery(Query):
                               OID string if oidonly=True, 
                               or empty dict on error.
         """
-        # Initialize key variables
-        data_dict = defaultdict(dict)
-        
+
         # Process OID - Enhanced memory pool used (high capacity)
         oid = ".1.3.6.1.4.1.9.9.48.1.1.1.5"
 
