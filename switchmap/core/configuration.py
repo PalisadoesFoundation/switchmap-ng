@@ -55,29 +55,6 @@ class ConfigCore(_Config):
             )
             log.log2die_safe(1006, log_message)
 
-    def agent_subprocesses(self):
-        """Get agent_subprocesses.
-
-        Args:
-            None
-
-        Returns:
-            result: result
-
-        """
-        # Get threads
-        threads = max(1, self._config_core.get("agent_subprocesses", 20))
-
-        # Get CPU cores
-        cores = multiprocessing.cpu_count()
-        desired_max_threads = max(1, cores - 1)
-
-        # We don't want a value that's too big that the CPU cannot cope
-        result = min(threads, desired_max_threads)
-
-        # Return
-        return result
-
     def api_log_file(self, daemon):
         """Get api_log_file.
 

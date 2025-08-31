@@ -8,7 +8,7 @@ import time
 import aiohttp
 
 # Import app libraries
-from switchmap import API_POLLER_POST_URI
+from switchmap import API_POLLER_POST_URI,API_PREFIX
 from switchmap.poller.snmp import async_poller
 from switchmap.poller.update import device as udevice
 from switchmap.poller.configuration import ConfigPoller
@@ -35,13 +35,16 @@ async def devices(max_concurrent_devices=None):
     config = ConfigPoller()
 
     # Use config value if not provided
-    if max_concurrent_devices is None:
-        max_concurrent_devices = config.agent_subprocesses()
+    if not isinstance(max_concurrent_devices,int) or max_concurrent_devices < 1:
+        log.log2warning(1401, f"Invalid concurrency={max_concurrent_devices}; defaulting to 1")
+        max_concurrent_devices = 1
 
     # Create a list of polling objects
     zones = sorted(config.zones(), key=lambda z: z.name)
 
     for zone in zones:
+        if not zone.hostnames:
+            continue
         arguments.extend(
             _META(zone=zone.name, hostname=_, config=config)
             for _ in zone.hostnames
@@ -60,8 +63,9 @@ async def devices(max_concurrent_devices=None):
 
     # Semaphore to limit concurrent devices
     device_semaphore = asyncio.Semaphore(max_concurrent_devices)
-
-    async with aiohttp.ClientSession() as session:
+    
+    timeout = aiohttp.ClientTimeout(total=30)
+    async with aiohttp.ClientSession(timeout=timeout) as session:
         tasks = [
             device(argument, device_semaphore, session, post=True)
             for argument in arguments
@@ -149,8 +153,13 @@ async def device(poll_meta, device_semaphore, session, post=True):
 
                 if post:
                     try:
+                        # Construct full URL for posting 
+                        url = f"{config.server_url_root()}{API_PREFIX}{API_POLLER_POST_URI}"
+                        log_message = f"Posting data for {hostname} to {url}"
+                        log.log2debug(1416, log_message)
+                        
                         async with session.post(
-                            API_POLLER_POST_URI, json=data
+                            url, json=data
                         ) as res:
                             if res.status == 200:
                                 log_message = (
@@ -168,7 +177,7 @@ async def device(poll_meta, device_semaphore, session, post=True):
                         log_message = (
                             f"HTTP error posting data for {hostname}: {e}"
                         )
-                        log.log2exception(1415, log_message)
+                        log.log2warning(1415, log_message)
                         return False
 
                 else:
@@ -183,9 +192,13 @@ async def device(poll_meta, device_semaphore, session, post=True):
                 log.log2debug(1408, log_message)
                 return False
 
+        except (asyncio.TimeoutError, KeyError, ValueError) as e:
+            log_message = f"Recoverable error polling device {hostname}: {e}"
+            log.log2warning(1409, log_message)
+            return False
         except Exception as e:
             log_message = f"Unexpected error polling device {hostname}: {e}"
-            log.log2exception(1409, log_message)
+            log.log2warning(1409, log_message)
             return False
 
 
@@ -209,6 +222,8 @@ async def cli_device(hostname):
 
     # Create a list of arguments
     for zone in zones:
+        if not zone.hostnames:
+            continue
         for next_hostname in zone.hostnames:
             if next_hostname == hostname:
                 arguments.append(
