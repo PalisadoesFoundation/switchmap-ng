@@ -8,7 +8,7 @@ import time
 import aiohttp
 
 # Import app libraries
-from switchmap import API_POLLER_POST_URI
+from switchmap import API_POLLER_POST_URI, API_PREFIX
 from switchmap.poller.snmp import async_poller
 from switchmap.poller.update import device as udevice
 from switchmap.poller.configuration import ConfigPoller
@@ -149,9 +149,12 @@ async def device(poll_meta, device_semaphore, session, post=True):
 
                 if post:
                     try:
-                        async with session.post(
-                            API_POLLER_POST_URI, json=data
-                        ) as res:
+                        # Construct full URL for posting
+                        url = f"{config.server_url_root()}{API_PREFIX}{API_POLLER_POST_URI}"
+                        log_message = f"Posting data for {hostname} to {url}"
+                        log.log2debug(1416, log_message)
+                        
+                        async with session.post(url, json=data) as res:
                             if res.status == 200:
                                 log_message = (
                                     f"Successfully polled and posted data "
