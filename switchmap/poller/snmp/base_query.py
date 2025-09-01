@@ -44,7 +44,7 @@ class Query:
         # List of the layers for which this query gathers information
         self.tags = tags
 
-    def supported(self):
+    async def supported(self):
         """Return device's support for the MIB.
 
         Args:
@@ -58,7 +58,7 @@ class Query:
         validity = False
 
         # Return nothing if oid doesn't exist
-        if self.snmp_object.oid_exists(self.test_oid) is True:
+        if await self.snmp_object.oid_exists(self.test_oid) is True:
             validity = True
 
         # Return

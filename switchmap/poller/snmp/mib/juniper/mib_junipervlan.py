@@ -71,19 +71,32 @@ class JuniperVlanQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1", "layer2"])
 
-        # Get mapping of the VLAN's dot1dbaseport ID value to its jnxExVlanTag
-        # Do this only once instead of every time we invoke a method
-        if self.supported() is True:
-            self.vlan_map = self._vlanid2tag()
-        else:
-            self.vlan_map = None
+        self.vlan_map = None
 
         # Get a mapping of dot1dbaseport values to the corresponding ifindex
-        bridge_mib = BridgeQuery(self.snmp_object)
+        self.baseportifindex = None
 
-        self.baseportifindex = bridge_mib.dot1dbaseport_2_ifindex()
+    async def _get_vlan_map(self):
+        """Get mapping of the VLAN's dot1dbaseport ID value to its jnxExVlanTag.
 
-    def layer1(self):
+        Do this only once instead of every time we invoke a method.
+        """
+        if await self.supported() is True:
+            self.vlan_map = await self._vlanid2tag()
+
+    async def _get_bridge_data(self):
+        """Load bridge data only when needed."""
+        if self.baseportifindex is None:
+            self.bridge_mib = BridgeQuery(self.snmp_object)
+
+            if await self.supported() and await self.bridge_mib.supported():
+                self.baseportifindex = (
+                    await self.bridge_mib.dot1dbaseport_2_ifindex()
+                )
+            else:
+                self.baseportifindex = {}
+
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -96,20 +109,24 @@ class JuniperVlanQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
+        # setup dependencies
+        await self._get_vlan_map()
+        await self._get_bridge_data()
+
         # Get interface jnxExVlanTag data
-        values = self.jnxexvlantag()
+        values = await self.jnxexvlantag()
         for key, value in values.items():
             final[key]["jnxExVlanTag"] = value
 
         # Get interface jnxExVlanPortAccessMode data
-        values = self.jnxexvlanportaccessmode()
+        values = await self.jnxexvlanportaccessmode()
         for key, value in values.items():
             final[key]["jnxExVlanPortAccessMode"] = value
 
         # Return
         return final
 
-    def layer2(self):
+    async def layer2(self):
         """Get layer 2 data from device.
 
         Args:
@@ -122,15 +139,17 @@ class JuniperVlanQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
+        await self._get_vlan_map()
+
         # Get interface jnxExVlanName data
-        values = self.jnxexvlanname()
+        values = await self.jnxexvlanname()
         for key, value in values.items():
             final[key]["jnxExVlanName"] = value
 
         # Return
         return final
 
-    def jnxexvlanportaccessmode(self):
+    async def jnxexvlanportaccessmode(self):
         """Return dict of JUNIPER-VLAN-MIB jnxExVlanPortAccessMode per port.
 
         Args:
@@ -145,15 +164,16 @@ class JuniperVlanQuery(Query):
 
         # Process OID
         oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.7.1.5"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
-            ifindex = self.baseportifindex[int(key)]
-            data_dict[ifindex] = value
+            ifindex = self.baseportifindex.get(int(key))
+            if ifindex is not None:
+                data_dict[ifindex] = value
 
         # Return
         return data_dict
 
-    def jnxexvlantag(self):
+    async def jnxexvlantag(self):
         """Return dict of JUNIPER-VLAN-MIB jnxExVlanTag per port.
 
         Args:
@@ -168,7 +188,7 @@ class JuniperVlanQuery(Query):
 
         # Process OID
         oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.7.1.3"
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key in sorted(results.keys()):
             # The key is the full OID. Split this into its component nodes
             nodes = key.split(".")
@@ -188,7 +208,7 @@ class JuniperVlanQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def jnxexvlanname(self):
+    async def jnxexvlanname(self):
         """Return dict of JUNIPER-VLAN-MIB jnxExVlanName for each VLAN tag.
 
         Args:
@@ -203,7 +223,7 @@ class JuniperVlanQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.5.1.2"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for vlan_id, value in results.items():
             # Get VLAN tag
             vlan_tag = self.vlan_map[int(vlan_id)]
@@ -214,7 +234,7 @@ class JuniperVlanQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def _vlanid2tag(self):
+    async def _vlanid2tag(self):
         """Return dict of JUNIPER-VLAN-MIB jnxExVlanTag w/ dot1dbaseport key.
 
         Args:
@@ -229,7 +249,7 @@ class JuniperVlanQuery(Query):
 
         # Get a mapping of dot1dbaseport values to the corresponding ifindex
         oid = ".1.3.6.1.4.1.2636.3.40.1.5.1.5.1.5"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = int(value)
