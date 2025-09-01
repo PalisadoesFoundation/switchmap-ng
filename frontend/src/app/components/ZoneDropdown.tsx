@@ -20,7 +20,12 @@ import { useEffect, useState, useRef } from "react";
  * @see {@link useRef} for managing the dropdown reference to handle outside clicks.
  */
 
-type Zone = { idxZone: string; id: string };
+type Zone = {
+  tsCreated: string;
+  name: string;
+  idxZone: string;
+  id: string;
+};
 
 type ZoneDropdownProps = {
   selectedZoneId: string | null;
@@ -46,18 +51,26 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              query: `  
-              {  
-                zones {  
-                  edges {  
-                    node {  
-                      idxZone  
-                      id  
-                    }  
-                  }  
-                }  
-              }  
-            `,
+              query: `
+  {
+    events(last: 2) {  # fetch last 10 events
+      edges {
+        node {
+          zones {
+            edges {
+              node {
+                tsCreated
+                id
+                idxZone
+                name
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  `,
             }),
           }
         );
@@ -68,9 +81,13 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
         if (json.errors) {
           throw new Error(json.errors[0].message);
         }
-        const rawZones = json.data.zones.edges.map(
-          (edge: ZoneEdge) => edge.node
-        );
+        const rawZones =
+          json.data.events.edges
+            .slice() // copy
+            .reverse() // start from last event
+            .find((edge: any) => edge.node.zones.edges.length > 0)
+            ?.node.zones.edges?.map((edge: ZoneEdge) => edge.node) || [];
+
         setZones(rawZones);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch zones");
@@ -143,6 +160,9 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
           />
         </svg>
       </button>
+      <p className="text-sm text-gray-700 pt-2 text-right">
+        {selected?.tsCreated || ""}
+      </p>
 
       {open && (
         <>
