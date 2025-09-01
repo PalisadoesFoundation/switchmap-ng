@@ -68,7 +68,7 @@ class CiscoIetfIpQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer3"])
 
-    def layer3(self):
+    async def layer3(self):
         """Get layer 3 data from device.
 
         Args:
@@ -82,14 +82,14 @@ class CiscoIetfIpQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface cInetNetToMediaPhysAddress data
-        values = self.cinetnettomediaphysaddress()
+        values = await self.cinetnettomediaphysaddress()
         for key, mac_value in values.items():
             final["cInetNetToMediaPhysAddress"][key] = mac_value[:12]
 
         # Return
         return final
 
-    def cinetnettomediaphysaddress(self):
+    async def cinetnettomediaphysaddress(self):
         """Return dict of the device's ARP table.
 
         Args:
@@ -104,7 +104,7 @@ class CiscoIetfIpQuery(Query):
         oid = ".1.3.6.1.4.1.9.10.86.1.1.3.1.3"
 
         # Get results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, mac_value in results.items():
             # Get MAC address
             macaddress = general.octetstr_2_string(mac_value)

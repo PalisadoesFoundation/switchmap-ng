@@ -4,6 +4,8 @@ from collections import defaultdict
 import binascii
 
 from switchmap.poller.snmp.base_query import Query
+from switchmap.core import log
+import asyncio
 
 
 def get_query():
@@ -71,7 +73,7 @@ class CiscoVtpQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1", "layer2"])
 
-    def layer2(self):
+    async def layer2(self):
         """Get layer 2 data from device.
 
         Args:
@@ -84,25 +86,28 @@ class CiscoVtpQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
-        # Get interface vtpVlanName data
-        values = self.vtpvlanname()
-        for key, value in values.items():
-            final[key]["vtpVlanName"] = value
+        # Run all the Vtp queries concurrently
 
-        # Get interface vtpVlanType data
-        values = self.vtpvlantype()
-        for key, value in values.items():
-            final[key]["vtpVlanType"] = value
+        results = await asyncio.gather(
+            self.vtpvlanname(),
+            self.vtpvlanstate(),
+            self.vtpvlantype(),
+            return_exceptions=True,
+        )
 
-        # Get interface vtpVlanState data
-        values = self.vtpvlanstate()
-        for key, value in values.items():
-            final[key]["vtpVlanState"] = value
+        method_names = ["vtpVlanName", "vtpVlanState", "vtpVlanType"]
 
-        # Return
+        for method_name, values in zip(method_names, results):
+            if isinstance(values, Exception):
+                continue
+
+            if values:
+                for key, value in values.items():
+                    final[key][method_name] = value
+
         return final
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -115,35 +120,49 @@ class CiscoVtpQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
-        # Get interface vlanTrunkPortDynamicState data
-        values = self.vlantrunkportdynamicstate()
-        for key, value in values.items():
-            final[key]["vlanTrunkPortDynamicState"] = value
+        # Can Limit concurrent SNMP queries (can adjust according to need)
+        semaphore = asyncio.Semaphore(10)
 
-        # Get interface vlanTrunkPortDynamicStatus data
-        values = self.vlantrunkportdynamicstatus()
-        for key, value in values.items():
-            final[key]["vlanTrunkPortDynamicStatus"] = value
+        async def limited_query(method, name):
+            """Rate limit SNMP query."""
+            async with semaphore:
+                try:
+                    return name, await method()
+                except Exception as e:
+                    log.log2warning(
+                        1001, f"CISCO-VTP layer1 query failed: {name}: {e}"
+                    )
+                    return name, {}
 
-        # Get interface vlanTrunkPortNativeVlan data
-        values = self.vlantrunkportnativevlan()
-        for key, value in values.items():
-            final[key]["vlanTrunkPortNativeVlan"] = value
+        queries = [
+            (self.vlantrunkportdynamicstate, "vlanTrunkPortDynamicState"),
+            (self.vlantrunkportdynamicstatus, "vlanTrunkPortDynamicStatus"),
+            (self.vlantrunkportnativevlan, "vlanTrunkPortNativeVlan"),
+            (
+                self.vlantrunkportencapsulationtype,
+                "vlanTrunkPortEncapsulationType",
+            ),
+            (self.vlantrunkportvlansenabled, "vlanTrunkPortVlansEnabled"),
+        ]
 
-        # Get interface vlanTrunkPortEncapsulationType data
-        values = self.vlantrunkportencapsulationtype()
-        for key, value in values.items():
-            final[key]["vlanTrunkPortEncapsulationType"] = value
+        # Execute all queries concurrently
+        results = await asyncio.gather(
+            *[limited_query(method, name) for method, name in queries],
+            return_exceptions=True,
+        )
 
-        # Get interface vlanTrunkPortVlansEnabled data
-        values = self.vlantrunkportvlansenabled()
-        for key, value in values.items():
-            final[key]["vlanTrunkPortVlansEnabled"] = value
+        for result in results:
+            if isinstance(result, Exception):
+                continue
 
-        # Return
+            method_name, values = result
+
+            for key, value in values.items():
+                final[key][method_name] = value
+
         return final
 
-    def vlantrunkportencapsulationtype(self, oidonly=False):
+    async def vlantrunkportencapsulationtype(self, oidonly=False):
         """Return CISCO-VTP-MIB vlanTrunkPortEncapsulationType per ifIndex.
 
         Args:
@@ -165,14 +184,14 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 
         # Return the interface descriptions
         return data_dict
 
-    def vlantrunkportnativevlan(self, oidonly=False):
+    async def vlantrunkportnativevlan(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vlanTrunkPortNativeVlan per ifIndex.
 
         Args:
@@ -194,14 +213,14 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 
         # Return the interface descriptions
         return data_dict
 
-    def vlantrunkportdynamicstatus(self, oidonly=False):
+    async def vlantrunkportdynamicstatus(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vlanTrunkPortDynamicStatus per ifIndex.
 
         Args:
@@ -223,14 +242,14 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 
         # Return the interface descriptions
         return data_dict
 
-    def vlantrunkportdynamicstate(self, oidonly=False):
+    async def vlantrunkportdynamicstate(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vlanTrunkPortDynamicState per ifIndex.
 
         Args:
@@ -252,14 +271,14 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 
         # Return the interface descriptions
         return data_dict
 
-    def vtpvlanname(self, oidonly=False):
+    async def vtpvlanname(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vtpVlanName for each VLAN.
 
         Args:
@@ -280,14 +299,14 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
 
-    def vtpvlantype(self, oidonly=False):
+    async def vtpvlantype(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vtpVlanType for each VLAN.
 
         Args:
@@ -308,14 +327,22 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
-            data_dict[int(key)] = value
+            try:
+                raw = value.asOctets()
+            except AttributeError:
+                raw = value if isinstance(value, (bytes, bytearray)) else None
+            data_dict[int(key)] = (
+                raw.decode("utf-8", errors="replace")
+                if raw is not None
+                else str(value)
+            )
 
         # Return the interface descriptions
         return data_dict
 
-    def vtpvlanstate(self, oidonly=False):
+    async def vtpvlanstate(self, oidonly=False):
         """Return dict of CISCO-VTP-MIB vtpVlanState for each VLAN.
 
         Args:
@@ -336,14 +363,14 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 
         # Return the interface descriptions
         return data_dict
 
-    def vlantrunkportvlansenabled(self, oidonly=False):
+    async def vlantrunkportvlansenabled(self, oidonly=False):
         """Return CISCO-VTP-MIB vlanTrunkPortVlansEnabled data per ifIndex.
 
         Args:
@@ -360,7 +387,7 @@ class CiscoVtpQuery(Query):
         base = 16
 
         # Get the trunk status for all ifIndex values
-        trunkstatus = self.vlantrunkportdynamicstatus()
+        trunkstatus = await self.vlantrunkportdynamicstatus()
 
         # OID to Process
         oid = ".1.3.6.1.4.1.9.9.46.1.6.1.1.4"
@@ -370,7 +397,7 @@ class CiscoVtpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Get the ifindex value
             ifindex = int(key)

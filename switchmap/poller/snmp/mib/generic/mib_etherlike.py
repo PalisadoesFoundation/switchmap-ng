@@ -67,7 +67,7 @@ class EtherlikeQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -81,14 +81,14 @@ class EtherlikeQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface dot3StatsDuplexStatus data
-        values = self.dot3statsduplexstatus()
+        values = await self.dot3statsduplexstatus()
         for key, value in values.items():
             final[key]["dot3StatsDuplexStatus"] = value
 
         # Return
         return final
 
-    def dot3statsduplexstatus(self, oidonly=False):
+    async def dot3statsduplexstatus(self, oidonly=False):
         """Return dict of ETHERLIKE-MIB dot3StatsDuplexStatus for each port.
 
         Args:
@@ -109,7 +109,7 @@ class EtherlikeQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 

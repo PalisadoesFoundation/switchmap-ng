@@ -3,6 +3,7 @@
 from collections import defaultdict
 
 from switchmap.poller.snmp.base_query import Query
+import asyncio
 
 
 def get_query():
@@ -74,7 +75,7 @@ class EntityQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["system"])
 
-    def system(self):
+    async def system(self):
         """Get system data from device.
 
         Args:
@@ -89,14 +90,25 @@ class EntityQuery(Query):
         final = {}
 
         # Get data
-        hw_rev = self.entphysicalhardwarerev()
-        fw_rev = self.entphysicalfirmwarerev()
-        sw_rev = self.entphysicalsoftwarerev()
-        name = self.entphysicalname()
-        model = self.entphysicalmodelname()
-        serial = self.entphysicalserialnum()
-        classtype = self.entphysicalclass()
-        description = self.entphysicaldescr()
+        (
+            hw_rev,
+            fw_rev,
+            sw_rev,
+            name,
+            model,
+            serial,
+            classtype,
+            description,
+        ) = await asyncio.gather(
+            self.entphysicalhardwarerev(),
+            self.entphysicalfirmwarerev(),
+            self.entphysicalsoftwarerev(),
+            self.entphysicalname(),
+            self.entphysicalmodelname(),
+            self.entphysicalserialnum(),
+            self.entphysicalclass(),
+            self.entphysicaldescr(),
+        )
 
         # Only process if a serial number is found
         count = 0
@@ -116,7 +128,7 @@ class EntityQuery(Query):
         final["ENTITY-MIB"] = data_dict
         return final
 
-    def entphysicaldescr(self):
+    async def entphysicaldescr(self):
         """Return dict of ENTITY-MIB entPhysicalDescr for device.
 
         Args:
@@ -132,7 +144,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.2"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -140,7 +152,7 @@ class EntityQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def entphysicalclass(self):
+    async def entphysicalclass(self):
         """Return dict of ENTITY-MIB entPhysicalClass for device.
 
         Args:
@@ -156,7 +168,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.5"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = value
@@ -164,7 +176,7 @@ class EntityQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def entphysicalsoftwarerev(self):
+    async def entphysicalsoftwarerev(self):
         """Return dict of ENTITY-MIB entPhysicalSoftwareRev for device.
 
         Args:
@@ -180,7 +192,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.10"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -188,7 +200,7 @@ class EntityQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def entphysicalserialnum(self):
+    async def entphysicalserialnum(self):
         """Return dict of ENTITY-MIB entPhysicalSerialNum for device.
 
         Args:
@@ -204,7 +216,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.11"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -212,7 +224,7 @@ class EntityQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def entphysicalmodelname(self):
+    async def entphysicalmodelname(self):
         """Return dict of ENTITY-MIB entPhysicalModelName for device.
 
         Args:
@@ -228,7 +240,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.13"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -236,7 +248,7 @@ class EntityQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def entphysicalname(self):
+    async def entphysicalname(self):
         """Return dict of ENTITY-MIB entPhysicalName for device.
 
         Args:
@@ -252,7 +264,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.7"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -260,7 +272,7 @@ class EntityQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def entphysicalhardwarerev(self):
+    async def entphysicalhardwarerev(self):
         """Return dict of ENTITY-MIB entPhysicalHardwareRev for device.
 
         Args:
@@ -276,7 +288,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.8"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()
@@ -284,7 +296,7 @@ class EntityQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def entphysicalfirmwarerev(self):
+    async def entphysicalfirmwarerev(self):
         """Return dict of ENTITY-MIB entPhysicalFirmwareRev for device.
 
         Args:
@@ -300,7 +312,7 @@ class EntityQuery(Query):
 
         # Descriptions
         oid = ".1.3.6.1.2.1.47.1.1.1.1.9"
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             # Process OID
             data_dict[int(key)] = str(bytes(value), encoding="utf-8").strip()

@@ -67,7 +67,7 @@ class EssSwitchQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -81,14 +81,14 @@ class EssSwitchQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface swPortDuplexStatus data
-        values = self.swportduplexstatus()
+        values = await self.swportduplexstatus()
         for key, value in values.items():
             final[key]["swPortDuplexStatus"] = value
 
         # Return
         return final
 
-    def swportduplexstatus(self, oidonly=False):
+    async def swportduplexstatus(self, oidonly=False):
         """Return dict of MIB-ESSWITCH swPortDuplexStatus for each port.
 
         Args:
@@ -109,7 +109,7 @@ class EssSwitchQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for key, value in results.items():
             data_dict[int(key)] = value
 

@@ -67,7 +67,7 @@ class CiscoCdpQuery(Query):
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -81,17 +81,17 @@ class CiscoCdpQuery(Query):
         final = defaultdict(lambda: defaultdict(dict))
 
         # Get interface cdpCacheDeviceId data
-        values = self.cdpcachedeviceid()
+        values = await self.cdpcachedeviceid()
         for key, value in values.items():
             final[key]["cdpCacheDeviceId"] = value
 
         # Get interface cdpCachePlatform data
-        values = self.cdpcacheplatform()
+        values = await self.cdpcacheplatform()
         for key, value in values.items():
             final[key]["cdpCachePlatform"] = value
 
         # Get interface cdpCacheDevicePort data
-        values = self.cdpcachedeviceport()
+        values = await self.cdpcachedeviceport()
         if values is not None:
             for key, value in values.items():
                 final[key]["cdpCacheDevicePort"] = value
@@ -99,7 +99,7 @@ class CiscoCdpQuery(Query):
         # Return
         return final
 
-    def cdpcachedeviceid(self, oidonly=False):
+    async def cdpcachedeviceid(self, oidonly=False):
         """Return dict of CISCO-CDP-MIB cdpCacheDeviceId for each port.
 
         Args:
@@ -120,7 +120,7 @@ class CiscoCdpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             ifindex = _ifindex(key)
             data_dict[ifindex] = str(bytes(value), encoding="utf-8")
@@ -128,7 +128,7 @@ class CiscoCdpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def cdpcacheplatform(self, oidonly=False):
+    async def cdpcacheplatform(self, oidonly=False):
         """Return dict of CISCO-CDP-MIB cdpCachePlatform for each port.
 
         Args:
@@ -149,7 +149,7 @@ class CiscoCdpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             ifindex = _ifindex(key)
             data_dict[ifindex] = str(bytes(value), encoding="utf-8")
@@ -157,7 +157,7 @@ class CiscoCdpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def cdpcachedeviceport(self, oidonly=False):
+    async def cdpcachedeviceport(self, oidonly=False):
         """Return dict of CISCO-CDP-MIB cdpCacheDevicePort for each port.
 
         Args:
@@ -178,7 +178,7 @@ class CiscoCdpQuery(Query):
             return oid
 
         # Process results
-        results = self.snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             ifindex = _ifindex(key)
             data_dict[ifindex] = str(bytes(value), encoding="utf-8")

@@ -76,7 +76,7 @@ class Snmpv2Query(Query):
 
         super().__init__(snmp_object, test_oid, tags=["system"])
 
-    def system(self):
+    async def system(self):
         """Get system data from device.
 
         Args:
@@ -96,7 +96,7 @@ class Snmpv2Query(Query):
         oidroot = ".1.3.6.1.2.1.1"
         for node in range(1, 7):
             oid = "{}.{}.0".format(oidroot, node)
-            results = self.snmp_object.get(oid, normalized=True)
+            results = await self.snmp_object.get(oid, normalized=True)
             for value in results.values():
                 getvalues.append(value)
 
