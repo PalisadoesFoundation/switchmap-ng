@@ -36,6 +36,8 @@ describe("LineChartWrapper", () => {
         tooltipFormatter={tooltipFormatter}
       />
     );
+
+    // Just ensure the formatter is callable
     expect(tooltipFormatter("10", "value", { payload: { value: 10 } })).toEqual(
       ["10 units", "value"]
     );

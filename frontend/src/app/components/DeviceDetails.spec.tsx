@@ -1,19 +1,15 @@
+// DeviceDetails.test.tsx
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { DeviceDetails } from "./DeviceDetails";
-import { mockDevice, mockDeviceMetrics } from "./__mocks__/deviceMocks";
+import { mockDevice } from "./__mocks__/deviceMocks";
 
-// Mock fetch globally
-global.fetch = vi.fn(() =>
-  Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve(mockDeviceMetrics),
-  })
-) as any;
-// Mock TopologyChart so it doesn't create a real Network
+// Component-specific mocks
 vi.mock("./TopologyChart", () => ({
-  TopologyChart: () => <div>Mocked TopologyChart</div>,
+  TopologyChart: () => (
+    <div data-testid="mock-topology">Mocked TopologyChart</div>
+  ),
 }));
-
 describe("DeviceDetails", () => {
   it("renders device overview and metadata correctly", async () => {
     render(<DeviceDetails device={mockDevice} />);

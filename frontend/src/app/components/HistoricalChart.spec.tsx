@@ -1,27 +1,18 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
 import { HistoricalChart } from "./HistoricalChart";
-import { vi } from "vitest";
+import { mockData } from "./__mocks__/chartMocks";
 
-vi.mock("recharts", async () => {
-  const Original: any = await vi.importActual("recharts");
-  return {
-    ...Original,
-    ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
-    LineChart: ({ children }: any) => <div>{children}</div>,
-    XAxis: () => <div data-testid="x-axis" />,
-    YAxis: () => <div data-testid="y-axis" />,
-    Tooltip: () => <div data-testid="tooltip" />,
-    Line: () => <div data-testid="line" />,
-    CartesianGrid: () => <div data-testid="grid" />,
-  };
-});
-
-const mockData = [
-  { lastPolled: "2025-08-01", value: 1 },
-  { lastPolled: "2025-08-02", value: 0 },
-];
-
+vi.mock("recharts", () => ({
+  ResponsiveContainer: ({ children }: any) => <div>{children}</div>,
+  LineChart: ({ children }: any) => <div>{children}</div>,
+  XAxis: () => <div data-testid="x-axis" />,
+  YAxis: () => <div data-testid="y-axis" />,
+  Tooltip: () => <div data-testid="tooltip" />,
+  Line: () => <div data-testid="line" />,
+  CartesianGrid: () => <div data-testid="grid" />,
+}));
 describe("HistoricalChart", () => {
   it("renders chart title", () => {
     render(<HistoricalChart title="System Status" data={mockData} />);

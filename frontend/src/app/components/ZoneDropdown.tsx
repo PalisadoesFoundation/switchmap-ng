@@ -53,7 +53,7 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
             body: JSON.stringify({
               query: `
   {
-    events(last: 2) {  # fetch last 10 events
+    events(last: 2) {
       edges {
         node {
           zones {

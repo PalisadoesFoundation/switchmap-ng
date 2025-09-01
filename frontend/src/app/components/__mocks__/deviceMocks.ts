@@ -14,19 +14,3 @@ export const mockDevice: DeviceNode = {
     edges: [], 
   },
 };
-
-export const mockDeviceMetrics = {
-  deviceMetrics: {
-    edges: [
-      {
-        node: {
-          hostname: "host1",
-          uptime: 1000,
-          cpuUtilization: 40,
-          memoryUtilization: 70,
-          lastPolled: 1693305600,
-        },
-      },
-    ],
-  },
-};
