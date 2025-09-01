@@ -47,7 +47,7 @@ export type InterfaceNode = {
   ifname: string;  
   nativevlan: number;  
   ifoperstatus: number;  
-  tsIdle: string;  
+  tsIdle: number;  
   ifspeed: number;  
   duplex: string;  
   ifalias?: string | null;  
