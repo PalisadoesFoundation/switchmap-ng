@@ -1,5 +1,5 @@
-import React from "react";
-import HistoricalChart from "./HistoricalChart";
+import React, { useEffect, useMemo, useState } from "react";
+import { HistoricalChart } from "./HistoricalChart";
 import { TopologyChart } from "./TopologyChart";
 import { DeviceNode } from "../types/graphql/GetZoneDevices";
 import styles from "./DeviceDetails.module.css";
@@ -200,7 +200,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
       </div>
 
       {/* Time Range Dropdown */}
-      <div className="flex flex-col-reverse md:flex-row gap-4 text-left justify-start xl:items-center">
+      <div className="mt-8 md:mt-2 flex flex-col lg:flex-row gap-4 text-left justify-start xl:items-center">
         <div className="relative">
           <button
             type="button"
@@ -244,26 +244,59 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           )}
         </div>
         {selectedRange === 0 && (
-          <div className="flex flex-col sm:flex-row gap-2 items-start">
-            <input
-              type="date"
-              className="border p-2 rounded"
-              value={customRange.start}
-              onChange={(e) =>
-                setCustomRange({ ...customRange, start: e.target.value })
-              }
-            />
-            <span className="flex items-center justify-center h-full px-2 my-auto">
-              to
-            </span>
-            <input
-              type="date"
-              className="border p-2 rounded"
-              value={customRange.end}
-              onChange={(e) =>
-                setCustomRange({ ...customRange, end: e.target.value })
-              }
-            />
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            <label className="flex flex-col lg:flex-row gap-2 lg:items-center">
+              Start date{" "}
+              <input
+                type="date"
+                className="border p-2 rounded"
+                value={customRange.start}
+                onChange={(e) => {
+                  const start = new Date(e.target.value);
+                  const end = customRange.end
+                    ? new Date(customRange.end)
+                    : null;
+                  if (
+                    end &&
+                    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
+                      180
+                  ) {
+                    setErrorMsg("Custom range cannot exceed 180 days.");
+                    setTimeout(() => setErrorMsg(""), 3000);
+                    return;
+                  }
+
+                  setCustomRange({ ...customRange, start: e.target.value });
+                }}
+              />
+            </label>
+            <label className="flex flex-col lg:flex-row gap-2 lg:items-center">
+              End date{" "}
+              <input
+                type="date"
+                className="border p-2 rounded"
+                value={customRange.end}
+                onChange={(e) => {
+                  const start = customRange.start
+                    ? new Date(customRange.start)
+                    : null;
+                  const end = new Date(e.target.value);
+
+                  if (
+                    start &&
+                    end &&
+                    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
+                      180
+                  ) {
+                    setErrorMsg("Custom range cannot exceed 180 days.");
+                    setTimeout(() => setErrorMsg(""), 3000);
+                    return;
+                  }
+
+                  setCustomRange({ ...customRange, end: e.target.value });
+                }}
+              />
+            </label>
           </div>
         )}
       </div>

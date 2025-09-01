@@ -10,7 +10,7 @@ import {
   Options,
 } from "vis-network/standalone/esm/vis-network";
 import { useTheme } from "next-themes";
-import { formatUptime } from "@/app/utils/time";
+import { formatUptime } from "../utils/time";
 import { useRouter } from "next/navigation";
 /**
  * Renders a network topology chart using vis-network based on the given devices.
