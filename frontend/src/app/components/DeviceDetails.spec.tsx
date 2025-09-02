@@ -1,4 +1,3 @@
-// DeviceDetails.test.tsx
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { DeviceDetails } from "./DeviceDetails";
