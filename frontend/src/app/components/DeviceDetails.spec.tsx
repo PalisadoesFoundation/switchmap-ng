@@ -27,6 +27,38 @@ describe("DeviceDetails", () => {
       expect(screen.getAllByText("Memory Usage (%)")[0]).toBeInTheDocument();
     });
   });
+  it("fetches device metrics and updates charts", async () => {
+    const mockMetrics = {
+      data: {
+        deviceMetrics: {
+          edges: [
+            {
+              node: {
+                hostname: "host1",
+                lastPolled: Math.floor(Date.now() / 1000),
+                uptime: 120,
+                cpuUtilization: 55,
+                memoryUtilization: 40,
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    vi.spyOn(global, "fetch").mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockMetrics,
+    } as any);
+
+    render(<DeviceDetails device={mockDevice} />);
+
+    await waitFor(() => {
+      expect(screen.getByText("System Status")).toBeInTheDocument();
+      expect(screen.getByText("CPU Usage (%)")).toBeInTheDocument();
+      expect(screen.getByText("Memory Usage (%)")).toBeInTheDocument();
+    });
+  });
 
   it("toggles time range dropdown", async () => {
     render(<DeviceDetails device={mockDevice} />);
@@ -71,5 +103,22 @@ describe("DeviceDetails", () => {
         screen.getByText("Custom range cannot exceed 180 days.")
       ).toBeInTheDocument()
     );
+  });
+  it("accepts valid custom range without showing error", async () => {
+    render(<DeviceDetails device={mockDevice} />);
+
+    const button = screen.getByRole("button", { name: /Past 1 day/i });
+    fireEvent.click(button);
+    fireEvent.click(screen.getByText("Custom range"));
+
+    const startInput = screen.getByLabelText(/start date/i) as HTMLInputElement;
+    const endInput = screen.getByLabelText(/end date/i) as HTMLInputElement;
+
+    fireEvent.change(startInput, { target: { value: "2025-01-01" } });
+    fireEvent.change(endInput, { target: { value: "2025-01-15" } });
+
+    expect(
+      screen.queryByText("Custom range cannot exceed 180 days.")
+    ).not.toBeInTheDocument();
   });
 });
