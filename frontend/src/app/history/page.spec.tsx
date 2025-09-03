@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import DeviceHistoryChart from "@/app/history/page"; // adjust path
+import DeviceHistoryChart from "@/app/history/page";
 
 // Mock fetch
 beforeEach(() => {
@@ -121,5 +121,44 @@ describe("DeviceHistoryChart", () => {
     fireEvent.click(screen.getByText(/past 1 day/i));
 
     expect(await screen.findByRole("button", { name: /past 1 day/i }));
+  });
+  it("shows an error when custom range exceeds 180 days", async () => {
+    render(<DeviceHistoryChart />);
+
+    const rangeButton = await screen.findByRole("button", {
+      name: /past 1 week/i,
+    });
+    fireEvent.click(rangeButton);
+    fireEvent.click(screen.getByText(/custom/i));
+
+    const startInput = screen.getByLabelText("custom start date");
+    const endInput = screen.getByLabelText("custom end date");
+
+    fireEvent.change(startInput, { target: { value: "2025-01-01" } });
+    fireEvent.change(endInput, { target: { value: "2025-08-01" } });
+
+    expect(
+      await screen.findByText(/custom range cannot exceed 180 days/i)
+    ).toBeInTheDocument();
+  });
+
+  it("accepts a valid custom date range without showing an error", async () => {
+    render(<DeviceHistoryChart />);
+
+    const rangeButton = await screen.findByRole("button", {
+      name: /past 1 week/i,
+    });
+    fireEvent.click(rangeButton);
+    fireEvent.click(screen.getByText(/custom/i));
+
+    const startInput = screen.getByLabelText("custom start date");
+    const endInput = screen.getByLabelText("custom end date");
+
+    fireEvent.change(startInput, { target: { value: "2025-01-01" } });
+    fireEvent.change(endInput, { target: { value: "2025-01-15" } });
+
+    expect(
+      screen.queryByText(/custom range cannot exceed 180 days/i)
+    ).not.toBeInTheDocument();
   });
 });

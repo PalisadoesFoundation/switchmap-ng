@@ -3,19 +3,6 @@ import React, { useState, useEffect, useMemo } from "react";
 
 import { Sidebar } from "../components/Sidebar";
 import { LineChartWrapper } from "../components/LineChartWrapper";
-/**
- * DeviceHistoryChart component fetches and visualizes the historical movement and status changes of devices within the network.
- * It includes search functionality, time range filtering, and displays charts for zone and sysName history.
- * It handles loading and error states, and provides a user-friendly interface for exploring device history.
- *
- * @remarks
- * This component is designed for client-side use only because it relies on the `useState` and `useEffect` hooks
- * to manage state and handle side effects like data fetching. It also includes interactive elements like
- * search input and dropdowns that require client-side rendering.
- * @returns A React component that renders the device history chart interface.
- * @see {@link Sidebar} for the sidebar component.
- * @see {@link LineChartWrapper} for the chart rendering component.
- */
 
 const QUERY = `
   query ZonesWithDevices {
@@ -380,6 +367,7 @@ export default function DeviceHistoryChart() {
                 <div className="flex flex-row gap-2 items-start">
                   <input
                     type="date"
+                    aria-label="custom start date"
                     className="border p-2 rounded"
                     value={customStart}
                     onChange={(e) => {
@@ -414,6 +402,7 @@ export default function DeviceHistoryChart() {
                   </span>
                   <input
                     type="date"
+                    aria-label="custom end date"
                     className="border p-2 rounded"
                     value={customEnd}
                     onChange={(e) => {
