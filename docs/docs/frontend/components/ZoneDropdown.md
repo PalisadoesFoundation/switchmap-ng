@@ -12,7 +12,7 @@
 
 > **ZoneDropdown**(`__namedParameters`): `Element`
 
-Defined in: [components/ZoneDropdown.tsx:30](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ZoneDropdown.tsx#L30)
+Defined in: [components/ZoneDropdown.tsx:34](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ZoneDropdown.tsx#L34)
 
 #### Parameters
 

@@ -1,6 +1,9 @@
 /**
  * Truncates a string to a specified number of lines with optional max length.
  * Adds line breaks and an ellipsis if truncated.
+ * @param str - The string to truncate.
+ * @param options - Optional settings for lines and maxLength.
+ * @returns The truncated string with line breaks and ellipsis if applicable.
  */
 export const truncateLines = (  
   str: string,  
