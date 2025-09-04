@@ -70,7 +70,7 @@ function HistoricalChart({
             formatter={(value: number) => `${value}${unit}`}
             labelStyle={{ fontWeight: "bold" }}
           />
-          <Line type="monotone" dataKey="value" stroke={color} dot={false} />
+          <Line type={lineType} dataKey="value" stroke={color} dot={false} />
         </LineChart>
       </ResponsiveContainer>
     </div>
