@@ -1,13 +1,7 @@
 "use client";
 
+import { ZoneEdge } from "@/app/types/graphql/GetZoneDevices";
 import { useEffect, useState, useRef } from "react";
-
-type Zone = { idxZone: string; id: string };
-
-type ZoneDropdownProps = {
-  selectedZoneId: string | null;
-  onChange: (zoneId: string) => void;
-};
 /**
  * ZoneDropdown component allows users to select a zone from a dropdown list.
  * It fetches the available zones from the API and manages the selected zone state.
@@ -26,11 +20,18 @@ type ZoneDropdownProps = {
  * @see {@link useRef} for managing the dropdown reference to handle outside clicks.
  */
 
+type Zone = { idxZone: string; id: string };
+
+type ZoneDropdownProps = {
+  selectedZoneId: string | null;
+  onChange: (zoneId: string) => void;
+};
+
 export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
   const [zones, setZones] = useState<Zone[]>([]);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
       setError(null);
       try {
         const res = await fetch(
-          process.env.NEXT_PUBLIC_API_URL ||
+          process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
             "http://localhost:7000/switchmap/api/graphql",
           {
             method: "POST",
@@ -67,7 +68,9 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
         if (json.errors) {
           throw new Error(json.errors[0].message);
         }
-        const rawZones = json.data.zones.edges.map((edge: any) => edge.node);
+        const rawZones = json.data.zones.edges.map(
+          (edge: ZoneEdge) => edge.node
+        );
         setZones(rawZones);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch zones");

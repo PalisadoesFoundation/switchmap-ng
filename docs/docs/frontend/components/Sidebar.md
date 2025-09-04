@@ -1,10 +1,10 @@
-[**frontend**](../../README.md)
+[**frontend**](../README.md)
 
 ***
 
-[frontend](../../modules.md) / app/components/Sidebar
+[frontend](../modules.md) / components/Sidebar
 
-# app/components/Sidebar
+# components/Sidebar
 
 ## Functions
 
@@ -12,7 +12,7 @@
 
 > **Sidebar**(): `Element`
 
-Defined in: [app/components/Sidebar.tsx:29](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/Sidebar.tsx#L29)
+Defined in: [components/Sidebar.tsx:29](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/Sidebar.tsx#L29)
 
 Sidebar component provides navigation links and a theme toggle button.
 It supports both large screens (desktop) and small screens (mobile).

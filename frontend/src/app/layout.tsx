@@ -40,7 +40,7 @@ export const metadata: Metadata = {
   description: "A Modern Network Monitoring and Analysis Tool",
 };
 
-export function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
