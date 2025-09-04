@@ -24,15 +24,21 @@ import { ConnectionDetails } from "@/app/components/ConnectionDetails";
  * @see {@link ThemeToggle} for the theme switching functionality.
  */
 
-export function DevicePage() {
+interface TabItem {
+  label: string;
+  content: React.ReactNode;
+  icon: React.ReactElement;
+}
+
+export default function DevicePage() {
   const searchParams = useSearchParams();
-  const sysName = searchParams.get("sysName");
-  const hostname = searchParams.get("hostname");
-  const params = useParams();
+  const sysName = searchParams.get("sysName") ?? "";
+  const hostname = searchParams.get("hostname") ?? "";
+  const params = useParams<{ id: string | string[] }>();
   // Ensure id is always a string
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  const tabs = [
+  const tabs: TabItem[] = [
     {
       label: "Device Overview",
       content: <div>Device Overview</div>,
@@ -49,8 +55,8 @@ export function DevicePage() {
       icon: <FiBarChart2 className="icon" />,
     },
   ];
-  const [activeTab, setActiveTab] = useState(0);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [activeTab, setActiveTab] = useState<number>(0);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
   const router = useRouter();
 
   return (

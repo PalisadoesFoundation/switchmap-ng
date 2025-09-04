@@ -12,7 +12,6 @@
   --color-icon: var(--icon-color);
   --color-hover-bg: var(--hover-bg);
   --color-select-bg: var(--select-bg);
-  --color-icon: #8C09BC;
 }
 
 
@@ -28,7 +27,9 @@
   --hover-bg: rgba(140, 9, 188, 0.1);
   --select-bg: rgba(140, 9, 188, 0.2);
   --h1-color: #8C09BC;
-  
+  --edge-color-light: #bbb;
+  --node-color-light: #1e90ff;
+  --font-color-light: black;
 
 }
 
@@ -44,6 +45,9 @@
   --hover-bg:rgb(59, 65, 85);
   --select-bg: #0B1A47;
   --h1-color:  #ddd;
+  --edge-color-dark: white;
+  --node-color-dark: #4a90e2;
+  --font-color-dark: white;
 }
 
 body {
@@ -65,8 +69,6 @@ a {
 }
 
 button {
-  color: var(--button-text);
-  border: none;
   cursor: pointer;
 }
 
@@ -89,7 +91,7 @@ li{
 
 
 .icon{
-  color: var(--color-icon);
+  color: #8C09BC;
   font-size: 1rem;
 }
 table{
@@ -105,4 +107,24 @@ th{
 td{
   padding: 0.5rem;
   border-bottom: 1px solid var(--bottom-border-color);
+}
+
+.reset-button{
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.vis-tooltip {
+  background: linear-gradient(to right, #8C09BC 27%, #59098B 71%) !important;
+  color: white !important;
+  font-size: 14px !important;
+  border-radius: 8px !important;
+  padding: 10px !important;
+  border: none !important;
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.3) !important;
+  white-space: normal !important;
+  max-width: 300px !important;
 }

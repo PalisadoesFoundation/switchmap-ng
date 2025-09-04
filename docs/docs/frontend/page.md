@@ -1,18 +1,18 @@
-[**frontend**](../README.md)
+[**frontend**](README.md)
 
 ***
 
-[frontend](../modules.md) / app/page
+[frontend](modules.md) / page
 
-# app/page
+# page
 
 ## Functions
 
-### Home()
+### default()
 
-> **Home**(): `Element`
+> **default**(): `Element`
 
-Defined in: [app/page.tsx:30](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/page.tsx#L30)
+Defined in: [page.tsx:34](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/page.tsx#L34)
 
 Main entry point for the application.
 

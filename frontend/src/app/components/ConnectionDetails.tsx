@@ -6,12 +6,32 @@ import {
   InterfaceNode,
   Mac,
   MacPort,
-} from "../../types/graphql/GetDeviceInterfaces";
-import { DeviceNode } from "../../types/graphql/GetZoneDevices";
+  MacsEdge,
+} from "@/app/types/graphql/GetDeviceInterfaces";
+import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
+/**
+ * ConnectionDetails component fetches and displays detailed information about a device's interfaces.
+ * It includes MAC addresses, manufacturers, and other relevant data.
+ *
+ * @remarks
+ * This component is designed for client-side use only because it relies on the `useParams` hook
+ * to retrieve the device ID from the URL. It also handles loading and error states.
+ *
+ * @param deviceId - The ID of the device to fetch details for. If not provided, it will use the ID from URL params.
+ *
+ * @returns The rendered connection details table or an error message if data is unavailable.
+ *
+ * @see {@link useParams} for retrieving the device ID from URL parameters.
+ * @see {@link DeviceResponse} for the structure of the device data.
+ * @see {@link QUERY} for the GraphQL query used to fetch device details.
+ * @see {@link InterfaceEdge} and {@link InterfaceNode} for the structure of interface data.
+ * @see {@link Mac} and {@link MacPort} for the structure of MAC address data.
+ */
 
 type DeviceResponse = {
   device: DeviceNode | null;
 };
+
 // GraphQL query to fetch device interface details
 const QUERY = `
   query Device($id: ID!) {
@@ -54,24 +74,6 @@ const QUERY = `
     }
   }
 `;
-/**
- * ConnectionDetails component fetches and displays detailed information about a device's interfaces.
- * It includes MAC addresses, manufacturers, and other relevant data.
- *
- * @remarks
- * This component is designed for client-side use only because it relies on the `useParams` hook
- * to retrieve the device ID from the URL. It also handles loading and error states.
- *
- * @param deviceId - The ID of the device to fetch details for. If not provided, it will use the ID from URL params.
- *
- * @returns The rendered connection details table or an error message if data is unavailable.
- *
- * @see {@link useParams} for retrieving the device ID from URL parameters.
- * @see {@link DeviceResponse} for the structure of the device data.
- * @see {@link QUERY} for the GraphQL query used to fetch device details.
- * @see {@link InterfaceEdge} and {@link InterfaceNode} for the structure of interface data.
- * @see {@link Mac} and {@link MacPort} for the structure of MAC address data.
- */
 
 export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
   const params = useParams();
@@ -124,16 +126,20 @@ export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
     setError(null);
     const globalId = id && typeof id === "string" ? btoa(`Device:${id}`) : id;
 
-    fetch("http://localhost:7000/switchmap/api/graphql", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        query: QUERY,
-        variables: { id: globalId },
-      }),
-    })
+    fetch(
+      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+        "http://localhost:7000/switchmap/api/graphql",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          query: QUERY,
+          variables: { id: globalId },
+        }),
+      }
+    )
       .then((res) => {
         if (!res.ok) throw new Error(`Network error: ${res.status}`);
         return res.json();
@@ -218,8 +224,27 @@ export function ConnectionDetails({ deviceId }: { deviceId?: string }) {
                 <td>{iface.duplex ?? "N/A"}</td>
                 <td>{iface.ifalias || "N/A"}</td>
                 <td>{iface.trunk ? "Trunk" : "-"}</td>
-                <td>{iface.cdpcachedeviceid || "-"}</td>
-                <td>{iface.lldpremportdesc || "-"}</td>
+                <td>
+                  {iface.cdpcachedeviceid ? (
+                    <>
+                      <div>{iface.cdpcachedeviceid}</div>
+                      <div>{iface.cdpcachedeviceport}</div>
+                    </>
+                  ) : (
+                    "-"
+                  )}
+                </td>
+                <td>
+                  {iface.lldpremsysname ? (
+                    <>
+                      <div>{iface.lldpremsysname}</div>
+                      <div>{iface.lldpremportdesc}</div>
+                    </>
+                  ) : (
+                    "-"
+                  )}
+                </td>
+
                 {/* Render MAC addresses */}
                 <td>{extractMacAddresses(iface.macports)}</td>
                 {/* Render MAC manufacturers */}

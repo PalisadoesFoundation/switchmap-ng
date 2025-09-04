@@ -11,38 +11,10 @@ import {
   createColumnHelper,
   SortingState,
 } from "@tanstack/react-table";
+import { DeviceNode, InterfaceEdge } from "@/app/types/graphql/GetZoneDevices";
+import { formatUptime } from "@/app/utils/time";
+import { InterfaceNode } from "@/app/types/graphql/GetDeviceInterfaces";
 
-// Device type definition
-type Device = {
-  idxDevice: string;
-  id: string;
-  sysName: string | null;
-  hostname: string | null;
-  sysObjectid: string | null;
-  sysUptime: number;
-  l1interfaces: {
-    edges: { node: { ifoperstatus: number } }[];
-  };
-};
-/** Converts uptime from hundredths of seconds to a readable string format.
- * @param hundredths - Uptime in hundredths of seconds.
- * @remarks
- * This function calculates the number of days, hours, minutes, and seconds
- * from the given uptime value and formats it into a string.
- * It is used to display device uptime in a user-friendly format.
- * @returns A string representing the uptime in days, hours, minutes, and seconds.
- * @see {@link Device} for the structure of device data.
- * @see {@link DevicesOverview} for the component that uses this function.
- */
-// Format uptime from hundredths of seconds to readable string
-const formatUptime = (hundredths: number) => {
-  const seconds = Math.floor(hundredths / 100);
-  const days = Math.floor(seconds / 86400);
-  const hrs = Math.floor((seconds % 86400) / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  return `${days}d ${hrs}h ${mins}m ${secs}s`;
-};
 /** * DevicesOverview component fetches and displays a list of devices in a table format.
  * It supports sorting and filtering of device data.
  * @remarks
@@ -61,96 +33,40 @@ const formatUptime = (hundredths: number) => {
  * @see getCoreRowModel, getFilteredRowModel, getSortedRowModel for table row models.
  */
 
-export function DevicesOverview({ zoneId }: { zoneId: string }) {
-  const [devices, setDevices] = useState<Device[]>([]);
-  const [loading, setLoading] = useState(true);
+interface DevicesOverviewProps {
+  devices: DeviceNode[];
+  loading: boolean;
+  error: string | null;
+}
+
+interface DeviceRow {
+  name: string;
+  hostname: string;
+  ports: string;
+  uptime: string;
+  link: string;
+}
+
+export function DevicesOverview({
+  devices,
+  loading,
+  error,
+}: DevicesOverviewProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [globalFilter, setGlobalFilter] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  const [globalFilter, setGlobalFilter] = useState<string>("");
 
-  useEffect(() => {
-    if (!zoneId) {
-      setDevices([]);
-      setLoading(false);
-      setError("Waiting for zone selection to load devices.");
-      return;
-    }
-    const fetchDevices = async () => {
-      try {
-        setLoading(true);
-        setError(null); // reset error before fetch
-
-        const res = await fetch(
-          process.env.NEXT_PUBLIC_API_URL ||
-            "http://localhost:7000/switchmap/api/graphql",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              query: `
-              query GetZoneDevices($id: ID!) {
-                zone(id: $id) {
-                  devices {
-                    edges {
-                      node {
-                        idxDevice
-                        sysObjectid
-                        sysUptime
-                        sysName
-                        hostname
-                        l1interfaces {
-                          edges {
-                            node {
-                              ifoperstatus
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            `,
-              variables: { id: zoneId },
-            }),
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error(`Network response was not ok: ${res.statusText}`);
-        }
-
-        const json = await res.json();
-
-        if (json.errors) {
-          throw new Error(json.errors.map((e: any) => e.message).join(", "));
-        }
-
-        const rawDevices =
-          json.data?.zone?.devices?.edges?.map((edge: any) => edge.node) || [];
-        setDevices(rawDevices);
-      } catch (err: any) {
-        console.error("Error fetching devices:", err?.message || err);
-        setDevices([]); // clear old data
-        setError(
-          "Failed to load devices. Please check your network or try again."
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDevices();
-  }, [zoneId]);
-
-  const columnHelper = createColumnHelper<any>();
+  const columnHelper = createColumnHelper<DeviceRow>();
 
   // Prepare table data from devices
   const data = useMemo(() => {
     return devices.map((device) => {
-      const interfaces = device.l1interfaces.edges.map((e) => e.node);
+      const interfaces = device.l1interfaces.edges.map(
+        (e: InterfaceEdge) => e.node
+      );
       const total = interfaces.length;
-      const active = interfaces.filter((p) => p.ifoperstatus === 1).length;
+      const active = interfaces.filter(
+        (p: InterfaceNode) => p.ifoperstatus === 1
+      ).length;
 
       return {
         id: device.id,
@@ -206,8 +122,9 @@ export function DevicesOverview({ zoneId }: { zoneId: string }) {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) return <p>Loading devices...</p>;
+  if (error) return <p>Error loading devices: {error}</p>;
+  if (!devices.length) return <p>No devices found.</p>;
 
   return (
     <div>
