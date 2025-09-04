@@ -47,6 +47,7 @@ interface LineChartWrapperProps<T = Record<string, unknown>> {
  * @returns The rendered line chart component.
  *
  * @see {@link ResponsiveContainer} for responsive layout.
+ * @see {@link LineChart}, {@link XAxis}, {@link YAxis}, {@link Tooltip}, {@link Line} from Recharts for chart rendering.
  * **/
 export function LineChartWrapper({
   data,
