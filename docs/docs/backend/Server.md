@@ -1810,6 +1810,16 @@ class DeviceMetrics(SQLAlchemyObjectType, DeviceMetricsAttribute)
 
 Device metrics node with decoded hostname.
 
+<a id="db.schemas.DeviceMetrics.Meta"></a>
+
+## Meta Objects
+
+```python
+class Meta()
+```
+
+Define the metadata.
+
 <a id="db.schemas.Ip"></a>
 
 ## Ip Objects
@@ -2020,6 +2030,16 @@ class Query(graphene.ObjectType)
 
 Define GraphQL queries.
 
+<a id="db.schemas.Query.resolve_deviceMetrics"></a>
+
+#### resolve\_deviceMetrics
+
+```python
+def resolve_deviceMetrics(info, hostname=None, **kwargs)
+```
+
+Resolve device metrics with optional hostname filtering.
+
 <a id="db.table.ipport"></a>
 
 # db.table.ipport
@@ -2229,6 +2249,8 @@ Upadate a Device table entry.
 <a id="db.table.metrics"></a>
 
 # db.table.metrics
+
+Database table operations for metrics.
 
 <a id="db.table.metrics.insert_row"></a>
 

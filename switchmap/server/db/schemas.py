@@ -16,7 +16,6 @@ from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.fields import BatchSQLAlchemyConnectionField
 from graphene.relay import Connection
 from graphene import ConnectionField
-from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene import ObjectType, String  # <- add String here
 
 
@@ -95,6 +94,8 @@ class DeviceMetrics(SQLAlchemyObjectType, DeviceMetricsAttribute):
     """Device metrics node with decoded hostname."""
 
     class Meta:
+        """Define the metadata."""
+
         model = DeviceMetricsModel
         interfaces = (graphene.relay.Node,)
 
@@ -213,6 +214,7 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_deviceMetrics(self, info, hostname=None, **kwargs):
+        """Resolve device metrics with optional hostname filtering."""
         query = DeviceMetrics.get_query(info)
         if hostname:
             query = query.filter(

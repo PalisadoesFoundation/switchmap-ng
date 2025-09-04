@@ -1,4 +1,4 @@
-# switchmap/server/db/table/metrics.py
+"""Database table operations for metrics."""
 
 from switchmap.server.db import db
 from switchmap.server.db.models import (
@@ -9,7 +9,6 @@ import datetime
 
 def insert_row(rows):
     """Insert rows into smap_device_metrics_history (historical metrics)."""
-
     if not isinstance(rows, list):
         rows = [rows]
 
