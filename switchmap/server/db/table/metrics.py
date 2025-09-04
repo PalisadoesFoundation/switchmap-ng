@@ -21,11 +21,14 @@ def insert_row(rows):
                     None if row.hostname is None else row.hostname.encode()
                 ),
                 "last_polled": (
-    row.last_polled
-    if isinstance(row.last_polled, int)
-    else int((row.last_polled or datetime.datetime.utcnow()).timestamp())
-),
-
+                    row.last_polled
+                    if isinstance(row.last_polled, int)
+                    else int(
+                        (
+                            row.last_polled or datetime.datetime.utcnow()
+                        ).timestamp()
+                    )
+                ),
                 "uptime": row.uptime,
                 "cpu_utilization": row.cpu_utilization,
                 "memory_utilization": row.memory_utilization,
