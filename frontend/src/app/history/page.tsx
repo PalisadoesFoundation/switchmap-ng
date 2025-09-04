@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 
 import { Sidebar } from "../components/Sidebar";
-import LineChartWrapper from "../components/LineChartWrapper";
+import { LineChartWrapper } from "../components/LineChartWrapper";
 /**
  * DeviceHistoryChart component fetches and visualizes the historical movement and status changes of devices within the network.
  * It includes search functionality, time range filtering, and displays charts for zone and sysName history.
@@ -39,8 +39,6 @@ const QUERY = `
     }
   }
 `;
-
-
 
 type DeviceNode = {
   idxDevice: number;
