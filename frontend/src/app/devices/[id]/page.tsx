@@ -6,6 +6,26 @@ import { ThemeToggle } from "@/app/theme-toggle";
 import { ConnectionDetails } from "@/app/components/ConnectionDetails";
 import { DeviceDetails } from "@/app/components/DeviceDetails";
 import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
+/**
+ * DevicePage component fetches and displays detailed information about a specific device.
+ * It includes tabs for device overview, connection details, and connection charts.
+ * It handles loading and error states, and allows navigation between different sections.
+ * It also includes a sidebar for easy navigation and a theme toggle button.
+ *
+ * @remarks
+ * This component is designed for client-side use only because it relies on the `useParams` hook
+ * to retrieve the device ID from the URL. It also handles loading and error states.
+ * The sidebar contains links to different sections of the device details.
+ * @returns The rendered device page with tabs and sidebar.
+ *
+ * @see {@link useParams} for retrieving the device ID from URL parameters.
+ * @see {@link useSearchParams} for retrieving query parameters from the URL.
+ * @see {@link useRouter} for navigation and URL manipulation.
+ * @see {@link DeviceDetails} for displaying device overview information.
+ * @see {@link ConnectionDetails} for displaying detailed connection information.
+ * @see {@link ThemeToggle} for the theme switching functionality.
+ * @see {@link FiHome}, {@link FiMonitor}, {@link FiLink}, {@link FiBarChart2} for the icons used in the sidebar.
+ * */
 
 interface TabItem {
   label: string;

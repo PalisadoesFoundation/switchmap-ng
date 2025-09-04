@@ -31,65 +31,8 @@ import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
 type DeviceResponse = {
   device: DeviceNode | null;
 };
-
-// GraphQL query to fetch device interface details
-// const QUERY = `
-//   query Device($id: ID!) {
-//     device(id: $id) {
-//       l1interfaces {
-//         edges {
-//           node {
-//             idxL1interface
-//             idxDevice
-//             ifname
-//             nativevlan
-//             ifoperstatus
-//             tsIdle
-//             ifspeed
-//             duplex
-//             ifalias
-//             trunk
-//             cdpcachedeviceid
-//             cdpcachedeviceport
-//             cdpcacheplatform
-//             lldpremportdesc
-//             lldpremsysname
-//             lldpremsysdesc
-//             lldpremsyscapenabled
-//             macports{
-//               edges{
-//                 node{
-//                   macs{
-//                     mac
-//                     oui{
-//                       organization
-//                     }
-//                   }
-//                 }
-//               }
-//             }
-//           }
-//         }
-//       }
-//     }
-//   }
-// `;
-
 export function ConnectionDetails({ device }: { device: DeviceNode }) {
   const params = useParams();
-  // Determine device ID from props or URL params
-  // const id =
-  //   deviceId ??
-  //   (typeof params?.id === "string"
-  //     ? decodeURIComponent(params.id)
-  //     : Array.isArray(params?.id) && params.id.length > 0
-  //     ? decodeURIComponent(params.id[0])
-  //     : undefined);
-
-  // const [data, setData] = useState<DeviceResponse | null>(null);
-  // const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState<string | null>(null);
-  // Helper functions for MAC address processing
   const extractMacAddresses = (macports?: MacPort): string => {
     if (!Array.isArray(macports?.edges) || macports.edges.length === 0)
       return "";
@@ -118,52 +61,6 @@ export function ConnectionDetails({ device }: { device: DeviceNode }) {
       .join(", ");
   };
 
-  // Fetch device data when ID changes
-  // useEffect(() => {
-  //   if (!id) return;
-
-  //   setLoading(true);
-  //   setError(null);
-  //   const globalId = id && typeof id === "string" ? btoa(`Device:${id}`) : id;
-
-  //   fetch(
-  //     process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-  //       "http://localhost:7000/switchmap/api/graphql",
-  //     {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify({
-  //         query: QUERY,
-  //         variables: { id: globalId },
-  //       }),
-  //     }
-  //   )
-  //     .then((res) => {
-  //       if (!res.ok) throw new Error(`Network error: ${res.status}`);
-  //       return res.json();
-  //     })
-  //     .then((json) => {
-  //       if (json.errors) throw new Error(json.errors[0].message);
-  //       setData(json.data);
-  //     })
-  //     .catch((err) => setError(err.message))
-  //     .finally(() => setLoading(false));
-  // }, [id]);
-
-  // Handle loading, error, and missing data states
-  // if (!id) return <p>Error: No device ID provided.</p>;
-  // if (loading) return <p>Loading...</p>;
-  // if (error) return <p>Error: {error}</p>;
-  // if (!data) return null;
-  // if (!data.device || !data.device.l1interfaces)
-  //   return <p>No interface data available.</p>;
-
-  // Extract interface list
-  // const interfaces = data.device.l1interfaces.edges.map(
-  //   ({ node }: InterfaceEdge) => node
-  // );
   if (!device || !device.l1interfaces)
     return <p>No interface data available.</p>;
 
@@ -256,6 +153,7 @@ export function ConnectionDetails({ device }: { device: DeviceNode }) {
                 {/* Render MAC manufacturers */}
                 <td>{extractManufacturers(iface.macports)}</td>
                 {/* Placeholders for IP Address and DNS Name */}
+                {/* These would need to be populated with real data when available */}
                 <td></td>
                 <td></td>
               </tr>
