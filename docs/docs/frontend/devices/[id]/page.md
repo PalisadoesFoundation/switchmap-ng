@@ -12,7 +12,7 @@
 
 > **default**(): `null` \| `Element`
 
-Defined in: [devices/\[id\]/page.tsx:78](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/devices/[id]/page.tsx#L78)
+Defined in: [devices/\[id\]/page.tsx:86](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/devices/[id]/page.tsx#L86)
 
 #### Returns
 

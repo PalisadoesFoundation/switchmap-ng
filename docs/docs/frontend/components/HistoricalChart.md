@@ -12,7 +12,7 @@
 
 > **default**(`__namedParameters`): `Element`
 
-Defined in: [components/HistoricalChart.tsx:48](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/HistoricalChart.tsx#L48)
+Defined in: [components/HistoricalChart.tsx:47](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/HistoricalChart.tsx#L47)
 
 #### Parameters
 
