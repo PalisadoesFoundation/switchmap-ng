@@ -5,12 +5,30 @@ from switchmap.poller.snmp.base_query import Query
 
 
 def get_query():
-    """Return this module's Query class."""
+    """Return this module's Query class.
+
+    Args:
+        None
+
+    Returns:
+        JuniperDeviceQuery: Query class for JUNIPER device MIBs
+
+    """
+
     return JuniperDeviceQuery
 
 
 def init_query(snmp_object):
-    """Initialize and return this module's Query class."""
+    """Initialize and return this module's Query class.
+
+    Args:
+        snmp_object (SNMP): SNMP object
+
+    Returns:
+        JuniperDeviceQuery: Initialized Query class
+
+    """
+
     return JuniperDeviceQuery(snmp_object)
 
 
@@ -18,12 +36,28 @@ class JuniperDeviceQuery(Query):
     """Class interacts with device-level MIBs for Juniper."""
 
     def __init__(self, snmp_object):
-        """Instantiate the class."""
+        """Instantiate the class.
+
+        Args:
+            snmp_object (SNMP): SNMP object
+
+        Returns:
+            None
+
+        """
         self.snmp_object = snmp_object
         super().__init__(snmp_object, None, tags=["device"])
 
     def system(self):
-        """Return system info (CPU + memory) in aggregator format."""
+        """Return system info (CPU + memory) in aggregator format.
+
+        Args:
+            None
+
+        Returns:
+            dict: System info in aggregator format
+
+        """
         data = defaultdict(lambda: defaultdict(dict))
 
         # CPU
@@ -54,7 +88,15 @@ class JuniperDeviceQuery(Query):
         return data
 
     def supported(self):
-        """Return True if this module can query the device."""
+        """Return True if this module can query the device.
+
+        Args:
+            None
+
+        Returns:
+            bool: True if supported, False otherwise
+
+        """
         # Use a known Juniper CPU OID to check support
         cpu_oid = ".1.3.6.1.4.1.2636.3.1.13.1.8.0"
         response = self.snmp_object.swalk(cpu_oid, normalized=True)

@@ -8,7 +8,21 @@ import datetime
 
 
 def insert_row(rows):
-    """Insert rows into smap_device_metrics_history (historical metrics)."""
+    """Insert rows into smap_device_metrics_history (historical metrics).
+
+    Args:
+        rows (list or object): Single row or list of rows to insert. Each row is
+            expected to have the following attributes:
+                - hostname (str or None): Device hostname
+                - last_polled (int or datetime or None): Last polled timestamp
+                - uptime (int or None): Device uptime in seconds
+                - cpu_utilization (float or None): CPU utilization percentage
+                - memory_utilization (float or None): Memory utilization percentage
+
+    Returns:
+        None
+
+    """
     if not isinstance(rows, list):
         rows = [rows]
 

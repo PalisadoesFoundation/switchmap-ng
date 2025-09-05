@@ -214,7 +214,17 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_deviceMetrics(self, info, hostname=None, **kwargs):
-        """Resolve device metrics with optional hostname filtering."""
+        """Resolve device metrics with optional hostname filtering.
+
+        Args:
+            info: GraphQL info object
+            hostname (str, optional): Hostname to filter by. Defaults to None.
+            **kwargs: Additional keyword arguments
+
+        Returns:
+            QuerySet: Filtered or unfiltered DeviceMetrics query set
+
+        """
         query = DeviceMetrics.get_query(info)
         if hostname:
             query = query.filter(

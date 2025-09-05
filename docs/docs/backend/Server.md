@@ -2040,6 +2040,17 @@ def resolve_deviceMetrics(info, hostname=None, **kwargs)
 
 Resolve device metrics with optional hostname filtering.
 
+**Arguments**:
+
+- `info` - GraphQL info object
+- `hostname` _str, optional_ - Hostname to filter by. Defaults to None.
+- `**kwargs` - Additional keyword arguments
+  
+
+**Returns**:
+
+- `QuerySet` - Filtered or unfiltered DeviceMetrics query set
+
 <a id="db.table.ipport"></a>
 
 # db.table.ipport
@@ -2261,6 +2272,21 @@ def insert_row(rows)
 ```
 
 Insert rows into smap_device_metrics_history (historical metrics).
+
+**Arguments**:
+
+- `rows` _list or object_ - Single row or list of rows to insert. Each row is
+  expected to have the following attributes:
+  - hostname (str or None): Device hostname
+  - last_polled (int or datetime or None): Last polled timestamp
+  - uptime (int or None): Device uptime in seconds
+  - cpu_utilization (float or None): CPU utilization percentage
+  - memory_utilization (float or None): Memory utilization percentage
+  
+
+**Returns**:
+
+  None
 
 <a id="db.table.l1interface"></a>
 
