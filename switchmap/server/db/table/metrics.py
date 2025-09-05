@@ -97,9 +97,7 @@ def _to_epoch(value):
                 dt = dt.replace(tzinfo=datetime.timezone.utc)
             return max(0, int(dt.timestamp()))
         except ValueError as exc:
-            raise TypeError(
-                "Invalid last_polled ISO-8601 string"
-            ) from exc  # noqa: TRY003
+            raise TypeError("Invalid last_polled ISO-8601 string") from exc
     raise TypeError("Invalid type for last_polled")  # noqa: TRY003
 
 
@@ -132,9 +130,7 @@ def insert_row(rows):
 
         # Validate/encode hostname (VARBINARY NOT NULL)
         if getattr(row, "hostname", None) is None:
-            raise ValueError(
-                "hostname is required for DeviceMetricsHistory"
-            )  # noqa: TRY003
+            raise ValueError("hostname is required for DeviceMetricsHistory")
         _host = (
             row.hostname.encode("utf-8")
             if isinstance(row.hostname, str)
