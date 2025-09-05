@@ -45,7 +45,8 @@ type DeviceNode = {
   hostname: string;
   sysName: string;
   zone?: string;
-  lastPolled?: number; // UNIX timestamp in seconds
+  lastPolled?: number;
+  lastPolledMs?: number;
 };
 
 type ZoneEdge = {
@@ -66,6 +67,11 @@ type GraphQLResponse = {
   };
   errors?: { message: string }[];
 };
+function toMs(value: string | null | undefined): number | null {
+  if (!value) return null;
+  const ms = Date.parse(value);
+  return isNaN(ms) ? null : ms;
+}
 
 export default function DeviceHistoryChart() {
   const [allDevices, setAllDevices] = useState<DeviceNode[]>([]);
@@ -120,7 +126,11 @@ export default function DeviceHistoryChart() {
           zone.devices.edges.forEach((deviceEdge) => {
             const device = deviceEdge.node;
             if (device?.hostname && device?.idxDevice) {
-              devicesWithZones.push({ ...device, zone: zone.name });
+              devicesWithZones.push({
+                ...device,
+                zone: zone.name,
+                lastPolledMs: device.lastPolled! * 1000,
+              });
             }
           });
         });
@@ -214,9 +224,9 @@ export default function DeviceHistoryChart() {
   // Sort using lastPolled (converted to ms)
   const history = allDevices
     .filter(
-      (d) => d.hostname === searchTerm && typeof d.lastPolled === "number"
+      (d) => d.hostname === searchTerm && typeof d.lastPolledMs === "number"
     )
-    .sort((a, b) => (a.lastPolled ?? 0) * 1000 - (b.lastPolled ?? 0) * 1000);
+    .sort((a, b) => (a.lastPolledMs ?? 0) - (b.lastPolledMs ?? 0));
 
   // SysName data
   const sysNameCategories = Array.from(new Set(history.map((h) => h.sysName)));
@@ -225,7 +235,7 @@ export default function DeviceHistoryChart() {
     sysNameMap[name] = i + 1;
   });
   const sysNameChartData = history.map((h) => ({
-    timestamp: new Date((h.lastPolled ?? 0) * 1000).toISOString(),
+    timestamp: new Date((h.lastPolledMs ?? 0) * 1000).toISOString(),
     sysNameNum: sysNameMap[h.sysName],
     sysName: h.sysName,
   }));
@@ -241,7 +251,7 @@ export default function DeviceHistoryChart() {
   const zoneChartData = history
     .filter((h) => h.zone)
     .map((h) => ({
-      timestamp: new Date((h.lastPolled ?? 0) * 1000).toISOString(),
+      timestamp: new Date((h.lastPolledMs ?? 0) * 1000).toISOString(),
       zoneNum: zoneMap[h.zone || ""],
       zoneName: h.zone || "",
     }));
