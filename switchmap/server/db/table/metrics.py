@@ -80,7 +80,7 @@ def _to_epoch(value):
     if isinstance(value, (int, float)):
         f = float(value)
         if not math.isfinite(f):
-            raise TypeError("Invalid last_polled float")  # noqa: TRY003
+            raise TypeError
         return max(0, int(f))
     if isinstance(value, datetime.datetime):
         dt = value
@@ -97,8 +97,8 @@ def _to_epoch(value):
                 dt = dt.replace(tzinfo=datetime.timezone.utc)
             return max(0, int(dt.timestamp()))
         except ValueError as exc:
-            raise TypeError("Invalid last_polled ISO-8601 string") from exc
-    raise TypeError from exc
+            raise TypeError from exc
+    raise TypeError
 
 
 def insert_row(rows):
@@ -141,9 +141,9 @@ def insert_row(rows):
             )
         )
         if _host is None:
-            raise TypeError("hostname must be str or bytes")  # noqa: TRY003
+            raise TypeError
         if len(_host) > 256:
-            raise ValueError("hostname exceeds 256 bytes")  # noqa: TRY003
+            raise ValueError
         inserts.append(
             {
                 "hostname": _host,
