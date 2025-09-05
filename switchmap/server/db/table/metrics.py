@@ -7,6 +7,37 @@ from switchmap.server.db.models import (
 import datetime
 
 
+def _to_epoch(value):
+    """Normalize int/float/datetime/ISO-8601 string to epoch seconds (int).
+
+    Args:
+        value (int, float, datetime, str, None): Input value to normalize.
+            - If None, returns current UTC epoch time.
+            - If int or float, returns int(value).
+            - If datetime, returns int(value.timestamp()).
+            - If str, attempts to parse as ISO-8601 datetime and returns
+              int(parsed_datetime.timestamp()).
+
+    Returns:
+        int: Epoch time in seconds.
+
+    """
+    if value is None:
+        return int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+    if isinstance(value, (int, float)):
+        return int(value)
+    if isinstance(value, datetime.datetime):
+        return int(value.timestamp())
+    if isinstance(value, str):
+        try:
+            return int(datetime.datetime.fromisoformat(value).timestamp())
+        except ValueError as exc:
+            raise TypeError(
+                "Invalid ISO-8601 datetime string for last_polled"
+            ) from exc
+    raise TypeError("last_polled must be int, float, datetime, or ISO-8601 str")
+
+
 def insert_row(rows):
     """Insert rows into smap_device_metrics_history (historical metrics).
 
@@ -14,7 +45,7 @@ def insert_row(rows):
         rows (list or object): Single row or list of rows to insert. Each row is
             expected to have the following attributes:
                 - hostname (str or None): Device hostname
-                - last_polled (int or datetime or None): Last polled timestamp
+                - last_polled (int, float, datetime, str, or None): Timestamp of last poll
                 - uptime (int or None): Device uptime in seconds
                 - cpu_utilization (float or None): CPU utilization percentage
                 - memory_utilization (float or None): Memory utilization in %
@@ -28,20 +59,26 @@ def insert_row(rows):
 
     inserts = []
     for row in rows:
+
+        # Validate/encode hostname (VARBINARY NOT NULL)
+        if getattr(row, "hostname", None) is None:
+            raise ValueError("hostname is required for DeviceMetricsHistory")
+        _host = (
+            row.hostname.encode("utf-8")
+            if isinstance(row.hostname, str)
+            else (
+                bytes(row.hostname)
+                if isinstance(row.hostname, (bytes, bytearray))
+                else None
+            )
+        )
+        if _host is None:
+            raise TypeError("hostname must be str or bytes")
+
         inserts.append(
             {
-                "hostname": (
-                    None if row.hostname is None else row.hostname.encode()
-                ),
-                "last_polled": (
-                    row.last_polled
-                    if isinstance(row.last_polled, int)
-                    else int(
-                        (
-                            row.last_polled or datetime.datetime.utcnow()
-                        ).timestamp()
-                    )
-                ),
+                "hostname": _host,
+                "last_polled": _to_epoch(row.last_polled),
                 "uptime": row.uptime,
                 "cpu_utilization": row.cpu_utilization,
                 "memory_utilization": row.memory_utilization,
