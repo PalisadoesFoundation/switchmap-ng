@@ -5,6 +5,7 @@ from switchmap.server.db.models import (
     DeviceMetricsHistory as _DeviceMetricsHistory,
 )
 import datetime
+from collections.abc import Iterable
 
 
 def _to_epoch(value):
@@ -62,7 +63,11 @@ def insert_row(rows):
         None
 
     """
-    if not isinstance(rows, list):
+    if isinstance(rows, Iterable) and not isinstance(
+        rows, (str, bytes, bytearray, dict)
+    ):
+        rows = list(rows)
+    else:
         rows = [rows]
 
     inserts = []
@@ -88,9 +93,21 @@ def insert_row(rows):
             {
                 "hostname": _host,
                 "last_polled": _to_epoch(row.last_polled),
-                "uptime": row.uptime,
-                "cpu_utilization": row.cpu_utilization,
-                "memory_utilization": row.memory_utilization,
+                "uptime": (
+                    0
+                    if (row.uptime is not None and row.uptime < 0)
+                    else row.uptime
+                ),
+                "cpu_utilization": (
+                    min(100.0, max(0.0, float(row.cpu_utilization)))
+                    if row.cpu_utilization is not None
+                    else None
+                ),
+                "memory_utilization": (
+                    min(100.0, max(0.0, float(row.memory_utilization)))
+                    if row.memory_utilization is not None
+                    else None
+                ),
             }
         )
 

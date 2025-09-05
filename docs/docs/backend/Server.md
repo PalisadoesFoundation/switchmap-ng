@@ -2035,22 +2035,19 @@ Define GraphQL queries.
 #### resolve\_deviceMetrics
 
 ```python
-def resolve_deviceMetrics(info,
-                          hostname=None,
-                          since=None,
-                          until=None,
-                          **kwargs)
+def resolve_deviceMetrics(info, hostname=None, since=None, until=None)
 ```
 
 Resolve device metrics with optional filtering.
 
 **Arguments**:
 
-- `info` - GraphQL info object
-- `hostname` _str, optional_ - Hostname to filter by
-- `since` _int, optional_ - Unix timestamp (inclusive) start of range
-- `until` _int, optional_ - Unix timestamp (exclusive) end of range
-- `**kwargs` - Additional keyword arguments
+- `info` - GraphQL query info
+- `hostname` _str, optional_ - Filter by hostname (exact match).
+- `since` _int, optional_ - Unix timestamp (seconds) for start of range
+  (inclusive).
+- `until` _int, optional_ - Unix timestamp (seconds) for end of range
+  (exclusive).
   
 
 **Returns**:
