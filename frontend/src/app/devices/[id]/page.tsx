@@ -6,33 +6,13 @@ import { ThemeToggle } from "@/app/theme-toggle";
 import { ConnectionDetails } from "@/app/components/ConnectionDetails";
 import { DeviceDetails } from "@/app/components/DeviceDetails";
 import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
-/**
- * DevicePage component fetches and displays detailed information about a specific device.
- * It includes tabs for device overview, connection details, and connection charts.
- * It handles loading and error states, and allows navigation between different sections.
- * It also includes a sidebar for easy navigation and a theme toggle button.
- *
- * @remarks
- * This component is designed for client-side use only because it relies on the `useParams` hook
- * to retrieve the device ID from the URL. It also handles loading and error states.
- * The sidebar contains links to different sections of the device details.
- * @returns The rendered device page with tabs and sidebar.
- *
- * @see {@link useParams} for retrieving the device ID from URL parameters.
- * @see {@link useSearchParams} for retrieving query parameters from the URL.
- * @see {@link useRouter} for navigation and URL manipulation.
- * @see {@link DeviceDetails} for displaying device overview information.
- * @see {@link ConnectionDetails} for displaying detailed connection information.
- * @see {@link ThemeToggle} for the theme switching functionality.
- * @see {@link FiHome}, {@link FiMonitor}, {@link FiLink}, {@link FiBarChart2} for the icons used in the sidebar.
- * */
 
 /** * Represents a tab item with label, content, and icon.
  * @remarks
  * - `label`: The display label of the tab.
  * - `content`: The React node to be rendered when the tab is active.
  * - `icon`: The icon associated with the tab.
- * @returns {JSX.Element | null} The device page UI or null when sidebarOpen is null.
+ * @returns {TabItem} An object representing a tab item.
  * @see {@link TabItem}
  * @interface TabItem
  * @property {string} label - The label of the tab.
@@ -118,9 +98,6 @@ export default function DevicePage() {
   useEffect(() => {
     if (!id) return;
     const globalId = btoa(`Device:${id}`);
-    const ac = new AbortController();
-    let cancelled = false;
-    const to = setTimeout(() => ac.abort(), 15000);
     setLoading(true);
     setError(null);
 
@@ -131,7 +108,6 @@ export default function DevicePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: QUERY, variables: { id: globalId } }),
-        signal: ac.signal,
       }
     )
       .then((res) => {
@@ -140,21 +116,10 @@ export default function DevicePage() {
       })
       .then((json) => {
         if (json.errors) throw new Error(json.errors[0].message);
-        if (!cancelled) setDevice(json.data.device);
+        setDevice(json.data.device);
       })
-      .catch((err) => {
-        if (err?.name === "AbortError" || cancelled) return;
-        setError(err.message);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-      clearTimeout(to);
-      ac.abort();
-    };
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const tabs: TabItem[] = [
@@ -190,15 +155,11 @@ export default function DevicePage() {
       icon: <FiBarChart2 className="icon" />,
     },
   ];
-  const clamp = (n: number, min: number, max: number) =>
-    Math.min(Math.max(n, min), max);
-  const parsedTab = Number.parseInt(searchParams.get("tab") ?? "0", 10);
-  const initialTab = Number.isNaN(parsedTab)
-    ? 0
-    : clamp(parsedTab, 0, tabs.length - 1);
-  const [activeTab, setActiveTab] = useState(initialTab);
 
+  const initialTab = Number(searchParams.get("tab") ?? 0);
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
+
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");
     const handler = () => setSidebarOpen(media.matches);
@@ -208,8 +169,6 @@ export default function DevicePage() {
 
     return () => media.removeEventListener("change", handler);
   }, []);
-
-  if (sidebarOpen === null) return null;
 
   if (sidebarOpen === null) return null;
 

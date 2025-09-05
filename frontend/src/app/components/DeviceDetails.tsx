@@ -120,17 +120,16 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
             />
             <MetadataRow
               label="Uptime"
-              value={
-                formatUptime(device.sysUptime ?? deviceMetrics?.uptime ?? 0) ??
-                "N/A"
-              }
+              value={formatUptime(
+                device.sysUptime ?? (deviceMetrics?.uptime ?? 0) * 100
+              )}
             />
             <MetadataRow label="System ID" value={device.sysObjectid ?? "-"} />
             <MetadataRow
               label="Time Last Polled"
-              value={
-                deviceMetrics ? formatUnixTimestamp(device.lastPolled) : "-"
-              }
+              value={formatUnixTimestamp(
+                deviceMetrics?.lastPolled ?? device.lastPolled
+              )}
             />
           </tbody>
         </table>
@@ -140,8 +139,8 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
   );
 
   const query = `
-    query {
-      deviceMetrics(hostname: "${device.hostname}") {
+    query DeviceMetrics($hostname: String!) {
+      deviceMetrics(hostname: $hostname) {
         edges {
           node {
             hostname
@@ -158,11 +157,18 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:7000/switchmap/api/graphql", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query }),
-        });
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+            "http://localhost:7000/switchmap/api/graphql",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query,
+              variables: { hostname: device.hostname },
+            }),
+          }
+        );
         const json = await res.json();
 
         const hostMetrics: DeviceData[] = json.data.deviceMetrics.edges.map(
@@ -171,10 +177,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
 
         if (hostMetrics.length === 0) return;
 
-        hostMetrics.sort(
-          (a, b) =>
-            new Date(a.lastPolled).getTime() - new Date(b.lastPolled).getTime()
-        );
+        hostMetrics.sort((a, b) => Number(a.lastPolled) - Number(b.lastPolled));
 
         setDeviceMetrics(hostMetrics[hostMetrics.length - 1]);
 
@@ -298,6 +301,11 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
               onChange={(e) => {
                 const start = new Date(e.target.value);
                 const end = customRange.end ? new Date(customRange.end) : null;
+                if (end && start > end) {
+                  setErrorMsg("Start date must be before end date.");
+                  setTimeout(() => setErrorMsg(""), 3000);
+                  return;
+                }
                 if (
                   end &&
                   (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
