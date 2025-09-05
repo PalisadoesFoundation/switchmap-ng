@@ -10,17 +10,20 @@ from collections.abc import Iterable
 
 
 def _pct(value):
-    """Normalize float percentage to 0.0-100.0 range or None.
+    """Normalize a percentage to the 0.0–100.0 range.
 
     Args:
-        value (float or None): Input percentage value.
+        value (float | None): Input percentage value.
             - If None, returns None.
             - If not a finite float, returns None.
             - If less than 0.0, returns 0.0.
             - If greater than 100.0, returns 100.0.
             - Otherwise, returns the float value.
+
     Returns:
-        float or None: Normalized percentage value or None.
+        float: Normalized percentage value between 0.0 and 100.0.
+        None: If the input is None or invalid.
+
     """
     if value is None:
         return None
@@ -34,7 +37,20 @@ def _pct(value):
 
 
 def _to_uint(value):
-    """Normalize to non-negative int or None."""
+    """Normalize an integer to a non-negative integer.
+
+    Args:
+        value (int | None): Input integer value.
+            - If None, returns None.
+            - If not an integer or cannot be converted to int, returns None.
+            - If less than 0, returns 0.
+            - Otherwise, returns the integer value.
+
+    Returns:
+        int: Non-negative integer value.
+        None: If the input is None or invalid.
+
+    """
     if value is None:
         return None
     try:
@@ -131,10 +147,12 @@ def insert_row(rows):
         inserts.append(
             {
                 "hostname": _host,
-                "last_polled": _to_epoch(row.last_polled),
+                "last_polled": _to_epoch(getattr(row, "last_polled", None)),
                 "uptime": _to_uint(getattr(row, "uptime", None)),
-                "cpu_utilization": _pct(row.cpu_utilization),
-                "memory_utilization": _pct(row.memory_utilization),
+                "cpu_utilization": _pct(getattr(row, "cpu_utilization", None)),
+                "memory_utilization": _pct(
+                    getattr(row, "memory_utilization", None)
+                ),
             }
         )
 
