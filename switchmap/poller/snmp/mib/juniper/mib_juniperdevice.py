@@ -14,7 +14,6 @@ def get_query():
         JuniperDeviceQuery: Query class for JUNIPER device MIBs
 
     """
-
     return JuniperDeviceQuery
 
 
@@ -28,7 +27,6 @@ def init_query(snmp_object):
         JuniperDeviceQuery: Initialized Query class
 
     """
-
     return JuniperDeviceQuery(snmp_object)
 
 
