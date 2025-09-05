@@ -163,20 +163,22 @@ class CiscoC2900Query(Query):
 
         # CPU OID (CISCO-CPU-MIB)
         cpu_total_oid = ".1.3.6.1.4.1.9.9.109.1.1.1.1.10"
+        # CPU & Memory OIDs
+        cpu_total_oid = ".1.3.6.1.4.1.9.9.109.1.1.1.1.10"  # CISCO-CPU-MIB
+        used_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.5"  # CISCO-MEMORY-POOL-MIB used
+        free_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.6"  # CISCO-MEMORY-POOL-MIB free
         if oidonly:
-            return {"cpu": {"total": cpu_total_oid}}
+            return {
+                "cpu": {"total": cpu_total_oid},
+                "memory": {"used": used_oid, "free": free_oid},
+            }
 
         cpu_values = self.snmp_object.swalk(cpu_total_oid) or {}
         total_cpu = sum(int(v) for v in cpu_values.values() if v is not None)
         final["cpu"]["total"] = {"value": total_cpu}
 
-        # Memory OIDs (CISCO-MEMORY-POOL-MIB)
-        used_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.5"
-        free_oid = ".1.3.6.1.4.1.9.9.48.1.1.1.6"
-
-        if oidonly:
-            return {"memory": {"used": used_oid, "free": free_oid}}
-
+        # Memory (CISCO-MEMORY-POOL-MIB)
+        # ... (rest of memory polling and final["memory"] assignment) ...
         used_values = self.snmp_object.swalk(used_oid) or {}
         free_values = self.snmp_object.swalk(free_oid) or {}
 

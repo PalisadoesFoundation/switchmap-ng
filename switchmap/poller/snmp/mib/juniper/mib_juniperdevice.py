@@ -60,11 +60,10 @@ class JuniperDeviceQuery(Query):
 
         # CPU
         cpu_oid = ".1.3.6.1.4.1.2636.3.1.13.1.8.0"
-        cpu_data = self.snmp_object.swalk(cpu_oid, normalized=True)
+        cpu_data = self.snmp_object.swalk(cpu_oid, normalized=True) or {}
         if cpu_data:
-            data["cpu"]["total"] = {
-                "value": sum(int(v) for v in cpu_data.values())
-            }
+            total_cpu = sum(int(v) for v in cpu_data.values() if v is not None)
+            data["cpu"]["total"] = {"value": total_cpu}
 
         # Memory
         mem_oids = {
@@ -76,12 +75,10 @@ class JuniperDeviceQuery(Query):
             for k, v in mem_oids.items()
         }
         if mem_data.get("used") and mem_data.get("free"):
-            data["memory"]["used"] = {
-                "value": list(mem_data["used"].values())[0]
-            }
-            data["memory"]["free"] = {
-                "value": list(mem_data["free"].values())[0]
-            }
+            used_val = next(iter(mem_data["used"].values()))
+            free_val = next(iter(mem_data["free"].values()))
+            data["memory"]["used"] = {"value": int(used_val)}
+            data["memory"]["free"] = {"value": int(free_val)}
 
         return data
 
@@ -96,6 +93,6 @@ class JuniperDeviceQuery(Query):
 
         """
         # Use a known Juniper CPU OID to check support
-        cpu_oid = ".1.3.6.1.4.1.2636.3.1.13.1.8.0"
+        cpu_oid = ".1.3.6.1.4.1.2636.3.1.13.1.8"
         response = self.snmp_object.swalk(cpu_oid, normalized=True)
         return bool(response)
