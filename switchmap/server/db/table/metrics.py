@@ -10,7 +10,7 @@ from collections.abc import Iterable
 
 
 def _pct(value):
-    """Normalize a percentage to the 0.0–100.0 range.
+    """Normalize a percentage to the 0.0-100.0 range.
 
     Args:
         value (float | None): Input percentage value.
@@ -80,7 +80,7 @@ def _to_epoch(value):
     if isinstance(value, (int, float)):
         f = float(value)
         if not math.isfinite(f):
-            raise TypeError("Invalid last_polled float")
+            raise TypeError("Invalid last_polled float")  # noqa: TRY003
         return max(0, int(f))
     if isinstance(value, datetime.datetime):
         dt = value
@@ -97,8 +97,10 @@ def _to_epoch(value):
                 dt = dt.replace(tzinfo=datetime.timezone.utc)
             return max(0, int(dt.timestamp()))
         except ValueError as exc:
-            raise TypeError("Invalid last_polled ISO-8601 string") from exc
-    raise TypeError("Invalid type for last_polled")
+            raise TypeError(
+                "Invalid last_polled ISO-8601 string"
+            ) from exc  # noqa: TRY003
+    raise TypeError("Invalid type for last_polled")  # noqa: TRY003
 
 
 def insert_row(rows):
@@ -130,7 +132,9 @@ def insert_row(rows):
 
         # Validate/encode hostname (VARBINARY NOT NULL)
         if getattr(row, "hostname", None) is None:
-            raise ValueError("hostname is required for DeviceMetricsHistory")
+            raise ValueError(
+                "hostname is required for DeviceMetricsHistory"
+            )  # noqa: TRY003
         _host = (
             row.hostname.encode("utf-8")
             if isinstance(row.hostname, str)
@@ -141,9 +145,9 @@ def insert_row(rows):
             )
         )
         if _host is None:
-            raise TypeError("hostname must be str or bytes")
+            raise TypeError("hostname must be str or bytes")  # noqa: TRY003
         if len(_host) > 256:
-            raise ValueError("hostname exceeds 256 bytes")
+            raise ValueError("hostname exceeds 256 bytes")  # noqa: TRY003
         inserts.append(
             {
                 "hostname": _host,
