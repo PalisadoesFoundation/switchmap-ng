@@ -1,11 +1,35 @@
 """Database table operations for metrics."""
 
+import math
 from switchmap.server.db import db
 from switchmap.server.db.models import (
     DeviceMetricsHistory as _DeviceMetricsHistory,
 )
 import datetime
 from collections.abc import Iterable
+
+
+def _pct(value):
+    """Normalize float percentage to 0.0-100.0 range or None.
+    Args:
+        value (float or None): Input percentage value.
+            - If None, returns None.
+            - If not a finite float, returns None.
+            - If less than 0.0, returns 0.0.
+            - If greater than 100.0, returns 100.0.
+            - Otherwise, returns the float value.
+    Returns:
+        float or None: Normalized percentage value or None.
+    """
+    if value is None:
+        return None
+    try:
+        f = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(f):
+        return None
+    return min(100.0, max(0.0, f))
 
 
 def _to_epoch(value):
@@ -98,16 +122,8 @@ def insert_row(rows):
                     if (row.uptime is not None and row.uptime < 0)
                     else row.uptime
                 ),
-                "cpu_utilization": (
-                    min(100.0, max(0.0, float(row.cpu_utilization)))
-                    if row.cpu_utilization is not None
-                    else None
-                ),
-                "memory_utilization": (
-                    min(100.0, max(0.0, float(row.memory_utilization)))
-                    if row.memory_utilization is not None
-                    else None
-                ),
+                "cpu_utilization": _pct(row.cpu_utilization),
+                "memory_utilization": _pct(row.memory_utilization),
             }
         )
 
