@@ -11,6 +11,7 @@ from collections.abc import Iterable
 
 def _pct(value):
     """Normalize float percentage to 0.0-100.0 range or None.
+
     Args:
         value (float or None): Input percentage value.
             - If None, returns None.
@@ -32,6 +33,17 @@ def _pct(value):
     return min(100.0, max(0.0, f))
 
 
+def _to_uint(value):
+    """Normalize to non-negative int or None."""
+    if value is None:
+        return None
+    try:
+        n = int(value)
+    except (TypeError, ValueError):
+        return None
+    return 0 if n < 0 else n
+
+
 def _to_epoch(value):
     """Normalize int/float/datetime/ISO-8601 string to epoch seconds (int).
 
@@ -50,12 +62,15 @@ def _to_epoch(value):
     if value is None:
         return int(datetime.datetime.now(datetime.timezone.utc).timestamp())
     if isinstance(value, (int, float)):
-        return int(value)
+        f = float(value)
+        if not math.isfinite(f):
+            raise TypeError("Invalid last_polled float")
+        return max(0, int(f))
     if isinstance(value, datetime.datetime):
         dt = value
         if dt.tzinfo is None:
             dt = dt.replace(tzinfo=datetime.timezone.utc)
-        return int(dt.timestamp())
+        return max(0, int(dt.timestamp()))
     if isinstance(value, str):
         try:
             s = value.strip()
@@ -64,7 +79,7 @@ def _to_epoch(value):
             dt = datetime.datetime.fromisoformat(s)
             if dt.tzinfo is None:
                 dt = dt.replace(tzinfo=datetime.timezone.utc)
-            return int(dt.timestamp())
+            return max(0, int(dt.timestamp()))
         except ValueError as exc:
             raise TypeError("Invalid last_polled ISO-8601 string") from exc
     raise TypeError("Invalid type for last_polled")
@@ -117,11 +132,7 @@ def insert_row(rows):
             {
                 "hostname": _host,
                 "last_polled": _to_epoch(row.last_polled),
-                "uptime": (
-                    0
-                    if (row.uptime is not None and row.uptime < 0)
-                    else row.uptime
-                ),
+                "uptime": _to_uint(getattr(row, "uptime", None)),
                 "cpu_utilization": _pct(row.cpu_utilization),
                 "memory_utilization": _pct(row.memory_utilization),
             }
