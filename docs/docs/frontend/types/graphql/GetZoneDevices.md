@@ -58,7 +58,7 @@ Defined in: [types/graphql/GetZoneDevices.ts:46](https://github.com/PalisadoesFo
 
 ##### lastPolled
 
-> **lastPolled**: `string` \| `null`
+> **lastPolled**: `number` \| `null`
 
 Defined in: [types/graphql/GetZoneDevices.ts:47](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetZoneDevices.ts#L47)
 

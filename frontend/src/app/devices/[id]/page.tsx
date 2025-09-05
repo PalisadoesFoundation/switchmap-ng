@@ -156,10 +156,10 @@ export default function DevicePage() {
     },
   ];
 
-  const initialTab = Number(searchParams.get("tab") ?? 0);
+  const parsedTab = Number.parseInt(searchParams.get("tab") ?? "0", 10);
+  const initialTab = Number.isNaN(parsedTab) ? 0 : parsedTab;
   const [activeTab, setActiveTab] = useState(initialTab);
   const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
-
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");
     const handler = () => setSidebarOpen(media.matches);

@@ -331,6 +331,11 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
                   ? new Date(customRange.start)
                   : null;
                 const end = new Date(e.target.value);
+                if (start && end < start) {
+                  setErrorMsg("End date must be after start date.");
+                  setTimeout(() => setErrorMsg(""), 3000);
+                  return;
+                }
 
                 if (
                   start &&

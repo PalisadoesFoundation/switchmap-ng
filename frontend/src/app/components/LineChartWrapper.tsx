@@ -1,4 +1,5 @@
 import React from "react";
+import type { AxisDomain } from "recharts/types/util/types";
 import {
   ResponsiveContainer,
   LineChart,
@@ -7,20 +8,31 @@ import {
   Tooltip,
   Line,
 } from "recharts";
+
 interface LineConfig {
   dataKey: string;
   stroke: string;
   type?: "monotone" | "linear" | "stepAfter" | "stepBefore";
-  dot?: boolean | Record<string, unknown>;
+  dot?:
+    | boolean
+    | object
+    | React.ReactElement<SVGElement>
+    | ((props: any) => React.ReactNode);
+  isAnimationActive?: boolean;
+  strokeWidth?: number;
 }
 
 interface YAxisConfig {
   type?: "number" | "category";
-  domain?: [number, number];
-  ticks?: number[];
-  tickFormatter?: (value: number | string) => string;
+  domain?: AxisDomain;
+  ticks?: Array<number | string>;
+  tickFormatter?: (value: any, index: number) => string;
   width?: number;
-  tick?: Record<string, unknown>;
+  tick?:
+    | boolean
+    | object
+    | React.ReactElement<SVGElement>
+    | ((props: any) => React.ReactElement<SVGElement>);
 }
 
 interface LineChartWrapperProps<T = Record<string, unknown>> {
@@ -34,8 +46,9 @@ interface LineChartWrapperProps<T = Record<string, unknown>> {
     value: unknown,
     name: string,
     props: any
-  ) => [React.ReactNode, string];
+  ) => React.ReactNode | [React.ReactNode, string];
 }
+
 /** * LineChartWrapper is a reusable component for rendering line charts with Recharts.
  * It abstracts the common configuration for line charts, including axes, tooltips, and lines.
  * This allows for consistent styling and behavior across different charts in the application.
@@ -89,6 +102,8 @@ export function LineChartWrapper({
               stroke={line.stroke}
               type={line.type || "linear"}
               dot={line.dot ?? true}
+              isAnimationActive={line.isAnimationActive}
+              strokeWidth={line.strokeWidth}
             />
           ))}
         </LineChart>
