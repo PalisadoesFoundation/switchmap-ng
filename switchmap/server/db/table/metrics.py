@@ -17,7 +17,7 @@ def insert_row(rows):
                 - last_polled (int or datetime or None): Last polled timestamp
                 - uptime (int or None): Device uptime in seconds
                 - cpu_utilization (float or None): CPU utilization percentage
-                - memory_utilization (float or None): Memory utilization percentage
+                - memory_utilization (float or None): Memory utilization in %
 
     Returns:
         None
