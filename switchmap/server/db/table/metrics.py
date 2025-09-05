@@ -27,15 +27,22 @@ def _to_epoch(value):
     if isinstance(value, (int, float)):
         return int(value)
     if isinstance(value, datetime.datetime):
-        return int(value.timestamp())
+        dt = value
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return int(dt.timestamp())
     if isinstance(value, str):
         try:
-            return int(datetime.datetime.fromisoformat(value).timestamp())
+            s = value.strip()
+            if s.endswith("Z"):
+                s = s[:-1] + "+00:00"
+            dt = datetime.datetime.fromisoformat(s)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=datetime.timezone.utc)
+            return int(dt.timestamp())
         except ValueError as exc:
-            raise TypeError(
-                "Invalid ISO-8601 datetime string for last_polled"
-            ) from exc
-    raise TypeError("last_polled must be int, float, datetime, or ISO-8601 str")
+            raise TypeError("Invalid last_polled ISO-8601 string") from exc
+    raise TypeError("Invalid type for last_polled")
 
 
 def insert_row(rows):
@@ -74,7 +81,8 @@ def insert_row(rows):
         )
         if _host is None:
             raise TypeError("hostname must be str or bytes")
-
+        if len(_host) > 256:
+            raise ValueError("hostname exceeds 256 bytes")
         inserts.append(
             {
                 "hostname": _host,
