@@ -155,10 +155,14 @@ export default function DevicePage() {
       icon: <FiBarChart2 className="icon" />,
     },
   ];
-
+  const clamp = (n: number, min: number, max: number) =>
+    Math.min(Math.max(n, min), max);
   const parsedTab = Number.parseInt(searchParams.get("tab") ?? "0", 10);
-  const initialTab = Number.isNaN(parsedTab) ? 0 : parsedTab;
+  const initialTab = Number.isNaN(parsedTab)
+    ? 0
+    : clamp(parsedTab, 0, tabs.length - 1);
   const [activeTab, setActiveTab] = useState(initialTab);
+
   const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");
@@ -235,7 +239,7 @@ export default function DevicePage() {
           <FiHome />
         </button>
         <div className="max-w-full flex items-center justify-center w-full h-full overflow-y-auto">
-          {tabs[activeTab].content}
+          {tabs[clamp(activeTab, 0, tabs.length - 1)]?.content}
         </div>
       </div>
     </div>

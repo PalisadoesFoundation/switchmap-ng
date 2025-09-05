@@ -12,7 +12,7 @@
 
 > **default**(): `Element`
 
-Defined in: [history/page.tsx:76](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/history/page.tsx#L76)
+Defined in: [history/page.tsx:80](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/history/page.tsx#L80)
 
 #### Returns
 

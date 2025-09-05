@@ -45,8 +45,8 @@ type DeviceNode = {
   hostname: string;
   sysName: string;
   zone?: string;
-  lastPolled?: number;
-  lastPolledMs?: number;
+  lastPolled?: number | null;
+  lastPolledMs?: number | null;
 };
 
 type ZoneEdge = {
@@ -67,10 +67,14 @@ type GraphQLResponse = {
   };
   errors?: { message: string }[];
 };
-function toMs(value: string | null | undefined): number | null {
-  if (!value) return null;
+function toMs(value: number | string | null | undefined): number | null {
+  if (value == null) return null;
+  if (typeof value === "number") {
+    // treat < 1e12 as seconds
+    return value < 1e12 ? value * 1000 : value;
+  }
   const ms = Date.parse(value);
-  return isNaN(ms) ? null : ms;
+  return Number.isNaN(ms) ? null : ms;
 }
 
 export default function DeviceHistoryChart() {
@@ -129,7 +133,7 @@ export default function DeviceHistoryChart() {
               devicesWithZones.push({
                 ...device,
                 zone: zone.name,
-                lastPolledMs: device.lastPolled! * 1000,
+                lastPolledMs: toMs(device.lastPolled ?? null),
               });
             }
           });
@@ -235,7 +239,7 @@ export default function DeviceHistoryChart() {
     sysNameMap[name] = i + 1;
   });
   const sysNameChartData = history.map((h) => ({
-    timestamp: new Date((h.lastPolledMs ?? 0) * 1000).toISOString(),
+    timestamp: new Date(h.lastPolledMs ?? 0).toISOString(),
     sysNameNum: sysNameMap[h.sysName],
     sysName: h.sysName,
   }));
@@ -251,7 +255,7 @@ export default function DeviceHistoryChart() {
   const zoneChartData = history
     .filter((h) => h.zone)
     .map((h) => ({
-      timestamp: new Date((h.lastPolledMs ?? 0) * 1000).toISOString(),
+      timestamp: new Date(h.lastPolledMs ?? 0).toISOString(),
       zoneNum: zoneMap[h.zone || ""],
       zoneName: h.zone || "",
     }));
@@ -373,6 +377,11 @@ export default function DeviceHistoryChart() {
                     onChange={(e) => {
                       const start = new Date(e.target.value);
                       const end = customEnd ? new Date(customEnd) : null;
+                      if (end && start > end) {
+                        setErrorMsg("Start date must be before end date.");
+                        setTimeout(() => setErrorMsg(""), 3000);
+                        return;
+                      }
 
                       if (
                         end &&
@@ -398,6 +407,11 @@ export default function DeviceHistoryChart() {
                     onChange={(e) => {
                       const start = customStart ? new Date(customStart) : null;
                       const end = new Date(e.target.value);
+                      if (start && end < start) {
+                        setErrorMsg("End date must be after start date.");
+                        setTimeout(() => setErrorMsg(""), 3000);
+                        return;
+                      }
 
                       if (
                         start &&

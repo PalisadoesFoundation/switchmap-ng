@@ -52,7 +52,8 @@ def insert_row(rows):
         rows (list or object): Single row or list of rows to insert. Each row is
             expected to have the following attributes:
                 - hostname (str or None): Device hostname
-                - last_polled (int, float, datetime, str, or None): Timestamp of last poll
+                - last_polled (int, float, datetime, str, or None):
+                  Timestamp of last poll
                 - uptime (int or None): Device uptime in seconds
                 - cpu_utilization (float or None): CPU utilization percentage
                 - memory_utilization (float or None): Memory utilization in %
