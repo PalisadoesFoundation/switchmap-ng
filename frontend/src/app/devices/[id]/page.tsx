@@ -6,40 +6,121 @@ import { ThemeToggle } from "@/app/theme-toggle";
 import { ConnectionDetails } from "@/app/components/ConnectionDetails";
 import { DeviceDetails } from "@/app/components/DeviceDetails";
 import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
-/**
- * DevicePage component fetches and displays detailed information about a specific device.
- * It includes tabs for device overview, connection details, and connection charts.
- * It handles loading and error states, and allows navigation between different sections.
- * It also includes a sidebar for easy navigation and a theme toggle button.
- *
- * @remarks
- * This component is designed for client-side use only because it relies on the `useParams` hook
- * to retrieve the device ID from the URL. It also handles loading and error states.
- * The sidebar contains links to different sections of the device details.
- * @returns The rendered device page with tabs and sidebar.
- *
- * @see {@link useParams} for retrieving the device ID from URL parameters.
- * @see {@link useSearchParams} for retrieving query parameters from the URL.
- * @see {@link useRouter} for navigation and URL manipulation.
- * @see {@link DeviceDetails} for displaying device overview information.
- * @see {@link ConnectionDetails} for displaying detailed connection information.
- * @see {@link ThemeToggle} for the theme switching functionality.
- * @see {@link FiHome}, {@link FiMonitor}, {@link FiLink}, {@link FiBarChart2} for the icons used in the sidebar.
- * */
 
+/** * Represents a tab item with label, content, and icon.
+ * @remarks
+ * - `label`: The display label of the tab.
+ * - `content`: The React node to be rendered when the tab is active.
+ * - `icon`: The icon associated with the tab.
+ * @returns {TabItem} An object representing a tab item.
+ * @see {@link TabItem}
+ * @interface TabItem
+ * @property {string} label - The label of the tab.
+ * @property {React.ReactNode} content - The content to display when the tab is active.
+ * @property {React.ReactElement} icon - The icon representing the tab.
+ */
 interface TabItem {
   label: string;
   content: React.ReactNode;
   icon: React.ReactElement;
 }
 
+const QUERY = `
+  query Device($id: ID!) {
+    device(id: $id) {
+      id
+      idxDevice
+      sysObjectid
+      sysUptime
+      sysDescription
+      sysName
+      hostname
+      lastPolled
+      l1interfaces {
+        edges {
+          node {
+            idxL1interface
+            idxDevice
+            ifname
+            nativevlan
+            ifoperstatus
+            tsIdle
+            ifspeed
+            duplex
+            ifalias
+            trunk
+            cdpcachedeviceid
+            cdpcachedeviceport
+            cdpcacheplatform
+            lldpremportdesc
+            lldpremsysname
+            lldpremsysdesc
+            lldpremsyscapenabled
+            macports {
+              edges {
+                node {
+                  macs {
+                    mac
+                    oui {
+                      organization
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export default function DevicePage() {
+  const params = useParams<{ id: string | string[] }>();
   const searchParams = useSearchParams();
   const sysName = searchParams.get("sysName") ?? "";
   const hostname = searchParams.get("hostname") ?? "";
-  const params = useParams<{ id: string | string[] }>();
-  // Ensure id is always a string
+
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const [device, setDevice] = useState<DeviceNode | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleTabChange = (idx: number) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", String(idx));
+    const hash = window.location.hash;
+    router.replace(`${window.location.pathname}?${params.toString()}${hash}`);
+    setActiveTab(idx);
+  };
+
+  useEffect(() => {
+    if (!id) return;
+    const globalId = btoa(`Device:${id}`);
+    setLoading(true);
+    setError(null);
+
+    fetch(
+      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+        "http://localhost:7000/switchmap/api/graphql",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: QUERY, variables: { id: globalId } }),
+      }
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((json) => {
+        if (json.errors) throw new Error(json.errors[0].message);
+        setDevice(json.data.device);
+      })
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [id]);
 
   const tabs: TabItem[] = [
     {
@@ -74,9 +155,20 @@ export default function DevicePage() {
       icon: <FiBarChart2 className="icon" />,
     },
   ];
-  const [activeTab, setActiveTab] = useState<number>(0);
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
-  const router = useRouter();
+
+  const initialTab = Number(searchParams.get("tab") ?? 0);
+  const [activeTab, setActiveTab] = useState(initialTab);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const handler = () => setSidebarOpen(media.matches);
+
+    handler();
+    media.addEventListener("change", handler);
+
+    return () => media.removeEventListener("change", handler);
+  }, []);
 
   if (sidebarOpen === null) return null;
 
