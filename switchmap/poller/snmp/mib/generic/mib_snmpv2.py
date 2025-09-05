@@ -116,9 +116,9 @@ class Snmpv2Query(Query):
 
         cpu_values = self.snmp_object.swalk(cpu_oid) or {}
         if cpu_values:
-            data_dict["cpu"]["total"] = {
-                "value": sum(int(v) for v in cpu_values.values())
-            }
+            vals = [int(v) for v in cpu_values.values()]
+            avg = sum(vals) / max(len(vals), 1)
+            data_dict["cpu"]["total"] = {"value": round(avg, 2)}
 
         # Normalize by hrStorageIndex and filter only RAM rows
         mem_used = self.snmp_object.swalk(mem_used_oid, normalized=True) or {}

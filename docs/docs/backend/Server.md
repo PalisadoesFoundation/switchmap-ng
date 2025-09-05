@@ -2035,21 +2035,27 @@ Define GraphQL queries.
 #### resolve\_deviceMetrics
 
 ```python
-def resolve_deviceMetrics(info, hostname=None, **kwargs)
+def resolve_deviceMetrics(info,
+                          hostname=None,
+                          since=None,
+                          until=None,
+                          **kwargs)
 ```
 
-Resolve device metrics with optional hostname filtering.
+Resolve device metrics with optional filtering.
 
 **Arguments**:
 
 - `info` - GraphQL info object
-- `hostname` _str, optional_ - Hostname to filter by. Defaults to None.
+- `hostname` _str, optional_ - Hostname to filter by
+- `since` _int, optional_ - Unix timestamp (inclusive) start of range
+- `until` _int, optional_ - Unix timestamp (exclusive) end of range
 - `**kwargs` - Additional keyword arguments
   
 
 **Returns**:
 
-- `QuerySet` - Filtered or unfiltered DeviceMetrics query set
+- `QuerySet` - Filtered DeviceMetrics query set
 
 <a id="db.table.ipport"></a>
 
@@ -2278,7 +2284,8 @@ Insert rows into smap_device_metrics_history (historical metrics).
 - `rows` _list or object_ - Single row or list of rows to insert. Each row is
   expected to have the following attributes:
   - hostname (str or None): Device hostname
-  - last_polled (int, float, datetime, str, or None): Timestamp of last poll
+  - last_polled (int, float, datetime, str, or None):
+  Timestamp of last poll
   - uptime (int or None): Device uptime in seconds
   - cpu_utilization (float or None): CPU utilization percentage
   - memory_utilization (float or None): Memory utilization in %

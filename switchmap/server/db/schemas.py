@@ -210,26 +210,43 @@ class Query(graphene.ObjectType):
     devices = BatchSQLAlchemyConnectionField(Device.connection)
 
     deviceMetrics = BatchSQLAlchemyConnectionField(
-        DeviceMetrics.connection, hostname=String()
+        DeviceMetrics.connection,
+        hostname=String(),
+        since=graphene.Int(description="Unix seconds (inclusive) lower bound"),
+        until=graphene.Int(description="Unix seconds (exclusive) upper bound"),
     )
 
-    def resolve_deviceMetrics(self, info, hostname=None, **kwargs):
-        """Resolve device metrics with optional hostname filtering.
+    def resolve_deviceMetrics(
+        self, info, hostname=None, since=None, until=None, **kwargs
+    ):
+        """Resolve device metrics with optional filtering.
 
         Args:
             info: GraphQL info object
-            hostname (str, optional): Hostname to filter by. Defaults to None.
+            hostname (str, optional): Hostname to filter by
+            since (int, optional): Unix timestamp (inclusive) start of range
+            until (int, optional): Unix timestamp (exclusive) end of range
             **kwargs: Additional keyword arguments
 
         Returns:
-            QuerySet: Filtered or unfiltered DeviceMetrics query set
-
+            QuerySet: Filtered DeviceMetrics query set
         """
         query = DeviceMetrics.get_query(info)
+
         if hostname:
             query = query.filter(
                 DeviceMetricsModel.hostname == hostname.encode()
             )
+
+        if since is not None:
+            query = query.filter(DeviceMetricsModel.last_polled >= since)
+
+        if until is not None:
+            query = query.filter(DeviceMetricsModel.last_polled < until)
+
+        # Add deterministic ordering
+        query = query.order_by(DeviceMetricsModel.last_polled.asc())
+
         return query
 
     # Results as a single entry filtered by 'id' and as a list
