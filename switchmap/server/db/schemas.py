@@ -222,11 +222,10 @@ class Query(graphene.ObjectType):
         """Resolve device metrics with optional hostname and time-range filters.
 
         Args:
-            self: The Query instance.
             info: GraphQL resolve info.
-            hostname (str, optional): Filter by device hostname.
-            since (int, optional): Unix seconds (inclusive) lower bound.
-            until (int, optional): Unix seconds (exclusive) upper bound.
+            hostname (str, optional): Filter by device hostname (exact match).
+            since (int, optional): Unix epoch seconds (inclusive) lower bound.
+            until (int, optional): Unix epoch seconds (exclusive) upper bound.
 
         Returns:
             sqlalchemy.orm.Query: Filtered query ordered by `last_polled` ASC.
