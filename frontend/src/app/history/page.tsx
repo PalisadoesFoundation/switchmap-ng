@@ -76,6 +76,11 @@ function toMs(value: number | string | null | undefined): number | null {
   const ms = Date.parse(value);
   return Number.isNaN(ms) ? null : ms;
 }
+// Parse a YYYY-MM-DD string as a local Date (avoids UTC parsing pitfalls)
+function parseDateOnlyLocal(yyyyMmDd: string): Date {
+  const [y, m, d] = yyyyMmDd.split("-").map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1);
+}
 
 export default function DeviceHistoryChart() {
   const [allDevices, setAllDevices] = useState<DeviceNode[]>([]);
@@ -145,13 +150,15 @@ export default function DeviceHistoryChart() {
         let filteredDevices = devicesWithZones;
 
         if (range === "custom") {
-          const startDate = new Date(customStart!);
-          const endDate = new Date(customEnd!);
+          const start = parseDateOnlyLocal(customStart!);
+          start.setHours(0, 0, 0, 0);
+          const end = parseDateOnlyLocal(customEnd!);
+          end.setHours(23, 59, 59, 999);
 
           filteredDevices = devicesWithZones.filter((d) => {
             if (typeof d.lastPolledMs !== "number") return false;
             const t = d.lastPolledMs;
-            return t >= startDate.getTime() && t <= endDate.getTime();
+            return t >= start.getTime() && t <= end.getTime();
           });
         } else {
           let startDate: Date | null = null;
@@ -376,8 +383,12 @@ export default function DeviceHistoryChart() {
                     className="border p-2 rounded"
                     value={customStart}
                     onChange={(e) => {
-                      const start = new Date(e.target.value);
-                      const end = customEnd ? new Date(customEnd) : null;
+                      const start = parseDateOnlyLocal(e.target.value);
+                      start.setHours(0, 0, 0, 0);
+                      const end = customEnd
+                        ? parseDateOnlyLocal(customEnd)
+                        : null;
+                      if (end) end.setHours(23, 59, 59, 999);
                       if (end && start > end) {
                         setErrorMsg("Start date must be before end date.");
                         setTimeout(() => setErrorMsg(""), 3000);
@@ -406,8 +417,12 @@ export default function DeviceHistoryChart() {
                     className="border p-2 rounded"
                     value={customEnd}
                     onChange={(e) => {
-                      const start = customStart ? new Date(customStart) : null;
-                      const end = new Date(e.target.value);
+                      const start = customStart
+                        ? parseDateOnlyLocal(customStart)
+                        : null;
+                      if (start) start.setHours(0, 0, 0, 0);
+                      const end = parseDateOnlyLocal(e.target.value);
+                      end.setHours(23, 59, 59, 999);
                       if (start && end < start) {
                         setErrorMsg("End date must be after start date.");
                         setTimeout(() => setErrorMsg(""), 3000);
