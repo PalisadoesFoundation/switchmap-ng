@@ -148,9 +148,9 @@ export default function DeviceHistoryChart() {
           const endDate = new Date(customEnd!);
 
           filteredDevices = devicesWithZones.filter((d) => {
-            if (!d.lastPolled) return false;
-            const date = new Date(d.lastPolled * 1000);
-            return date >= startDate && date <= endDate;
+            if (typeof d.lastPolledMs !== "number") return false;
+            const t = d.lastPolledMs;
+            return t >= startDate.getTime() && t <= endDate.getTime();
           });
         } else {
           let startDate: Date | null = null;
@@ -174,10 +174,10 @@ export default function DeviceHistoryChart() {
           }
 
           if (startDate) {
+            const startMs = startDate.getTime();
             filteredDevices = devicesWithZones.filter((d) => {
-              if (!d.lastPolled) return false;
-              const date = new Date(d.lastPolled * 1000);
-              return date >= startDate!;
+              if (typeof d.lastPolledMs !== "number") return false;
+              return d.lastPolledMs >= startMs;
             });
           }
         }

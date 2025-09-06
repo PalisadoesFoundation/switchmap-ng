@@ -1,7 +1,7 @@
-.deviceChartWrapper h2,
-.deviceChartWrapper form,
-.deviceChartWrapper button,
-.deviceChartWrapper :global(.topology-instructions) {
+.deviceChartWrapper :global(.topology-chart-container) h2,
+.deviceChartWrapper :global(.topology-chart-container) form,
+.deviceChartWrapper :global(.topology-chart-container) button,
+.deviceChartWrapper :global(.topology-chart-container .topology-instructions) {
   display: none;
 }
 

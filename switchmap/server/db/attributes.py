@@ -407,15 +407,8 @@ class DeviceMetricsAttribute:
     """Descriptive attributes for DeviceMetricsHistory table."""
 
     hostname = graphene.String(
-        resolver=lambda obj, info: (
-            obj.hostname.decode() if obj.hostname else None
-        ),
-        description="System hostname",
+        resolver=resolve_hostname, description="System hostname"
     )
-    last_polled = graphene.Int(description="Timestamp of last poll")
-    uptime = graphene.Float(description="System uptime")
-    cpu_utilization = graphene.Float(description="CPU utilization")
-    memory_utilization = graphene.Float(description="Memory utilization")
 
 
 class L1InterfaceAttribute:
