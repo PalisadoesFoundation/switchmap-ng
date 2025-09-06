@@ -61,12 +61,13 @@ export function ConnectionDetails({ device }: { device: DeviceNode }) {
       .join(", ");
   };
 
-  if (!device || !device.l1interfaces)
+  if (!device || !device.l1interfaces?.edges?.length)
     return <p>No interface data available.</p>;
 
-  const interfaces = device.l1interfaces.edges.map(
-    ({ node }: InterfaceEdge) => node
-  );
+  const edges = device.l1interfaces.edges ?? [];
+  const interfaces = edges
+    .map(({ node }: InterfaceEdge) => node)
+    .filter(Boolean);
 
   return (
     <div className="w-[87%] h-[80vh]">

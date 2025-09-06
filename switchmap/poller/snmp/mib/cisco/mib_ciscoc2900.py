@@ -174,9 +174,9 @@ class CiscoC2900Query(Query):
             }
 
         cpu_values = self.snmp_object.swalk(cpu_total_oid) or {}
-        total_cpu = sum(int(v) for v in cpu_values.values() if v is not None)
-        final["cpu"]["total"] = {"value": total_cpu}
-
+        vals = [int(v) for v in cpu_values.values() if v is not None]
+        avg_cpu = round(sum(vals) / max(len(vals), 1), 2) if vals else 0
+        final["cpu"]["total"] = {"value": avg_cpu}
         # Memory (CISCO-MEMORY-POOL-MIB)
         # ... (rest of memory polling and final["memory"] assignment) ...
         used_values = self.snmp_object.swalk(used_oid) or {}

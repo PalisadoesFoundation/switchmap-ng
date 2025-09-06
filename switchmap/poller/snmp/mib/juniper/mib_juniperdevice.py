@@ -33,6 +33,8 @@ def init_query(snmp_object):
 class JuniperDeviceQuery(Query):
     """Class interacts with device-level MIBs for Juniper."""
 
+    layer = "device"
+
     def __init__(self, snmp_object):
         """Instantiate the class.
 
