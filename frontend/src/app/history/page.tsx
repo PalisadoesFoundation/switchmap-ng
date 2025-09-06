@@ -127,7 +127,8 @@ export default function DeviceHistoryChart() {
 
         zones.forEach((zoneEdge) => {
           const zone = zoneEdge.node;
-          zone.devices.edges.forEach((deviceEdge) => {
+          const deviceEdges = zone?.devices?.edges ?? [];
+          deviceEdges.forEach((deviceEdge) => {
             const device = deviceEdge.node;
             if (device?.hostname && device?.idxDevice) {
               devicesWithZones.push({

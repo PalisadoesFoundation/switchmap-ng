@@ -214,6 +214,7 @@ class Query(graphene.ObjectType):
         hostname=String(),
         since=graphene.Int(description="Unix seconds (inclusive) lower bound"),
         until=graphene.Int(description="Unix seconds (exclusive) upper bound"),
+        sort=None,
     )
 
     def resolve_deviceMetrics(

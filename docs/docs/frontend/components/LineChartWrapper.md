@@ -12,7 +12,7 @@
 
 > **LineChartWrapper**(`__namedParameters`): `Element`
 
-Defined in: [components/LineChartWrapper.tsx:65](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/LineChartWrapper.tsx#L65)
+Defined in: [components/LineChartWrapper.tsx:66](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/LineChartWrapper.tsx#L66)
 
 LineChartWrapper is a reusable component for rendering line charts with Recharts.
 It abstracts the common configuration for line charts, including axes, tooltips, and lines.
