@@ -10,7 +10,7 @@ import {
   Options,
 } from "vis-network/standalone/esm/vis-network";
 import { useTheme } from "next-themes";
-import { formatUptime } from "../utils/time";
+import { formatUptime } from "@/app/utils/time";
 import { useRouter } from "next/navigation";
 /**
  * Renders a network topology chart using vis-network based on the given devices.
@@ -24,12 +24,20 @@ import { useRouter } from "next/navigation";
  */
 
 interface TopologyChartProps {
-  devices: any[];
+  devices: DeviceNode[];
   loading: boolean;
   error: string | null;
+  zoomView?: boolean;
+  clickToUse?: boolean;
 }
 
-export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
+export function TopologyChart({
+  devices,
+  loading,
+  error,
+  zoomView,
+  clickToUse,
+}: TopologyChartProps) {
   // React state to hold current graph structure: array of nodes and edges
   const [graph, setGraph] = useState<{ nodes: Node[]; edges: Edge[] }>({
     nodes: [],
@@ -37,7 +45,12 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   });
   const router = useRouter();
   // State to track the current search input (used for node filtering/highlighting)
+  const [inputTerm, setInputTerm] = useState("");
+  // State to hold the search term for highlighting nodes
   const [searchTerm, setSearchTerm] = useState("");
+  // State to track the search result
+  const [searchResult, setSearchResult] = useState("");
+
   // Reference to the DOM element where the network will be rendered
   const containerRef = useRef<HTMLDivElement | null>(null);
   // Reference to the actual vis-network instance (used for calling methods like focus, fit, etc.)
@@ -53,6 +66,9 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
     nodes: [],
     edges: [],
   });
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  const [allNodeLabels, setAllNodeLabels] = useState<string[]>([]);
 
   // Determine if current theme is dark to set graph colors accordingly.
   // Note: vis-network options are initialized once and do not auto-update on theme change.
@@ -60,7 +76,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   const isDark = theme === "dark";
   const options: Options = useMemo(
     () => ({
-      clickToUse: true,
+      clickToUse: clickToUse ?? true, // Use passed clickToUse prop or default to true
       layout: { hierarchical: false },
       physics: {
         enabled: true,
@@ -91,7 +107,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         hover: true,
         tooltipDelay: 100,
         dragNodes: true,
-        zoomView: true,
+        zoomView: zoomView ?? true, // Use passed interaction options or default to true
         selectConnectedEdges: false,
       },
     }),
@@ -104,46 +120,66 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
      * (nodes and edges) to render a topology network using vis-network.
      *
      * - Each device becomes a node.
-     * - If a device has interfaces with a CDP (Cisco Discovery Protocol) target,
+     * - If a device has interfaces with a CDP (Cisco Discovery Protocol) or
+     *   LLDP(Link Layer Discovery Protocol) relationship,
      *   those relationships become edges.
      *
      * Custom `title` (tooltip) and `idxDevice` are added to nodes for UX features
      * like tooltips and click navigation.
      */
+    // If no devices are available, reset the graph to empty state
     if (!devices || devices.length === 0) {
       setGraph({ nodes: [], edges: [] });
       return;
     }
-
+    // Create sets to track unique nodes and edges
+    // `nodesSet` tracks nodes already in the graph
+    // `extraNodesSet` tracks nodes that are not in the current zone
+    // This helps avoid duplicates and manage relationships correctly
     const nodesSet = new Set<string>();
     const extraNodesSet = new Set<string>();
     const edgesArray: Edge[] = [];
-
+    // Iterate over each device to build nodes and edges
+    // We use `sysName` as the unique identifier for each device
     devices.forEach((device) => {
       const sysName = device?.sysName;
       if (!sysName) return;
+      // If the device is already in the current zone, remove it from `extraNodesSet`
+      // This ensures we only add devices that are not in the current zone to `extraNodesSet`
       if (extraNodesSet.has(sysName)) {
-        // If device is in the current zone, skip adding it
         extraNodesSet.delete(sysName);
-        nodesSet.add(sysName);
       }
       nodesSet.add(device.sysName);
 
       (device.l1interfaces?.edges ?? []).forEach(
         ({ node: iface }: { node: any }) => {
-          const target = iface?.cdpcachedeviceid;
-          const port = iface?.cdpcachedeviceport;
-
-          if (target) {
-            if (!nodesSet.has(target)) {
-              extraNodesSet.add(target);
+          const targetCDP = iface?.cdpcachedeviceid;
+          const portCDP = iface?.cdpcachedeviceport;
+          const targetLLDP = iface?.lldpcachedeviceid;
+          const portLLDP = iface?.lldpcachedeviceport;
+          // Create edges for CDP or LLDP relationships
+          if (targetCDP) {
+            if (!nodesSet.has(targetCDP)) {
+              extraNodesSet.add(targetCDP);
             }
             edgesArray.push({
               from: sysName,
-              to: target,
-              label: port,
+              to: targetCDP,
+              label: "",
+              title: portCDP,
               color: "#BBBBBB",
-            });
+            } as Edge);
+          } else if (targetLLDP) {
+            if (!nodesSet.has(targetLLDP)) {
+              extraNodesSet.add(targetLLDP);
+            }
+            edgesArray.push({
+              from: sysName,
+              to: targetLLDP,
+              label: "",
+              title: portLLDP,
+              color: "#BBBBBB",
+            } as Edge);
           }
         }
       );
@@ -157,7 +193,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
     // Create nodes array from devices
     // Each node has an `id`, `label`, `color`, and custom `title
     const nodesArray: Node[] = devices.map((device) => ({
-      id: device.sysName ?? "", // use sysName as the node ID (to match edge `cdpcachedeviceid`)
+      id: device.sysName ?? "",
       label: device.sysName ?? device.idxDevice?.toString() ?? "",
       color: "#1E90FF",
       idxDevice: device.idxDevice?.toString(), // custom field for navigation
@@ -184,12 +220,13 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
       ),
     }));
     // Add extra nodes that are not in the current zone
+    // These nodes are added with a different color and a tooltip
+    // indicating they are not in the current zone
     extraNodesSet.forEach((sysName) => {
       nodesArray.push({
         id: sysName,
         label: sysName,
         color: "#383e44ff",
-        title: "Device not in current zone",
       });
     });
     // Clean up DOM elements in node titles
@@ -214,14 +251,16 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
     // Set the new graph
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
+
+    // (Lines 255–262 have been removed; the fit()/moveTo() reset now lives
+    // in the Network-creation useEffect so it always runs on a fresh instance.)
   }, [devices]);
 
   useEffect(() => {
+    // If no graph data is available, do not render the network
     if (!containerRef.current || graph.nodes.length === 0) return;
-
     nodesData.current = new DataSet<Node>(graph.nodes);
     edgesData.current = new DataSet<Edge>(graph.edges);
-
     networkRef.current = new Network(
       containerRef.current,
       {
@@ -238,62 +277,76 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         const nodeId = params.nodes[0];
         const nodeData = nodesData.current?.get(nodeId);
         const node = Array.isArray(nodeData) ? nodeData[0] : nodeData;
-        const idxDevice = (node as any)?.idxDevice ?? nodeId;
-        const sysName = (node as any)?.label ?? "";
-        const url = `/devices/${encodeURIComponent(
-          idxDevice
-        )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
-        router.push(url);
+
+        // Only navigate if idxDevice exists
+        if ((node as any)?.idxDevice) {
+          const idxDevice = (node as any).idxDevice;
+          const sysName = (node as any)?.label ?? "";
+          const url = `/devices/${encodeURIComponent(
+            idxDevice
+          )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
+          router.push(url);
+        }
       }
     });
 
     // Node selection highlighting
+    // When a node is selected, it highlights the node and dims others
+    // It also updates the edges to have a different color
+
     networkRef.current.on("selectNode", ({ nodes }) => {
       const selected = nodes[0];
       if (!nodesData.current || !edgesData.current) return;
 
       nodesData.current.forEach((node) => {
+        const isSelected = node.id === selected;
         nodesData.current!.update({
           id: node.id,
+          opacity: isSelected ? 1 : 0.6,
           color: {
-            background: node.id === selected ? "#FF6347" : "#D3D3D3",
-            border: "#555",
+            border: isDark ? "#999" : "#555",
           },
           font: {
-            color: node.id === selected ? "black" : "#A9A9A9",
+            color: isSelected
+              ? isDark
+                ? "#fff"
+                : "black"
+              : isDark
+              ? "#aaa"
+              : "#A9A9A9",
           },
-        });
-      });
-
-      edgesData.current.forEach((edge) => {
-        const connected = edge.from === selected || edge.to === selected;
-        edgesData.current!.update({
-          id: edge.id,
-          color: connected ? "#555" : "#DDD",
         });
       });
     });
-
-    // Reset highlight on deselect
+    // Reset node selection highlighting
+    // When a node is deselected, it resets the opacity and color of all nodes
+    // It also resets the edges color to default
     networkRef.current.on("deselectNode", () => {
       if (!nodesData.current || !edgesData.current) return;
 
       nodesData.current.forEach((node) => {
         nodesData.current!.update({
           id: node.id,
-          color: { background: "#1E90FF", border: "#555" },
-          font: { color: "black" },
+          opacity: 1,
+          color: {
+            border: isDark ? "#999" : "#555",
+          },
+          font: {
+            color: isDark ? "#fff" : "black",
+          },
         });
       });
-
-      edgesData.current.forEach((edge) => {
+      // Reset edges color
+      initialGraph.current.edges.forEach((originalEdge) => {
         edgesData.current!.update({
-          id: edge.id,
-          color: "#BBBBBB",
+          id: originalEdge.id,
+          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"), // fallback if color missing
         });
       });
     });
-  }, [graph]);
+    // Show arrow on hover
+    networkRef.current.on("hoverEdge", (params) => {
+      if (!edgesData.current) return;
 
       edgesData.current.update({
         id: params.edge,
@@ -334,7 +387,27 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         });
       });
     });
+    const labels =
+      nodesData.current
+        ?.get()
+        ?.map((node: any) => node.label)
+        .filter(Boolean) || [];
+
+    setAllNodeLabels(labels);
   }, [graph, theme]);
+
+  useEffect(() => {
+    if (!inputTerm || inputTerm.trim() === "") {
+      setSuggestions([]);
+      return;
+    }
+
+    const filtered = allNodeLabels
+      .filter((label) => label.toLowerCase().includes(inputTerm.toLowerCase()))
+      .slice(0, 5); // limit to top 5
+
+    setSuggestions(filtered);
+  }, [inputTerm, allNodeLabels]);
 
   // Effect to handle search term changes
   // When the search term changes, it highlights the matching node and focuses the network view on it.
@@ -344,25 +417,59 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
 
     const node = nodesData.current.get(searchTerm);
     if (!node) {
-      console.warn(`Node "${searchTerm}" not found.`);
+      setSearchResult("No results found for: " + searchTerm);
       return;
-    }
+    } else {
+      // Highlight the node and focus the network
+      setSearchResult("Showing results for: " + searchTerm);
 
-    networkRef.current.focus(searchTerm, { scale: 1.5, animation: true });
+      networkRef.current.focus(searchTerm, { scale: 1.5, animation: true });
 
-    nodesData.current.get().forEach((n) => {
-      nodesData.current!.update({
-        id: n.id,
-        color: {
-          background: n.id === searchTerm ? "#FF6347" : "#D3D3D3",
-          border: "#555",
-        },
-        font: {
-          color: n.id === searchTerm ? "black" : "#A9A9A9",
-        },
+      nodesData.current.get().forEach((n) => {
+        nodesData.current!.update({
+          id: n.id,
+          color: {
+            background: n.id === searchTerm ? "#FF6347" : "#D3D3D3",
+            border: "#555",
+          },
+          font: {
+            color:
+              n.id === searchTerm
+                ? isDark
+                  ? "#fff"
+                  : "black"
+                : isDark
+                ? "#aaa"
+                : "#A9A9A9",
+          },
+        });
       });
-    });
+    }
   }, [searchTerm]);
+
+  const handleReset = () => {
+    setInputTerm("");
+    setSearchResult("");
+    setGraph(initialGraph.current);
+
+    if (!networkRef.current || !nodesData.current || !edgesData.current) return;
+
+    // Clear selection
+    networkRef.current.unselectAll();
+
+    // Instead of clear + add, do update
+    const originalNodes = initialGraph.current.nodes;
+    const originalEdges = initialGraph.current.edges;
+
+    nodesData.current.clear();
+    edgesData.current.clear();
+
+    nodesData.current.add(originalNodes);
+    edgesData.current.add(originalEdges);
+
+    // Reset view
+    networkRef.current.fit();
+  };
 
   const handleExportImage = () => {
     const canvas = containerRef.current?.getElementsByTagName("canvas")[0];
@@ -469,6 +576,4 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
       </div>
     </div>
   );
-};
-
-export default TopologyChart;
+}

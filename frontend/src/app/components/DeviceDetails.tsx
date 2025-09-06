@@ -7,11 +7,28 @@ import { formatUptime } from "../utils/time";
 import { formatUnixTimestamp } from "../utils/timeStamp";
 import { truncateLines } from "../utils/stringUtils";
 
-const uptimeData = [
-  { timestamp: "2025-07-29 00:00", value: 99.95 },
-  { timestamp: "2025-07-29 01:00", value: 99.97 },
-  { timestamp: "2025-07-29 02:00", value: 99.92 },
-];
+/**
+ * DeviceDetails component displays detailed information about a specific device,
+ * including its metadata and historical performance charts.
+ * It fetches device metrics from a GraphQL API and allows users to filter
+ * the displayed data by predefined time ranges or a custom date range.
+ * It also includes a topology chart to visualize the device's connections.
+ * @remarks
+ * This component is designed for client-side use only because it relies on
+ * the `useEffect` hook for fetching data and managing state.
+ * It also uses `useMemo` to optimize rendering of static parts of the UI.
+ * @param device - The device object containing basic information like hostname and sysName.
+ * @returns The rendered device details component.
+ *
+ * @see {@link DeviceResponse} for the structure of the device data response.
+ * @see {@link DeviceNode} for the structure of the device data.
+ * @see {@link HistoricalChart} for the chart component used to display historical data.
+ * @see {@link TopologyChart} for the topology visualization component.
+ * @see {@link useState} for managing component state.
+ * @see {@link useEffect} for fetching data and handling side effects.
+ * @see {@link useMemo} for optimizing rendering of static UI parts.
+ */
+
 function MetadataRow({ label, value }: { label: string; value: string }) {
   return (
     <tr>
@@ -25,10 +42,9 @@ function MetadataRow({ label, value }: { label: string; value: string }) {
 type DeviceData = {
   hostname: string;
   uptime?: number;
-  sysUptime?: number;
   cpuUtilization: number;
   memoryUtilization: number;
-  timestamp: string; // ISO string from API
+  lastPolled: number;
   sysName?: string;
   sysDescription?: string;
   sysObjectid?: string;
@@ -48,33 +64,90 @@ const TIME_RANGES = [
 
 export function DeviceDetails({ device }: DeviceDetailsProps) {
   const [uptimeData, setUptimeData] = useState<
-    { timestamp: string; value: number }[]
+    { lastPolled: string; value: number }[]
   >([]);
+
   const [cpuUsageData, setCpuUsageData] = useState<
-    { timestamp: string; value: number }[]
+    { lastPolled: string; value: number }[]
   >([]);
   const [memoryUsageData, setMemoryUsageData] = useState<
-    { timestamp: string; value: number }[]
+    { lastPolled: string; value: number }[]
   >([]);
   const [deviceMetrics, setDeviceMetrics] = useState<DeviceData | null>(null);
 
   const [selectedRange, setSelectedRange] = useState<number>(1);
+  const [errorMsg, setErrorMsg] = useState("");
   const [customRange, setCustomRange] = useState<{
     start: string;
     end: string;
   }>({ start: "", end: "" });
   const [open, setOpen] = useState<boolean>(false);
+  const topologyChartMemo = useMemo(
+    () => (
+      <TopologyChart
+        devices={[device]}
+        loading={false}
+        error={null}
+        zoomView={false}
+        clickToUse={false}
+      />
+    ),
+    [device] // only re-render if device changes
+  );
+  const metadataTableMemo = useMemo(
+    () => (
+      <div className="max-w-full min-h-[300px] h-auto min-w-[300px] w-auto md:w-[50vw] p-5 m-4 bg-content-bg items-center justify-center border border-border-subtle rounded-lg xl:w-[35vw]">
+        <table
+          className={`table-auto w-fit m-top-0 text-left ${styles.tableCustom}`}
+        >
+          <tbody className="text-xs md:text-sm xl:text-lg">
+            <MetadataRow label="Device Name" value={device.sysName ?? "-"} />
+            <MetadataRow
+              label="Description"
+              value={truncateLines(device.sysDescription ?? "", {
+                lines: 3,
+                maxLength: 60,
+              })}
+            />
+            <MetadataRow label="Hostname" value={device.hostname} />
+            <MetadataRow
+              label="Status"
+              value={
+                typeof device.sysUptime === "number" && device.sysUptime > 0
+                  ? "Up"
+                  : "Down"
+              }
+            />
+            <MetadataRow
+              label="Uptime"
+              value={formatUptime(
+                device.sysUptime ?? (deviceMetrics?.uptime ?? 0) * 100
+              )}
+            />
+            <MetadataRow label="System ID" value={device.sysObjectid ?? "-"} />
+            <MetadataRow
+              label="Time Last Polled"
+              value={formatUnixTimestamp(
+                deviceMetrics?.lastPolled ?? device.lastPolled
+              )}
+            />
+          </tbody>
+        </table>
+      </div>
+    ),
+    [device, deviceMetrics] // only re-render if device or deviceMetrics change
+  );
 
   const query = `
-    query {
-      deviceMetrics(hostname: "${device.hostname}") {
+    query DeviceMetrics($hostname: String!) {
+      deviceMetrics(hostname: $hostname) {
         edges {
           node {
             hostname
             uptime
             cpuUtilization
             memoryUtilization
-            timestamp
+            lastPolled
           }
         }
       }
@@ -82,57 +155,95 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
     `;
 
   useEffect(() => {
+    const ac = new AbortController();
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:7000/switchmap/api/graphql", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query }),
-        });
+        const res = await fetch(
+          process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+            "http://localhost:7000/switchmap/api/graphql",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              query,
+              variables: { hostname: device.hostname },
+            }),
+            signal: ac.signal,
+          }
+        );
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const json = await res.json();
+        if (json?.errors?.length) {
+          throw new Error(json.errors[0]?.message || "GraphQL error");
+        }
+        if (!json?.data?.deviceMetrics?.edges) {
+          throw new Error("Malformed response");
+        }
 
         const hostMetrics: DeviceData[] = json.data.deviceMetrics.edges.map(
           ({ node }: { node: DeviceData }) => node
         );
-
+        if (hostMetrics.length === 0) {
+          setUptimeData([]);
+          setCpuUsageData([]);
+          setMemoryUsageData([]);
+          setDeviceMetrics(null);
+          return;
+        }
         if (hostMetrics.length === 0) return;
 
-        hostMetrics.sort(
-          (a, b) =>
-            new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-        );
+        hostMetrics.sort((a, b) => Number(a.lastPolled) - Number(b.lastPolled));
 
         setDeviceMetrics(hostMetrics[hostMetrics.length - 1]);
 
         setUptimeData(
-          hostMetrics.map((m) => ({
-            timestamp: new Date(m.timestamp).toISOString(),
-            value: (m.sysUptime ?? m.uptime ?? 0) / 1000000,
-          }))
+          hostMetrics.map((m) => {
+            const uptime = Number(m.uptime);
+            return {
+              lastPolled: new Date(m.lastPolled * 1000).toISOString(),
+              value: Number.isFinite(uptime) && uptime > 0 ? 1 : 0,
+            };
+          })
         );
 
         setCpuUsageData(
-          hostMetrics.map((m) => ({
-            timestamp: new Date(m.timestamp).toISOString(),
-            value: m.cpuUtilization,
-          }))
+          hostMetrics.map((m) => {
+            const cpu = Number.isFinite(Number(m.cpuUtilization))
+              ? Number(m.cpuUtilization)
+              : 0;
+            return {
+              lastPolled: new Date(Number(m.lastPolled) * 1000).toISOString(),
+              value: Math.max(0, Math.min(100, cpu)),
+            };
+          })
         );
 
         setMemoryUsageData(
-          hostMetrics.map((m) => ({
-            timestamp: new Date(m.timestamp).toISOString(),
-            value: m.memoryUtilization,
-          }))
+          hostMetrics.map((m) => {
+            const mem = Number.isFinite(Number(m.memoryUtilization))
+              ? Number(m.memoryUtilization)
+              : 0;
+            return {
+              lastPolled: new Date(Number(m.lastPolled) * 1000).toISOString(),
+              value: Math.max(0, Math.min(100, mem)),
+            };
+          })
         );
-      } catch (error) {
+      } catch (error: any) {
+        if (error.name === "AbortError") return; // ignore aborted fetch
         console.error("Error fetching device metrics:", error);
+        setErrorMsg("Failed to load device metrics.");
+        setTimeout(() => setErrorMsg(""), 3000);
       }
     }
 
     fetchData();
+    return () => ac.abort();
   }, [device.hostname]);
 
-  const filterByRange = (data: { timestamp: string; value: number }[]) => {
+  const filterByRange = (data: { lastPolled: string; value: number }[]) => {
     const now = new Date();
     let startDate: Date;
 
@@ -141,64 +252,33 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
       const endDate = new Date(customRange.end);
       return data.filter(
         (d) =>
-          new Date(d.timestamp) >= startDate && new Date(d.timestamp) <= endDate
+          new Date(d.lastPolled) >= startDate &&
+          new Date(d.lastPolled) <= endDate
       );
     } else {
       startDate = new Date();
       startDate.setDate(now.getDate() - selectedRange);
-      return data.filter((d) => new Date(d.timestamp) >= startDate);
+      return data.filter((d) => new Date(d.lastPolled) >= startDate);
     }
   };
 
   return (
     <div className="p-8 w-[85vw] flex flex-col gap-4 h-full ">
+      {/* Centralized error alert */}
+      {errorMsg && (
+        <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
+          <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
+            {errorMsg}
+          </div>
+        </div>
+      )}
       <h2 className="text-xl font-semibold mb-2">Device Overview</h2>
       <div
-        className={`flex flex-col md:flex-row gap-2 ${styles.deviceChartWrapper}`}
+        className={`flex flex-col md:flex-row md:self-center gap-2 ${styles.deviceChartWrapper}`}
       >
-        <TopologyChart
-          devices={[device]}
-          loading={false}
-          error={null}
-          zoomView={false}
-          clickToUse={false}
-        />
-        <div className="max-w-full h-[400px] min-w-[300px] w-[50vw] p-5 bg-content-bg items-center justify-center border border-border-subtle rounded-lg lg:w-[50vw] xl:w-[35vw]">
-          <table
-            className={`table-auto w-fit m-top-0 text-left ${styles.tableCustom}`}
-          >
-            <tbody className="text-xs md:text-sm">
-              <MetadataRow label="Device Name" value={device.sysName} />
-              <MetadataRow
-                label="Description"
-                value={truncateLines(device.sysDescription, {
-                  lines: 3,
-                  maxLength: 60,
-                })}
-              />
-              <MetadataRow label="Hostname" value={device.hostname} />
-              <MetadataRow
-                label="Status"
-                value={
-                  typeof device.sysUptime === "number" && device.sysUptime > 0
-                    ? "Up"
-                    : "Down"
-                }
-              />
-              <MetadataRow
-                label="Uptime"
-                value={formatUptime(device.sysUptime) ?? "N/A"}
-              />
-              <MetadataRow label="System ID" value={device.sysObjectid} />
-              <MetadataRow
-                label="Time Last Polled"
-                value={formatUnixTimestamp(device.lastPolled)}
-              />
-            </tbody>
-          </table>
-        </div>
+        {topologyChartMemo}
+        {metadataTableMemo}
       </div>
-
       {/* Time Range Dropdown */}
       <div className="mt-8 md:mt-2 flex flex-col lg:flex-row gap-4 text-left justify-start xl:items-center">
         <div className="relative">
@@ -256,6 +336,11 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
                   const end = customRange.end
                     ? new Date(customRange.end)
                     : null;
+                  if (end && start > end) {
+                    setErrorMsg("Start date must be before end date.");
+                    setTimeout(() => setErrorMsg(""), 3000);
+                    return;
+                  }
                   if (
                     end &&
                     (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
@@ -281,6 +366,11 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
                     ? new Date(customRange.start)
                     : null;
                   const end = new Date(e.target.value);
+                  if (start && end < start) {
+                    setErrorMsg("End date must be after start date.");
+                    setTimeout(() => setErrorMsg(""), 3000);
+                    return;
+                  }
 
                   if (
                     start &&
@@ -301,12 +391,19 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         )}
       </div>
 
-      <div className="p-4 w-full flex flex-col xl:flex-row gap-4">
+      <div className="p-4 w-full min-w-[350px] flex flex-col xl:flex-row gap-4">
         <HistoricalChart
-          title="Uptime (%)"
+          title="System Status"
           data={filterByRange(uptimeData)}
           color="#00b894"
-          unit="%"
+          unit=""
+          yAxisConfig={{
+            domain: [0, 1],
+            ticks: [0, 1],
+            tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
+            allowDecimals: false,
+          }}
+          lineType="stepAfter"
         />
 
         <HistoricalChart
@@ -315,7 +412,6 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           color="#0984e3"
           unit="%"
         />
-
         <HistoricalChart
           title="Memory Usage (%)"
           data={filterByRange(memoryUsageData)}

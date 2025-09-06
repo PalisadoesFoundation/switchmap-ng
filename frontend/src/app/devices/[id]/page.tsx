@@ -7,6 +7,18 @@ import { ConnectionDetails } from "@/app/components/ConnectionDetails";
 import { DeviceDetails } from "@/app/components/DeviceDetails";
 import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
 
+/** * Represents a tab item with label, content, and icon.
+ * @remarks
+ * - `label`: The display label of the tab.
+ * - `content`: The React node to be rendered when the tab is active.
+ * - `icon`: The icon associated with the tab.
+ * @returns {JSX.Element | null} The device page UI or null when sidebarOpen is null.
+ * @see {@link TabItem}
+ * @interface TabItem
+ * @property {string} label - The label of the tab.
+ * @property {React.ReactNode} content - The content to display when the tab is active.
+ * @property {React.ReactElement} icon - The icon representing the tab.
+ */
 interface TabItem {
   label: string;
   content: React.ReactNode;
@@ -86,6 +98,9 @@ export default function DevicePage() {
   useEffect(() => {
     if (!id) return;
     const globalId = btoa(`Device:${id}`);
+    const ac = new AbortController();
+    let cancelled = false;
+    const to = setTimeout(() => ac.abort(), 15000);
     setLoading(true);
     setError(null);
 
@@ -96,6 +111,7 @@ export default function DevicePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: QUERY, variables: { id: globalId } }),
+        signal: ac.signal,
       }
     )
       .then((res) => {
@@ -104,10 +120,21 @@ export default function DevicePage() {
       })
       .then((json) => {
         if (json.errors) throw new Error(json.errors[0].message);
-        setDevice(json.data.device);
+        if (!cancelled) setDevice(json.data.device);
       })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        if (err?.name === "AbortError" || cancelled) return;
+        setError(err.message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(to);
+      ac.abort();
+    };
   }, [id]);
 
   const tabs: TabItem[] = [
@@ -143,11 +170,15 @@ export default function DevicePage() {
       icon: <FiBarChart2 className="icon" />,
     },
   ];
-
-  const initialTab = Number(searchParams.get("tab") ?? 0);
+  const clamp = (n: number, min: number, max: number) =>
+    Math.min(Math.max(n, min), max);
+  const parsedTab = Number.parseInt(searchParams.get("tab") ?? "0", 10);
+  const initialTab = Number.isNaN(parsedTab)
+    ? 0
+    : clamp(parsedTab, 0, tabs.length - 1);
   const [activeTab, setActiveTab] = useState(initialTab);
-  const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
 
+  const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");
     const handler = () => setSidebarOpen(media.matches);
@@ -223,7 +254,7 @@ export default function DevicePage() {
           <FiHome />
         </button>
         <div className="max-w-full flex items-center justify-center w-full h-full overflow-y-auto">
-          {tabs[activeTab].content}
+          {tabs[clamp(activeTab, 0, tabs.length - 1)]?.content}
         </div>
       </div>
     </div>

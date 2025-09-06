@@ -114,7 +114,7 @@ export function Sidebar() {
       </button>
 
       {/* Static sidebar for large screens */}
-      <aside className="hidden lg:block sticky top-0 left-0 w-60 h-screen border-r border-border lg:p-4">
+      <aside className="hidden lg:block sticky top-0 left-0 w-60 h-screen border-r border-border lg:p-4 flex-shrink-0">
         {sidebarContent}
       </aside>
 
@@ -124,7 +124,6 @@ export function Sidebar() {
           <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" />
           <aside
             ref={sidebarRef}
-            aria-label="slide-in sidebar"
             className="fixed top-0 left-0 w-60 h-full bg-bg border-r border-border z-50 p-4 shadow-md transition-transform transform lg:hidden"
           >
             {sidebarContent}
