@@ -2042,6 +2042,7 @@ Resolve device metrics with optional hostname and time-range filters.
 
 **Arguments**:
 
+- `self` - The Query instance.
 - `info` - GraphQL resolve info.
 - `hostname` _str, optional_ - Filter by device hostname.
 - `since` _int, optional_ - Unix seconds (inclusive) lower bound.
@@ -2050,7 +2051,7 @@ Resolve device metrics with optional hostname and time-range filters.
 
 **Returns**:
 
-- `sqlalchemy.orm.Query` - Filtered, deterministically ordered query.
+- `sqlalchemy.orm.Query` - Filtered query ordered by `last_polled` ASC.
 
 <a id="db.table.ipport"></a>
 
