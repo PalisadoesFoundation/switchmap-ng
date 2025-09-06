@@ -12,7 +12,7 @@ import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
  * - `label`: The display label of the tab.
  * - `content`: The React node to be rendered when the tab is active.
  * - `icon`: The icon associated with the tab.
- * @returns {TabItem} An object representing a tab item.
+ * @returns {JSX.Element | null} The device page UI or null when sidebarOpen is null.
  * @see {@link TabItem}
  * @interface TabItem
  * @property {string} label - The label of the tab.
@@ -98,6 +98,9 @@ export default function DevicePage() {
   useEffect(() => {
     if (!id) return;
     const globalId = btoa(`Device:${id}`);
+    const ac = new AbortController();
+    let cancelled = false;
+    const to = setTimeout(() => ac.abort(), 15000);
     setLoading(true);
     setError(null);
 
@@ -108,6 +111,7 @@ export default function DevicePage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: QUERY, variables: { id: globalId } }),
+        signal: ac.signal,
       }
     )
       .then((res) => {
@@ -116,10 +120,21 @@ export default function DevicePage() {
       })
       .then((json) => {
         if (json.errors) throw new Error(json.errors[0].message);
-        setDevice(json.data.device);
+        if (!cancelled) setDevice(json.data.device);
       })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        if (err?.name === "AbortError" || cancelled) return;
+        setError(err.message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(to);
+      ac.abort();
+    };
   }, [id]);
 
   const tabs: TabItem[] = [
