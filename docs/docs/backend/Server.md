@@ -2042,11 +2042,10 @@ Resolve device metrics with optional hostname and time-range filters.
 
 **Arguments**:
 
-- `self` - The Query instance.
 - `info` - GraphQL resolve info.
-- `hostname` _str, optional_ - Filter by device hostname.
-- `since` _int, optional_ - Unix seconds (inclusive) lower bound.
-- `until` _int, optional_ - Unix seconds (exclusive) upper bound.
+- `hostname` _str, optional_ - Filter by device hostname (exact match).
+- `since` _int, optional_ - Unix epoch seconds (inclusive) lower bound.
+- `until` _int, optional_ - Unix epoch seconds (exclusive) upper bound.
   
 
 **Returns**:
