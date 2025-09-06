@@ -155,6 +155,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
     `;
 
   useEffect(() => {
+    const ac = new AbortController();
     async function fetchData() {
       try {
         const res = await fetch(
@@ -167,14 +168,30 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
               query,
               variables: { hostname: device.hostname },
             }),
+            signal: ac.signal,
           }
         );
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
         const json = await res.json();
+        if (json?.errors?.length) {
+          throw new Error(json.errors[0]?.message || "GraphQL error");
+        }
+        if (!json?.data?.deviceMetrics?.edges) {
+          throw new Error("Malformed response");
+        }
 
         const hostMetrics: DeviceData[] = json.data.deviceMetrics.edges.map(
           ({ node }: { node: DeviceData }) => node
         );
-
+        if (hostMetrics.length === 0) {
+          setUptimeData([]);
+          setCpuUsageData([]);
+          setMemoryUsageData([]);
+          setDeviceMetrics(null);
+          return;
+        }
         if (hostMetrics.length === 0) return;
 
         hostMetrics.sort((a, b) => Number(a.lastPolled) - Number(b.lastPolled));
@@ -192,24 +209,38 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         );
 
         setCpuUsageData(
-          hostMetrics.map((m) => ({
-            lastPolled: new Date(m.lastPolled * 1000).toISOString(),
-            value: m.cpuUtilization,
-          }))
+          hostMetrics.map((m) => {
+            const cpu = Number.isFinite(Number(m.cpuUtilization))
+              ? Number(m.cpuUtilization)
+              : 0;
+            return {
+              lastPolled: new Date(Number(m.lastPolled) * 1000).toISOString(),
+              value: Math.max(0, Math.min(100, cpu)),
+            };
+          })
         );
 
         setMemoryUsageData(
-          hostMetrics.map((m) => ({
-            lastPolled: new Date(m.lastPolled * 1000).toISOString(),
-            value: m.memoryUtilization,
-          }))
+          hostMetrics.map((m) => {
+            const mem = Number.isFinite(Number(m.memoryUtilization))
+              ? Number(m.memoryUtilization)
+              : 0;
+            return {
+              lastPolled: new Date(Number(m.lastPolled) * 1000).toISOString(),
+              value: Math.max(0, Math.min(100, mem)),
+            };
+          })
         );
-      } catch (error) {
+      } catch (error: any) {
+        if (error.name === "AbortError") return; // ignore aborted fetch
         console.error("Error fetching device metrics:", error);
+        setErrorMsg("Failed to load device metrics.");
+        setTimeout(() => setErrorMsg(""), 3000);
       }
     }
 
     fetchData();
+    return () => ac.abort();
   }, [device.hostname]);
 
   const filterByRange = (data: { lastPolled: string; value: number }[]) => {

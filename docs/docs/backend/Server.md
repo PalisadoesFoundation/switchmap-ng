@@ -2030,30 +2030,6 @@ class Query(graphene.ObjectType)
 
 Define GraphQL queries.
 
-<a id="db.schemas.Query.resolve_deviceMetrics"></a>
-
-#### resolve\_deviceMetrics
-
-```python
-def resolve_deviceMetrics(info, hostname=None, since=None, until=None)
-```
-
-Resolve device metrics with optional filtering.
-
-**Arguments**:
-
-- `info` - GraphQL query info
-- `hostname` _str, optional_ - Filter by hostname (exact match).
-- `since` _int, optional_ - Unix timestamp (seconds) for start of range
-  (inclusive).
-- `until` _int, optional_ - Unix timestamp (seconds) for end of range
-  (exclusive).
-  
-
-**Returns**:
-
-- `QuerySet` - Filtered DeviceMetrics query set
-
 <a id="db.table.ipport"></a>
 
 # db.table.ipport

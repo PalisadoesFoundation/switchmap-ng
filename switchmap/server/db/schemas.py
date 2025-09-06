@@ -217,21 +217,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_deviceMetrics(
-        self, info, hostname=None, since=None, until=None
+        self, info, hostname=None, since=None, until=None, **kwargs
     ):
-        """Resolve device metrics with optional filtering.
-
-        Args:
-            info: GraphQL query info
-            hostname (str, optional): Filter by hostname (exact match).
-            since (int, optional): Unix timestamp (seconds) for start of range
-                (inclusive).
-            until (int, optional): Unix timestamp (seconds) for end of range
-                (exclusive).
-
-        Returns:
-            QuerySet: Filtered DeviceMetrics query set
-        """
         query = DeviceMetrics.get_query(info)
 
         if hostname:
@@ -245,7 +232,6 @@ class Query(graphene.ObjectType):
         if until is not None:
             query = query.filter(DeviceMetricsModel.last_polled < until)
 
-        # Add deterministic ordering
         query = query.order_by(
             DeviceMetricsModel.last_polled.asc(),
             DeviceMetricsModel.id.asc(),
