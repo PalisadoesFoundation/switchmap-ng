@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import type { AxisDomain } from "recharts/types/util/types";
 import {
