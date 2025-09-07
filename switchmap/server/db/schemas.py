@@ -207,7 +207,17 @@ class Query(graphene.ObjectType):
 
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
-    devices = BatchSQLAlchemyConnectionField(Device.connection)
+    devices = BatchSQLAlchemyConnectionField(
+        Device.connection, hostname=graphene.String()
+    )
+
+    def resolve_devices(root, info, hostname=None, **kwargs):
+        query = Device.get_query(info)
+
+        if hostname:
+            query = query.filter(DeviceModel.hostname == hostname.encode())
+
+        return query
 
     deviceMetrics = BatchSQLAlchemyConnectionField(
         DeviceMetrics.connection,
