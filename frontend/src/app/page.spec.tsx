@@ -1,6 +1,12 @@
 /// <reference types="vitest" />
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { describe, it, vi, expect, beforeEach, afterEach } from "vitest";
 import Home from "./page";
 
@@ -103,4 +109,52 @@ describe("Home page", () => {
     );
     expect(localStorageMock.setItem).toHaveBeenCalledWith("zoneId", "1");
   });
+
+  it("scrolls to element if hash exists", () => {
+    // Set a hash in the URL
+    window.location.hash = "#devices-overview";
+
+    // Create a matching element in the DOM
+    const element = document.createElement("div");
+    element.id = "devices-overview";
+    document.body.appendChild(element);
+
+    // Mock scrollIntoView
+    element.scrollIntoView = vi.fn();
+
+    render(<Home />);
+
+    expect(element.scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth" });
+
+    // Clean up
+    document.body.removeChild(element);
+    window.location.hash = "";
+  });
+  it(
+    "handles unknown errors correctly",
+    async () => {
+      // Throw a non-Error to hit the 'unknown error' branch
+      (global.fetch as any).mockImplementation(() => {
+        throw "fail string";
+      });
+
+      render(<Home />);
+      const dropdown = screen.getByTestId("zone-dropdown");
+      fireEvent.change(dropdown, { target: { value: "1" } });
+
+      // Wait long enough for retries: first retry 1s, second retry 2s
+      await waitFor(
+        () =>
+          expect(screen.getByTestId("topology-chart")).toHaveTextContent(
+            "Error: Failed to load devices. Please check your network or try again."
+          ),
+        { timeout: 7000 } // give it enough time for 2 retries
+      );
+
+      expect(screen.getByTestId("devices-overview")).toHaveTextContent(
+        "Error: Failed to load devices. Please check your network or try again."
+      );
+    },
+    { timeout: 7000 }
+  );
 });
