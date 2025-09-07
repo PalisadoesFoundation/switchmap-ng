@@ -132,4 +132,55 @@ describe("ZoneDropdown - Unit Tests", () => {
       expect(screen.getByText("Zone 1")).toBeInTheDocument();
     });
   });
+  it("handles network error when res.ok is false", async () => {
+    const onChange = vi.fn();
+    global.fetch = vi.fn(
+      () =>
+        Promise.resolve({
+          ok: false,
+          status: 500,
+        }) as any
+    );
+
+    render(<ZoneDropdown selectedZoneId={null} onChange={onChange} />);
+    fireEvent.click(screen.getByRole("button")); // open dropdown
+
+    await waitFor(() =>
+      expect(screen.getByText("Error: Network error: 500")).toBeInTheDocument()
+    );
+  });
+
+  it("handles GraphQL errors returned in JSON", async () => {
+    const onChange = vi.fn();
+    global.fetch = vi.fn(
+      () =>
+        Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({ errors: [{ message: "GraphQL failed" }] }),
+        }) as any
+    );
+
+    render(<ZoneDropdown selectedZoneId={null} onChange={onChange} />);
+    fireEvent.click(screen.getByRole("button")); // open dropdown
+
+    await waitFor(() =>
+      expect(screen.getByText("Error: GraphQL failed")).toBeInTheDocument()
+    );
+  });
+  it("closes dropdown when clicking outside", async () => {
+    const onChange = vi.fn();
+    render(<ZoneDropdown selectedZoneId={null} onChange={onChange} />);
+
+    const button = screen.getByRole("button");
+    fireEvent.click(button); // open dropdown
+    expect(button.querySelector("svg")).toHaveClass("rotate-180");
+
+    // Click outside
+    fireEvent.mouseDown(document.body);
+
+    await waitFor(() => {
+      expect(button.querySelector("svg")).not.toHaveClass("rotate-180");
+    });
+  });
 });

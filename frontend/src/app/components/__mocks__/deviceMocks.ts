@@ -8,7 +8,7 @@ const mockInterface: InterfaceNode = {
   ifname: "Gig1/0/1",
   nativevlan: 10,
   ifoperstatus: 1,
-  tsIdle: 100,
+  tsIdle: "100",
   ifspeed: 1000,
   duplex: "full",
   ifalias: "uplink",
@@ -39,7 +39,7 @@ export const mockDevice: DeviceNode = {
   sysDescription: "Test device description",
   sysObjectid: "1.3.6.1",
   sysUptime: 1000,
-  lastPolled: "1693305600",
+  lastPolled: 1693305600,
   l1interfaces: {
     edges: [{ node: mockInterface }],
   },
