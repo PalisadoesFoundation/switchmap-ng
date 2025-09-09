@@ -6,6 +6,7 @@ import { ThemeToggle } from "@/app/theme-toggle";
 import { ConnectionDetails } from "@/app/components/ConnectionDetails";
 import { DeviceDetails } from "@/app/components/DeviceDetails";
 import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
+import { ConnectionCharts } from "@/app/components/ConnectionCharts";
 
 /** * Represents a tab item with label, content, and icon.
  * @remarks
@@ -166,8 +167,16 @@ export default function DevicePage() {
     },
     {
       label: "Connection Charts",
-      content: <div>Connection Charts</div>,
-      icon: <FiBarChart2 className="icon" />,
+      content: loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : device ? (
+        <ConnectionCharts device={device} />
+      ) : (
+        <p>No device data.</p>
+      ),
+      icon: <FiLink className="icon" />,
     },
   ];
   const clamp = (n: number, min: number, max: number) =>

@@ -49,6 +49,16 @@ export type InterfaceNode = {
   ifoperstatus: number;  
   tsIdle: string;  
   ifspeed: number;  
+  ifinUcastPkts: number|null;
+  ifoutUcastPkts: number|null;
+  ifinNUcastPkts: number|null;
+  ifoutNUcastPkts: number|null;
+  ifinOctets: number|null;
+  ifoutOctets: number|null;
+  ifinErrors: number|null;
+  ifoutErrors: number|null;
+  ifinDiscards: number|null;
+  ifoutDiscards: number|null;
   duplex: string;  
   ifalias?: string | null;  
   trunk: boolean;  
