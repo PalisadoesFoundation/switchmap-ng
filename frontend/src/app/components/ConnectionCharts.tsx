@@ -203,22 +203,38 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
       </p>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-4 items-center mb-4">
-        <div>
-          <label className="text-sm block mb-1">Time Range</label>
+      <div className="flex flex-wrap gap-4 items-end mb-4">
+        <div className="relative w-[160px] items-end">
           <select
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="border rounded px-2 py-1 w-[160px] bg-[var(--select-bg)]"
+            className="appearance-none border rounded px-2 py-1 w-full bg-[var(--select-bg)] pr-6"
           >
             <option value="24h">Past 24 hours</option>
             <option value="7d">Past 7 days</option>
             <option value="30d">Past 30 days</option>
             <option value="custom">Custom Date</option>
           </select>
+
+          <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+            <svg
+              className="h-5 w-5 text-gray-500"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
         </div>
 
-        <div className="min-h-[60px] flex gap-4">
+        <div className="min-h-[60px] flex gap-4 items-end">
           {timeRange === "custom" && (
             <>
               <div>
