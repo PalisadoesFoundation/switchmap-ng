@@ -57,6 +57,16 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
     Record<string, Record<ChartTab, ChartDataPoint[]>>
   >({});
   const [error, setError] = useState<string | null>(null);
+  // new state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10; // number of interfaces per page
+
+  // pagination logic
+  const totalPages = Math.ceil(device.l1interfaces.edges.length / pageSize);
+  const paginatedIfaces = device.l1interfaces.edges.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   // Expand All / Collapse All
   const expandAll = () => {
@@ -204,26 +214,35 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             <option value="24h">Past 24 hours</option>
             <option value="7d">Past 7 days</option>
             <option value="30d">Past 30 days</option>
+            <option value="custom">Custom Date</option>
           </select>
         </div>
-        <div>
-          <label className="text-sm block mb-1">Start Date</label>
-          <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="border rounded px-2 py-1 bg-[var(--select-bg)]"
-          />
+
+        <div className="min-h-[60px] flex gap-4">
+          {timeRange === "custom" && (
+            <>
+              <div>
+                <label className="text-sm block mb-1">Start Date</label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="border rounded px-2 py-1 bg-[var(--select-bg)]"
+                />
+              </div>
+              <div>
+                <label className="text-sm block mb-1">End Date</label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="border rounded px-2 py-1 bg-[var(--select-bg)]"
+                />
+              </div>
+            </>
+          )}
         </div>
-        <div>
-          <label className="text-sm block mb-1">End Date</label>
-          <input
-            type="date"
-            value={endDate}
-            onChange={(e) => setEndDate(e.target.value)}
-            className="border rounded px-2 py-1 bg-[var(--select-bg)]"
-          />
-        </div>
+
         <div className="flex gap-4 ml-auto mr-0 align-bottom">
           <button
             className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
@@ -240,97 +259,120 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
         </div>
       </div>
 
-      {/* Interfaces */}
-      {device.l1interfaces.edges.map(({ node }: { node: InterfaceNode }) => {
-        const ifname = node.ifname;
-        const isExpanded = expandedIfaces[ifname];
-        const currentTab = activeTabs[ifname] || "Traffic";
-        const filteredData = data[ifname]?.[currentTab] || [];
+      {/* Interfaces with Pagination */}
+      <div className="flex flex-col gap-4">
+        {paginatedIfaces.map(({ node }: { node: InterfaceNode }) => {
+          const ifname = node.ifname;
+          const isExpanded = expandedIfaces[ifname];
+          const currentTab = activeTabs[ifname] || "Traffic";
+          const filteredData = data[ifname]?.[currentTab] || [];
 
-        return (
-          <div
-            key={ifname}
-            className="border rounded-lg p-4 bg-[var(--content-bg)] shadow-md relative mb-4"
-          >
+          return (
             <div
-              className="flex items-center gap-2 cursor-pointer"
-              onClick={() =>
-                setExpandedIfaces((prev) => ({
-                  ...prev,
-                  [ifname]: !prev[ifname],
-                }))
-              }
+              key={ifname}
+              className="border rounded-lg p-2 bg-[var(--content-bg)] shadow-md relative mb-2"
             >
-              {isExpanded ? (
-                <FiMinus className="text-[var(--icon-color)]" />
-              ) : (
-                <FiPlus className="text-[var(--icon-color)]" />
-              )}
-              <p className="font-medium text-[var(--text-color)]">{ifname}</p>
-            </div>
+              <div
+                className="flex items-center gap-2 cursor-pointer"
+                onClick={() =>
+                  setExpandedIfaces((prev) => ({
+                    ...prev,
+                    [ifname]: !prev[ifname],
+                  }))
+                }
+              >
+                {isExpanded ? (
+                  <FiMinus className="text-[var(--icon-color)]" />
+                ) : (
+                  <FiPlus className="text-[var(--icon-color)]" />
+                )}
+                <p className="font-medium text-[var(--text-color)]">{ifname}</p>
+              </div>
 
-            {isExpanded && (
-              <>
-                <div className="flex gap-6 border-b border-[var(--border-subtle)] mt-2 mb-4">
-                  <button
-                    className="absolute top-4 right-4 bg-bg px-4 py-2 mb-2 border border-gray-300 rounded-md shadow-sm outline"
-                    onClick={() =>
-                      downloadCSV(filteredData, `${ifname}-${currentTab}.csv`)
-                    }
-                  >
-                    <FiDownload className="inline mr-1" /> Download
-                  </button>
-                  {(
-                    [
-                      "Traffic",
-                      "Unicast",
-                      "NonUnicast",
-                      "Errors",
-                      "Discards",
-                      "Speed",
-                    ] as ChartTab[]
-                  ).map((tab) => (
+              {isExpanded && (
+                <>
+                  <div className="flex gap-6 border-b border-[var(--border-subtle)] mt-2 mb-4">
                     <button
-                      key={tab}
-                      className={`pb-2 text-sm font-medium ${
-                        currentTab === tab
-                          ? "border-b-2 border-[var(--h1-color)] text-[var(--h1-color)]"
-                          : "text-[var(--text-color)]"
-                      }`}
+                      className="absolute top-4 right-4 bg-bg px-4 py-2 mb-2 border border-gray-300 rounded-md shadow-sm outline"
                       onClick={() =>
-                        setActiveTabs((prev) => ({ ...prev, [ifname]: tab }))
+                        downloadCSV(filteredData, `${ifname}-${currentTab}.csv`)
                       }
                     >
-                      {tab}
+                      <FiDownload className="inline mr-1" /> Download
                     </button>
-                  ))}
-                </div>
-
-                {filteredData.length > 0 ? (
-                  <div className="relative">
-                    <HistoricalChart
-                      data={filteredData}
-                      title={`${ifname} - ${currentTab}`}
-                      color={
-                        currentTab === "Traffic"
-                          ? "#8884d8"
-                          : currentTab === "Speed"
-                          ? "#FF5733"
-                          : "#82ca9d"
-                      }
-                      unit={currentTab === "Speed" ? " Mbps" : " pkts"}
-                    />
+                    {(
+                      [
+                        "Traffic",
+                        "Unicast",
+                        "NonUnicast",
+                        "Errors",
+                        "Discards",
+                        "Speed",
+                      ] as ChartTab[]
+                    ).map((tab) => (
+                      <button
+                        key={tab}
+                        className={`pb-2 text-sm font-medium ${
+                          currentTab === tab
+                            ? "border-b-2 border-[var(--h1-color)] text-[var(--h1-color)]"
+                            : "text-[var(--text-color)]"
+                        }`}
+                        onClick={() =>
+                          setActiveTabs((prev) => ({ ...prev, [ifname]: tab }))
+                        }
+                      >
+                        {tab}
+                      </button>
+                    ))}
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-500 mt-4">
-                    No data available for the selected range.
-                  </p>
-                )}
-              </>
-            )}
-          </div>
-        );
-      })}
+
+                  {filteredData.length > 0 ? (
+                    <div className="relative">
+                      <HistoricalChart
+                        data={filteredData}
+                        title={`${ifname} - ${currentTab}`}
+                        color={
+                          currentTab === "Traffic"
+                            ? "#8884d8"
+                            : currentTab === "Speed"
+                            ? "#FF5733"
+                            : "#82ca9d"
+                        }
+                        unit={currentTab === "Speed" ? " Mbps" : " pkts"}
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 mt-4">
+                      No data available for the selected range.
+                    </p>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
+
+        {/* Pagination Controls */}
+        <div className="flex justify-center gap-4 mt-4 mb-4">
+          <button
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage((p) => p - 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span className="text-sm text-[var(--text-color)]">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage((p) => p + 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
