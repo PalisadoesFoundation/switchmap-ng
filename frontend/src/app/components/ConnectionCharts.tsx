@@ -149,6 +149,10 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
               lastPolled: lastPolled.toISOString(),
               value: (iface.ifinUcastPkts ?? 0) + (iface.ifoutUcastPkts ?? 0),
             });
+            newData[ifname].NonUnicast.push({
+              lastPolled: lastPolled.toISOString(),
+              value: (iface.ifinNUcastPkts ?? 0) + (iface.ifoutNUcastPkts ?? 0),
+            });
             newData[ifname].Errors.push({
               lastPolled: lastPolled.toISOString(),
               value: (iface.ifinErrors ?? 0) + (iface.ifoutErrors ?? 0),
@@ -194,199 +198,202 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   };
 
   return (
-    <div className="p-6 w-[85vw] flex flex-col gap-6 h-full bg-bg">
-      <h2 className="text-2xl font-semibold text-[var(--heading-color)]">
-        Connection Charts
-      </h2>
-      <p className="text-sm text-[var(--text-color)]">
-        View bandwidth, packet flow, errors, and discards per interface.
-      </p>
+    <div className="p-8 w-[85vw] flex flex-col gap-6 h-full bg-bg">
+      <div className=" min-w-[400px]">
+        <h2 className="text-xl font-semibold mb-2">Connection Charts</h2>
+        <p className="text-sm">
+          View bandwidth, packet flow, errors, and discards per interface.
+        </p>
 
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4 items-end mb-4">
-        <div className="relative w-[160px] items-end">
-          <select
-            value={timeRange}
-            onChange={(e) => setTimeRange(e.target.value)}
-            className="appearance-none border rounded px-2 py-1 w-full bg-[var(--select-bg)] pr-6"
-          >
-            <option value="24h">Past 24 hours</option>
-            <option value="7d">Past 7 days</option>
-            <option value="30d">Past 30 days</option>
-            <option value="custom">Custom Date</option>
-          </select>
-
-          <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
-            <svg
-              className="h-5 w-5 text-gray-500"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        {/* Filters */}
+        <div className="flex flex-wrap gap-4 items-end mb-4">
+          <div className="relative w-[160px] items-end">
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              className="appearance-none border rounded px-2 py-1 w-full bg-bg pr-6 "
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
+              <option value="24h">Past 24 hours</option>
+              <option value="7d">Past 7 days</option>
+              <option value="30d">Past 30 days</option>
+              <option value="custom">Custom Date</option>
+            </select>
+
+            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+              <svg
+                className="h-5 w-5 text-gray-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+
+          <div className="min-h-[60px] flex gap-4 items-end">
+            {timeRange === "custom" && (
+              <>
+                <div>
+                  <label className="text-sm block mb-1">Start Date</label>
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="border rounded px-2 py-1 bg-bg"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm block mb-1">End Date</label>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="border rounded px-2 py-1 bg-bg"
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="flex gap-4 sm:ml-auto mr-0 align-bottom">
+            <button
+              className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
+              onClick={expandAll}
+            >
+              Expand All
+            </button>
+            <button
+              className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
+              onClick={collapseAll}
+            >
+              Collapse All
+            </button>
           </div>
         </div>
 
-        <div className="min-h-[60px] flex gap-4 items-end">
-          {timeRange === "custom" && (
-            <>
-              <div>
-                <label className="text-sm block mb-1">Start Date</label>
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="border rounded px-2 py-1 bg-[var(--select-bg)]"
-                />
-              </div>
-              <div>
-                <label className="text-sm block mb-1">End Date</label>
-                <input
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="border rounded px-2 py-1 bg-[var(--select-bg)]"
-                />
-              </div>
-            </>
-          )}
-        </div>
+        {/* Interfaces with Pagination */}
+        <div className="flex flex-col gap-4">
+          {paginatedIfaces.map(({ node }: { node: InterfaceNode }) => {
+            const ifname = node.ifname;
+            const isExpanded = expandedIfaces[ifname];
+            const currentTab = activeTabs[ifname] || "Traffic";
+            const filteredData = data[ifname]?.[currentTab] || [];
 
-        <div className="flex gap-4 ml-auto mr-0 align-bottom">
-          <button
-            className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
-            onClick={expandAll}
-          >
-            Expand All
-          </button>
-          <button
-            className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
-            onClick={collapseAll}
-          >
-            Collapse All
-          </button>
-        </div>
-      </div>
-
-      {/* Interfaces with Pagination */}
-      <div className="flex flex-col gap-4">
-        {paginatedIfaces.map(({ node }: { node: InterfaceNode }) => {
-          const ifname = node.ifname;
-          const isExpanded = expandedIfaces[ifname];
-          const currentTab = activeTabs[ifname] || "Traffic";
-          const filteredData = data[ifname]?.[currentTab] || [];
-
-          return (
-            <div
-              key={ifname}
-              className="border rounded-lg p-2 bg-[var(--content-bg)] shadow-md relative mb-2"
-            >
+            return (
               <div
-                className="flex items-center gap-2 cursor-pointer"
-                onClick={() =>
-                  setExpandedIfaces((prev) => ({
-                    ...prev,
-                    [ifname]: !prev[ifname],
-                  }))
-                }
+                key={ifname}
+                className="border rounded-lg p-2 bg-content-bg shadow-md relative mb-2"
               >
-                {isExpanded ? (
-                  <FiMinus className="text-[var(--icon-color)]" />
-                ) : (
-                  <FiPlus className="text-[var(--icon-color)]" />
-                )}
-                <p className="font-medium text-[var(--text-color)]">{ifname}</p>
-              </div>
+                <div
+                  className="flex items-center gap-2 cursor-pointer ml-2"
+                  onClick={() =>
+                    setExpandedIfaces((prev) => ({
+                      ...prev,
+                      [ifname]: !prev[ifname],
+                    }))
+                  }
+                >
+                  {isExpanded ? <FiMinus /> : <FiPlus />}
+                  <p className="font-medium">{ifname}</p>
+                </div>
 
-              {isExpanded && (
-                <>
-                  <div className="flex gap-6 border-b border-[var(--border-subtle)] mt-2 mb-4">
-                    <button
-                      className="absolute top-4 right-4 bg-bg px-4 py-2 mb-2 border border-gray-300 rounded-md shadow-sm outline"
-                      onClick={() =>
-                        downloadCSV(filteredData, `${ifname}-${currentTab}.csv`)
-                      }
-                    >
-                      <FiDownload className="inline mr-1" /> Download
-                    </button>
-                    {(
-                      [
-                        "Traffic",
-                        "Unicast",
-                        "NonUnicast",
-                        "Errors",
-                        "Discards",
-                        "Speed",
-                      ] as ChartTab[]
-                    ).map((tab) => (
+                {isExpanded && (
+                  <>
+                    <div className="flex gap-6 border-b border-border-subtle mt-4 mb-4">
                       <button
-                        key={tab}
-                        className={`pb-2 text-sm font-medium ${
-                          currentTab === tab
-                            ? "border-b-2 border-[var(--h1-color)] text-[var(--h1-color)]"
-                            : "text-[var(--text-color)]"
-                        }`}
+                        className="absolute top-2 right-2 md:top-4 md:right-4 px-3 py-1 md:py-2 rounded-md shadow-sm text-white"
+                        style={{ backgroundColor: "#CB3CFF" }}
                         onClick={() =>
-                          setActiveTabs((prev) => ({ ...prev, [ifname]: tab }))
+                          downloadCSV(
+                            filteredData,
+                            `${ifname}-${currentTab}.csv`
+                          )
                         }
                       >
-                        {tab}
+                        <FiDownload className="inline mr-1" /> Download
                       </button>
-                    ))}
-                  </div>
-
-                  {filteredData.length > 0 ? (
-                    <div className="relative">
-                      <HistoricalChart
-                        data={filteredData}
-                        title={`${ifname} - ${currentTab}`}
-                        color={
-                          currentTab === "Traffic"
-                            ? "#8884d8"
-                            : currentTab === "Speed"
-                            ? "#FF5733"
-                            : "#82ca9d"
-                        }
-                        unit={currentTab === "Speed" ? " Mbps" : " pkts"}
-                      />
+                      {(
+                        [
+                          "Traffic",
+                          "Unicast",
+                          "NonUnicast",
+                          "Errors",
+                          "Discards",
+                          "Speed",
+                        ] as ChartTab[]
+                      ).map((tab) => (
+                        <button
+                          key={tab}
+                          className={`pb-2 text-sm font-medium transition-colors duration-150 ${
+                            currentTab === tab
+                              ? "border-b-2 border-primary text-primary"
+                              : "text-gray-500 hover:text-primary"
+                          }`}
+                          onClick={() =>
+                            setActiveTabs((prev) => ({
+                              ...prev,
+                              [ifname]: tab,
+                            }))
+                          }
+                        >
+                          {tab}
+                        </button>
+                      ))}
                     </div>
-                  ) : (
-                    <p className="text-sm text-gray-500 mt-4">
-                      No data available for the selected range.
-                    </p>
-                  )}
-                </>
-              )}
-            </div>
-          );
-        })}
 
-        {/* Pagination Controls */}
-        <div className="flex justify-center gap-4 mt-4 mb-4">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage((p) => p - 1)}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-sm text-[var(--text-color)]">
-            Page {currentPage} of {totalPages}
-          </span>
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage((p) => p + 1)}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Next
-          </button>
+                    {filteredData.length > 0 ? (
+                      <div className="relative  min-h-[300px] mr-2">
+                        <HistoricalChart
+                          data={filteredData}
+                          title={`${ifname} - ${currentTab}`}
+                          color={
+                            currentTab === "Traffic"
+                              ? "#8884d8"
+                              : currentTab === "Speed"
+                              ? "#FF5733"
+                              : "#82ca9d"
+                          }
+                          unit={currentTab === "Speed" ? " Mbps" : " pkts"}
+                        />
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 mt-4">
+                        No data available for the selected range.
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            );
+          })}
+
+          {/* Pagination Controls */}
+          <div className="flex justify-center gap-4 mt-4 mb-4">
+            <button
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage((p) => p - 1)}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage((p) => p + 1)}
+              className="px-3 py-1 border rounded disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
