@@ -207,8 +207,12 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
 
         {/* Filters */}
         <div className="flex flex-wrap gap-4 items-end mb-4">
+          <label htmlFor="timeRange" className="sr-only">
+            Time Range
+          </label>
           <div className="relative w-[160px] items-end">
             <select
+              id="timeRange"
               value={timeRange}
               onChange={(e) => setTimeRange(e.target.value)}
               className="appearance-none border rounded px-2 py-1 w-full bg-bg pr-6 "
@@ -241,8 +245,11 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             {timeRange === "custom" && (
               <>
                 <div>
-                  <label className="text-sm block mb-1">Start Date</label>
+                  <label htmlFor="startDate" className="text-sm block mb-1">
+                    Start Date
+                  </label>
                   <input
+                    id="startDate"
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
@@ -250,8 +257,11 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                   />
                 </div>
                 <div>
-                  <label className="text-sm block mb-1">End Date</label>
+                  <label htmlFor="endDate" className="text-sm block mb-1">
+                    End Date
+                  </label>
                   <input
+                    id="endDate"
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}

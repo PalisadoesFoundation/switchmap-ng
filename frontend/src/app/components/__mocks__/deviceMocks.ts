@@ -29,6 +29,16 @@ const mockInterface: InterfaceNode = {
       },
     ],
   },
+  ifinUcastPkts: null,
+  ifoutUcastPkts: null,
+  ifinNUcastPkts: null,
+  ifoutNUcastPkts: null,
+  ifinOctets: null,
+  ifoutOctets: null,
+  ifinErrors: null,
+  ifoutErrors: null,
+  ifinDiscards: null,
+  ifoutDiscards: null
 };
 
 export const mockDevice: DeviceNode = {
