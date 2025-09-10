@@ -53,6 +53,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
     {}
   );
   const [activeTabs, setActiveTabs] = useState<Record<string, ChartTab>>({});
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [data, setData] = useState<
     Record<string, Record<ChartTab, ChartDataPoint[]>>
   >({});
@@ -67,6 +68,12 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+  const TIME_RANGES = [
+    { value: "24h", label: "Past 24 hours" },
+    { value: "7d", label: "Past 7 days" },
+    { value: "30d", label: "Past 30 days" },
+    { value: "custom", label: "Custom Date" },
+  ];
 
   // Expand All / Collapse All
   const expandAll = () => {
@@ -206,26 +213,20 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
         </p>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-4 items-end mb-4">
-          <label htmlFor="timeRange" className="sr-only">
-            Time Range
-          </label>
-          <div className="relative w-[160px] items-end">
-            <select
-              id="timeRange"
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value)}
-              className="appearance-none border rounded px-2 py-1 w-full bg-bg pr-6 "
+        <div className="flex flex-wrap gap-4 items-end mb-4 mt-4">
+          {/* Dropdown */}
+          <div className="relative w-[160px]">
+            <button
+              type="button"
+              className="flex justify-between items-end w-full border border-gray-300 rounded px-3 py-1 bg-bg transition-colors"
+              onClick={() => setDropdownOpen(!dropdownOpen)}
             >
-              <option value="24h">Past 24 hours</option>
-              <option value="7d">Past 7 days</option>
-              <option value="30d">Past 30 days</option>
-              <option value="custom">Custom Date</option>
-            </select>
-
-            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center">
+              {TIME_RANGES.find((r) => r.value === timeRange)?.label ||
+                "Select Range"}
               <svg
-                className="h-5 w-5 text-gray-500"
+                className={`ml-2 h-5 w-5 text-gray-500 transition-transform ${
+                  dropdownOpen ? "rotate-180" : ""
+                }`}
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
@@ -238,49 +239,110 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                   d="M19 9l-7 7-7-7"
                 />
               </svg>
-            </div>
-          </div>
+            </button>
 
-          <div className="min-h-[60px] flex gap-4 items-end">
-            {timeRange === "custom" && (
-              <>
-                <div>
-                  <label htmlFor="startDate" className="text-sm block mb-1">
-                    Start Date
-                  </label>
-                  <input
-                    id="startDate"
-                    type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="border rounded px-2 py-1 bg-bg"
-                  />
-                </div>
-                <div>
-                  <label htmlFor="endDate" className="text-sm block mb-1">
-                    End Date
-                  </label>
-                  <input
-                    id="endDate"
-                    type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="border rounded px-2 py-1 bg-bg"
-                  />
-                </div>
-              </>
+            {dropdownOpen && (
+              <div className="absolute mt-1 w-full bg-bg border border-gray-300 rounded shadow z-10">
+                {TIME_RANGES.map((r) => (
+                  <button
+                    key={r.value}
+                    className="w-full text-left px-3 py-2 hover:bg-hover-bg transition-colors"
+                    onClick={() => {
+                      setTimeRange(r.value);
+                      setDropdownOpen(false);
+                    }}
+                  >
+                    {r.label}
+                  </button>
+                ))}
+              </div>
             )}
           </div>
 
-          <div className="flex gap-4 sm:ml-auto mr-0 align-bottom">
+          {/* Custom date inputs */}
+          {timeRange === "custom" && (
+            <div className="flex gap-4 items-end">
+              <div>
+                <label htmlFor="startDate" className="text-sm block mb-1">
+                  Start Date
+                </label>
+                <input
+                  id="startDate"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => {
+                    const start = new Date(e.target.value);
+                    const end = endDate ? new Date(endDate) : null;
+
+                    if (end && start > end) {
+                      setError("Start date must be before end date.");
+                      setTimeout(() => setError(""), 3000);
+                      return;
+                    }
+
+                    if (
+                      end &&
+                      (end.getTime() - start.getTime()) /
+                        (1000 * 60 * 60 * 24) >
+                        180
+                    ) {
+                      setError("Custom range cannot exceed 180 days.");
+                      setTimeout(() => setError(""), 3000);
+                      return;
+                    }
+
+                    setStartDate(e.target.value);
+                  }}
+                  className="border border-gray-300 rounded px-2 py-1 bg-bg"
+                />
+              </div>
+              <div>
+                <label htmlFor="endDate" className="text-sm block mb-1">
+                  End Date
+                </label>
+                <input
+                  id="endDate"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => {
+                    const end = new Date(e.target.value);
+                    const start = startDate ? new Date(startDate) : null;
+
+                    if (start && end < start) {
+                      setError("End date must be after start date.");
+                      setTimeout(() => setError(""), 3000);
+                      return;
+                    }
+
+                    if (
+                      start &&
+                      (end.getTime() - start.getTime()) /
+                        (1000 * 60 * 60 * 24) >
+                        180
+                    ) {
+                      setError("Custom range cannot exceed 180 days.");
+                      setTimeout(() => setError(""), 3000);
+                      return;
+                    }
+
+                    setEndDate(e.target.value);
+                  }}
+                  className="border border-gray-300 rounded px-2 py-1 bg-bg"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Expand / Collapse */}
+          <div className="flex gap-4 sm:ml-auto mr-0">
             <button
-              className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
+              className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 transition-colors"
               onClick={expandAll}
             >
               Expand All
             </button>
             <button
-              className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm outline"
+              className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 transition-colors"
               onClick={collapseAll}
             >
               Collapse All
@@ -299,7 +361,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             return (
               <div
                 key={ifname}
-                className="border rounded-lg p-2 bg-content-bg shadow-md relative mb-2"
+                className="border border-gray-300 rounded-lg p-2 bg-content-bg relative mb-2"
               >
                 <div
                   className="flex items-center gap-2 cursor-pointer ml-2"
@@ -318,7 +380,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                   <>
                     <div className="flex gap-6 border-b border-border-subtle mt-4 mb-4">
                       <button
-                        className="absolute top-2 right-2 md:top-4 md:right-4 px-3 py-1 md:py-2 rounded-md shadow-sm text-white"
+                        className="absolute top-2 right-2 md:top-4 md:right-4 px-3 py-1 md:py-2 rounded-md text-white"
                         style={{ backgroundColor: "#CB3CFF" }}
                         onClick={() =>
                           downloadCSV(
