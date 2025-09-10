@@ -108,11 +108,17 @@ describe("ConnectionCharts", () => {
   it("shows date inputs when timeRange is custom", async () => {
     render(<ConnectionCharts device={mockDevice} />);
 
-    // Find the select (combobox) and switch to "custom"
-    const timeRangeSelect = screen.getByRole("combobox");
-    fireEvent.change(timeRangeSelect, { target: { value: "custom" } });
+    // Open the dropdown
+    const dropdownButton = screen.getByRole("button", {
+      name: /Past 24 hours/i,
+    });
+    fireEvent.click(dropdownButton);
 
-    // Wait for the inputs to appear
+    // Select "Custom Date"
+    const customOption = screen.getByRole("button", { name: /Custom Date/i });
+    fireEvent.click(customOption);
+
+    // Now the date pickers should appear
     const startInput = await screen.findByLabelText("Start Date");
     const endInput = await screen.findByLabelText("End Date");
 
@@ -126,6 +132,7 @@ describe("ConnectionCharts", () => {
     expect((startInput as HTMLInputElement).value).toBe("2025-09-01");
     expect((endInput as HTMLInputElement).value).toBe("2025-09-09");
   });
+
   it("covers 24h timeRange branch", async () => {
     render(<ConnectionCharts device={mockDevice} />);
     // Default is "24h", so fetch and data processing runs
@@ -136,16 +143,20 @@ describe("ConnectionCharts", () => {
 
   it("covers 7d and 30d timeRange branches", async () => {
     render(<ConnectionCharts device={mockDevice} />);
-    const select = screen.getByRole("combobox");
+    const dropdownButton = screen.getByRole("button", {
+      name: /Past 24 hours/i,
+    });
 
     // 7d
-    fireEvent.change(select, { target: { value: "7d" } });
+    fireEvent.click(dropdownButton);
+    fireEvent.click(screen.getByRole("button", { name: /Past 7 days/i }));
     await waitFor(() => {
       expect(screen.getByText("Gig1/0/1")).toBeInTheDocument();
     });
 
     // 30d
-    fireEvent.change(select, { target: { value: "30d" } });
+    fireEvent.click(dropdownButton);
+    fireEvent.click(screen.getByRole("button", { name: /Past 30 days/i }));
     await waitFor(() => {
       expect(screen.getByText("Gig1/0/1")).toBeInTheDocument();
     });
@@ -153,8 +164,13 @@ describe("ConnectionCharts", () => {
 
   it("covers custom date range branch", async () => {
     render(<ConnectionCharts device={mockDevice} />);
-    const select = screen.getByRole("combobox");
-    fireEvent.change(select, { target: { value: "custom" } });
+    const dropdownButton = screen.getByRole("button", {
+      name: /Past 24 hours/i,
+    });
+
+    // Open dropdown and select "Custom Date"
+    fireEvent.click(dropdownButton);
+    fireEvent.click(screen.getByRole("button", { name: /Custom Date/i }));
 
     // Inputs appear
     const startInput = await screen.findByLabelText("Start Date");
