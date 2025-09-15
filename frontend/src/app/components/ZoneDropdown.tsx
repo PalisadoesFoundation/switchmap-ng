@@ -109,21 +109,21 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // If selectedZoneId is null, pick the first zone (if available)
+  // Determine the selected zone object
   const selected =
-    (selectedZoneId && zones.find((z) => z.id === selectedZoneId)) ||
-    (zones.length > 0 ? zones[0] : undefined);
+    selectedZoneId === "all"
+      ? { name: "All", idxZone: "all", id: "all", tsCreated: "" }
+      : (selectedZoneId && zones.find((z) => z.id === selectedZoneId)) ||
+        (zones.length > 0 ? zones[0] : undefined);
 
-  // If selectedZoneId is null and zones are loaded, notify parent
   useEffect(() => {
     if (zones.length > 0) {
-      // Always call onChange with the first zone if selectedZoneId is null or not found in zones
+      if (selectedZoneId === "all") return;
       const found = zones.find((z) => z.id === selectedZoneId);
       if (!found) {
         onChange(zones[0].id);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zones, selectedZoneId]);
 
   return (
@@ -181,6 +181,16 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
                 {zone.name || `Zone ${zone.idxZone}`}
               </button>
             ))}
+            <button
+              key="all"
+              onClick={() => {
+                onChange("all");
+                setOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 hover:bg-hover-bg focus:outline-none"
+            >
+              All
+            </button>
           </div>
         </>
       )}
