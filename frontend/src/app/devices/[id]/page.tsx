@@ -176,7 +176,7 @@ export default function DevicePage() {
       ) : (
         <p>No device data.</p>
       ),
-      icon: <FiLink className="icon" />,
+      icon: <FiBarChart2 className="icon" />,
     },
   ];
   const clamp = (n: number, min: number, max: number) =>

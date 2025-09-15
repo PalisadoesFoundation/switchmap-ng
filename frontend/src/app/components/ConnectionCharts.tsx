@@ -361,7 +361,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             return (
               <div
                 key={ifname}
-                className="border border-gray-300 rounded-lg p-2 bg-content-bg relative mb-2"
+                className="border border-gray-300 rounded-lg p-2 bg-content-bg relative mb-2 overflow-auto"
               >
                 <div
                   className="flex items-center gap-2 cursor-pointer ml-2"
