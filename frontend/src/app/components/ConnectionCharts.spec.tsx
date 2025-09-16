@@ -1,4 +1,3 @@
-// ConnectionCharts.test.tsx
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ConnectionCharts } from "./ConnectionCharts";

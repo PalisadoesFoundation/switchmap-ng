@@ -1,4 +1,3 @@
-// __mocks__/deviceMocks.ts
 import { InterfaceNode } from "@/app/types/graphql/GetDeviceInterfaces";
 import { DeviceNode } from "../../types/graphql/GetZoneDevices";
 
@@ -8,7 +7,7 @@ const mockInterface: InterfaceNode = {
   ifname: "Gig1/0/1",
   nativevlan: 10,
   ifoperstatus: 1,
-  tsIdle: "100",
+  tsIdle: 100,
   ifspeed: 1000,
   duplex: "full",
   ifalias: "uplink",

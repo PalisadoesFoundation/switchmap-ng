@@ -4,7 +4,6 @@ import { describe, it, expect, vi } from "vitest";
 import { ConnectionDetails } from "./ConnectionDetails";
 import { mockDevice } from "./__mocks__/deviceMocks";
 
-// Mock next/navigation globally in vitest.setup.ts
 vi.mock("next/navigation", () => ({ useParams: () => ({ deviceId: "1" }) }));
 
 describe("ConnectionDetails", () => {

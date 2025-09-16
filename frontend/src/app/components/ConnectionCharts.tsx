@@ -4,6 +4,22 @@ import { FiPlus, FiMinus, FiDownload } from "react-icons/fi";
 import HistoricalChart from "./HistoricalChart";
 import { DeviceNode } from "../types/graphql/GetZoneDevices";
 import { InterfaceNode } from "../types/graphql/GetDeviceInterfaces";
+/**
+ * Tabs available for chart display.
+ * @remarks
+ * - "Traffic": Displays total traffic (in and out) in packets.
+ * - "Unicast": Displays unicast packet flow.
+ * - "NonUnicast": Displays non-unicast packet flow.
+ * - "Errors": Displays error packets.
+ * - "Discards": Displays discarded packets.
+ * - "Speed": Displays interface speed in Mbps.
+ * @typedef {("Traffic" | "Unicast" | "NonUnicast" | "Errors" | "Discards" | "Speed")} ChartTab
+ * @enum {ChartTab}
+ * @see {@link HistoricalChart} for rendering the charts.
+ * @see {@link ConnectionChartsProps} for component props.
+ * @interface ConnectionChartsProps
+ * @property {DeviceNode} device - The device for which to display connection charts.
+ */
 
 type ChartTab =
   | "Traffic"
@@ -58,7 +74,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
     Record<string, Record<ChartTab, ChartDataPoint[]>>
   >({});
   const [error, setError] = useState<string | null>(null);
-  // new state
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10; // number of interfaces per page
 

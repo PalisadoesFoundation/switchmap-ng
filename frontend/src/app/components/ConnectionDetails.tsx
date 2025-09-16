@@ -26,9 +26,6 @@ import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
  * @see {@link Mac} and {@link MacPort} for the structure of MAC address data.
  */
 
-type DeviceResponse = {
-  device: DeviceNode | null;
-};
 export function ConnectionDetails({ device }: { device: DeviceNode }) {
   const params = useParams();
   const extractMacAddresses = (macports?: MacPort): string => {

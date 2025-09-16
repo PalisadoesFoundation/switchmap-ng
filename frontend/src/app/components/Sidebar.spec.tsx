@@ -4,7 +4,6 @@ import { render, screen, fireEvent, within } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { Sidebar } from "./Sidebar";
 
-// Mock next/link to render children directly
 vi.mock("next/link", () => ({ default: ({ children }: any) => children }));
 
 // Mock ThemeToggle

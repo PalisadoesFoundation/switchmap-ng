@@ -182,9 +182,15 @@ export default function Home() {
         }
         setDevices(rawDevices);
       } catch (err: any) {
-        console.error("Error fetching devices:", err.message);
+        const message =
+          err instanceof Error
+            ? err.message
+            : typeof err === "string"
+            ? err
+            : "Failed to load devices. Please check your network or try again.";
+        console.error("Error fetching devices:", message);
         setDevices([]);
-        setError(err.message);
+        setError(message);
       } finally {
         setLoading(false);
       }

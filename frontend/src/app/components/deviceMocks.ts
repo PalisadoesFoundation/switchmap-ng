@@ -1,6 +1,6 @@
 // __mocks__/deviceMocks.ts
 import { InterfaceNode } from "@/app/types/graphql/GetDeviceInterfaces";
-import { DeviceNode } from "../../types/graphql/GetZoneDevices";
+import { DeviceNode } from "../types/graphql/GetZoneDevices";
 
 const mockInterface: InterfaceNode = {
   idxL1interface: "1",
@@ -29,6 +29,16 @@ const mockInterface: InterfaceNode = {
       },
     ],
   },
+  ifinUcastPkts: null,
+  ifoutUcastPkts: null,
+  ifinNUcastPkts: null,
+  ifoutNUcastPkts: null,
+  ifinOctets: null,
+  ifoutOctets: null,
+  ifinErrors: null,
+  ifoutErrors: null,
+  ifinDiscards: null,
+  ifoutDiscards: null
 };
 
 export const mockDevice: DeviceNode = {
@@ -39,7 +49,7 @@ export const mockDevice: DeviceNode = {
   sysDescription: "Test device description",
   sysObjectid: "1.3.6.1",
   sysUptime: 1000,
-  lastPolled: "1693305600",
+  lastPolled: 1693305600,
   l1interfaces: {
     edges: [{ node: mockInterface }],
   },

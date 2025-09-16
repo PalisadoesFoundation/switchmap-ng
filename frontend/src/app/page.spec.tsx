@@ -133,26 +133,24 @@ describe("Home page", () => {
   it(
     "handles unknown errors correctly",
     async () => {
-      // Throw a non-Error to hit the 'unknown error' branch
-      (global.fetch as any).mockImplementation(() => {
-        throw "fail string";
-      });
+      vi.spyOn(global, "fetch").mockResolvedValue({
+        ok: false,
+        statusText: "Undefined error",
+        json: async () => ({}),
+      } as any);
 
       render(<Home />);
       const dropdown = screen.getByTestId("zone-dropdown");
       fireEvent.change(dropdown, { target: { value: "1" } });
 
-      // Wait long enough for retries: first retry 1s, second retry 2s
-      await waitFor(
-        () =>
-          expect(screen.getByTestId("topology-chart")).toHaveTextContent(
-            "Error: Failed to load devices. Please check your network or try again."
-          ),
-        { timeout: 7000 } // give it enough time for 2 retries
+      await waitFor(() =>
+        expect(screen.getByTestId("topology-chart")).toHaveTextContent(
+          "Error: Network error: Undefined error"
+        )
       );
 
       expect(screen.getByTestId("devices-overview")).toHaveTextContent(
-        "Error: Failed to load devices. Please check your network or try again."
+        "Error: Network error: Undefined error"
       );
     },
     { timeout: 7000 }

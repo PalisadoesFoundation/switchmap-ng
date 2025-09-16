@@ -5,7 +5,6 @@ import { describe, it, expect, vi } from "vitest";
 import { DevicesOverview } from "./DevicesOverview";
 import { mockDevice } from "./__mocks__/deviceMocks";
 
-// Mock next/link to render children directly
 vi.mock("next/link", () => ({ default: ({ children }: any) => children }));
 
 describe("DevicesOverview", () => {
