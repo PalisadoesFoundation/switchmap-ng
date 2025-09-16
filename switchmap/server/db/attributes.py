@@ -11,6 +11,7 @@ Based on the pages at:
 
 # PIP3 imports
 import graphene
+from graphql.pyutils import description
 
 
 ###############################################################################
@@ -398,12 +399,23 @@ class DeviceAttribute:
         resolver=resolve_sys_uptime, description="System uptime"
     )
     last_polled = graphene.Int(description="Timestamp of last poll")
-    cpu_usage = graphene.Float(description="CPU usage percentage (0-100)")
-    memory_used = graphene.Float(description="Memory used in bytes")
-    memory_free = graphene.Float(description="Memory free in bytes")
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
+
+class SystemStatAttribute:
+    """Descriptive attributes of the SystemStat table.
+    
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+
+    """
+
+    idx_systemstat = graphene.Int(description="Primary key index")
+    idx_device = graphene.Int(description="Device Index Foreign key ")
+    cpu_5min = graphene.Int(description=" Device cpu_5min_usage")
+    mem_used = graphene.Int(description="Device memory_used")
+    mem_free = graphene.Int(description="Device memory_free")
 
 
 class L1InterfaceAttribute:
@@ -457,6 +469,14 @@ class L1InterfaceAttribute:
     lldpremsysname = graphene.String(
         resolver=resolve_lldpremsysname, description="LLDP system name"
     )
+    ifin_ucast_pkts = graphene.Int(
+        description="Interface inbound unicast packets"
+    )
+    ifout_ucast_pkts = graphene.Int(
+        description="Interface outbound unicast packets"
+    )
+    ifin_errors = graphene.Int(description="Interface inbound errors")
+    ifin_discards = graphene.Int(description="Interface inbound discards")
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")

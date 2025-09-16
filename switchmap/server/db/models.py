@@ -179,9 +179,6 @@ class Device(BASE):
     sys_objectid = Column(VARBINARY(256), nullable=True, default=None)
     sys_uptime = Column(BIGINT(20, unsigned=True), default=None)
     last_polled = Column(BIGINT(20, unsigned=True), default=None)
-    cpu_usage = Column(BIGINT(unsigned=True), nullable=True, default=None)
-    memory_used = Column(BIGINT(unsigned=True), nullable=True, default=None)
-    memory_free = Column(BIGINT(unsigned=True), nullable=True, default=None)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,
@@ -202,6 +199,31 @@ class Device(BASE):
             cascade="all, delete, delete-orphan",
             passive_deletes=True,
         ),
+    )
+
+class SystemStat(BASE):
+    """Database table definition."""
+
+    __tablename__ = "smap_systemstat"
+    
+    idx_systemstat = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
+    idx_device = Column(
+        ForeignKey(Device.idx_device, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+        default=1,
+        server_default=text("1")
+    )
+
+    cpu_5min = Column(BIGINT(20, unsigned=True), nullable=True, default=None)
+    mem_used = Column(BIGINT(20, unsigned=True), nullable=True, default=None)
+    mem_free = Column(BIGINT(20, unsigned=True), nullable=True, default=None)
+
+    device = relationship(
+        "Device",
+        backref=backref("systemstats", cascade="all, delete-orphan", passive_deletes=True),
     )
 
 
@@ -236,6 +258,10 @@ class L1Interface(BASE):
     ifdescr = Column(VARBINARY(256), nullable=True, default=None)
     ifadminstatus = Column(BIGINT(unsigned=True), nullable=True, default=None)
     ifoperstatus = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifin_ucast_pkts = Column(BIGINT(unsigned=True),nullable=True, default=None)
+    ifout_ucast_pkts = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifin_errors = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifin_discards = Column(BIGINT(unsigned=True), nullable=True, default=None)
     ts_idle = Column(BIGINT(unsigned=True), nullable=True, default=None)
     cdpcachedeviceid = Column(VARBINARY(256), nullable=True, default=None)
     cdpcachedeviceport = Column(VARBINARY(256), nullable=True, default=None)

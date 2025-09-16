@@ -13,6 +13,7 @@ from switchmap.server.db.table import RIpPort
 from switchmap.server.db.table import RZone
 from switchmap.server.db.table import REvent
 from switchmap.server.db.table import RRoot
+from switchmap.server.db.table import SystemStat
 
 
 def device(row):
@@ -53,7 +54,6 @@ def device(row):
         ts_modified=row.ts_modified,
     )
     return result
-
 
 def root(row):
     """Convert table row to tuple.
@@ -98,6 +98,26 @@ def event(row):
     )
     return result
 
+def systemstat(row):
+    """Convert table row to tuple.
+    
+    Args:
+        row: SystemStat row
+
+    Returns:
+        results: SystemStat tuple
+    
+    """
+    # Initialize key variables
+    result = SystemStat(
+        idx_systemstat=row.idx_systemstat,
+        idx_device=row.idx_device,
+        cpu_5min=row.cpu_5min,
+        mem_free=row.mem_free,
+        mem_used=row.mem_used
+    )
+    
+    return result
 
 def l1interface(row):
     """Convert table row to tuple.
@@ -157,6 +177,10 @@ def l1interface(row):
         lldpremsysname=(
             None if row.lldpremsysname is None else row.lldpremsysname.decode()
         ),
+        ifin_ucast_pkts=row.ifin_ucast_pkts,
+        ifout_ucast_pkts=row.ifout_ucast_pkts, 
+        ifin_errors=row.ifin_errors,
+        ifin_discards=row.ifin_discards,
         enabled=int(bool(row.enabled) is True),
         ts_created=row.ts_created,
         ts_modified=row.ts_modified,

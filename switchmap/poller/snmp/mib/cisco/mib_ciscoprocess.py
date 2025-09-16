@@ -44,10 +44,10 @@ class CiscoProcessQuery(Query):
                 final["CISCO-PROCESS-MIB"]["cpmCPUTotal5minRev"] = cpu_data
             
             if memory_used_data and not isinstance(memory_used_data, Exception):
-                final["CISCO-MEMORY-POOL-MIB"]["ciscoMemoryPoolUsed"] = memory_used_data
+                final["CISCO-PROCESS-MIB"]["ciscoMemoryPoolUsed"] = memory_used_data
             
             if memory_free_data and not isinstance(memory_free_data, Exception):
-                final["CISCO-MEMORY-POOL-MIB"]["ciscoMemoryPoolFree"] = memory_free_data
+                final["CISCO-PROCESS-MIB"]["ciscoMemoryPoolFree"] = memory_free_data
 
         except Exception as e:
             print(f"Error in Cisco system queries: {e}")

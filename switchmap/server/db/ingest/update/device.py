@@ -5,6 +5,8 @@ from collections import namedtuple
 from copy import deepcopy
 from operator import attrgetter
 
+from sqlalchemy import false
+
 # Application imports
 from switchmap.core import log
 from switchmap.core import general
@@ -19,6 +21,7 @@ from switchmap.server.db.table import vlanport as _vlanport
 from switchmap.server.db.table import ipport as _ipport
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import macip as _macip
+from switchmap.server.db.table import systemstat as _systemstat
 from switchmap.server.db.table import (
     IVlan,
     IDevice,
@@ -26,6 +29,8 @@ from switchmap.server.db.table import (
     IIpPort,
     IVlanPort,
     IL1Interface,
+    SystemStat,
+    ISystemStat
 )
 
 
@@ -47,55 +52,6 @@ def process(data, idx_zone, dns=True):
     _topology.process()
 
 
-def _extract_cpu_memory_data(data):
-    """Extract CPU and memory data from device data.
-    
-    Args:
-        data: Device data (dict)
-        
-    Returns:
-        tuple: (cpu_usage, memory_used, memory_free)
-    """
-    cpu_usage = None
-    memory_used = None
-    memory_free = None
-    
-    system_data = data.get("system", {})
-    
-    # Try to extract Cisco CPU data
-    cisco_process = system_data.get("CISCO-PROCESS-MIB", {})
-    if cisco_process:
-        cpu_data = cisco_process.get("cpmCPUTotal5minRev", {})
-        if cpu_data:
-            # Get the first CPU value (usually index 1)
-            cpu_usage = next(iter(cpu_data.values()), None)
-    
-    # Try to extract Cisco memory data  
-    cisco_memory = system_data.get("CISCO-ENHANCED-MEMPOOL-MIB", {})
-    if cisco_memory:
-        memory_used_data = cisco_memory.get("cempMemPoolHCUsed", {})
-        memory_free_data = cisco_memory.get("cempMemPoolHCFree", {})
-        
-        if memory_used_data:
-            memory_used = next(iter(memory_used_data.values()), None)
-        if memory_free_data:
-            memory_free = next(iter(memory_free_data.values()), None)
-    
-    # Try to extract generic HOST-RESOURCES data as fallback
-    if cpu_usage is None:
-        host_resources = system_data.get("HOST-RESOURCES-MIB", {})
-        if host_resources:
-            hr_cpu_data = host_resources.get("hrProcessorLoad", {})
-            hr_memory_data = host_resources.get("hrStorageUsed", {})
-            
-            if hr_cpu_data:
-                cpu_usage = next(iter(hr_cpu_data.values()), None)
-            if hr_memory_data:
-                memory_used = next(iter(hr_memory_data.values()), None)
-    
-    return cpu_usage, memory_used, memory_free
-
-
 def device(idx_zone, data):
     """Update the Device DB table.
 
@@ -111,9 +67,6 @@ def device(idx_zone, data):
     exists = False
     hostname = data["misc"]["host"]
     
-    # Extract CPU and memory data
-    cpu_usage, memory_used, memory_free = _extract_cpu_memory_data(data)
-    
     row = IDevice(
         idx_zone=idx_zone,
         hostname=hostname,
@@ -123,9 +76,6 @@ def device(idx_zone, data):
         sys_objectid=data["system"]["SNMPv2-MIB"]["sysObjectID"][0],
         sys_uptime=data["system"]["SNMPv2-MIB"]["sysUpTime"][0],
         last_polled=data["misc"]["timestamp"],
-        cpu_usage=cpu_usage,
-        memory_used=memory_used,
-        memory_free=memory_free,
         enabled=1,
     )
 
@@ -147,6 +97,10 @@ def device(idx_zone, data):
 
     # Return
     return exists
+
+    
+
+
 
 
 def _lookup(idx_device):
@@ -188,16 +142,28 @@ class Status:
         self._macport = False
         self._l1interface = False
         self._ipport = False
+        self._systemstat = False
 
     @property
     def l1interface(self):
-        """Provide the value of  the 'l1interface' property."""
+        """Provide the value of the 'l1interface' property."""
         return self._l1interface
 
     @l1interface.setter
     def l1interface(self, value):
         """Set the 'l1interface' property."""
         self._l1interface = value
+    
+    #! this is also tricky to understand, understand this as well 
+    @property
+    def systemstat(self):
+        """Provide the value of the 'systemstat' property."""
+        return self._systemstat
+    
+    @systemstat.setter
+    def systemstat(self,value):
+        """Set the 'systemstat' property."""
+        self._systemstat = value
 
     @property
     def ipport(self):
@@ -281,6 +247,7 @@ class Topology:
         self.vlan()
         self.vlanport()
         self.macport()
+        self.systemstat()
         self.ipport()
 
     def l1interface(self, test=False):
@@ -357,6 +324,10 @@ No interfaces detected for for host {self._device.hostname}"""
                     lldpremsyscapenabled=interface.get("lldpRemSysCapEnabled"),
                     lldpremsysdesc=interface.get("lldpRemSysDesc"),
                     lldpremsysname=interface.get("lldpRemSysName"),
+                    ifin_ucast_pkts=interface.get("ifInUcastPkts"),
+                    ifout_ucast_pkts=interface.get("ifOutUcastPkts"), 
+                    ifin_errors=interface.get("ifInErrors"),
+                    ifin_discards=interface.get("ifInDiscards"),
                     ts_idle=ts_idle,
                     enabled=1,
                 )
@@ -378,6 +349,7 @@ No interfaces detected for for host {self._device.hostname}"""
 
         # Everything is completed
         self._status.l1interface = True
+
 
     def vlan(self, test=False):
         """Update the Vlan DB table.
@@ -685,6 +657,66 @@ Getting MAC addresses for interface {ifindex} in the DB for device \
 
         # Everything is completed
         self._status.ipport = True
+
+    def systemstat(self, test=False):
+        """Update the SystemStat DB table.
+        
+        Args:
+            test: Test mode if True
+            
+        Returns:
+            None
+        """
+        # Initialize key variables
+        inserts = []
+        
+        # Log start
+        self.log("SystemStat")
+        
+        # Extract CISCO MIB data from system section
+        system_data = self._data.get("system", {})
+        
+        # Get CPU data from CISCO-PROCESS-MIB
+        cpu_5min = None
+        cisco_process = system_data.get("CISCO-PROCESS-MIB", {})
+        cpu_total_5min = cisco_process.get("cpmCPUTotal5minRev", {})
+        if cpu_total_5min:
+            # Get the first CPU value (usually CPU '1')
+            cpu_5min = next(iter(cpu_total_5min.values()), None)
+        
+        # Get Memory data from CISCO-MEMORY-POOL-MIB  
+        mem_used = None
+        mem_free = None
+        cisco_memory = system_data.get("CISCO-MEMORY-POOL-MIB", {})
+        if cisco_memory:
+            mem_used = cisco_memory.get("ciscoMemoryPoolUsed")
+            mem_free = cisco_memory.get("ciscoMemoryPoolFree")
+        
+        # Only create record if we have some data
+        if cpu_5min is not None or mem_used is not None or mem_free is not None:
+            row = ISystemStat(
+                idx_device=self._device.idx_device,
+                cpu_5min=cpu_5min,
+                mem_used=mem_used, 
+                mem_free=mem_free
+            )
+            inserts.append(row)
+            
+            # Check if a record already exists for this device
+            existing = _systemstat.device_exists(self._device.idx_device)
+            if existing:
+                # Update existing record
+                _systemstat.update_row(existing.idx_systemstat, row)
+            else:
+                # Insert new record
+                if not test:
+                    _systemstat.insert_row(inserts)
+        
+        # Log completion
+        self.log("SystemStat", updated=True)
+        
+        # Mark as completed
+        self._status.systemstat = True
 
     def log(self, table, updated=False):
         """Create standardized log messaging.

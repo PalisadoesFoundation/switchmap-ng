@@ -62,13 +62,14 @@ def main():
                 enabled=1,
             )
         )
-        oui.insert_row(
-            IOui(
-                oui=None,
-                organization=None,
-                enabled=1,
-            )
-        )
+        # oui.insert_row(
+        #     IOui(
+        #         oui=None,
+        #         organization=None,
+        #         enabled=1,
+        #     )
+        # )
+        # Skip dummy OUI insertion - real data will be populated from file
 
     # Populate the OUI data
     _oui.update_db_oui(oui_filepath)
