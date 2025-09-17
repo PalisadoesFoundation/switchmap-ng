@@ -392,33 +392,53 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
       </div>
 
       <div className="p-4 w-full min-w-[350px] flex flex-col xl:flex-row gap-4">
-        <HistoricalChart
-          title="System Status"
-          data={filterByRange(uptimeData)}
-          color="#00b894"
-          unit=""
-          yAxisConfig={{
-            domain: [0, 1],
-            ticks: [0, 1],
-            tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
-            allowDecimals: false,
-          }}
-          lineType="stepAfter"
-        />
+  {filterByRange(uptimeData)?.length ? (
+    <HistoricalChart
+      title="System Status"
+      data={filterByRange(uptimeData)}
+      color="#00b894"
+      unit=""
+      yAxisConfig={{
+        domain: [0, 1],
+        ticks: [0, 1],
+        tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
+        allowDecimals: false,
+      }}
+      lineType="stepAfter"
+    />
+  ) : (
+    <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
+      No uptime data available
+    </div>
+  )}
 
-        <HistoricalChart
-          title="CPU Usage (%)"
-          data={filterByRange(cpuUsageData)}
-          color="#0984e3"
-          unit="%"
-        />
-        <HistoricalChart
-          title="Memory Usage (%)"
-          data={filterByRange(memoryUsageData)}
-          color="#e17055"
-          unit="%"
-        />
-      </div>
+  {filterByRange(cpuUsageData)?.length ? (
+    <HistoricalChart
+      title="CPU Usage (%)"
+      data={filterByRange(cpuUsageData)}
+      color="#0984e3"
+      unit="%"
+    />
+  ) : (
+    <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
+      No CPU data available
+    </div>
+  )}
+
+  {filterByRange(memoryUsageData)?.length ? (
+    <HistoricalChart
+      title="Memory Usage (%)"
+      data={filterByRange(memoryUsageData)}
+      color="#e17055"
+      unit="%"
+    />
+  ) : (
+    <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
+      No memory data available
+    </div>
+  )}
+</div>
+
     </div>
   );
 }
