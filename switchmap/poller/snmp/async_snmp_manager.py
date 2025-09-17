@@ -1065,54 +1065,6 @@ def _convert(value):
         return None
 
 
-def _format_results(results, mock_filter, normalized=False):
-    """Normalize and format SNMP results.
-
-    Args:
-        results: List of (OID, value) tuples from pysnmp
-        mock_filter: The original OID to get. Facilitates unittesting by
-            filtering Mock values.
-        normalized: If True, then return results as a dict keyed by
-            only the last node of an OID, otherwise return results
-            keyed by the entire OID string. Normalization is useful
-            when trying to create multidimensional dicts where the
-            primary key is a universal value such as IF-MIB::ifIndex
-            or BRIDGE-MIB::dot1dBasePort
-
-    Returns:
-        dict: Formatted results as OID-value pairs
-
-    """
-
-    formatted = {}
-
-    for oid_str, value in results:
-
-        # Normalize both OIDs for comparison to handle leading dot mismatch
-        if mock_filter:
-            # Remove leading dots for comparison
-            filter_normalized = mock_filter.lstrip(".")
-            oid_normalized = oid_str.lstrip(".")
-
-            if not oid_normalized.startswith(filter_normalized):
-                continue
-
-        # convert value using proper type conversion
-        converted_value = _convert(value=value)
-
-        if normalized is True:
-            # use only the last node of the OID
-            key = oid_str.split(".")[-1]
-        else:
-            key = oid_str
-
-        formatted[key] = converted_value
-
-    return formatted
-
-
-
-
 def _convert(value):
     """Convert SNMP value from pysnmp object to Python type.
 

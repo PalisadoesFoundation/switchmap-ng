@@ -8,7 +8,6 @@ from . import async_snmp_info
 from switchmap.core import log
 
 
-
 class Poll:
     """Asynchronous SNMP poller for switchmap-ng that gathers network data.
 
