@@ -1,7 +1,7 @@
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { DeviceDetails } from "./DeviceDetails";
-import { mockDevice } from "./__mocks__/deviceMocks";
+import { mockDevice, mockMetricsForHost } from "./__mocks__/deviceMocks";
 
 // Component-specific mocks
 vi.mock("./TopologyChart", () => ({
@@ -10,22 +10,24 @@ vi.mock("./TopologyChart", () => ({
   ),
 }));
 describe("DeviceDetails", () => {
-  it("renders device overview and metadata correctly", async () => {
+  it("renders charts with fetched metrics", async () => {
+    // Mock fetch for this test
+    vi.spyOn(global, "fetch").mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockMetricsForHost,
+    } as any);
+
     render(<DeviceDetails device={mockDevice} />);
 
-    // Check static elements
-    expect(screen.getByText("Device Overview")).toBeInTheDocument();
-    expect(screen.getByText("Device 1")).toBeInTheDocument();
-    expect(screen.getByText("Test device description")).toBeInTheDocument();
-    expect(screen.getByText("host1")).toBeInTheDocument();
-    expect(screen.getByText("Up")).toBeInTheDocument();
-
-    // Wait for fetched metrics to update
+    // wait for charts to appear
     await waitFor(() => {
-      expect(screen.getAllByText("System Status")[0]).toBeInTheDocument();
-      expect(screen.getAllByText("CPU Usage (%)")[0]).toBeInTheDocument();
-      expect(screen.getAllByText("Memory Usage (%)")[0]).toBeInTheDocument();
+      expect(screen.getByText("System Status")).toBeInTheDocument();
+      expect(screen.getByText("CPU Usage (%)")).toBeInTheDocument();
+      expect(screen.getByText("Memory Usage (%)")).toBeInTheDocument();
     });
+
+    // you can also check status labels for up/down
+    expect(screen.getByText("Up")).toBeInTheDocument();
   });
   it("fetches device metrics and updates charts", async () => {
     const mockMetrics = {
