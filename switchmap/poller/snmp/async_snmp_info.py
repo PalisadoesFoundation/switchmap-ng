@@ -1,7 +1,6 @@
 """Async module to aggregate query results."""
 
 import time
-import sys
 from collections import defaultdict
 from switchmap.core import log
 import asyncio
@@ -57,10 +56,10 @@ class Query:
         keys = ["misc", "system", "layer1", "layer2", "layer3"]
         for key, result in zip(keys, results):
             if isinstance(result, Exception):
-                log.log2warning(f"{key} failed: {result}")
+                log.log2warning(1004, f"{key} failed: {result}")
             elif result:
                 data[key] = result
-        print(f"final data: {data}")
+
         # Return
         return data
 

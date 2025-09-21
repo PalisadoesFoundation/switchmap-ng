@@ -5,6 +5,8 @@ from collections import defaultdict
 from switchmap.poller.snmp.base_query import Query
 from switchmap.core import general, log
 import asyncio
+from switchmap.core import general, log
+import asyncio
 
 
 def get_query():

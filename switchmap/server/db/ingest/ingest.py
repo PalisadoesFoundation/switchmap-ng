@@ -78,48 +78,39 @@ class Ingest:
         with tempfile.TemporaryDirectory(
             dir=self._config.ingest_directory()
         ) as tmpdir:
-            # Only run the ingest if there is no poller lock file
-            # This helps to prevent ingesting files while polling is
-            # still running. This is only effective when the poller
-            # and ingester are running on the same machine
-            if os.path.isfile(poller_lock_file) is False:
-                # Copy files from cache to ingest
-                files.move_yaml_files(cache_directory, tmpdir)
+            # ASYNC ARCHITECTURE: Allow ingester to run while poller is active
+            # Copy files from cache to ingest
+            files.move_yaml_files(cache_directory, tmpdir)
 
-                # Parallel process the files
-                setup_success = setup(tmpdir, self._config)
+            # Parallel process the files
+            setup_success = setup(tmpdir, self._config)
 
-                if bool(setup_success) is True:
-                    # Populate the arguments
-                    arguments = [
-                        [
-                            IngestArgument(
-                                idx_zone=item.idx_zone,
-                                data=item.data,
-                                filepath=item.filepath,
-                                config=item.config,
-                                dns=self._dns,
-                            )
-                        ]
-                        for item in setup_success.zones
+            if bool(setup_success) is True:
+                # Populate the arguments
+                arguments = [
+                    [
+                        IngestArgument(
+                            idx_zone=item.idx_zone,
+                            data=item.data,
+                            filepath=item.filepath,
+                            config=item.config,
+                            dns=self._dns,
+                        )
                     ]
+                    for item in setup_success.zones
+                ]
 
-                    # Process the device independent zone data in the
-                    # database first
-                    if bool(arguments) is True:
-                        pairmacips = self.zone(arguments)
+                # Process the device independent zone data in the
+                # database first
+                if bool(arguments) is True:
+                    pairmacips = self.zone(arguments)
 
-                    # Process the device dependent in the database second
-                    if bool(pairmacips):
-                        self.device(arguments)
+                # Process the device dependent in the database second
+                if bool(pairmacips):
+                    self.device(arguments)
 
-                    # Cleanup
-                    self.cleanup(setup_success.event)
-            else:
-                log_message = f"""\
-Poller lock file {poller_lock_file} exists. Skipping processing of cache \
-files. Is the poller running or did it crash unexpectedly?"""
-                log.log2info(1077, log_message)
+                # Cleanup
+                self.cleanup(setup_success.event)
 
     def zone(self, arguments):
         """Ingest the files' zone data.
