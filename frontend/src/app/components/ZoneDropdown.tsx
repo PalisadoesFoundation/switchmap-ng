@@ -40,6 +40,8 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     const fetchZones = async () => {
       setLoading(true);
       setError(null);
@@ -51,49 +53,54 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              query: `  
-               {
-      events(last: 1) {
-        edges {
-          node {
-            zones {
-              edges {
-                node {
-                tsCreated
-                  id
-                  idxZone
-                  name
+              query: `{
+              events(last: 1) {
+                edges {
+                  node {
+                    zones {
+                      edges {
+                        node {
+                          tsCreated
+                          id
+                          idxZone
+                          name
+                        }
+                      }
+                    }
+                  }
                 }
               }
-            }
-          }
-        }
-      }
-    }
-            `,
+            }`,
             }),
           }
         );
-        if (!res.ok) {
-          throw new Error(`Network error: ${res.status}`);
-        }
+
+        if (!res.ok) throw new Error(`Network error: ${res.status}`);
+
         const json = await res.json();
-        if (json.errors) {
-          throw new Error(json.errors[0].message);
-        }
+        if (json.errors) throw new Error(json.errors[0].message);
+
         const rawZones =
           json?.data?.events?.edges?.[0]?.node?.zones?.edges?.map(
             (edge: ZoneEdge) => edge.node
           ) ?? [];
-        setZones(rawZones);
+
+        if (active) setZones(rawZones);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch zones");
+        if (active)
+          setError(
+            err instanceof Error ? err.message : "Failed to fetch zones"
+          );
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
     fetchZones();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
