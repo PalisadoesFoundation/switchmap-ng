@@ -10,18 +10,18 @@
 
 ### ConnectionDetails()
 
-> **ConnectionDetails**(`__namedParameters`): `null` \| `Element`
+> **ConnectionDetails**(`__namedParameters`): `Element`
 
-Defined in: [components/ConnectionDetails.tsx:78](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ConnectionDetails.tsx#L78)
+Defined in: [components/ConnectionDetails.tsx:34](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ConnectionDetails.tsx#L34)
 
 #### Parameters
 
 ##### \_\_namedParameters
 
-###### deviceId?
+###### device
 
-`string`
+[`DeviceNode`](../types/graphql/GetZoneDevices.md#devicenode)
 
 #### Returns
 
-`null` \| `Element`
+`Element`

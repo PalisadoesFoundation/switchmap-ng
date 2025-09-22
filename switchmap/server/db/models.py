@@ -4,12 +4,21 @@
 import datetime
 
 # SQLalchemy imports
-from sqlalchemy import Column, DateTime, ForeignKey, text, UniqueConstraint
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.mysql import BIGINT, VARBINARY, BIT
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import Null
 from sqlalchemy.orm import Session
+from typing import ClassVar
 
 # Project imports
 from switchmap.server.db import SCOPED_SESSION, ENGINE

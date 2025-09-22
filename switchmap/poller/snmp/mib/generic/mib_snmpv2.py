@@ -109,7 +109,66 @@ class Snmpv2Query(Query):
         data_dict["sysContact"][key] = getvalues[4].decode("utf-8")
         data_dict["sysName"][key] = getvalues[5].decode("utf-8")
         data_dict["sysLocation"][key] = getvalues[6].decode("utf-8")
+        # --- generic CPU & memory (HOST-RESOURCES-MIB) ---
+        cpu_oid = ".1.3.6.1.2.1.25.3.3.1.2"  # hrProcessorLoad
+        mem_used_oid = ".1.3.6.1.2.1.25.2.3.1.6"  # hrStorageUsed
+        mem_total_oid = ".1.3.6.1.2.1.25.2.3.1.5"  # hrStorageSize
 
+        cpu_values = self.snmp_object.swalk(cpu_oid) or {}
+        if cpu_values:
+            vals = [int(v) for v in cpu_values.values()]
+            avg = sum(vals) / max(len(vals), 1)
+            data_dict["cpu"]["total"] = {"value": round(avg, 2)}
+
+        # Normalize by hrStorageIndex and filter only RAM rows
+        mem_used = self.snmp_object.swalk(mem_used_oid, normalized=True) or {}
+        mem_total = self.snmp_object.swalk(mem_total_oid, normalized=True) or {}
+        mem_units = (
+            self.snmp_object.swalk(".1.3.6.1.2.1.25.2.3.1.4", normalized=True)
+            or {}
+        )
+        mem_type = (
+            self.snmp_object.swalk(".1.3.6.1.2.1.25.2.3.1.2", normalized=True)
+            or {}
+        )
+        HR_STORAGE_RAM = "1.3.6.1.2.1.25.2.1.2"
+        idxs = [
+            k
+            for k, t in mem_type.items()
+            if str(t) == HR_STORAGE_RAM
+            and k in mem_total
+            and k in mem_used
+            and k in mem_units
+        ]
+        if idxs:
+            total_used_bytes = sum(
+                int(mem_used[i]) * int(mem_units[i]) for i in idxs
+            )
+            total_bytes = sum(
+                int(mem_total[i]) * int(mem_units[i]) for i in idxs
+            )
+            total_free_bytes = max(total_bytes - total_used_bytes, 0)
+            data_dict["memory"]["used"] = {"value": total_used_bytes}
+            data_dict["memory"]["free"] = {"value": total_free_bytes}
+        HR_STORAGE_RAM = "1.3.6.1.2.1.25.2.1.2"
+        idxs = [
+            k
+            for k, t in mem_type.items()
+            if str(t) == HR_STORAGE_RAM
+            and k in mem_total
+            and k in mem_used
+            and k in mem_units
+        ]
+        if idxs:
+            total_used_bytes = sum(
+                int(mem_used[i]) * int(mem_units[i]) for i in idxs
+            )
+            total_bytes = sum(
+                int(mem_total[i]) * int(mem_units[i]) for i in idxs
+            )
+            total_free_bytes = max(total_bytes - total_used_bytes, 0)
+            data_dict["memory"]["used"] = {"value": total_used_bytes}
+            data_dict["memory"]["free"] = {"value": total_free_bytes}
         # Return
         final["SNMPv2-MIB"] = data_dict
         return final

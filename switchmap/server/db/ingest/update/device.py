@@ -1,9 +1,11 @@
 """Module for updating the database with topology data."""
 
+import datetime
 import time
 from collections import namedtuple
 from copy import deepcopy
 from operator import attrgetter
+from sqlalchemy.exc import SQLAlchemyError
 
 # Application imports
 from switchmap.core import log
@@ -11,6 +13,7 @@ from switchmap.core import general
 from switchmap.core.mac_utils import decode_mac_address
 from switchmap.server.db.ingest.query import device as _misc_device
 from switchmap.server.db.misc import interface as _historical
+from switchmap.server.db.models import DeviceMetricsHistory
 from switchmap.server.db.table import device as _device
 from switchmap.server.db.table import l1interface as _l1interface
 from switchmap.server.db.table import vlan as _vlan
@@ -91,6 +94,50 @@ def device(idx_zone, data):
     # Log
     log_message = f"Updated Device table for host {hostname}"
     log.log2debug(1137, log_message)
+    # Insert metrics into historical table
+    raw_cpu = (
+        data.get("system", {}).get("cpu", {}).get("total", {}).get("value")
+    )
+    try:
+        cpu_value = None if raw_cpu is None else float(raw_cpu)
+    except (TypeError, ValueError):
+        cpu_value = None
+
+    raw_used = (
+        data.get("system", {}).get("memory", {}).get("used", {}).get("value", 0)
+    )
+    raw_free = (
+        data.get("system", {}).get("memory", {}).get("free", {}).get("value", 0)
+    )
+    try:
+        memory_used = float(raw_used)
+    except (TypeError, ValueError):
+        memory_used = 0.0
+    try:
+        memory_free = float(raw_free)
+    except (TypeError, ValueError):
+        memory_free = 0.0
+
+    memory_total = memory_used + memory_free
+
+    if memory_total > 0:
+        memory_value = (memory_used / memory_total) * 100
+    else:
+        memory_value = 0
+
+    # save memory_percent instead of raw memory_used
+
+    metric_row = DeviceMetricsHistory(
+        hostname=hostname,
+        last_polled=data["misc"]["timestamp"],
+        uptime=data["system"]["SNMPv2-MIB"]["sysUpTime"][0],
+        cpu_utilization=cpu_value,
+        memory_utilization=memory_value,
+    )
+    try:
+        _metrics.insert_row(metric_row)
+    except SQLAlchemyError as e:
+        log.log2debug(5000, f"Metrics insert failed: {e}")
 
     # Return
     return exists

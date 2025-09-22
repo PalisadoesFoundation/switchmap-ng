@@ -14,12 +14,17 @@ import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.fields import BatchSQLAlchemyConnectionField
+from graphene.relay import Connection
+from graphene import ConnectionField
+from graphene import ObjectType, String  # <- add String here
+
 
 # Import models
 from switchmap.server.db.models import (
     Event as EventModel,
     Root as RootModel,
     Device as DeviceModel,
+    DeviceMetricsHistory as DeviceMetricsModel,
     L1Interface as L1InterfaceModel,
     Zone as ZoneModel,
     MacIp as MacIpModel,
@@ -38,6 +43,7 @@ from switchmap.server.db.attributes import (
     EventAttribute,
     RootAttribute,
     DeviceAttribute,
+    DeviceMetricsAttribute,
     L1InterfaceAttribute,
     MacAttribute,
     MacIpAttribute,

@@ -27,9 +27,17 @@ interface TopologyChartProps {
   devices: DeviceNode[];
   loading: boolean;
   error: string | null;
+  zoomView?: boolean;
+  clickToUse?: boolean;
 }
 
-export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
+export function TopologyChart({
+  devices,
+  loading,
+  error,
+  zoomView,
+  clickToUse,
+}: TopologyChartProps) {
   // React state to hold current graph structure: array of nodes and edges
   const [graph, setGraph] = useState<{ nodes: Node[]; edges: Edge[] }>({
     nodes: [],
@@ -68,7 +76,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   const isDark = theme === "dark";
   const options: Options = useMemo(
     () => ({
-      clickToUse: true,
+      clickToUse: clickToUse ?? true, // Use passed clickToUse prop or default to true
       layout: { hierarchical: false },
       physics: {
         enabled: true,
@@ -99,7 +107,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         hover: true,
         tooltipDelay: 100,
         dragNodes: true,
-        zoomView: true,
+        zoomView: zoomView ?? true, // Use passed interaction options or default to true
         selectConnectedEdges: false,
       },
     }),
@@ -219,7 +227,6 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         id: sysName,
         label: sysName,
         color: "#383e44ff",
-        title: "Device not in current zone",
       });
     });
     // Clean up DOM elements in node titles
@@ -244,6 +251,9 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
     // Set the new graph
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
+
+    // (Lines 255–262 have been removed; the fit()/moveTo() reset now lives
+    // in the Network-creation useEffect so it always runs on a fresh instance.)
   }, [devices]);
 
   useEffect(() => {
@@ -267,12 +277,16 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         const nodeId = params.nodes[0];
         const nodeData = nodesData.current?.get(nodeId);
         const node = Array.isArray(nodeData) ? nodeData[0] : nodeData;
-        const idxDevice = (node as any)?.idxDevice ?? nodeId;
-        const sysName = (node as any)?.label ?? "";
-        const url = `/devices/${encodeURIComponent(
-          idxDevice
-        )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
-        router.push(url);
+
+        // Only navigate if idxDevice exists
+        if ((node as any)?.idxDevice) {
+          const idxDevice = (node as any).idxDevice;
+          const sysName = (node as any)?.label ?? "";
+          const url = `/devices/${encodeURIComponent(
+            idxDevice
+          )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
+          router.push(url);
+        }
       }
     });
 
@@ -472,12 +486,14 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
   if (error) return <p>Error loading topology: {error}</p>;
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-2">Network Topology</h2>
-      <div className="flex mb-2 w-full gap-4 flex-wrap justify-between">
-        <div className="relative max-w-sm flex-grow">
+    <div className="topology-chart-container">
+      <h2 className="text-xl font-semibold mb-2 topology-title">
+        Network Topology
+      </h2>
+      <div className="flex mb-2 w-full gap-4 flex-wrap justify-between topology-controls">
+        <div className="relative max-w-sm flex-grow topology-search-container">
           <form
-            className="flex items-center gap-4"
+            className="flex items-center gap-4 topology-search-form"
             onSubmit={(e) => {
               e.preventDefault();
               setSearchTerm(inputTerm);
@@ -485,7 +501,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
             }}
           >
             <input
-              className="border p-2 rounded w-full"
+              className="border p-2 rounded w-full topology-search-input"
               type="text"
               placeholder="Search device..."
               value={inputTerm}
@@ -504,13 +520,13 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
                 setSuggestions(filtered);
               }}
             />
-            <button className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit">
+            <button className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit topology-search-btn">
               Search
             </button>
           </form>
 
           {suggestions.length > 0 && (
-            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50">
+            <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50 topology-suggestions-list">
               {suggestions.map((suggestion, index) => (
                 <li
                   key={index}
@@ -519,7 +535,7 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
                     setInputTerm("");
                     setSuggestions([]);
                   }}
-                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg"
+                  className="cursor-pointer px-4 py-2 hover:bg-hover-bg topology-suggestion-item"
                 >
                   {suggestion}
                 </li>
@@ -527,13 +543,16 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
             </ul>
           )}
         </div>
-        <div className="flex items-center gap-4">
-          <button onClick={handleReset} className="reset-button">
+        <div className="flex items-center gap-4 topology-action-buttons">
+          <button
+            onClick={handleReset}
+            className="reset-button topology-reset-btn"
+          >
             Reset
           </button>
           <button
             onClick={handleExportImage}
-            className="text-white rounded px-4 py-2 cursor-pointer transition-colors duration-300"
+            className="text-white rounded px-4 py-2 cursor-pointer transition-colors duration-300 topology-export-btn"
             style={{ backgroundColor: "#CB3CFF" }}
           >
             Export
@@ -541,15 +560,18 @@ export function TopologyChart({ devices, loading, error }: TopologyChartProps) {
         </div>
       </div>
 
-      <p className="mt-2 mb-2 text-sm text-gray-600 h-fit">
+      <p className="mt-2 mb-2 text-sm text-gray-600 h-fit topology-search-result">
         {searchResult || ""}
       </p>
 
       <div
         ref={containerRef}
-        className="w-full h-[70vh] border rounded shadow"
+        className="w-full h-[70vh] border rounded topology-network-canvas"
       />
-      <div style={{ margin: "0.25rem", fontSize: "0.85rem", color: "#666" }}>
+      <div
+        className="topology-instructions"
+        style={{ margin: "0.25rem", fontSize: "0.85rem", color: "#666" }}
+      >
         Single-click to select nodes, double-click to open device details.
       </div>
     </div>

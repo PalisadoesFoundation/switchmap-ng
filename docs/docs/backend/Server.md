@@ -27,7 +27,7 @@ Intialize the class.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -46,7 +46,7 @@ Get api_bind_port.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -65,7 +65,7 @@ Determine the cache_directory.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -84,7 +84,7 @@ Return db_host value.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -103,7 +103,7 @@ Return db_name value.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -122,7 +122,7 @@ Get DB connection pool overflow size.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -141,7 +141,7 @@ Return db_pass value.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -160,7 +160,7 @@ Get DB connection pool size.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -179,7 +179,7 @@ Return db_user value.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -198,7 +198,7 @@ Determine the ingest_directory.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -217,7 +217,7 @@ Get ingest_interval.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -236,7 +236,7 @@ Return purge_after_ingest value.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -255,7 +255,7 @@ Get username.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -270,7 +270,7 @@ Define the switchmap.server package.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -295,7 +295,7 @@ Process agent data.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -336,7 +336,7 @@ Initialize class.
 - `test` - True if testing
 - `test_cache_directory` - Ingest directory. Only used when testing.
 - `multiprocessing` - True if multiprocessing is enabled
-
+  
 
 **Returns**:
 
@@ -355,7 +355,7 @@ Process files in the cache.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -373,9 +373,8 @@ Ingest the files' zone data.
 
 **Arguments**:
 
-- `arguments` - List of arguments for the processing the zone
-  [[item.idx_zone, item.data, item.filepath, item.config]]
-
+- `arguments` - List of Argument objects
+  
 
 **Returns**:
 
@@ -395,7 +394,7 @@ Ingest the files' device data.
 
 - `arguments` - List of arguments for the processing the zone
   [[item.idx_zone, item.data, item.filepath, item.config]]
-
+  
 
 **Returns**:
 
@@ -414,7 +413,7 @@ Ingest the files' device data.
 **Arguments**:
 
 - `event` - Name of event
-
+  
 
 **Returns**:
 
@@ -425,18 +424,15 @@ Ingest the files' device data.
 #### process\_zone
 
 ```python
-def process_zone(idx_zone, data, filepath, config)
+def process_zone(argument)
 ```
 
 Ingest a single file for device updates.
 
 **Arguments**:
 
-- `idx_zone` - Zone index to be used for the data
-- `data` - Cache file containing data
-- `filepath` - Cache file filepath that contains the data
-- `config` - Daemon configuration
-
+- `argument` - Argument object
+  
 
 **Returns**:
 
@@ -447,18 +443,15 @@ Ingest a single file for device updates.
 #### process\_device
 
 ```python
-def process_device(idx_zone, data, filepath, config)
+def process_device(argument)
 ```
 
 Ingest a single file for device updates.
 
 **Arguments**:
 
-- `idx_zone` - Zone index to be used for the data
-- `data` - Cache file containing data
-- `filepath` - Cache file filepath that contains the data
-- `config` - Daemon configuration
-
+- `argument` - Argument object
+  
 
 **Returns**:
 
@@ -478,7 +471,7 @@ Ingest the files in parallel.
 
 - `src` - Directory where device YAML files are located
 - `config` - Configuration object
-
+  
 
 **Returns**:
 
@@ -500,7 +493,7 @@ Insert values from ARP tables.
   OR a single ZoneObjects from testing
 - `test` - Sequentially insert values into the database if True.
   Bulk inserts don't insert data with predictable primary keys.
-
+  
 
 **Returns**:
 
@@ -521,28 +514,7 @@ Update the mac DB table.
 - `items` - List of PairMacIp objects
 - `test` - Sequentially insert values into the database if True.
   Bulk inserts don't insert data with predictable primary keys.
-
-
-**Returns**:
-
-  None
-
-<a id="db.ingest.ingest.insert_ipports"></a>
-
-#### insert\_ipports
-
-```python
-def insert_ipports(items, test=False)
-```
-
-Update the mac DB table.
-
-**Arguments**:
-
-- `items` - PairMacIp objects list
-- `test` - Sequentially insert values into the database if True.
-  Bulk inserts don't insert data with predictable primary keys.
-
+  
 
 **Returns**:
 
@@ -578,7 +550,7 @@ Initialize class.
 
 - `idx_zone` - Zone index to which the data belongs
 - `hostname` - Hostname to process
-
+  
 
 **Returns**:
 
@@ -597,7 +569,7 @@ Return complete device.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -616,7 +588,7 @@ Return system summary data.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -635,7 +607,7 @@ Return L1 data for Ethernet ports only.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -654,7 +626,7 @@ Get all the VlanPorts for a device.
 **Arguments**:
 
 - `idx_device` - Idx_device of the device being processed
-
+  
 
 **Returns**:
 
@@ -679,7 +651,7 @@ Search for MAC addresses.
 **Arguments**:
 
 - `idx_mac` - idx_mac
-
+  
 
 **Returns**:
 
@@ -704,7 +676,7 @@ Search for VLANs tied to interface.
 **Arguments**:
 
 - `idx_l1interface` - idx_l1interface
-
+  
 
 **Returns**:
 
@@ -719,7 +691,7 @@ Define the switchmap.server.db.ingest.query package.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -734,7 +706,7 @@ Define the switchmap.server.db.ingest package.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -761,7 +733,7 @@ Process data received from a device.
 - `data` - Device data (dict)
 - `idx_zone` - Zone index to which the data belongs
 - `dns` - Do DNS lookups if True
-
+  
 
 **Returns**:
 
@@ -781,7 +753,7 @@ Update the Device DB table.
 
 - `idx_zone` - Zone index to which the data belongs
 - `data` - Device data (dict)
-
+  
 
 **Returns**:
 
@@ -810,7 +782,7 @@ Instantiate the class.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -837,6 +809,28 @@ def l1interface(value)
 ```
 
 Set the 'l1interface' property.
+
+<a id="db.ingest.update.device.Status.ipport"></a>
+
+#### ipport
+
+```python
+@property
+def ipport()
+```
+
+Provide the value of  the 'ipport' property.
+
+<a id="db.ingest.update.device.Status.ipport"></a>
+
+#### ipport
+
+```python
+@ipport.setter
+def ipport(value)
+```
+
+Set the 'ipport' property.
 
 <a id="db.ingest.update.device.Status.macport"></a>
 
@@ -929,7 +923,7 @@ Initialize class.
 - `exists` - RDevice object
 - `data` - Dict of device data
 - `dns` - Do DNS lookups if True
-
+  
 
 **Returns**:
 
@@ -948,7 +942,7 @@ Process data received from a device.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -968,7 +962,7 @@ Update the L1interface DB table.
 
 - `test` - Sequentially insert values into the database if True.
   Bulk inserts don't insert data with predictable primary keys.
-
+  
 
 **Returns**:
 
@@ -988,7 +982,7 @@ Update the Vlan DB table.
 
 - `test` - Sequentially insert values into the database if True.
   Bulk inserts don't insert data with predictable primary keys.
-
+  
 
 **Returns**:
 
@@ -1008,7 +1002,7 @@ Update the VlanPort DB table.
 
 - `test` - Sequentially insert values into the database if True.
   Bulk inserts don't insert data with predictable primary keys.
-
+  
 
 **Returns**:
 
@@ -1028,7 +1022,27 @@ Update the MacPort DB table.
 
 - `test` - Sequentially insert values into the database if True.
   Bulk inserts don't insert data with predictable primary keys.
+  
 
+**Returns**:
+
+  None
+
+<a id="db.ingest.update.device.Topology.ipport"></a>
+
+#### ipport
+
+```python
+def ipport(test=False)
+```
+
+Update the IpPort DB table.
+
+**Arguments**:
+
+- `test` - Sequentially insert values into the database if True.
+  Bulk inserts don't insert data with predictable primary keys.
+  
 
 **Returns**:
 
@@ -1048,7 +1062,7 @@ Create standardized log messaging.
 
 - `table` - Name of table being updated
 - `updated` - True if the table has been updated
-
+  
 
 **Returns**:
 
@@ -1067,7 +1081,7 @@ Create standardized log messaging for invalid states.
 **Arguments**:
 
 - `table` - Name of table being updated
-
+  
 
 **Returns**:
 
@@ -1082,7 +1096,7 @@ Define the switchmap.server.db.ingest.update package.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -1109,7 +1123,7 @@ Process data received from a device.
 - `data` - Device data (dict)
 - `idx_zone` - Zone index to which the data belongs
 - `dns` - Do DNS lookups if True
-
+  
 
 **Returns**:
 
@@ -1138,7 +1152,7 @@ Instantiate the class.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -1158,7 +1172,7 @@ Provide the value of the 'ip' property.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -1178,7 +1192,7 @@ Set the 'ip' property.
 **Arguments**:
 
 - `value` - Value to set
-
+  
 
 **Returns**:
 
@@ -1198,7 +1212,7 @@ Provide the value of the 'mac' property.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -1218,7 +1232,7 @@ Set the 'mac' property.
 **Arguments**:
 
 - `value` - Value to set
-
+  
 
 **Returns**:
 
@@ -1238,7 +1252,7 @@ Provide the value of the 'macip' property.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -1258,7 +1272,7 @@ Set the 'macip' property.
 **Arguments**:
 
 - `value` - Value to set
-
+  
 
 **Returns**:
 
@@ -1289,7 +1303,7 @@ Initialize class.
 - `data` - Dict of device data
 - `idx_zone` - idx_zone of the Zone being processed
 - `dns` - Do DNS lookups if True
-
+  
 
 **Returns**:
 
@@ -1300,15 +1314,15 @@ Initialize class.
 #### process
 
 ```python
-def process(dns)
+def process()
 ```
 
 Process data received from a device.
 
 **Arguments**:
 
-- `dns` - If True, perform DNS lookups to resolve hostnames.
-
+  None
+  
 
 **Returns**:
 
@@ -1327,7 +1341,7 @@ Update the Mac DB table.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -1346,7 +1360,7 @@ Update the Ip DB table.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -1365,7 +1379,7 @@ Update the MacIp DB table.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -1385,7 +1399,7 @@ Create standardized log messaging.
 
 - `table` - Name of table being updated
 - `updated` - True if the table has been updated
-
+  
 
 **Returns**:
 
@@ -1404,7 +1418,7 @@ Create standardized log messaging for invalid states.
 **Arguments**:
 
 - `table` - Name of table being updated
-
+  
 
 **Returns**:
 
@@ -1465,6 +1479,16 @@ class Device(BASE)
 ```
 
 Database table definition.
+
+<a id="db.models.DeviceMetricsHistory"></a>
+
+## DeviceMetricsHistory Objects
+
+```python
+class DeviceMetricsHistory(BASE)
+```
+
+Database table for historical CPU, memory, uptime metrics.
 
 <a id="db.models.L1Interface"></a>
 
@@ -1585,12 +1609,12 @@ Support 'Select' actions for __ENTIRE__ row.
 - `error_code` - Error code to use in messages
 - `statement` - SqlALchemy statement to execute. This must only reference
   an ORM Row object.
-
+  
 
 **Returns**:
 
 - `result` - List of objects resulting from Select
-
+  
   https://docs.sqlalchemy.org/en/14/orm/session_api.html#sqlalchemy.orm.Session
 
 <a id="db.db.db_select"></a>
@@ -1607,12 +1631,12 @@ Provide a transactional support for Select actions.
 
 - `error_code` - Error code to use in messages
 - `statement` - SqlALchemy statement to execute
-
+  
 
 **Returns**:
 
 - `result` - List of objects resulting from Select
-
+  
   https://docs.sqlalchemy.org/en/14/orm/session_api.html#sqlalchemy.orm.Session
 
 <a id="db.db.db_update"></a>
@@ -1630,12 +1654,12 @@ Provide a transactional support for Update actions.
 - `error_code` - Error code to use in messages
 - `statement` - SqlALchemy statement to execute
 - `values` - List of values to insert if required
-
+  
 
 **Returns**:
 
 - `result` - True if the transaction is successful
-
+  
   https://docs.sqlalchemy.org/en/14/orm/session_api.html#sqlalchemy.orm.Session
 
 <a id="db.db.db_delete_row"></a>
@@ -1653,12 +1677,12 @@ Support 'Delete' actions for __ENTIRE__ row.
 - `error_code` - Error code to use in messages
 - `statement` - SqlALchemy statement to execute. This must only reference
   an ORM Row object.
-
+  
 
 **Returns**:
 
 - `result` - List of objects resulting from Delete
-
+  
   https://docs.sqlalchemy.org/en/14/orm/session_api.html#sqlalchemy.orm.Session
 
 <a id="db.db.db_delete"></a>
@@ -1675,7 +1699,7 @@ Provide a transactional support for Delete actions.
 
 - `error_code` - Error code to use in messages
 - `statement` - SqlALchemy statement to execute
-
+  
 
 **Returns**:
 
@@ -1697,7 +1721,7 @@ Perform bulk insert for ORM objects with enhanced logging.
 - `model` - SQLAlchemy model to insert into
 - `mappings` - List of dictionaries with data to insert
 - `die` - Die if True
-
+  
 
 **Returns**:
 
@@ -1767,6 +1791,26 @@ class Device(SQLAlchemyObjectType, DeviceAttribute)
 Device node.
 
 <a id="db.schemas.Device.Meta"></a>
+
+## Meta Objects
+
+```python
+class Meta()
+```
+
+Define the metadata.
+
+<a id="db.schemas.DeviceMetrics"></a>
+
+## DeviceMetrics Objects
+
+```python
+class DeviceMetrics(SQLAlchemyObjectType, DeviceMetricsAttribute)
+```
+
+Device metrics node with decoded hostname.
+
+<a id="db.schemas.DeviceMetrics.Meta"></a>
 
 ## Meta Objects
 
@@ -1986,6 +2030,28 @@ class Query(graphene.ObjectType)
 
 Define GraphQL queries.
 
+<a id="db.schemas.Query.resolve_deviceMetrics"></a>
+
+#### resolve\_deviceMetrics
+
+```python
+def resolve_deviceMetrics(info, hostname=None, since=None, until=None)
+```
+
+Resolve device metrics with optional hostname and time-range filters.
+
+**Arguments**:
+
+- `info` - GraphQL resolve info.
+- `hostname` _str, optional_ - Filter by device hostname (exact match).
+- `since` _int, optional_ - Unix epoch seconds (inclusive) lower bound.
+- `until` _int, optional_ - Unix epoch seconds (exclusive) upper bound.
+  
+
+**Returns**:
+
+- `sqlalchemy.orm.Query` - Filtered query ordered by `last_polled` ASC.
+
 <a id="db.table.ipport"></a>
 
 # db.table.ipport
@@ -2005,7 +2071,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_ipport
-
+  
 
 **Returns**:
 
@@ -2025,7 +2091,7 @@ Determine whether entry exists in the IpPort table.
 
 - `idx_l1interface` - Device.idx_l1interface
 - `idx_ip` - Ip.idx_ip
-
+  
 
 **Returns**:
 
@@ -2044,7 +2110,7 @@ Find all ports on which MAC address has been found.
 **Arguments**:
 
 - `idx_ip` - Ip.idx_ip
-
+  
 
 **Returns**:
 
@@ -2063,7 +2129,7 @@ Create a IpPort table entry.
 **Arguments**:
 
 - `rows` - IIpPort objects
-
+  
 
 **Returns**:
 
@@ -2083,7 +2149,7 @@ Upadate a IpPort table entry.
 
 - `idx` - idx_ipport value
 - `row` - IIpPort object
-
+  
 
 **Returns**:
 
@@ -2108,7 +2174,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_device
-
+  
 
 **Returns**:
 
@@ -2128,7 +2194,7 @@ Determine whether hostname exists in the Device table.
 
 - `idx_zone` - Zone index
 - `hostname` - Device
-
+  
 
 **Returns**:
 
@@ -2147,7 +2213,7 @@ Get all Devices for a zone.
 **Arguments**:
 
 - `idx_zone` - Zone index
-
+  
 
 **Returns**:
 
@@ -2166,7 +2232,7 @@ Create a Device table entry.
 **Arguments**:
 
 - `rows` - IDevice objects
-
+  
 
 **Returns**:
 
@@ -2186,7 +2252,39 @@ Upadate a Device table entry.
 
 - `idx` - idx_device value
 - `row` - IDevice object
+  
 
+**Returns**:
+
+  None
+
+<a id="db.table.metrics"></a>
+
+# db.table.metrics
+
+Database table operations for metrics.
+
+<a id="db.table.metrics.insert_row"></a>
+
+#### insert\_row
+
+```python
+def insert_row(rows)
+```
+
+Insert rows into smap_device_metrics_history (historical metrics).
+
+**Arguments**:
+
+- `rows` _list or object_ - Single row or list of rows to insert. Each row is
+  expected to have the following attributes:
+  - hostname (str | bytes): Device hostname (required; UTF-8
+  encoded to VARBINARY, ≤256 bytes)
+  - last_polled (int, float, datetime, str, or None):
+  Timestamp of last poll
+  - uptime (int or None): Device uptime in seconds
+  - cpu_utilization (float or None): CPU utilization percentage
+  - memory_utilization (float or None): Memory utilization in %
 
 **Returns**:
 
@@ -2211,7 +2309,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_l1interface
-
+  
 
 **Returns**:
 
@@ -2231,7 +2329,7 @@ Determine whether hostname exists in the L1Interface table.
 
 - `idx_device` - Device.idx_device
 - `ifindex` - SNMP IfIndex number
-
+  
 
 **Returns**:
 
@@ -2250,7 +2348,7 @@ Get all the L1Interface table records for a device.
 **Arguments**:
 
 - `idx_device` - Device.idx_device
-
+  
 
 **Returns**:
 
@@ -2270,7 +2368,7 @@ Find ifalias.
 
 - `idx_device` - Device.idx_device
 - `ifalias` - Hostname
-
+  
 
 **Returns**:
 
@@ -2290,7 +2388,7 @@ Create a L1Interface table entry.
 **Arguments**:
 
 - `rows` - IL1Interface objects
-
+  
 
 **Returns**:
 
@@ -2310,7 +2408,7 @@ Upadate a L1Interface table entry.
 
 - `idx` - idx_l1interface value
 - `row` - IL1Interface object
-
+  
 
 **Returns**:
 
@@ -2335,7 +2433,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_vlanport
-
+  
 
 **Returns**:
 
@@ -2355,7 +2453,7 @@ Determine whether entry exists in the VlanPort table.
 
 - `idx_l1interface` - Device.idx_l1interface
 - `idx_vlan` - Vlan.idx_vlan
-
+  
 
 **Returns**:
 
@@ -2374,7 +2472,7 @@ Find all ports on which MAC address has been found.
 **Arguments**:
 
 - `idx_vlan` - Vlan.idx_vlan
-
+  
 
 **Returns**:
 
@@ -2393,7 +2491,7 @@ Create a VlanPort table entry.
 **Arguments**:
 
 - `rows` - IVlanPort objects
-
+  
 
 **Returns**:
 
@@ -2413,7 +2511,7 @@ Upadate a VlanPort table entry.
 
 - `idx` - idx_vlanport value
 - `row` - IVlanPort object
-
+  
 
 **Returns**:
 
@@ -2438,7 +2536,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_macport
-
+  
 
 **Returns**:
 
@@ -2458,7 +2556,7 @@ Determine whether entry exists in the MacPort table.
 
 - `idx_l1interface` - Device.idx_l1interface
 - `idx_mac` - Mac.idx_mac
-
+  
 
 **Returns**:
 
@@ -2477,7 +2575,7 @@ Find all ports on which MAC address has been found.
 **Arguments**:
 
 - `idx_mac` - Mac.idx_mac
-
+  
 
 **Returns**:
 
@@ -2496,7 +2594,7 @@ Create a MacPort table entry.
 **Arguments**:
 
 - `rows` - IMacPort objects
-
+  
 
 **Returns**:
 
@@ -2516,7 +2614,7 @@ Upadate a MacPort table entry.
 
 - `idx` - idx_macport value
 - `row` - IMacPort object
-
+  
 
 **Returns**:
 
@@ -2541,7 +2639,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_mac
-
+  
 
 **Returns**:
 
@@ -2561,7 +2659,7 @@ Determine whether MAC exists in the Mac table.
 
 - `idx_zone` - Zone index
 - `_mac` - Mac address
-
+  
 
 **Returns**:
 
@@ -2581,7 +2679,7 @@ Determine whether MAC exists in the Mac table.
 
 - `idx_zone` - Zone index
 - `macs` - List or single MAC address
-
+  
 
 **Returns**:
 
@@ -2600,7 +2698,7 @@ Create a Mac table entry.
 **Arguments**:
 
 - `rows` - TopologyMac objects
-
+  
 
 **Returns**:
 
@@ -2620,7 +2718,7 @@ Upadate a Mac table entry.
 
 - `idx` - idx_mac value
 - `row` - IMac object
-
+  
 
 **Returns**:
 
@@ -2645,7 +2743,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_ip
-
+  
 
 **Returns**:
 
@@ -2665,7 +2763,7 @@ Determine whether MAC exists in the Ip table.
 
 - `idx_zone` - Zone index
 - `_ip` - Ip address
-
+  
 
 **Returns**:
 
@@ -2685,7 +2783,7 @@ Determine whether hostname exists in the Ip table.
 
 - `idx_zone` - Zone index
 - `hostname` - hostname
-
+  
 
 **Returns**:
 
@@ -2705,7 +2803,7 @@ Determine whether MAC exists in the Ip table.
 
 - `idx_zone` - Zone index
 - `ips` - one or more IP addresses
-
+  
 
 **Returns**:
 
@@ -2724,7 +2822,7 @@ Perform bulk insert for the Mac table.
 **Arguments**:
 
 - `rows` - List of IMac objects to be inserted into the database.
-
+  
 
 **Returns**:
 
@@ -2744,7 +2842,7 @@ Upadate a Ip table entry.
 
 - `idx` - idx_ip value
 - `row` - IIp object
-
+  
 
 **Returns**:
 
@@ -2769,7 +2867,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_vlan
-
+  
 
 **Returns**:
 
@@ -2789,7 +2887,7 @@ Determine whether vlan exists in the Vlan table.
 
 - `idx_device` - DB idx for the device
 - `vlan` - Vlan
-
+  
 
 **Returns**:
 
@@ -2808,7 +2906,7 @@ Get all VLANs for a device.
 **Arguments**:
 
 - `idx_device` - Device index
-
+  
 
 **Returns**:
 
@@ -2827,7 +2925,7 @@ Create a Vlan table entry.
 **Arguments**:
 
 - `rows` - IVlan objects
-
+  
 
 **Returns**:
 
@@ -2847,7 +2945,7 @@ Upadate a Vlan table entry.
 
 - `idx` - idx_vlan value
 - `row` - IVlan object
-
+  
 
 **Returns**:
 
@@ -2872,7 +2970,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_root
-
+  
 
 **Returns**:
 
@@ -2891,7 +2989,7 @@ Determine whether root exists in the Root table.
 **Arguments**:
 
 - `root` - Root
-
+  
 
 **Returns**:
 
@@ -2910,7 +3008,7 @@ Create a Root table entry.
 **Arguments**:
 
 - `rows` - IRoot objects
-
+  
 
 **Returns**:
 
@@ -2930,7 +3028,7 @@ Upadate a Root table entry.
 
 - `idx` - idx_root value
 - `row` - IRoot object
-
+  
 
 **Returns**:
 
@@ -2949,7 +3047,7 @@ Get list of Roots.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -2980,7 +3078,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_event
-
+  
 
 **Returns**:
 
@@ -2999,7 +3097,7 @@ Determine whether event exists in the Event table.
 **Arguments**:
 
 - `event` - Event
-
+  
 
 **Returns**:
 
@@ -3018,7 +3116,7 @@ Create a Event table entry.
 **Arguments**:
 
 - `rows` - IEvent objects
-
+  
 
 **Returns**:
 
@@ -3038,7 +3136,7 @@ Upadate a Event table entry.
 
 - `idx` - idx_event value
 - `row` - IEvent object
-
+  
 
 **Returns**:
 
@@ -3057,7 +3155,7 @@ Get list of Events.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -3076,7 +3174,7 @@ Delete event.
 **Arguments**:
 
 - `idx` - idx_event
-
+  
 
 **Returns**:
 
@@ -3095,7 +3193,7 @@ Create an event.
 **Arguments**:
 
 - `name` - Alternative name
-
+  
 
 **Returns**:
 
@@ -3114,7 +3212,7 @@ Purge all events except the most recent two.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -3139,7 +3237,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_zone
-
+  
 
 **Returns**:
 
@@ -3159,7 +3257,7 @@ Determine whether name exists in the Zone table.
 
 - `idx_event` - Event index
 - `name` - Zone
-
+  
 
 **Returns**:
 
@@ -3178,7 +3276,7 @@ Get all Zones for a event.
 **Arguments**:
 
 - `idx_event` - Event index
-
+  
 
 **Returns**:
 
@@ -3197,7 +3295,7 @@ Create a Zone table entry.
 **Arguments**:
 
 - `rows` - IZone objects
-
+  
 
 **Returns**:
 
@@ -3217,7 +3315,7 @@ Upadate a Zone table entry.
 
 - `idx` - idx_zone value
 - `row` - IZone object
-
+  
 
 **Returns**:
 
@@ -3242,7 +3340,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_macip
-
+  
 
 **Returns**:
 
@@ -3262,7 +3360,7 @@ Determine whether mac exists in the MacIp table.
 
 - `idx_mac` - Mac.idx_mac
 - `idx_ip` - Ip.idx_ip
-
+  
 
 **Returns**:
 
@@ -3281,7 +3379,7 @@ Create a MacIp table entry.
 **Arguments**:
 
 - `rows` - IMacIp objects
-
+  
 
 **Returns**:
 
@@ -3301,11 +3399,30 @@ Upadate a MacIp table entry.
 
 - `idx` - idx_macip value
 - `row` - IMacIp object
-
+  
 
 **Returns**:
 
   None
+
+<a id="db.table.macip.idx_ips_exist"></a>
+
+#### idx\_ips\_exist
+
+```python
+def idx_ips_exist(idx_mac)
+```
+
+Get a list of idx_ip values matching idx_mac from the MacIp table.
+
+**Arguments**:
+
+- `idx_mac` - Mac.idx_mac
+  
+
+**Returns**:
+
+- `result` - List of RMacIp tuples
 
 <a id="db.table.oui"></a>
 
@@ -3326,7 +3443,7 @@ Get the idx_oui value.
 **Arguments**:
 
 - `mac` - MAC address
-
+  
 
 **Returns**:
 
@@ -3345,7 +3462,7 @@ Determine whether primary key exists.
 **Arguments**:
 
 - `idx` - idx_oui
-
+  
 
 **Returns**:
 
@@ -3364,7 +3481,7 @@ Determine whether oui exists in the Oui table.
 **Arguments**:
 
 - `oui` - Oui
-
+  
 
 **Returns**:
 
@@ -3383,7 +3500,7 @@ Create a Oui table entry.
 **Arguments**:
 
 - `rows` - IOui objects
-
+  
 
 **Returns**:
 
@@ -3403,7 +3520,7 @@ Upadate a Oui table entry.
 
 - `idx` - idx_oui value
 - `row` - IOui object
-
+  
 
 **Returns**:
 
@@ -3422,7 +3539,7 @@ Get all the OUIs.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -3447,7 +3564,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - Device row
-
+  
 
 **Returns**:
 
@@ -3466,7 +3583,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - Root row
-
+  
 
 **Returns**:
 
@@ -3485,7 +3602,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - Event row
-
+  
 
 **Returns**:
 
@@ -3504,7 +3621,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - L1Interface row
-
+  
 
 **Returns**:
 
@@ -3523,7 +3640,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - Mac row
-
+  
 
 **Returns**:
 
@@ -3542,7 +3659,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - MacIp row
-
+  
 
 **Returns**:
 
@@ -3561,7 +3678,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - MacPort row
-
+  
 
 **Returns**:
 
@@ -3580,7 +3697,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - Oui row
-
+  
 
 **Returns**:
 
@@ -3599,7 +3716,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - Vlan row
-
+  
 
 **Returns**:
 
@@ -3618,7 +3735,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - VlanPort row
-
+  
 
 **Returns**:
 
@@ -3637,7 +3754,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - Zone row
-
+  
 
 **Returns**:
 
@@ -3656,7 +3773,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - Ip row
-
+  
 
 **Returns**:
 
@@ -3675,7 +3792,7 @@ Convert table row to tuple.
 **Arguments**:
 
 - `row` - IpPort row
-
+  
 
 **Returns**:
 
@@ -3700,7 +3817,7 @@ Get an Rl1interface list for the device during the previous event.
 **Arguments**:
 
 - `rdevice` - RDevice object
-
+  
 
 **Returns**:
 
@@ -3746,7 +3863,7 @@ Initialize the class.
 
 - `idx_event` - Event index
 - `searchstring` - search string to look for
-
+  
 
 **Returns**:
 
@@ -3765,7 +3882,7 @@ Find search string.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -3785,7 +3902,7 @@ Search for macaddress.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -3805,7 +3922,7 @@ Search for string in ifalias names.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -3825,7 +3942,7 @@ Search for ipaddress.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -3845,7 +3962,7 @@ Search for string hostnames.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -3865,7 +3982,7 @@ Find all ports on which an specfic IP address has been found.
 **Arguments**:
 
 - `idx_ip` - Ip.idx_ip
-
+  
 
 **Returns**:
 
@@ -3885,7 +4002,7 @@ Search based on idx_root values.
 
 - `idx_root` - Root index
 - `searchstring` - search string to look for
-
+  
 
 **Returns**:
 
@@ -3904,7 +4021,7 @@ Determine whether the interface is a trunk.
 **Arguments**:
 
 - `idx_l1interface` - L1interface table primary key
-
+  
 
 **Returns**:
 
@@ -3919,7 +4036,7 @@ Define the switchmap.server.db.misc package.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -3944,12 +4061,12 @@ Update the database with Oui data.
 **Arguments**:
 
 - `filepath` - File to process
-
+  
 
 **Returns**:
 
   None
-
+  
 
 **Raises**:
 
@@ -3983,7 +4100,7 @@ Convert 'address' from bytes to string.
 
 - `obj` - Object containing address attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4003,7 +4120,7 @@ Convert 'cdpcachedeviceid' from bytes to string.
 
 - `obj` - Object containing cdpcachedeviceid attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4023,7 +4140,7 @@ Convert 'cdpcacheplatform' from bytes to string.
 
 - `obj` - Object containing cdpcacheplatform attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4043,7 +4160,7 @@ Convert 'cdpcachedeviceport' from bytes to string.
 
 - `obj` - Object containing cdpcachedeviceport attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4063,7 +4180,7 @@ Convert 'hostname' from bytes to string.
 
 - `obj` - Object containing hostname attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4083,7 +4200,7 @@ Convert 'ifalias' from bytes to string.
 
 - `obj` - Object containing ifalias attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4103,7 +4220,7 @@ Convert 'ifname' from bytes to string.
 
 - `obj` - Object containing ifname attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4123,7 +4240,7 @@ Convert 'ifdescr' from bytes to string.
 
 - `obj` - Object containing ifdescr attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4143,7 +4260,7 @@ Convert 'lldpremportdesc' from bytes to string.
 
 - `obj` - Object containing lldpremportdesc attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4163,7 +4280,7 @@ Convert 'lldpremsyscapenabled' from bytes to string.
 
 - `obj` - Object containing lldpremsyscapenabled attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4183,7 +4300,7 @@ Convert 'lldpremsysdesc' from bytes to string.
 
 - `obj` - Object containing lldpremsysdesc attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4203,7 +4320,7 @@ Convert 'lldpremsysname' from bytes to string.
 
 - `obj` - Object containing lldpremsysname attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4223,7 +4340,7 @@ Convert 'mac' from bytes to string.
 
 - `obj` - Object containing mac attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4243,7 +4360,7 @@ Convert 'organization' from bytes to string.
 
 - `obj` - Object containing organization attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4263,7 +4380,7 @@ Convert 'name' from bytes to string.
 
 - `obj` - Object containing name attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4283,7 +4400,7 @@ Convert 'notes' from bytes to string.
 
 - `obj` - Object containing notes attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4303,7 +4420,7 @@ Convert 'oui' from bytes to string.
 
 - `obj` - Object containing oui attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4323,7 +4440,7 @@ Convert 'sys_description' from bytes to string.
 
 - `obj` - Object containing sys_description attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4343,7 +4460,7 @@ Convert 'sys_name' from bytes to string.
 
 - `obj` - Object containing sys_name attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4363,7 +4480,7 @@ Convert 'sys_uptime' from Null to zero.
 
 - `obj` - Object containing sys_uptime attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4383,7 +4500,7 @@ Convert 'sys_objectid' from bytes to string.
 
 - `obj` - Object containing sys_objectid attribute
 - `_` - Unused GraphQL parameter
-
+  
 
 **Returns**:
 
@@ -4453,6 +4570,16 @@ Descriptive attributes of the Device table.
 
 A generic class to mutualize description of attributes for both queries
 and mutations.
+
+<a id="db.attributes.DeviceMetricsAttribute"></a>
+
+## DeviceMetricsAttribute Objects
+
+```python
+class DeviceMetricsAttribute()
+```
+
+Descriptive attributes for DeviceMetricsHistory table.
 
 <a id="db.attributes.L1InterfaceAttribute"></a>
 
@@ -4586,7 +4713,7 @@ Accept posts of network device data from pollers.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -4606,7 +4733,7 @@ Accept posts searches.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
@@ -4627,8 +4754,9 @@ Define the switchmap.server.api.routes package.
 **Arguments**:
 
   None
-
+  
 
 **Returns**:
 
   None
+
