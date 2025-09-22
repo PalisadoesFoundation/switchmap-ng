@@ -8,6 +8,17 @@ vi.mock("./TopologyChart", () => ({
     <div data-testid="mock-topology">Mocked TopologyChart</div>
   ),
 }));
+// 3. Custom range validations
+const openCustomRange = () => {
+  const button = screen.getByRole("button", { name: /Past 1 day/i });
+  fireEvent.click(button);
+  fireEvent.click(screen.getByText("Custom range"));
+
+  const startInput = screen.getByLabelText(/start date/i) as HTMLInputElement;
+  const endInput = screen.getByLabelText(/end date/i) as HTMLInputElement;
+
+  return { startInput, endInput };
+};
 
 describe("DeviceDetails", () => {
   beforeEach(() => {
@@ -64,17 +75,6 @@ describe("DeviceDetails", () => {
     });
   });
 
-  // 3. Custom range validations
-  const openCustomRange = () => {
-    const button = screen.getByRole("button", { name: /Past 1 day/i });
-    fireEvent.click(button);
-    fireEvent.click(screen.getByText("Custom range"));
-
-    const startInput = screen.getByLabelText(/start date/i) as HTMLInputElement;
-    const endInput = screen.getByLabelText(/end date/i) as HTMLInputElement;
-
-    return { startInput, endInput };
-  };
   describe("Custom range validations", () => {
     beforeEach(() => {
       render(<DeviceDetails device={mockDevice} />);

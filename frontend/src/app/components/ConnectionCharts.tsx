@@ -84,10 +84,10 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
     currentPage * pageSize
   );
   const TIME_RANGES = [
-    { value: "24h", label: "Past 24 hours" },
+    { value: "24h", label: "Past 1 day" },
     { value: "7d", label: "Past 7 days" },
     { value: "30d", label: "Past 30 days" },
-    { value: "custom", label: "Custom Date" },
+    { value: "custom", label: "Custom range" },
   ];
 
   // Expand All / Collapse All
@@ -221,6 +221,14 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
 
   return (
     <div className="p-8 w-[85vw] flex flex-col gap-6 h-full bg-bg">
+      {/* Centralized error alert */}
+      {error && (
+        <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
+          <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
+            {error}
+          </div>
+        </div>
+      )}
       <div className=" min-w-[400px]">
         <h2 className="text-xl font-semibold mb-2">Connection Charts</h2>
         <p className="text-sm">

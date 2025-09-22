@@ -5,6 +5,28 @@ import { mockDevice } from "./__mocks__/deviceMocks";
 
 vi.stubGlobal("fetch", vi.fn());
 
+// ---------- Helpers ----------
+const renderConnectionCharts = () =>
+  render(<ConnectionCharts device={mockDevice} />);
+
+const openCustomRange = () => {
+  const button = screen.getByRole("button", { name: /Past 1 day/i });
+  fireEvent.click(button);
+  fireEvent.click(screen.getByText("Custom range"));
+
+  const startInput = screen.getByLabelText(/start date/i) as HTMLInputElement;
+  const endInput = screen.getByLabelText(/end date/i) as HTMLInputElement;
+
+  return { startInput, endInput };
+};
+
+const expandInterface = async (ifaceName = "Gig1/0/1") => {
+  const toggle = screen.getByText(ifaceName).closest("div")!;
+  fireEvent.click(toggle);
+  await waitFor(() => expect(screen.getByText("Download")).toBeInTheDocument());
+};
+
+// ---------- Tests ----------
 describe("ConnectionCharts", () => {
   beforeEach(() => {
     (fetch as unknown as Mock).mockResolvedValue({
@@ -28,52 +50,47 @@ describe("ConnectionCharts", () => {
     });
   });
 
-  it("renders interface names", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
+  // ---------- Rendering ----------
+  it("renders interface names", () => {
+    renderConnectionCharts();
     expect(screen.getByText("Connection Charts")).toBeInTheDocument();
     expect(screen.getByText("Gig1/0/1")).toBeInTheDocument();
   });
 
+  // ---------- Interface interactions ----------
   it("expands and collapses interfaces", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
+    renderConnectionCharts();
+    const toggle = screen.getByText("Gig1/0/1").closest("div")!;
+    fireEvent.click(toggle);
 
-    const ifaceToggle = screen.getByText("Gig1/0/1").closest("div")!;
-    fireEvent.click(ifaceToggle);
-
-    // Expanded: "Download" appears
     await waitFor(() =>
       expect(screen.getByText("Download")).toBeInTheDocument()
     );
 
-    // Collapse again
-    fireEvent.click(ifaceToggle);
-
-    // After collapse: the expanded content is REMOVED from the DOM
+    fireEvent.click(toggle);
     await waitFor(() =>
       expect(screen.queryByText("Download")).not.toBeInTheDocument()
     );
 
-    // But the interface header still exists
     expect(screen.getByText("Gig1/0/1")).toBeInTheDocument();
   });
 
   it("expands all and collapses all buttons", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
-    const expandBtn = screen.getByText("Expand All");
-    fireEvent.click(expandBtn);
+    renderConnectionCharts();
+    fireEvent.click(screen.getByText("Expand All"));
     await waitFor(() =>
       expect(screen.getByText("Download")).toBeInTheDocument()
     );
 
-    const collapseBtn = screen.getByText("Collapse All");
-    fireEvent.click(collapseBtn);
+    fireEvent.click(screen.getByText("Collapse All"));
     await waitFor(() =>
       expect(screen.queryByText("Download")).not.toBeInTheDocument()
     );
   });
 
+  // ---------- Fetch ----------
   it("calls fetch with correct hostname", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
+    renderConnectionCharts();
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
         expect.stringContaining("graphql"),
@@ -85,8 +102,19 @@ describe("ConnectionCharts", () => {
     );
   });
 
+  it("sets error if fetch fails", async () => {
+    (fetch as unknown as Mock).mockRejectedValueOnce(
+      new Error("Network Error")
+    );
+    renderConnectionCharts();
+    await expandInterface();
+    await waitFor(() =>
+      expect(screen.getByText(/No data available/i)).toBeInTheDocument()
+    );
+  });
+
+  // ---------- Download ----------
   it("downloads CSV when download button clicked", async () => {
-    // Mock URL.createObjectURL
     const createObjectURLSpy = vi.fn(() => "blob:mock");
     const revokeObjectURLSpy = vi.fn();
     vi.stubGlobal("URL", {
@@ -94,135 +122,97 @@ describe("ConnectionCharts", () => {
       revokeObjectURL: revokeObjectURLSpy,
     });
 
-    render(<ConnectionCharts device={mockDevice} />);
-    fireEvent.click(screen.getByText("Gig1/0/1").closest("div")!);
+    renderConnectionCharts();
+    await expandInterface();
 
-    await waitFor(() => {
-      const downloadBtn = screen.getByText("Download");
-      fireEvent.click(downloadBtn);
-      expect(createObjectURLSpy).toHaveBeenCalled();
-      expect(revokeObjectURLSpy).toHaveBeenCalled();
-    });
+    fireEvent.click(screen.getByText("Download"));
+    expect(createObjectURLSpy).toHaveBeenCalled();
+    expect(revokeObjectURLSpy).toHaveBeenCalled();
   });
-  it("shows date inputs when timeRange is custom", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
 
-    // Open the dropdown
-    const dropdownButton = screen.getByRole("button", {
-      name: /Past 24 hours/i,
-    });
+  // ---------- Time ranges ----------
+  it("covers 24h, 7d, 30d timeRange branches", async () => {
+    renderConnectionCharts();
+    const dropdownButton = screen.getByRole("button", { name: /Past 1 day/i });
+
     fireEvent.click(dropdownButton);
-
-    // Select "Custom Date"
-    const customOption = screen.getByRole("button", { name: /Custom Date/i });
-    fireEvent.click(customOption);
-
-    // Now the date pickers should appear
-    const startInput = await screen.findByLabelText("Start Date");
-    const endInput = await screen.findByLabelText("End Date");
-
-    expect(startInput).toBeInTheDocument();
-    expect(endInput).toBeInTheDocument();
-
-    // Simulate typing dates
-    fireEvent.change(startInput, { target: { value: "2025-09-01" } });
-    fireEvent.change(endInput, { target: { value: "2025-09-09" } });
-
-    expect((startInput as HTMLInputElement).value).toBe("2025-09-01");
-    expect((endInput as HTMLInputElement).value).toBe("2025-09-09");
-  });
-
-  it("covers 24h timeRange branch", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
-    // Default is "24h", so fetch and data processing runs
-    await waitFor(() => {
-      expect(screen.getByText("Gig1/0/1")).toBeInTheDocument();
-    });
-  });
-
-  it("covers 7d and 30d timeRange branches", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
-    const dropdownButton = screen.getByRole("button", {
-      name: /Past 24 hours/i,
-    });
-
-    // 7d
-    fireEvent.click(dropdownButton);
-    fireEvent.click(screen.getByRole("button", { name: /Past 7 days/i }));
-    await waitFor(() => {
-      expect(screen.getByText("Gig1/0/1")).toBeInTheDocument();
-    });
-
-    // 30d
-    fireEvent.click(dropdownButton);
-    fireEvent.click(screen.getByRole("button", { name: /Past 30 days/i }));
-    await waitFor(() => {
-      expect(screen.getByText("Gig1/0/1")).toBeInTheDocument();
-    });
-  });
-
-  it("covers custom date range branch", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
-    const dropdownButton = screen.getByRole("button", {
-      name: /Past 24 hours/i,
-    });
-
-    // Open dropdown and select "Custom Date"
-    fireEvent.click(dropdownButton);
-    fireEvent.click(screen.getByRole("button", { name: /Custom Date/i }));
-
-    // Inputs appear
-    const startInput = await screen.findByLabelText("Start Date");
-    const endInput = await screen.findByLabelText("End Date");
-
-    // Set start/end dates
-    const today = new Date();
-    const yesterday = new Date(today.getTime() - 24 * 3600 * 1000);
-    fireEvent.change(startInput, {
-      target: { value: yesterday.toISOString().split("T")[0] },
-    });
-    fireEvent.change(endInput, {
-      target: { value: today.toISOString().split("T")[0] },
-    });
-
-    await waitFor(() => {
-      expect(screen.getByText("Gig1/0/1")).toBeInTheDocument();
-    });
-  });
-
-  it("fills newData for interfaces", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
-    // Expand interface to render chart
-    const toggle = screen.getByText("Gig1/0/1").closest("div")!;
-    fireEvent.click(toggle);
-
-    await waitFor(() => {
-      expect(screen.getByText("Download")).toBeInTheDocument();
-    });
-  });
-
-  it("handles Speed push", async () => {
-    render(<ConnectionCharts device={mockDevice} />);
-    const toggle = screen.getByText("Gig1/0/1").closest("div")!;
-    fireEvent.click(toggle);
-
-    await waitFor(() => {
-      expect(screen.getByText("Download")).toBeInTheDocument();
-    });
-  });
-
-  it("sets error if fetch fails", async () => {
-    (fetch as unknown as Mock).mockRejectedValueOnce(
-      new Error("Network Error")
+    fireEvent.click(screen.getByText("Past 7 days"));
+    await waitFor(() =>
+      expect(screen.getByText("Gig1/0/1")).toBeInTheDocument()
     );
-    render(<ConnectionCharts device={mockDevice} />);
 
-    // Expand the interface so the "No data available" message can appear
-    const toggle = screen.getByText("Gig1/0/1").closest("div")!;
-    fireEvent.click(toggle);
+    fireEvent.click(dropdownButton);
+    fireEvent.click(screen.getByText("Past 30 days"));
+    await waitFor(() =>
+      expect(screen.getByText("Gig1/0/1")).toBeInTheDocument()
+    );
+  });
 
-    await waitFor(() => {
-      expect(screen.getByText(/No data available/i)).toBeInTheDocument();
+  // ---------- Custom range validations ----------
+  describe("Custom range validations", () => {
+    beforeEach(() => {
+      render(<ConnectionCharts device={mockDevice} />);
+    });
+
+    it("shows error message if custom range exceeds 180 days", async () => {
+      const { startInput, endInput } = openCustomRange();
+
+      // Input range > 180 days
+      fireEvent.change(startInput, { target: { value: "2025-01-01" } });
+      fireEvent.change(endInput, { target: { value: "2025-09-01" } });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Custom range cannot exceed 180 days.")
+        ).toBeInTheDocument()
+      );
+    });
+    it("accepts valid custom range without showing error", async () => {
+      const { startInput, endInput } = openCustomRange();
+
+      fireEvent.change(startInput, { target: { value: "2025-01-01" } });
+      fireEvent.change(endInput, { target: { value: "2025-01-15" } });
+
+      expect(
+        screen.queryByText("Custom range cannot exceed 180 days.")
+      ).not.toBeInTheDocument();
+    });
+
+    it("shows error when start date is after end date", async () => {
+      const { startInput, endInput } = openCustomRange();
+      fireEvent.change(endInput, { target: { value: "2025-09-10" } });
+      fireEvent.change(startInput, { target: { value: "2025-09-15" } });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Start date must be before end date.")
+        ).toBeInTheDocument()
+      );
+    });
+
+    it("shows error when end date is before start date", async () => {
+      const { startInput, endInput } = openCustomRange();
+      fireEvent.change(startInput, { target: { value: "2025-09-15" } });
+      fireEvent.change(endInput, { target: { value: "2025-09-10" } });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("End date must be after start date.")
+        ).toBeInTheDocument()
+      );
+    });
+
+    it("errors if start date exceeds 180-day range from end date", async () => {
+      const { startInput, endInput } = openCustomRange();
+
+      fireEvent.change(endInput, { target: { value: "2025-08-01" } });
+      fireEvent.change(startInput, { target: { value: "2025-01-01" } });
+
+      await waitFor(() =>
+        expect(
+          screen.getByText("Custom range cannot exceed 180 days.")
+        ).toBeInTheDocument()
+      );
     });
   });
 });
