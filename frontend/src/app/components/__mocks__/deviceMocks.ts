@@ -61,7 +61,7 @@ export const mockMetricsForHost = {
         {
           node: {
             hostname: "host1",
-            lastPolled: Math.floor(Date.now() / 1000),
+            lastPolled:1693305600,
             uptime: 120,
             cpuUtilization: 55,
             memoryUtilization: 40,
