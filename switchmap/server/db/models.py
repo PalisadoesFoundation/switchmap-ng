@@ -4,12 +4,21 @@
 import datetime
 
 # SQLalchemy imports
-from sqlalchemy import Column, DateTime, ForeignKey, text, UniqueConstraint
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    ForeignKey,
+    Index,
+    text,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.mysql import BIGINT, VARBINARY, BIT
 from sqlalchemy.orm import backref, relationship
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.sql.expression import Null
 from sqlalchemy.orm import Session
+from typing import ClassVar
 
 # Project imports
 from switchmap.server.db import SCOPED_SESSION, ENGINE
@@ -200,6 +209,27 @@ class Device(BASE):
             passive_deletes=True,
         ),
     )
+
+
+class DeviceMetricsHistory(BASE):
+    """Database table for historical CPU, memory, uptime metrics."""
+
+    __tablename__ = "smap_device_metrics_history"
+    __table_args__: ClassVar[tuple] = (
+        Index(
+            "ix_smap_device_metrics_history_hostname_last_polled",
+            "hostname",
+            "last_polled",
+        ),
+        {"mysql_engine": "InnoDB"},
+    )
+
+    id = Column(BIGINT(20, unsigned=True), primary_key=True, autoincrement=True)
+    hostname = Column(VARBINARY(256), nullable=False)
+    last_polled = Column(BIGINT(20, unsigned=True), default=None)
+    uptime = Column(BIGINT(20, unsigned=True), nullable=True)
+    cpu_utilization = Column(Float, nullable=True)
+    memory_utilization = Column(Float, nullable=True)
 
 
 class L1Interface(BASE):

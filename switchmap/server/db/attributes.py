@@ -403,6 +403,14 @@ class DeviceAttribute:
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
+class DeviceMetricsAttribute:
+    """Descriptive attributes for DeviceMetricsHistory table."""
+
+    hostname = graphene.String(
+        resolver=resolve_hostname, description="System hostname"
+    )
+
+
 class L1InterfaceAttribute:
     """Descriptive attributes of the L1Interface table.
 

@@ -14,12 +14,17 @@ import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.fields import BatchSQLAlchemyConnectionField
+from graphene.relay import Connection
+from graphene import ConnectionField
+from graphene import ObjectType, String  # <- add String here
+
 
 # Import models
 from switchmap.server.db.models import (
     Event as EventModel,
     Root as RootModel,
     Device as DeviceModel,
+    DeviceMetricsHistory as DeviceMetricsModel,
     L1Interface as L1InterfaceModel,
     Zone as ZoneModel,
     MacIp as MacIpModel,
@@ -37,6 +42,7 @@ from switchmap.server.db.attributes import (
     EventAttribute,
     RootAttribute,
     DeviceAttribute,
+    DeviceMetricsAttribute,
     L1InterfaceAttribute,
     MacAttribute,
     MacIpAttribute,
@@ -81,6 +87,16 @@ class Device(SQLAlchemyObjectType, DeviceAttribute):
         """Define the metadata."""
 
         model = DeviceModel
+        interfaces = (graphene.relay.Node,)
+
+
+class DeviceMetrics(SQLAlchemyObjectType, DeviceMetricsAttribute):
+    """Device metrics node with decoded hostname."""
+
+    class Meta:
+        """Define the metadata."""
+
+        model = DeviceMetricsModel
         interfaces = (graphene.relay.Node,)
 
 
@@ -192,6 +208,51 @@ class Query(graphene.ObjectType):
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
     devices = BatchSQLAlchemyConnectionField(Device.connection)
+
+    deviceMetrics = BatchSQLAlchemyConnectionField(
+        DeviceMetrics.connection,
+        hostname=String(),
+        since=graphene.Int(description="Unix seconds (inclusive) lower bound"),
+        until=graphene.Int(description="Unix seconds (exclusive) upper bound"),
+        sort=None,
+    )
+
+    def resolve_deviceMetrics(
+        self, info, hostname=None, since=None, until=None
+    ):
+        """Resolve device metrics with optional hostname and time-range filters.
+
+        Args:
+            info: GraphQL resolve info.
+            hostname (str, optional): Filter by device hostname (exact match).
+            since (int, optional): Unix epoch seconds (inclusive) lower bound.
+            until (int, optional): Unix epoch seconds (exclusive) upper bound.
+
+        Returns:
+            sqlalchemy.orm.Query: Filtered query ordered by `last_polled` ASC.
+        """
+        query = DeviceMetrics.get_query(info)
+
+        if hostname:
+            query = query.filter(
+                DeviceMetricsModel.hostname == hostname.encode()
+            )
+
+        if since is not None:
+            query = query.filter(DeviceMetricsModel.last_polled >= since)
+
+        if until is not None:
+            query = query.filter(DeviceMetricsModel.last_polled < until)
+
+        # Avoid NULL timestamps to keep ordering deterministic
+        query = query.filter(DeviceMetricsModel.last_polled.isnot(None))
+
+        query = query.order_by(
+            DeviceMetricsModel.last_polled.asc(),
+            DeviceMetricsModel.id.asc(),
+        )
+
+        return query
 
     # Results as a single entry filtered by 'id' and as a list
     l1interface = graphene.relay.Node.Field(L1Interface)

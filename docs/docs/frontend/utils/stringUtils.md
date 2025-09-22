@@ -12,7 +12,7 @@
 
 > **truncateLines**(`str`, `options?`): `string`
 
-Defined in: [utils/stringUtils.ts:5](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/utils/stringUtils.ts#L5)
+Defined in: [utils/stringUtils.ts:8](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/utils/stringUtils.ts#L8)
 
 Truncates a string to a specified number of lines with optional max length.
 Adds line breaks and an ellipsis if truncated.
@@ -23,7 +23,11 @@ Adds line breaks and an ellipsis if truncated.
 
 `string`
 
+The string to truncate.
+
 ##### options?
+
+Optional settings for lines and maxLength.
 
 ###### lines?
 
@@ -36,3 +40,5 @@ Adds line breaks and an ellipsis if truncated.
 #### Returns
 
 `string`
+
+The truncated string with line breaks and ellipsis if applicable.

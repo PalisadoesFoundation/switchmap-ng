@@ -21,6 +21,7 @@ from .mib.cisco import CiscoVlanIftableRelationshipQuery
 from .mib.cisco import CiscoVtpQuery
 
 from .mib.juniper import JuniperVlanQuery
+from .mib.juniper import JuniperDeviceQuery
 
 
 __all__ = ("cisco", "juniper")
@@ -43,6 +44,7 @@ QUERIES = [
     LldpQuery,
     EssSwitchQuery,
     JuniperVlanQuery,
+    JuniperDeviceQuery,
     QbridgeQuery,
 ]
 

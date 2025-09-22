@@ -1,52 +1,167 @@
 "use client";
-import React, { useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { useSearchParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import { ThemeToggle } from "@/app/theme-toggle";
 import { ConnectionDetails } from "@/app/components/ConnectionDetails";
-/**
- * Renders the DevicePage component, showing detailed information about a specific device.
- *
- * Includes a sidebar for navigation and tabbed sections for various device data,
- * such as overview, connection details, and connection charts.
- *
- * @remarks
- * - Designed for client-side rendering only, as it relies on `useParams` and `useSearchParams`.
- * - Uses a responsive layout that adjusts based on sidebar visibility.
- * - Handles active tab state and sidebar toggle logic.
- * - Icons from `react-icons` visually represent each tab.
- * - Includes a Home button for quick navigation.
- *
- * @returns The rendered device detail page.
- *
- * @see {@link ConnectionDetails} for displaying device interface details.
- * @see {@link ThemeToggle} for the theme switching functionality.
- */
+import { DeviceDetails } from "@/app/components/DeviceDetails";
+import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
 
+/** * Represents a tab item with label, content, and icon.
+ * @remarks
+ * - `label`: The display label of the tab.
+ * - `content`: The React node to be rendered when the tab is active.
+ * - `icon`: The icon associated with the tab.
+ * @returns {JSX.Element | null} The device page UI or null when sidebarOpen is null.
+ * @see {@link TabItem}
+ * @interface TabItem
+ * @property {string} label - The label of the tab.
+ * @property {React.ReactNode} content - The content to display when the tab is active.
+ * @property {React.ReactElement} icon - The icon representing the tab.
+ */
 interface TabItem {
   label: string;
   content: React.ReactNode;
   icon: React.ReactElement;
 }
 
+const QUERY = `
+  query Device($id: ID!) {
+    device(id: $id) {
+      id
+      idxDevice
+      sysObjectid
+      sysUptime
+      sysDescription
+      sysName
+      hostname
+      lastPolled
+      l1interfaces {
+        edges {
+          node {
+            idxL1interface
+            idxDevice
+            ifname
+            nativevlan
+            ifoperstatus
+            tsIdle
+            ifspeed
+            duplex
+            ifalias
+            trunk
+            cdpcachedeviceid
+            cdpcachedeviceport
+            cdpcacheplatform
+            lldpremportdesc
+            lldpremsysname
+            lldpremsysdesc
+            lldpremsyscapenabled
+            macports {
+              edges {
+                node {
+                  macs {
+                    mac
+                    oui {
+                      organization
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
 export default function DevicePage() {
+  const params = useParams<{ id: string | string[] }>();
   const searchParams = useSearchParams();
   const sysName = searchParams.get("sysName") ?? "";
   const hostname = searchParams.get("hostname") ?? "";
-  const params = useParams<{ id: string | string[] }>();
-  // Ensure id is always a string
+
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
+  const [device, setDevice] = useState<DeviceNode | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const handleTabChange = (idx: number) => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", String(idx));
+    const hash = window.location.hash;
+    router.replace(`${window.location.pathname}?${params.toString()}${hash}`);
+    setActiveTab(idx);
+  };
+
+  useEffect(() => {
+    if (!id) return;
+    const globalId = btoa(`Device:${id}`);
+    const ac = new AbortController();
+    let cancelled = false;
+    const to = setTimeout(() => ac.abort(), 15000);
+    setLoading(true);
+    setError(null);
+
+    fetch(
+      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+        "http://localhost:7000/switchmap/api/graphql",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: QUERY, variables: { id: globalId } }),
+        signal: ac.signal,
+      }
+    )
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((json) => {
+        if (json.errors) throw new Error(json.errors[0].message);
+        if (!cancelled) setDevice(json.data.device);
+      })
+      .catch((err) => {
+        if (err?.name === "AbortError" || cancelled) return;
+        setError(err.message);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(to);
+      ac.abort();
+    };
+  }, [id]);
 
   const tabs: TabItem[] = [
     {
       label: "Device Overview",
-      content: <div>Device Overview</div>,
+      content: loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : device ? (
+        <DeviceDetails device={device} />
+      ) : (
+        <p>No device data.</p>
+      ),
       icon: <FiMonitor className="icon" />,
     },
     {
       label: "Connection Details",
-      content: <ConnectionDetails deviceId={id || ""} />,
+      content: loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Error: {error}</p>
+      ) : device ? (
+        <ConnectionDetails device={device} />
+      ) : (
+        <p>No device data.</p>
+      ),
       icon: <FiLink className="icon" />,
     },
     {
@@ -55,9 +170,26 @@ export default function DevicePage() {
       icon: <FiBarChart2 className="icon" />,
     },
   ];
-  const [activeTab, setActiveTab] = useState<number>(0);
-  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
-  const router = useRouter();
+  const clamp = (n: number, min: number, max: number) =>
+    Math.min(Math.max(n, min), max);
+  const parsedTab = Number.parseInt(searchParams.get("tab") ?? "0", 10);
+  const initialTab = Number.isNaN(parsedTab)
+    ? 0
+    : clamp(parsedTab, 0, tabs.length - 1);
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const handler = () => setSidebarOpen(media.matches);
+
+    handler();
+    media.addEventListener("change", handler);
+
+    return () => media.removeEventListener("change", handler);
+  }, []);
+
+  if (sidebarOpen === null) return null;
 
   return (
     <div className="flex h-screen">
@@ -76,7 +208,6 @@ export default function DevicePage() {
               : "flex flex-col gap-4 mb-8"
           }
         >
-          {/* Sidebar Toggle */}
           <button
             className="my-2 px-0 bg-transparent text-[1.2rem] self-center"
             onClick={() => setSidebarOpen((open) => !open)}
@@ -88,9 +219,9 @@ export default function DevicePage() {
         </div>
         <div className="flex flex-col items-center">
           <h1
-            className={`px-4 py-3 text-[1.2rem] max-w-[150px] break-all whitespace-normal overflow-hidden
-  
- ${!sidebarOpen ? "hidden" : ""}`}
+            className={`px-4 py-3 text-[1.2rem] max-w-[150px] break-all whitespace-normal overflow-hidden ${
+              !sidebarOpen ? "hidden" : ""
+            }`}
           >
             {sysName || hostname || "Unnamed Device"}
           </h1>
@@ -99,9 +230,10 @@ export default function DevicePage() {
           {tabs.map((tab, idx) => (
             <button
               key={tab.label}
-              onClick={() => setActiveTab(idx)}
-              className={`bg-transparent px-4 py-3 font-normal text-left text-base
- ${activeTab === idx ? "bg-[var(--select-bg)]" : ""}`}
+              onClick={() => handleTabChange(idx)}
+              className={`bg-transparent px-4 py-3 font-normal text-left text-base ${
+                activeTab === idx ? "bg-[var(--select-bg)]" : ""
+              }`}
             >
               <span className="flex flex-row gap-4">
                 {tab.icon}
@@ -114,7 +246,6 @@ export default function DevicePage() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col relative" style={{ width: "80vw" }}>
-        {/* Home Icon at Top Right */}
         <button
           onClick={() => router.push("/")}
           aria-label="Go to home"
@@ -122,8 +253,8 @@ export default function DevicePage() {
         >
           <FiHome />
         </button>
-        <div className="max-w-full flex items-center justify-center w-full h-full">
-          {tabs[activeTab].content}
+        <div className="max-w-full flex items-center justify-center w-full h-full overflow-y-auto">
+          {tabs[clamp(activeTab, 0, tabs.length - 1)]?.content}
         </div>
       </div>
     </div>
