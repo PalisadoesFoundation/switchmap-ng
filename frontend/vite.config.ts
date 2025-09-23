@@ -19,6 +19,19 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov"],
+      exclude: [
+    "vite.config.ts",
+  "next.config.ts",
+  "postcss.config.mjs",
+  ".next/**",
+  "node_modules/**",
+  "coverage/**",
+  "src/app/components/__mocks__/**",
+  "src/app/components/__mocks__/**/*.ts",
+  "src/app/types/graphql/**",
+  "eslint.config.mjs",
+  "next-env.d.ts",
+  ],
     },
   },
 });
