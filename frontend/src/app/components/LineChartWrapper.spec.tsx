@@ -1,27 +1,26 @@
-import { render } from "@testing-library/react";
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi } from "vitest";
 import { LineChartWrapper } from "./LineChartWrapper";
-import { vi } from "vitest";
+import { mockLineData } from "./__mocks__/chartMocks";
 
 describe("LineChartWrapper", () => {
-  const mockData = [
-    { time: "2025-08-01T00:00:00Z", value: 10 },
-    { time: "2025-08-02T00:00:00Z", value: 20 },
-  ];
-
-  it("renders with lines and title", () => {
-    const { getByText } = render(
+  // ---------- Rendering ----------
+  it("renders chart title", () => {
+    render(
       <LineChartWrapper
-        data={mockData}
+        data={mockLineData}
         xAxisKey="time"
         lines={[{ dataKey: "value", stroke: "#8884d8" }]}
         title="My Chart"
       />
     );
 
-    expect(getByText("My Chart")).toBeInTheDocument();
+    expect(screen.getByText("My Chart")).toBeInTheDocument();
   });
 
-  it("accepts a tooltipFormatter", () => {
+  // ---------- Props ----------
+  it("accepts tooltipFormatter prop", () => {
     const tooltipFormatter = vi.fn(
       (val: unknown, name: string, props: any): [React.ReactNode, string] => {
         return [`${val} units`, name];
@@ -30,16 +29,26 @@ describe("LineChartWrapper", () => {
 
     render(
       <LineChartWrapper
-        data={mockData}
+        data={mockLineData}
         xAxisKey="time"
         lines={[{ dataKey: "value", stroke: "#82ca9d" }]}
         tooltipFormatter={tooltipFormatter}
       />
     );
-
-    // Just ensure the formatter is callable
     expect(tooltipFormatter("10", "value", { payload: { value: 10 } })).toEqual(
       ["10 units", "value"]
     );
+  });
+
+  // ---------- Functions / Inline logic ----------
+  it("executes tickFormatter correctly", () => {
+    const tickFormatter = (t: string) =>
+      new Date(t).toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+      });
+
+    expect(tickFormatter(mockLineData[0].time)).toBe("Aug 1");
+    expect(tickFormatter(mockLineData[1].time)).toBe("Aug 2");
   });
 });
