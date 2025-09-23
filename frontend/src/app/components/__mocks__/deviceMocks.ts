@@ -19,6 +19,10 @@ const mockInterface: InterfaceNode = {
   lldpremsysname: "switch1",
   lldpremsysdesc: "Cisco 9300",
   lldpremsyscapenabled: ["R", "S"],
+  lldpcachedeviceid: "switch2",
+lldpcachedeviceport: "Gi1/0/3",
+
+  
   macports: {
     edges: [
       {
@@ -81,3 +85,19 @@ export const mockMetricsForHost = {
   },
 };
 
+export const mockInterfaceLLDP: InterfaceNode = {
+  ...mockInterface,
+  cdpcachedeviceid: null,
+  cdpcachedeviceport: "",
+  lldpremportdesc: "Gi1/0/3",
+  lldpremsysname: "switch2",
+  lldpremsysdesc: "Cisco 9500",
+  lldpremsyscapenabled: ["R"],
+};
+
+export const mockDeviceLLDP: DeviceNode = {
+  ...mockDevice,
+  l1interfaces: {
+    edges: [{ node: mockInterfaceLLDP }],
+  },
+};

@@ -155,8 +155,8 @@ export function TopologyChart({
         ({ node: iface }: { node: any }) => {
           const targetCDP = iface?.cdpcachedeviceid;
           const portCDP = iface?.cdpcachedeviceport;
-          const targetLLDP = iface?.lldpcachedeviceid;
-          const portLLDP = iface?.lldpcachedeviceport;
+          const targetLLDP = iface?.lldpremsysname;
+const portLLDP = iface?.lldpremportdesc; 
           // Create edges for CDP or LLDP relationships
           if (targetCDP) {
             if (!nodesSet.has(targetCDP)) {

@@ -73,6 +73,10 @@ export default function Home() {
                   ifoperstatus
                   cdpcachedeviceid
                   cdpcachedeviceport
+                  lldpremportdesc
+                  lldpremsysname
+                  lldpremsysdesc
+                  lldpremsyscapenabled 
                 }
               }
             }

@@ -2,7 +2,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import DeviceHistoryChart from "@/app/history/page";
-import { mockDevice } from "../components/deviceMocks";
 
 // Mock fetch
 beforeEach(() => {
