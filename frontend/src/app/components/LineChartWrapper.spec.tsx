@@ -41,14 +41,22 @@ describe("LineChartWrapper", () => {
   });
 
   // ---------- Functions / Inline logic ----------
-  it("executes tickFormatter correctly", () => {
+  it("executes tickFormatter with locale-aware expectations", () => {
     const tickFormatter = (t: string) =>
       new Date(t).toLocaleDateString(undefined, {
         month: "short",
         day: "numeric",
       });
 
-    expect(tickFormatter(mockLineData[0].time)).toBe("Aug 1");
-    expect(tickFormatter(mockLineData[1].time)).toBe("Aug 2");
+    const expected0 = new Date(mockLineData[0].time).toLocaleDateString(
+      undefined,
+      { month: "short", day: "numeric" }
+    );
+    const expected1 = new Date(mockLineData[1].time).toLocaleDateString(
+      undefined,
+      { month: "short", day: "numeric" }
+    );
+    expect(tickFormatter(mockLineData[0].time)).toBe(expected0);
+    expect(tickFormatter(mockLineData[1].time)).toBe(expected1);
   });
 });

@@ -139,6 +139,7 @@ export function TopologyChart({
     const nodesSet = new Set<string>();
     const extraNodesSet = new Set<string>();
     const edgesArray: Edge[] = [];
+    let edgeSeq = 0;
     // Iterate over each device to build nodes and edges
     // We use `sysName` as the unique identifier for each device
     devices.forEach((device) => {
@@ -156,24 +157,32 @@ export function TopologyChart({
           const targetCDP = iface?.cdpcachedeviceid;
           const portCDP = iface?.cdpcachedeviceport;
           const targetLLDP = iface?.lldpremsysname;
-const portLLDP = iface?.lldpremportdesc; 
+          const portLLDP = iface?.lldpremportdesc;
           // Create edges for CDP or LLDP relationships
           if (targetCDP) {
+            const edgeId = `e_${sysName}__${targetCDP}__${
+              portCDP ?? ""
+            }__${edgeSeq++}`;
             if (!nodesSet.has(targetCDP)) {
               extraNodesSet.add(targetCDP);
             }
             edgesArray.push({
               from: sysName,
+              id: edgeId,
               to: targetCDP,
               label: "",
               title: portCDP,
               color: "#BBBBBB",
             } as Edge);
           } else if (targetLLDP) {
+            const edgeId = `e_${sysName}__${targetLLDP}__${
+              portLLDP ?? ""
+            }__${edgeSeq++}`;
             if (!nodesSet.has(targetLLDP)) {
               extraNodesSet.add(targetLLDP);
             }
             edgesArray.push({
+              id: edgeId,
               from: sysName,
               to: targetLLDP,
               label: "",
@@ -184,6 +193,14 @@ const portLLDP = iface?.lldpremportdesc;
         }
       );
     });
+    function escapeHtml(s: string): string {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
     function htmlTitle(html: string): HTMLElement {
       const container = document.createElement("div");
       container.innerHTML = html;
@@ -201,8 +218,8 @@ const portLLDP = iface?.lldpremportdesc;
         `
     <div style="display: flex; align-items: flex-start; gap: 1rem;">
       <div>
-        ${device.sysName ?? "Unknown"}<br>
-        Hostname: ${device.hostname ?? "N/A"}
+        ${escapeHtml(device.sysName ?? "Unknown")}<br>  
+        Hostname: ${escapeHtml(device.hostname ?? "N/A")} 
       </div>
       <div style="font-size: 2em;">
         ${
@@ -291,9 +308,6 @@ const portLLDP = iface?.lldpremportdesc;
     });
 
     // Node selection highlighting
-    // When a node is selected, it highlights the node and dims others
-    // It also updates the edges to have a different color
-
     networkRef.current.on("selectNode", ({ nodes }) => {
       const selected = nodes[0];
       if (!nodesData.current || !edgesData.current) return;
@@ -303,9 +317,7 @@ const portLLDP = iface?.lldpremportdesc;
         nodesData.current!.update({
           id: node.id,
           opacity: isSelected ? 1 : 0.6,
-          color: {
-            border: isDark ? "#999" : "#555",
-          },
+          color: { border: isDark ? "#999" : "#555" },
           font: {
             color: isSelected
               ? isDark
@@ -318,9 +330,8 @@ const portLLDP = iface?.lldpremportdesc;
         });
       });
     });
+
     // Reset node selection highlighting
-    // When a node is deselected, it resets the opacity and color of all nodes
-    // It also resets the edges color to default
     networkRef.current.on("deselectNode", () => {
       if (!nodesData.current || !edgesData.current) return;
 
@@ -328,22 +339,19 @@ const portLLDP = iface?.lldpremportdesc;
         nodesData.current!.update({
           id: node.id,
           opacity: 1,
-          color: {
-            border: isDark ? "#999" : "#555",
-          },
-          font: {
-            color: isDark ? "#fff" : "black",
-          },
+          color: { border: isDark ? "#999" : "#555" },
+          font: { color: isDark ? "#fff" : "black" },
         });
       });
       // Reset edges color
       initialGraph.current.edges.forEach((originalEdge) => {
         edgesData.current!.update({
           id: originalEdge.id,
-          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"), // fallback if color missing
+          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"),
         });
       });
     });
+
     // Show arrow on hover
     networkRef.current.on("hoverEdge", (params) => {
       if (!edgesData.current) return;
@@ -358,7 +366,6 @@ const portLLDP = iface?.lldpremportdesc;
       if (!edgesData.current || !networkRef.current) return;
 
       const selectedEdges = networkRef.current.getSelectedEdges();
-
       if (!selectedEdges.includes(params.edge)) {
         edgesData.current.update({
           id: params.edge,
@@ -371,7 +378,7 @@ const portLLDP = iface?.lldpremportdesc;
       if (!edgesData.current) return;
 
       edgesData.current.update({
-        id: params.edges[0], // handles single selection
+        id: params.edges[0],
         arrows: { to: { enabled: true, scaleFactor: 0.5 } },
       });
     });
@@ -382,18 +389,29 @@ const portLLDP = iface?.lldpremportdesc;
       initialGraph.current.edges.forEach((originalEdge) => {
         edgesData.current!.update({
           id: originalEdge.id,
-          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"), // fallback if color missing
-          arrows: { to: false }, // reset arrow visibility
+          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"),
+          arrows: { to: false },
         });
       });
     });
+
     const labels =
       nodesData.current
         ?.get()
         ?.map((node: any) => node.label)
         .filter(Boolean) || [];
-
     setAllNodeLabels(labels);
+
+    // Cleanup previous Network instance to avoid leaks & duplicate handlers
+    return () => {
+      try {
+        networkRef.current?.destroy();
+      } finally {
+        networkRef.current = null;
+        nodesData.current = null;
+        edgesData.current = null;
+      }
+    };
   }, [graph, theme]);
 
   useEffect(() => {

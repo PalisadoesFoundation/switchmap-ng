@@ -46,6 +46,7 @@ vi.mock("vis-network/standalone/esm/vis-network", () => {
     on: vi.fn(),
     focus: focusMock,
     unselectAll: vi.fn(),
+    destroy: vi.fn(),
     nodes: [],
     edges: [],
     nodesData: { add: addMock, update: updateMock, forEach: forEachMock },

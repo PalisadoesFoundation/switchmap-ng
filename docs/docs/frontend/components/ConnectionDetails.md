@@ -10,7 +10,7 @@
 
 ### ConnectionDetails()
 
-> **ConnectionDetails**(`__namedParameters`): `null` \| `Element`
+> **ConnectionDetails**(`__namedParameters`): `null` | `Element`
 
 Defined in: [components/ConnectionDetails.tsx:78](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ConnectionDetails.tsx#L78)
 
@@ -18,10 +18,10 @@ Defined in: [components/ConnectionDetails.tsx:78](https://github.com/PalisadoesF
 
 ##### \_\_namedParameters
 
-###### deviceId?
+###### device 
 
-`string`
+`DeviceNode` 
 
 #### Returns
 
-`null` \| `Element`
+`null` | `Element` 

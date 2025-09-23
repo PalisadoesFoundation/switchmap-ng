@@ -192,10 +192,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           setDeviceMetrics(null);
           return;
         }
-        if (hostMetrics.length === 0) return;
-
         hostMetrics.sort((a, b) => Number(a.lastPolled) - Number(b.lastPolled));
-
         setDeviceMetrics(hostMetrics[hostMetrics.length - 1]);
 
         setUptimeData(
@@ -249,7 +246,10 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
 
     if (selectedRange === 0 && customRange.start && customRange.end) {
       startDate = new Date(customRange.start);
+      startDate.setHours(0, 0, 0, 0);
       const endDate = new Date(customRange.end);
+      // include entire end day
+      endDate.setHours(23, 59, 59, 999);
       return data.filter(
         (d) =>
           new Date(d.lastPolled) >= startDate &&
@@ -392,53 +392,52 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
       </div>
 
       <div className="p-4 w-full min-w-[350px] flex flex-col xl:flex-row gap-4">
-  {filterByRange(uptimeData)?.length ? (
-    <HistoricalChart
-      title="System Status"
-      data={filterByRange(uptimeData)}
-      color="#00b894"
-      unit=""
-      yAxisConfig={{
-        domain: [0, 1],
-        ticks: [0, 1],
-        tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
-        allowDecimals: false,
-      }}
-      lineType="stepAfter"
-    />
-  ) : (
-    <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
-      No uptime data available
-    </div>
-  )}
+        {filterByRange(uptimeData)?.length ? (
+          <HistoricalChart
+            title="System Status"
+            data={filterByRange(uptimeData)}
+            color="#00b894"
+            unit=""
+            yAxisConfig={{
+              domain: [0, 1],
+              ticks: [0, 1],
+              tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
+              allowDecimals: false,
+            }}
+            lineType="stepAfter"
+          />
+        ) : (
+          <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
+            No uptime data available
+          </div>
+        )}
 
-  {filterByRange(cpuUsageData)?.length ? (
-    <HistoricalChart
-      title="CPU Usage (%)"
-      data={filterByRange(cpuUsageData)}
-      color="#0984e3"
-      unit="%"
-    />
-  ) : (
-    <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
-      No CPU data available
-    </div>
-  )}
+        {filterByRange(cpuUsageData)?.length ? (
+          <HistoricalChart
+            title="CPU Usage (%)"
+            data={filterByRange(cpuUsageData)}
+            color="#0984e3"
+            unit="%"
+          />
+        ) : (
+          <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
+            No CPU data available
+          </div>
+        )}
 
-  {filterByRange(memoryUsageData)?.length ? (
-    <HistoricalChart
-      title="Memory Usage (%)"
-      data={filterByRange(memoryUsageData)}
-      color="#e17055"
-      unit="%"
-    />
-  ) : (
-    <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
-      No memory data available
-    </div>
-  )}
-</div>
-
+        {filterByRange(memoryUsageData)?.length ? (
+          <HistoricalChart
+            title="Memory Usage (%)"
+            data={filterByRange(memoryUsageData)}
+            color="#e17055"
+            unit="%"
+          />
+        ) : (
+          <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
+            No memory data available
+          </div>
+        )}
+      </div>
     </div>
   );
 }

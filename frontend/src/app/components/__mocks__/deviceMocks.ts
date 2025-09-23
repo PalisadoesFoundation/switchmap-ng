@@ -19,8 +19,7 @@ const mockInterface: InterfaceNode = {
   lldpremsysname: "switch1",
   lldpremsysdesc: "Cisco 9300",
   lldpremsyscapenabled: ["R", "S"],
-  lldpcachedeviceid: "switch2",
-lldpcachedeviceport: "Gi1/0/3",
+
 
   
   macports: {
