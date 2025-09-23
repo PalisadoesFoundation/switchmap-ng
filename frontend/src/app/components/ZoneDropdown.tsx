@@ -175,9 +175,13 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
               Error: {error}
             </div>
           )}
-          <div className="absolute bg-bg mt-1 w-48 rounded-md shadow-lg border border-color z-10 max-h-60 overflow-auto">
+          <div
+            data-testid="zone-dropdown-menu"
+            className="absolute bg-bg mt-1 w-48 rounded-md shadow-lg border border-color z-10 max-h-60 overflow-auto"
+          >
             {zones.map((zone) => (
               <button
+                data-testid={`zone-button-${zone.id}`}
                 key={zone.id}
                 onClick={() => {
                   onChange(zone.id);
@@ -190,6 +194,7 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
             ))}
             <button
               key="all"
+              data-testid="zone-button-all"
               onClick={() => {
                 onChange("all");
                 setOpen(false);
