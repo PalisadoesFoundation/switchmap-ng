@@ -16,9 +16,9 @@ import { useRouter } from "next/navigation";
  * Renders a network topology chart using vis-network based on the given devices.
  *
  * @param {TopologyChartProps} props - The properties for the topology chart.
- * @param {Device[]} props.devices - Array of device objects representing nodes.
+ * @param {DeviceNode[]} props.devices - Array of device objects representing nodes.
  * @param {boolean} props.loading - Loading state flag.
- * @param {Error | null} props.error - Error state, if any.
+ * @param {string | null} props.error - Error state, if any.
  *
  * @returns {JSX.Element} A React component rendering the network graph visualization.
  */
