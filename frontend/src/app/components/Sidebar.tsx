@@ -123,6 +123,7 @@ export function Sidebar() {
         <>
           <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" />
           <aside
+            data-testid="slide-in-sidebar"
             ref={sidebarRef}
             className="fixed top-0 left-0 w-60 h-full bg-bg border-r border-border z-50 p-4 shadow-md transition-transform transform lg:hidden"
           >

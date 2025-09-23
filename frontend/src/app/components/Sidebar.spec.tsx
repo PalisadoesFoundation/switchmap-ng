@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 import React from "react";
-import { render, screen, fireEvent, within } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { Sidebar } from "./Sidebar";
 
@@ -12,6 +12,8 @@ vi.mock("@/app/theme-toggle", () => ({
 }));
 
 describe("Sidebar", () => {
+  // ---------- Rendering ----------
+
   it("renders static sidebar on large screens", () => {
     render(<Sidebar />);
     expect(screen.getByText(/Switchmap-NG/i)).toBeInTheDocument();
@@ -21,12 +23,13 @@ describe("Sidebar", () => {
     expect(screen.getByText(/ThemeToggle/i)).toBeInTheDocument();
   });
 
+  // ---------- Interactions ----------
+
   it("opens slide-in sidebar on hamburger click", () => {
     render(<Sidebar />);
     const button = screen.getByLabelText(/open sidebar/i);
     fireEvent.click(button);
 
-    // Pick the first instance to avoid multiple matches
     const networkLink = screen.getAllByText(/Network Topology/i)[0];
     const devicesLink = screen.getAllByText(/Devices Overview/i)[0];
 
@@ -41,7 +44,18 @@ describe("Sidebar", () => {
 
     fireEvent.mouseDown(document.body);
 
-    // The slide-in sidebar should disappear from DOM
     expect(screen.queryByLabelText("slide-in sidebar")).toBeNull();
+  });
+
+  it("closes sidebar when clicking outside", () => {
+    render(<Sidebar />);
+    const button = screen.getByLabelText(/open sidebar/i);
+    fireEvent.click(button);
+
+    // Click outside
+    fireEvent.mouseDown(document.body);
+
+    // Slide-in sidebar should be removed
+    expect(screen.queryByTestId("slide-in-sidebar")).toBeNull();
   });
 });
