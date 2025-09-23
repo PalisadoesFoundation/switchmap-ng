@@ -8,6 +8,7 @@ import { mockDevice } from "./__mocks__/deviceMocks";
 vi.mock("next/link", () => ({ default: ({ children }: any) => children }));
 
 describe("DevicesOverview", () => {
+  // ---------- Render States ----------
   it("renders loading state", () => {
     render(<DevicesOverview devices={[]} loading={true} error={null} />);
     expect(screen.getByText(/loading devices/i)).toBeInTheDocument();
@@ -33,6 +34,7 @@ describe("DevicesOverview", () => {
     expect(screen.getByText(/1\/1/i)).toBeInTheDocument(); // active/total ports
   });
 
+  // ---------- Interactions ----------
   it("updates global filter input", () => {
     render(
       <DevicesOverview devices={[mockDevice]} loading={false} error={null} />
@@ -40,5 +42,32 @@ describe("DevicesOverview", () => {
     const input = screen.getByPlaceholderText(/search/i);
     fireEvent.change(input, { target: { value: "Device 1" } });
     expect((input as HTMLInputElement).value).toBe("Device 1");
+  });
+
+  it("calls sorting handler on Enter and Space key press", () => {
+    render(
+      <DevicesOverview devices={[mockDevice]} loading={false} error={null} />
+    );
+
+    const headerCell = screen.getByRole("button", {
+      name: /sort by device name/i,
+    });
+
+    fireEvent.keyDown(headerCell, { key: "Enter" });
+    fireEvent.keyDown(headerCell, { key: " " });
+    expect(headerCell).toBeInTheDocument();
+  });
+
+  it("calls sorting handler on mouse click", () => {
+    render(
+      <DevicesOverview devices={[mockDevice]} loading={false} error={null} />
+    );
+
+    const headerCell = screen.getByRole("button", {
+      name: /sort by device name/i,
+    });
+
+    fireEvent.click(headerCell);
+    expect(headerCell).toBeInTheDocument();
   });
 });

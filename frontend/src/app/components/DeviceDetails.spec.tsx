@@ -8,7 +8,8 @@ vi.mock("./TopologyChart", () => ({
     <div data-testid="mock-topology">Mocked TopologyChart</div>
   ),
 }));
-// 3. Custom range validations
+
+// ---------- Helpers ----------
 const openCustomRange = () => {
   const button = screen.getByRole("button", { name: /Past 1 day/i });
   fireEvent.click(button);
@@ -34,7 +35,7 @@ describe("DeviceDetails", () => {
     vi.restoreAllMocks();
   });
 
-  // 1. Basic rendering / happy path
+  // ---------- Basic rendering / happy path ----------
   describe("Basic rendering", () => {
     it("renders charts and shows device status with fetched metrics", async () => {
       render(<DeviceDetails device={mockDevice} />);
@@ -49,7 +50,7 @@ describe("DeviceDetails", () => {
     });
   });
 
-  // 2. UI interactions
+  // ---------- UI interactions ----------
   describe("UI interactions", () => {
     it("toggles time range dropdown", async () => {
       render(<DeviceDetails device={mockDevice} />);
@@ -75,6 +76,7 @@ describe("DeviceDetails", () => {
     });
   });
 
+  // ---------- Custom range validations ----------
   describe("Custom range validations", () => {
     beforeEach(() => {
       render(<DeviceDetails device={mockDevice} />);
@@ -156,7 +158,7 @@ describe("DeviceDetails", () => {
     });
   });
 
-  // 4. Network / fetch errors
+  // ---------- Network / fetch errors ----------
   describe("Network / fetch errors", () => {
     let consoleSpy: ReturnType<typeof vi.spyOn>;
 
@@ -222,7 +224,7 @@ describe("DeviceDetails", () => {
     });
   });
 
-  // 5. Edge cases / special device states
+  // ---------- Edge cases / special device states ----------
   describe("Edge cases / special device states", () => {
     let consoleSpy: ReturnType<typeof vi.spyOn>;
 
