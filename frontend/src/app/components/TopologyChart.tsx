@@ -111,7 +111,7 @@ export function TopologyChart({
         selectConnectedEdges: false,
       },
     }),
-    [isDark]
+    [isDark, clickToUse, zoomView]
   );
 
   useEffect(() => {
@@ -209,13 +209,14 @@ export function TopologyChart({
 
     // Create nodes array from devices
     // Each node has an `id`, `label`, `color`, and custom `title
-    const nodesArray: Node[] = devices.map((device) => ({
-      id: device.sysName ?? "",
-      label: device.sysName ?? device.idxDevice?.toString() ?? "",
-      color: "#1E90FF",
-      idxDevice: device.idxDevice?.toString(), // custom field for navigation
-      title: htmlTitle(
-        `
+    const nodesArray: Node[] = devices
+      .filter((d) => Boolean(d?.sysName))
+      .map((device) => ({
+        id: device.sysName!,
+        label: device.sysName ?? device.idxDevice?.toString() ?? "",
+        idxDevice: device.idxDevice?.toString(), // custom field for navigation
+        title: htmlTitle(
+          `
     <div style="display: flex; align-items: flex-start; gap: 1rem;">
       <div>
         ${escapeHtml(device.sysName ?? "Unknown")}<br>  
@@ -234,8 +235,8 @@ export function TopologyChart({
       <span style="font-size: 0.4em; font-weight: normal;">Uptime</span>
     </div>
   `.trim()
-      ),
-    }));
+        ),
+      }));
     // Add extra nodes that are not in the current zone
     // These nodes are added with a different color and a tooltip
     // indicating they are not in the current zone
@@ -243,7 +244,7 @@ export function TopologyChart({
       nodesArray.push({
         id: sysName,
         label: sysName,
-        color: "#383e44ff",
+        color: "#383e44",
       });
     });
     // Clean up DOM elements in node titles
@@ -412,7 +413,7 @@ export function TopologyChart({
         edgesData.current = null;
       }
     };
-  }, [graph, theme]);
+  }, [graph, options]);
 
   useEffect(() => {
     if (!inputTerm || inputTerm.trim() === "") {
