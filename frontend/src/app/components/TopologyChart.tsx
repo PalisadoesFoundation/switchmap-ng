@@ -31,6 +31,9 @@ interface TopologyChartProps {
   clickToUse?: boolean;
 }
 
+// vis-network Node plus our custom field for navigation
+type VisNode = Node & { idxDevice?: string };
+
 export function TopologyChart({
   devices,
   loading,
@@ -39,7 +42,7 @@ export function TopologyChart({
   clickToUse,
 }: TopologyChartProps) {
   // React state to hold current graph structure: array of nodes and edges
-  const [graph, setGraph] = useState<{ nodes: Node[]; edges: Edge[] }>({
+  const [graph, setGraph] = useState<{ nodes: VisNode[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
   });
@@ -57,12 +60,12 @@ export function TopologyChart({
   const networkRef = useRef<Network | null>(null);
   // DataSets are vis-network's internal reactive data structures for nodes and edges
   // These allow to dynamically add, update, or remove nodes/edges without recreating the network
-  const nodesData = useRef<DataSet<Node> | null>(null);
+  const nodesData = useRef<DataSet<VisNode> | null>(null);
   const edgesData = useRef<DataSet<Edge> | null>(null);
   // Theme context to determine if dark mode is enabled
   const { theme } = useTheme();
   // Stores the original, unmodified graph (used for resets, filtering, etc.)
-  const initialGraph = React.useRef<{ nodes: Node[]; edges: Edge[] }>({
+  const initialGraph = React.useRef<{ nodes: VisNode[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
   });
@@ -207,14 +210,16 @@ export function TopologyChart({
 
     // Create nodes array from devices
     // Each node has an `id`, `label`, `color`, and custom `title
-    const nodesArray: Node[] = devices
+    const nodesArray: VisNode[] = devices
       .filter((d) => Boolean(d?.sysName))
-      .map((device) => ({
-        id: device.sysName!,
-        label: device.sysName ?? device.idxDevice?.toString() ?? "",
-        idxDevice: device.idxDevice?.toString(), // custom field for navigation
-        title: htmlTitle(
-          `
+      .map(
+        (device) =>
+          ({
+            id: device.sysName!,
+            label: device.sysName ?? device.idxDevice?.toString() ?? "",
+            idxDevice: device.idxDevice?.toString(), // custom field for navigation
+            title: htmlTitle(
+              `
     <div style="display: flex; align-items: flex-start; gap: 1rem;">
       <div>
         ${escapeHtml(device.sysName ?? "Unknown")}<br>  
@@ -237,8 +242,9 @@ export function TopologyChart({
       <span style="font-size: 0.4em; font-weight: normal;">Uptime</span>
     </div>
   `.trim()
-        ),
-      }));
+            ),
+          } as VisNode)
+      );
     // Add extra nodes that are not in the current zone
     // These nodes are added with a different color and a tooltip
     // indicating they are not in the current zone
