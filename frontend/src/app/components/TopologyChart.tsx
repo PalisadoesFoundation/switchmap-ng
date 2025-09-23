@@ -171,8 +171,7 @@ export function TopologyChart({
               id: edgeId,
               to: targetCDP,
               label: "",
-              title: portCDP,
-              color: "#BBBBBB",
+              title: htmlTitle(escapeHtml(String(portCDP ?? ""))),
             } as Edge);
           } else if (targetLLDP) {
             const edgeId = `e_${sysName}__${targetLLDP}__${
@@ -186,8 +185,7 @@ export function TopologyChart({
               from: sysName,
               to: targetLLDP,
               label: "",
-              title: portLLDP,
-              color: "#BBBBBB",
+              title: htmlTitle(escapeHtml(String(portLLDP ?? ""))),
             } as Edge);
           }
         }
@@ -231,7 +229,11 @@ export function TopologyChart({
       </div>
     </div>
     <div style="margin-top: 0.5rem; font-size: 1.2em; font-weight: bold; color: white;">
-      ${formatUptime(device.sysUptime) ?? "N/A"}
+      ${
+        typeof device.sysUptime === "number"
+          ? formatUptime(device.sysUptime)
+          : "N/A"
+      }
       <span style="font-size: 0.4em; font-weight: normal;">Uptime</span>
     </div>
   `.trim()
@@ -347,8 +349,8 @@ export function TopologyChart({
       // Reset edges color
       initialGraph.current.edges.forEach((originalEdge) => {
         edgesData.current!.update({
-          id: originalEdge.id,
-          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"),
+          id: originalEdge.id!,
+          color: isDark ? "#444" : "#BBBBBB",
         });
       });
     });
@@ -389,8 +391,8 @@ export function TopologyChart({
 
       initialGraph.current.edges.forEach((originalEdge) => {
         edgesData.current!.update({
-          id: originalEdge.id,
-          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"),
+          id: originalEdge.id!,
+          color: isDark ? "#444" : "#BBBBBB",
           arrows: { to: false },
         });
       });
@@ -546,9 +548,9 @@ export function TopologyChart({
 
           {suggestions.length > 0 && (
             <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50 topology-suggestions-list">
-              {suggestions.map((suggestion, index) => (
+              {suggestions.map((suggestion) => (
                 <li
-                  key={index}
+                  key={suggestion}
                   onClick={() => {
                     setSearchTerm(suggestion);
                     setInputTerm("");
