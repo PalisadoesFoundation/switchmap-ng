@@ -979,6 +979,7 @@ def _oid_valid_format(oid):
     # Otherwise valid
     return True
 
+
 def _convert(value):
     """Convert SNMP value from pysnmp object to Python type.
 
