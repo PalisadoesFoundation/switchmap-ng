@@ -160,8 +160,10 @@ async def device(poll_meta, device_semaphore, session, post=True):
                 if post:
                     try:
                         # Construct full URL for posting
-                        url = (f"{config.server_url_root()}{API_PREFIX}"
-                               f"{API_POLLER_POST_URI}")
+                        url = (
+                            f"{config.server_url_root()}{API_PREFIX}"
+                            f"{API_POLLER_POST_URI}"
+                        )
                         log_message = f"Posting data for {hostname} to {url}"
                         log.log2debug(1416, log_message)
 
