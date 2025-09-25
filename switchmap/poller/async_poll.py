@@ -35,7 +35,9 @@ async def devices(max_concurrent_devices=None):
     config = ConfigPoller()
 
     # Use config value if not provided
-    if (
+    if max_concurrent_devices is None:
+        max_concurrent_devices = config.agent_subprocesses()
+    elif (
         not isinstance(max_concurrent_devices, int)
         or max_concurrent_devices < 1
     ):
@@ -203,10 +205,6 @@ async def device(poll_meta, device_semaphore, session, post=True):
             log_message = f"Recoverable error polling device {hostname}: {e}"
             log.log2warning(1409, log_message)
             return False
-        except Exception as e:
-            log_message = f"Unexpected error polling device {hostname}: {e}"
-            log.log2warning(1409, log_message)
-            return False
 
 
 async def cli_device(hostname):
@@ -225,7 +223,7 @@ async def cli_device(hostname):
     config = ConfigPoller()
 
     # Create a list of polling objects
-    zones = sorted(config.zones())
+    zones = sorted(config.zones(), key=lambda z: z.name)
 
     # Create a list of arguments
     for zone in zones:

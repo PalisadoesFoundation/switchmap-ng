@@ -7,6 +7,7 @@ from copy import deepcopy
 # Application imports
 from switchmap.core import log
 from switchmap.core import general
+from switchmap.core.mac_utils import decode_mac_address
 from switchmap.server.db.table import oui as _oui
 from switchmap.server import ZoneObjects
 from switchmap.server import PairMacIp
@@ -14,34 +15,6 @@ from switchmap.server.db.table import (
     IIp,
     IMac,
 )
-
-
-def _decode_mac_address(encoded_mac):
-    """Decode double-encoded MAC addresses from async poller.
-
-    Args:
-        encoded_mac: MAC address that may be double hex-encoded
-
-    Returns:
-        str: Properly formatted MAC address or original if already valid
-
-    """
-    import binascii
-
-    try:
-        # Try to decode hex-encoded string to ASCII
-        if isinstance(encoded_mac, str) and len(encoded_mac) > 12:
-            decoded = binascii.unhexlify(encoded_mac).decode("ascii")
-            # Check if it starts with '0x' (hex prefix)
-            if decoded.startswith("0x"):
-                return decoded[2:]
-
-        # If decoding fails or doesn't match pattern, return original
-        return encoded_mac
-
-    except Exception:
-        # If any decoding fails, return original
-        return encoded_mac
 
 
 def process(data, idx_zone, dns=True):
@@ -429,7 +402,7 @@ def _process_pairmacips(idx_zone, table):
 
         # Create lowercase version of mac address. Skip if invalid
         # Handle double-encoded MAC addresses from async poller
-        decoded_mac = _decode_mac_address(next_mac)
+        decoded_mac = decode_mac_address(next_mac)
         mactest = general.mac(decoded_mac)
         if bool(mactest.valid) is False:
             continue
@@ -473,7 +446,7 @@ def _arp_table(idx_zone, data):
 
                     # Create lowercase version of mac address. Skip if invalid.
                     # Handle double-encoded MAC addresses from async poller
-                    decoded_mac = _decode_mac_address(next_mac)
+                    decoded_mac = decode_mac_address(next_mac)
                     mactest = general.mac(decoded_mac)
                     if bool(mactest.valid) is False:
                         continue
