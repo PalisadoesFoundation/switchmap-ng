@@ -371,7 +371,7 @@ export default function ConfigPage() {
                   key={zoneIndex}
                   className="space-y-1 border rounded p-3"
                 >
-                  <header className="mb-4 flex justify-between items-center">
+                  <div className="mb-4 flex justify-between items-center">
                     <h3 className="font-semibold">{zone.zone}</h3>
 
                     <div className="flex items-center space-x-2">
@@ -412,7 +412,7 @@ export default function ConfigPage() {
                         {isExpanded ? <FiChevronUp /> : <FiChevronDown />}
                       </button>
                     </div>
-                  </header>
+                  </div>
 
                   {isExpanded && (
                     <div className="space-y-2">
@@ -545,7 +545,7 @@ export default function ConfigPage() {
                   key={groupIndex}
                   className="space-y-1 rounded py-3 px-4 relative border"
                 >
-                  <header className="flex justify-between items-start">
+                  <div className="flex justify-between items-start">
                     <div className="flex-1">
                       <h3 className="font-semibold">
                         {group.group_name || "Unnamed Group"}
@@ -603,7 +603,7 @@ export default function ConfigPage() {
                         {isExpanded ? <FiChevronUp /> : <FiChevronDown />}
                       </button>
                     </div>
-                  </header>
+                  </div>
 
                   {isExpanded && (
                     <div className="mt-4 space-y-3">
