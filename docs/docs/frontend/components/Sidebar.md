@@ -35,6 +35,6 @@ The sidebar contains links to the dashboard, history, and configuration pages,
 
  - [ThemeToggle](../theme-toggle.md#themetoggle) for the theme switching functionality.
  - Link for navigation links.
- - useState for managing the open/close state of the sidebar.
- - useEffect for handling side effects like closing the sidebar on outside clicks.
- - FiLayout, FiClock, FiSettings, RxHamburgerMenu for the icons used in the sidebar.
+ - [useState](#) for managing the open/close state of the sidebar.
+ - [useEffect](#) for handling side effects like closing the sidebar on outside clicks.
+ - [FiLayout](#), [FiClock](#), [FiSettings](#), [RxHamburgerMenu](#) for the icons used in the sidebar.

@@ -50,7 +50,7 @@ type DeviceData = {
   sysObjectid?: string;
 };
 
-type DeviceDetailsProps = {
+export type DeviceDetailsProps = {
   device: DeviceNode;
 };
 

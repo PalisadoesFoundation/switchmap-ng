@@ -40,7 +40,7 @@ to retrieve the device ID from the URL. It also handles loading and error states
 
 #### See
 
- - useParams for retrieving the device ID from URL parameters.
+ - [useParams](#) for retrieving the device ID from URL parameters.
  - DeviceResponse for the structure of the device data.
  - QUERY for the GraphQL query used to fetch device details.
  - [InterfaceEdge](../types/graphql/GetDeviceInterfaces.md#interfaceedge) and [InterfaceNode](../types/graphql/GetDeviceInterfaces.md#interfacenode) for the structure of interface data.

@@ -4721,6 +4721,45 @@ Contains all routes that the Flask API uses
 
 Config API routes for Switchmap.
 
+<a id="api.routes.config.read_config"></a>
+
+#### read\_config
+
+```python
+def read_config()
+```
+
+Read the configuration file from disk.
+
+**Arguments**:
+
+  None
+  
+
+**Returns**:
+
+- `dict` - The loaded configuration data. Returns an empty dictionary if
+  the configuration file does not exist or is empty.
+
+<a id="api.routes.config.write_config"></a>
+
+#### write\_config
+
+```python
+def write_config(data)
+```
+
+Write the configuration data to disk.
+
+**Arguments**:
+
+- `data` _dict_ - The configuration data to write.
+  
+
+**Returns**:
+
+  None
+
 <a id="api.routes.config.get_config"></a>
 
 #### get\_config
@@ -4730,7 +4769,17 @@ Config API routes for Switchmap.
 def get_config()
 ```
 
-Return the current config as JSON.
+Return the current configuration as JSON.
+
+**Arguments**:
+
+  None
+  
+
+**Returns**:
+
+- `Response` - A Flask JSON response containing the current config
+  loaded from config.yaml.
 
 <a id="api.routes.config.update_config"></a>
 
@@ -4741,7 +4790,18 @@ Return the current config as JSON.
 def update_config()
 ```
 
-Update the config.yaml with new JSON data.
+Update the config.yaml with new JSON data from the request.
+
+**Arguments**:
+
+  None
+  
+
+**Returns**:
+
+- `Response` - A Flask JSON response indicating success or failure.
+  Returns 400 if the JSON data is invalid, otherwise returns
+  a success message.
 
 <a id="api.routes.post"></a>
 

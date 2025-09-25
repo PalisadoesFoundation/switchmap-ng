@@ -10,6 +10,15 @@ CONFIG_PATH = "/home/abhi/switchmap-ng/etc/config.yaml"
 
 
 def read_config():
+    """Read the configuration file from disk.
+
+    Args:
+        None
+
+    Returns:
+        dict: The loaded configuration data. Returns an empty dictionary if
+            the configuration file does not exist or is empty.
+    """
     if not os.path.exists(CONFIG_PATH):
         return {}
     with open(CONFIG_PATH, "r") as f:
@@ -17,13 +26,29 @@ def read_config():
 
 
 def write_config(data):
+    """Write the configuration data to disk.
+
+    Args:
+        data (dict): The configuration data to write.
+
+    Returns:
+        None
+    """
     with open(CONFIG_PATH, "w") as f:
         yaml.dump(data, f, default_flow_style=False)
 
 
 @API_CONFIG.route("/config", methods=["GET"])
 def get_config():
-    """Return the current config as JSON."""
+    """Return the current configuration as JSON.
+
+    Args:
+        None
+
+    Returns:
+        Response: A Flask JSON response containing the current config
+        loaded from config.yaml.
+    """
     with open("/home/abhi/switchmap-ng/etc/config.yaml", "r") as f:
         config = yaml.safe_load(f)
     return jsonify(config)
@@ -31,7 +56,16 @@ def get_config():
 
 @API_CONFIG.route("/config", methods=["POST"])
 def update_config():
-    """Update the config.yaml with new JSON data."""
+    """Update the config.yaml with new JSON data from the request.
+
+    Args:
+        None
+
+    Returns:
+        Response: A Flask JSON response indicating success or failure.
+            Returns 400 if the JSON data is invalid, otherwise returns
+            a success message.
+    """
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid JSON"}), 400
