@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
 import {
   FiCheck,
@@ -11,739 +11,832 @@ import {
   FiChevronUp,
 } from "react-icons/fi";
 
-type Config = any;
+// Type definitions
+interface Zone {
+  zone: string;
+  hostnames: string[];
+}
+
+interface SNMPGroup {
+  enabled: boolean;
+  group_name: string;
+  snmp_ip: string;
+  snmp_version: number;
+  snmp_secname: string;
+  snmp_authprotocol: string;
+  snmp_authpassword: string;
+  snmp_privprotocol: string;
+  snmp_privpassword: string;
+  snmp_community: string;
+}
+
+interface PollerConfig {
+  zones?: Zone[];
+  snmp_groups?: SNMPGroup[];
+}
+
+interface Config {
+  poller?: PollerConfig;
+  core: Record<string, any>;
+  server: Record<string, any>;
+}
+
+type TabType = "zones" | "snmp" | "advanced";
+type SectionType = "core" | "server";
+
+// Constants
+const SECTIONS: SectionType[] = ["core", "server"];
+const TABS: TabType[] = ["zones", "snmp", "advanced"];
+const SAVE_SUCCESS_DURATION = 2000;
+const API_BASE_URL = "http://localhost:7000/switchmap/api/config";
+
+const DEFAULT_SNMP_GROUP: Omit<SNMPGroup, "group_name"> = {
+  enabled: true,
+  snmp_ip: "",
+  snmp_version: 3,
+  snmp_secname: "",
+  snmp_authprotocol: "SHA",
+  snmp_authpassword: "",
+  snmp_privprotocol: "AES",
+  snmp_privpassword: "",
+  snmp_community: "",
+};
 
 export default function ConfigPage() {
+  // State management
   const [config, setConfig] = useState<Config | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>("zones");
+
+  // Edit states
   const [draftZone, setDraftZone] = useState<string | null>(null);
+  const [draftGroupName, setDraftGroupName] = useState<string | null>(null);
   const [editIdx, setEditIdx] = useState<number | null>(null);
-  const [editSection, setEditSection] = useState<"core" | "server" | null>(
-    null
-  );
+  const [editSection, setEditSection] = useState<SectionType | null>(null);
+  const [authPasswordEdit, setAuthPasswordEdit] = useState(false);
+
+  // Expansion states
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({});
-
-  const [activeTab, setActiveTab] = useState<"zones" | "snmp" | "advanced">(
-    "zones"
-  );
-  const sections: ("core" | "server")[] = ["core", "server"];
   const [editingZones, setEditingZones] = useState<Record<number, boolean>>({});
-  const [authPasswordEdit, setAuthPasswordEdit] = useState(false);
   const [expandedZones, setExpandedZones] = useState<Record<number, boolean>>(
     {}
   );
   const [expandedGroups, setExpandedGroups] = useState<Record<number, boolean>>(
     {}
   );
-  const [draftGroupName, setDraftGroupName] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchConfig = async () => {
-      try {
-        const res = await fetch("http://localhost:7000/switchmap/api/config", {
-          credentials: "include",
-        });
-        const data = await res.json();
-        setConfig(data);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+  // API functions
+  const fetchConfig = useCallback(async () => {
+    try {
+      const response = await fetch(API_BASE_URL, {
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
-    fetchConfig();
+
+      const data = await response.json();
+      setConfig(data);
+    } catch (error) {
+      console.error("Failed to fetch config:", error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!config) return;
+
     setSaving(true);
     setSaved(false);
 
     try {
-      const res = await fetch("http://localhost:7000/switchmap/api/config", {
+      const response = await fetch(API_BASE_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(config),
       });
 
-      if (!res.ok) throw new Error("Request failed");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
       setSaved(true);
-
-      // hide "Saved!" after 2s
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      console.error(err);
-      // optional: show error inline instead of alert
+      setTimeout(() => setSaved(false), SAVE_SUCCESS_DURATION);
+    } catch (error) {
+      console.error("Failed to save config:", error);
     } finally {
       setSaving(false);
     }
-  };
+  }, [config]);
+
+  // Zone management functions
+  const updateZoneHostnames = useCallback(
+    (zoneIndex: number, hostnames: string[]) => {
+      if (!config?.poller?.zones) return;
+
+      const newZones = [...config.poller.zones];
+      newZones[zoneIndex] = { ...newZones[zoneIndex], hostnames };
+
+      setConfig({
+        ...config,
+        poller: { ...config.poller, zones: newZones },
+      });
+    },
+    [config]
+  );
+
+  const toggleZoneEdit = useCallback(
+    (zoneIndex: number) => {
+      const isCurrentlyEditing = editingZones[zoneIndex];
+
+      if (isCurrentlyEditing && config?.poller?.zones) {
+        // Clean up empty hostnames when exiting edit mode
+        const filteredHostnames = config.poller.zones[
+          zoneIndex
+        ].hostnames.filter((hostname) => hostname.trim() !== "");
+        updateZoneHostnames(zoneIndex, filteredHostnames);
+      }
+
+      setEditingZones((prev) => ({
+        ...prev,
+        [zoneIndex]: !isCurrentlyEditing,
+      }));
+
+      if (!isCurrentlyEditing) {
+        setExpandedZones((prev) => ({ ...prev, [zoneIndex]: true }));
+      }
+    },
+    [editingZones, config, updateZoneHostnames]
+  );
+
+  const deleteZone = useCallback(
+    (zoneIndex: number) => {
+      if (!config?.poller?.zones) return;
+
+      const newZones = [...config.poller.zones];
+      newZones.splice(zoneIndex, 1);
+
+      setConfig({
+        ...config,
+        poller: { ...config.poller, zones: newZones },
+      });
+
+      // Clean up edit and expansion states
+      setEditingZones((prev) => {
+        const newState = { ...prev };
+        delete newState[zoneIndex];
+        return newState;
+      });
+
+      setExpandedZones((prev) => {
+        const newState = { ...prev };
+        delete newState[zoneIndex];
+        return newState;
+      });
+    },
+    [config]
+  );
+
+  const addZone = useCallback((zoneName: string) => {
+    if (!zoneName.trim()) return;
+
+    const newZone: Zone = { zone: zoneName.trim(), hostnames: [] };
+
+    setConfig((prev) => ({
+      ...prev!,
+      poller: {
+        ...prev!.poller,
+        zones: [...(prev!.poller?.zones || []), newZone],
+      },
+    }));
+
+    setDraftZone(null);
+  }, []);
+
+  // SNMP group management functions
+  const updateSNMPGroup = useCallback(
+    (groupIndex: number, updates: Partial<SNMPGroup>) => {
+      if (!config?.poller?.snmp_groups) return;
+
+      const newGroups = [...config.poller.snmp_groups];
+      newGroups[groupIndex] = { ...newGroups[groupIndex], ...updates };
+
+      setConfig({
+        ...config,
+        poller: { ...config.poller, snmp_groups: newGroups },
+      });
+    },
+    [config]
+  );
+
+  const deleteSNMPGroup = useCallback(
+    (groupIndex: number) => {
+      if (!config?.poller?.snmp_groups) return;
+
+      const newGroups = [...config.poller.snmp_groups];
+      newGroups.splice(groupIndex, 1);
+
+      setConfig({
+        ...config,
+        poller: { ...config.poller, snmp_groups: newGroups },
+      });
+
+      if (editIdx === groupIndex) {
+        setEditIdx(null);
+      }
+    },
+    [config, editIdx]
+  );
+
+  const addSNMPGroup = useCallback((groupName: string) => {
+    if (!groupName.trim()) return;
+
+    const newGroup: SNMPGroup = {
+      ...DEFAULT_SNMP_GROUP,
+      group_name: groupName.trim(),
+    };
+
+    setConfig((prev) => ({
+      ...prev!,
+      poller: {
+        ...prev!.poller,
+        snmp_groups: [...(prev!.poller?.snmp_groups || []), newGroup],
+      },
+    }));
+
+    setDraftGroupName(null);
+  }, []);
+
+  // Advanced section management
+  const updateConfigSection = useCallback(
+    (section: SectionType, key: string, value: any) => {
+      if (!config) return;
+
+      setConfig({
+        ...config,
+        [section]: {
+          ...config[section],
+          [key]: value,
+        },
+      });
+    },
+    [config]
+  );
+
+  const handlePasswordEdit = useCallback(
+    (section: SectionType, key: string) => {
+      const currentValue = config?.[section]?.[key];
+      const auth = window.prompt("Enter current password to edit:");
+
+      if (auth === currentValue) {
+        setAuthPasswordEdit(true);
+      } else {
+        alert("Incorrect password");
+      }
+    },
+    [config]
+  );
+
+  // Effects
+  useEffect(() => {
+    fetchConfig();
+  }, [fetchConfig]);
+
+  // Early returns for loading/empty states
+  if (loading || !config) {
+    return (
+      <div className="flex h-screen overflow-y-auto">
+        <Sidebar />
+        <div className="p-4 w-full max-w-full flex flex-col gap-6 h-fit mx-10 min-w-[400px]">
+          <div className="m-4 lg:ml-0">
+            <h1 className="text-xl font-semibold">Switchmap Config</h1>
+            <p className="text-sm pt-2 text-gray-600">
+              Manage and customize your Switchmap settings
+            </p>
+          </div>
+          <div className="flex-1 flex items-center justify-center text-gray-700">
+            {loading ? "Loading…" : "No config loaded"}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen overflow-y-auto">
       <Sidebar />
       <div className="p-4 w-full max-w-full flex flex-col gap-6 h-fit mx-10 min-w-[400px]">
-        <div className="m-4 lg:ml-0">
+        <header className="m-4 lg:ml-0">
           <h1 className="text-xl font-semibold">Switchmap Config</h1>
           <p className="text-sm pt-2 text-gray-600">
             Manage and customize your Switchmap settings
           </p>
-        </div>
-        {/* Loading / No config placeholder */}
-        {(loading || !config) && (
-          <div className="flex-1 flex items-center justify-center text-gray-700">
-            {loading ? "Loading…" : "No config loaded"}
-          </div>
-        )}
-        {/* Only render the tabs and content if config exists */}
-        {!loading && config && (
-          <>
-            {/* Tabs */}
-            <div className="flex border-b mb-4">
-              {["zones", "snmp", "advanced"].map((tab) => (
-                <button
-                  key={tab}
-                  className={`px-4 py-2 -mb-px border-b-2 font-semibold ${
-                    activeTab === tab
-                      ? "border-b-2 border-primary text-primary hover:bg-hover-bg"
-                      : "text-gray-500 hover:bg-hover-bg"
-                  }`}
-                  onClick={() => setActiveTab(tab as any)}
+        </header>
+
+        {/* Tab Navigation */}
+        <nav className="flex border-b mb-4">
+          {TABS.map((tab) => (
+            <button
+              key={tab}
+              className={`px-4 py-2 -mb-px border-b-2 font-semibold transition-colors ${
+                activeTab === tab
+                  ? "border-primary text-primary hover:bg-hover-bg"
+                  : "border-transparent text-gray-500 hover:bg-hover-bg"
+              }`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === "snmp"
+                ? "SNMP Groups"
+                : tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </nav>
+
+        {/* Tab Content */}
+        {activeTab === "zones" && (
+          <section className="space-y-4">
+            {config.poller?.zones?.map((zone, zoneIndex) => {
+              const isEditing = editingZones[zoneIndex] || false;
+              const isExpanded = expandedZones[zoneIndex];
+
+              return (
+                <article
+                  key={zoneIndex}
+                  className="space-y-1 border rounded p-3"
                 >
-                  {tab === "snmp"
-                    ? "SNMP Groups"
-                    : tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </div>
+                  <header className="mb-4 flex justify-between items-center">
+                    <h3 className="font-semibold">{zone.zone}</h3>
 
-            {/* Tab Content */}
-            {activeTab === "zones" && (
-              <div className="space-y-4">
-                {config.poller?.zones?.map((zone: any, idx: number) => {
-                  const editing = editingZones[idx] || false;
-                  const expanded = expandedZones[idx];
-
-                  return (
-                    <div key={idx} className="space-y-1 border rounded p-3">
-                      <div className="mb-4 flex justify-between items-center">
-                        <span className="font-semibold">{zone.zone}</span>
-
-                        <div className="space-x-2 flex flex-row items-center">
-                          {/* Edit button */}
-                          <div className="mr-4 ">
-                            <button
-                              className={`p-1 mr-1 rounded transition ${
-                                editing
-                                  ? "bg-purple-500 text-white hover:bg-purple-600"
-                                  : "text-primary hover:text-hover-bg"
-                              }`}
-                              onClick={() => {
-                                if (editing) {
-                                  // Exiting edit mode: remove empty hostnames
-                                  const newZones = [...config.poller.zones];
-                                  newZones[idx].hostnames = newZones[
-                                    idx
-                                  ].hostnames.filter(
-                                    (h: string) => h && h.trim() !== ""
-                                  );
-                                  setConfig({
-                                    ...config,
-                                    poller: {
-                                      ...config.poller,
-                                      zones: newZones,
-                                    },
-                                  });
-                                }
-
-                                // Toggle edit mode
-                                setEditingZones({
-                                  ...editingZones,
-                                  [idx]: !editing,
-                                });
-
-                                // Expand the section if entering edit mode
-                                if (!editing) {
-                                  setExpandedZones({
-                                    ...expandedZones,
-                                    [idx]: true,
-                                  });
-                                }
-                              }}
-                            >
-                              {editing ? <FiCheck /> : <FiEdit2 />}
-                            </button>
-
-                            {/* Delete button */}
-                            <button
-                              className="text-primary hover:text-hover-bg"
-                              onClick={() => {
-                                const newZones = [...config.poller.zones];
-                                newZones.splice(idx, 1);
-                                setConfig({
-                                  ...config,
-                                  poller: { ...config.poller, zones: newZones },
-                                });
-
-                                const newEditing = { ...editingZones };
-                                delete newEditing[idx];
-                                setEditingZones(newEditing);
-
-                                const newExpanded = { ...expandedZones };
-                                delete newExpanded[idx];
-                                setExpandedZones(newExpanded);
-                              }}
-                            >
-                              <FiTrash2 />
-                            </button>
-                          </div>
-
-                          {/* Expand button */}
-                          <button
-                            className="text-primary hover:text-hover-bg"
-                            onClick={() =>
-                              setExpandedZones({
-                                ...expandedZones,
-                                [idx]: !expanded,
-                              })
-                            }
-                          >
-                            {expanded ? <FiChevronUp /> : <FiChevronDown />}
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Expanded content */}
-                      {expanded && (
-                        <>
-                          {editing ? (
-                            <div className="space-y-2">
-                              {zone.hostnames.map(
-                                (host: string, hIdx: number) => (
-                                  <div
-                                    key={hIdx}
-                                    className="flex items-center space-x-2"
-                                  >
-                                    <input
-                                      className="border p-1 rounded flex-1"
-                                      value={host}
-                                      onChange={(e) => {
-                                        const newZones = [
-                                          ...config.poller.zones,
-                                        ];
-                                        newZones[idx].hostnames[hIdx] =
-                                          e.target.value;
-                                        setConfig({
-                                          ...config,
-                                          poller: {
-                                            ...config.poller,
-                                            zones: newZones,
-                                          },
-                                        });
-                                      }}
-                                    />
-                                    <button
-                                      onClick={() => {
-                                        const newZones = [
-                                          ...config.poller.zones,
-                                        ];
-                                        newZones[idx].hostnames.splice(hIdx, 1);
-                                        setConfig({
-                                          ...config,
-                                          poller: {
-                                            ...config.poller,
-                                            zones: newZones,
-                                          },
-                                        });
-                                      }}
-                                    >
-                                      <FiMinus />
-                                    </button>
-                                  </div>
-                                )
-                              )}
-                              <button
-                                className="px-2 py-1 border border-primary rounded"
-                                onClick={() => {
-                                  const newZones = [...config.poller.zones];
-                                  newZones[idx].hostnames.push("");
-                                  setConfig({
-                                    ...config,
-                                    poller: {
-                                      ...config.poller,
-                                      zones: newZones,
-                                    },
-                                  });
-                                }}
-                              >
-                                + Add Device
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="space-y-1">
-                              {zone.hostnames.length > 0 ? (
-                                zone.hostnames.map((h: string, i: number) => (
-                                  <div
-                                    key={i}
-                                    className="border-b border-gray-300 last:border-b-0 pb-1"
-                                  >
-                                    {h}
-                                  </div>
-                                ))
-                              ) : (
-                                <div className="border-b border-gray-300 py-1">
-                                  No devices
-                                </div>
-                              )}
-                            </div>
-                          )}
-                        </>
-                      )}
-
-                      {/* Collapsed summary */}
-                      {!expanded && !editing && (
-                        <div>
-                          {zone.hostnames.length > 0
-                            ? zone.hostnames[0] +
-                              (zone.hostnames.length > 1
-                                ? ` (+${zone.hostnames.length - 1} more)`
-                                : "")
-                            : "No devices"}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-                {draftZone === null ? (
-                  <button
-                    className="px-3 py-1 border border-primary rounded"
-                    onClick={() => setDraftZone("")}
-                  >
-                    + Add Zone
-                  </button>
-                ) : (
-                  <div className="flex items-center space-x-2">
-                    <input
-                      className="border p-1 rounded flex-1"
-                      placeholder="Zone name"
-                      value={draftZone}
-                      onChange={(e) => setDraftZone(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault(); // prevent form submission or page reload
-                          if (!draftZone) return;
-                          setConfig({
-                            ...config,
-                            poller: {
-                              ...config.poller,
-                              zones: [
-                                ...(config.poller.zones || []),
-                                { zone: draftZone, hostnames: [] },
-                              ],
-                            },
-                          });
-                          setDraftZone(null);
-                        }
-                      }}
-                    />
-
-                    <button
-                      className="px-2 py-1 border border-primary rounded"
-                      onClick={() => {
-                        if (!draftZone) return;
-                        setConfig({
-                          ...config,
-                          poller: {
-                            ...config.poller,
-                            zones: [
-                              ...(config.poller.zones || []),
-                              { zone: draftZone, hostnames: [] },
-                            ],
-                          },
-                        });
-                        setDraftZone(null);
-                      }}
-                    >
-                      Add
-                    </button>
-                    <button
-                      className="px-2 py-1 border rounded"
-                      onClick={() => setDraftZone(null)}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === "snmp" && (
-              <div className="space-y-4">
-                {config.poller?.snmp_groups?.map((grp: any, idx: number) => {
-                  const editing = editIdx === idx;
-                  const expanded = expandedGroups[idx] ?? false;
-
-                  return (
-                    <div
-                      key={idx}
-                      className="space-y-1 rounded py-3 px-2 relative border"
-                    >
-                      {/* Edit/Delete/Expand buttons */}
-                      <div className="absolute top-2 right-2 flex space-x-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex space-x-1 mr-4">
                         <button
                           className={`p-1 rounded transition ${
-                            editing
+                            isEditing
                               ? "bg-purple-500 text-white hover:bg-purple-600"
                               : "text-primary hover:text-hover-bg"
                           }`}
-                          onClick={() => {
-                            if (editing) {
-                              setEditIdx(null); // save / exit edit mode
-                            } else {
-                              setEditIdx(idx);
-                              setExpandedGroups({
-                                ...expandedGroups,
-                                [idx]: true,
-                              }); // auto-expand
-                            }
-                          }}
+                          onClick={() => toggleZoneEdit(zoneIndex)}
+                          aria-label={isEditing ? "Save zone" : "Edit zone"}
                         >
-                          {editing ? <FiCheck /> : <FiEdit2 />}
+                          {isEditing ? <FiCheck /> : <FiEdit2 />}
                         </button>
 
                         <button
-                          className="text-primary hover:text-hover-bg"
-                          onClick={() => {
-                            const newGroups = [...config.poller.snmp_groups];
-                            newGroups.splice(idx, 1);
-                            setConfig({
-                              ...config,
-                              poller: {
-                                ...config.poller,
-                                snmp_groups: newGroups,
-                              },
-                            });
-                            if (editing) setEditIdx(null);
-                          }}
+                          className="p-1 text-primary hover:text-hover-bg rounded transition"
+                          onClick={() => deleteZone(zoneIndex)}
+                          aria-label="Delete zone"
                         >
                           <FiTrash2 />
                         </button>
-
-                        {/* Expand/collapse toggle */}
-                        <button
-                          className="text-primary hover:text-hover-bg"
-                          onClick={() =>
-                            setExpandedGroups({
-                              ...expandedGroups,
-                              [idx]: !expanded,
-                            })
-                          }
-                        >
-                          {expanded ? <FiChevronUp /> : <FiChevronDown />}
-                        </button>
                       </div>
 
-                      {/* Collapsed view */}
-                      {!expanded && (
-                        <div className="mt-6 space-y-1">
-                          <div>{grp.group_name || "Unnamed Group"}</div>
-                          <div>{grp.snmp_ip || "No IP"}</div>
-                        </div>
-                      )}
+                      <button
+                        className="p-1 text-primary hover:text-hover-bg rounded transition"
+                        onClick={() =>
+                          setExpandedZones((prev) => ({
+                            ...prev,
+                            [zoneIndex]: !isExpanded,
+                          }))
+                        }
+                        aria-label={
+                          isExpanded ? "Collapse zone" : "Expand zone"
+                        }
+                      >
+                        {isExpanded ? <FiChevronUp /> : <FiChevronDown />}
+                      </button>
+                    </div>
+                  </header>
 
-                      {/* Expanded view */}
-                      {expanded && (
-                        <div className="mt-6 space-y-2">
-                          {Object.entries(grp).map(([key, value]) => {
-                            if (key === "enabled") {
-                              return (
-                                <label
-                                  key={key}
-                                  className="inline-flex items-center space-x-2"
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={grp.enabled || false}
-                                    disabled={!editing}
-                                    onChange={(e) => {
-                                      const newGroups = [
-                                        ...config.poller.snmp_groups,
-                                      ];
-                                      newGroups[idx].enabled = e.target.checked;
-                                      setConfig({
-                                        ...config,
-                                        poller: {
-                                          ...config.poller,
-                                          snmp_groups: newGroups,
-                                        },
-                                      });
-                                    }}
-                                  />
-                                  <span>Enabled</span>
-                                </label>
-                              );
-                            }
-
-                            return (
+                  {isExpanded && (
+                    <div className="space-y-2">
+                      {isEditing ? (
+                        <>
+                          {zone.hostnames.map((hostname, hostIndex) => (
+                            <div
+                              key={hostIndex}
+                              className="flex items-center space-x-2"
+                            >
                               <input
-                                key={key}
-                                className="w-full border p-2 rounded"
-                                value={
-                                  typeof value === "string" ||
-                                  typeof value === "number"
-                                    ? value
-                                    : value != null
-                                    ? String(value)
-                                    : ""
-                                }
-                                placeholder={key.replace(/_/g, " ")}
-                                type={
-                                  key.toLowerCase().includes("password")
-                                    ? "password"
-                                    : "text"
-                                }
-                                readOnly={!editing}
+                                className="border p-1 rounded flex-1"
+                                value={hostname}
                                 onChange={(e) => {
-                                  const newGroups = [
-                                    ...config.poller.snmp_groups,
-                                  ];
-                                  newGroups[idx][key] = e.target.value;
-                                  setConfig({
-                                    ...config,
-                                    poller: {
-                                      ...config.poller,
-                                      snmp_groups: newGroups,
-                                    },
-                                  });
+                                  const newHostnames = [...zone.hostnames];
+                                  newHostnames[hostIndex] = e.target.value;
+                                  updateZoneHostnames(zoneIndex, newHostnames);
                                 }}
+                                placeholder="Enter hostname"
                               />
-                            );
-                          })}
+                              <button
+                                className="p-1 text-primary hover:text-hover-bg rounded transition"
+                                onClick={() => {
+                                  const newHostnames = [...zone.hostnames];
+                                  newHostnames.splice(hostIndex, 1);
+                                  updateZoneHostnames(zoneIndex, newHostnames);
+                                }}
+                                aria-label="Remove hostname"
+                              >
+                                <FiMinus />
+                              </button>
+                            </div>
+                          ))}
+                          <button
+                            className="px-3 py-1 border border-primary text-primary rounded hover:bg-primary hover:text-white transition-colors"
+                            onClick={() => {
+                              const newHostnames = [...zone.hostnames, ""];
+                              updateZoneHostnames(zoneIndex, newHostnames);
+                            }}
+                          >
+                            + Add Device
+                          </button>
+                        </>
+                      ) : (
+                        <div className="space-y-1">
+                          {zone.hostnames.length > 0 ? (
+                            zone.hostnames.map((hostname, index) => (
+                              <div
+                                key={index}
+                                className="border-b border-gray-300 last:border-b-0 pb-1"
+                              >
+                                {hostname}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-gray-500 py-1">No devices</div>
+                          )}
                         </div>
                       )}
                     </div>
-                  );
-                })}
+                  )}
 
-                {/* Draft input for new group */}
-                {draftGroupName === null ? (
-                  <button
-                    className="px-3 py-1 border border-primary rounded"
-                    onClick={() => setDraftGroupName("")}
-                  >
-                    + Add SNMP Group
-                  </button>
-                ) : (
-                  <div className="flex items-center space-x-2 mt-2">
-                    <input
-                      className="border p-2 rounded flex-1"
-                      placeholder="Enter new group name"
-                      value={draftGroupName}
-                      onChange={(e) => setDraftGroupName(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && draftGroupName.trim()) {
-                          const groups = config.poller?.snmp_groups || [];
-                          setConfig({
-                            ...config,
-                            poller: {
-                              ...config.poller,
-                              snmp_groups: [
-                                ...groups,
-                                {
-                                  enabled: true,
-                                  group_name: draftGroupName.trim(),
-                                  snmp_ip: "",
-                                  snmp_version: 3,
-                                  snmp_secname: "",
-                                  snmp_authprotocol: "SHA",
-                                  snmp_authpassword: "",
-                                  snmp_privprotocol: "AES",
-                                  snmp_privpassword: "",
-                                  snmp_community: "",
-                                },
-                              ],
-                            },
-                          });
-                          setDraftGroupName(null);
+                  {!isExpanded && (
+                    <div className="text-gray-600">
+                      {zone.hostnames.length > 0
+                        ? `${zone.hostnames[0]}${
+                            zone.hostnames.length > 1
+                              ? ` (+${zone.hostnames.length - 1} more)`
+                              : ""
+                          }`
+                        : "No devices"}
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+
+            {/* Add Zone Section */}
+            {draftZone === null ? (
+              <button
+                className="px-3 py-2 border border-primary text-primary rounded hover:bg-primary hover:text-white transition-colors"
+                onClick={() => setDraftZone("")}
+              >
+                + Add Zone
+              </button>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <input
+                  className="border p-2 rounded flex-1"
+                  placeholder="Zone name"
+                  value={draftZone}
+                  onChange={(e) => setDraftZone(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      addZone(draftZone);
+                    }
+                    if (e.key === "Escape") {
+                      setDraftZone(null);
+                    }
+                  }}
+                  autoFocus
+                />
+                <button
+                  className="px-3 py-2 border border-primary text-primary rounded hover:bg-primary hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => addZone(draftZone)}
+                  disabled={!draftZone.trim()}
+                >
+                  Add
+                </button>
+                <button
+                  className="px-3 py-2 border border-gray-300 text-gray-600 rounded hover:bg-gray-50 transition-colors"
+                  onClick={() => setDraftZone(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeTab === "snmp" && (
+          <section className="space-y-4">
+            {config.poller?.snmp_groups?.map((group, groupIndex) => {
+              const isEditing = editIdx === groupIndex;
+              const isExpanded = expandedGroups[groupIndex] ?? false;
+
+              return (
+                <article
+                  key={groupIndex}
+                  className="space-y-1 rounded py-3 px-4 relative border"
+                >
+                  <header className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <h3 className="font-semibold">
+                        {group.group_name || "Unnamed Group"}
+                      </h3>
+                      {!isExpanded && (
+                        <p className="text-gray-600 text-sm mt-1">
+                          {group.snmp_ip || "No IP configured"}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="flex space-x-1 ml-4">
+                      <button
+                        className={`p-1 rounded transition ${
+                          isEditing
+                            ? "bg-purple-500 text-white hover:bg-purple-600"
+                            : "text-primary hover:text-hover-bg"
+                        }`}
+                        onClick={() => {
+                          if (isEditing) {
+                            setEditIdx(null);
+                          } else {
+                            setEditIdx(groupIndex);
+                            setExpandedGroups((prev) => ({
+                              ...prev,
+                              [groupIndex]: true,
+                            }));
+                          }
+                        }}
+                        aria-label={isEditing ? "Save group" : "Edit group"}
+                      >
+                        {isEditing ? <FiCheck /> : <FiEdit2 />}
+                      </button>
+
+                      <button
+                        className="p-1 text-primary hover:text-hover-bg rounded transition"
+                        onClick={() => deleteSNMPGroup(groupIndex)}
+                        aria-label="Delete SNMP group"
+                      >
+                        <FiTrash2 />
+                      </button>
+
+                      <button
+                        className="p-1 text-primary hover:text-hover-bg rounded transition"
+                        onClick={() =>
+                          setExpandedGroups((prev) => ({
+                            ...prev,
+                            [groupIndex]: !isExpanded,
+                          }))
                         }
-                      }}
-                    />
+                        aria-label={
+                          isExpanded ? "Collapse group" : "Expand group"
+                        }
+                      >
+                        {isExpanded ? <FiChevronUp /> : <FiChevronDown />}
+                      </button>
+                    </div>
+                  </header>
+
+                  {isExpanded && (
+                    <div className="mt-4 space-y-3">
+                      {Object.entries(group).map(([key, value]) => {
+                        if (key === "enabled") {
+                          return (
+                            <label
+                              key={key}
+                              className="flex items-center space-x-2 cursor-pointer"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={group.enabled || false}
+                                disabled={!isEditing}
+                                onChange={(e) =>
+                                  updateSNMPGroup(groupIndex, {
+                                    enabled: e.target.checked,
+                                  })
+                                }
+                                className="rounded"
+                              />
+                              <span>Enabled</span>
+                            </label>
+                          );
+                        }
+
+                        return (
+                          <div key={key} className="space-y-1">
+                            <label className="block text-sm font-medium text-gray-700">
+                              {key
+                                .replace(/_/g, " ")
+                                .replace(/\b\w/g, (l) => l.toUpperCase())}
+                            </label>
+                            <input
+                              className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                              value={
+                                typeof value === "string" ||
+                                typeof value === "number"
+                                  ? String(value)
+                                  : value != null
+                                  ? String(value)
+                                  : ""
+                              }
+                              type={
+                                key.toLowerCase().includes("password")
+                                  ? "password"
+                                  : "text"
+                              }
+                              readOnly={!isEditing}
+                              onChange={(e) =>
+                                updateSNMPGroup(groupIndex, {
+                                  [key]: e.target.value,
+                                })
+                              }
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+
+            {/* Add SNMP Group Section */}
+            {draftGroupName === null ? (
+              <button
+                className="px-3 py-2 border border-primary text-primary rounded hover:bg-primary hover:text-white transition-colors"
+                onClick={() => setDraftGroupName("")}
+              >
+                + Add SNMP Group
+              </button>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <input
+                  className="border p-2 rounded flex-1"
+                  placeholder="Enter group name"
+                  value={draftGroupName}
+                  onChange={(e) => setDraftGroupName(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && draftGroupName.trim()) {
+                      addSNMPGroup(draftGroupName);
+                    }
+                    if (e.key === "Escape") {
+                      setDraftGroupName(null);
+                    }
+                  }}
+                  autoFocus
+                />
+                <button
+                  className="px-3 py-2 border border-primary text-primary rounded hover:bg-primary hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => addSNMPGroup(draftGroupName)}
+                  disabled={!draftGroupName.trim()}
+                >
+                  Add
+                </button>
+                <button
+                  className="px-3 py-2 border border-gray-300 text-gray-600 rounded hover:bg-gray-50 transition-colors"
+                  onClick={() => setDraftGroupName(null)}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+          </section>
+        )}
+
+        {activeTab === "advanced" && (
+          <section className="space-y-4">
+            {SECTIONS.map((section) => (
+              <details
+                key={section}
+                className="border rounded p-4"
+                open={expandedSections[section] ?? false}
+              >
+                <summary className="cursor-pointer flex justify-between items-center font-semibold">
+                  <span>
+                    {section.charAt(0).toUpperCase() + section.slice(1)}
+                  </span>
+                  <div className="flex gap-1">
                     <button
-                      className="px-3 py-1 border border-primary rounded"
-                      disabled={!draftGroupName.trim()}
-                      onClick={() => {
-                        const groups = config.poller?.snmp_groups || [];
-                        setConfig({
-                          ...config,
-                          poller: {
-                            ...config.poller,
-                            snmp_groups: [
-                              ...groups,
-                              {
-                                enabled: true,
-                                group_name: draftGroupName.trim(),
-                                snmp_ip: "",
-                                snmp_version: 3,
-                                snmp_secname: "",
-                                snmp_authprotocol: "SHA",
-                                snmp_authpassword: "",
-                                snmp_privprotocol: "AES",
-                                snmp_privpassword: "",
-                                snmp_community: "",
-                              },
-                            ],
-                          },
-                        });
-                        setDraftGroupName(null);
+                      className={`p-1 rounded transition ${
+                        editSection === section
+                          ? "bg-purple-500 text-white hover:bg-purple-600"
+                          : "text-primary hover:text-hover-bg"
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setEditSection(
+                          editSection === section ? null : section
+                        );
+                        setExpandedSections((prev) => ({
+                          ...prev,
+                          [section]: !prev[section],
+                        }));
                       }}
+                      aria-label={
+                        editSection === section
+                          ? "Save section"
+                          : "Edit section"
+                      }
                     >
-                      Add
+                      {editSection === section ? <FiCheck /> : <FiEdit2 />}
                     </button>
                     <button
-                      className="px-3 py-1 border rounded"
-                      onClick={() => setDraftGroupName(null)}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setExpandedSections((prev) => ({
+                          ...prev,
+                          [section]: !prev[section],
+                        }));
+                      }}
+                      aria-label={
+                        expandedSections[section]
+                          ? "Collapse section"
+                          : "Expand section"
+                      }
                     >
-                      Cancel
+                      {expandedSections[section] ? (
+                        <FiChevronUp />
+                      ) : (
+                        <FiChevronDown />
+                      )}
                     </button>
                   </div>
-                )}
-              </div>
-            )}
+                </summary>
 
-            {activeTab === "advanced" && (
-              <div className="space-y-4">
-                {sections.map((section) => (
-                  <details
-                    key={section}
-                    className="border rounded p-4"
-                    open={expandedSections[section] ?? false}
-                  >
-                    <summary className="cursor-pointer flex justify-between items-center font-semibold">
-                      <span>
-                        {section.charAt(0).toUpperCase() + section.slice(1)}
-                      </span>
-                      <div className="flex gap-1">
-                        <button
-                          className={`p-1 rounded transition ${
-                            editSection === section
-                              ? "bg-purple-500 text-white hover:bg-purple-600"
-                              : "text-primary hover:text-hover-bg"
-                          }`}
-                          onClick={(e) => {
-                            e.preventDefault(); // prevent toggling details
-                            setEditSection(
-                              editSection === section ? null : section
-                            );
-                            setExpandedSections({
-                              ...expandedSections,
-                              [section]: !expandedSections[section],
-                            });
+                <div className="mt-4 space-y-3">
+                  {Object.entries(config[section]).map(([key, value]) => {
+                    const isPasswordField = key.toLowerCase().includes("pass");
+                    const showMasked =
+                      isPasswordField &&
+                      (editSection !== section || !authPasswordEdit);
+
+                    return (
+                      <div key={key} className="space-y-1">
+                        <label className="block text-sm font-medium text-gray-700">
+                          {key
+                            .replace(/_/g, " ")
+                            .replace(/\b\w/g, (l) => l.toUpperCase())}
+                          :
+                        </label>
+                        <input
+                          className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                          type="text"
+                          value={showMasked ? "***********" : String(value)}
+                          readOnly={editSection !== section || showMasked}
+                          onClick={() => {
+                            if (
+                              isPasswordField &&
+                              editSection === section &&
+                              !authPasswordEdit
+                            ) {
+                              handlePasswordEdit(section, key);
+                            }
                           }}
-                        >
-                          {editSection === section ? <FiCheck /> : <FiEdit2 />}
-                        </button>
-                        {/* Expand button */}
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.preventDefault(); // prevent toggling by default summary click
-                            setExpandedSections({
-                              ...expandedSections,
-                              [section]: !expandedSections[section],
-                            });
+                          onChange={(e) => {
+                            if (
+                              editSection === section &&
+                              (!isPasswordField || authPasswordEdit)
+                            ) {
+                              updateConfigSection(section, key, e.target.value);
+                            }
                           }}
-                        >
-                          {expandedSections[section] ? (
-                            <FiChevronUp />
-                          ) : (
-                            <FiChevronDown />
-                          )}
-                        </button>
+                        />
                       </div>
-                    </summary>
-
-                    <div className="mt-2 space-y-2">
-                      {Object.entries(config[section]).map(([key, value]) => (
-                        <div key={key} className="flex items-center space-x-2">
-                          <label className="w-40">{key}:</label>
-                          <input
-                            className="border p-1 rounded flex-1"
-                            type="text" // keep text to control masking
-                            value={
-                              key.toLowerCase().includes("pass") &&
-                              (editSection !== section || !authPasswordEdit)
-                                ? "***********" // always show mask if not editing/authenticated
-                                : (value as any)
-                            }
-                            readOnly={
-                              editSection !== section ||
-                              (key.toLowerCase().includes("pass") &&
-                                !authPasswordEdit)
-                            }
-                            onClick={() => {
-                              if (
-                                key.toLowerCase().includes("pass") &&
-                                editSection === section &&
-                                !authPasswordEdit
-                              ) {
-                                const auth = window.prompt(
-                                  "Enter current password to edit:"
-                                );
-                                if (auth === config[section][key]) {
-                                  setAuthPasswordEdit(true);
-                                } else {
-                                  alert("Incorrect password");
-                                }
-                              }
-                            }}
-                            onChange={(e) => {
-                              if (
-                                editSection === section &&
-                                (key.toLowerCase().includes("pass")
-                                  ? authPasswordEdit
-                                  : true)
-                              ) {
-                                setConfig({
-                                  ...config,
-                                  [section]: {
-                                    ...config[section],
-                                    [key]: e.target.value,
-                                  },
-                                });
-                              }
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </details>
-                ))}
-              </div>
-            )}
-
-            <div className="flex justify-end items-center gap-3 mt-6">
-              {saving && <span className="text-sm text-gray-500">Saving…</span>}
-              {!saving && saved && <span className="text-sm">Saved!</span>}
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className={`px-5 py-2 font-medium rounded-lg shadow transition
-      ${
-        saving
-          ? "bg-hover-bg text-white cursor-not-allowed"
-          : "bg-primary hover:bg-hover-bg text-white"
-      }`}
-              >
-                Save
-              </button>
-            </div>
-          </>
+                    );
+                  })}
+                </div>
+              </details>
+            ))}
+          </section>
         )}
+
+        {/* Save Button */}
+        <footer className="flex justify-end items-center gap-3 mt-6 pt-4 border-t">
+          {saving && <span className="text-sm text-gray-500">Saving…</span>}
+          {!saving && saved && (
+            <span className="text-sm text-green-600 font-medium">Saved!</span>
+          )}
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className={`w-48 px-6 py-2 font-medium rounded-lg shadow transition-colors ${
+              saving
+                ? "bg-gray-400 text-white cursor-not-allowed"
+                : "bg-primary hover:bg-hover-bg text-white focus:ring-2 focus:ring-primary focus:ring-offset-2"
+            }`}
+          >
+            {saving ? "Saving..." : "Save Configuration"}
+          </button>
+        </footer>
       </div>
     </div>
   );
