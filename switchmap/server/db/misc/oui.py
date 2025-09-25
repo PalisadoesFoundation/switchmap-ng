@@ -48,7 +48,7 @@ def update_db_oui(filepath, new=False):
         rows.append(IOui(oui=oui, organization=organization, enabled=1))
 
     if new:
-        # For new installations, do bulk insert without checking existing entries
+        # Bulk insert on fresh install, skip checks
         _oui.insert_row(rows)
     else:
         # For updates, check existing entries
