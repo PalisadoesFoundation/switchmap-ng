@@ -10,6 +10,8 @@ export default function ConfigPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [draftZone, setDraftZone] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<"zones" | "snmp" | "advanced">(
     "zones"
   );
@@ -207,23 +209,48 @@ export default function ConfigPage() {
                     </div>
                   );
                 })}
-                <button
-                  className="px-3 py-1 bg-green-600 text-white rounded"
-                  onClick={() =>
-                    setConfig({
-                      ...config,
-                      poller: {
-                        ...config.poller,
-                        zones: [
-                          ...(config.poller.zones || []),
-                          { zone: "", hostnames: [] },
-                        ],
-                      },
-                    })
-                  }
-                >
-                  + Add Zone
-                </button>
+                {draftZone === null ? (
+                  <button
+                    className="px-3 py-1 bg-green-600 text-white rounded"
+                    onClick={() => setDraftZone("")}
+                  >
+                    + Add Zone
+                  </button>
+                ) : (
+                  <div className="flex items-center space-x-2">
+                    <input
+                      className="border p-1 rounded flex-1"
+                      placeholder="Zone name"
+                      value={draftZone}
+                      onChange={(e) => setDraftZone(e.target.value)}
+                    />
+                    <button
+                      className="px-2 py-1 bg-blue-600 text-white rounded"
+                      onClick={() => {
+                        if (!draftZone) return;
+                        setConfig({
+                          ...config,
+                          poller: {
+                            ...config.poller,
+                            zones: [
+                              ...(config.poller.zones || []),
+                              { zone: draftZone, hostnames: [] },
+                            ],
+                          },
+                        });
+                        setDraftZone(null);
+                      }}
+                    >
+                      Add
+                    </button>
+                    <button
+                      className="px-2 py-1 border rounded"
+                      onClick={() => setDraftZone(null)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
