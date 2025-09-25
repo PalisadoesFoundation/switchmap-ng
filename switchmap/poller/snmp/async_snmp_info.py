@@ -56,7 +56,7 @@ class Query:
         keys = ["misc", "system", "layer1", "layer2", "layer3"]
         for key, result in zip(keys, results):
             if isinstance(result, Exception):
-                log.log2warning(1004, f"{key} failed: {result}")
+                log.log2warning(1417, f"{key} failed: {result}")
             elif result:
                 data[key] = result
 

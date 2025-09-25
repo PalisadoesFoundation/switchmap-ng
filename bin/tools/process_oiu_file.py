@@ -38,8 +38,7 @@ def main():
     """
     # Read Oui file
     args = _cli()
-    #  _oui.update_db_oui(args.filename, new=args.new_installation)
-    _oui.update_db_oui(args.filename)
+    _oui.update_db_oui(args.filename, new=args.new_installation)
 
 
 def _cli():
