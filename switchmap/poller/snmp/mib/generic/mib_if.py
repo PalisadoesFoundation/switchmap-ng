@@ -109,7 +109,7 @@ class IfQuery(Query):
                 try:
                     return name, await method()
                 except Exception as e:
-                    log.log2warning(1301, f"Error in {name}: {e}")
+                    log.log2warning(1092, f"Error in {name}: {e}")
                     return name, {}
 
         queries = [

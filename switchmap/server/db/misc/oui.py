@@ -11,11 +11,12 @@ from switchmap.server.db.models import Oui
 from sqlalchemy.exc import IntegrityError
 
 
-def update_db_oui(filepath):
+def update_db_oui(filepath, new=False):
     """Update the database with Oui data.
 
     Args:
         filepath: File to process
+        new: If True, skip existing entry checks for new installations
 
     Returns:
         None
@@ -46,11 +47,16 @@ def update_db_oui(filepath):
         organization = row["organization"].strip()
         rows.append(IOui(oui=oui, organization=organization, enabled=1))
 
-    for row in rows:
-        existing_entry = _oui.exists(row.oui)
-        if not existing_entry:
-            _oui.insert_row([row])
-        elif existing_entry.organization != row.organization:
-            _oui.update_row(existing_entry.idx_oui, row)
+    if new:
+        # For new installations, do bulk insert without checking existing entries
+        _oui.insert_row(rows)
+    else:
+        # For updates, check existing entries
+        for row in rows:
+            existing_entry = _oui.exists(row.oui)
+            if not existing_entry:
+                _oui.insert_row([row])
+            elif existing_entry.organization != row.organization:
+                _oui.update_row(existing_entry.idx_oui, row)
 
     SCOPED_SESSION.commit()

@@ -574,13 +574,13 @@ class Interact:
                         f"Unexpected async SNMP error for "
                         f"{self._poll.hostname}: {exception_error}"
                     )
-                    log.log2info(1210, log_message)
+                    log.log2info(1041, log_message)
                 else:
                     log_message = (
                         f"Unexpected async SNMP error for "
                         f"{self._poll.hostname}: {exception_error}"
                     )
-                    log.log2die(1003, log_message)
+                    log.log2die(1023, log_message)
                 # Ensure formatted_result is set for exception cases
                 formatted_result = {}
 
@@ -1048,7 +1048,7 @@ def _convert(value):
                     f"Failed to convert pysnmp integer value: "
                     f"{value_type}, prettyPrint'{value_str}"
                 )
-                log.log2warning(1059, log_message)
+                log.log2warning(1036, log_message)
                 return None
 
     # Handle direct access to value (for objects without prettyPrint)
@@ -1125,4 +1125,4 @@ def _update_cache(filename, group):
             f_handle.write(group)
     except Exception as e:
         log_message = f"Failed to update cache file {filename}: {e}"
-        log.log2warning(1049, log_message)
+        log.log2warning(1025, log_message)
