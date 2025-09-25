@@ -9,7 +9,7 @@ import aiohttp
 
 # Import app libraries
 from switchmap import API_POLLER_POST_URI, API_PREFIX
-from switchmap.poller.snmp import async_poller
+from switchmap.poller.snmp import poller
 from switchmap.poller.update import device as udevice
 from switchmap.poller.configuration import ConfigPoller
 from switchmap.core import log, rest, files
@@ -141,7 +141,7 @@ async def device(poll_meta, device_semaphore, session, post=True):
             return False
 
         try:
-            poll = async_poller.Poll(hostname)
+            poll = poller.Poll(hostname)
 
             # Initialize SNMP connection
             if not await poll.initialize_snmp():

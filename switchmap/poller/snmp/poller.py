@@ -3,8 +3,8 @@
 # Switchmap imports
 from switchmap.poller.configuration import ConfigPoller
 from switchmap.poller import POLLING_OPTIONS, SNMP, POLL
-from . import async_snmp_manager
-from . import async_snmp_info
+from . import snmp_manager
+from . import snmp_info
 from switchmap.core import log
 
 
@@ -45,7 +45,7 @@ class Poll:
             bool: True if successful, False otherwise
         """
         # Get snmp config information from Switchmap-NG
-        validate = async_snmp_manager.Validate(
+        validate = snmp_manager.Validate(
             POLLING_OPTIONS(
                 hostname=self._hostname,
                 authorizations=self._server_config.snmp_auth(),
@@ -57,7 +57,7 @@ class Poll:
 
         # Create an SNMP object for querying
         if _do_poll(authorization) is True:
-            self.snmp_object = async_snmp_manager.Interact(
+            self.snmp_object = snmp_manager.Interact(
                 POLL(hostname=self._hostname, authorization=authorization)
             )
             return True
@@ -94,7 +94,7 @@ Querying topology data from host: {}.""".format(
 
         log.log2info(1078, log_message)
 
-        status = async_snmp_info.Query(snmp_object=self.snmp_object)
+        status = snmp_info.Query(snmp_object=self.snmp_object)
 
         _data = await status.everything()
 
