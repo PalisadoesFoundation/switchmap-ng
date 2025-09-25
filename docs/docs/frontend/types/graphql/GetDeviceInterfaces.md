@@ -12,7 +12,7 @@
 
 > **GetDeviceInterfacesData** = `object`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:73](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L73)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:83](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L83)
 
 #### Properties
 
@@ -20,7 +20,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:73](https://github.com/Palisad
 
 > **data**: `object`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:74](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L74)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:84](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L84)
 
 ###### device
 
@@ -34,7 +34,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:74](https://github.com/Palisad
 
 > `optional` **errors**: `object`[]
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:79](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L79)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:89](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L89)
 
 ###### message
 
@@ -46,7 +46,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:79](https://github.com/Palisad
 
 > **GetDeviceInterfacesVars** = `object`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:82](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L82)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:92](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L92)
 
 #### Properties
 
@@ -54,7 +54,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:82](https://github.com/Palisad
 
 > **id**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:83](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L83)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:93](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L93)
 
 ***
 
@@ -62,7 +62,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:83](https://github.com/Palisad
 
 > **InterfaceEdge** = `object`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:65](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L65)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:75](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L75)
 
 #### Properties
 
@@ -70,7 +70,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:65](https://github.com/Palisad
 
 > **node**: [`InterfaceNode`](#interfacenode)
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:66](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L66)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:76](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L76)
 
 ***
 
@@ -86,25 +86,25 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:44](https://github.com/Palisad
 
 > `optional` **cdpcachedeviceid**: `string` \| `null`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:55](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L55)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:65](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L65)
 
 ##### cdpcachedeviceport
 
 > **cdpcachedeviceport**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:56](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L56)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:66](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L66)
 
 ##### cdpcacheplatform
 
 > **cdpcacheplatform**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:57](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L57)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:67](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L67)
 
 ##### duplex
 
 > **duplex**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:52](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L52)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:62](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L62)
 
 ##### idxDevice
 
@@ -122,7 +122,37 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:45](https://github.com/Palisad
 
 > `optional` **ifalias**: `string` \| `null`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:53](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L53)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:63](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L63)
+
+##### ifinDiscards
+
+> **ifinDiscards**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:60](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L60)
+
+##### ifinErrors
+
+> **ifinErrors**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:58](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L58)
+
+##### ifinNUcastPkts
+
+> **ifinNUcastPkts**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:54](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L54)
+
+##### ifinOctets
+
+> **ifinOctets**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:56](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L56)
+
+##### ifinUcastPkts
+
+> **ifinUcastPkts**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:52](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L52)
 
 ##### ifname
 
@@ -136,6 +166,36 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:47](https://github.com/Palisad
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:49](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L49)
 
+##### ifoutDiscards
+
+> **ifoutDiscards**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:61](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L61)
+
+##### ifoutErrors
+
+> **ifoutErrors**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:59](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L59)
+
+##### ifoutNUcastPkts
+
+> **ifoutNUcastPkts**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:55](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L55)
+
+##### ifoutOctets
+
+> **ifoutOctets**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:57](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L57)
+
+##### ifoutUcastPkts
+
+> **ifoutUcastPkts**: `number` \| `null`
+
+Defined in: [types/graphql/GetDeviceInterfaces.ts:53](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L53)
+
 ##### ifspeed
 
 > **ifspeed**: `number`
@@ -146,31 +206,31 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:51](https://github.com/Palisad
 
 > **lldpremportdesc**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:58](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L58)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:68](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L68)
 
 ##### lldpremsyscapenabled
 
 > **lldpremsyscapenabled**: `string`[]
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:61](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L61)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:71](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L71)
 
 ##### lldpremsysdesc
 
 > **lldpremsysdesc**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:60](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L60)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:70](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L70)
 
 ##### lldpremsysname
 
 > **lldpremsysname**: `string`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:59](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L59)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:69](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L69)
 
 ##### macports
 
 > **macports**: [`MacPort`](#macport)
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:62](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L62)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:72](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L72)
 
 ##### nativevlan
 
@@ -182,11 +242,11 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:48](https://github.com/Palisad
 
 > **trunk**: `boolean`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:54](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L54)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:64](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L64)
 
 ##### tsIdle
 
-> **tsIdle**: `string`
+> **tsIdle**: `number`
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:50](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L50)
 
@@ -196,7 +256,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:50](https://github.com/Palisad
 
 > **L1Interfaces** = `object`
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:69](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L69)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:79](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L79)
 
 #### Properties
 
@@ -204,7 +264,7 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:69](https://github.com/Palisad
 
 > **edges**: [`InterfaceEdge`](#interfaceedge)[]
 
-Defined in: [types/graphql/GetDeviceInterfaces.ts:70](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L70)
+Defined in: [types/graphql/GetDeviceInterfaces.ts:80](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L80)
 
 ***
 
