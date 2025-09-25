@@ -36,6 +36,10 @@ export default function ConfigPage() {
   const [expandedZones, setExpandedZones] = useState<Record<number, boolean>>(
     {}
   );
+  const [expandedGroups, setExpandedGroups] = useState<Record<number, boolean>>(
+    {}
+  );
+  const [draftGroupName, setDraftGroupName] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -359,129 +363,234 @@ export default function ConfigPage() {
 
             {activeTab === "snmp" && (
               <div className="space-y-4">
-                {config.poller?.snmp_groups?.map((grp: any, idx: number) => (
-                  <div
-                    key={idx}
-                    className="space-y-1 rounded py-3 px-2 relative"
-                  >
-                    {/* Edit/Delete buttons */}
-                    <div className="absolute top-2 right-2 flex space-x-2">
-                      <button
-                        className={`p-1 rounded transition ${
-                          editIdx === idx
-                            ? "bg-purple-500 text-white hover:bg-purple-600"
-                            : "text-primary hover:text-hover-bg"
-                        }`}
-                        onClick={() => {
-                          if (editIdx === idx) {
-                            // Save action when clicking the check
-                            setEditIdx(null);
-                            // optionally do other save logic here
-                          } else {
-                            // Enter edit mode
-                            setEditIdx(idx);
+                {config.poller?.snmp_groups?.map((grp: any, idx: number) => {
+                  const editing = editIdx === idx;
+                  const expanded = expandedGroups[idx] ?? false;
+
+                  return (
+                    <div
+                      key={idx}
+                      className="space-y-1 rounded py-3 px-2 relative border"
+                    >
+                      {/* Edit/Delete/Expand buttons */}
+                      <div className="absolute top-2 right-2 flex space-x-2">
+                        <button
+                          className={`p-1 rounded transition ${
+                            editing
+                              ? "bg-purple-500 text-white hover:bg-purple-600"
+                              : "text-primary hover:text-hover-bg"
+                          }`}
+                          onClick={() => {
+                            if (editing) {
+                              setEditIdx(null); // save / exit edit mode
+                            } else {
+                              setEditIdx(idx);
+                              setExpandedGroups({
+                                ...expandedGroups,
+                                [idx]: true,
+                              }); // auto-expand
+                            }
+                          }}
+                        >
+                          {editing ? <FiCheck /> : <FiEdit2 />}
+                        </button>
+
+                        <button
+                          className="text-primary hover:text-hover-bg"
+                          onClick={() => {
+                            const newGroups = [...config.poller.snmp_groups];
+                            newGroups.splice(idx, 1);
+                            setConfig({
+                              ...config,
+                              poller: {
+                                ...config.poller,
+                                snmp_groups: newGroups,
+                              },
+                            });
+                            if (editing) setEditIdx(null);
+                          }}
+                        >
+                          <FiTrash2 />
+                        </button>
+
+                        {/* Expand/collapse toggle */}
+                        <button
+                          className="text-primary hover:text-hover-bg"
+                          onClick={() =>
+                            setExpandedGroups({
+                              ...expandedGroups,
+                              [idx]: !expanded,
+                            })
                           }
-                        }}
-                      >
-                        {editIdx === idx ? <FiCheck /> : <FiEdit2 />}
-                      </button>
+                        >
+                          {expanded ? <FiChevronUp /> : <FiChevronDown />}
+                        </button>
+                      </div>
 
-                      <button
-                        className="text-primary hover:text-hover-bg"
-                        onClick={() => {
-                          const newGroups = [...config.poller.snmp_groups];
-                          newGroups.splice(idx, 1);
-                          setConfig({
-                            ...config,
-                            poller: {
-                              ...config.poller,
-                              snmp_groups: newGroups,
-                            },
-                          });
-                          if (editIdx === idx) setEditIdx(null); // reset edit mode if deleting
-                        }}
-                      >
-                        <FiTrash2 />
-                      </button>
+                      {/* Collapsed view */}
+                      {!expanded && (
+                        <div className="mt-6 space-y-1">
+                          <div>{grp.group_name || "Unnamed Group"}</div>
+                          <div>{grp.snmp_ip || "No IP"}</div>
+                        </div>
+                      )}
+
+                      {/* Expanded view */}
+                      {expanded && (
+                        <div className="mt-6 space-y-2">
+                          {Object.entries(grp).map(([key, value]) => {
+                            if (key === "enabled") {
+                              return (
+                                <label
+                                  key={key}
+                                  className="inline-flex items-center space-x-2"
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={grp.enabled || false}
+                                    disabled={!editing}
+                                    onChange={(e) => {
+                                      const newGroups = [
+                                        ...config.poller.snmp_groups,
+                                      ];
+                                      newGroups[idx].enabled = e.target.checked;
+                                      setConfig({
+                                        ...config,
+                                        poller: {
+                                          ...config.poller,
+                                          snmp_groups: newGroups,
+                                        },
+                                      });
+                                    }}
+                                  />
+                                  <span>Enabled</span>
+                                </label>
+                              );
+                            }
+
+                            return (
+                              <input
+                                key={key}
+                                className="w-full border p-2 rounded"
+                                value={
+                                  typeof value === "string" ||
+                                  typeof value === "number"
+                                    ? value
+                                    : value != null
+                                    ? String(value)
+                                    : ""
+                                }
+                                placeholder={key.replace(/_/g, " ")}
+                                type={
+                                  key.toLowerCase().includes("password")
+                                    ? "password"
+                                    : "text"
+                                }
+                                readOnly={!editing}
+                                onChange={(e) => {
+                                  const newGroups = [
+                                    ...config.poller.snmp_groups,
+                                  ];
+                                  newGroups[idx][key] = e.target.value;
+                                  setConfig({
+                                    ...config,
+                                    poller: {
+                                      ...config.poller,
+                                      snmp_groups: newGroups,
+                                    },
+                                  });
+                                }}
+                              />
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
+                  );
+                })}
 
+                {/* Draft input for new group */}
+                {draftGroupName === null ? (
+                  <button
+                    className="px-3 py-1 border border-primary rounded"
+                    onClick={() => setDraftGroupName("")}
+                  >
+                    + Add SNMP Group
+                  </button>
+                ) : (
+                  <div className="flex items-center space-x-2 mt-2">
                     <input
-                      className="w-full border p-2 rounded mt-6"
-                      value={grp.group_name}
-                      placeholder="Group Name"
-                      readOnly={editIdx !== idx} // only editable if this group is being edited
-                      onChange={(e) => {
-                        const newGroups = [...config.poller.snmp_groups];
-                        newGroups[idx].group_name = e.target.value;
-                        setConfig({
-                          ...config,
-                          poller: { ...config.poller, snmp_groups: newGroups },
-                        });
-                      }}
-                    />
-                    <input
-                      className="w-full border p-2 rounded"
-                      value={grp.snmp_ip || ""}
-                      placeholder="IP Address"
-                      readOnly={editIdx !== idx} // only editable in edit mode
-                      onChange={(e) => {
-                        const newGroups = [...config.poller.snmp_groups];
-                        newGroups[idx].snmp_ip = e.target.value;
-                        setConfig({
-                          ...config,
-                          poller: { ...config.poller, snmp_groups: newGroups },
-                        });
-                      }}
-                    />
-                    <label className="inline-flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={grp.enabled || false}
-                        disabled={editIdx !== idx} // only editable in edit mode
-                        onChange={(e) => {
-                          const newGroups = [...config.poller.snmp_groups];
-                          newGroups[idx].enabled = e.target.checked;
+                      className="border p-2 rounded flex-1"
+                      placeholder="Enter new group name"
+                      value={draftGroupName}
+                      onChange={(e) => setDraftGroupName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && draftGroupName.trim()) {
+                          const groups = config.poller?.snmp_groups || [];
                           setConfig({
                             ...config,
                             poller: {
                               ...config.poller,
-                              snmp_groups: newGroups,
+                              snmp_groups: [
+                                ...groups,
+                                {
+                                  enabled: true,
+                                  group_name: draftGroupName.trim(),
+                                  snmp_ip: "",
+                                  snmp_version: 3,
+                                  snmp_secname: "",
+                                  snmp_authprotocol: "SHA",
+                                  snmp_authpassword: "",
+                                  snmp_privprotocol: "AES",
+                                  snmp_privpassword: "",
+                                  snmp_community: "",
+                                },
+                              ],
                             },
                           });
-                        }}
-                      />
-                      <span>Enabled</span>
-                    </label>
+                          setDraftGroupName(null);
+                        }
+                      }}
+                    />
+                    <button
+                      className="px-3 py-1 border border-primary rounded"
+                      disabled={!draftGroupName.trim()}
+                      onClick={() => {
+                        const groups = config.poller?.snmp_groups || [];
+                        setConfig({
+                          ...config,
+                          poller: {
+                            ...config.poller,
+                            snmp_groups: [
+                              ...groups,
+                              {
+                                enabled: true,
+                                group_name: draftGroupName.trim(),
+                                snmp_ip: "",
+                                snmp_version: 3,
+                                snmp_secname: "",
+                                snmp_authprotocol: "SHA",
+                                snmp_authpassword: "",
+                                snmp_privprotocol: "AES",
+                                snmp_privpassword: "",
+                                snmp_community: "",
+                              },
+                            ],
+                          },
+                        });
+                        setDraftGroupName(null);
+                      }}
+                    >
+                      Add
+                    </button>
+                    <button
+                      className="px-3 py-1 border rounded"
+                      onClick={() => setDraftGroupName(null)}
+                    >
+                      Cancel
+                    </button>
                   </div>
-                ))}
-
-                <button
-                  className="px-3 py-1 border border-primary rounded"
-                  onClick={() => {
-                    const groups = config.poller?.snmp_groups || [];
-                    const lastGroup = groups[groups.length - 1];
-
-                    // Only add if last group exists and has a name or IP
-                    if (
-                      !lastGroup ||
-                      (lastGroup.group_name?.trim() &&
-                        lastGroup.snmp_ip?.trim())
-                    ) {
-                      setConfig({
-                        ...config,
-                        poller: {
-                          ...config.poller,
-                          snmp_groups: [
-                            ...groups,
-                            { group_name: "", snmp_ip: "", enabled: true },
-                          ],
-                        },
-                      });
-                    }
-                  }}
-                >
-                  + Add SNMP Group
-                </button>
+                )}
               </div>
             )}
 
