@@ -32,7 +32,14 @@ else:
 
 @pytest.fixture
 def mock_config_setup():
-    """Set up mock configuration for tests."""
+    """Set up mock configuration for tests.
+
+    Args:
+        None
+
+    Returns:
+        MagicMock: Mock configuration instance with zones and subprocesses.
+    """
     mock_config_instance = MagicMock()
     mock_zone = MagicMock()
     mock_zone.name = "zone1"
@@ -44,7 +51,14 @@ def mock_config_setup():
 
 @pytest.fixture
 def mock_poll_meta():
-    """Create a mock poll meta object."""
+    """Create a mock poll meta object.
+
+    Args:
+        None
+
+    Returns:
+        _META: Mock poll meta object with zone, hostname, and config.
+    """
     return _META(zone="zone1", hostname="device1", config=MagicMock())
 
 
