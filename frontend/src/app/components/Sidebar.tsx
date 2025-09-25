@@ -14,7 +14,7 @@ import { ThemeToggle } from "@/app/theme-toggle";
  * This component is designed for client-side use only because it relies on
  * the `useState` and `useEffect` hooks for managing state and handling events.
  * It also includes responsive design features to adapt to different screen sizes.
- * The sidebar contains links to the dashboard, history, and settings pages,
+ * The sidebar contains links to the dashboard, history, and configuration pages,
  *
  * @returns The rendered sidebar component.
  *
@@ -90,12 +90,12 @@ export function Sidebar() {
         </li>
         <li>
           <Link
-            href="/settings"
+            href="/config"
             className="flex items-center gap-2 hover:text-primary"
             onClick={() => setOpen(false)}
           >
             <FiSettings className="icon" />
-            <span>Settings</span>
+            <span>Configuration</span>
           </Link>
         </li>
       </ul>

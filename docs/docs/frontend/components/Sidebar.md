@@ -29,7 +29,7 @@ The rendered sidebar component.
 This component is designed for client-side use only because it relies on
 the `useState` and `useEffect` hooks for managing state and handling events.
 It also includes responsive design features to adapt to different screen sizes.
-The sidebar contains links to the dashboard, history, and settings pages,
+The sidebar contains links to the dashboard, history, and configuration pages,
 
 #### See
 
