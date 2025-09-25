@@ -11,6 +11,7 @@
 - [components/Sidebar](components/Sidebar.md)
 - [components/TopologyChart](components/TopologyChart.md)
 - [components/ZoneDropdown](components/ZoneDropdown.md)
+- [config/page](config/page.md)
 - [devices/\[id\]/page](devices/[id]/page.md)
 - [layout](layout.md)
 - [page](page.md)

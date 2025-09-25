@@ -4715,6 +4715,34 @@ Module of switchmap API routes.
 
 Contains all routes that the Flask API uses
 
+<a id="api.routes.config"></a>
+
+# api.routes.config
+
+Config API routes for Switchmap.
+
+<a id="api.routes.config.get_config"></a>
+
+#### get\_config
+
+```python
+@API_CONFIG.route("/config", methods=["GET"])
+def get_config()
+```
+
+Return the current config as JSON.
+
+<a id="api.routes.config.update_config"></a>
+
+#### update\_config
+
+```python
+@API_CONFIG.route("/config", methods=["POST"])
+def update_config()
+```
+
+Update the config.yaml with new JSON data.
+
 <a id="api.routes.post"></a>
 
 # api.routes.post
