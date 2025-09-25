@@ -673,12 +673,13 @@ export default function ConfigPage() {
                           <label className="w-40">{key}:</label>
                           <input
                             className="border p-1 rounded flex-1"
-                            type={
-                              key.toLowerCase().includes("pass")
-                                ? "password"
-                                : "text"
+                            type="text" // keep text to control masking
+                            value={
+                              key.toLowerCase().includes("pass") &&
+                              (editSection !== section || !authPasswordEdit)
+                                ? "***********" // always show mask if not editing/authenticated
+                                : (value as any)
                             }
-                            value={value as any}
                             readOnly={
                               editSection !== section ||
                               (key.toLowerCase().includes("pass") &&
@@ -687,25 +688,35 @@ export default function ConfigPage() {
                             onClick={() => {
                               if (
                                 key.toLowerCase().includes("pass") &&
-                                editSection === section && // <-- only when editing
+                                editSection === section &&
                                 !authPasswordEdit
                               ) {
-                                const auth = prompt(
-                                  "Enter admin password to edit:"
+                                const auth = window.prompt(
+                                  "Enter current password to edit:"
                                 );
-                                if (auth === "your-secret")
+                                if (auth === config[section][key]) {
                                   setAuthPasswordEdit(true);
+                                } else {
+                                  alert("Incorrect password");
+                                }
                               }
                             }}
-                            onChange={(e) =>
-                              setConfig({
-                                ...config,
-                                [section]: {
-                                  ...config[section],
-                                  [key]: e.target.value,
-                                },
-                              })
-                            }
+                            onChange={(e) => {
+                              if (
+                                editSection === section &&
+                                (key.toLowerCase().includes("pass")
+                                  ? authPasswordEdit
+                                  : true)
+                              ) {
+                                setConfig({
+                                  ...config,
+                                  [section]: {
+                                    ...config[section],
+                                    [key]: e.target.value,
+                                  },
+                                });
+                              }
+                            }}
                           />
                         </div>
                       ))}
