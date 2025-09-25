@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
+import { FiCheck, FiEdit2, FiMinus, FiTrash2, FiX } from "react-icons/fi";
 
 type Config = any;
 
@@ -108,9 +109,9 @@ export default function ConfigPage() {
                     <div key={idx} className="space-y-1 border rounded p-3">
                       <div className="flex justify-between items-center">
                         <span className="font-semibold">{zone.zone}</span>
-                        <div className="space-x-2">
+                        <div className="space-x-2 flex flex-row">
                           <button
-                            className="px-2 py-1 bg-button-bg rounded"
+                            className="w-10 h-10 flex items-center justify-center bg-button-bg rounded"
                             onClick={() =>
                               setEditingZones({
                                 ...editingZones,
@@ -118,10 +119,11 @@ export default function ConfigPage() {
                               })
                             }
                           >
-                            {editing ? "Cancel" : "Edit"}
+                            {editing ? <FiCheck /> : <FiEdit2 />}
                           </button>
+
                           <button
-                            className="px-2 py-1 border rounded"
+                            className="w-10 h-10 flex items-center justify-center bg-button-bg rounded"
                             onClick={() => {
                               const newZones = [...config.poller.zones];
                               newZones.splice(idx, 1);
@@ -136,7 +138,7 @@ export default function ConfigPage() {
                               setEditingZones(newEditing);
                             }}
                           >
-                            Delete
+                            <FiTrash2 />
                           </button>
                         </div>
                       </div>
@@ -165,7 +167,6 @@ export default function ConfigPage() {
                                 }}
                               />
                               <button
-                                className="px-2 py-1 border rounded"
                                 onClick={() => {
                                   const newZones = [...config.poller.zones];
                                   newZones[idx].hostnames.splice(hIdx, 1);
@@ -178,7 +179,7 @@ export default function ConfigPage() {
                                   });
                                 }}
                               >
-                                Delete
+                                <FiMinus />
                               </button>
                             </div>
                           ))}
@@ -223,7 +224,25 @@ export default function ConfigPage() {
                       placeholder="Zone name"
                       value={draftZone}
                       onChange={(e) => setDraftZone(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault(); // prevent form submission or page reload
+                          if (!draftZone) return;
+                          setConfig({
+                            ...config,
+                            poller: {
+                              ...config.poller,
+                              zones: [
+                                ...(config.poller.zones || []),
+                                { zone: draftZone, hostnames: [] },
+                              ],
+                            },
+                          });
+                          setDraftZone(null);
+                        }
+                      }}
                     />
+
                     <button
                       className="px-2 py-1 bg-blue-600 text-white rounded"
                       onClick={() => {
