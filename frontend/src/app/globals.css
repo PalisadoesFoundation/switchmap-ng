@@ -13,11 +13,12 @@
   --color-icon: var(--icon-color);
   --color-hover-bg: var(--hover-bg);
   --color-select-bg: var(--select-bg);
-  --color-border-subtle: var(--border-subtle);
+  --color-primary: var(--primary-color);
 }
 
 
 :root {
+  --primary-color: #8C09BC;
   --bg-color: white;
   --content-bg: white;
   --text-color: #081028;
@@ -38,6 +39,7 @@
 }
 
 .dark {
+  --primary-color: #8C09BC;
   --bg-color: #081028;
   --content-bg: #0B1739;
   --text-color: #AEB9E1;

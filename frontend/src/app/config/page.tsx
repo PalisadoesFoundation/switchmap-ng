@@ -12,11 +12,19 @@ export default function ConfigPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [draftZone, setDraftZone] = useState<string | null>(null);
+  const [editIdx, setEditIdx] = useState<number | null>(null);
+  const [editSection, setEditSection] = useState<"core" | "server" | null>(
+    null
+  );
 
   const [activeTab, setActiveTab] = useState<"zones" | "snmp" | "advanced">(
     "zones"
   );
+  const sections: ("core" | "server")[] = ["core", "server"];
   const [editingZones, setEditingZones] = useState<Record<number, boolean>>({});
+  const [authPasswordEdit, setAuthPasswordEdit] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authInput, setAuthInput] = useState("");
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -64,7 +72,7 @@ export default function ConfigPage() {
   return (
     <div className="flex h-screen overflow-y-auto">
       <Sidebar />
-      <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full mx-10 min-w-[400px]">
+      <div className="p-4 w-full max-w-full flex flex-col gap-6 h-fit mx-10 min-w-[400px]">
         <div className="m-4 lg:ml-0">
           <h1 className="text-xl font-semibold">Switchmap Config</h1>
           <p className="text-sm pt-2 text-gray-600">
@@ -87,8 +95,8 @@ export default function ConfigPage() {
                   key={tab}
                   className={`px-4 py-2 -mb-px border-b-2 font-semibold ${
                     activeTab === tab
-                      ? "border-b-2 border-primary text-primary"
-                      : "text-gray-500 hover:text-primary"
+                      ? "border-b-2 border-primary text-primary hover:bg-hover-bg"
+                      : "text-gray-500 hover:bg-hover-bg"
                   }`}
                   onClick={() => setActiveTab(tab as any)}
                 >
@@ -107,11 +115,15 @@ export default function ConfigPage() {
 
                   return (
                     <div key={idx} className="space-y-1 border rounded p-3">
-                      <div className="flex justify-between items-center">
+                      <div className="mb-4 flex justify-between items-center">
                         <span className="font-semibold">{zone.zone}</span>
                         <div className="space-x-2 flex flex-row">
                           <button
-                            className="w-10 h-10 flex items-center justify-center bg-button-bg rounded"
+                            className={`p-1 rounded transition ${
+                              editing
+                                ? "bg-purple-500 text-white hover:bg-purple-600"
+                                : "text-primary hover:text-hover-bg"
+                            }`}
                             onClick={() =>
                               setEditingZones({
                                 ...editingZones,
@@ -123,7 +135,7 @@ export default function ConfigPage() {
                           </button>
 
                           <button
-                            className="w-10 h-10 flex items-center justify-center bg-button-bg rounded"
+                            className="text-primary hover:text-hover-bg"
                             onClick={() => {
                               const newZones = [...config.poller.zones];
                               newZones.splice(idx, 1);
@@ -184,7 +196,7 @@ export default function ConfigPage() {
                             </div>
                           ))}
                           <button
-                            className="px-2 py-1 bg-green-600 text-white rounded"
+                            className="px-2 py-1 border border-primary rounded"
                             onClick={() => {
                               const newZones = [...config.poller.zones];
                               newZones[idx].hostnames.push("");
@@ -212,7 +224,7 @@ export default function ConfigPage() {
                 })}
                 {draftZone === null ? (
                   <button
-                    className="px-3 py-1 bg-green-600 text-white rounded"
+                    className="px-3 py-1 border border-primary rounded"
                     onClick={() => setDraftZone("")}
                   >
                     + Add Zone
@@ -244,7 +256,7 @@ export default function ConfigPage() {
                     />
 
                     <button
-                      className="px-2 py-1 bg-blue-600 text-white rounded"
+                      className="px-2 py-1 bg-blue-600 rounded"
                       onClick={() => {
                         if (!draftZone) return;
                         setConfig({
@@ -276,11 +288,56 @@ export default function ConfigPage() {
             {activeTab === "snmp" && (
               <div className="space-y-4">
                 {config.poller?.snmp_groups?.map((grp: any, idx: number) => (
-                  <div key={idx} className="space-y-1 border rounded p-3">
+                  <div
+                    key={idx}
+                    className="space-y-1 rounded py-3 px-2 relative"
+                  >
+                    {/* Edit/Delete buttons */}
+                    <div className="absolute top-2 right-2 flex space-x-2">
+                      <button
+                        className={`p-1 rounded transition ${
+                          editIdx === idx
+                            ? "bg-purple-500 text-white hover:bg-purple-600"
+                            : "text-primary hover:text-hover-bg"
+                        }`}
+                        onClick={() => {
+                          if (editIdx === idx) {
+                            // Save action when clicking the check
+                            setEditIdx(null);
+                            // optionally do other save logic here
+                          } else {
+                            // Enter edit mode
+                            setEditIdx(idx);
+                          }
+                        }}
+                      >
+                        {editIdx === idx ? <FiCheck /> : <FiEdit2 />}
+                      </button>
+
+                      <button
+                        className="text-primary hover:text-hover-bg"
+                        onClick={() => {
+                          const newGroups = [...config.poller.snmp_groups];
+                          newGroups.splice(idx, 1);
+                          setConfig({
+                            ...config,
+                            poller: {
+                              ...config.poller,
+                              snmp_groups: newGroups,
+                            },
+                          });
+                          if (editIdx === idx) setEditIdx(null); // reset edit mode if deleting
+                        }}
+                      >
+                        <FiTrash2 />
+                      </button>
+                    </div>
+
                     <input
-                      className="w-full border p-2 rounded"
+                      className="w-full border p-2 rounded mt-6"
                       value={grp.group_name}
                       placeholder="Group Name"
+                      readOnly={editIdx !== idx} // only editable if this group is being edited
                       onChange={(e) => {
                         const newGroups = [...config.poller.snmp_groups];
                         newGroups[idx].group_name = e.target.value;
@@ -294,6 +351,7 @@ export default function ConfigPage() {
                       className="w-full border p-2 rounded"
                       value={grp.snmp_ip || ""}
                       placeholder="IP Address"
+                      readOnly={editIdx !== idx} // only editable in edit mode
                       onChange={(e) => {
                         const newGroups = [...config.poller.snmp_groups];
                         newGroups[idx].snmp_ip = e.target.value;
@@ -307,6 +365,7 @@ export default function ConfigPage() {
                       <input
                         type="checkbox"
                         checked={grp.enabled || false}
+                        disabled={editIdx !== idx} // only editable in edit mode
                         onChange={(e) => {
                           const newGroups = [...config.poller.snmp_groups];
                           newGroups[idx].enabled = e.target.checked;
@@ -323,20 +382,31 @@ export default function ConfigPage() {
                     </label>
                   </div>
                 ))}
+
                 <button
-                  className="px-3 py-1 bg-green-600 text-white rounded"
-                  onClick={() =>
-                    setConfig({
-                      ...config,
-                      poller: {
-                        ...config.poller,
-                        snmp_groups: [
-                          ...(config.poller.snmp_groups || []),
-                          { group_name: "", snmp_ip: "", enabled: true },
-                        ],
-                      },
-                    })
-                  }
+                  className="px-3 py-1 border border-primary rounded"
+                  onClick={() => {
+                    const groups = config.poller?.snmp_groups || [];
+                    const lastGroup = groups[groups.length - 1];
+
+                    // Only add if last group exists and has a name or IP
+                    if (
+                      !lastGroup ||
+                      (lastGroup.group_name?.trim() &&
+                        lastGroup.snmp_ip?.trim())
+                    ) {
+                      setConfig({
+                        ...config,
+                        poller: {
+                          ...config.poller,
+                          snmp_groups: [
+                            ...groups,
+                            { group_name: "", snmp_ip: "", enabled: true },
+                          ],
+                        },
+                      });
+                    }
+                  }}
                 >
                   + Add SNMP Group
                 </button>
@@ -345,11 +415,29 @@ export default function ConfigPage() {
 
             {activeTab === "advanced" && (
               <div className="space-y-4">
-                {["core", "server"].map((section) => (
+                {sections.map((section) => (
                   <details key={section} className="border rounded p-4">
-                    <summary className="cursor-pointer font-semibold">
-                      {section.charAt(0).toUpperCase() + section.slice(1)}
+                    <summary className="cursor-pointer flex justify-between items-center font-semibold">
+                      <span>
+                        {section.charAt(0).toUpperCase() + section.slice(1)}
+                      </span>
+                      <button
+                        className={`p-1 rounded transition ${
+                          editSection === section
+                            ? "bg-purple-500 text-white hover:bg-purple-600"
+                            : "text-primary hover:text-hover-bg"
+                        }`}
+                        onClick={(e) => {
+                          e.preventDefault(); // prevent toggling details
+                          setEditSection(
+                            editSection === section ? null : section
+                          );
+                        }}
+                      >
+                        {editSection === section ? <FiCheck /> : <FiEdit2 />}
+                      </button>
                     </summary>
+
                     <div className="mt-2 space-y-2">
                       {Object.entries(config[section]).map(([key, value]) => (
                         <div key={key} className="flex items-center space-x-2">
@@ -362,6 +450,23 @@ export default function ConfigPage() {
                                 : "text"
                             }
                             value={value as any}
+                            readOnly={
+                              editSection !== section ||
+                              (key.toLowerCase().includes("pass") &&
+                                !authPasswordEdit)
+                            }
+                            onClick={() => {
+                              if (
+                                key.toLowerCase().includes("pass") &&
+                                !authPasswordEdit
+                              ) {
+                                const auth = prompt(
+                                  "Enter admin password to edit:"
+                                ); // simple prompt
+                                if (auth === "your-secret")
+                                  setAuthPasswordEdit(true);
+                              }
+                            }}
                             onChange={(e) =>
                               setConfig({
                                 ...config,
@@ -382,20 +487,18 @@ export default function ConfigPage() {
 
             <div className="flex justify-end items-center gap-3 mt-6">
               {saving && <span className="text-sm text-gray-500">Saving…</span>}
-              {!saving && saved && (
-                <span className="text-sm text-green-600">Saved!</span>
-              )}
+              {!saving && saved && <span className="text-sm">Saved!</span>}
               <button
                 onClick={handleSave}
                 disabled={saving}
                 className={`px-5 py-2 font-medium rounded-lg shadow transition
       ${
         saving
-          ? "bg-gray-400 cursor-not-allowed"
-          : "bg-blue-600 hover:bg-blue-700 text-white"
+          ? "bg-hover-bg text-white cursor-not-allowed"
+          : "bg-primary hover:bg-hover-bg text-white"
       }`}
               >
-                Save Config
+                Save
               </button>
             </div>
           </>
