@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import HistoricalChart from "./HistoricalChart";
+import { HistoricalChart } from "./HistoricalChart";
 import { TopologyChart } from "./TopologyChart";
 import { DeviceNode } from "../types/graphql/GetZoneDevices";
 import styles from "./DeviceDetails.module.css";
@@ -192,10 +192,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           setDeviceMetrics(null);
           return;
         }
-        if (hostMetrics.length === 0) return;
-
         hostMetrics.sort((a, b) => Number(a.lastPolled) - Number(b.lastPolled));
-
         setDeviceMetrics(hostMetrics[hostMetrics.length - 1]);
 
         setUptimeData(
@@ -249,7 +246,10 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
 
     if (selectedRange === 0 && customRange.start && customRange.end) {
       startDate = new Date(customRange.start);
+      startDate.setHours(0, 0, 0, 0);
       const endDate = new Date(customRange.end);
+      // include entire end day
+      endDate.setHours(23, 59, 59, 999);
       return data.filter(
         (d) =>
           new Date(d.lastPolled) >= startDate &&
@@ -280,7 +280,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         {metadataTableMemo}
       </div>
       {/* Time Range Dropdown */}
-      <div className="mt-8 md:mt-2 flex flex-col md:flex-row gap-4 text-left justify-start xl:items-center">
+      <div className="mt-8 md:mt-2 flex flex-col lg:flex-row gap-4 text-left justify-start xl:items-center">
         <div className="relative">
           <button
             type="button"
@@ -324,95 +324,119 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           )}
         </div>
         {selectedRange === 0 && (
-          <div className="flex flex-col sm:flex-row gap-2 items-start">
-            <input
-              type="date"
-              className="border p-2 rounded"
-              value={customRange.start}
-              onChange={(e) => {
-                const start = new Date(e.target.value);
-                const end = customRange.end ? new Date(customRange.end) : null;
-                if (end && start > end) {
-                  setErrorMsg("Start date must be before end date.");
-                  setTimeout(() => setErrorMsg(""), 3000);
-                  return;
-                }
-                if (
-                  end &&
-                  (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
-                    180
-                ) {
-                  setErrorMsg("Custom range cannot exceed 180 days.");
-                  setTimeout(() => setErrorMsg(""), 3000);
-                  return;
-                }
+          <div className="flex flex-col lg:flex-row gap-8 items-start">
+            <label className="flex flex-col lg:flex-row gap-2 lg:items-center">
+              Start date{" "}
+              <input
+                type="date"
+                className="border p-2 rounded"
+                value={customRange.start}
+                onChange={(e) => {
+                  const start = new Date(e.target.value);
+                  const end = customRange.end
+                    ? new Date(customRange.end)
+                    : null;
+                  if (end && start > end) {
+                    setErrorMsg("Start date must be before end date.");
+                    setTimeout(() => setErrorMsg(""), 3000);
+                    return;
+                  }
+                  if (
+                    end &&
+                    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
+                      180
+                  ) {
+                    setErrorMsg("Custom range cannot exceed 180 days.");
+                    setTimeout(() => setErrorMsg(""), 3000);
+                    return;
+                  }
 
-                setCustomRange({ ...customRange, start: e.target.value });
-              }}
-            />
-            <span className="flex items-center justify-center h-full px-2 my-auto">
-              to
-            </span>
-            <input
-              type="date"
-              className="border p-2 rounded"
-              value={customRange.end}
-              onChange={(e) => {
-                const start = customRange.start
-                  ? new Date(customRange.start)
-                  : null;
-                const end = new Date(e.target.value);
-                if (start && end < start) {
-                  setErrorMsg("End date must be after start date.");
-                  setTimeout(() => setErrorMsg(""), 3000);
-                  return;
-                }
+                  setCustomRange({ ...customRange, start: e.target.value });
+                }}
+              />
+            </label>
+            <label className="flex flex-col lg:flex-row gap-2 lg:items-center">
+              End date{" "}
+              <input
+                type="date"
+                className="border p-2 rounded"
+                value={customRange.end}
+                onChange={(e) => {
+                  const start = customRange.start
+                    ? new Date(customRange.start)
+                    : null;
+                  const end = new Date(e.target.value);
+                  if (start && end < start) {
+                    setErrorMsg("End date must be after start date.");
+                    setTimeout(() => setErrorMsg(""), 3000);
+                    return;
+                  }
 
-                if (
-                  start &&
-                  end &&
-                  (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
-                    180
-                ) {
-                  setErrorMsg("Custom range cannot exceed 180 days.");
-                  setTimeout(() => setErrorMsg(""), 3000);
-                  return;
-                }
+                  if (
+                    start &&
+                    end &&
+                    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24) >
+                      180
+                  ) {
+                    setErrorMsg("Custom range cannot exceed 180 days.");
+                    setTimeout(() => setErrorMsg(""), 3000);
+                    return;
+                  }
 
-                setCustomRange({ ...customRange, end: e.target.value });
-              }}
-            />
+                  setCustomRange({ ...customRange, end: e.target.value });
+                }}
+              />
+            </label>
           </div>
         )}
       </div>
 
       <div className="p-4 w-full min-w-[350px] flex flex-col xl:flex-row gap-4">
-        <HistoricalChart
-          title="System Status"
-          data={filterByRange(uptimeData)}
-          color="#00b894"
-          unit=""
-          yAxisConfig={{
-            domain: [0, 1],
-            ticks: [0, 1],
-            tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
-            allowDecimals: false,
-          }}
-          lineType="stepAfter"
-        />
+        {filterByRange(uptimeData)?.length ? (
+          <HistoricalChart
+            title="System Status"
+            data={filterByRange(uptimeData)}
+            color="#00b894"
+            unit=""
+            yAxisConfig={{
+              domain: [0, 1],
+              ticks: [0, 1],
+              tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
+              allowDecimals: false,
+            }}
+            lineType="stepAfter"
+          />
+        ) : (
+          <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
+            No uptime data available
+          </div>
+        )}
 
-        <HistoricalChart
-          title="CPU Usage (%)"
-          data={filterByRange(cpuUsageData)}
-          color="#0984e3"
-          unit="%"
-        />
-        <HistoricalChart
-          title="Memory Usage (%)"
-          data={filterByRange(memoryUsageData)}
-          color="#e17055"
-          unit="%"
-        />
+        {filterByRange(cpuUsageData)?.length ? (
+          <HistoricalChart
+            title="CPU Usage (%)"
+            data={filterByRange(cpuUsageData)}
+            color="#0984e3"
+            unit="%"
+          />
+        ) : (
+          <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
+            No CPU data available
+          </div>
+        )}
+
+        {filterByRange(memoryUsageData)?.length ? (
+          <HistoricalChart
+            title="Memory Usage (%)"
+            data={filterByRange(memoryUsageData)}
+            color="#e17055"
+            unit="%"
+          />
+        ) : (
+          <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
+            No memory data available
+          </div>
+        )}
       </div>
     </div>
   );

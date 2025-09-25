@@ -16,9 +16,9 @@ import { useRouter } from "next/navigation";
  * Renders a network topology chart using vis-network based on the given devices.
  *
  * @param {TopologyChartProps} props - The properties for the topology chart.
- * @param {Device[]} props.devices - Array of device objects representing nodes.
+ * @param {DeviceNode[]} props.devices - Array of device objects representing nodes.
  * @param {boolean} props.loading - Loading state flag.
- * @param {Error | null} props.error - Error state, if any.
+ * @param {string | null} props.error - Error state, if any.
  *
  * @returns {JSX.Element} A React component rendering the network graph visualization.
  */
@@ -31,6 +31,9 @@ interface TopologyChartProps {
   clickToUse?: boolean;
 }
 
+// vis-network Node plus our custom field for navigation
+type VisNode = Node & { idxDevice?: string };
+
 export function TopologyChart({
   devices,
   loading,
@@ -39,7 +42,7 @@ export function TopologyChart({
   clickToUse,
 }: TopologyChartProps) {
   // React state to hold current graph structure: array of nodes and edges
-  const [graph, setGraph] = useState<{ nodes: Node[]; edges: Edge[] }>({
+  const [graph, setGraph] = useState<{ nodes: VisNode[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
   });
@@ -57,12 +60,12 @@ export function TopologyChart({
   const networkRef = useRef<Network | null>(null);
   // DataSets are vis-network's internal reactive data structures for nodes and edges
   // These allow to dynamically add, update, or remove nodes/edges without recreating the network
-  const nodesData = useRef<DataSet<Node> | null>(null);
+  const nodesData = useRef<DataSet<VisNode> | null>(null);
   const edgesData = useRef<DataSet<Edge> | null>(null);
   // Theme context to determine if dark mode is enabled
   const { theme } = useTheme();
   // Stores the original, unmodified graph (used for resets, filtering, etc.)
-  const initialGraph = React.useRef<{ nodes: Node[]; edges: Edge[] }>({
+  const initialGraph = React.useRef<{ nodes: VisNode[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
   });
@@ -111,7 +114,7 @@ export function TopologyChart({
         selectConnectedEdges: false,
       },
     }),
-    [isDark]
+    [isDark, clickToUse, zoomView]
   );
 
   useEffect(() => {
@@ -139,6 +142,7 @@ export function TopologyChart({
     const nodesSet = new Set<string>();
     const extraNodesSet = new Set<string>();
     const edgesArray: Edge[] = [];
+    let edgeSeq = 0;
     // Iterate over each device to build nodes and edges
     // We use `sysName` as the unique identifier for each device
     devices.forEach((device) => {
@@ -155,35 +159,49 @@ export function TopologyChart({
         ({ node: iface }: { node: any }) => {
           const targetCDP = iface?.cdpcachedeviceid;
           const portCDP = iface?.cdpcachedeviceport;
-          const targetLLDP = iface?.lldpcachedeviceid;
-          const portLLDP = iface?.lldpcachedeviceport;
+          const targetLLDP = iface?.lldpremsysname;
+          const portLLDP = iface?.lldpremportdesc;
           // Create edges for CDP or LLDP relationships
           if (targetCDP) {
+            const edgeId = `e_${sysName}__${targetCDP}__${
+              portCDP ?? ""
+            }__${edgeSeq++}`;
             if (!nodesSet.has(targetCDP)) {
               extraNodesSet.add(targetCDP);
             }
             edgesArray.push({
               from: sysName,
+              id: edgeId,
               to: targetCDP,
               label: "",
-              title: portCDP,
-              color: "#BBBBBB",
+              title: htmlTitle(escapeHtml(String(portCDP ?? ""))),
             } as Edge);
           } else if (targetLLDP) {
+            const edgeId = `e_${sysName}__${targetLLDP}__${
+              portLLDP ?? ""
+            }__${edgeSeq++}`;
             if (!nodesSet.has(targetLLDP)) {
               extraNodesSet.add(targetLLDP);
             }
             edgesArray.push({
+              id: edgeId,
               from: sysName,
               to: targetLLDP,
               label: "",
-              title: portLLDP,
-              color: "#BBBBBB",
+              title: htmlTitle(escapeHtml(String(portLLDP ?? ""))),
             } as Edge);
           }
         }
       );
     });
+    function escapeHtml(s: string): string {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
     function htmlTitle(html: string): HTMLElement {
       const container = document.createElement("div");
       container.innerHTML = html;
@@ -192,17 +210,20 @@ export function TopologyChart({
 
     // Create nodes array from devices
     // Each node has an `id`, `label`, `color`, and custom `title
-    const nodesArray: Node[] = devices.map((device) => ({
-      id: device.sysName ?? "",
-      label: device.sysName ?? device.idxDevice?.toString() ?? "",
-      color: "#1E90FF",
-      idxDevice: device.idxDevice?.toString(), // custom field for navigation
-      title: htmlTitle(
-        `
+    const nodesArray: VisNode[] = devices
+      .filter((d) => Boolean(d?.sysName))
+      .map(
+        (device) =>
+          ({
+            id: device.sysName!,
+            label: device.sysName ?? device.idxDevice?.toString() ?? "",
+            idxDevice: device.idxDevice?.toString(), // custom field for navigation
+            title: htmlTitle(
+              `
     <div style="display: flex; align-items: flex-start; gap: 1rem;">
       <div>
-        ${device.sysName ?? "Unknown"}<br>
-        Hostname: ${device.hostname ?? "N/A"}
+        ${escapeHtml(device.sysName ?? "Unknown")}<br>  
+        Hostname: ${escapeHtml(device.hostname ?? "N/A")} 
       </div>
       <div style="font-size: 2em;">
         ${
@@ -213,12 +234,17 @@ export function TopologyChart({
       </div>
     </div>
     <div style="margin-top: 0.5rem; font-size: 1.2em; font-weight: bold; color: white;">
-      ${formatUptime(device.sysUptime) ?? "N/A"}
+      ${
+        typeof device.sysUptime === "number"
+          ? formatUptime(device.sysUptime)
+          : "N/A"
+      }
       <span style="font-size: 0.4em; font-weight: normal;">Uptime</span>
     </div>
   `.trim()
-      ),
-    }));
+            ),
+          } as VisNode)
+      );
     // Add extra nodes that are not in the current zone
     // These nodes are added with a different color and a tooltip
     // indicating they are not in the current zone
@@ -226,7 +252,7 @@ export function TopologyChart({
       nodesArray.push({
         id: sysName,
         label: sysName,
-        color: "#383e44ff",
+        color: "#383e44",
       });
     });
     // Clean up DOM elements in node titles
@@ -291,9 +317,6 @@ export function TopologyChart({
     });
 
     // Node selection highlighting
-    // When a node is selected, it highlights the node and dims others
-    // It also updates the edges to have a different color
-
     networkRef.current.on("selectNode", ({ nodes }) => {
       const selected = nodes[0];
       if (!nodesData.current || !edgesData.current) return;
@@ -303,9 +326,7 @@ export function TopologyChart({
         nodesData.current!.update({
           id: node.id,
           opacity: isSelected ? 1 : 0.6,
-          color: {
-            border: isDark ? "#999" : "#555",
-          },
+          color: { border: isDark ? "#999" : "#555" },
           font: {
             color: isSelected
               ? isDark
@@ -318,9 +339,8 @@ export function TopologyChart({
         });
       });
     });
+
     // Reset node selection highlighting
-    // When a node is deselected, it resets the opacity and color of all nodes
-    // It also resets the edges color to default
     networkRef.current.on("deselectNode", () => {
       if (!nodesData.current || !edgesData.current) return;
 
@@ -328,22 +348,19 @@ export function TopologyChart({
         nodesData.current!.update({
           id: node.id,
           opacity: 1,
-          color: {
-            border: isDark ? "#999" : "#555",
-          },
-          font: {
-            color: isDark ? "#fff" : "black",
-          },
+          color: { border: isDark ? "#999" : "#555" },
+          font: { color: isDark ? "#fff" : "black" },
         });
       });
       // Reset edges color
       initialGraph.current.edges.forEach((originalEdge) => {
         edgesData.current!.update({
-          id: originalEdge.id,
-          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"), // fallback if color missing
+          id: originalEdge.id!,
+          color: isDark ? "#444" : "#BBBBBB",
         });
       });
     });
+
     // Show arrow on hover
     networkRef.current.on("hoverEdge", (params) => {
       if (!edgesData.current) return;
@@ -358,7 +375,6 @@ export function TopologyChart({
       if (!edgesData.current || !networkRef.current) return;
 
       const selectedEdges = networkRef.current.getSelectedEdges();
-
       if (!selectedEdges.includes(params.edge)) {
         edgesData.current.update({
           id: params.edge,
@@ -371,7 +387,7 @@ export function TopologyChart({
       if (!edgesData.current) return;
 
       edgesData.current.update({
-        id: params.edges[0], // handles single selection
+        id: params.edges[0],
         arrows: { to: { enabled: true, scaleFactor: 0.5 } },
       });
     });
@@ -381,20 +397,31 @@ export function TopologyChart({
 
       initialGraph.current.edges.forEach((originalEdge) => {
         edgesData.current!.update({
-          id: originalEdge.id,
-          color: originalEdge.color || (isDark ? "#444" : "#BBBBBB"), // fallback if color missing
-          arrows: { to: false }, // reset arrow visibility
+          id: originalEdge.id!,
+          color: isDark ? "#444" : "#BBBBBB",
+          arrows: { to: false },
         });
       });
     });
+
     const labels =
       nodesData.current
         ?.get()
         ?.map((node: any) => node.label)
         .filter(Boolean) || [];
-
     setAllNodeLabels(labels);
-  }, [graph, theme]);
+
+    // Cleanup previous Network instance to avoid leaks & duplicate handlers
+    return () => {
+      try {
+        networkRef.current?.destroy();
+      } finally {
+        networkRef.current = null;
+        nodesData.current = null;
+        edgesData.current = null;
+      }
+    };
+  }, [graph, options]);
 
   useEffect(() => {
     if (!inputTerm || inputTerm.trim() === "") {
@@ -527,9 +554,9 @@ export function TopologyChart({
 
           {suggestions.length > 0 && (
             <ul className="absolute bg-bg shadow-md mt-1 rounded border w-full z-50 topology-suggestions-list">
-              {suggestions.map((suggestion, index) => (
+              {suggestions.map((suggestion) => (
                 <li
-                  key={index}
+                  key={suggestion}
                   onClick={() => {
                     setSearchTerm(suggestion);
                     setInputTerm("");

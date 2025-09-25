@@ -45,7 +45,7 @@ interface HistoricalChartProps {
   lineType?: "linear" | "monotone" | "step" | "stepAfter" | "stepBefore";
 }
 
-function HistoricalChart({
+export function HistoricalChart({
   data,
   title,
   color = "#8884d8",

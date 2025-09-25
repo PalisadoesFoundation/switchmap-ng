@@ -2030,6 +2030,28 @@ class Query(graphene.ObjectType)
 
 Define GraphQL queries.
 
+<a id="db.schemas.Query.resolve_devices"></a>
+
+#### resolve\_devices
+
+```python
+def resolve_devices(root, info, hostname=None, **kwargs)
+```
+
+Resolve and return devices from the database.
+
+**Arguments**:
+
+- `root` - The root object (not used here).
+- `info` - GraphQL resolver info, used to get the query context.
+- `hostname` _str, optional_ - If provided, filters by this hostname.
+- `**kwargs` - Additional arguments (ignored).
+  
+
+**Returns**:
+
+- `sqlalchemy.orm.Query` - A query object for the matching Device.
+
 <a id="db.schemas.Query.resolve_deviceMetrics"></a>
 
 #### resolve\_deviceMetrics

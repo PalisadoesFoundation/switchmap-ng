@@ -84,6 +84,7 @@ function parseDateOnlyLocal(yyyyMmDd: string): Date {
 
 export default function DeviceHistoryChart() {
   const [allDevices, setAllDevices] = useState<DeviceNode[]>([]);
+  const [allDeviceHostnames, setAllDeviceHostnames] = useState<string[]>([]);
   const [inputTerm, setInputTerm] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
@@ -195,6 +196,9 @@ export default function DeviceHistoryChart() {
           if (!searchTerm && filteredDevices.length > 0) {
             setSearchTerm(filteredDevices[0].hostname);
           }
+          setAllDeviceHostnames(
+            Array.from(new Set(devicesWithZones.map((d) => d.hostname)))
+          ); // all devices, unfiltered
         }
       } catch (err: any) {
         if (isMounted) setError(err.message || "Error fetching devices");
@@ -219,11 +223,11 @@ export default function DeviceHistoryChart() {
       setSuggestions([]);
       return;
     }
-    const filtered = uniqueHostnames
+    const filtered = allDeviceHostnames
       .filter((host) => host.toLowerCase().includes(inputTerm.toLowerCase()))
       .slice(0, 5);
     setSuggestions(filtered);
-  }, [inputTerm, uniqueHostnames]);
+  }, [inputTerm, allDeviceHostnames]);
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -299,16 +303,6 @@ export default function DeviceHistoryChart() {
         </div>
       );
     }
-    if (searchTerm && history.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64">
-          <p className="text-gray-700">
-            No history found for{" "}
-            <span className="font-semibold">{searchTerm}</span>.
-          </p>
-        </div>
-      );
-    }
     return null;
   };
 
@@ -322,10 +316,10 @@ export default function DeviceHistoryChart() {
           </div>
         </div>
       )}
-      <div className="flex h-screen md:m-8 overflow-y-auto">
+      <div className="flex h-screen overflow-y-auto">
         <Sidebar />
         <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full overflow-y-auto mx-10">
-          <div className="m-4 md:ml-0">
+          <div className="m-4 lg:ml-0">
             <h2 className="text-xl font-semibold">Device History</h2>
             <p className="text-sm pt-2 text-gray-600">
               Visualizing the historical movement and status changes of devices
@@ -336,6 +330,8 @@ export default function DeviceHistoryChart() {
           <div className="relative flex flex-col xl:flex-row gap-10 justify-between w-full">
             <form
               className="flex flex-col gap-4 md:flex-row md:items-center"
+              role="form"
+              data-testid="search-form"
               onSubmit={onSubmit}
             >
               <div className="relative">
@@ -349,7 +345,10 @@ export default function DeviceHistoryChart() {
                   disabled={loading}
                 />
                 {suggestions.length > 0 && (
-                  <ul className="absolute top-full left-0 mt-1 bg-bg shadow-md rounded border w-full z-50 ">
+                  <ul
+                    className="absolute top-full left-0 mt-1 bg-bg shadow-md rounded border w-full z-50 "
+                    data-testid="suggestions-list"
+                  >
                     {suggestions.map((suggestion, i) => (
                       <li
                         key={i}
@@ -380,6 +379,7 @@ export default function DeviceHistoryChart() {
                 <div className="flex flex-row gap-2 items-start">
                   <input
                     type="date"
+                    aria-label="custom start date"
                     className="border p-2 rounded"
                     value={customStart}
                     onChange={(e) => {
@@ -414,6 +414,7 @@ export default function DeviceHistoryChart() {
                   </span>
                   <input
                     type="date"
+                    aria-label="custom end date"
                     className="border p-2 rounded"
                     value={customEnd}
                     onChange={(e) => {

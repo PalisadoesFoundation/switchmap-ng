@@ -21,6 +21,7 @@ import { useEffect, useState, useRef } from "react";
  */
 
 type Zone = {
+  tsCreated: string;
   name: string;
   idxZone: string;
   id: string;
@@ -39,6 +40,8 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
+
     const fetchZones = async () => {
       setLoading(true);
       setError(null);
@@ -50,48 +53,54 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              query: `  
-               {
-      events(last: 1) {
-        edges {
-          node {
-            zones {
-              edges {
-                node {
-                  id
-                  idxZone
-                  name
+              query: `{
+              events(last: 1) {
+                edges {
+                  node {
+                    zones {
+                      edges {
+                        node {
+                          tsCreated
+                          id
+                          idxZone
+                          name
+                        }
+                      }
+                    }
+                  }
                 }
               }
-            }
-          }
-        }
-      }
-    }
-            `,
+            }`,
             }),
           }
         );
-        if (!res.ok) {
-          throw new Error(`Network error: ${res.status}`);
-        }
+
+        if (!res.ok) throw new Error(`Network error: ${res.status}`);
+
         const json = await res.json();
-        if (json.errors) {
-          throw new Error(json.errors[0].message);
-        }
+        if (json.errors) throw new Error(json.errors[0].message);
+
         const rawZones =
           json?.data?.events?.edges?.[0]?.node?.zones?.edges?.map(
             (edge: ZoneEdge) => edge.node
           ) ?? [];
-        setZones(rawZones);
+
+        if (active) setZones(rawZones);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to fetch zones");
+        if (active)
+          setError(
+            err instanceof Error ? err.message : "Failed to fetch zones"
+          );
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
     fetchZones();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -107,21 +116,21 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // If selectedZoneId is null, pick the first zone (if available)
+  // Determine the selected zone object
   const selected =
-    (selectedZoneId && zones.find((z) => z.id === selectedZoneId)) ||
-    (zones.length > 0 ? zones[0] : undefined);
+    selectedZoneId === "all"
+      ? { name: "All", idxZone: "all", id: "all", tsCreated: "" }
+      : (selectedZoneId && zones.find((z) => z.id === selectedZoneId)) ||
+        (zones.length > 0 ? zones[0] : undefined);
 
-  // If selectedZoneId is null and zones are loaded, notify parent
   useEffect(() => {
     if (zones.length > 0) {
-      // Always call onChange with the first zone if selectedZoneId is null or not found in zones
+      if (selectedZoneId === "all") return;
       const found = zones.find((z) => z.id === selectedZoneId);
       if (!found) {
         onChange(zones[0].id);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [zones, selectedZoneId]);
 
   return (
@@ -155,6 +164,9 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
           />
         </svg>
       </button>
+      <p className="text-sm text-gray-700 pt-2 text-right">
+        {selected?.tsCreated || ""}
+      </p>
 
       {open && (
         <>
@@ -163,9 +175,13 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
               Error: {error}
             </div>
           )}
-          <div className="absolute bg-bg mt-1 w-48 rounded-md shadow-lg border border-color z-10 max-h-60 overflow-auto">
+          <div
+            data-testid="zone-dropdown-menu"
+            className="absolute bg-bg mt-1 w-48 rounded-md shadow-lg border border-color z-10 max-h-60 overflow-auto"
+          >
             {zones.map((zone) => (
               <button
+                data-testid={`zone-button-${zone.id}`}
                 key={zone.id}
                 onClick={() => {
                   onChange(zone.id);
@@ -176,6 +192,17 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
                 {zone.name || `Zone ${zone.idxZone}`}
               </button>
             ))}
+            <button
+              key="all"
+              data-testid="zone-button-all"
+              onClick={() => {
+                onChange("all");
+                setOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 hover:bg-hover-bg focus:outline-none"
+            >
+              All
+            </button>
           </div>
         </>
       )}

@@ -10,10 +10,10 @@
 
 ### default()
 
-> **default**(): `null` \| `Element`
+> **default**(): `Element`
 
-Defined in: [devices/\[id\]/page.tsx:78](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/devices/[id]/page.tsx#L78)
+Defined in: [devices/\[id\]/page.tsx:33](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/devices/[id]/page.tsx#L33)
 
 #### Returns
 
-`null` \| `Element`
+`Element`
