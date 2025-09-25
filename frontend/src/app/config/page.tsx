@@ -144,15 +144,36 @@ export default function ConfigPage() {
                                   : "text-primary hover:text-hover-bg"
                               }`}
                               onClick={() => {
+                                if (editing) {
+                                  // Exiting edit mode: remove empty hostnames
+                                  const newZones = [...config.poller.zones];
+                                  newZones[idx].hostnames = newZones[
+                                    idx
+                                  ].hostnames.filter(
+                                    (h: string) => h && h.trim() !== ""
+                                  );
+                                  setConfig({
+                                    ...config,
+                                    poller: {
+                                      ...config.poller,
+                                      zones: newZones,
+                                    },
+                                  });
+                                }
+
+                                // Toggle edit mode
                                 setEditingZones({
                                   ...editingZones,
                                   [idx]: !editing,
                                 });
 
-                                setExpandedZones({
-                                  ...expandedZones,
-                                  [idx]: true,
-                                });
+                                // Expand the section if entering edit mode
+                                if (!editing) {
+                                  setExpandedZones({
+                                    ...expandedZones,
+                                    [idx]: true,
+                                  });
+                                }
                               }}
                             >
                               {editing ? <FiCheck /> : <FiEdit2 />}
