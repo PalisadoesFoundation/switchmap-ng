@@ -170,7 +170,7 @@ async def device(poll_meta, device_semaphore, session, post=True):
                         log.log2debug(1416, log_message)
 
                         async with session.post(url, json=data) as res:
-                            if res.status == 200:
+                            if 200 <= res.status < 300:
                                 log_message = (
                                     f"Successfully polled and posted data "
                                     f"for {hostname}"
@@ -182,6 +182,7 @@ async def device(poll_meta, device_semaphore, session, post=True):
                                     f"status={res.status}"
                                 )
                                 log.log2warning(1414, log_message)
+                                return False
                     except aiohttp.ClientError as e:
                         log_message = (
                             f"HTTP error posting data for {hostname}: {e}"
