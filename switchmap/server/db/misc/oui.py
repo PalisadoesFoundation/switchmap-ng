@@ -49,8 +49,12 @@ def update_db_oui(filepath, new=False):
 
     if new:
         # Bulk insert on fresh install, skip checks
-        _oui.insert_row(rows)
-    else:
+        try:
+            _oui.insert_row(rows)
+        except IntegrityError:
+            SCOPED_SESSION.rollback()
+            new = False
+    if not new:
         # For updates, check existing entries
         for row in rows:
             existing_entry = _oui.exists(row.oui)

@@ -7,7 +7,7 @@ import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 from switchmap.poller.poll import devices, device, cli_device, _META
 
-# Try to create a working PYTHONPATH
+# Create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
 ROOT_DIR = os.path.abspath(
     os.path.join(
@@ -124,9 +124,7 @@ class TestAsyncPoll:
         """Test device processing when skip file exists."""
         with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
             mock_skip_file.return_value = "/path/to/skip/file"
-            with patch(
-                "switchmap.poller.poll.os.path.isfile"
-            ) as mock_isfile:
+            with patch("switchmap.poller.poll.os.path.isfile") as mock_isfile:
                 mock_isfile.return_value = True
                 with patch("switchmap.poller.poll.log.log2debug") as mock_log:
                     # Create mock semaphore and session
@@ -163,9 +161,7 @@ class TestAsyncPoll:
         mock_skip_file_path = "/path/to/skip/file"
         with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
             mock_skip_file.return_value = mock_skip_file_path
-            with patch(
-                "switchmap.poller.poll.os.path.isfile"
-            ) as mock_isfile:
+            with patch("switchmap.poller.poll.os.path.isfile") as mock_isfile:
                 mock_isfile.return_value = False
                 with patch(
                     "switchmap.poller.poll.poller.Poll"
@@ -190,9 +186,7 @@ class TestAsyncPoll:
         mock_skip_file_path = "/path/to/skip/file"
         with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
             mock_skip_file.return_value = mock_skip_file_path
-            with patch(
-                "switchmap.poller.poll.os.path.isfile"
-            ) as mock_isfile:
+            with patch("switchmap.poller.poll.os.path.isfile") as mock_isfile:
                 mock_isfile.return_value = False
                 with patch(
                     "switchmap.poller.poll.poller.Poll"
@@ -211,7 +205,7 @@ class TestAsyncPoll:
                         mock_device_instance = MagicMock()
                         mock_device_instance.process.return_value = {
                             "misc": {},
-                            "test": "data"
+                            "test": "data",
                         }
                         mock_device_class.return_value = mock_device_instance
 
@@ -219,7 +213,7 @@ class TestAsyncPoll:
                             mock_poll_meta,
                             mock_semaphore,
                             mock_session,
-                            post=False
+                            post=False,
                         )
 
                         # Should return True for successful poll
