@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { Sidebar } from "../components/Sidebar";
-import { FiCheck, FiEdit2, FiMinus, FiTrash2, FiX } from "react-icons/fi";
+import {
+  FiCheck,
+  FiEdit2,
+  FiMinus,
+  FiTrash2,
+  FiChevronDown,
+  FiChevronUp,
+} from "react-icons/fi";
 
 type Config = any;
 
@@ -16,6 +23,9 @@ export default function ConfigPage() {
   const [editSection, setEditSection] = useState<"core" | "server" | null>(
     null
   );
+  const [expandedSections, setExpandedSections] = useState<
+    Record<string, boolean>
+  >({});
 
   const [activeTab, setActiveTab] = useState<"zones" | "snmp" | "advanced">(
     "zones"
@@ -23,8 +33,9 @@ export default function ConfigPage() {
   const sections: ("core" | "server")[] = ["core", "server"];
   const [editingZones, setEditingZones] = useState<Record<number, boolean>>({});
   const [authPasswordEdit, setAuthPasswordEdit] = useState(false);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [authInput, setAuthInput] = useState("");
+  const [expandedZones, setExpandedZones] = useState<Record<number, boolean>>(
+    {}
+  );
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -112,76 +123,130 @@ export default function ConfigPage() {
               <div className="space-y-4">
                 {config.poller?.zones?.map((zone: any, idx: number) => {
                   const editing = editingZones[idx] || false;
+                  const expanded = expandedZones[idx];
 
                   return (
                     <div key={idx} className="space-y-1 border rounded p-3">
                       <div className="mb-4 flex justify-between items-center">
                         <span className="font-semibold">{zone.zone}</span>
-                        <div className="space-x-2 flex flex-row">
+
+                        <div className="space-x-2 flex flex-row items-center">
+                          {/* Edit button */}
+                          <div className="mr-4 ">
+                            <button
+                              className={`p-1 mr-1 rounded transition ${
+                                editing
+                                  ? "bg-purple-500 text-white hover:bg-purple-600"
+                                  : "text-primary hover:text-hover-bg"
+                              }`}
+                              onClick={() => {
+                                setEditingZones({
+                                  ...editingZones,
+                                  [idx]: !editing,
+                                });
+
+                                setExpandedZones({
+                                  ...expandedZones,
+                                  [idx]: true,
+                                });
+                              }}
+                            >
+                              {editing ? <FiCheck /> : <FiEdit2 />}
+                            </button>
+
+                            {/* Delete button */}
+                            <button
+                              className="text-primary hover:text-hover-bg"
+                              onClick={() => {
+                                const newZones = [...config.poller.zones];
+                                newZones.splice(idx, 1);
+                                setConfig({
+                                  ...config,
+                                  poller: { ...config.poller, zones: newZones },
+                                });
+
+                                const newEditing = { ...editingZones };
+                                delete newEditing[idx];
+                                setEditingZones(newEditing);
+
+                                const newExpanded = { ...expandedZones };
+                                delete newExpanded[idx];
+                                setExpandedZones(newExpanded);
+                              }}
+                            >
+                              <FiTrash2 />
+                            </button>
+                          </div>
+
+                          {/* Expand button */}
                           <button
-                            className={`p-1 rounded transition ${
-                              editing
-                                ? "bg-purple-500 text-white hover:bg-purple-600"
-                                : "text-primary hover:text-hover-bg"
-                            }`}
+                            className="text-primary hover:text-hover-bg"
                             onClick={() =>
-                              setEditingZones({
-                                ...editingZones,
-                                [idx]: !editing,
+                              setExpandedZones({
+                                ...expandedZones,
+                                [idx]: !expanded,
                               })
                             }
                           >
-                            {editing ? <FiCheck /> : <FiEdit2 />}
-                          </button>
-
-                          <button
-                            className="text-primary hover:text-hover-bg"
-                            onClick={() => {
-                              const newZones = [...config.poller.zones];
-                              newZones.splice(idx, 1);
-                              setConfig({
-                                ...config,
-                                poller: { ...config.poller, zones: newZones },
-                              });
-
-                              // Remove from editing state if present
-                              const newEditing = { ...editingZones };
-                              delete newEditing[idx];
-                              setEditingZones(newEditing);
-                            }}
-                          >
-                            <FiTrash2 />
+                            {expanded ? <FiChevronUp /> : <FiChevronDown />}
                           </button>
                         </div>
                       </div>
 
-                      {editing ? (
-                        <div className="space-y-2">
-                          {zone.hostnames.map((host: string, hIdx: number) => (
-                            <div
-                              key={hIdx}
-                              className="flex items-center space-x-2"
-                            >
-                              <input
-                                className="border p-1 rounded flex-1"
-                                value={host}
-                                onChange={(e) => {
-                                  const newZones = [...config.poller.zones];
-                                  newZones[idx].hostnames[hIdx] =
-                                    e.target.value;
-                                  setConfig({
-                                    ...config,
-                                    poller: {
-                                      ...config.poller,
-                                      zones: newZones,
-                                    },
-                                  });
-                                }}
-                              />
+                      {/* Expanded content */}
+                      {expanded && (
+                        <>
+                          {editing ? (
+                            <div className="space-y-2">
+                              {zone.hostnames.map(
+                                (host: string, hIdx: number) => (
+                                  <div
+                                    key={hIdx}
+                                    className="flex items-center space-x-2"
+                                  >
+                                    <input
+                                      className="border p-1 rounded flex-1"
+                                      value={host}
+                                      onChange={(e) => {
+                                        const newZones = [
+                                          ...config.poller.zones,
+                                        ];
+                                        newZones[idx].hostnames[hIdx] =
+                                          e.target.value;
+                                        setConfig({
+                                          ...config,
+                                          poller: {
+                                            ...config.poller,
+                                            zones: newZones,
+                                          },
+                                        });
+                                      }}
+                                    />
+                                    <button
+                                      onClick={() => {
+                                        const newZones = [
+                                          ...config.poller.zones,
+                                        ];
+                                        newZones[idx].hostnames.splice(hIdx, 1);
+                                        setConfig({
+                                          ...config,
+                                          poller: {
+                                            ...config.poller,
+                                            zones: newZones,
+                                          },
+                                        });
+                                      }}
+                                    >
+                                      <FiMinus />
+                                    </button>
+                                  </div>
+                                )
+                              )}
                               <button
+                                className="px-2 py-1 border border-primary rounded"
                                 onClick={() => {
                                   const newZones = [...config.poller.zones];
-                                  newZones[idx].hostnames.splice(hIdx, 1);
+                                  newZones[idx].hostnames.push("");
                                   setConfig({
                                     ...config,
                                     poller: {
@@ -191,25 +256,32 @@ export default function ConfigPage() {
                                   });
                                 }}
                               >
-                                <FiMinus />
+                                + Add Device
                               </button>
                             </div>
-                          ))}
-                          <button
-                            className="px-2 py-1 border border-primary rounded"
-                            onClick={() => {
-                              const newZones = [...config.poller.zones];
-                              newZones[idx].hostnames.push("");
-                              setConfig({
-                                ...config,
-                                poller: { ...config.poller, zones: newZones },
-                              });
-                            }}
-                          >
-                            + Add Device
-                          </button>
-                        </div>
-                      ) : (
+                          ) : (
+                            <div className="space-y-1">
+                              {zone.hostnames.length > 0 ? (
+                                zone.hostnames.map((h: string, i: number) => (
+                                  <div
+                                    key={i}
+                                    className="border-b border-gray-300 last:border-b-0 pb-1"
+                                  >
+                                    {h}
+                                  </div>
+                                ))
+                              ) : (
+                                <div className="border-b border-gray-300 py-1">
+                                  No devices
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {/* Collapsed summary */}
+                      {!expanded && !editing && (
                         <div>
                           {zone.hostnames.length > 0
                             ? zone.hostnames[0] +
@@ -256,7 +328,7 @@ export default function ConfigPage() {
                     />
 
                     <button
-                      className="px-2 py-1 bg-blue-600 rounded"
+                      className="px-2 py-1 border border-primary rounded"
                       onClick={() => {
                         if (!draftZone) return;
                         setConfig({
@@ -416,26 +488,53 @@ export default function ConfigPage() {
             {activeTab === "advanced" && (
               <div className="space-y-4">
                 {sections.map((section) => (
-                  <details key={section} className="border rounded p-4">
+                  <details
+                    key={section}
+                    className="border rounded p-4"
+                    open={expandedSections[section] ?? false}
+                  >
                     <summary className="cursor-pointer flex justify-between items-center font-semibold">
                       <span>
                         {section.charAt(0).toUpperCase() + section.slice(1)}
                       </span>
-                      <button
-                        className={`p-1 rounded transition ${
-                          editSection === section
-                            ? "bg-purple-500 text-white hover:bg-purple-600"
-                            : "text-primary hover:text-hover-bg"
-                        }`}
-                        onClick={(e) => {
-                          e.preventDefault(); // prevent toggling details
-                          setEditSection(
-                            editSection === section ? null : section
-                          );
-                        }}
-                      >
-                        {editSection === section ? <FiCheck /> : <FiEdit2 />}
-                      </button>
+                      <div className="flex gap-1">
+                        <button
+                          className={`p-1 rounded transition ${
+                            editSection === section
+                              ? "bg-purple-500 text-white hover:bg-purple-600"
+                              : "text-primary hover:text-hover-bg"
+                          }`}
+                          onClick={(e) => {
+                            e.preventDefault(); // prevent toggling details
+                            setEditSection(
+                              editSection === section ? null : section
+                            );
+                            setExpandedSections({
+                              ...expandedSections,
+                              [section]: !expandedSections[section],
+                            });
+                          }}
+                        >
+                          {editSection === section ? <FiCheck /> : <FiEdit2 />}
+                        </button>
+                        {/* Expand button */}
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault(); // prevent toggling by default summary click
+                            setExpandedSections({
+                              ...expandedSections,
+                              [section]: !expandedSections[section],
+                            });
+                          }}
+                        >
+                          {expandedSections[section] ? (
+                            <FiChevronUp />
+                          ) : (
+                            <FiChevronDown />
+                          )}
+                        </button>
+                      </div>
                     </summary>
 
                     <div className="mt-2 space-y-2">
@@ -458,11 +557,12 @@ export default function ConfigPage() {
                             onClick={() => {
                               if (
                                 key.toLowerCase().includes("pass") &&
+                                editSection === section && // <-- only when editing
                                 !authPasswordEdit
                               ) {
                                 const auth = prompt(
                                   "Enter admin password to edit:"
-                                ); // simple prompt
+                                );
                                 if (auth === "your-secret")
                                   setAuthPasswordEdit(true);
                               }
