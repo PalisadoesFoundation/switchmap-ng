@@ -207,7 +207,28 @@ class Query(graphene.ObjectType):
 
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
-    devices = BatchSQLAlchemyConnectionField(Device.connection)
+    devices = BatchSQLAlchemyConnectionField(
+        Device.connection, hostname=graphene.String()
+    )
+
+    def resolve_devices(root, info, hostname=None, **kwargs):
+        """Resolve and return devices from the database.
+
+        Args:
+            root: The root object (not used here).
+            info: GraphQL resolver info, used to get the query context.
+            hostname (str, optional): If provided, filters by this hostname.
+            **kwargs: Additional arguments (ignored).
+
+        Returns:
+             sqlalchemy.orm.Query: A query object for the matching Device.
+        """
+        query = Device.get_query(info)
+
+        if hostname:
+            query = query.filter(DeviceModel.hostname == hostname.encode())
+
+        return query
 
     deviceMetrics = BatchSQLAlchemyConnectionField(
         DeviceMetrics.connection,

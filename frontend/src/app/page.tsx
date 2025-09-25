@@ -34,8 +34,6 @@ import {
 export default function Home() {
   const [zoneId, setZoneId] = useState<string>("");
   const [zoneSelected, setZoneSelected] = useState<boolean>(false);
-
-  // Add these states for device data
   const [devices, setDevices] = useState<DeviceNode[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,6 +73,10 @@ export default function Home() {
                   ifoperstatus
                   cdpcachedeviceid
                   cdpcachedeviceport
+                  lldpremportdesc
+                  lldpremsysname
+                  lldpremsysdesc
+                  lldpremsyscapenabled 
                 }
               }
             }
@@ -97,51 +99,102 @@ export default function Home() {
       try {
         setLoading(true);
         setError(null);
+
+        const query =
+          zoneId === "all"
+            ? `
+          query GetAllZonesDevices {
+          events(last: 1) {
+        edges {
+          node {
+            zones {
+              edges {
+                node {
+                  devices {
+                    edges {
+                      node {
+                        idxDevice
+            sysObjectid
+            sysUptime
+            sysDescription
+            sysName
+            hostname
+            l1interfaces {
+              edges {
+                node {
+                  ifoperstatus
+                  cdpcachedeviceid
+                  cdpcachedeviceport
+                }
+              }
+            }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+      }
+      }
+      }
+          }
+        `
+            : GET_ZONE_DEVICES;
+
+        const variables = zoneId === "all" ? {} : { id: zoneId };
+
         const res = await fetch(
           process.env.NEXT_PUBLIC_API_URL ||
             "http://localhost:7000/switchmap/api/graphql",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              query: GET_ZONE_DEVICES,
-              variables: { id: zoneId },
-            }),
+            body: JSON.stringify({ query, variables }),
           }
         );
 
-        if (!res.ok)
-          throw new Error(`Network response was not ok: ${res.statusText}`);
+        if (!res.ok) throw new Error(`Network error: ${res.statusText}`);
+        const json = await res.json();
 
-        const json: GetZoneDevicesData = await res.json();
         if (json.errors)
           throw new Error(json.errors.map((e: any) => e.message).join(", "));
 
-        const rawDevices = json.data.zone.devices.edges.map(
-          (edge) => edge.node
-        );
-        setDevices(rawDevices);
-      } catch (err: unknown) {
-        if (retryCount < 2) {
-          setTimeout(
-            () => fetchDevices(retryCount + 1),
-            1000 * (retryCount + 1)
-          );
-          return;
-        }
+        let rawDevices: DeviceNode[] = [];
 
-        let errorMessage =
-          "Failed to load devices. Please check your network or try again.";
+        if (zoneId === "all") {
+          const devices =
+            json?.data?.events?.edges?.[0]?.node?.zones?.edges?.flatMap(
+              (z: any) => z?.node?.devices?.edges?.map((d: any) => d.node) ?? []
+            ) ?? [];
 
-        if (err instanceof Error) {
-          console.error("Error fetching devices:", err.message);
-          errorMessage = err.message;
+          // Deduplicate by hostname
+          const seen = new Map<string, any>();
+          devices.forEach((dev: any) => {
+            if (dev.hostname) seen.set(dev.hostname, dev);
+          });
+          rawDevices = Array.from(seen.values()) as DeviceNode[];
         } else {
-          console.error("Unknown error", err);
-        }
+          const devices =
+            json?.data?.zone?.devices?.edges?.map((d: any) => d.node) ?? [];
 
+          // Deduplicate by hostname
+          const seen = new Map<string, any>();
+          devices.forEach((dev: any) => {
+            if (dev.hostname) seen.set(dev.hostname, dev);
+          });
+          rawDevices = Array.from(seen.values()) as DeviceNode[];
+        }
+        setDevices(rawDevices);
+      } catch (err: any) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : typeof err === "string"
+            ? err
+            : "Failed to load devices. Please check your network or try again.";
+        console.error("Error fetching devices:", message);
         setDevices([]);
-        setError(errorMessage);
+        setError(message);
       } finally {
         setLoading(false);
       }

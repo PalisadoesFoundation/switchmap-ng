@@ -1,12 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   InterfaceEdge,
   InterfaceNode,
   Mac,
   MacPort,
-  MacsEdge,
 } from "@/app/types/graphql/GetDeviceInterfaces";
 import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
 /**
@@ -28,9 +26,6 @@ import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
  * @see {@link Mac} and {@link MacPort} for the structure of MAC address data.
  */
 
-type DeviceResponse = {
-  device: DeviceNode | null;
-};
 export function ConnectionDetails({ device }: { device: DeviceNode }) {
   const params = useParams();
   const extractMacAddresses = (macports?: MacPort): string => {
@@ -70,8 +65,8 @@ export function ConnectionDetails({ device }: { device: DeviceNode }) {
     .filter(Boolean);
 
   return (
-    <div className="w-[87%] h-[80vh]">
-      <h2 className="mb-4">Connection Details</h2>
+    <div className="p-8 w-[85vw] flex flex-col gap-4 h-full">
+      <h2 className="text-xl font-semibold mb-2">Connection Details</h2>
       <div className="w-full h-full overflow-auto border border-border rounded-lg shadow-sm">
         <table
           className="w-full h-full border border-border rounded-lg shadow-sm"

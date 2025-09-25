@@ -13,6 +13,7 @@
   --color-icon: var(--icon-color);
   --color-hover-bg: var(--hover-bg);
   --color-select-bg: var(--select-bg);
+  --color-border-subtle: var(--border-subtle);
 }
 
 
@@ -32,6 +33,7 @@
   --edge-color-light: #bbb;
   --node-color-light: #1e90ff;
   --font-color-light: black;
+  --border-subtle: #343B4F;
 
 }
 
