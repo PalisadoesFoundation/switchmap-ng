@@ -6,7 +6,12 @@ import os
 
 API_CONFIG = Blueprint("config", __name__)
 
-CONFIG_PATH = os.environ.get("CONFIG_PATH", "/etc/switchmap-ng/config.yaml")
+CURRENT_DIR = os.path.dirname(__file__)
+
+CONFIG_PATH = os.environ.get(
+    "CONFIG_PATH",
+    os.path.abspath(os.path.join(CURRENT_DIR, "../../../../etc/config.yaml")),
+)
 
 
 def read_config():
