@@ -4,8 +4,7 @@
 import os
 import sys
 import unittest
-from unittest.mock import AsyncMock
-from mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))

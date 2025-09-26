@@ -89,6 +89,40 @@ class TestAsyncPoll:
                 assert "device2" in hostnames_called
 
     @pytest.mark.asyncio
+    async def test_devices_invalid_concurrency(self, mock_config_setup):
+        """Test devices() with invalid concurrency values."""
+        with patch("switchmap.poller.poll.ConfigPoller") as mock_config:
+            mock_config.return_value = mock_config_setup
+            with patch(
+                "switchmap.poller.poll.device", new_callable=AsyncMock
+            ) as mock_device:
+                mock_device.return_value = True
+
+                # Test negative concurrency
+                await devices(max_concurrent_devices=-1)
+                # Should still call device functions with default concurrency
+                assert mock_device.call_count == 2
+
+    @pytest.mark.asyncio
+    async def test_devices_empty_zones(self):
+        """Test devices() with zones containing no hostnames."""
+        mock_config_instance = MagicMock()
+        mock_zone = MagicMock()
+        mock_zone.name = "empty_zone"
+        mock_zone.hostnames = []  # Empty hostnames
+        mock_config_instance.zones.return_value = [mock_zone]
+        mock_config_instance.agent_subprocesses.return_value = 2
+
+        with patch("switchmap.poller.poll.ConfigPoller") as mock_config:
+            mock_config.return_value = mock_config_instance
+            with patch(
+                "switchmap.poller.poll.device", new_callable=AsyncMock
+            ) as mock_device:
+                await devices()
+                # Should not call device when no hostnames
+                assert mock_device.call_count == 0
+
+    @pytest.mark.asyncio
     async def test_devices_with_custom_concurrency(self, mock_config_setup):
         """Test device polling with custom concurrency limit."""
         with patch("switchmap.poller.poll.ConfigPoller") as mock_config:

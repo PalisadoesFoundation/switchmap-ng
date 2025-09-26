@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Test the mib_etherlike module."""
 
-from token import ASYNC
 import unittest
 from unittest.mock import Mock, AsyncMock
 import os
