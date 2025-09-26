@@ -32,7 +32,7 @@ from switchmap import AGENT_POLLER
 from switchmap.core.agent import Agent, AgentCLI
 from switchmap.core import general
 from switchmap.poller.configuration import ConfigPoller
-from switchmap.poller import async_poll
+from switchmap.poller import poll
 from switchmap.core import log
 
 # We have to create this named tuple outside the multiprocessing Pool
@@ -89,7 +89,7 @@ class PollingAgent(Agent):
             open(self.lockfile, "a").close()
 
             # Poll after sleeping
-            async_poll.run_devices(max_concurrent_devices=max_concurrent)
+            poll.run_devices(max_concurrent_devices=max_concurrent)
 
             # Delete lockfile
             os.remove(self.lockfile)

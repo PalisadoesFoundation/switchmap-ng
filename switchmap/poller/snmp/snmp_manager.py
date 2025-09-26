@@ -313,8 +313,10 @@ class Interact:
 
             if exists and bool(result):
                 # Make sure the OID key exists in result
+                exact_key = oid_to_get
+                alt_key = oid_to_get.lstrip(".")
                 if isinstance(result, dict) and oid_to_get in result:
-                    if result[oid_to_get] is not None:
+                    if result.get(exact_key) is not None or result.get(alt_key) is not None:
                         validity = True
                 elif isinstance(result, dict) and result:
                     # If result has data but not exact OID, still consider valid
@@ -662,8 +664,11 @@ class Session:
                 elif auth_proto == "sha512":
                     auth_protocol = usmHMAC384SHA512AuthProtocol
                 else:
-                    # Default to SHA-256 for better security
-                    auth_protocol = usmHMAC192SHA256AuthProtocol
+                    log.log2warning(
+                        1218,
+                        f"Unknown auth protocol '{auth.authprotocol}', leaving unset",
+                    )
+                    auth_protocol = None 
 
             # Set privacy protocol only if privprotocol is specified
             # Also if we have authentication (privacy requires authentication)
@@ -678,8 +683,11 @@ class Session:
                 elif priv_proto == "aes256":
                     priv_protocol = usmAesCfb256Protocol
                 else:
-                    # Default to AES-256 for best security
-                    priv_protocol = usmAesCfb256Protocol
+                    log.log2warning(
+                        1218,
+                        f"Unknown auth protocol '{auth.privprotocol}', leaving unset",
+                    )
+                    priv_protocol = None
 
             auth_data = UsmUserData(
                 userName=auth.secname,

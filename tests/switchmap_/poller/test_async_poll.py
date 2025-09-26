@@ -4,6 +4,7 @@
 import os
 import sys
 import pytest
+import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock
 from switchmap.poller.poll import devices, device, cli_device, _META
 
@@ -176,7 +177,7 @@ class TestAsyncPoll:
                 mock_isfile.return_value = True
                 with patch("switchmap.poller.poll.log.log2debug") as mock_log:
                     # Create mock semaphore and session
-                    mock_semaphore = AsyncMock()
+                    mock_semaphore = asyncio.Semaphore(1)
                     mock_session = MagicMock()
 
                     result = await device(
@@ -190,7 +191,7 @@ class TestAsyncPoll:
     @pytest.mark.asyncio
     async def test_device_invalid_hostname(self):
         """Test device processing with invalid hostname."""
-        mock_semaphore = AsyncMock()
+        mock_semaphore = asyncio.Semaphore(1)
         mock_session = MagicMock()
 
         # Test with None hostname
@@ -218,7 +219,7 @@ class TestAsyncPoll:
                     mock_poll_instance.initialize_snmp.return_value = False
                     mock_poll_cls.return_value = mock_poll_instance
 
-                    mock_semaphore = AsyncMock()
+                    mock_semaphore = asyncio.Semaphore(1)
                     mock_session = MagicMock()
 
                     result = await device(
@@ -244,7 +245,7 @@ class TestAsyncPoll:
                     mock_poll_instance.query.return_value = {"test": "data"}
                     mock_poll_cls.return_value = mock_poll_instance
 
-                    mock_semaphore = AsyncMock()
+                    mock_semaphore = asyncio.Semaphore(1)
                     mock_session = MagicMock()
 
                     with patch(

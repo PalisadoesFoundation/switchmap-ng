@@ -41,7 +41,7 @@ class Poll:
     async def initialize_snmp(self):
         """Initialize SNMP connection asynchronously.
 
-        Returns;
+        Returns:
             bool: True if successful, False otherwise
         """
         # Get snmp config information from Switchmap-NG
@@ -83,7 +83,7 @@ class Poll:
 
         # Only query if the device is contactable
         if bool(self.snmp_object) is False:
-            log.log2die(1001, f"No valid SNMP object for {self._hostname} ")
+            log.log2warning(1001, f"No valid SNMP object for {self._hostname} ")
             return _data
 
         # Get data
