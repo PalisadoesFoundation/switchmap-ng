@@ -6,8 +6,6 @@ import sys
 import unittest
 from unittest.mock import Mock, AsyncMock
 
-from sqlalchemy import true
-
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
 ROOT_DIR = os.path.abspath(
