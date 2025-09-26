@@ -48,7 +48,9 @@ type SectionType = "core" | "server";
 const SECTIONS: SectionType[] = ["core", "server"];
 const TABS: TabType[] = ["zones", "snmp", "advanced"];
 const SAVE_SUCCESS_DURATION = 2000;
-const API_BASE_URL = "http://localhost:7000/switchmap/api/config";
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_SWITCHMAP_CONFIG_URL ??
+  "http://localhost:7000/switchmap/api/config";
 
 const DEFAULT_SNMP_GROUP: Omit<SNMPGroup, "group_name"> = {
   enabled: true,
@@ -188,18 +190,18 @@ export default function ConfigPage() {
         poller: { ...config.poller, zones: newZones },
       });
 
-      // Clean up edit and expansion states
-      setEditingZones((prev) => {
-        const newState = { ...prev };
-        delete newState[zoneIndex];
-        return newState;
-      });
-
-      setExpandedZones((prev) => {
-        const newState = { ...prev };
-        delete newState[zoneIndex];
-        return newState;
-      });
+      // Reindex edit and expansion states to match shifted indices
+      const reindex = (state: Record<number, boolean>, removed: number) => {
+        const next: Record<number, boolean> = {};
+        Object.keys(state).forEach((k) => {
+          const i = Number(k);
+          if (i < removed) next[i] = state[i];
+          else if (i > removed) next[i - 1] = state[i];
+        });
+        return next;
+      };
+      setEditingZones((prev) => reindex(prev, zoneIndex));
+      setExpandedZones((prev) => reindex(prev, zoneIndex));
     },
     [config]
   );
@@ -248,11 +250,24 @@ export default function ConfigPage() {
         poller: { ...config.poller, snmp_groups: newGroups },
       });
 
-      if (editIdx === groupIndex) {
-        setEditIdx(null);
-      }
+      // Keep editIdx consistent after deletion
+      setEditIdx((prev) => {
+        if (prev == null) return prev;
+        if (prev === groupIndex) return null;
+        return prev > groupIndex ? prev - 1 : prev;
+      });
+      // Reindex expanded states
+      setExpandedGroups((prev) => {
+        const next: Record<number, boolean> = {};
+        Object.keys(prev).forEach((k) => {
+          const i = Number(k);
+          if (i < groupIndex) next[i] = prev[i];
+          else if (i > groupIndex) next[i - 1] = prev[i];
+        });
+        return next;
+      });
     },
-    [config, editIdx]
+    [config]
   );
 
   const addSNMPGroup = useCallback((groupName: string) => {
@@ -732,9 +747,13 @@ export default function ConfigPage() {
                       }`}
                       onClick={(e) => {
                         e.preventDefault();
-                        setEditSection(
-                          editSection === section ? null : section
-                        );
+                        if (editSection === section) {
+                          setAuthPasswordEdit(false);
+                          setEditSection(null);
+                        } else {
+                          setAuthPasswordEdit(false);
+                          setEditSection(section);
+                        }
                         setExpandedSections((prev) => ({
                           ...prev,
                           [section]: !prev[section],
@@ -773,7 +792,7 @@ export default function ConfigPage() {
                 </summary>
 
                 <div className="mt-4 space-y-3">
-                  {Object.entries(config[section]).map(([key, value]) => {
+                  {Object.entries(config[section] ?? {}).map(([key, value]) => {
                     const isPasswordField = key.toLowerCase().includes("pass");
                     const showMasked =
                       isPasswordField &&

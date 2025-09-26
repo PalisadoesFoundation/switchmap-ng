@@ -6,7 +6,7 @@ import os
 
 API_CONFIG = Blueprint("config", __name__)
 
-CONFIG_PATH = "/home/abhi/switchmap-ng/etc/config.yaml"
+CONFIG_PATH = os.environ.get("CONFIG_PATH", "/etc/switchmap-ng/config.yaml")
 
 
 def read_config():
@@ -49,9 +49,7 @@ def get_config():
         Response: A Flask JSON response containing the current config
         loaded from config.yaml.
     """
-    with open("/home/abhi/switchmap-ng/etc/config.yaml", "r") as f:
-        config = yaml.safe_load(f)
-    return jsonify(config)
+    return jsonify(read_config())
 
 
 @API_CONFIG.route("/config", methods=["POST"])

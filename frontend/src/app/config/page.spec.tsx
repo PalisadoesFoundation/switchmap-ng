@@ -445,15 +445,16 @@ describe("ConfigPage", () => {
     });
 
     it("handles password fields correctly", async () => {
-      // Add a password field to test config
-
-      const coreSection = screen.getByText("Core").closest("details");
-      const editButton = within(coreSection!).getByTestId("edit-icon");
+      // Server has db_pass in mockConfig; expand and enter edit to reveal masked input
+      const serverSection = screen.getByText("Server").closest("details");
+      const editButton = within(serverSection!).getByTestId("edit-icon");
 
       await user.click(editButton);
 
       await waitFor(() => {
-        const passwordField = screen.getByDisplayValue("***********");
+        const passwordField = within(serverSection!).getByDisplayValue(
+          "***********"
+        );
         expect(passwordField).toBeInTheDocument();
       });
     });
