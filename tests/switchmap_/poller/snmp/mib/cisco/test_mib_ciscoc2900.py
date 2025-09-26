@@ -4,7 +4,7 @@
 import os
 import sys
 import unittest
-from mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -153,7 +153,7 @@ class TestMibCiscoc2900Functions(unittest.TestCase):
         pass
 
 
-class TestMibCiscoc2900(unittest.TestCase):
+class TestMibCiscoc2900(unittest.IsolatedAsyncioTestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -167,11 +167,9 @@ class TestMibCiscoc2900(unittest.TestCase):
 
     # Set the stage for SNMPwalk for integer results
     snmpobj_integer = Mock(spec=Query)
-    mock_spec_integer = {
-        "swalk.return_value": nwalk_results_integer,
-        "walk.return_value": nwalk_results_integer,
-    }
-    snmpobj_integer.configure_mock(**mock_spec_integer)
+    # Configure async methods
+    snmpobj_integer.swalk = AsyncMock(return_value=nwalk_results_integer)
+    snmpobj_integer.walk = AsyncMock(return_value=nwalk_results_integer)
 
     # Initializing key variables
     expected_dict = {
@@ -214,7 +212,7 @@ class TestMibCiscoc2900(unittest.TestCase):
         """Testing function __init__."""
         pass
 
-    def test_layer1(self):
+    async def test_layer1(self):
         """Testing function layer1."""
         # Initializing key variables
         expected_dict = {
@@ -230,12 +228,11 @@ class TestMibCiscoc2900(unittest.TestCase):
 
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {"swalk.return_value": self.nwalk_results_integer}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.swalk = AsyncMock(return_value=self.nwalk_results_integer)
 
         # Get results
         testobj = testimport.init_query(snmpobj)
-        results = testobj.layer1()
+        results = await testobj.layer1()
 
         # Basic testing of results
         for primary in results.keys():
@@ -245,7 +242,7 @@ class TestMibCiscoc2900(unittest.TestCase):
                     expected_dict[primary][secondary],
                 )
 
-    def test_c2900portlinkbeatstatus(self):
+    async def test_c2900portlinkbeatstatus(self):
         """Testing function c2900portlinkbeatstatus."""
         # Initialize key variables
         oid_key = "c2900PortLinkbeatStatus"
@@ -253,7 +250,7 @@ class TestMibCiscoc2900(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.c2900portlinkbeatstatus()
+        results = await testobj.c2900portlinkbeatstatus()
 
         # Basic testing of results
         for key, value in results.items():
@@ -261,18 +258,18 @@ class TestMibCiscoc2900(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.c2900portlinkbeatstatus(oidonly=True)
+        results = await testobj.c2900portlinkbeatstatus(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_c2900portduplexstatus(self):
+    async def test_c2900portduplexstatus(self):
         """Testing function c2900portduplexstatus."""
         # Initialize key variables
-        oid_key = "c2900PortLinkbeatStatus"
+        oid_key = "c2900PortDuplexStatus"
         oid = ".1.3.6.1.4.1.9.9.87.1.4.1.1.32"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.c2900portduplexstatus()
+        results = await testobj.c2900portduplexstatus()
 
         # Basic testing of results
         for key, value in results.items():
@@ -280,7 +277,7 @@ class TestMibCiscoc2900(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.c2900portduplexstatus(oidonly=True)
+        results = await testobj.c2900portduplexstatus(oidonly=True)
         self.assertEqual(results, oid)
 
 

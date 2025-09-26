@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Test the mib_etherlike module."""
 
+from token import ASYNC
 import unittest
-from mock import Mock
+from unittest.mock import Mock, AsyncMock
 import os
 import sys
 
@@ -153,7 +154,7 @@ class TestMibEtherlikeFunctions(unittest.TestCase):
         pass
 
 
-class TestMibEtherlike(unittest.TestCase):
+class TestMibEtherlike(unittest.IsolatedAsyncioTestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -182,26 +183,24 @@ class TestMibEtherlike(unittest.TestCase):
         # Cleanup the
         CONFIG.cleanup()
 
-    def test_supported(self):
+    async def test_supported(self):
         """Testing method / function supported."""
         # Set the stage for oid_exists returning True
         snmpobj = Mock(spec=Query)
-        mock_spec = {"oid_exists.return_value": True}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.oid_exists = AsyncMock(return_value=True)
 
         # Test supported
         testobj = testimport.init_query(snmpobj)
-        self.assertEqual(testobj.supported(), True)
+        self.assertEqual(await testobj.supported(), True)
 
         # Set the stage for oid_exists returning False
-        mock_spec = {"oid_exists.return_value": False}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.oid_exists = AsyncMock(return_value=False)
 
         # Test unsupported
         testobj = testimport.init_query(snmpobj)
-        self.assertEqual(testobj.supported(), False)
+        self.assertEqual(await testobj.supported(), False)
 
-    def test_layer1(self):
+    async def test_layer1(self):
         """Testing method / function layer1."""
         # Initializing key variables
         expected_dict = {
@@ -211,12 +210,11 @@ class TestMibEtherlike(unittest.TestCase):
 
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {"swalk.return_value": self.nwalk_results_integer}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.swalk = AsyncMock(return_value=self.nwalk_results_integer)
 
         # Get results
         testobj = testimport.init_query(snmpobj)
-        results = testobj.layer1()
+        results = await testobj.layer1()
 
         # Basic testing of results
         for primary in results.keys():
@@ -226,23 +224,22 @@ class TestMibEtherlike(unittest.TestCase):
                     expected_dict[primary][secondary],
                 )
 
-    def test_dot3statsduplexstatus(self):
+    async def test_dot3statsduplexstatus(self):
         """Testing method / function dot3statsduplexstatus."""
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {"swalk.return_value": self.nwalk_results_integer}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.swalk = AsyncMock(return_value=self.nwalk_results_integer)
 
         # Get results
         testobj = testimport.init_query(snmpobj)
-        results = testobj.dot3statsduplexstatus()
+        results = await testobj.dot3statsduplexstatus()
 
         # Basic testing of results
         for key in results.keys():
             self.assertEqual(isinstance(key, int), True)
 
         # Test that we are getting the correct OID
-        results = testobj.dot3statsduplexstatus(oidonly=True)
+        results = await testobj.dot3statsduplexstatus(oidonly=True)
         self.assertEqual(results, ".1.3.6.1.2.1.10.7.2.1.19")
 
 

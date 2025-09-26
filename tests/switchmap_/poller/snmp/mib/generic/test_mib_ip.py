@@ -4,6 +4,7 @@
 import os
 import sys
 import unittest
+from unittest.mock import AsyncMock
 from mock import Mock
 
 # Try to create a working PYTHONPATH
@@ -153,7 +154,7 @@ class TestMibIpFunctions(unittest.TestCase):
         pass
 
 
-class TestMibIp(unittest.TestCase):
+class TestMibIp(unittest.IsolatedAsyncioTestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -181,18 +182,12 @@ class TestMibIp(unittest.TestCase):
 
     # Set the stage for SNMPwalk for binary results
     snmpobj_ipv4_binary = Mock(spec=Query)
-    mock_spec_ipv4_binary = {
-        "swalk.return_value": walk_results_ipv4_binary,
-        "walk.return_value": walk_results_ipv4_binary,
-    }
-    snmpobj_ipv4_binary.configure_mock(**mock_spec_ipv4_binary)
+    snmpobj_ipv4_binary.swalk = AsyncMock(return_value=walk_results_ipv4_binary)
+    snmpobj_ipv4_binary.walk = AsyncMock(return_value=walk_results_ipv4_binary)
 
     snmpobj_ipv6_binary = Mock(spec=Query)
-    mock_spec_ipv6_binary = {
-        "swalk.return_value": walk_results_ipv6_binary,
-        "walk.return_value": walk_results_ipv6_binary,
-    }
-    snmpobj_ipv6_binary.configure_mock(**mock_spec_ipv6_binary)
+    snmpobj_ipv6_binary.swalk = AsyncMock(return_value=walk_results_ipv6_binary)
+    snmpobj_ipv6_binary.walk = AsyncMock(return_value=walk_results_ipv6_binary)
 
     # Initialize expected results
     ipv4_expected_dict = {
@@ -242,14 +237,14 @@ class TestMibIp(unittest.TestCase):
         # Initializing key variables
         pass
 
-    def test_ipnettomediatable(self):
+    async def test_ipnettomediatable(self):
         """Testing method / function ipnettomediatable."""
         # Initialize key variables
         oid = ".1.3.6.1.2.1.4.22.1.2"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_ipv4_binary)
-        results = testobj.ipnettomediatable()
+        results = await testobj.ipnettomediatable()
 
         # Basic testing of results
         for key, value in results.items():
@@ -257,17 +252,17 @@ class TestMibIp(unittest.TestCase):
             self.assertEqual(value, self.ipv4_expected_dict[key])
 
         # Test that we are getting the correct OID
-        results = testobj.ipnettomediatable(oidonly=True)
+        results = await testobj.ipnettomediatable(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ipnettophysicalphysaddress(self):
+    async def test_ipnettophysicalphysaddress(self):
         """Testing method / function ipnettophysicalphysaddress."""
         # Initialize key variables
         oid = ".1.3.6.1.2.1.4.35.1.4"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_ipv6_binary)
-        results = testobj.ipnettophysicalphysaddress()
+        results = await testobj.ipnettophysicalphysaddress()
 
         # Basic testing of results
         for key, value in results.items():
@@ -275,7 +270,7 @@ class TestMibIp(unittest.TestCase):
             self.assertEqual(value, self.ipv6_expected_dict[key])
 
         # Test that we are getting the correct OID
-        results = testobj.ipnettophysicalphysaddress(oidonly=True)
+        results = await testobj.ipnettophysicalphysaddress(oidonly=True)
         self.assertEqual(results, oid)
 
 
