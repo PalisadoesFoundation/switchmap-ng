@@ -316,7 +316,10 @@ class Interact:
                 exact_key = oid_to_get
                 alt_key = oid_to_get.lstrip(".")
                 if isinstance(result, dict) and oid_to_get in result:
-                    if result.get(exact_key) is not None or result.get(alt_key) is not None:
+                    if (
+                        result.get(exact_key) is not None
+                        or result.get(alt_key) is not None
+                    ):
                         validity = True
                 elif isinstance(result, dict) and result:
                     # If result has data but not exact OID, still consider valid
@@ -666,9 +669,10 @@ class Session:
                 else:
                     log.log2warning(
                         1218,
-                        f"Unknown auth protocol '{auth.authprotocol}', leaving unset",
+                        f"Unknown auth protocol '{auth.authprotocol}',"
+                        f"leaving unset",
                     )
-                    auth_protocol = None 
+                    auth_protocol = None
 
             # Set privacy protocol only if privprotocol is specified
             # Also if we have authentication (privacy requires authentication)
@@ -685,7 +689,8 @@ class Session:
                 else:
                     log.log2warning(
                         1218,
-                        f"Unknown auth protocol '{auth.privprotocol}', leaving unset",
+                        f"Unknown auth protocol '{auth.privprotocol}',"
+                        f"leaving unset",
                     )
                     priv_protocol = None
 
