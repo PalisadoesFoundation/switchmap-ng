@@ -4,7 +4,6 @@
 import unittest
 import os
 import sys
-from mock import Mock
 
 
 # Try to create a working PYTHONPATH

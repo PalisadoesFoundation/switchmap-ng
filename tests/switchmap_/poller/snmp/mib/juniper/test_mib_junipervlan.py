@@ -116,7 +116,7 @@ class Query:
         pass
 
 
-class TestJuniperVlanFunctions(unittest.TestCase):
+class TestJuniperVlanFunctions(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################
@@ -152,7 +152,7 @@ class TestJuniperVlanFunctions(unittest.TestCase):
         pass
 
 
-class TestJuniperVlan(unittest.TestCase):
+class TestJuniperVlan(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################

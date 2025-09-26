@@ -253,7 +253,7 @@ def read_yaml_file(filepath, as_string=False, die=True):
                     "".format(filepath)
                 )
                 if bool(die) is True:
-                    log.log2die_safe(1001, log_message)
+                    log.log2die_safe(1008, log_message)
                 else:
                     log.log2debug(1002, log_message)
                     return {}

@@ -7,6 +7,7 @@ from copy import deepcopy
 # Application imports
 from switchmap.core import log
 from switchmap.core import general
+from switchmap.core.mac_utils import decode_mac_address
 from switchmap.server.db.table import oui as _oui
 from switchmap.server import ZoneObjects
 from switchmap.server import PairMacIp
@@ -400,7 +401,9 @@ def _process_pairmacips(idx_zone, table):
             continue
 
         # Create lowercase version of mac address. Skip if invalid
-        mactest = general.mac(next_mac)
+        # Handle double-encoded MAC addresses from async poller
+        decoded_mac = decode_mac_address(next_mac)
+        mactest = general.mac(decoded_mac)
         if bool(mactest.valid) is False:
             continue
         else:
@@ -442,7 +445,9 @@ def _arp_table(idx_zone, data):
                         continue
 
                     # Create lowercase version of mac address. Skip if invalid.
-                    mactest = general.mac(next_mac)
+                    # Handle double-encoded MAC addresses from async poller
+                    decoded_mac = decode_mac_address(next_mac)
+                    mactest = general.mac(decoded_mac)
                     if bool(mactest.valid) is False:
                         continue
                     else:

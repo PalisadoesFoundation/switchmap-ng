@@ -5,7 +5,7 @@ import os
 import sys
 import binascii
 import unittest
-from mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -154,7 +154,7 @@ class TestMibIfFunctions(unittest.TestCase):
         pass
 
 
-class TestMibIf(unittest.TestCase):
+class TestMibIf(unittest.IsolatedAsyncioTestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -168,33 +168,24 @@ class TestMibIf(unittest.TestCase):
 
     # Set the stage for SNMPwalk for integer results
     snmpobj_integer = Mock(spec=Query)
-    mock_spec_integer = {
-        "swalk.return_value": nwalk_results_integer,
-        "walk.return_value": nwalk_results_integer,
-    }
-    snmpobj_integer.configure_mock(**mock_spec_integer)
+    snmpobj_integer.swalk = AsyncMock(return_value=nwalk_results_integer)
+    snmpobj_integer.walk = AsyncMock(return_value=nwalk_results_integer)
 
     # Normalized walk returning integers for the ifIndex
     nwalk_results_ifindex = {100: 100, 200: 200}
 
     # Set the stage for SNMPwalk for integer results for the ifIndex
     snmpobj_ifindex = Mock(spec=Query)
-    mock_spec_ifindex = {
-        "swalk.return_value": nwalk_results_ifindex,
-        "walk.return_value": nwalk_results_ifindex,
-    }
-    snmpobj_ifindex.configure_mock(**mock_spec_ifindex)
+    snmpobj_ifindex.swalk = AsyncMock(return_value=nwalk_results_ifindex)
+    snmpobj_ifindex.walk = AsyncMock(return_value=nwalk_results_ifindex)
 
     # Normalized walk returning strings
     nwalk_results_bytes = {100: b"1234", 200: b"5678"}
 
     # Set the stage for SNMPwalk for string results
     snmpobj_bytes = Mock(spec=Query)
-    mock_spec_bytes = {
-        "swalk.return_value": nwalk_results_bytes,
-        "walk.return_value": nwalk_results_bytes,
-    }
-    snmpobj_bytes.configure_mock(**mock_spec_bytes)
+    snmpobj_bytes.swalk = AsyncMock(return_value=nwalk_results_bytes)
+    snmpobj_bytes.walk = AsyncMock(return_value=nwalk_results_bytes)
 
     # Normalized walk returning binary data
     nwalk_results_binary = {
@@ -204,11 +195,8 @@ class TestMibIf(unittest.TestCase):
 
     # Set the stage for SNMPwalk for binary results
     snmpobj_binary = Mock(spec=Query)
-    mock_spec_binary = {
-        "swalk.return_value": nwalk_results_binary,
-        "walk.return_value": nwalk_results_binary,
-    }
-    snmpobj_binary.configure_mock(**mock_spec_binary)
+    snmpobj_binary.swalk = AsyncMock(return_value=nwalk_results_binary)
+    snmpobj_binary.walk = AsyncMock(return_value=nwalk_results_binary)
 
     # Initializing key variables
     expected_dict = {
@@ -289,7 +277,7 @@ class TestMibIf(unittest.TestCase):
         # the same type of results (eg. int, string, hex)
         pass
 
-    def test_iflastchange(self):
+    async def test_iflastchange(self):
         """Testing function iflastchange."""
         # Initialize key variables
         oid_key = "ifLastChange"
@@ -297,7 +285,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.iflastchange()
+        results = await testobj.iflastchange()
 
         # Basic testing of results
         for key, value in results.items():
@@ -305,10 +293,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.iflastchange(oidonly=True)
+        results = await testobj.iflastchange(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifinoctets(self):
+    async def test_ifinoctets(self):
         """Testing function ifinoctets."""
         # Initialize key variables
         oid_key = "ifInOctets"
@@ -316,7 +304,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.ifinoctets()
+        results = await testobj.ifinoctets()
 
         # Basic testing of results
         for key, value in results.items():
@@ -324,10 +312,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifinoctets(oidonly=True)
+        results = await testobj.ifinoctets(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifoutoctets(self):
+    async def test_ifoutoctets(self):
         """Testing function ifoutoctets."""
         # Initialize key variables
         oid_key = "ifOutOctets"
@@ -335,7 +323,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.ifoutoctets()
+        results = await testobj.ifoutoctets()
 
         # Basic testing of results
         for key, value in results.items():
@@ -343,10 +331,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifoutoctets(oidonly=True)
+        results = await testobj.ifoutoctets(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifdescr(self):
+    async def test_ifdescr(self):
         """Testing function ifdescr."""
         # Initialize key variables
         oid_key = "ifDescr"
@@ -354,7 +342,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_bytes)
-        results = testobj.ifdescr()
+        results = await testobj.ifdescr()
 
         # Basic testing of results
         for key, value in results.items():
@@ -362,10 +350,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifdescr(oidonly=True)
+        results = await testobj.ifdescr(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_iftype(self):
+    async def test_iftype(self):
         """Testing function iftype."""
         # Initialize key variables
         oid_key = "ifType"
@@ -373,7 +361,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.iftype()
+        results = await testobj.iftype()
 
         # Basic testing of results
         for key, value in results.items():
@@ -381,10 +369,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.iftype(oidonly=True)
+        results = await testobj.iftype(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifspeed(self):
+    async def test_ifspeed(self):
         """Testing function ifspeed."""
         # Initialize key variables
         oid_key = "ifSpeed"
@@ -392,7 +380,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.ifspeed()
+        results = await testobj.ifspeed()
 
         # Basic testing of results
         for key, value in results.items():
@@ -400,10 +388,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifspeed(oidonly=True)
+        results = await testobj.ifspeed(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifadminstatus(self):
+    async def test_ifadminstatus(self):
         """Testing function ifadminstatus."""
         # Initialize key variables
         oid_key = "ifAdminStatus"
@@ -411,7 +399,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.ifadminstatus()
+        results = await testobj.ifadminstatus()
 
         # Basic testing of results
         for key, value in results.items():
@@ -419,10 +407,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifadminstatus(oidonly=True)
+        results = await testobj.ifadminstatus(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifoperstatus(self):
+    async def test_ifoperstatus(self):
         """Testing function ifoperstatus."""
         # Initialize key variables
         oid_key = "ifOperStatus"
@@ -430,7 +418,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.ifoperstatus()
+        results = await testobj.ifoperstatus()
 
         # Basic testing of results
         for key, value in results.items():
@@ -438,10 +426,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifoperstatus(oidonly=True)
+        results = await testobj.ifoperstatus(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifalias(self):
+    async def test_ifalias(self):
         """Testing function ifalias."""
         # Initialize key variables
         oid_key = "ifAlias"
@@ -449,7 +437,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_bytes)
-        results = testobj.ifalias()
+        results = await testobj.ifalias()
 
         # Basic testing of results
         for key, value in results.items():
@@ -457,10 +445,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifalias(oidonly=True)
+        results = await testobj.ifalias(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifname(self):
+    async def test_ifname(self):
         """Testing function ifname."""
         # Initialize key variables
         oid_key = "ifName"
@@ -468,7 +456,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_bytes)
-        results = testobj.ifname()
+        results = await testobj.ifname()
 
         # Basic testing of results
         for key, value in results.items():
@@ -476,10 +464,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifname(oidonly=True)
+        results = await testobj.ifname(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifindex(self):
+    async def test_ifindex(self):
         """Testing function ifindex."""
         # Initialize key variables
         oid_key = "ifIndex"
@@ -487,7 +475,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_ifindex)
-        results = testobj.ifindex()
+        results = await testobj.ifindex()
 
         # Basic testing of results
         for key, value in results.items():
@@ -499,10 +487,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(key, value)
 
         # Test that we are getting the correct OID
-        results = testobj.ifindex(oidonly=True)
+        results = await testobj.ifindex(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifphysaddress(self):
+    async def test_ifphysaddress(self):
         """Testing function ifphysaddress."""
         # Initialize key variables
         oid_key = "ifPhysAddress"
@@ -510,7 +498,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_binary)
-        results = testobj.ifphysaddress()
+        results = await testobj.ifphysaddress()
 
         # Basic testing of results
         for key, value in results.items():
@@ -518,10 +506,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifphysaddress(oidonly=True)
+        results = await testobj.ifphysaddress(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifinmulticastpkts(self):
+    async def test_ifinmulticastpkts(self):
         """Testing function ifinmulticastpkts."""
         # Initialize key variables
         oid_key = "ifInMulticastPkts"
@@ -529,7 +517,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.ifinmulticastpkts()
+        results = await testobj.ifinmulticastpkts()
 
         # Basic testing of results
         for key, value in results.items():
@@ -537,10 +525,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifinmulticastpkts(oidonly=True)
+        results = await testobj.ifinmulticastpkts(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifoutmulticastpkts(self):
+    async def test_ifoutmulticastpkts(self):
         """Testing function ifoutmulticastpkts."""
         # Initialize key variables
         oid_key = "ifOutMulticastPkts"
@@ -548,7 +536,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.ifoutmulticastpkts()
+        results = await testobj.ifoutmulticastpkts()
 
         # Basic testing of results
         for key, value in results.items():
@@ -556,10 +544,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifoutmulticastpkts(oidonly=True)
+        results = await testobj.ifoutmulticastpkts(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifinbroadcastpkts(self):
+    async def test_ifinbroadcastpkts(self):
         """Testing function ifinbroadcastpkts."""
         # Initialize key variables
         oid_key = "ifInBroadcastPkts"
@@ -567,7 +555,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.ifinbroadcastpkts()
+        results = await testobj.ifinbroadcastpkts()
 
         # Basic testing of results
         for key, value in results.items():
@@ -575,10 +563,10 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifinbroadcastpkts(oidonly=True)
+        results = await testobj.ifinbroadcastpkts(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_ifoutbroadcastpkts(self):
+    async def test_ifoutbroadcastpkts(self):
         """Testing function ifoutbroadcastpkts."""
         # Initialize key variables
         oid_key = "ifOutBroadcastPkts"
@@ -586,7 +574,7 @@ class TestMibIf(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.ifoutbroadcastpkts()
+        results = await testobj.ifoutbroadcastpkts()
 
         # Basic testing of results
         for key, value in results.items():
@@ -594,7 +582,7 @@ class TestMibIf(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.ifoutbroadcastpkts(oidonly=True)
+        results = await testobj.ifoutbroadcastpkts(oidonly=True)
         self.assertEqual(results, oid)
 
     def test_ifstackstatus(self):

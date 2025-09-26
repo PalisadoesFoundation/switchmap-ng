@@ -4,7 +4,7 @@
 import os
 import sys
 import unittest
-from mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -55,6 +55,7 @@ else:
     sys.exit(2)
 
 # Create the necessary configuration to load the module
+from switchmap.poller import snmp
 from tests.testlib_ import setup
 
 CONFIG = setup.config()
@@ -119,7 +120,7 @@ class Query:
         pass
 
 
-class TestMibCiscoVlanIfTableFunctions(unittest.TestCase):
+class TestMibCiscoVlanIfTableFunctions(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################
@@ -155,7 +156,7 @@ class TestMibCiscoVlanIfTableFunctions(unittest.TestCase):
         pass
 
 
-class TestMibCiscoVlanIfTable(unittest.TestCase):
+class TestMibCiscoVlanIfTable(unittest.IsolatedAsyncioTestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -174,11 +175,8 @@ class TestMibCiscoVlanIfTable(unittest.TestCase):
 
     # Set the stage for SNMPwalk for integer results
     snmpobj_integer = Mock(spec=Query)
-    mock_spec_integer = {
-        "swalk.return_value": nwalk_results_integer,
-        "walk.return_value": nwalk_results_integer,
-    }
-    snmpobj_integer.configure_mock(**mock_spec_integer)
+    snmpobj_integer.swalk = AsyncMock(return_value=nwalk_results_integer)
+    snmpobj_integer.walk = AsyncMock(return_value=nwalk_results_integer)
 
     # Initializing key variables
     expected_dict = {
@@ -217,26 +215,24 @@ class TestMibCiscoVlanIfTable(unittest.TestCase):
         """Testing function __init__."""
         pass
 
-    def test_supported(self):
+    async def test_supported(self):
         """Testing method / function supported."""
         # Set the stage for oid_exists returning True
         snmpobj = Mock(spec=Query)
-        mock_spec = {"oid_exists.return_value": True}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.oid_exists = AsyncMock(return_value=True)
 
         # Test supported
         testobj = testimport.init_query(snmpobj)
-        self.assertEqual(testobj.supported(), True)
+        self.assertEqual(await testobj.supported(), True)
 
         # Set the stage for oid_exists returning False
-        mock_spec = {"oid_exists.return_value": False}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.oid_exists = AsyncMock(return_value=False)
 
         # Test unsupported
         testobj = testimport.init_query(snmpobj)
-        self.assertEqual(testobj.supported(), False)
+        self.assertEqual(await testobj.supported(), False)
 
-    def test_layer1(self):
+    async def test_layer1(self):
         """Testing function layer1."""
         # Initializing key variables
         expected_dict = {
@@ -248,12 +244,11 @@ class TestMibCiscoVlanIfTable(unittest.TestCase):
 
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {"swalk.return_value": self.nwalk_results_integer}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.swalk = AsyncMock(return_value=self.nwalk_results_integer)
 
         # Get results
         testobj = testimport.init_query(snmpobj)
-        results = testobj.layer1()
+        results = await testobj.layer1()
 
         # Basic testing of results
         for primary in results.keys():
@@ -263,14 +258,14 @@ class TestMibCiscoVlanIfTable(unittest.TestCase):
                     expected_dict[primary][secondary],
                 )
 
-    def test_cviroutedvlanifindex(self):
+    async def test_cviroutedvlanifindex(self):
         """Testing function cviroutedvlanifindex."""
         oid_key = "CiscoVlanIftableRelationship"
         oid = ".1.3.6.1.4.1.9.9.128.1.1.1.1.3"
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.cviroutedvlanifindex()
+        results = await testobj.cviroutedvlanifindex()
 
         # Basic testing of results
         for key, value in results.items():
@@ -279,7 +274,7 @@ class TestMibCiscoVlanIfTable(unittest.TestCase):
             self.assertEqual(value, expected_value)
 
         # Test that we are getting the correct OID
-        results = testobj.cviroutedvlanifindex(oidonly=True)
+        results = await testobj.cviroutedvlanifindex(oidonly=True)
         self.assertEqual(results, oid)
 
 
