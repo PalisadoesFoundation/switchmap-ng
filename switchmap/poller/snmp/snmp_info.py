@@ -1,37 +1,37 @@
-"""Module to aggregate query results."""
+"""Async module to aggregate query results."""
 
 import time
 from collections import defaultdict
+from switchmap.core import log
+import asyncio
 
 from . import iana_enterprise
 from . import get_queries
 
 
 class Query:
-    """Class interacts with IfMIB devices.
+    """Async class interacts with devices - use existing MIB classes.
 
     Args:
         None
 
     Returns:
         None
-
     """
 
     def __init__(self, snmp_object):
         """Instantiate the class.
 
         Args:
-            snmp_object: SNMP Interact class object from snmp_manager.py
+            snmp_object: SNMP interact class object from async_snmp_manager.py
 
         Returns:
             None
-
         """
         # Define query object
         self.snmp_object = snmp_object
 
-    def everything(self):
+    async def everything(self):
         """Get all information from device.
 
         Args:
@@ -39,122 +39,151 @@ class Query:
 
         Returns:
             data: Aggregated data
-
         """
         # Initialize key variables
         data = {}
 
-        # Append data
-        data["misc"] = self.misc()
-        data["layer1"] = self.layer1()
-        data["layer2"] = self.layer2()
-        data["layer3"] = self.layer3()
-        data["system"] = self.system()
+        # Run all sections concurrently
+        results = await asyncio.gather(
+            self.misc(),
+            self.system(),
+            self.layer1(),
+            self.layer2(),
+            self.layer3(),
+            return_exceptions=True,
+        )
+
+        keys = ["misc", "system", "layer1", "layer2", "layer3"]
+        for key, result in zip(keys, results):
+            if isinstance(result, Exception):
+                log.log2warning(1417, f"{key} failed: {result}")
+            elif result:
+                data[key] = result
 
         # Return
         return data
 
-    def misc(self):
-        """Provide miscellaneous information about device and the poll.
-
-        Args:
-            None
-
-        Returns:
-            data: Aggregated data
-
-        """
+    async def misc(self):
+        """Provide miscellaneous information about the device and the poll."""
         # Initialize data
         data = defaultdict(lambda: defaultdict(dict))
         data["timestamp"] = int(time.time())
         data["host"] = self.snmp_object.hostname()
 
         # Get vendor information
-        sysobjectid = self.snmp_object.sysobjectid()
-        vendor = iana_enterprise.Query(sysobjectid=sysobjectid)
-        data["IANAEnterpriseNumber"] = vendor.enterprise()
+        sysobjectid = await self.snmp_object.sysobjectid()
+        if sysobjectid:
+            vendor = iana_enterprise.Query(sysobjectid=sysobjectid)
+            data["IANAEnterpriseNumber"] = vendor.enterprise()
+        else:
+            data["IANAEnterpriseNumber"] = None
 
-        # Return
         return data
 
-    def system(self):
+    async def system(self):
         """Get all system information from device.
 
         Args:
             None
 
         Returns:
-            data: Aggregated data
-
-        """
-        # Initialize data
-        data = defaultdict(lambda: defaultdict(dict))
-        processed = False
-
-        # Get system information from SNMPv2-MIB, ENTITY-MIB, IF-MIB
-        # Instantiate a query object for each system query
-        for item in [
-            Query(self.snmp_object) for Query in get_queries("system")
-        ]:
-            if item.supported():
-                processed = True
-                data = _add_system(item, data)
-
-        # Return
-        if processed is True:
-            return data
-        else:
-            return None
-
-    def layer1(self):
-        """Get all layer1 information from device.
-
-        Args:
-            None
-
-        Returns:
-            data: Aggregated data
-
-        """
-        # Initialize key values
-        data = defaultdict(lambda: defaultdict(dict))
-        processed = False
-
-        # Get information layer1 queries
-
-        for item in [
-            Query(self.snmp_object) for Query in get_queries("layer1")
-        ]:
-            if item.supported():
-                processed = True
-                data = _add_layer1(item, data)
-
-        # Return
-        if processed is True:
-            return data
-        else:
-            return None
-
-    def layer2(self):
-        """Get all layer2 information from device.
-
-        Args:
-            None
-
-        Returns:
-            data: Aggregated data
-
+            data: Aggregated system data
         """
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
 
-        for item in [
-            Query(self.snmp_object) for Query in get_queries("layer2")
-        ]:
-            if item.supported():
-                processed = True
-                data = _add_layer2(item, data)
+        # Get system information from various MIB classes
+        system_queries = get_queries("system")
+
+        # Create all query instances
+        query_items = [
+            (query_class(self.snmp_object), query_class.__name__)
+            for query_class in system_queries
+        ]
+
+        # Check if supported
+        support_results = await asyncio.gather(
+            *[item.supported() for item, _ in query_items]
+        )
+
+        supported_items = [
+            (item, name)
+            for (item, name), supported in zip(query_items, support_results)
+            if supported
+        ]
+
+        if supported_items:
+            results = await asyncio.gather(
+                *[
+                    _add_system(item, defaultdict(lambda: defaultdict(dict)))
+                    for item, _ in supported_items
+                ]
+            )
+
+            # Merge results
+            for result in results:
+                for key, value in result.items():
+                    data[key].update(value)
+            processed = True
+
+        if processed is True:
+            return data
+        else:
+            return None
+
+    async def layer1(self):
+        """Get all layer 1 information from device.
+
+        Args:
+            None
+
+        Returns:
+            data: Aggregated layer1 data
+        """
+        # Initialize key values
+        data = defaultdict(lambda: defaultdict(dict))
+        processed = False
+
+        layer1_queries = get_queries("layer1")
+
+        query_items = [
+            (query_class(self.snmp_object), query_class.__name__)
+            for query_class in layer1_queries
+        ]
+
+        # Concurrent support check
+        support_results = await asyncio.gather(
+            *[item.supported() for item, _ in query_items]
+        )
+
+        supported_items = [
+            (item, name)
+            for (item, name), supported in zip(query_items, support_results)
+            if supported
+        ]
+
+        if supported_items:
+            results = await asyncio.gather(
+                *[
+                    _add_layer1(item, defaultdict(lambda: defaultdict(dict)))
+                    for item, _ in supported_items
+                ],
+                return_exceptions=True,
+            )
+
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    item_name = supported_items[i][1]
+                    log.log2warning(
+                        1005, f"Layer1 error in {item_name}: {result}"
+                    )
+                    continue
+
+                for key, value in result.items():
+                    data[key].update(value)
+
+            processed = True
 
         # Return
         if processed is True:
@@ -162,112 +191,150 @@ class Query:
         else:
             return None
 
-    def layer3(self):
+    async def layer2(self):
+        """Get all layer 2 information from device.
+
+        Args:
+            None
+
+        Returns:
+            data: Aggregated layer2 data
+        """
+        # Initialize key variables
+        data = defaultdict(lambda: defaultdict(dict))
+        processed = False
+
+        # Get layer2 information from MIB classes
+        layer2_queries = get_queries("layer2")
+
+        query_items = [
+            (query_class(self.snmp_object), query_class.__name__)
+            for query_class in layer2_queries
+        ]
+
+        support_results = await asyncio.gather(
+            *[item.supported() for item, _ in query_items]
+        )
+
+        # Filter supported MIBs
+        supported_items = [
+            (item, name)
+            for (item, name), supported in zip(query_items, support_results)
+            if supported
+        ]
+
+        if supported_items:
+            # Concurrent processing
+            results = await asyncio.gather(
+                *[
+                    _add_layer2(item, defaultdict(lambda: defaultdict(dict)))
+                    for item, _ in supported_items
+                ],
+                return_exceptions=True,
+            )
+
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    item_name = supported_items[i][1]
+                    log.log2warning(
+                        1007, f"Layer2 error in {item_name}: {result}"
+                    )
+                    continue
+
+                # Merge this MIB's complete results
+                for key, value in result.items():
+                    data[key].update(value)
+
+            processed = True
+
+        # Return
+
+        if processed is True:
+            return data
+        else:
+            return None
+
+    async def layer3(self):
         """Get all layer3 information from device.
 
         Args:
             None
 
         Returns:
-            data: Aggregated data
-
+           data: Aggregated layer3 data
         """
         # Initialize key variables
         data = defaultdict(lambda: defaultdict(dict))
         processed = False
 
-        for item in [
-            Query(self.snmp_object) for Query in get_queries("layer3")
-        ]:
-            if item.supported():
-                processed = True
-                data = _add_layer3(item, data)
+        # Get layer3 information from MIB classes
+        layer3_queries = get_queries("layer3")
 
-        # Return
+        query_items = [
+            (query_class(self.snmp_object), query_class.__name__)
+            for query_class in layer3_queries
+        ]
+
+        support_results = await asyncio.gather(
+            *[item.supported() for item, _ in query_items]
+        )
+
+        # Filter supported MIBs
+        supported_items = [
+            (item, name)
+            for (item, name), supported in zip(query_items, support_results)
+            if supported
+        ]
+
+        if supported_items:
+            # Concurrent processing
+            results = await asyncio.gather(
+                *[
+                    _add_layer3(item, defaultdict(lambda: defaultdict(dict)))
+                    for item, _ in supported_items
+                ],
+                return_exceptions=True,
+            )
+
+            for i, result in enumerate(results):
+                if isinstance(result, Exception):
+                    item_name = supported_items[i][1]
+                    log.log2warning(
+                        1006, f"Layer3 error in {item_name}: {result}"
+                    )
+                    continue
+
+                # Merge this MIB's complete results
+                for key, value in result.items():
+                    data[key].update(value)
+
+            processed = True
+
         if processed is True:
             return data
-        else:
-            return None
+        return None
 
 
-def _add_data(source, target):
+async def _add_data(source, target):
     """Add data from source to target dict. Both dicts must have two keys.
 
     Args:
         source: Source dict
-        target: Target dict
+    target: Target dict
 
     Returns:
         target: Aggregated data
-
     """
     # Process data
     for primary in source.keys():
         for secondary, value in source[primary].items():
             target[primary][secondary] = value
 
-        # Return
+    # Return
     return target
 
 
-def _add_layer1(query, original_data):
-    """Add data from successful layer1 MIB query to original data provided.
-
-    Args:
-        query: MIB query object
-        original_data: Two keyed dict of data
-
-    Returns:
-        new_data: Aggregated data
-
-    """
-    # Process query
-    result = query.layer1()
-    new_data = _add_data(result, original_data)
-
-    # Return
-    return new_data
-
-
-def _add_layer2(query, original_data):
-    """Add data from successful layer2 MIB query to original data provided.
-
-    Args:
-        query: MIB query object
-        original_data: Two keyed dict of data
-
-    Returns:
-        new_data: Aggregated data
-
-    """
-    # Process query
-    result = query.layer2()
-    new_data = _add_data(result, original_data)
-
-    # Return
-    return new_data
-
-
-def _add_layer3(query, original_data):
-    """Add data from successful layer3 MIB query to original data provided.
-
-    Args:
-        query: MIB query object
-        original_data: Two keyed dict of data
-
-    Returns:
-        new_data: Aggregated data
-
-    """
-    # Process query
-    result = query.layer3()
-    new_data = _add_data(result, original_data)
-
-    # Return
-    return new_data
-
-
-def _add_system(query, data):
+async def _add_system(query, data):
     """Add data from successful system MIB query to original data provided.
 
     Args:
@@ -276,16 +343,128 @@ def _add_system(query, data):
 
     Returns:
         data: Aggregated data
-
     """
-    # Process query
-    result = query.system()
+    try:
+        result = None
 
-    # Add tag
-    for primary in result.keys():
-        for secondary in result[primary].keys():
-            for tertiary, value in result[primary][secondary].items():
-                data[primary][secondary][tertiary] = value
+        if asyncio.iscoroutinefunction(query.system):
+            result = await query.system()
+        else:
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(None, query.system)
 
-    # Return
-    return data
+        # Merge only if we have data
+        if not result:
+            return data
+        for primary, secondary_map in result.items():
+            if isinstance(secondary_map, dict):
+                for secondary, maybe_tertiary in secondary_map.items():
+                    if isinstance(maybe_tertiary, dict):
+                        for tertiary, value in maybe_tertiary.items():
+                            data[primary][secondary][tertiary] = value
+                    else:
+                        data[primary][secondary] = maybe_tertiary
+            else:
+                # Handle case where secondary level is not a dict
+                data[primary] = secondary_map
+
+        return data
+    except Exception as e:
+        log.log2warning(1320, f"Error in _add_system: {e}")
+        return data
+
+
+async def _add_layer1(query, data):
+    """Add data from successful layer1 MIB query to original data provided.
+
+    Args:
+        query: MIB query object
+        data: dict of data
+
+    Returns:
+        data: Aggregated data
+    """
+    try:
+        mib_name = query.__class__.__name__
+
+        result = None
+        if asyncio.iscoroutinefunction(query.layer1):
+            result = await query.layer1()
+        else:
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(None, query.layer1)
+
+        if result:
+            data = await _add_data(result, data)
+        else:
+            log.log2debug(1302, f" No layer1 data returned for {mib_name}")
+
+        return data
+
+    except Exception as e:
+        log.log2warning(1316, f" Error in _add_layer1 for {mib_name}: {e}")
+        return data
+
+
+async def _add_layer2(query, data):
+    """Add data from successful layer2 MIB query to original data provided.
+
+    Args:
+        query: MIB query object
+        data: dict of data
+
+    Returns:
+        data: Aggregated data
+    """
+    try:
+        mib_name = query.__class__.__name__
+        result = None
+        if asyncio.iscoroutinefunction(query.layer2):
+            result = await query.layer2()
+        else:
+
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(None, query.layer2)
+
+        if result:
+            data = await _add_data(result, data)
+        else:
+            log.log2debug(1306, f" No layer2 data returned for {mib_name}")
+
+        return data
+
+    except Exception as e:
+        log.log2warning(1308, f" Error in _add_layer2 for {mib_name}: {e}")
+        return data
+
+
+async def _add_layer3(query, data):
+    """Add data from successful layer3 MIB query to original data provided.
+
+    Args:
+        query: MIB query object
+        data: dict of data
+
+    Returns:
+        data: Aggregated data
+    """
+    try:
+        mib_name = query.__class__.__name__
+
+        result = None
+        if asyncio.iscoroutinefunction(query.layer3):
+            result = await query.layer3()
+        else:
+            loop = asyncio.get_event_loop()
+            result = await loop.run_in_executor(None, query.layer3)
+
+        if result:
+            data = await _add_data(result, data)
+        else:
+            log.log2debug(1309, f" No layer3 data returned for {mib_name}")
+
+        return data
+
+    except Exception as e:
+        log.log2warning(1310, f" Error in _add_layer3 for {mib_name}: {e}")
+        return data

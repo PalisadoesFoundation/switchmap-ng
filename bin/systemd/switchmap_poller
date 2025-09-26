@@ -74,7 +74,7 @@ class PollingAgent(Agent):
         """
         # Initialize key variables
         delay = self._server_config.polling_interval()
-        multiprocessing = self._server_config.multiprocessing()
+        max_concurrent = self._server_config.agent_subprocesses()
 
         # Post data to the remote server
         while True:
@@ -89,7 +89,7 @@ class PollingAgent(Agent):
             open(self.lockfile, "a").close()
 
             # Poll after sleeping
-            poll.devices(multiprocessing=multiprocessing)
+            poll.run_devices(max_concurrent_devices=max_concurrent)
 
             # Delete lockfile
             os.remove(self.lockfile)

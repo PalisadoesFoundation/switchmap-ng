@@ -115,7 +115,7 @@ class Query:
         pass
 
 
-class TestMibBridgeFunctions(unittest.TestCase):
+class TestMibBridgeFunctions(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################
@@ -151,7 +151,7 @@ class TestMibBridgeFunctions(unittest.TestCase):
         pass
 
 
-class TestMibBridge(unittest.TestCase):
+class TestMibBridge(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################

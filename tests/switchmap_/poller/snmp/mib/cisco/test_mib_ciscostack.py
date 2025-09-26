@@ -4,7 +4,7 @@
 import os
 import sys
 import unittest
-from mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -117,7 +117,7 @@ class Query:
         pass
 
 
-class TestMibCiscoStackFunctions(unittest.TestCase):
+class TestMibCiscoStackFunctions(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################
@@ -153,7 +153,7 @@ class TestMibCiscoStackFunctions(unittest.TestCase):
         pass
 
 
-class TestMibCiscoStack(unittest.TestCase):
+class TestMibCiscoStack(unittest.IsolatedAsyncioTestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -167,11 +167,8 @@ class TestMibCiscoStack(unittest.TestCase):
 
     # Set the stage for SNMPwalk for integer results
     snmpobj_integer = Mock(spec=Query)
-    mock_spec_integer = {
-        "swalk.return_value": nwalk_results_integer,
-        "walk.return_value": nwalk_results_integer,
-    }
-    snmpobj_integer.configure_mock(**mock_spec_integer)
+    snmpobj_integer.swalk = AsyncMock(return_value=nwalk_results_integer)
+    snmpobj_integer.walk = AsyncMock(return_value=nwalk_results_integer)
 
     # Initializing key variables
     expected_dict = {100: {"portDuplex": 100}, 200: {"portDuplex": 100}}
@@ -209,7 +206,7 @@ class TestMibCiscoStack(unittest.TestCase):
         """Testing function layer1."""
         pass
 
-    def test_portduplex(self):
+    async def test_portduplex(self):
         """Testing function portduplex."""
         # Initialize key variables
         oid_key = "portDuplex"
@@ -217,7 +214,7 @@ class TestMibCiscoStack(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.portduplex()
+        results = await testobj.portduplex()
 
         # Basic testing of results
         for key, value in results.items():
@@ -225,10 +222,10 @@ class TestMibCiscoStack(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.portduplex(oidonly=True)
+        results = await testobj.portduplex(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test__portifindex(self):
+    async def test__portifindex(self):
         """Testing function _portifindex."""
         # Initialize key variables
         oid_key = "portDuplex"
@@ -236,7 +233,7 @@ class TestMibCiscoStack(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj._portifindex()
+        results = await testobj._portifindex()
 
         # Basic testing of results
         for key, value in results.items():
@@ -244,7 +241,7 @@ class TestMibCiscoStack(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj._portifindex(oidonly=True)
+        results = await testobj._portifindex(oidonly=True)
         self.assertEqual(results, oid)
 
 

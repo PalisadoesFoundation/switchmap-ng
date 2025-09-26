@@ -8,6 +8,7 @@ from operator import attrgetter
 # Application imports
 from switchmap.core import log
 from switchmap.core import general
+from switchmap.core.mac_utils import decode_mac_address
 from switchmap.server.db.ingest.query import device as _misc_device
 from switchmap.server.db.misc import interface as _historical
 from switchmap.server.db.table import device as _device
@@ -505,13 +506,14 @@ Updating MAC address to interface {ifindex} mapping in the DB for device \
 {self._device.hostname} based on SNMP MIB-BRIDGE entries"""
                 log.log2debug(1065, log_message)
 
-                # Iterate over the MACs found
                 for next_mac in sorted(_macs):
-                    # Initialize loop variables
+                    # Initialize variables
                     valid_mac = None
 
                     # Create lowercase version of MAC address
-                    mactest = general.mac(next_mac)
+                    # Handle double-encoded MAC addresses from async poller
+                    decoded_mac = decode_mac_address(next_mac)
+                    mactest = general.mac(decoded_mac)
                     if bool(mactest.valid) is False:
                         continue
                     else:
