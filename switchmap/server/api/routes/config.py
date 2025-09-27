@@ -57,8 +57,20 @@ def get_config():
     return jsonify(read_config())
 
 
+def mask_secrets(config: dict) -> dict:
+    masked = {}
+    for key, value in config.items():
+        if key == "db_pass" and value:
+            masked[key] = {"isSecret": True, "value": "********"}
+        elif isinstance(value, dict):
+            masked[key] = mask_secrets(value)
+        else:
+            masked[key] = value
+    return masked
+
+
 @API_CONFIG.route("/config", methods=["POST"])
-def update_config():
+def post_config():
     """Update the config.yaml with new JSON data from the request.
 
     Args:
@@ -73,4 +85,43 @@ def update_config():
     if not data:
         return jsonify({"error": "Invalid JSON"}), 400
     write_config(data)
+    return jsonify({"status": "success"})
+
+@API_CONFIG.route("/config", methods=["PATCH"])
+def patch_config():
+    """
+    Partially update the SwitchMap configuration.
+
+    Handles the db_pass secret securely:
+    - Expects db_pass updates in the form {"current": "...", "new": "..."}.
+    - Updates db_pass directly without checking for the default placeholder.
+    - Other non-secret fields are merged directly.
+
+    Returns:
+        JSON response indicating success or failure:
+        - 400 if the request JSON is invalid or db_pass format is incorrect.
+        - 200 with {"status": "success"} on successful update.
+    """
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    current_config = read_config()
+
+    # Handle db_pass specially
+    if "db_pass" in data:
+        db_pass_data = data["db_pass"]
+        if not isinstance(db_pass_data, dict) or "new" not in db_pass_data:
+            return jsonify({"error": "Invalid db_pass format"}), 400
+
+        new = db_pass_data.get("new")
+        if new:
+            current_config["server"]["db_pass"] = new
+
+    # Merge all other non-secret fields
+    for key, value in data.items():
+        if key != "db_pass":
+            current_config[key] = value
+
+    write_config(current_config)
     return jsonify({"status": "success"})

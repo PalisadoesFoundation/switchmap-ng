@@ -4781,13 +4781,13 @@ Return the current configuration as JSON.
 - `Response` - A Flask JSON response containing the current config
   loaded from config.yaml.
 
-<a id="api.routes.config.update_config"></a>
+<a id="api.routes.config.post_config"></a>
 
-#### update\_config
+#### post\_config
 
 ```python
 @API_CONFIG.route("/config", methods=["POST"])
-def update_config()
+def post_config()
 ```
 
 Update the config.yaml with new JSON data from the request.
@@ -4802,6 +4802,28 @@ Update the config.yaml with new JSON data from the request.
 - `Response` - A Flask JSON response indicating success or failure.
   Returns 400 if the JSON data is invalid, otherwise returns
   a success message.
+
+<a id="api.routes.config.patch_config"></a>
+
+#### patch\_config
+
+```python
+@API_CONFIG.route("/config", methods=["PATCH"])
+def patch_config()
+```
+
+Partially update the SwitchMap configuration.
+
+Handles the db_pass secret securely:
+- Expects db_pass updates in the form {"current": "...", "new": "..."}.
+- Updates db_pass directly without checking for the default placeholder.
+- Other non-secret fields are merged directly.
+
+**Returns**:
+
+  JSON response indicating success or failure:
+  - 400 if the request JSON is invalid or db_pass format is incorrect.
+  - 200 with {"status": "success"} on successful update.
 
 <a id="api.routes.post"></a>
 

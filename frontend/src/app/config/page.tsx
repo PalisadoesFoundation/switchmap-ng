@@ -663,16 +663,22 @@ export default function ConfigPage() {
                                   : ""
                               }
                               type={
-                                key.toLowerCase().includes("password")
+                                key === "snmp_version"
+                                  ? "number"
+                                  : key.toLowerCase().includes("password")
                                   ? "password"
                                   : "text"
                               }
                               readOnly={!isEditing}
-                              onChange={(e) =>
+                              onChange={(e) => {
+                                const next =
+                                  key === "snmp_version"
+                                    ? Number(e.target.value)
+                                    : e.target.value;
                                 updateSNMPGroup(groupIndex, {
-                                  [key]: e.target.value,
-                                })
-                              }
+                                  [key as keyof SNMPGroup]: next,
+                                } as Partial<SNMPGroup>);
+                              }}
                             />
                           </div>
                         );
@@ -806,29 +812,42 @@ export default function ConfigPage() {
                             .replace(/\b\w/g, (l) => l.toUpperCase())}
                           :
                         </label>
-                        <input
-                          className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
-                          type="text"
-                          value={showMasked ? "***********" : String(value)}
-                          readOnly={editSection !== section || showMasked}
-                          onClick={() => {
-                            if (
-                              isPasswordField &&
-                              editSection === section &&
-                              !authPasswordEdit
-                            ) {
-                              handlePasswordEdit(section, key);
-                            }
-                          }}
-                          onChange={(e) => {
-                            if (
-                              editSection === section &&
-                              (!isPasswordField || authPasswordEdit)
-                            ) {
-                              updateConfigSection(section, key, e.target.value);
-                            }
-                          }}
-                        />
+
+                        {isPasswordField ? (
+                          // Masked input for db_pass
+                          <div className="flex items-center gap-2">
+                            <input
+                              className="w-full border border-gray-300 p-2 rounded disabled:bg-gray-50 disabled:text-gray-500"
+                              type="password"
+                              value="********"
+                              readOnly
+                            />
+                            <button
+                              type="button"
+                              className="px-2 py-1 bg-blue-500 text-white rounded"
+                              onClick={() => handlePasswordEdit(section, key)}
+                            >
+                              Change
+                            </button>
+                          </div>
+                        ) : (
+                          // Regular input for non-secret fields
+                          <input
+                            className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
+                            type="text"
+                            value={String(value)}
+                            readOnly={editSection !== section}
+                            onChange={(e) => {
+                              if (editSection === section) {
+                                updateConfigSection(
+                                  section,
+                                  key,
+                                  e.target.value
+                                );
+                              }
+                            }}
+                          />
+                        )}
                       </div>
                     );
                   })}
