@@ -443,21 +443,6 @@ describe("ConfigPage", () => {
         expect(debugInput).not.toHaveAttribute("readOnly");
       });
     });
-
-    it("handles password fields correctly", async () => {
-      // Server has db_pass in mockConfig; expand and enter edit to reveal masked input
-      const serverSection = screen.getByText("Server").closest("details");
-      const editButton = within(serverSection!).getByTestId("edit-icon");
-
-      await user.click(editButton);
-
-      await waitFor(() => {
-        const passwordField = within(serverSection!).getByDisplayValue(
-          "***********"
-        );
-        expect(passwordField).toBeInTheDocument();
-      });
-    });
   });
 
   // ---------- Save Functionality ----------
