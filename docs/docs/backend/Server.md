@@ -4781,6 +4781,28 @@ Return the current configuration as JSON.
 - `Response` - A Flask JSON response containing the current config
   loaded from config.yaml.
 
+<a id="api.routes.config.mask_secrets"></a>
+
+#### mask\_secrets
+
+```python
+def mask_secrets(config: dict) -> dict
+```
+
+Recursively masks sensitive values in a configuration dictionary.
+
+Specifically, replaces the value of "db_pass" with a masked string,
+while preserving the structure of nested dictionaries.
+
+**Arguments**:
+
+- `config` _dict_ - The configuration dictionary to process.
+  
+
+**Returns**:
+
+- `dict` - A new dictionary with secrets masked.
+
 <a id="api.routes.config.post_config"></a>
 
 #### post\_config
@@ -4795,6 +4817,7 @@ Update the config.yaml with new JSON data from the request.
 **Arguments**:
 
   None
+  
   
 
 **Returns**:
@@ -4819,9 +4842,18 @@ Handles the db_pass secret securely:
 - Updates db_pass directly without checking for the default placeholder.
 - Other non-secret fields are merged directly.
 
+**Arguments**:
+
+  None
+  
+  The request JSON body can contain:
+  - "db_pass" (dict, optional): {"new": "<new_password>"}
+  - Other configuration keys to update.
+  
+
 **Returns**:
 
-  JSON response indicating success or failure:
+- `Response` - JSON response indicating success or failure:
   - 400 if the request JSON is invalid or db_pass format is incorrect.
   - 200 with {"status": "success"} on successful update.
 

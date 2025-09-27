@@ -58,6 +58,17 @@ def get_config():
 
 
 def mask_secrets(config: dict) -> dict:
+    """Recursively masks sensitive values in a configuration dictionary.
+
+    Specifically, replaces the value of "db_pass" with a masked string,
+    while preserving the structure of nested dictionaries.
+
+    Args:
+        config (dict): The configuration dictionary to process.
+
+    Returns:
+        dict: A new dictionary with secrets masked.
+    """
     masked = {}
     for key, value in config.items():
         if key == "db_pass" and value:
@@ -76,6 +87,7 @@ def post_config():
     Args:
         None
 
+
     Returns:
         Response: A Flask JSON response indicating success or failure.
             Returns 400 if the JSON data is invalid, otherwise returns
@@ -87,20 +99,27 @@ def post_config():
     write_config(data)
     return jsonify({"status": "success"})
 
+
 @API_CONFIG.route("/config", methods=["PATCH"])
 def patch_config():
-    """
-    Partially update the SwitchMap configuration.
+    """Partially update the SwitchMap configuration.
 
     Handles the db_pass secret securely:
-    - Expects db_pass updates in the form {"current": "...", "new": "..."}.
-    - Updates db_pass directly without checking for the default placeholder.
-    - Other non-secret fields are merged directly.
+      - Expects db_pass updates in the form {"current": "...", "new": "..."}.
+      - Updates db_pass directly without checking for the default placeholder.
+      - Other non-secret fields are merged directly.
+
+    Args:
+        None
+
+    The request JSON body can contain:
+      - "db_pass" (dict, optional): {"new": "<new_password>"}
+      - Other configuration keys to update.
 
     Returns:
-        JSON response indicating success or failure:
-        - 400 if the request JSON is invalid or db_pass format is incorrect.
-        - 200 with {"status": "success"} on successful update.
+        Response: JSON response indicating success or failure:
+          - 400 if the request JSON is invalid or db_pass format is incorrect.
+          - 200 with {"status": "success"} on successful update.
     """
     data = request.get_json()
     if not data:
