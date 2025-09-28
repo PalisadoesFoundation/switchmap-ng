@@ -19,6 +19,7 @@ from switchmap.server.db.table import vlanport as _vlanport
 from switchmap.server.db.table import ipport as _ipport
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import macip as _macip
+from switchmap.server.db.table import systemstat as _systemstat
 from switchmap.server.db.table import (
     IVlan,
     IDevice,
@@ -26,6 +27,8 @@ from switchmap.server.db.table import (
     IIpPort,
     IVlanPort,
     IL1Interface,
+    SystemStat,
+    ISystemStat,
 )
 
 
@@ -132,16 +135,27 @@ class Status:
         self._macport = False
         self._l1interface = False
         self._ipport = False
+        self._systemstat = False
 
     @property
     def l1interface(self):
-        """Provide the value of  the 'l1interface' property."""
+        """Provide the value of the 'l1interface' property."""
         return self._l1interface
 
     @l1interface.setter
     def l1interface(self, value):
         """Set the 'l1interface' property."""
         self._l1interface = value
+
+    @property
+    def systemstat(self):
+        """Provide the value of the 'systemstat' property."""
+        return self._systemstat
+
+    @systemstat.setter
+    def systemstat(self, value):
+        """Set the 'systemstat' property."""
+        self._systemstat = value
 
     @property
     def ipport(self):
@@ -226,6 +240,7 @@ class Topology:
         self.vlanport()
         self.macport()
         self.ipport()
+        self.systemstat()
 
     def l1interface(self, test=False):
         """Update the L1interface DB table.
@@ -301,6 +316,10 @@ No interfaces detected for for host {self._device.hostname}"""
                     lldpremsyscapenabled=interface.get("lldpRemSysCapEnabled"),
                     lldpremsysdesc=interface.get("lldpRemSysDesc"),
                     lldpremsysname=interface.get("lldpRemSysName"),
+                    ifin_ucast_pkts=interface.get("ifInUcastPkts"),
+                    ifout_ucast_pkts=interface.get("ifOutUcastPkts"),
+                    ifin_errors=interface.get("ifInErrors"),
+                    ifin_discards=interface.get("ifInDiscards"),
                     ts_idle=ts_idle,
                     enabled=1,
                 )
@@ -629,6 +648,65 @@ Getting MAC addresses for interface {ifindex} in the DB for device \
 
         # Everything is completed
         self._status.ipport = True
+
+    def systemstat(self, test=False):
+        """Update the SystemStat DB table.
+
+        Args:
+            test: Test mode if True
+
+        Returns:
+            None
+        """
+        # Initialize key variables
+        inserts = []
+
+        # Log start
+        self.log("SystemStat")
+
+        # Extract CISCO MIB data from system section
+        system_data = self._data.get("system", {})
+
+        # Get CPU data from CISCO-PROCESS-MIB
+        cpu_5min = None
+        cisco_process = system_data.get("CISCO-PROCESS-MIB", {})
+        cpu_total_5min = cisco_process.get("cpmCPUTotal5minRev", {})
+        if cpu_total_5min:
+            # Get the first CPU value (usually CPU '1')
+            cpu_5min = next(iter(cpu_total_5min.values()), None)
+
+        # Get Memory data from CISCO-MEMORY-POOL-MIB
+        mem_used = None
+        mem_free = None
+        cisco_memory = system_data.get("CISCO-MEMORY-POOL-MIB", {})
+        if cisco_memory:
+            mem_used = cisco_memory.get("ciscoMemoryPoolUsed")
+            mem_free = cisco_memory.get("ciscoMemoryPoolFree")
+
+        # Only create record if we have some data
+        if cpu_5min is not None or mem_used is not None or mem_free is not None:
+            row = ISystemStat(
+                idx_device=self._device.idx_device,
+                cpu_5min=cpu_5min,
+                mem_used=mem_used,
+                mem_free=mem_free,
+            )
+            inserts.append(row)
+
+            # Check if a record already exists for this device
+            existing = _systemstat.device_exists(self._device.idx_device)
+            if existing:
+                # Update existing record
+                _systemstat.update_row(existing.idx_systemstat, row)
+            else:
+                # Insert new record
+                if not test:
+                    _systemstat.insert_row(inserts)
+                    # Log completion
+        self.log("SystemStat", updated=True)
+
+        # Mark as completed
+        self._status.systemstat = True
 
     def log(self, table, updated=False):
         """Create standardized log messaging.
