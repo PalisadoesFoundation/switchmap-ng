@@ -4851,7 +4851,6 @@ Update the config.yaml with new JSON data from the request.
 #### deep\_merge
 
 ```python
-@API_CONFIG.route("/config", methods=["PATCH"])
 def deep_merge(dst, src)
 ```
 
@@ -4872,6 +4871,7 @@ Recursively merge two dictionaries or values.
 #### patch\_config
 
 ```python
+@API_CONFIG.route("/config", methods=["PATCH"])
 def patch_config()
 ```
 

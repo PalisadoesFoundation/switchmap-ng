@@ -3,6 +3,7 @@
 from flask import Blueprint, jsonify, request
 import yaml
 import os
+import tempfile
 
 API_CONFIG = Blueprint("config", __name__)
 
@@ -22,6 +23,14 @@ SECRET_KEYS = {
 }
 
 
+def _is_secret_placeholder(v):
+    return (
+        isinstance(v, dict)
+        and v.get("isSecret")
+        and v.get("value") == PLACEHOLDER
+    ) or (isinstance(v, str) and v == PLACEHOLDER)
+
+
 def merge_preserving_secrets(current, incoming):
     """Merge two configuration objects while preserving secret values.
 
@@ -36,12 +45,8 @@ def merge_preserving_secrets(current, incoming):
         out = dict(current)
         for k, v in incoming.items():
             if k in SECRET_KEYS:
-                # accept updates only if not placeholder object or empty
-                if (
-                    isinstance(v, dict)
-                    and v.get("isSecret")
-                    and v.get("value") == PLACEHOLDER
-                ):
+                # accept updates only if not a placeholder or empty
+                if _is_secret_placeholder(v):
                     continue
                 if v in ("", None):
                     continue
@@ -49,6 +54,13 @@ def merge_preserving_secrets(current, incoming):
             else:
                 out[k] = merge_preserving_secrets(current.get(k), v)
         return out
+    # Merge lists positionally (best-effort). If shapes diverge, prefer incoming.
+    if isinstance(current, list) and isinstance(incoming, list):
+        merged = []
+        for i, v in enumerate(incoming):
+            prev = current[i] if i < len(current) else None
+            merged.append(merge_preserving_secrets(prev, v))
+        return merged
     return incoming
 
 
@@ -82,22 +94,29 @@ def write_config(data):
     Returns:
         None
     """
-    tmp_path = f"{CONFIG_PATH}.tmp"
-    with open(tmp_path, "w") as f:
-        yaml.safe_dump(
-            data,
-            f,
-            default_flow_style=False,
-            sort_keys=False,
-            allow_unicode=True,
-        )
-        f.flush()
-        os.fsync(f.fileno())
-    os.replace(tmp_path, CONFIG_PATH)
+    dir_name = os.path.dirname(CONFIG_PATH) or "."
+    fd, tmp_path = tempfile.mkstemp(dir=dir_name, prefix=".config.", text=True)
     try:
-        os.chmod(CONFIG_PATH, 0o600)
-    except OSError:
-        pass
+        with os.fdopen(fd, "w") as f:
+            yaml.safe_dump(
+                data,
+                f,
+                default_flow_style=False,
+                sort_keys=False,
+                allow_unicode=True,
+            )
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp_path, CONFIG_PATH)
+        try:
+            os.chmod(CONFIG_PATH, 0o600)
+        except OSError:
+            pass
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except FileNotFoundError:
+            pass
 
 
 @API_CONFIG.route("/config", methods=["GET"])
@@ -161,7 +180,6 @@ def post_config():
     return jsonify({"status": "success"})
 
 
-@API_CONFIG.route("/config", methods=["PATCH"])
 def deep_merge(dst, src):
     """Recursively merge two dictionaries or values.
 
@@ -180,6 +198,7 @@ def deep_merge(dst, src):
     return src
 
 
+@API_CONFIG.route("/config", methods=["PATCH"])
 def patch_config():
     """Partially update the SwitchMap configuration.
 
