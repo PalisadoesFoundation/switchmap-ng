@@ -501,7 +501,8 @@ describe("ConfigPage", () => {
     });
 
     it("disables save button while saving", async () => {
-      mockFetch.mockImplementation(() => new Promise(() => {})); // Never resolves
+      const neverResolvingFetch = new Promise<Response>(() => {});
+      mockFetch.mockImplementationOnce(() => neverResolvingFetch);
 
       const saveButton = screen.getByText("Save Configuration");
       await user.click(saveButton);

@@ -13,6 +13,44 @@ CONFIG_PATH = os.environ.get(
     os.path.abspath(os.path.join(CURRENT_DIR, "../../../../etc/config.yaml")),
 )
 
+PLACEHOLDER = "********"
+SECRET_KEYS = {
+    "db_pass",
+    "snmp_authpassword",
+    "snmp_privpassword",
+    "snmp_community",
+}
+
+
+def merge_preserving_secrets(current, incoming):
+    """Merge two configuration objects while preserving secret values.
+
+    Args:
+        current (dict | Any): Existing configuration or value.
+        incoming (dict | Any): New configuration or value to merge.
+
+    Returns:
+        result: Merged configuration where secrets are preserved.
+    """
+    if isinstance(current, dict) and isinstance(incoming, dict):
+        out = dict(current)
+        for k, v in incoming.items():
+            if k in SECRET_KEYS:
+                # accept updates only if not placeholder object or empty
+                if (
+                    isinstance(v, dict)
+                    and v.get("isSecret")
+                    and v.get("value") == PLACEHOLDER
+                ):
+                    continue
+                if v in ("", None):
+                    continue
+                out[k] = v
+            else:
+                out[k] = merge_preserving_secrets(current.get(k), v)
+        return out
+    return incoming
+
 
 def read_config():
     """Read the configuration file from disk.
@@ -26,8 +64,13 @@ def read_config():
     """
     if not os.path.exists(CONFIG_PATH):
         return {}
-    with open(CONFIG_PATH, "r") as f:
-        return yaml.safe_load(f) or {}
+    try:
+        with open(CONFIG_PATH, "r") as f:
+            return yaml.safe_load(f) or {}
+    except yaml.YAMLError:
+        return {}
+    except OSError:
+        return {}
 
 
 def write_config(data):
@@ -39,8 +82,22 @@ def write_config(data):
     Returns:
         None
     """
-    with open(CONFIG_PATH, "w") as f:
-        yaml.dump(data, f, default_flow_style=False)
+    tmp_path = f"{CONFIG_PATH}.tmp"
+    with open(tmp_path, "w") as f:
+        yaml.safe_dump(
+            data,
+            f,
+            default_flow_style=False,
+            sort_keys=False,
+            allow_unicode=True,
+        )
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp_path, CONFIG_PATH)
+    try:
+        os.chmod(CONFIG_PATH, 0o600)
+    except OSError:
+        pass
 
 
 @API_CONFIG.route("/config", methods=["GET"])
@@ -54,7 +111,7 @@ def get_config():
         Response: A Flask JSON response containing the current config
         loaded from config.yaml.
     """
-    return jsonify(read_config())
+    return jsonify(mask_secrets(read_config()))
 
 
 def mask_secrets(config: dict) -> dict:
@@ -69,15 +126,17 @@ def mask_secrets(config: dict) -> dict:
     Returns:
         dict: A new dictionary with secrets masked.
     """
-    masked = {}
-    for key, value in config.items():
-        if key == "db_pass" and value:
-            masked[key] = {"isSecret": True, "value": "********"}
-        elif isinstance(value, dict):
-            masked[key] = mask_secrets(value)
-        else:
-            masked[key] = value
-    return masked
+    if isinstance(config, dict):
+        out = {}
+        for k, v in config.items():
+            if k in SECRET_KEYS and v:
+                out[k] = {"isSecret": True, "value": PLACEHOLDER}
+            else:
+                out[k] = mask_secrets(v)
+        return out
+    if isinstance(config, list):
+        return [mask_secrets(x) for x in config]
+    return config
 
 
 @API_CONFIG.route("/config", methods=["POST"])
@@ -96,11 +155,31 @@ def post_config():
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid JSON"}), 400
-    write_config(data)
+    current_config = read_config()
+    sanitized = merge_preserving_secrets(current_config, data)
+    write_config(sanitized)
     return jsonify({"status": "success"})
 
 
 @API_CONFIG.route("/config", methods=["PATCH"])
+def deep_merge(dst, src):
+    """Recursively merge two dictionaries or values.
+
+    Args:
+        dst (dict | Any): Destination dictionary or value.
+        src (dict | Any): Source dictionary or value to merge into dst.
+
+    Returns:
+        result: Result of merging src into dst.
+    """
+    if isinstance(dst, dict) and isinstance(src, dict):
+        out = dict(dst)
+        for k, v in src.items():
+            out[k] = deep_merge(out.get(k), v)
+        return out
+    return src
+
+
 def patch_config():
     """Partially update the SwitchMap configuration.
 
@@ -134,13 +213,17 @@ def patch_config():
             return jsonify({"error": "Invalid db_pass format"}), 400
 
         new = db_pass_data.get("new")
-        if new:
+        if "server" not in current_config or not isinstance(
+            current_config["server"], dict
+        ):
+            current_config["server"] = {}
+        if new is not None:
             current_config["server"]["db_pass"] = new
 
     # Merge all other non-secret fields
     for key, value in data.items():
-        if key != "db_pass":
-            current_config[key] = value
-
+        if key == "db_pass":
+            continue
+        current_config[key] = deep_merge(current_config.get(key), value)
     write_config(current_config)
     return jsonify({"status": "success"})

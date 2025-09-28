@@ -4721,6 +4721,26 @@ Contains all routes that the Flask API uses
 
 Config API routes for Switchmap.
 
+<a id="api.routes.config.merge_preserving_secrets"></a>
+
+#### merge\_preserving\_secrets
+
+```python
+def merge_preserving_secrets(current, incoming)
+```
+
+Merge two configuration objects while preserving secret values.
+
+**Arguments**:
+
+- `current` _dict | Any_ - Existing configuration or value.
+- `incoming` _dict | Any_ - New configuration or value to merge.
+  
+
+**Returns**:
+
+- `result` - Merged configuration where secrets are preserved.
+
 <a id="api.routes.config.read_config"></a>
 
 #### read\_config
@@ -4826,12 +4846,32 @@ Update the config.yaml with new JSON data from the request.
   Returns 400 if the JSON data is invalid, otherwise returns
   a success message.
 
+<a id="api.routes.config.deep_merge"></a>
+
+#### deep\_merge
+
+```python
+@API_CONFIG.route("/config", methods=["PATCH"])
+def deep_merge(dst, src)
+```
+
+Recursively merge two dictionaries or values.
+
+**Arguments**:
+
+- `dst` _dict | Any_ - Destination dictionary or value.
+- `src` _dict | Any_ - Source dictionary or value to merge into dst.
+  
+
+**Returns**:
+
+- `result` - Result of merging src into dst.
+
 <a id="api.routes.config.patch_config"></a>
 
 #### patch\_config
 
 ```python
-@API_CONFIG.route("/config", methods=["PATCH"])
 def patch_config()
 ```
 
