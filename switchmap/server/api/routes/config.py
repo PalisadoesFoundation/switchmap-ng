@@ -24,6 +24,14 @@ SECRET_KEYS = {
 
 
 def _is_secret_placeholder(v):
+    """Check if a value is a secret placeholder.
+
+    Args:
+        v (Any): The value to check. Can be a dict or a string.
+
+    Returns:
+        bool: True if the value is a secret placeholder, False otherwise.
+    """
     return (
         isinstance(v, dict)
         and v.get("isSecret")
@@ -54,7 +62,6 @@ def merge_preserving_secrets(current, incoming):
             else:
                 out[k] = merge_preserving_secrets(current.get(k), v)
         return out
-    # Merge lists positionally (best-effort). If shapes diverge, prefer incoming.
     if isinstance(current, list) and isinstance(incoming, list):
         merged = []
         for i, v in enumerate(incoming):
