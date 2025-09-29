@@ -274,13 +274,12 @@ def patch_config():
             current_config["server"], dict
         ):
             current_config["server"] = {}
-        if new is not None:
+        # Skip empty or placeholder updates
+        if new not in (None, "", PLACEHOLDER):
             current_config["server"]["db_pass"] = new
 
-    # Merge all other non-secret fields
-    for key, value in data.items():
-        if key == "db_pass":
-            continue
-        current_config[key] = deep_merge(current_config.get(key), value)
+    # Merge all other fields using secret-preserving merge (handles lists and wrappers)
+    rest = {k: v for k, v in data.items() if k != "db_pass"}
+    current_config = merge_preserving_secrets(current_config, rest)
     write_config(current_config)
     return jsonify({"status": "success"})
