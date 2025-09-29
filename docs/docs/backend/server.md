@@ -4721,26 +4721,6 @@ Contains all routes that the Flask API uses
 
 Config API routes for Switchmap.
 
-<a id="api.routes.config.merge_preserving_secrets"></a>
-
-#### merge\_preserving\_secrets
-
-```python
-def merge_preserving_secrets(current, incoming)
-```
-
-Merge two configuration objects while preserving secret values.
-
-**Arguments**:
-
-- `current` _dict | Any_ - Existing configuration or value.
-- `incoming` _dict | Any_ - New configuration or value to merge.
-  
-
-**Returns**:
-
-- `result` - Merged configuration where secrets are preserved.
-
 <a id="api.routes.config.read_config"></a>
 
 #### read\_config
@@ -4801,35 +4781,13 @@ Return the current configuration as JSON.
 - `Response` - A Flask JSON response containing the current config
   loaded from config.yaml.
 
-<a id="api.routes.config.mask_secrets"></a>
+<a id="api.routes.config.update_config"></a>
 
-#### mask\_secrets
-
-```python
-def mask_secrets(config: dict) -> dict
-```
-
-Recursively masks sensitive values in a configuration dictionary.
-
-Specifically, replaces the value of "db_pass" with a masked string,
-while preserving the structure of nested dictionaries.
-
-**Arguments**:
-
-- `config` _dict_ - The configuration dictionary to process.
-  
-
-**Returns**:
-
-- `dict` - A new dictionary with secrets masked.
-
-<a id="api.routes.config.post_config"></a>
-
-#### post\_config
+#### update\_config
 
 ```python
 @API_CONFIG.route("/config", methods=["POST"])
-def post_config()
+def update_config()
 ```
 
 Update the config.yaml with new JSON data from the request.
@@ -4838,64 +4796,12 @@ Update the config.yaml with new JSON data from the request.
 
   None
   
-  
 
 **Returns**:
 
 - `Response` - A Flask JSON response indicating success or failure.
   Returns 400 if the JSON data is invalid, otherwise returns
   a success message.
-
-<a id="api.routes.config.deep_merge"></a>
-
-#### deep\_merge
-
-```python
-def deep_merge(dst, src)
-```
-
-Recursively merge two dictionaries or values.
-
-**Arguments**:
-
-- `dst` _dict | Any_ - Destination dictionary or value.
-- `src` _dict | Any_ - Source dictionary or value to merge into dst.
-  
-
-**Returns**:
-
-- `result` - Result of merging src into dst.
-
-<a id="api.routes.config.patch_config"></a>
-
-#### patch\_config
-
-```python
-@API_CONFIG.route("/config", methods=["PATCH"])
-def patch_config()
-```
-
-Partially update the SwitchMap configuration.
-
-Handles the db_pass secret:
-- Expects {"new": "..."}.
-- Updates db_pass directly.
-- Other non-secret fields are merged directly.
-
-**Arguments**:
-
-  None
-  
-  The request JSON body can contain:
-  - "db_pass" (dict, optional): {"new": "<new_password>"}
-  - Other configuration keys to update.
-  
-
-**Returns**:
-
-- `Response` - JSON response indicating success or failure:
-  - 400 if the request JSON is invalid or db_pass format is incorrect.
-  - 200 with {"status": "success"} on successful update.
 
 <a id="api.routes.post"></a>
 

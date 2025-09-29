@@ -33,5 +33,5 @@ The icons used for the toggle come from the `react-icons` library.
 
 #### See
 
- - useTheme for managing themes in Next.js.
- - FiSun and FiMoon for the icons used in the toggle button.
+ - [useTheme](#) for managing themes in Next.js.
+ - [FiSun](#) and [FiMoon](#) for the icons used in the toggle button.

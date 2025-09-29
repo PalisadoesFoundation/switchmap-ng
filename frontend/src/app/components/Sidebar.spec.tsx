@@ -19,7 +19,7 @@ describe("Sidebar", () => {
     expect(screen.getByText(/Switchmap-NG/i)).toBeInTheDocument();
     expect(screen.getByText(/Dashboard/i)).toBeInTheDocument();
     expect(screen.getByText(/History/i)).toBeInTheDocument();
-    expect(screen.getByText(/Settings/i)).toBeInTheDocument();
+    expect(screen.getByText(/Configuration/i)).toBeInTheDocument();
     expect(screen.getByText(/ThemeToggle/i)).toBeInTheDocument();
   });
 

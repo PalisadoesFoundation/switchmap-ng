@@ -195,3 +195,60 @@ To run the test suite and generate a coverage report, use this command:
 (venv) $ cd /path/to/switchmap
 (venv) $ pytest --cov=switchmap --cov-report=lcov:coverage/coverage.lcov --cov-report=term-missing tests/switchmap_
 ```
+
+# Frontend Testing
+
+Frontend tests for Switchmap-NG are written with **Vitest** and **React Testing Library**.
+
+## Prerequisites
+
+Ensure the frontend dependencies are installed:
+
+## Run the Frontend Test Suite
+
+Run all frontend tests:
+
+```bash
+cd /path/to/switchmap-ng/frontend
+npm run test
+```
+
+### Run Tests in Watch Mode
+
+For active development, run tests in watch mode to automatically rerun tests on file changes:
+
+```bash
+
+npm run test:watch
+```
+
+### Run Tests with Coverage
+
+To generate a coverage report:
+
+```bash
+
+npm run test:coverage
+```
+
+The coverage report will be saved under:
+
+```bash
+
+frontend/coverage/lcov-report/index.html
+```
+
+Open the report in your browser to inspect test coverage:
+
+```bash
+
+open frontend/coverage/lcov-report/index.html
+```
+
+### Run a Single Test File
+
+To run a specific test file:
+
+```bash
+npm run test -- /path/to/file
+```
