@@ -138,6 +138,9 @@ def write_config(data):
             dfd = os.open(dir_name, flags)
             os.fsync(dfd)
             os.close(dfd)
+            dfd = os.open(dir_name, flags)
+            os.fsync(dfd)
+            os.close(dfd)
         except Exception:
             pass
 
