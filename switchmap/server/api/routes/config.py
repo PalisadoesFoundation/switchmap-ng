@@ -58,10 +58,15 @@ def merge_preserving_secrets(current, incoming):
                     continue
                 if v in ("", None):
                     continue
-                out[k] = v
+                # unwrap secret dict into raw value
+                if isinstance(v, dict) and v.get("isSecret"):
+                    out[k] = v.get("value")
+                else:
+                    out[k] = v
             else:
                 out[k] = merge_preserving_secrets(current.get(k), v)
         return out
+
     if isinstance(current, list) and isinstance(incoming, list):
         merged = []
         for i, v in enumerate(incoming):
