@@ -8,9 +8,9 @@
 
 ## Functions
 
-### default()
+### HistoricalChart()
 
-> **default**(`__namedParameters`): `Element`
+> **HistoricalChart**(`__namedParameters`): `Element`
 
 Defined in: [components/HistoricalChart.tsx:48](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/HistoricalChart.tsx#L48)
 
@@ -23,3 +23,9 @@ Defined in: [components/HistoricalChart.tsx:48](https://github.com/PalisadoesFou
 #### Returns
 
 `Element`
+
+## References
+
+### default
+
+Renames and re-exports [HistoricalChart](#historicalchart)

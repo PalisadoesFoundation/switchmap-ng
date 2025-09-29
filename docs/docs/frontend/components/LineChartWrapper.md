@@ -38,8 +38,8 @@ It supports custom tooltips and titles, making it suitable for various charting 
 
 #### See
 
- - ResponsiveContainer for responsive layout.
- - LineChart, XAxis, YAxis, Tooltip, Line from Recharts for chart rendering.
+ - [ResponsiveContainer](#) for responsive layout.
+ - [LineChart](#), [XAxis](#), [YAxis](#), [Tooltip](#), [Line](#) from Recharts for chart rendering.
 *
 
 ## References

@@ -75,8 +75,10 @@ describe("DeviceHistoryChart", () => {
 
     const result = await screen.findByText(
       (_, element) =>
-        element?.tagName === "P" &&
-        element.textContent?.includes("Showing results for Hostname: device1")
+        !!(
+          element?.tagName === "P" &&
+          element.textContent?.includes("Showing results for Hostname: device1")
+        )
     );
 
     expect(result).toBeInTheDocument();
@@ -88,8 +90,10 @@ describe("DeviceHistoryChart", () => {
     // Wait for initial results
     const initialResult = await screen.findByText(
       (_, element) =>
-        element?.tagName === "P" &&
-        element.textContent?.includes("Showing results for Hostname: device1")
+        !!(
+          element?.tagName === "P" &&
+          element.textContent?.includes("Showing results for Hostname: device1")
+        )
     );
     expect(initialResult).toBeInTheDocument();
 
@@ -99,14 +103,16 @@ describe("DeviceHistoryChart", () => {
 
     const suggestion = await screen.findByText(
       (_, element) =>
-        element?.tagName === "LI" && element.textContent === "device1"
+        !!(element?.tagName === "LI" && element.textContent === "device1")
     );
     fireEvent.click(suggestion);
 
     const updatedResult = await screen.findByText(
       (_, element) =>
-        element?.tagName === "P" &&
-        element.textContent?.includes("Showing results for Hostname: device1")
+        !!(
+          element?.tagName === "P" &&
+          element.textContent?.includes("Showing results for Hostname: device1")
+        )
     );
 
     expect(updatedResult).toBeInTheDocument();

@@ -1,15 +1,38 @@
 {
   "entryPoints": ["src"],
   "entryPointStrategy": "expand",
-  "out": "../docs/docs/frontend", 
+  "out": "../docs/docs/frontend",
   "plugin": ["typedoc-plugin-markdown"],
-  "exclude": ["**/node_modules/**"], 
+  "exclude": ["**/node_modules/**"],
   "excludeExternals": true,
   "excludePrivate": true,
   "excludeProtected": true,
   "router": "module",
   "githubPages": false,
   "gitRemote": "upstream",
-  "gitRevision": "develop"
-
+  "gitRevision": "develop",
+  "externalSymbolLinkMappings": {
+    "next": { "useParams": "#" },
+    "recharts": {
+      "ResponsiveContainer": "#",
+      "LineChart": "#",
+      "XAxis": "#",
+      "YAxis": "#",
+      "Tooltip": "#",
+      "Line": "#"
+    },
+    "react-icons": {
+      "FiLayout": "#",
+      "FiClock": "#",
+      "FiSettings": "#",
+      "RxHamburgerMenu": "#",
+      "FiSun": "#",
+      "FiMoon": "#"
+    },
+    "@types/react": {
+      "React.useState": "#",
+      "React.useEffect": "#"
+    },
+    "next-themes": { "useTheme": "#" }
+  }
 }
