@@ -4,6 +4,10 @@ from flask import Blueprint, jsonify, request
 import yaml
 import os
 import tempfile
+import threading
+
+
+_WRITE_LOCK = threading.RLock()
 
 API_CONFIG = Blueprint("config", __name__)
 
@@ -106,10 +110,15 @@ def write_config(data):
     Returns:
         None
     """
+    # Ensure the parent directory exists
     dir_name = os.path.dirname(CONFIG_PATH) or "."
+    os.makedirs(dir_name, exist_ok=True)
+
+    # Create a unique temp file for atomic write
     fd, tmp_path = tempfile.mkstemp(dir=dir_name, prefix=".config.", text=True)
     try:
-        with os.fdopen(fd, "w") as f:
+        # Serialize threads within this process and write with explicit UTF-8
+        with _WRITE_LOCK, os.fdopen(fd, "w", encoding="utf-8") as f:
             yaml.safe_dump(
                 data,
                 f,
@@ -119,12 +128,27 @@ def write_config(data):
             )
             f.flush()
             os.fsync(f.fileno())
+
+        # Atomically replace the old config
         os.replace(tmp_path, CONFIG_PATH)
+
+        # Best-effort: fsync the containing directory so the rename is durable
+        try:
+            flags = getattr(os, "O_DIRECTORY", 0) | getattr(os, "O_RDONLY", 0)
+            dfd = os.open(dir_name, flags)
+            os.fsync(dfd)
+            os.close(dfd)
+        except Exception:
+            pass
+
+        # Restrict permissions on the new file
         try:
             os.chmod(CONFIG_PATH, 0o600)
         except OSError:
             pass
+
     finally:
+        # Clean up the temp file if something went wrong before replace
         try:
             os.unlink(tmp_path)
         except FileNotFoundError:
@@ -183,9 +207,11 @@ def post_config():
             Returns 400 if the JSON data is invalid, otherwise returns
             a success message.
     """
-    data = request.get_json()
-    if not data:
-        return jsonify({"error": "Invalid JSON"}), 400
+    data = request.get_json(silent=True)
+    if data is None:
+        return jsonify({"error": "Invalid or missing JSON"}), 400
+    if not isinstance(data, dict):
+        return jsonify({"error": "Expected JSON object"}), 400
     current_config = read_config()
     sanitized = merge_preserving_secrets(current_config, data)
     write_config(sanitized)
@@ -214,9 +240,9 @@ def deep_merge(dst, src):
 def patch_config():
     """Partially update the SwitchMap configuration.
 
-    Handles the db_pass secret securely:
-      - Expects db_pass updates in the form {"current": "...", "new": "..."}.
-      - Updates db_pass directly without checking for the default placeholder.
+    Handles the db_pass secret:
+      - Expects {"new": "..."}.
+      - Updates db_pass directly.
       - Other non-secret fields are merged directly.
 
     Args:

@@ -4877,9 +4877,9 @@ def patch_config()
 
 Partially update the SwitchMap configuration.
 
-Handles the db_pass secret securely:
-- Expects db_pass updates in the form {"current": "...", "new": "..."}.
-- Updates db_pass directly without checking for the default placeholder.
+Handles the db_pass secret:
+- Expects {"new": "..."}.
+- Updates db_pass directly.
 - Other non-secret fields are merged directly.
 
 **Arguments**:
