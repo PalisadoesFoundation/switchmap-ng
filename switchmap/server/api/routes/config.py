@@ -141,6 +141,9 @@ def write_config(data):
             dfd = os.open(dir_name, flags)
             os.fsync(dfd)
             os.close(dfd)
+            dfd = os.open(dir_name, flags)
+            os.fsync(dfd)
+            os.close(dfd)
         except Exception:
             pass
 
@@ -281,7 +284,7 @@ def patch_config():
         if new not in (None, "", PLACEHOLDER):
             current_config["server"]["db_pass"] = new
 
-    # Merge all other fields using secret-preserving merge (handles lists and wrappers)
+    # Merge all other fields using secret-preserving merge
     rest = {k: v for k, v in data.items() if k != "db_pass"}
     current_config = merge_preserving_secrets(current_config, rest)
     write_config(current_config)
