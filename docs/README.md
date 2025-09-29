@@ -1,92 +1,90 @@
-# SwitchMap-NG Documentation Website
+# Talawa Mobile Documentation Website
 
-[![N|Solid](static/img/markdown/misc/logo.png)](https://github.com/PalisadoesFoundation/switchmap-ng)
+[![N|Solid](static/img/markdown/misc/logo.png)](https://github.com/PalisadoesFoundation/docs-mobile)
 
 # Installation
 
-This document provides instructions on how to set up and start a running instance of the [switchmap-ng documentation website](https://docs-legacy.switchmap-ng.io/) on your local system. The instructions are written to be followed in sequence so make sure to go through each of them step by step without skipping any sections.
+This document provides instructions on how to set up and start a running instance of docs-mobile website on your local system. The instructions are written to be followed in sequence so make sure to go through each of them step by step without skipping any sections.
 
 # Table of Contents
 
-<!-- TOC -->
+<!-- /TOC -->
 
-- [SwitchMap-NG Documentation Website](#switchmap-ng-documentation-website)
-- [Installation](#installation)
+- [Developer-Docs Installation](#docs-mobile-installation)
 - [Table of Contents](#table-of-contents)
 - [Prerequisites for Developers](#prerequisites-for-developers)
-    - [Install the Required Packages](#install-the-required-packages)
-        - [Install PNPM on Windows Using NPM](#install-pnpm-on-windows-using-npm)
-        - [Install PNPM on Windows Using msi File](#install-pnpm-on-windows-using-msi-file)
-        - [Install PNPM on macOS Using NPM](#install-pnpm-on-macos-using-npm)
-        - [Install PNPM on macOS Using Homebrew](#install-pnpm-on-macos-using-homebrew)
-        - [Install PNPM on Linux Using NPM](#install-pnpm-on-linux-using-npm)
+  - [Install node.js](#install-nodejs)
+  - [Install the Required Packages](#install-the-required-packages)
+    - [Install Yarn on Windows Using NPM](#install-yarn-on-windows-using-npm)
+    - [Install Yarn on Windows Using msi File](#install-yarn-on-windows-using-msi-file)
+    - [Install Yarn on macOS Using NPM](#install-yarn-on-macos-using-npm)
+    - [Install Yarn on macOS Using Homebrew](#install-yarn-on-macos-using-homebrew)
+    - [Install Yarn on Linux Using NPM](#install-yarn-on-linux-using-npm)
 - [Running the Development Server](#running-the-development-server)
 - [Building Static HTML Pages](#building-static-html-pages)
 
-<!-- /TOC -->
-
 # Prerequisites for Developers
 
-The contents of the `switchmap-ng` repo is used to automatically create [the switchmap-ng Documentation website](https://docs-legacy.switchmap-ng.io/). The automation uses [Docusaurus](https://docusaurus.io/docs/), a modern static website generator.
+The contents of the `docs-mobile` repo is used to automatically create [the Talawa Mobile Documentation website](https://docs-mobile.talawa.io/). The automation uses [Docusaurus](https://docusaurus.io/docs/), a modern static website generator.
 
 We recommend that you follow these steps before beginning development work in this repository.
 
 ## Install the Required Packages
 
-For the package installation, use only the `pnpm` package as `npm` will throw an error. Only `npm` use case here would be to install the `pnpm` package. Visit the [Docusaurus installation web page](https://docusaurus.io/docs/installation) if you have any difficulties with the steps below.
+For the package installation, use only the `yarn` package as `npm` will throw an error. Only `npm` use case here would be to install the `yarn` package. Visit the [Docusaurus installation web page](https://docusaurus.io/docs/installation) if you have any difficulties with the steps below.
 
 The steps are simple:
 
-1. If you have previously installed pnpm on your local device run the following command to confirm
+1. If you have previously installed yarn on your local device run the following command to confirm
 
 ```terminal
-$ pnpm -version
+$ yarn -version
 ```
 
-2. If you don't have pnpm installed, follow these steps:
+2. If you don't have yarn installed, follow these steps:
 
 **Note:** Please bear in mind that to install docusaurus in your system, a Node.js version 16.14 or above (which can be checked by running node -v) is required. Other requirements that pertains to the installation of docusaurus can be found [here](https://docusaurus.io/docs/installation)
 
 ```console
-$ git clone https://github.com/PalisadoesFoundation/switchmap-ng.git
-$ cd switchmap-ng
-$ pnpm add docusaurus
+$ git clone https://github.com/PalisadoesFoundation/docs-mobile.git
+$ cd docs-mobile
+$ yarn add docusaurus
 ```
 
-### Install PNPM on Windows Using NPM
+### Install Yarn on Windows Using NPM
 
-NPM (Node Package Manager) is a package manager included with the Node.js installation. It is used for developing and sharing JavaScript code, but it also provides another method of installing PNPM
+NPM (Node Package Manager) is a package manager included with the Node.js installation. It is used for developing and sharing JavaScript code, but it also provides another method of installing Yarn
 
 1. [Download the Node Windows installer](https://nodejs.org/en/download/)
 1. After choosing the path, double-click to install. Then give access to run the application
-1. Install PNPM by running the following command
+1. Install Yarn by running the following command
 
 ```terminal
-$ npm install --global pnpm
+$ npm install --global yarn
 ```
 
-4. Check PNPM installation
+4. Check Yarn installation
 
 ```terminal
-$ pnpm -version
+$ yarn -version
 ```
 
-### Install PNPM on Windows Using msi File
+### Install Yarn on Windows Using msi File
 
-Here’s how to install the PNPM package manager on Windows
+Here’s how to install the Yarn package manager on Windows
 
-1. [Download the PNPM Windows installer](https://classic.pnpmpkg.com/en/docs/install#windows-stable)
+1. [Download the Yarn Windows installer](https://classic.yarnpkg.com/en/docs/install#windows-stable)
 1. After choosing the path, double-click to install. Then give access to run the application
 
-1. Check PNPM installation
+1. Check Yarn installation
 
 ```terminal
-$ pnpm -version
+$ yarn -version
 ```
 
-### Install PNPM on macOS Using NPM
+### Install Yarn on macOS Using NPM
 
-The .pkg installer can be used to install PNPM on macOS. Using the .pkg installer also helps resolve dependencies since it does not require a command line to install Node.js
+The .pkg installer can be used to install Yarn on macOS. Using the .pkg installer also helps resolve dependencies since it does not require a command line to install Node.js
 
 1. [Click on the macOS Installer option to download the .pkg installer](https://nodejs.org/en/download/)
 2. Run the Node.js installer
@@ -97,33 +95,33 @@ $ node -v
 $ npm -v
 ```
 
-4. Run the following command to install PNPM
+4. Run the following command to install Yarn
 
 ```terminal
-$ sudo npm install --global pnpm
+$ sudo npm install --global yarn
 ```
 
-5. Verify PNPM Installation
+5. Verify Yarn Installation
 
 ```terminal
-$ pnpm --version
+$ yarn --version
 ```
 
-### Install PNPM on macOS Using Homebrew
+### Install Yarn on macOS Using Homebrew
 
-One of the easiest way to install PNPM on macOS is to use the command line installer
+One of the easiest way to install Yarn on macOS is to use the command line installer
 
-1. Install PNPM by running the given command in your terminal
+1. Install Yarn by running the given command in your terminal
 
 ```terminal
-$ brew install pnpm
+$ brew install yarn
 ```
 
-### Install PNPM on Linux Using NPM
+### Install Yarn on Linux Using NPM
 
-Installing PNPM on Linux through NPM can be done via command line installer, this doesn't automatically install Node.js
+Installing Yarn on Linux through NPM can be done via command line installer, this doesn't automatically install Node.js
 
-1. Run the following command in your terminal to install Node and NPM respectively. [Confirm your Linux distro and it's command prompt](https://classic.pnpmpkg.com/lang/en/docs/install/#debian-stable)
+1. Run the following command in your terminal to install Node and NPM respectively. [Confirm your Linux distro and it's command prompt](https://classic.yarnpkg.com/lang/en/docs/install/#debian-stable)
 
 ```terminal
 $ sudo apt install nodejs
@@ -137,16 +135,16 @@ $ node -v
 $ npm -v
 ```
 
-3. Install PNPM with the following command
+3. Install Yarn with the following command
 
 ```terminal
-npm install --global pnpm
+npm install --global yarn
 ```
 
-Finally, after installing pnpm and confirming that it is installed in your computer, run the command below to install the packages
+Finally, after installing yarn and confirming that it is installed in your computer, run the command below to install the packages
 
 ```terminal
-$ pnpm install
+$ yarn install
 ```
 
 # Running the Development Server
@@ -156,7 +154,9 @@ To preview your changes as you edit the files, you can run a local development s
 The command to run the server is:
 
 ```console
-pnpm start
+$ yarn run start
+OR
+$ yarn start
 ```
 
 By default, a browser window will open at http://localhost:3000.
@@ -170,7 +170,7 @@ This command starts a local development server and open up a browser window. Mos
 If you need to generate static HTML pages (unlikely), then follow these steps.
 
 ```console
-$ pnpm run build
+$ yarn run build
 ```
 
 This command generates static content into the `/build` directory and can be served using any static contents hosting service.
