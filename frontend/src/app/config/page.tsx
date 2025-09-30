@@ -824,6 +824,7 @@ export default function ConfigPage() {
                             />
                             <button
                               type="button"
+                              data-testid="password-edit-btn"
                               className="px-2 py-1 bg-blue-500 text-white rounded"
                               onClick={() => handlePasswordEdit(section, key)}
                             >

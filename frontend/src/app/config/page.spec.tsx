@@ -398,6 +398,30 @@ describe("ConfigPage", () => {
 
       expect(screen.getByText("New SNMP Group")).toBeInTheDocument();
     });
+    it("renders correct input types for SNMP group fields", async () => {
+      render(<ConfigPage />);
+      await user.click(screen.getByRole("button", { name: "SNMP Groups" }));
+
+      await user.click(screen.getByTestId("chevron-down"));
+
+      const snmpVersionInput = screen.getByDisplayValue("3");
+      expect(snmpVersionInput).toHaveAttribute("type", "number");
+
+      const authPasswordInput = screen.getByDisplayValue("testpass");
+      expect(authPasswordInput).toHaveAttribute("type", "password");
+
+      const groupNameInput = screen.getByDisplayValue("Test Group 1");
+      expect(groupNameInput).toHaveAttribute("type", "text");
+    });
+
+    it("prevents editing when not in edit mode", async () => {
+      const expandButton = screen.getByTestId("chevron-down");
+      await user.click(expandButton);
+      const input = screen.getByDisplayValue("Test Group 1");
+      expect(input).toHaveAttribute("readOnly");
+      await user.type(input, "New Name");
+      expect(input).toHaveValue("Test Group 1");
+    });
   });
 
   // ---------- Advanced Tab ----------
@@ -428,8 +452,8 @@ describe("ConfigPage", () => {
 
       await user.click(expandButton);
 
-      expect(screen.getByDisplayValue("false")).toBeInTheDocument(); // debug field
-      expect(screen.getByDisplayValue("info")).toBeInTheDocument(); // log_level field
+      expect(screen.getByDisplayValue("false")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("info")).toBeInTheDocument();
     });
 
     it("enters edit mode for sections", async () => {
@@ -442,6 +466,31 @@ describe("ConfigPage", () => {
         const debugInput = screen.getByDisplayValue("false");
         expect(debugInput).not.toHaveAttribute("readOnly");
       });
+    });
+
+    it("shows alert when password is incorrect", async () => {
+      const promptSpy = vi.spyOn(window, "prompt").mockReturnValue("wrongpass");
+      const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+
+      render(<ConfigPage />);
+      const editButton = screen.getByTestId("password-edit-btn");
+      await user.click(editButton);
+
+      expect(alertSpy).toHaveBeenCalledWith("Incorrect password");
+
+      promptSpy.mockRestore();
+      alertSpy.mockRestore();
+    });
+    it("updates core section field when editing", async () => {
+      const coreSection = screen.getByText("Core").closest("details");
+      const editButton = within(coreSection!).getByTestId("edit-icon");
+      await user.click(editButton);
+
+      const debugInput = screen.getByDisplayValue("false");
+      await user.clear(debugInput);
+      await user.type(debugInput, "true");
+
+      expect(debugInput).toHaveValue("true");
     });
   });
 
