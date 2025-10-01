@@ -38,6 +38,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Switchmap-NG",
   description: "A Modern Network Monitoring and Analysis Tool",
+  icons: {
+    icon: "/images/switchmap-logo-modified.svg",
+  },
 };
 
 export default function RootLayout({

@@ -51,7 +51,13 @@ export function Sidebar() {
   // Sidebar content
   const sidebarContent = (
     <nav className="space-y-6">
-      <div className="flex flex-row items-center justify-between gap-2">
+      <div className="flex flex-row items-center justify-between gap-1">
+        <img
+          src="/images/switchmap-logo-modified.svg"
+          alt="logo"
+          className="w-6 h-6"
+        />
+
         <h2 className="text-xl font-semibold">Switchmap-NG</h2>
         <ThemeToggle />
       </div>

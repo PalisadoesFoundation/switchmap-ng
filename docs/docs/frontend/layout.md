@@ -20,7 +20,7 @@ Defined in: [layout.tsx:38](https://github.com/PalisadoesFoundation/switchmap-ng
 
 > **default**(`__namedParameters`): `Element`
 
-Defined in: [layout.tsx:43](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/layout.tsx#L43)
+Defined in: [layout.tsx:46](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/layout.tsx#L46)
 
 #### Parameters
 

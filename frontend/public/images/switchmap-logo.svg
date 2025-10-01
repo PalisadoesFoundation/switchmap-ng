@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200">
+  <!-- Central Circle -->
+  <circle cx="600" cy="600" r="120" fill="#F59E0B"/>
+  
+  <!-- Primary Geometric Rays -->
+  <g transform="rotate(0 600 600)">
+    <path d="M600 480 L675 375 L735 435 L660 540 Z" fill="#FBBF24"/>
+  </g>
+  <g transform="rotate(45 600 600)">
+    <path d="M600 480 L675 375 L735 435 L660 540 Z" fill="#F59E0B"/>
+  </g>
+  <g transform="rotate(90 600 600)">
+    <path d="M600 480 L675 375 L735 435 L660 540 Z" fill="#FBBF24"/>
+  </g>
+  <g transform="rotate(135 600 600)">
+    <path d="M600 480 L675 375 L735 435 L660 540 Z" fill="#F59E0B"/>
+  </g>
+  <g transform="rotate(180 600 600)">
+    <path d="M600 480 L675 375 L735 435 L660 540 Z" fill="#FBBF24"/>
+  </g>
+  <g transform="rotate(225 600 600)">
+    <path d="M600 480 L675 375 L735 435 L660 540 Z" fill="#F59E0B"/>
+  </g>
+  <g transform="rotate(270 600 600)">
+    <path d="M600 480 L675 375 L735 435 L660 540 Z" fill="#FBBF24"/>
+  </g>
+  <g transform="rotate(315 600 600)">
+    <path d="M600 480 L675 375 L735 435 L660 540 Z" fill="#F59E0B"/>
+  </g>
+
+  <!-- Secondary Geometric Rays -->
+  <g transform="rotate(22.5 600 600)">
+    <path d="M600 510 L645 435 L675 465 L630 540 Z" fill="#FCD34D" opacity="0.7"/>
+  </g>
+  <g transform="rotate(67.5 600 600)">
+    <path d="M600 510 L645 435 L675 465 L630 540 Z" fill="#FCD34D" opacity="0.7"/>
+  </g>
+  <g transform="rotate(112.5 600 600)">
+    <path d="M600 510 L645 435 L675 465 L630 540 Z" fill="#FCD34D" opacity="0.7"/>
+  </g>
+  <g transform="rotate(157.5 600 600)">
+    <path d="M600 510 L645 435 L675 465 L630 540 Z" fill="#FCD34D" opacity="0.7"/>
+  </g>
+  <g transform="rotate(202.5 600 600)">
+    <path d="M600 510 L645 435 L675 465 L630 540 Z" fill="#FCD34D" opacity="0.7"/>
+  </g>
+  <g transform="rotate(247.5 600 600)">
+    <path d="M600 510 L645 435 L675 465 L630 540 Z" fill="#FCD34D" opacity="0.7"/>
+  </g>
+  <g transform="rotate(292.5 600 600)">
+    <path d="M600 510 L645 435 L675 465 L630 540 Z" fill="#FCD34D" opacity="0.7"/>
+  </g>
+  <g transform="rotate(337.5 600 600)">
+    <path d="M600 510 L645 435 L675 465 L630 540 Z" fill="#FCD34D" opacity="0.7"/>
+  </g>
+
+  <!-- Inner Accent Circle -->
+  <circle cx="600" cy="600" r="105" fill="#FBBF24"/>
+  <circle cx="600" cy="600" r="75" fill="#F59E0B"/>
+</svg>
