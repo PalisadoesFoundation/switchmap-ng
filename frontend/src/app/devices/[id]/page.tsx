@@ -199,12 +199,11 @@ export default function DevicePage() {
   }, []);
 
   if (sidebarOpen === null) return null;
-
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
+    <div className="flex min-h-screen">
+      {/* Sidebar - Fixed */}
       <div
-        className="transition-width duration-200 border-r border-[var(--border-color)] flex flex-col gap-4 py-2"
+        className="fixed top-0 left-0 z-50 h-screen transition-all duration-200 border-r border-[var(--border-color)] flex flex-col gap-4 py-2 bg-bg"
         style={{
           width: sidebarOpen ? "220px" : "48px",
           alignItems: sidebarOpen ? "flex-start" : "center",
@@ -253,8 +252,13 @@ export default function DevicePage() {
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col relative" style={{ width: "80vw" }}>
+      {/* Main Content - Adjusted for fixed sidebar */}
+      <div
+        className="flex-1 flex flex-col relative transition-all duration-200 min-h-screen"
+        style={{
+          marginLeft: sidebarOpen ? "220px" : "48px",
+        }}
+      >
         <button
           onClick={() => router.push("/")}
           aria-label="Go to home"
@@ -262,7 +266,7 @@ export default function DevicePage() {
         >
           <FiHome />
         </button>
-        <div className="max-w-full flex items-center justify-center w-full h-full overflow-y-auto">
+        <div className="max-w-full flex items-center justify-center w-full min-h-screen">
           {tabs[clamp(activeTab, 0, tabs.length - 1)]?.content}
         </div>
       </div>

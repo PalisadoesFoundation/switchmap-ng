@@ -16,6 +16,8 @@
 - [components/DeviceDetails.spec](components/DeviceDetails.spec.md)
 - [components/DeviceOverview.spec](components/DeviceOverview.spec.md)
 - [components/DevicesOverview](components/DevicesOverview.md)
+- [components/Footer](components/Footer.md)
+- [components/Footer.spec](components/Footer.spec.md)
 - [components/HistoricalChart](components/HistoricalChart.md)
 - [components/HistoricalChart.spec](components/HistoricalChart.spec.md)
 - [components/LineChartWrapper](components/LineChartWrapper.md)

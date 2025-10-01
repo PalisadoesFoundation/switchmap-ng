@@ -204,9 +204,9 @@ export default function Home() {
   }, [zoneId]);
 
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto overflow-x-hidden">
+      <main className="flex-1">
         <div className="sticky top-0 z-10 bg-bg lg:bg-blend-soft-light flex justify-end p-4">
           <ZoneDropdown selectedZoneId={zoneId} onChange={setZoneId} />
         </div>
