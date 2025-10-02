@@ -5,9 +5,6 @@ from collections import namedtuple
 from copy import deepcopy
 from operator import attrgetter
 
-from sqlalchemy import false
-from sqlalchemy.orm.base import instance_dict
-
 # Application imports
 from switchmap.core import log
 from switchmap.core import general
@@ -731,15 +728,16 @@ Getting MAC addresses for interface {ifindex} in the DB for device \
             )
             inserts.append(row)
 
-            # Check if a record already exists for this device
+            # Check if a record already exists for this device.
             existing = _systemstat.device_exists(self._device.idx_device)
             if existing:
-                # Update existing record
+                # Update the existing records.
+                # Unlike bulk-insert tables, SystemStat only handles one row.
                 _systemstat.update_row(existing.idx_systemstat, row)
             else:
-                # Insert new record
-                if not test:
-                    _systemstat.insert_row(row)
+                # Insert a new record.
+                # Test mode is ignored, since only one row is ever written.
+                _systemstat.insert_row(row)
 
         self.log("SystemStat", updated=True)
 

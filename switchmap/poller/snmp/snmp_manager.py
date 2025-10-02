@@ -192,6 +192,25 @@ class Interact:
         """
         return self._poll.hostname
 
+    def close(self):
+        """Clean up SNMP engine resources.
+
+        This method should be called when the Interact object is no longer
+        needed to ensure proper cleanup of SNMP engine resources.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        if hasattr(self, "_engine") and self._engine:
+            try:
+                self._engine.closeDispatcher()
+            except Exception:
+                # Ignore cleanup errors to avoid breaking application flow
+                pass
+
     async def contactable(self):
         """Check if device is reachable via SNMP.
 
@@ -213,8 +232,8 @@ class Interact:
             if bool(result) is True:
                 contactable = True
 
-        except Exception:
-            # Not Contactable
+        except (PySnmpError, asyncio.TimeoutError):
+            # Expected: device not contactable or timeout
             contactable = False
 
         return contactable
@@ -632,8 +651,8 @@ class Session:
 
         # Use shorter timeouts for walk operations to prevent hanging
         if walk_operation:
-            timeout = 3
-            retries = 1
+            timeout = 5
+            retries = 2
         else:
             # Normal timeout for GET operations
             timeout = 10
@@ -712,7 +731,7 @@ class Session:
         self, oid, auth_data, transport_target, context_data
     ):
         """Pure async SNMP GET using pysnmp."""
-        error_indication, error_status, error_index, var_binds = await getCmd(
+        error_indication, error_status, _error_index, var_binds = await getCmd(
             self._engine,
             auth_data,
             transport_target,
@@ -721,9 +740,9 @@ class Session:
         )
 
         if error_indication:
-            raise PySnmpError(f"SNMP GET error: {error_indication}")
+            raise PySnmpError(str(error_indication))
         elif error_status:
-            raise PySnmpError(f"SNMP GET error status: {error_status}")
+            raise PySnmpError(error_status.prettyPrint())
 
         # Return in object format expected by _format_results
         results = []

@@ -206,6 +206,10 @@ async def device(poll_meta, device_semaphore, session, post=True):
             log_message = f"Recoverable error polling device {hostname}: {e}"
             log.log2warning(1409, log_message)
             return False
+        finally:
+            # Clean up SNMP resources
+            if "poll" in locals():
+                poll.close()
 
 
 async def cli_device(hostname):

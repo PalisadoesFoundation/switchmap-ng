@@ -7,12 +7,26 @@ from switchmap.core import log
 
 
 def get_query():
-    """Return this module's Query class."""
+    """Return this module's Query class.
+
+    Args:
+        None
+
+    Returns:
+        type: CiscoProcessQuery class
+    """
     return CiscoProcessQuery
 
 
 def init_query(snmp_object):
-    """Return initialize and return this module's Query class."""
+    """Initialize and return this module's Query class.
+
+    Args:
+        snmp_object: SNMP interact class object from snmp_manager.py
+
+    Returns:
+        CiscoProcessQuery: Initialized query instance
+    """
     return CiscoProcessQuery(snmp_object)
 
 
@@ -20,7 +34,14 @@ class CiscoProcessQuery(Query):
     """Class interacts with devices supporting CISCO-PROCESS-MIB."""
 
     def __init__(self, snmp_object):
-        """Instantiate the class."""
+        """Instantiate the class.
+
+        Args:
+            snmp_object: SNMP interact class object from snmp_manager.py
+
+        Returns:
+            None
+        """
         self.snmp_object = snmp_object
 
         # Test OID for Cisco CPU monitoring - cpmCPUTotalTable
@@ -93,7 +114,7 @@ class CiscoProcessQuery(Query):
             oidonly (bool): If True, return the OID string instead of querying.
 
         Returns:
-            int | str | dict: Sum of used memory in bytes,
+            int | str | None: Sum of used memory in bytes,
                               OID string if oidonly=True,
                               or None on error.
         """
@@ -120,7 +141,7 @@ class CiscoProcessQuery(Query):
             oidonly (bool): If True, return the OID string instead of querying.
 
         Returns:
-            int | str | dict: Sum of free memory in bytes,
+            int | str | None: Sum of free memory in bytes,
                               OID string if oidonly=True,
                               or None on error.
         """
