@@ -413,8 +413,8 @@ class SystemStatAttribute:
     idx_systemstat = graphene.Int(description="Primary key index")
     idx_device = graphene.Int(description="Device Index Foreign key ")
     cpu_5min = graphene.Int(description=" Device cpu_5min_usage")
-    mem_used = graphene.Int(description="Device memory_used (bytes)")
-    mem_free = graphene.Int(description="Device memory_free (bytes)")
+    mem_used = graphene.Float(description="Device memory_used (bytes)")
+    mem_free = graphene.Float(description="Device memory_free (bytes)")
 
 
 class L1InterfaceAttribute:
@@ -468,14 +468,14 @@ class L1InterfaceAttribute:
     lldpremsysname = graphene.String(
         resolver=resolve_lldpremsysname, description="LLDP system name"
     )
-    ifin_ucast_pkts = graphene.Int(
+    ifin_ucast_pkts = graphene.Float(
         description="Interface inbound unicast packets"
     )
-    ifout_ucast_pkts = graphene.Int(
+    ifout_ucast_pkts = graphene.Float(
         description="Interface outbound unicast packets"
     )
-    ifin_errors = graphene.Int(description="Interface inbound errors")
-    ifin_discards = graphene.Int(description="Interface inbound discards")
+    ifin_errors = graphene.Float(description="Interface inbound errors")
+    ifin_discards = graphene.Float(description="Interface inbound discards")
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
