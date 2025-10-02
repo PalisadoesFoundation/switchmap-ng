@@ -403,7 +403,7 @@ async def _add_layer1(query, data):
         return data
 
     except Exception as e:
-        log.log2warning(1316, f" Error in _add_layer1 for {mib_name}: {e}")
+        log.log2warning(1096, f" Error in _add_layer1 for {mib_name}: {e}")
         return data
 
 

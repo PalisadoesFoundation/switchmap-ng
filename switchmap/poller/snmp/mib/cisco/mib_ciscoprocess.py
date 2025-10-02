@@ -60,7 +60,7 @@ class CiscoProcessQuery(Query):
                     "ciscoMemoryPoolFree"
                 ] = memory_free_data
         except Exception as e:
-            log.log2warning(1316, f"Error in Cisco Process MIB: {e}")
+            log.log2warning(1095, f"Error in Cisco Process MIB: {e}")
             return final
 
         return final
