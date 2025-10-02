@@ -7,12 +7,26 @@ import asyncio
 
 
 def get_query():
-    """Return this module's Query class."""
+    """Return this module's Query class.
+
+    Args:
+        None
+
+    Returns:
+        type: JuniperProcessQuery class
+    """
     return JuniperProcessQuery
 
 
 def init_query(snmp_object):
-    """Return initialize and return this module's Query class."""
+    """Initialize and return this module's Query class.
+
+    Args:
+        snmp_object: SNMP interact class object from snmp_manager.py
+
+    Returns:
+        JuniperProcessQuery: Initialized query instance
+    """
     return JuniperProcessQuery(snmp_object)
 
 

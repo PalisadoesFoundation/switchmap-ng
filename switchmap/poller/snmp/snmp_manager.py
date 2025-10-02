@@ -205,11 +205,18 @@ class Interact:
             None
         """
         if hasattr(self, "_engine") and self._engine:
-            try:
-                self._engine.closeDispatcher()
-            except Exception:
-                # Ignore cleanup errors to avoid breaking application flow
-                pass
+            dispatcher = getattr(self._engine, "transportDispatcher", None)
+            if dispatcher is not None:
+                try:
+                    dispatcher.closeDispatcher()
+                except (PySnmpError, AttributeError) as exc:
+                    log.log2debug(
+                        1219,
+                        f"Failed to close SNMP dispatcher for "
+                        f"{self.hostname()}: {exc}",
+                    )
+            # Always clear the engine reference
+            self._engine = None
 
     async def contactable(self):
         """Check if device is reachable via SNMP.
