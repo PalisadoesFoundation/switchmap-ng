@@ -300,10 +300,10 @@ def _convert(row):
         ifdescr=row.ifdescr,
         ifadminstatus=row.ifadminstatus,
         ifoperstatus=row.ifoperstatus,
-        ifin_ucast_pkts=getattr(row, 'ifin_ucast_pkts', 0),
-        ifout_ucast_pkts=getattr(row, 'ifout_ucast_pkts', 0),
-        ifin_errors=getattr(row, 'ifin_errors', 0),
-        ifin_discards=getattr(row, 'ifin_discards', 0),
+        ifin_ucast_pkts=getattr(row, "ifin_ucast_pkts", 0),
+        ifout_ucast_pkts=getattr(row, "ifout_ucast_pkts", 0),
+        ifin_errors=getattr(row, "ifin_errors", 0),
+        ifin_discards=getattr(row, "ifin_discards", 0),
         ts_idle=row.ts_idle,
         cdpcachedeviceid=row.cdpcachedeviceid,
         cdpcachedeviceport=row.cdpcachedeviceport,
@@ -311,7 +311,7 @@ def _convert(row):
         lldpremportdesc=row.lldpremsysdesc,
         lldpremsyscapenabled=row.lldpremsyscapenabled,
         lldpremsysdesc=row.lldpremportdesc,
-        lldpremsysname=getattr(row, 'lldpremsysname', ''),
+        lldpremsysname=getattr(row, "lldpremsysname", ""),
         enabled=row.enabled,
     )
     return result

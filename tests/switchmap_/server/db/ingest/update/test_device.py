@@ -1271,10 +1271,10 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                     # time.time() and inserted into the database
                     ts_idle=0,
                     ifin_ucast_pkts=0,
-                ifout_ucast_pkts=0,
-                ifin_errors=0,
-                ifin_discards=0,
-                cdpcachedeviceid=(
+                    ifout_ucast_pkts=0,
+                    ifin_errors=0,
+                    ifin_discards=0,
+                    cdpcachedeviceid=(
                         None
                         if row.cdpcachedeviceid is None
                         else row.cdpcachedeviceid.decode()
