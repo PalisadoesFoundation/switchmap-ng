@@ -8,10 +8,10 @@ import asyncio
 
 def get_query():
     """Return this module's Query class.
-    
+
     Args:
         None
-    
+
     Returns:
         type: JuniperProcessQuery class
     """
@@ -20,7 +20,7 @@ def get_query():
 
 def init_query(snmp_object):
     """Initialize and return this module's Query class.
-    
+
     Args:
         snmp_object: SNMP interact class object from snmp_manager.py
 
