@@ -1,4 +1,4 @@
-"Module for JUNIPER-PROCESS-MIB." ""
+"""Module for JUNIPER-PROCESS-MIB."""
 
 from collections import defaultdict
 from switchmap.poller.snmp.base_query import Query
@@ -42,15 +42,19 @@ class JuniperProcessQuery(Query):
                 return_exceptions=True,
             )
             # Populate final results
-            if cpu_data and not isinstance(cpu_data, Exception):
+            if cpu_data is not None and not isinstance(cpu_data, Exception):
                 final["JUNIPER-MIB"]["jnxOperatingCPU"] = cpu_data
 
-            if memory_used_data and not isinstance(memory_used_data, Exception):
+            if memory_used_data is not None and not isinstance(
+                memory_used_data, Exception
+            ):
                 final["JUNIPER-MIB"][
                     "jnxOperatingMemoryUsed"
                 ] = memory_used_data
 
-            if memory_free_data and not isinstance(memory_free_data, Exception):
+            if memory_free_data is not None and not isinstance(
+                memory_free_data, Exception
+            ):
                 final["JUNIPER-MIB"][
                     "jnxOperatingMemoryFree"
                 ] = memory_free_data

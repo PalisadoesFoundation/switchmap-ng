@@ -431,7 +431,7 @@ class Interact:
                 blank values.
 
         Returns:
-            result: Dictionary of tuples (OID, value)
+            result: Dictionary of {OID: value} pairs
         """
         (_, _, result) = await self.query(
             oid_to_get,
@@ -689,7 +689,7 @@ class Session:
                 else:
                     log.log2warning(
                         1218,
-                        f"Unknown auth protocol '{auth.privprotocol}',"
+                        f"Unknown privacy protocol '{auth.privprotocol}',"
                         f"leaving unset",
                     )
                     priv_protocol = None

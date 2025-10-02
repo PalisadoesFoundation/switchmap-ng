@@ -10,6 +10,7 @@ from switchmap.server.db.misc import rows as _rows
 
 def idx_exists(idx):
     """Determine whether primary key exists.
+
     Args:
         idx: idx_systemstat
     Returns:
@@ -25,16 +26,14 @@ def idx_exists(idx):
 
     # Return
     for row in rows:
-        #! i think we are just finding if row exist we are ret bool
         result = _rows.systemstat(row)
-        #! why breaking just after appending result for single row
-        #! are we just checking if there exists a single row or not
         break
     return result
 
 
 def device_exists(idx_device):
     """Determine whether SystemStat record exists for a device.
+
     Args:
         idx_device: Device index
     Returns:
@@ -90,6 +89,7 @@ def insert_row(rows):
 
 def update_row(idx, row):
     """Update a systemstat table entry.
+
     Args:
         idx: idx_systemstat value
         row: SystemStat object

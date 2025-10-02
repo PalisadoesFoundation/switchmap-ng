@@ -23,7 +23,7 @@ class Query:
         """Instantiate the class.
 
         Args:
-            snmp_object: SNMP interact class object from async_snmp_manager.py
+            snmp_object: SNMP interact class object from snmp_manager.py
 
         Returns:
             None

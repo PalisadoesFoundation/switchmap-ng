@@ -5,6 +5,9 @@ from collections import namedtuple
 from copy import deepcopy
 from operator import attrgetter
 
+from sqlalchemy import false
+from sqlalchemy.orm.base import instance_dict
+
 # Application imports
 from switchmap.core import log
 from switchmap.core import general
@@ -529,9 +532,15 @@ Updating MAC address to interface {ifindex} mapping in the DB for device \
                     # Initialize variables
                     valid_mac = None
 
-                    # Create lowercase version of MAC address
+                    # Normalize possible bytes OctetString to hex
+                    raw_mac = (
+                        next_mac.hex()
+                        if isinstance(next_mac, (bytes, bytearray))
+                        else next_mac
+                    )
+
                     # Handle double-encoded MAC addresses from async poller
-                    decoded_mac = decode_mac_address(next_mac)
+                    decoded_mac = decode_mac_address(raw_mac)
                     mactest = general.mac(decoded_mac)
                     if bool(mactest.valid) is False:
                         continue
@@ -613,8 +622,18 @@ Getting MAC addresses for interface {ifindex} in the DB for device \
 
                 # Iterate over the MACs found
                 for item in sorted(_macs):
+                    # Normalize possible bytes OctetString to hex and decode
+                    raw_mac = (
+                        item.hex()
+                        if isinstance(item, (bytes, bytearray))
+                        else item
+                    )
+                    decoded = decode_mac_address(raw_mac)
+                    mtest = general.mac(decoded)
+                    if bool(mtest.valid) is False:
+                        continue
                     # Ensure the MAC exists in the database
-                    mac_exists = _mac.exists(self._device.idx_zone, item)
+                    mac_exists = _mac.exists(self._device.idx_zone, mtest.mac)
                     if bool(mac_exists) is True:
                         # Get all the IP addresses for the mac
                         found = _macip.idx_ips_exist(mac_exists.idx_mac)
@@ -664,24 +683,43 @@ Getting MAC addresses for interface {ifindex} in the DB for device \
         # Log start
         self.log("SystemStat")
 
-        # Extract CISCO MIB data from system section
+        # Extract vendor-specific MIB data from system section
         system_data = self._data.get("system", {})
 
-        # Get CPU data from CISCO-PROCESS-MIB
+        # Initialize variables
         cpu_5min = None
-        cisco_process = system_data.get("CISCO-PROCESS-MIB", {})
-        cpu_total_5min = cisco_process.get("cpmCPUTotal5minRev", {})
-        if cpu_total_5min:
-            # Get the first CPU value (usually CPU '1')
-            cpu_5min = next(iter(cpu_total_5min.values()), None)
-
-        # Get Memory data from CISCO-MEMORY-POOL-MIB
         mem_used = None
         mem_free = None
-        cisco_memory = system_data.get("CISCO-MEMORY-POOL-MIB", {})
-        if cisco_memory:
-            mem_used = cisco_memory.get("ciscoMemoryPoolUsed")
-            mem_free = cisco_memory.get("ciscoMemoryPoolFree")
+
+        # Get CPU and Memory data from CISCO-PROCESS-MIB
+        cisco_process = system_data.get("CISCO-PROCESS-MIB", {})
+        if cisco_process:
+            # Get CPU data
+            cpu_total_5min = cisco_process.get("cpmCPUTotal5minRev", {})
+            if cpu_total_5min:
+                # Get the first CPU value (usually CPU '1')
+                cpu_5min = next(iter(cpu_total_5min.values()), None)
+
+            # Get Memory data from CISCO-PROCESS-MIB
+            if not mem_used:
+                mem_used = cisco_process.get("ciscoMemoryPoolUsed")
+            if not mem_free:
+                mem_free = cisco_process.get("ciscoMemoryPoolFree")
+
+        # Get CPU and Memory data from JUNIPER-MIB
+        juniper_process = system_data.get("JUNIPER-MIB", {})
+        if juniper_process:
+            # Get CPU data
+            juniper_cpu = juniper_process.get("jnxOperatingCPU", {})
+            if juniper_cpu and cpu_5min is None:
+                # Get the first CPU value
+                cpu_5min = next(iter(juniper_cpu.values()), None)
+
+            # Get Memory data
+            if not mem_used:
+                mem_used = juniper_process.get("jnxOperatingMemoryUsed")
+            if not mem_free:
+                mem_free = juniper_process.get("jnxOperatingMemoryFree")
 
         # Only create record if we have some data
         if cpu_5min is not None or mem_used is not None or mem_free is not None:
@@ -701,8 +739,8 @@ Getting MAC addresses for interface {ifindex} in the DB for device \
             else:
                 # Insert new record
                 if not test:
-                    _systemstat.insert_row(inserts)
-                    # Log completion
+                    _systemstat.insert_row(row)
+
         self.log("SystemStat", updated=True)
 
         # Mark as completed

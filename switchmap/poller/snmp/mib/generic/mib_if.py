@@ -716,6 +716,7 @@ class IfQuery(Query):
 
     async def ifInUcastPkts(self, oidonly=False):
         """Get inbound unicast packet counters for each interface.
+
         Args:
             oidonly: Return OID's value, not results, if True
         Returns:
@@ -738,6 +739,7 @@ class IfQuery(Query):
 
     async def ifOutUcastPkts(self, oidonly=False):
         """Get Outbound unicast packet counters for each interface.
+
         Args:
             oidonly: Return OID's value, not results, if True
         Returns:
@@ -760,6 +762,7 @@ class IfQuery(Query):
 
     async def ifInErrors(self, oidonly=False):
         """Return dict of IFMIB ifInErrors for each ifIndex for device.
+
         Args:
             oidonly: Return OID's value, not results, if True
         Returns:
@@ -782,6 +785,7 @@ class IfQuery(Query):
 
     async def ifInDiscards(self, oidonly=False):
         """Return dict of IFMIB ifInDiscards for each ifIndex for device.
+
         Args:
             oidonly: Return OID's value, not results, if True
         Returns:

@@ -32,7 +32,7 @@ graphql_server==3.0.0b5
 # Testing
 mock
 pytest
-pytest-asyncio
+pytest-asyncio>=0.24,<0.25
 
 # Other
 more-itertools

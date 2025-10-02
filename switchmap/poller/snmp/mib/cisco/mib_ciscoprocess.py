@@ -43,15 +43,19 @@ class CiscoProcessQuery(Query):
             )
 
             # Populate final results with better structure
-            if cpu_data and not isinstance(cpu_data, Exception):
+            if cpu_data is not None and not isinstance(cpu_data, Exception):
                 final["CISCO-PROCESS-MIB"]["cpmCPUTotal5minRev"] = cpu_data
 
-            if memory_used_data and not isinstance(memory_used_data, Exception):
+            if memory_used_data is not None and not isinstance(
+                memory_used_data, Exception
+            ):
                 final["CISCO-PROCESS-MIB"][
                     "ciscoMemoryPoolUsed"
                 ] = memory_used_data
 
-            if memory_free_data and not isinstance(memory_free_data, Exception):
+            if memory_free_data is not None and not isinstance(
+                memory_free_data, Exception
+            ):
                 final["CISCO-PROCESS-MIB"][
                     "ciscoMemoryPoolFree"
                 ] = memory_free_data
@@ -83,16 +87,16 @@ class CiscoProcessQuery(Query):
         return data_dict
 
     async def memorypoolused(self, oidonly=False):
-        """Get total used memory from CISCO-MEMORY-POOL-MIB (ciscoMemoryPoolUsed).
+        """Get total used memory from CISCO-MEMORY-POOL-MIB.
 
         Args:
             oidonly (bool): If True, return the OID string instead of querying.
+
         Returns:
             int | str | dict: Sum of used memory in bytes,
                               OID string if oidonly=True,
-                              or empty dict on error.
+                              or None on error.
         """
-
         # Process OID - Enhanced memory pool used (high capacity)
         oid = ".1.3.6.1.4.1.9.9.48.1.1.1.5"
 
@@ -110,17 +114,16 @@ class CiscoProcessQuery(Query):
             return None
 
     async def memorypoolfree(self, oidonly=False):
-        """Get total free memory from CISCO-MEMORY-POOL-MIB (ciscoMemoryPoolFree).
+        """Get total free memory from CISCO-MEMORY-POOL-MIB.
 
         Args:
             oidonly (bool): If True, return the OID string instead of querying.
+
         Returns:
             int | str | dict: Sum of free memory in bytes,
                               OID string if oidonly=True,
-                              or empty dict on error.
+                              or None on error.
         """
-        # Initialize key variables
-
         # Process OID - Enhanced memory pool free (high capacity)
         oid = ".1.3.6.1.4.1.9.9.48.1.1.1.6"
 
