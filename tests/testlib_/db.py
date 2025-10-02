@@ -268,6 +268,10 @@ def populate():
             ifdescr="IfDescr_{}".format(data.random_string()),
             ifadminstatus=random.randint(0, 1000000),
             ifoperstatus=random.randint(0, 1000000),
+            ifin_ucast_pkts=random.randint(0, 1000000),
+            ifout_ucast_pkts=random.randint(0, 1000000),
+            ifin_errors=random.randint(0, 1000000),
+            ifin_discards=random.randint(0, 1000000),
             ts_idle=random.randint(0, 1000000),
             cdpcachedeviceid="cdpcachedeviceid_{}".format(data.random_string()),
             cdpcachedeviceport="cdpcachedeviceport_{}".format(
