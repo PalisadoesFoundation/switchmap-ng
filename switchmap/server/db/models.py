@@ -202,6 +202,34 @@ class Device(BASE):
     )
 
 
+class SystemStat(BASE):
+    """Database table definition."""
+
+    __tablename__ = "smap_systemstat"
+
+    idx_systemstat = Column(
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
+    )
+    idx_device = Column(
+        ForeignKey(Device.idx_device, ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+        default=1,
+        server_default=text("1"),
+    )
+
+    cpu_5min = Column(BIGINT(20, unsigned=True), nullable=True, default=None)
+    mem_used = Column(BIGINT(20, unsigned=True), nullable=True, default=None)
+    mem_free = Column(BIGINT(20, unsigned=True), nullable=True, default=None)
+
+    device = relationship(
+        "Device",
+        backref=backref(
+            "systemstats", cascade="all, delete-orphan", passive_deletes=True
+        ),
+    )
+
+
 class L1Interface(BASE):
     """Database table definition."""
 
@@ -236,6 +264,12 @@ class L1Interface(BASE):
     ts_idle = Column(BIGINT(unsigned=True), nullable=True, default=None)
     cdpcachedeviceid = Column(VARBINARY(256), nullable=True, default=None)
     cdpcachedeviceport = Column(VARBINARY(256), nullable=True, default=None)
+    ifin_ucast_pkts = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifout_ucast_pkts = Column(
+        BIGINT(unsigned=True), nullable=True, default=None
+    )
+    ifin_errors = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifin_discards = Column(BIGINT(unsigned=True), nullable=True, default=None)
     cdpcacheplatform = Column(VARBINARY(256), nullable=True, default=None)
     lldpremportdesc = Column(VARBINARY(256), nullable=True, default=None)
     lldpremsyscapenabled = Column(VARBINARY(256), nullable=True, default=None)

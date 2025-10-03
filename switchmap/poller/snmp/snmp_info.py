@@ -2,6 +2,7 @@
 
 import time
 from collections import defaultdict
+
 from switchmap.core import log
 import asyncio
 
@@ -23,7 +24,7 @@ class Query:
         """Instantiate the class.
 
         Args:
-            snmp_object: SNMP interact class object from async_snmp_manager.py
+            snmp_object: SNMP interact class object from snmp_manager.py
 
         Returns:
             None
@@ -402,7 +403,7 @@ async def _add_layer1(query, data):
         return data
 
     except Exception as e:
-        log.log2warning(1316, f" Error in _add_layer1 for {mib_name}: {e}")
+        log.log2warning(1096, f" Error in _add_layer1 for {mib_name}: {e}")
         return data
 
 

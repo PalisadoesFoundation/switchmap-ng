@@ -192,6 +192,32 @@ class Interact:
         """
         return self._poll.hostname
 
+    def close(self):
+        """Clean up SNMP engine resources.
+
+        This method should be called when the Interact object is no longer
+        needed to ensure proper cleanup of SNMP engine resources.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        if hasattr(self, "_engine") and self._engine:
+            dispatcher = getattr(self._engine, "transportDispatcher", None)
+            if dispatcher is not None:
+                try:
+                    dispatcher.closeDispatcher()
+                except (PySnmpError, AttributeError) as exc:
+                    log.log2debug(
+                        1219,
+                        f"Failed to close SNMP dispatcher for "
+                        f"{self.hostname()}: {exc}",
+                    )
+            # Always clear the engine reference
+            self._engine = None
+
     async def contactable(self):
         """Check if device is reachable via SNMP.
 
@@ -213,8 +239,8 @@ class Interact:
             if bool(result) is True:
                 contactable = True
 
-        except Exception:
-            # Not Contactable
+        except (PySnmpError, asyncio.TimeoutError):
+            # Expected: device not contactable or timeout
             contactable = False
 
         return contactable
@@ -431,7 +457,7 @@ class Interact:
                 blank values.
 
         Returns:
-            result: Dictionary of tuples (OID, value)
+            result: Dictionary of {OID: value} pairs
         """
         (_, _, result) = await self.query(
             oid_to_get,
@@ -632,8 +658,8 @@ class Session:
 
         # Use shorter timeouts for walk operations to prevent hanging
         if walk_operation:
-            timeout = 3
-            retries = 1
+            timeout = 5
+            retries = 2
         else:
             # Normal timeout for GET operations
             timeout = 10
@@ -689,7 +715,7 @@ class Session:
                 else:
                     log.log2warning(
                         1218,
-                        f"Unknown auth protocol '{auth.privprotocol}',"
+                        f"Unknown privacy protocol '{auth.privprotocol}',"
                         f"leaving unset",
                     )
                     priv_protocol = None
@@ -712,7 +738,7 @@ class Session:
         self, oid, auth_data, transport_target, context_data
     ):
         """Pure async SNMP GET using pysnmp."""
-        error_indication, error_status, error_index, var_binds = await getCmd(
+        error_indication, error_status, _error_index, var_binds = await getCmd(
             self._engine,
             auth_data,
             transport_target,
@@ -721,9 +747,9 @@ class Session:
         )
 
         if error_indication:
-            raise PySnmpError(f"SNMP GET error: {error_indication}")
+            raise PySnmpError(str(error_indication))
         elif error_status:
-            raise PySnmpError(f"SNMP GET error status: {error_status}")
+            raise PySnmpError(error_status.prettyPrint())
 
         # Return in object format expected by _format_results
         results = []

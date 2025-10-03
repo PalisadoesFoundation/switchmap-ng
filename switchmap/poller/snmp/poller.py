@@ -69,6 +69,21 @@ class Poll:
             log.log2info(1081, log_message)
             return False
 
+    def close(self):
+        """Clean up SNMP resources.
+
+        This method should be called when the Poll object is no longer needed
+        to ensure proper cleanup of SNMP engine resources.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        if self.snmp_object and hasattr(self.snmp_object, "close"):
+            self.snmp_object.close()
+
     async def query(self):
         """Query all remote hosts for data.
 
