@@ -11,6 +11,7 @@ Based on the pages at:
 
 # PIP3 imports
 import graphene
+from switchmap.server.db.models import Device
 
 
 ###############################################################################
@@ -204,6 +205,23 @@ def resolve_organization(obj, _):
         str: Decoded organization string or empty string
     """
     return obj.organization.decode() if bool(obj.organization) else ""
+
+
+def resolve_device_by_hostname(hostname=None):
+    """Resolve device by hostname with proper encoding handling.
+
+    Args:
+        hostname: Hostname to search for
+
+    Returns:
+        Device: Device object matching hostname
+    """
+    if not hostname:
+        return None
+
+    # Convert hostname to bytes for comparison
+    hostname_bytes = hostname.encode('utf-8')
+    return Device.query.filter(Device.hostname == hostname_bytes).first()
 
 
 def resolve_name(obj, _):
