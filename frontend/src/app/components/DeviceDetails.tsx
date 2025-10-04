@@ -139,20 +139,24 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
   );
 
   const query = `
-    query DeviceMetrics($hostname: String!) {
-      deviceMetrics(hostname: $hostname) {
-        edges {
-          node {
-            hostname
-            uptime
-            cpuUtilization
-            memoryUtilization
-            lastPolled
+      query SystemStats($hostname: String!) {
+        systemstats(filter: {
+          device: { hostname: { eq: $hostname } }
+        }) {
+          edges {
+            node {
+              idxSystemstat
+              cpu5min
+              memUsed
+              memFree
+              device {
+                hostname
+              }
+            }
           }
         }
       }
-    }
-    `;
+      `;
 
   useEffect(() => {
     const ac = new AbortController();
@@ -178,13 +182,28 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         if (json?.errors?.length) {
           throw new Error(json.errors[0]?.message || "GraphQL error");
         }
-        if (!json?.data?.deviceMetrics?.edges) {
+        if (!json?.data?.systemstats?.edges) {
           throw new Error("Malformed response");
         }
 
-        const hostMetrics: DeviceData[] = json.data.deviceMetrics.edges.map(
-          ({ node }: { node: DeviceData }) => node
+        const hostMetrics: DeviceData[] = json.data.systemstats.edges.map(
+          ({ node }: any): DeviceData => ({
+            hostname: node.device?.hostname ?? "",
+            uptime: undefined,
+            cpuUtilization: Number(node.cpu5min) ?? 0,
+            memoryUtilization: Number(node.memUsed) ?? 0,
+            lastPolled: Number(node.idxSystemstat),
+            sysName: undefined,
+            sysDescription: undefined,
+            sysObjectid: undefined,
+          })
         );
+
+        // Sort now works with proper typing
+        hostMetrics.sort(
+          (a: DeviceData, b: DeviceData) => a.lastPolled - b.lastPolled
+        );
+
         if (hostMetrics.length === 0) {
           setUptimeData([]);
           setCpuUsageData([]);

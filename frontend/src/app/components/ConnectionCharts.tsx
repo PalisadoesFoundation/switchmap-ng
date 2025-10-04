@@ -7,7 +7,7 @@ import { InterfaceNode } from "../types/graphql/GetDeviceInterfaces";
 /**
  * Tabs available for chart display.
  * @remarks
- * - "Traffic": Displays total traffic (in and out) in packets.
+ * - "Traffic": Displays total traffic (in and out) in octets.
  * - "Unicast": Displays unicast packet flow.
  * - "NonUnicast": Displays non-unicast packet flow.
  * - "Errors": Displays error packets.
@@ -52,6 +52,16 @@ const QUERY = (hostname: string) => `
             node {
               ifname
               ifspeed
+              ifinOctets
+              ifoutOctets
+              ifinUcastPkts
+              ifoutUcastPkts
+              ifinNUcastPkts
+              ifoutNUcastPkts
+              ifinErrors
+              ifoutErrors
+              ifinDiscards
+              ifoutDiscards
             }
           }
         }
@@ -75,9 +85,8 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   >({});
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10; // number of interfaces per page
+  const pageSize = 10;
 
-  // pagination logic
   const totalPages = Math.ceil(device.l1interfaces.edges.length / pageSize);
   const paginatedIfaces = device.l1interfaces.edges.slice(
     (currentPage - 1) * pageSize,
@@ -90,7 +99,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
     { value: "custom", label: "Custom range" },
   ];
 
-  // Expand All / Collapse All
   const expandAll = () => {
     const newState = device.l1interfaces.edges.reduce((acc, { node }) => {
       acc[node.ifname] = true;
@@ -165,7 +173,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
 
             newData[ifname].Traffic.push({
               lastPolled: lastPolled.toISOString(),
-              value: (iface.ifinUcastPkts ?? 0) + (iface.ifoutUcastPkts ?? 0),
+              value: (iface.ifinOctets ?? 0) + (iface.ifoutOctets ?? 0),
             });
             newData[ifname].Unicast.push({
               lastPolled: lastPolled.toISOString(),
@@ -221,7 +229,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
 
   return (
     <div className="p-8 w-[85vw] flex flex-col gap-6 h-full bg-bg">
-      {/* Centralized error alert */}
       {error && (
         <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
           <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
@@ -235,9 +242,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           View bandwidth, packet flow, errors, and discards per interface.
         </p>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-4 items-end mb-4 mt-4">
-          {/* Dropdown */}
           <div className="relative w-[160px]">
             <button
               type="button"
@@ -282,7 +287,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             )}
           </div>
 
-          {/* Custom date inputs */}
           {timeRange === "custom" && (
             <div className="flex gap-4 items-end">
               <div>
@@ -356,7 +360,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             </div>
           )}
 
-          {/* Expand / Collapse */}
           <div className="flex gap-4 sm:ml-auto mr-0">
             <button
               className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 transition-colors"
@@ -373,7 +376,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           </div>
         </div>
 
-        {/* Interfaces with Pagination */}
         <div className="flex flex-col gap-4">
           {paginatedIfaces.map(({ node }: { node: InterfaceNode }) => {
             const ifname = node.ifname;
@@ -469,7 +471,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             );
           })}
 
-          {/* Pagination Controls */}
           <div className="flex justify-center gap-4 mt-4 mb-4">
             <button
               disabled={currentPage === 1}

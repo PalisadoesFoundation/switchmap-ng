@@ -59,24 +59,28 @@ export const mockDevice: DeviceNode = {
 
 export const mockMetricsForHost = {
   data: {
-    deviceMetrics: {
+    systemstats: {
       edges: [
         {
           node: {
-            hostname: "host1",
-            lastPolled:1693305600,
-            uptime: 120,
-            cpuUtilization: 55,
-            memoryUtilization: 40,
+            idxSystemstat: 1693305600,
+            cpu5min: 55,
+            memUsed: 40,
+            memFree: 60,
+            device: {
+              hostname: "host1",
+            },
           },
         },
         {
           node: {
-            hostname: "host1",
-            lastPolled: Math.floor(Date.now() / 1000) - 3600,
-            uptime: 0,
-            cpuUtilization: 20,
-            memoryUtilization: 30,
+            idxSystemstat: Math.floor(Date.now() / 1000) - 3600,
+            cpu5min: 20,
+            memUsed: 30,
+            memFree: 70,
+            device: {
+              hostname: "host1",
+            },
           },
         },
       ],
