@@ -211,6 +211,8 @@ def resolve_device_by_hostname(obj, info, hostname=None):
     """Resolve device by hostname with proper encoding handling.
 
     Args:
+        obj: Device object
+        info: GraphQL resolve info
         hostname: Hostname to search for
 
     Returns:
