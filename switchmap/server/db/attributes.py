@@ -207,7 +207,7 @@ def resolve_organization(obj, _):
     return obj.organization.decode() if bool(obj.organization) else ""
 
 
-def resolve_device_by_hostname(hostname=None):
+def resolve_device_by_hostname(obj, info, hostname=None):
     """Resolve device by hostname with proper encoding handling.
 
     Args:
@@ -220,7 +220,7 @@ def resolve_device_by_hostname(hostname=None):
         return None
 
     # Convert hostname to bytes for comparison
-    hostname_bytes = hostname.encode('utf-8')
+    hostname_bytes = hostname.encode("utf-8")
     return Device.query.filter(Device.hostname == hostname_bytes).first()
 
 
