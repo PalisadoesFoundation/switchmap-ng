@@ -274,28 +274,8 @@ export default function DeviceHistoryChart() {
 
   // Fallback UI
   const renderFallback = () => {
-    if (loading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64">
-          <span className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-4"></span>
-          <p className="text-gray-500">Loading devices...</p>
-        </div>
-      );
-    }
-    if (error) {
-      return (
-        <div className="flex flex-col items-center justify-center h-64">
-          <p className="text-red-600 font-semibold mb-2">Error</p>
-          <p className="text-gray-700">{error}</p>
-          <button
-            className="mt-4 px-4 py-2 rounded bg-blue-600 text-white"
-            onClick={() => window.location.reload()}
-          >
-            Retry
-          </button>
-        </div>
-      );
-    }
+    if (loading) return <p>Loading devices...</p>;
+    if (error) return <p>Error loading history: {error}</p>;
     if (allDevices.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center h-64">

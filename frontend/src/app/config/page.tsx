@@ -337,7 +337,7 @@ export default function ConfigPage() {
             </p>
           </div>
           <div className="flex-1 flex items-center justify-center text-gray-700">
-            {loading ? "Loading…" : "No config loaded"}
+            {loading ? "Loading…" : "Error loading config"}
           </div>
         </div>
       </div>

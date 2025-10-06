@@ -109,7 +109,7 @@ describe("ConfigPage", () => {
       render(<ConfigPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("No config loaded")).toBeInTheDocument();
+        expect(screen.getByText("Error loading config")).toBeInTheDocument();
       });
 
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -132,7 +132,7 @@ describe("ConfigPage", () => {
       render(<ConfigPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("No config loaded")).toBeInTheDocument();
+        expect(screen.getByText("Error loading config")).toBeInTheDocument();
       });
 
       expect(consoleSpy).toHaveBeenCalled();

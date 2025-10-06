@@ -248,11 +248,6 @@ describe("DeviceHistoryChart", () => {
 
     expect(await screen.findByText(/error/i)).toBeInTheDocument();
     expect(await screen.findByText(/boom/i)).toBeInTheDocument();
-
-    const retryBtn = screen.getByRole("button", { name: /retry/i });
-    fireEvent.click(retryBtn);
-
-    expect(reloadMock).toHaveBeenCalled();
   });
 
   it("shows an error when end date is before start date", async () => {
