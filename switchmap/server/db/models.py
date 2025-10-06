@@ -270,6 +270,16 @@ class L1Interface(BASE):
     )
     ifin_errors = Column(BIGINT(unsigned=True), nullable=True, default=None)
     ifin_discards = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifout_errors = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifout_discards = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifin_nucast_pkts = Column(
+        BIGINT(unsigned=True), nullable=True, default=None
+    )
+    ifout_nucast_pkts = Column(
+        BIGINT(unsigned=True), nullable=True, default=None
+    )
+    ifin_octets = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifout_octets = Column(BIGINT(unsigned=True), nullable=True, default=None)
     cdpcacheplatform = Column(VARBINARY(256), nullable=True, default=None)
     lldpremportdesc = Column(VARBINARY(256), nullable=True, default=None)
     lldpremsyscapenabled = Column(VARBINARY(256), nullable=True, default=None)

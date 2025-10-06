@@ -320,6 +320,12 @@ No interfaces detected for for host {self._device.hostname}"""
                     ifout_ucast_pkts=interface.get("ifOutUcastPkts"),
                     ifin_errors=interface.get("ifInErrors"),
                     ifin_discards=interface.get("ifInDiscards"),
+                    ifin_octets=interface.get("ifInOctets"),
+                    ifout_octets=interface.get("ifOutOctets"),
+                    ifin_nucast_pkts=interface.get("ifInNUcastPkts"),
+                    ifout_nucast_pkts=interface.get("ifOutNUcastPkts"),
+                    ifout_errors=interface.get("ifOutErrors"),
+                    ifout_discards=interface.get("ifOutDiscards"),
                     ts_idle=ts_idle,
                     enabled=1,
                 )

@@ -211,8 +211,8 @@ def resolve_device_by_hostname(obj, info, hostname=None):
     """Resolve device by hostname with proper encoding handling.
 
     Args:
-        obj: Device object
-        info: GraphQL resolve info
+        obj: Root object passed by Graphene (unused in this resolver)
+        info: GraphQL execution context (unused in this resolver)
         hostname: Hostname to search for
 
     Returns:
@@ -496,6 +496,21 @@ class L1InterfaceAttribute:
     )
     ifin_errors = graphene.Float(description="Interface inbound errors")
     ifin_discards = graphene.Float(description="Interface inbound discards")
+    ifin_octets = graphene.Float(description="Interface inbound octets (bytes)")
+    ifout_octets = graphene.Float(
+        description="Interface outbound octets (bytes)"
+    )
+    ifin_nucast_pkts = graphene.Float(
+        description="Interface inbound non-unicast packets \
+        (broadcast/multicast)"
+    )
+    ifout_nucast_pkts = graphene.Float(
+        description="Interface outbound non-unicast packets \
+        (broadcast/multicast)"
+    )
+    ifout_errors = graphene.Float(description="Interface outbound errors")
+    ifout_discards = graphene.Float(description="Interface outbound discards")
+
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
