@@ -112,7 +112,7 @@ export function Sidebar() {
     <>
       {/* Hamburger button */}
       <button
-        className="p-3 text-2xl lg:hidden fixed top-4 left-4 z-50 bg-bg border border-border rounded"
+        className="p-3 text-2xl lg:hidden h-fit sticky top-4 left-4 z-50 bg-bg border border-border rounded"
         onClick={() => setOpen(true)}
         aria-label="Open sidebar"
       >

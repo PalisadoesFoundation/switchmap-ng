@@ -217,7 +217,7 @@ export default function Home() {
           )}
         </div>
 
-        <div id="devices-overview" className="h-screen p-8">
+        <div id="devices-overview" className="h-fit p-8">
           {zoneSelected && (
             <DevicesOverview
               devices={devices}

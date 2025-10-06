@@ -318,7 +318,7 @@ export default function DeviceHistoryChart() {
       )}
       <div className="flex h-screen overflow-y-auto">
         <Sidebar />
-        <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full overflow-y-auto mx-10">
+        <div className="p-4 w-full max-w-full flex flex-col gap-6 h-full mr-4">
           <div className="m-4 lg:ml-0">
             <h2 className="text-xl font-semibold">Device History</h2>
             <p className="text-sm pt-2 text-gray-600">
