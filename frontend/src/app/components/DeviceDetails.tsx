@@ -96,7 +96,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
   );
   const metadataTableMemo = useMemo(
     () => (
-      <div className="max-w-full min-h-[300px] h-auto min-w-[300px] w-auto md:w-[50vw] p-5 m-4 bg-content-bg items-center justify-center border border-border-subtle rounded-lg xl:w-[35vw]">
+      <div className="max-w-full min-h-[350px] h-auto min-w-[300px] w-auto md:w-[50vw] p-5 mx-4 bg-content-bg items-center justify-center border border-border-subtle rounded-lg xl:w-[35vw]">
         <table
           className={`table-auto w-fit m-top-0 text-left ${styles.tableCustom}`}
         >
@@ -293,7 +293,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
       )}
       <h2 className="text-xl font-semibold mb-2">Device Overview</h2>
       <div
-        className={`flex flex-col md:flex-row md:self-center gap-2 ${styles.deviceChartWrapper}`}
+        className={`flex flex-col md:flex-row md:self-center gap-2 h-fit ${styles.deviceChartWrapper}`}
       >
         {topologyChartMemo}
         {metadataTableMemo}

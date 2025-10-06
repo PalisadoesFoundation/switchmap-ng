@@ -376,7 +376,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 m-2">
           {paginatedIfaces.map(({ node }: { node: InterfaceNode }) => {
             const ifname = node.ifname;
             const isExpanded = expandedIfaces[ifname];
