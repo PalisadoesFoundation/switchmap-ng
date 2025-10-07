@@ -1,11 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { HistoricalChart } from "./HistoricalChart";
-import { TopologyChart } from "./TopologyChart";
+"use client";
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  Suspense,
+} from "react";
 import { DeviceNode } from "../types/graphql/GetZoneDevices";
 import styles from "./DeviceDetails.module.css";
 import { formatUptime } from "../utils/time";
 import { formatUnixTimestamp } from "../utils/timeStamp";
 import { truncateLines } from "../utils/stringUtils";
+const HistoricalChart = React.lazy(() => import("./HistoricalChart"));
+const TopologyChart = React.lazy(() =>
+  import("./TopologyChart").then((m) => ({ default: m.TopologyChart }))
+);
 
 /**
  * DeviceDetails component displays detailed information about a specific device,
@@ -84,13 +93,19 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
   const [open, setOpen] = useState<boolean>(false);
   const topologyChartMemo = useMemo(
     () => (
-      <TopologyChart
-        devices={[device]}
-        loading={false}
-        error={null}
-        zoomView={false}
-        clickToUse={false}
-      />
+      <Suspense
+        fallback={
+          <div className="text-center text-gray-400 py-4">Loading chart...</div>
+        }
+      >
+        <TopologyChart
+          devices={[device]}
+          loading={false}
+          error={null}
+          zoomView={false}
+          clickToUse={false}
+        />
+      </Suspense>
     ),
     [device] // only re-render if device changes
   );
@@ -259,30 +274,46 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
     return () => ac.abort();
   }, [device.hostname]);
 
-  const filterByRange = (data: { lastPolled: string; value: number }[]) => {
-    const now = new Date();
-    let startDate: Date;
+  const filterByRange = useCallback(
+    (data: { lastPolled: string; value: number }[]) => {
+      const now = new Date();
+      let startDate: Date;
 
-    if (selectedRange === 0 && customRange.start && customRange.end) {
-      startDate = new Date(customRange.start);
-      startDate.setHours(0, 0, 0, 0);
-      const endDate = new Date(customRange.end);
-      // include entire end day
-      endDate.setHours(23, 59, 59, 999);
-      return data.filter(
-        (d) =>
-          new Date(d.lastPolled) >= startDate &&
-          new Date(d.lastPolled) <= endDate
-      );
-    } else {
-      startDate = new Date();
-      startDate.setDate(now.getDate() - selectedRange);
-      return data.filter((d) => new Date(d.lastPolled) >= startDate);
-    }
-  };
+      if (selectedRange === 0 && customRange.start && customRange.end) {
+        startDate = new Date(customRange.start);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(customRange.end);
+        // include entire end day
+        endDate.setHours(23, 59, 59, 999);
+        return data.filter(
+          (d) =>
+            new Date(d.lastPolled) >= startDate &&
+            new Date(d.lastPolled) <= endDate
+        );
+      } else {
+        startDate = new Date();
+        startDate.setDate(now.getDate() - selectedRange);
+        return data.filter((d) => new Date(d.lastPolled) >= startDate);
+      }
+    },
+    [selectedRange, customRange]
+  );
+
+  const filteredUptime = useMemo(
+    () => filterByRange(uptimeData),
+    [filterByRange, uptimeData]
+  );
+  const filteredCpu = useMemo(
+    () => filterByRange(cpuUsageData),
+    [filterByRange, cpuUsageData]
+  );
+  const filteredMemory = useMemo(
+    () => filterByRange(memoryUsageData),
+    [filterByRange, memoryUsageData]
+  );
 
   return (
-    <div className="p-8 w-[85vw] flex flex-col gap-4 h-full ">
+    <div className="p-8 w-[80vw] flex flex-col gap-4 h-full ">
       {/* Centralized error alert */}
       {errorMsg && (
         <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
@@ -412,19 +443,27 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
 
       <div className="p-4 w-full min-w-[350px] flex flex-col xl:flex-row gap-4">
         {filterByRange(uptimeData)?.length ? (
-          <HistoricalChart
-            title="System Status"
-            data={filterByRange(uptimeData)}
-            color="#00b894"
-            unit=""
-            yAxisConfig={{
-              domain: [0, 1],
-              ticks: [0, 1],
-              tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
-              allowDecimals: false,
-            }}
-            lineType="stepAfter"
-          />
+          <Suspense
+            fallback={
+              <div className="text-center text-gray-400 py-4">
+                Loading chart...
+              </div>
+            }
+          >
+            <HistoricalChart
+              title="System Status"
+              data={filteredUptime}
+              color="#00b894"
+              unit=""
+              yAxisConfig={{
+                domain: [0, 1],
+                ticks: [0, 1],
+                tickFormatter: (v) => (v === 1 ? "Up" : "Down"),
+                allowDecimals: false,
+              }}
+              lineType="stepAfter"
+            />
+          </Suspense>
         ) : (
           <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
             No uptime data available
@@ -432,12 +471,20 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         )}
 
         {filterByRange(cpuUsageData)?.length ? (
-          <HistoricalChart
-            title="CPU Usage (%)"
-            data={filterByRange(cpuUsageData)}
-            color="#0984e3"
-            unit="%"
-          />
+          <Suspense
+            fallback={
+              <div className="text-center text-gray-400 py-4">
+                Loading chart...
+              </div>
+            }
+          >
+            <HistoricalChart
+              title="CPU Usage (%)"
+              data={filteredCpu}
+              color="#0984e3"
+              unit="%"
+            />
+          </Suspense>
         ) : (
           <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
             No CPU data available
@@ -445,12 +492,20 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         )}
 
         {filterByRange(memoryUsageData)?.length ? (
-          <HistoricalChart
-            title="Memory Usage (%)"
-            data={filterByRange(memoryUsageData)}
-            color="#e17055"
-            unit="%"
-          />
+          <Suspense
+            fallback={
+              <div className="text-center text-gray-400 py-4">
+                Loading chart...
+              </div>
+            }
+          >
+            <HistoricalChart
+              title="Memory Usage (%)"
+              data={filteredMemory}
+              color="#e17055"
+              unit="%"
+            />
+          </Suspense>
         ) : (
           <div className="flex items-center justify-center w-full h-64 rounded-xl border text-gray-500">
             No memory data available

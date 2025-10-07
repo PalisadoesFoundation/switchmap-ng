@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FiPlus, FiMinus, FiDownload } from "react-icons/fi";
 import HistoricalChart from "./HistoricalChart";
 import { DeviceNode } from "../types/graphql/GetZoneDevices";
@@ -88,10 +88,15 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   const pageSize = 10;
 
   const totalPages = Math.ceil(device.l1interfaces.edges.length / pageSize);
-  const paginatedIfaces = device.l1interfaces.edges.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
+  const paginatedIfaces = useMemo(
+    () =>
+      device.l1interfaces.edges.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+      ),
+    [device.l1interfaces.edges, currentPage]
   );
+
   const TIME_RANGES = [
     { value: "24h", label: "Past 1 day" },
     { value: "7d", label: "Past 7 days" },
@@ -228,7 +233,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   };
 
   return (
-    <div className="p-8 w-[85vw] flex flex-col gap-6 h-full bg-bg">
+    <div className="p-8 w-[80vw] flex flex-col gap-6 h-full bg-bg">
       {error && (
         <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
           <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
@@ -470,7 +475,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             );
           })}
 
-          <div className="flex justify-center gap-4 mt-4 mb-4">
+          <div className="flex justify-center items-center gap-4 mt-4 mb-4">
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}

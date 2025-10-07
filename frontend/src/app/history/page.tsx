@@ -1,12 +1,33 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  lazy,
+  Suspense,
+} from "react";
 
 import { Sidebar } from "../components/Sidebar";
-import { LineChartWrapper } from "../components/LineChartWrapper";
+
+// Lazy load the chart component
+const LineChartWrapper = lazy(() =>
+  import("../components/LineChartWrapper").then((mod) => ({
+    default: mod.LineChartWrapper,
+  }))
+);
+
 /**
  * DeviceHistoryChart component fetches and visualizes the historical movement and status changes of devices within the network.
  * It includes search functionality, time range filtering, and displays charts for zone and sysName history.
  * It handles loading and error states, and provides a user-friendly interface for exploring device history.
+ *
+ * Optimizations:
+ * - Lazy loading of LineChartWrapper component
+ * - In-memory caching of device data with TTL
+ * - Debounced search input
+ * - Memoized expensive computations
+ * - Request cancellation with AbortController
  *
  * @remarks
  * This component is designed for client-side use only because it relies on the `useState` and `useEffect` hooks
@@ -67,16 +88,25 @@ type GraphQLResponse = {
   };
   errors?: { message: string }[];
 };
+
+// Cache for device data
+interface CacheEntry {
+  data: DeviceNode[];
+  timestamp: number;
+}
+
+const deviceCache = new Map<string, CacheEntry>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 function toMs(value: number | string | null | undefined): number | null {
   if (value == null) return null;
   if (typeof value === "number") {
-    // treat < 1e12 as seconds
     return value < 1e12 ? value * 1000 : value;
   }
   const ms = Date.parse(value);
   return Number.isNaN(ms) ? null : ms;
 }
-// Parse a YYYY-MM-DD string as a local Date (avoids UTC parsing pitfalls)
+
 function parseDateOnlyLocal(yyyyMmDd: string): Date {
   const [y, m, d] = yyyyMmDd.split("-").map(Number);
   return new Date(y, (m ?? 1) - 1, d ?? 1);
@@ -95,185 +125,288 @@ export default function DeviceHistoryChart() {
   const [customEnd, setCustomEnd] = useState("");
   const [open, setOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [ongoingRequest, setOngoingRequest] = useState<AbortController | null>(
+    null
+  );
 
-  const now = new Date();
-  let startDate: Date | null = null;
-  const ranges = [
-    { label: "Past 1 day", value: "1d" },
-    { label: "Past 1 week", value: "1w" },
-    { label: "Past 1 month", value: "1m" },
-    { label: "Past 6 months", value: "6m" },
-    { label: "Custom range", value: "custom" },
-  ];
+  const ranges = useMemo(
+    () => [
+      { label: "Past 1 day", value: "1d" },
+      { label: "Past 1 week", value: "1w" },
+      { label: "Past 1 month", value: "1m" },
+      { label: "Past 6 months", value: "6m" },
+      { label: "Custom range", value: "custom" },
+    ],
+    []
+  );
 
-  useEffect(() => {
+  // Check cache validity
+  const getCachedDevices = useCallback(
+    (cacheKey: string): DeviceNode[] | null => {
+      const cached = deviceCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        return cached.data;
+      }
+      return null;
+    },
+    []
+  );
+
+  // Memoized filter function
+  const filterDevicesByTimeRange = useCallback(
+    (
+      devices: DeviceNode[],
+      timeRange: string,
+      start?: string,
+      end?: string
+    ): DeviceNode[] => {
+      const now = new Date();
+
+      if (timeRange === "custom" && start && end) {
+        const startDate = parseDateOnlyLocal(start);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = parseDateOnlyLocal(end);
+        endDate.setHours(23, 59, 59, 999);
+
+        return devices.filter((d) => {
+          if (typeof d.lastPolledMs !== "number") return false;
+          const t = d.lastPolledMs;
+          return t >= startDate.getTime() && t <= endDate.getTime();
+        });
+      }
+
+      let startDate: Date | null = null;
+      switch (timeRange) {
+        case "1d":
+          startDate = new Date(now);
+          startDate.setDate(now.getDate() - 1);
+          break;
+        case "1w":
+          startDate = new Date(now);
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case "1m":
+          startDate = new Date(now);
+          startDate.setMonth(now.getMonth() - 1);
+          break;
+        case "6m":
+          startDate = new Date(now);
+          startDate.setMonth(now.getMonth() - 6);
+          break;
+      }
+
+      if (startDate) {
+        const startMs = startDate.getTime();
+        return devices.filter((d) => {
+          if (typeof d.lastPolledMs !== "number") return false;
+          return d.lastPolledMs >= startMs;
+        });
+      }
+
+      return devices;
+    },
+    []
+  );
+
+  // Fetch devices with caching and abort control
+  const fetchDevices = useCallback(async () => {
     if (range === "custom" && (!customStart || !customEnd)) return;
 
-    let isMounted = true;
+    // Generate cache key
+    const cacheKey = `${range}-${customStart}-${customEnd}`;
 
-    async function fetchDevices() {
-      setLoading(true);
-      setError(null);
-      try {
-        const endpoint =
-          process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-          "http://localhost:7000/switchmap/api/graphql";
-        const res = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ query: QUERY }),
-        });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const json: GraphQLResponse = await res.json();
-
-        if (json.errors?.length) throw new Error(json.errors[0].message);
-
-        const zones = json.data?.zones?.edges || [];
-        let devicesWithZones: DeviceNode[] = [];
-
-        zones.forEach((zoneEdge) => {
-          const zone = zoneEdge.node;
-          const deviceEdges = zone?.devices?.edges ?? [];
-          deviceEdges.forEach((deviceEdge) => {
-            const device = deviceEdge.node;
-            if (device?.hostname && device?.idxDevice) {
-              devicesWithZones.push({
-                ...device,
-                zone: zone.name,
-                lastPolledMs: toMs(device.lastPolled ?? null),
-              });
-            }
-          });
-        });
-
-        // Time range filtering
-        const now = new Date();
-        let filteredDevices = devicesWithZones;
-
-        if (range === "custom") {
-          const start = parseDateOnlyLocal(customStart!);
-          start.setHours(0, 0, 0, 0);
-          const end = parseDateOnlyLocal(customEnd!);
-          end.setHours(23, 59, 59, 999);
-
-          filteredDevices = devicesWithZones.filter((d) => {
-            if (typeof d.lastPolledMs !== "number") return false;
-            const t = d.lastPolledMs;
-            return t >= start.getTime() && t <= end.getTime();
-          });
-        } else {
-          let startDate: Date | null = null;
-          switch (range) {
-            case "1d":
-              startDate = new Date(now);
-              startDate.setDate(now.getDate() - 1);
-              break;
-            case "1w":
-              startDate = new Date(now);
-              startDate.setDate(now.getDate() - 7);
-              break;
-            case "1m":
-              startDate = new Date(now);
-              startDate.setMonth(now.getMonth() - 1);
-              break;
-            case "6m":
-              startDate = new Date(now);
-              startDate.setMonth(now.getMonth() - 6);
-              break;
-          }
-
-          if (startDate) {
-            const startMs = startDate.getTime();
-            filteredDevices = devicesWithZones.filter((d) => {
-              if (typeof d.lastPolledMs !== "number") return false;
-              return d.lastPolledMs >= startMs;
-            });
-          }
-        }
-
-        if (isMounted) {
-          setAllDevices(filteredDevices);
-          if (!searchTerm && filteredDevices.length > 0) {
-            setSearchTerm(filteredDevices[0].hostname);
-          }
-          setAllDeviceHostnames(
-            Array.from(new Set(devicesWithZones.map((d) => d.hostname)))
-          ); // all devices, unfiltered
-        }
-      } catch (err: any) {
-        if (isMounted) setError(err.message || "Error fetching devices");
-      } finally {
-        if (isMounted) setLoading(false);
+    // Check cache
+    const cached = getCachedDevices(cacheKey);
+    if (cached) {
+      setAllDevices(cached);
+      if (!searchTerm && cached.length > 0) {
+        setSearchTerm(cached[0].hostname);
       }
+      setLoading(false);
+      setError(null);
+      return;
     }
 
-    fetchDevices();
+    // Cancel ongoing request
+    if (ongoingRequest) {
+      ongoingRequest.abort();
+    }
 
-    return () => {
-      isMounted = false;
-    };
-  }, [range, customStart, customEnd]);
+    const abortController = new AbortController();
+    setOngoingRequest(abortController);
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const endpoint =
+        process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+        "http://localhost:7000/switchmap/api/graphql";
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: QUERY }),
+        signal: abortController.signal,
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const json: GraphQLResponse = await res.json();
+
+      if (json.errors?.length) throw new Error(json.errors[0].message);
+
+      const zones = json.data?.zones?.edges || [];
+      let devicesWithZones: DeviceNode[] = [];
+
+      zones.forEach((zoneEdge) => {
+        const zone = zoneEdge.node;
+        const deviceEdges = zone?.devices?.edges ?? [];
+        deviceEdges.forEach((deviceEdge) => {
+          const device = deviceEdge.node;
+          if (device?.hostname && device?.idxDevice) {
+            devicesWithZones.push({
+              ...device,
+              zone: zone.name,
+              lastPolledMs: toMs(device.lastPolled ?? null),
+            });
+          }
+        });
+      });
+
+      // Store all hostnames (unfiltered)
+      setAllDeviceHostnames(
+        Array.from(new Set(devicesWithZones.map((d) => d.hostname)))
+      );
+
+      // Filter by time range
+      const filteredDevices = filterDevicesByTimeRange(
+        devicesWithZones,
+        range,
+        customStart,
+        customEnd
+      );
+
+      // Cache the filtered results
+      deviceCache.set(cacheKey, {
+        data: filteredDevices,
+        timestamp: Date.now(),
+      });
+
+      setAllDevices(filteredDevices);
+      if (!searchTerm && filteredDevices.length > 0) {
+        setSearchTerm(filteredDevices[0].hostname);
+      }
+    } catch (err: any) {
+      if (err.name === "AbortError") {
+        return; // Request was cancelled
+      }
+      setError(err.message || "Error fetching devices");
+    } finally {
+      setLoading(false);
+      setOngoingRequest(null);
+    }
+  }, [
+    range,
+    customStart,
+    customEnd,
+    searchTerm,
+    getCachedDevices,
+    filterDevicesByTimeRange,
+    ongoingRequest,
+  ]);
+
+  // Debounced fetch
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchDevices();
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [fetchDevices]);
 
   const uniqueHostnames = useMemo(() => {
     return Array.from(new Set(allDevices.map((d) => d.hostname)));
   }, [allDevices]);
 
+  // Debounced suggestions
   useEffect(() => {
     if (inputTerm.trim() === "") {
       setSuggestions([]);
       return;
     }
-    const filtered = allDeviceHostnames
-      .filter((host) => host.toLowerCase().includes(inputTerm.toLowerCase()))
-      .slice(0, 5);
-    setSuggestions(filtered);
+
+    const timeoutId = setTimeout(() => {
+      const filtered = allDeviceHostnames
+        .filter((host) => host.toLowerCase().includes(inputTerm.toLowerCase()))
+        .slice(0, 5);
+      setSuggestions(filtered);
+    }, 200);
+
+    return () => clearTimeout(timeoutId);
   }, [inputTerm, allDeviceHostnames]);
 
-  function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (inputTerm.trim() === "") return;
-    setSearchTerm(inputTerm);
-    setInputTerm("");
-    setSuggestions([]);
-  }
+  const onSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      if (inputTerm.trim() === "") return;
+      setSearchTerm(inputTerm);
+      setInputTerm("");
+      setSuggestions([]);
+    },
+    [inputTerm]
+  );
 
-  // Sort using lastPolled (converted to ms)
-  const history = allDevices
-    .filter(
-      (d) => d.hostname === searchTerm && typeof d.lastPolledMs === "number"
-    )
-    .sort((a, b) => (a.lastPolledMs ?? 0) - (b.lastPolledMs ?? 0));
+  // Memoized history calculation
+  const history = useMemo(() => {
+    return allDevices
+      .filter(
+        (d) => d.hostname === searchTerm && typeof d.lastPolledMs === "number"
+      )
+      .sort((a, b) => (a.lastPolledMs ?? 0) - (b.lastPolledMs ?? 0));
+  }, [allDevices, searchTerm]);
 
-  // SysName data
-  const sysNameCategories = Array.from(new Set(history.map((h) => h.sysName)));
-  const sysNameMap: Record<string, number> = {};
-  sysNameCategories.forEach((name, i) => {
-    sysNameMap[name] = i + 1;
-  });
-  const sysNameChartData = history.map((h) => ({
-    timestamp: new Date(h.lastPolledMs ?? 0).toISOString(),
-    sysNameNum: sysNameMap[h.sysName],
-    sysName: h.sysName,
-  }));
-
-  // Zone data
-  const zoneCategories = Array.from(
-    new Set(history.map((h) => h.zone || ""))
-  ).filter(Boolean);
-  const zoneMap: Record<string, number> = {};
-  zoneCategories.forEach((zone, i) => {
-    zoneMap[zone] = i + 1;
-  });
-  const zoneChartData = history
-    .filter((h) => h.zone)
-    .map((h) => ({
+  // Memoized chart data
+  const { sysNameChartData, sysNameCategories, sysNameMap } = useMemo(() => {
+    const categories = Array.from(new Set(history.map((h) => h.sysName)));
+    const map: Record<string, number> = {};
+    categories.forEach((name, i) => {
+      map[name] = i + 1;
+    });
+    const chartData = history.map((h) => ({
       timestamp: new Date(h.lastPolledMs ?? 0).toISOString(),
-      zoneNum: zoneMap[h.zone || ""],
-      zoneName: h.zone || "",
+      sysNameNum: map[h.sysName],
+      sysName: h.sysName,
     }));
+    return {
+      sysNameChartData: chartData,
+      sysNameCategories: categories,
+      sysNameMap: map,
+    };
+  }, [history]);
 
-  // Fallback UI
-  const renderFallback = () => {
+  const { zoneChartData, zoneCategories, zoneMap } = useMemo(() => {
+    const categories = Array.from(
+      new Set(history.map((h) => h.zone || ""))
+    ).filter(Boolean);
+    const map: Record<string, number> = {};
+    categories.forEach((zone, i) => {
+      map[zone] = i + 1;
+    });
+    const chartData = history
+      .filter((h) => h.zone)
+      .map((h) => ({
+        timestamp: new Date(h.lastPolledMs ?? 0).toISOString(),
+        zoneNum: map[h.zone || ""],
+        zoneName: h.zone || "",
+      }));
+    return {
+      zoneChartData: chartData,
+      zoneCategories: categories,
+      zoneMap: map,
+    };
+  }, [history]);
+
+  const renderFallback = useCallback(() => {
     if (loading) return <p>Loading devices...</p>;
     if (error) return <p>Error loading history: {error}</p>;
     if (allDevices.length === 0) {
@@ -284,11 +417,62 @@ export default function DeviceHistoryChart() {
       );
     }
     return null;
-  };
+  }, [loading, error, allDevices.length]);
+
+  const handleDateValidation = useCallback(
+    (type: "start" | "end", value: string, otherValue: string) => {
+      const date = parseDateOnlyLocal(value);
+      date.setHours(
+        type === "start" ? 0 : 23,
+        type === "start" ? 0 : 59,
+        type === "start" ? 0 : 59,
+        type === "start" ? 0 : 999
+      );
+
+      const other = otherValue ? parseDateOnlyLocal(otherValue) : null;
+      if (other)
+        other.setHours(
+          type === "start" ? 23 : 0,
+          type === "start" ? 59 : 0,
+          type === "start" ? 59 : 0,
+          type === "start" ? 999 : 0
+        );
+
+      if (
+        other &&
+        ((type === "start" && date > other) || (type === "end" && date < other))
+      ) {
+        setErrorMsg(
+          `${type === "start" ? "Start" : "End"} date must be ${
+            type === "start" ? "before" : "after"
+          } ${type === "start" ? "end" : "start"} date.`
+        );
+        setTimeout(() => setErrorMsg(""), 3000);
+        return false;
+      }
+
+      if (
+        other &&
+        Math.abs(date.getTime() - other.getTime()) / (1000 * 60 * 60 * 24) > 180
+      ) {
+        setErrorMsg("Custom range cannot exceed 180 days.");
+        setTimeout(() => setErrorMsg(""), 3000);
+        return false;
+      }
+
+      return true;
+    },
+    []
+  );
+
+  const LoadingFallback = () => (
+    <div className="flex items-center justify-center h-64">
+      <div className="text-gray-500">Loading chart...</div>
+    </div>
+  );
 
   return (
     <div className="flex h-screen max-w-full lg:ml-60">
-      {/* Centralized error alert */}
       {errorMsg && (
         <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
           <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
@@ -326,7 +510,7 @@ export default function DeviceHistoryChart() {
                 />
                 {suggestions.length > 0 && (
                   <ul
-                    className="absolute top-full left-0 mt-1 bg-bg shadow-md rounded border w-full z-50 "
+                    className="absolute top-full left-0 mt-1 bg-bg shadow-md rounded border w-full z-50"
                     data-testid="suggestions-list"
                   >
                     {suggestions.map((suggestion, i) => (
@@ -347,7 +531,7 @@ export default function DeviceHistoryChart() {
               </div>
               <button
                 type="submit"
-                className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit"
+                className="border text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit"
                 disabled={loading}
               >
                 Search
@@ -363,30 +547,11 @@ export default function DeviceHistoryChart() {
                     className="border p-2 rounded"
                     value={customStart}
                     onChange={(e) => {
-                      const start = parseDateOnlyLocal(e.target.value);
-                      start.setHours(0, 0, 0, 0);
-                      const end = customEnd
-                        ? parseDateOnlyLocal(customEnd)
-                        : null;
-                      if (end) end.setHours(23, 59, 59, 999);
-                      if (end && start > end) {
-                        setErrorMsg("Start date must be before end date.");
-                        setTimeout(() => setErrorMsg(""), 3000);
-                        return;
-                      }
-
                       if (
-                        end &&
-                        (end.getTime() - start.getTime()) /
-                          (1000 * 60 * 60 * 24) >
-                          180
+                        handleDateValidation("start", e.target.value, customEnd)
                       ) {
-                        setErrorMsg("Custom range cannot exceed 180 days.");
-                        setTimeout(() => setErrorMsg(""), 3000);
-                        return;
+                        setCustomStart(e.target.value);
                       }
-
-                      setCustomStart(e.target.value);
                     }}
                   />
                   <span className="flex items-center justify-center h-full px-2 my-auto">
@@ -398,30 +563,11 @@ export default function DeviceHistoryChart() {
                     className="border p-2 rounded"
                     value={customEnd}
                     onChange={(e) => {
-                      const start = customStart
-                        ? parseDateOnlyLocal(customStart)
-                        : null;
-                      if (start) start.setHours(0, 0, 0, 0);
-                      const end = parseDateOnlyLocal(e.target.value);
-                      end.setHours(23, 59, 59, 999);
-                      if (start && end < start) {
-                        setErrorMsg("End date must be after start date.");
-                        setTimeout(() => setErrorMsg(""), 3000);
-                        return;
-                      }
-
                       if (
-                        start &&
-                        (end.getTime() - start.getTime()) /
-                          (1000 * 60 * 60 * 24) >
-                          180
+                        handleDateValidation("end", e.target.value, customStart)
                       ) {
-                        setErrorMsg("Custom range cannot exceed 180 days.");
-                        setTimeout(() => setErrorMsg(""), 3000);
-                        return;
+                        setCustomEnd(e.target.value);
                       }
-
-                      setCustomEnd(e.target.value);
                     }}
                   />
                 </div>
@@ -481,8 +627,7 @@ export default function DeviceHistoryChart() {
           <div className="flex-1">
             <div className="gap-8 w-[70vw] min-w-[600px] items-stretch p-4 mx-auto flex flex-col xl:flex-row xl:text-left text-center h-full">
               {renderFallback() || (
-                <>
-                  {/* Zone Chart */}
+                <Suspense fallback={<LoadingFallback />}>
                   {zoneChartData.length > 0 && (
                     <LineChartWrapper
                       data={zoneChartData}
@@ -514,7 +659,6 @@ export default function DeviceHistoryChart() {
                       }}
                     />
                   )}
-                  {/* SysName Chart */}
                   {sysNameChartData.length > 0 && (
                     <LineChartWrapper
                       data={sysNameChartData}
@@ -549,7 +693,7 @@ export default function DeviceHistoryChart() {
                       }}
                     />
                   )}
-                </>
+                </Suspense>
               )}
             </div>
           </div>

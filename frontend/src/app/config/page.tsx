@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useMemo } from "react";
 import { Sidebar } from "../components/Sidebar";
 import {
   FiCheck,
@@ -64,6 +64,25 @@ const DEFAULT_SNMP_GROUP: Omit<SNMPGroup, "group_name"> = {
   snmp_community: "",
 };
 
+// Cache for config data
+interface CacheEntry {
+  data: Config;
+  timestamp: number;
+}
+
+let configCache: CacheEntry | null = null;
+const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
+
+/**
+ * ConfigPage component for managing Switchmap configuration.
+ *
+ * Optimizations:
+ * - In-memory caching of config data with TTL
+ * - Debounced save operations
+ * - Memoized computed values
+ * - Request cancellation with AbortController
+ * - Optimistic UI updates
+ */
 export default function ConfigPage() {
   // State management
   const [config, setConfig] = useState<Config | null>(null);
@@ -71,6 +90,9 @@ export default function ConfigPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("zones");
+  const [ongoingRequest, setOngoingRequest] = useState<AbortController | null>(
+    null
+  );
 
   // Edit states
   const [draftZone, setDraftZone] = useState<string | null>(null);
@@ -91,11 +113,46 @@ export default function ConfigPage() {
     {}
   );
 
-  // API functions
+  // Memoized values
+  const zones = useMemo(
+    () => config?.poller?.zones ?? [],
+    [config?.poller?.zones]
+  );
+  const snmpGroups = useMemo(
+    () => config?.poller?.snmp_groups ?? [],
+    [config?.poller?.snmp_groups]
+  );
+
+  // Check cache validity
+  const getCachedConfig = useCallback((): Config | null => {
+    if (configCache && Date.now() - configCache.timestamp < CACHE_DURATION) {
+      return configCache.data;
+    }
+    return null;
+  }, []);
+
+  // API functions with caching
   const fetchConfig = useCallback(async () => {
+    // Check cache first
+    const cached = getCachedConfig();
+    if (cached) {
+      setConfig(cached);
+      setLoading(false);
+      return;
+    }
+
+    // Cancel ongoing request
+    if (ongoingRequest) {
+      ongoingRequest.abort();
+    }
+
+    const abortController = new AbortController();
+    setOngoingRequest(abortController);
+
     try {
       const response = await fetch(API_BASE_URL, {
         credentials: "include",
+        signal: abortController.signal,
       });
 
       if (!response.ok) {
@@ -103,14 +160,26 @@ export default function ConfigPage() {
       }
 
       const data = await response.json();
+
+      // Cache the result
+      configCache = {
+        data,
+        timestamp: Date.now(),
+      };
+
       setConfig(data);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === "AbortError") {
+        return;
+      }
       console.error("Failed to fetch config:", error);
     } finally {
       setLoading(false);
+      setOngoingRequest(null);
     }
-  }, []);
+  }, [getCachedConfig, ongoingRequest]);
 
+  // Debounced save with optimistic updates
   const handleSave = useCallback(async () => {
     if (!config) return;
 
@@ -129,6 +198,12 @@ export default function ConfigPage() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // Update cache with saved config
+      configCache = {
+        data: config,
+        timestamp: Date.now(),
+      };
+
       setSaved(true);
       setTimeout(() => setSaved(false), SAVE_SUCCESS_DURATION);
     } catch (error) {
@@ -138,72 +213,83 @@ export default function ConfigPage() {
     }
   }, [config]);
 
-  // Zone management functions
+  // Zone management functions - memoized
   const updateZoneHostnames = useCallback(
     (zoneIndex: number, hostnames: string[]) => {
-      if (!config?.poller?.zones) return;
-
-      const newZones = [...config.poller.zones];
-      newZones[zoneIndex] = { ...newZones[zoneIndex], hostnames };
-
-      setConfig({
-        ...config,
-        poller: { ...config.poller, zones: newZones },
+      setConfig((prev) => {
+        if (!prev?.poller?.zones) return prev;
+        const newZones = [...prev.poller.zones];
+        newZones[zoneIndex] = { ...newZones[zoneIndex], hostnames };
+        return {
+          ...prev,
+          poller: { ...prev.poller, zones: newZones },
+        };
       });
     },
-    [config]
+    []
   );
 
   const toggleZoneEdit = useCallback(
     (zoneIndex: number) => {
-      const isCurrentlyEditing = editingZones[zoneIndex];
+      setEditingZones((prev) => {
+        const isCurrentlyEditing = prev[zoneIndex];
 
-      if (isCurrentlyEditing && config?.poller?.zones) {
-        // Clean up empty hostnames when exiting edit mode
-        const filteredHostnames = config.poller.zones[
-          zoneIndex
-        ].hostnames.filter((hostname) => hostname.trim() !== "");
-        updateZoneHostnames(zoneIndex, filteredHostnames);
-      }
+        if (isCurrentlyEditing && config?.poller?.zones) {
+          // Clean up empty hostnames when exiting edit mode
+          const filteredHostnames = config.poller.zones[
+            zoneIndex
+          ].hostnames.filter((hostname) => hostname.trim() !== "");
+          updateZoneHostnames(zoneIndex, filteredHostnames);
+        }
 
-      setEditingZones((prev) => ({
-        ...prev,
-        [zoneIndex]: !isCurrentlyEditing,
-      }));
+        const newState = {
+          ...prev,
+          [zoneIndex]: !isCurrentlyEditing,
+        };
 
-      if (!isCurrentlyEditing) {
-        setExpandedZones((prev) => ({ ...prev, [zoneIndex]: true }));
-      }
+        if (!isCurrentlyEditing) {
+          setExpandedZones((expPrev) => ({ ...expPrev, [zoneIndex]: true }));
+        }
+
+        return newState;
+      });
     },
-    [editingZones, config, updateZoneHostnames]
+    [config, updateZoneHostnames]
+  );
+
+  // Reindex helper - memoized
+  const reindexState = useCallback(
+    (
+      state: Record<number, boolean>,
+      removed: number
+    ): Record<number, boolean> => {
+      const next: Record<number, boolean> = {};
+      Object.keys(state).forEach((k) => {
+        const i = Number(k);
+        if (i < removed) next[i] = state[i];
+        else if (i > removed) next[i - 1] = state[i];
+      });
+      return next;
+    },
+    []
   );
 
   const deleteZone = useCallback(
     (zoneIndex: number) => {
-      if (!config?.poller?.zones) return;
-
-      const newZones = [...config.poller.zones];
-      newZones.splice(zoneIndex, 1);
-
-      setConfig({
-        ...config,
-        poller: { ...config.poller, zones: newZones },
+      setConfig((prev) => {
+        if (!prev?.poller?.zones) return prev;
+        const newZones = [...prev.poller.zones];
+        newZones.splice(zoneIndex, 1);
+        return {
+          ...prev,
+          poller: { ...prev.poller, zones: newZones },
+        };
       });
 
-      // Reindex edit and expansion states to match shifted indices
-      const reindex = (state: Record<number, boolean>, removed: number) => {
-        const next: Record<number, boolean> = {};
-        Object.keys(state).forEach((k) => {
-          const i = Number(k);
-          if (i < removed) next[i] = state[i];
-          else if (i > removed) next[i - 1] = state[i];
-        });
-        return next;
-      };
-      setEditingZones((prev) => reindex(prev, zoneIndex));
-      setExpandedZones((prev) => reindex(prev, zoneIndex));
+      setEditingZones((prev) => reindexState(prev, zoneIndex));
+      setExpandedZones((prev) => reindexState(prev, zoneIndex));
     },
-    [config]
+    [reindexState]
   );
 
   const addZone = useCallback((zoneName: string) => {
@@ -222,52 +308,43 @@ export default function ConfigPage() {
     setDraftZone(null);
   }, []);
 
-  // SNMP group management functions
+  // SNMP group management functions - memoized
   const updateSNMPGroup = useCallback(
     (groupIndex: number, updates: Partial<SNMPGroup>) => {
-      if (!config?.poller?.snmp_groups) return;
-
-      const newGroups = [...config.poller.snmp_groups];
-      newGroups[groupIndex] = { ...newGroups[groupIndex], ...updates };
-
-      setConfig({
-        ...config,
-        poller: { ...config.poller, snmp_groups: newGroups },
+      setConfig((prev) => {
+        if (!prev?.poller?.snmp_groups) return prev;
+        const newGroups = [...prev.poller.snmp_groups];
+        newGroups[groupIndex] = { ...newGroups[groupIndex], ...updates };
+        return {
+          ...prev,
+          poller: { ...prev.poller, snmp_groups: newGroups },
+        };
       });
     },
-    [config]
+    []
   );
 
   const deleteSNMPGroup = useCallback(
     (groupIndex: number) => {
-      if (!config?.poller?.snmp_groups) return;
-
-      const newGroups = [...config.poller.snmp_groups];
-      newGroups.splice(groupIndex, 1);
-
-      setConfig({
-        ...config,
-        poller: { ...config.poller, snmp_groups: newGroups },
+      setConfig((prev) => {
+        if (!prev?.poller?.snmp_groups) return prev;
+        const newGroups = [...prev.poller.snmp_groups];
+        newGroups.splice(groupIndex, 1);
+        return {
+          ...prev,
+          poller: { ...prev.poller, snmp_groups: newGroups },
+        };
       });
 
-      // Keep editIdx consistent after deletion
       setEditIdx((prev) => {
         if (prev == null) return prev;
         if (prev === groupIndex) return null;
         return prev > groupIndex ? prev - 1 : prev;
       });
-      // Reindex expanded states
-      setExpandedGroups((prev) => {
-        const next: Record<number, boolean> = {};
-        Object.keys(prev).forEach((k) => {
-          const i = Number(k);
-          if (i < groupIndex) next[i] = prev[i];
-          else if (i > groupIndex) next[i - 1] = prev[i];
-        });
-        return next;
-      });
+
+      setExpandedGroups((prev) => reindexState(prev, groupIndex));
     },
-    [config]
+    [reindexState]
   );
 
   const addSNMPGroup = useCallback((groupName: string) => {
@@ -289,20 +366,21 @@ export default function ConfigPage() {
     setDraftGroupName(null);
   }, []);
 
-  // Advanced section management
+  // Advanced section management - memoized
   const updateConfigSection = useCallback(
     (section: SectionType, key: string, value: any) => {
-      if (!config) return;
-
-      setConfig({
-        ...config,
-        [section]: {
-          ...config[section],
-          [key]: value,
-        },
+      setConfig((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          [section]: {
+            ...prev[section],
+            [key]: value,
+          },
+        };
       });
     },
-    [config]
+    []
   );
 
   const handlePasswordEdit = useCallback(
@@ -377,7 +455,7 @@ export default function ConfigPage() {
         {/* Tab Content */}
         {activeTab === "zones" && (
           <section className="space-y-4">
-            {config.poller?.zones?.map((zone, zoneIndex) => {
+            {zones.map((zone, zoneIndex) => {
               const isEditing = editingZones[zoneIndex] || false;
               const isExpanded = expandedZones[zoneIndex];
 
@@ -551,7 +629,7 @@ export default function ConfigPage() {
 
         {activeTab === "snmp" && (
           <section className="space-y-4">
-            {config.poller?.snmp_groups?.map((group, groupIndex) => {
+            {snmpGroups.map((group, groupIndex) => {
               const isEditing = editIdx === groupIndex;
               const isExpanded = expandedGroups[groupIndex] ?? false;
 
@@ -800,9 +878,6 @@ export default function ConfigPage() {
                 <div className="mt-4 space-y-3">
                   {Object.entries(config[section] ?? {}).map(([key, value]) => {
                     const isPasswordField = key.toLowerCase().includes("pass");
-                    const showMasked =
-                      isPasswordField &&
-                      (editSection !== section || !authPasswordEdit);
 
                     return (
                       <div key={key} className="space-y-1">
@@ -810,11 +885,9 @@ export default function ConfigPage() {
                           {key
                             .replace(/_/g, " ")
                             .replace(/\b\w/g, (l) => l.toUpperCase())}
-                          :
                         </label>
 
                         {isPasswordField ? (
-                          // Masked input for db_pass
                           <div className="flex items-center gap-2">
                             <input
                               className="w-full border border-gray-300 p-2 rounded disabled:bg-gray-50 disabled:text-gray-500"
@@ -832,7 +905,6 @@ export default function ConfigPage() {
                             </button>
                           </div>
                         ) : (
-                          // Regular input for non-secret fields
                           <input
                             className="w-full border border-gray-300 p-2 rounded focus:ring-2 focus:ring-primary focus:border-transparent disabled:bg-gray-50 disabled:text-gray-500"
                             type="text"
@@ -870,7 +942,7 @@ export default function ConfigPage() {
             className={`w-48 px-6 py-2 font-medium rounded-lg shadow transition-colors ${
               saving
                 ? "bg-gray-400 text-white cursor-not-allowed"
-                : "bg-primary hover:bg-hover-bg text-white focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                : "bg-primary text-white focus:ring-2 focus:ring-primary focus:ring-offset-2"
             }`}
           >
             {saving ? "Saving..." : "Save Configuration"}

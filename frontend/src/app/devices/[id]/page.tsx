@@ -1,30 +1,32 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, {
+  useState,
+  useMemo,
+  useCallback,
+  useEffect,
+  Suspense,
+  lazy,
+} from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import { ThemeToggle } from "@/app/theme-toggle";
-import { ConnectionDetails } from "@/app/components/ConnectionDetails";
-import { DeviceDetails } from "@/app/components/DeviceDetails";
-import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
-import { ConnectionCharts } from "@/app/components/ConnectionCharts";
+import useSWR from "swr";
 
-/** * Represents a tab item with label, content, and icon.
- * @remarks
- * - `label`: The display label of the tab.
- * - `content`: The React node to be rendered when the tab is active.
- * - `icon`: The icon associated with the tab.
- * @returns {JSX.Element | null} The device page UI or null when sidebarOpen is null.
- * @see {@link TabItem}
- * @interface TabItem
- * @property {string} label - The label of the tab.
- * @property {React.ReactNode} content - The content to display when the tab is active.
- * @property {React.ReactElement} icon - The icon representing the tab.
- */
-interface TabItem {
-  label: string;
-  content: React.ReactNode;
-  icon: React.ReactElement;
-}
+const DeviceDetails = lazy(() =>
+  import("@/app/components/DeviceDetails").then((m) => ({
+    default: m.DeviceDetails,
+  }))
+);
+const ConnectionDetails = lazy(() =>
+  import("@/app/components/ConnectionDetails").then((m) => ({
+    default: m.ConnectionDetails,
+  }))
+);
+const ConnectionCharts = lazy(() =>
+  import("@/app/components/ConnectionCharts").then((m) => ({
+    default: m.ConnectionCharts,
+  }))
+);
 
 const QUERY = `
   query Device($id: ID!) {
@@ -76,134 +78,130 @@ const QUERY = `
   }
 `;
 
+const fetcher = async (query: string, id: string) => {
+  const res = await fetch(
+    process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+      "http://localhost:7000/switchmap/api/graphql",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ query, variables: { id } }),
+    }
+  );
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const json = await res.json();
+  if (json.errors) throw new Error(json.errors[0].message);
+  return json.data.device;
+};
+
 export default function DevicePage() {
   const params = useParams<{ id: string | string[] }>();
   const searchParams = useSearchParams();
+  const router = useRouter();
+
+  const idParam = Array.isArray(params.id) ? params.id[0] : params.id;
+  const globalId = idParam ? btoa(`Device:${idParam}`) : null;
   const sysName = searchParams.get("sysName") ?? "";
   const hostname = searchParams.get("hostname") ?? "";
 
-  const id = Array.isArray(params.id) ? params.id[0] : params.id;
-  const [device, setDevice] = useState<DeviceNode | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const router = useRouter();
+  const {
+    data: device,
+    error,
+    isLoading,
+  } = useSWR(
+    globalId ? [QUERY, globalId] : null,
+    ([query, id]) => fetcher(query, id),
+    { revalidateOnFocus: false, dedupingInterval: 300000 }
+  );
 
-  const handleTabChange = (idx: number) => {
-    const params = new URLSearchParams(window.location.search);
-    params.set("tab", String(idx));
-    const hash = window.location.hash;
-    router.replace(`${window.location.pathname}?${params.toString()}${hash}`);
-    setActiveTab(idx);
-  };
+  const clamp = useCallback(
+    (n: number, min: number, max: number) => Math.min(Math.max(n, min), max),
+    []
+  );
 
-  useEffect(() => {
-    if (!id) return;
-    const globalId = btoa(`Device:${id}`);
-    const ac = new AbortController();
-    let cancelled = false;
-    const to = setTimeout(() => ac.abort(), 15000);
-    setLoading(true);
-    setError(null);
-
-    fetch(
-      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
-        "http://localhost:7000/switchmap/api/graphql",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: QUERY, variables: { id: globalId } }),
-        signal: ac.signal,
-      }
-    )
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((json) => {
-        if (json.errors) throw new Error(json.errors[0].message);
-        if (!cancelled) setDevice(json.data.device);
-      })
-      .catch((err) => {
-        if (err?.name === "AbortError" || cancelled) return;
-        setError(err.message);
-      })
-      .finally(() => {
-        if (!cancelled) setLoading(false);
-      });
-
-    return () => {
-      cancelled = true;
-      clearTimeout(to);
-      ac.abort();
-    };
-  }, [id]);
-
-  const tabs: TabItem[] = [
-    {
-      label: "Device Overview",
-      content: loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : device ? (
-        <DeviceDetails device={device} />
-      ) : (
-        <p>No device data.</p>
-      ),
-      icon: <FiMonitor className="icon" />,
-    },
-    {
-      label: "Connection Details",
-      content: loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : device ? (
-        <ConnectionDetails device={device} />
-      ) : (
-        <p>No device data.</p>
-      ),
-      icon: <FiLink className="icon" />,
-    },
-    {
-      label: "Connection Charts",
-      content: loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error}</p>
-      ) : device ? (
-        <ConnectionCharts device={device} />
-      ) : (
-        <p>No device data.</p>
-      ),
-      icon: <FiBarChart2 className="icon" />,
-    },
-  ];
-  const clamp = (n: number, min: number, max: number) =>
-    Math.min(Math.max(n, min), max);
   const parsedTab = Number.parseInt(searchParams.get("tab") ?? "0", 10);
-  const initialTab = Number.isNaN(parsedTab)
-    ? 0
-    : clamp(parsedTab, 0, tabs.length - 1);
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const [activeTab, setActiveTab] = useState(
+    Number.isNaN(parsedTab) ? 0 : clamp(parsedTab, 0, 2)
+  );
+
+  const handleTabChange = useCallback(
+    (idx: number) => {
+      const params = new URLSearchParams(window.location.search);
+      params.set("tab", String(idx));
+      const hash = window.location.hash;
+      router.replace(`${window.location.pathname}?${params.toString()}${hash}`);
+      setActiveTab(idx);
+    },
+    [router]
+  );
 
   const [sidebarOpen, setSidebarOpen] = useState<boolean | null>(null);
   useEffect(() => {
     const media = window.matchMedia("(min-width: 1024px)");
     const handler = () => setSidebarOpen(media.matches);
-
     handler();
     media.addEventListener("change", handler);
-
     return () => media.removeEventListener("change", handler);
   }, []);
 
+  const tabs = useMemo(
+    () => [
+      {
+        label: "Device Overview",
+        icon: <FiMonitor className="icon" />,
+        content: device ? (
+          <Suspense fallback={<p>Loading...</p>}>
+            <DeviceDetails device={device} />
+          </Suspense>
+        ) : isLoading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <p>No device data.</p>
+        ),
+      },
+      {
+        label: "Connection Details",
+        icon: <FiLink className="icon" />,
+        content: device ? (
+          <Suspense fallback={<p>Loading...</p>}>
+            <ConnectionDetails device={device} />
+          </Suspense>
+        ) : isLoading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <p>No device data.</p>
+        ),
+      },
+      {
+        label: "Connection Charts",
+        icon: <FiBarChart2 className="icon" />,
+        content: device ? (
+          <Suspense fallback={<p>Loading...</p>}>
+            <ConnectionCharts device={device} />
+          </Suspense>
+        ) : isLoading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p>Error: {error.message}</p>
+        ) : (
+          <p>No device data.</p>
+        ),
+      },
+    ],
+    [device, error, isLoading]
+  );
+
   if (sidebarOpen === null) return null;
+
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar - Fixed */}
+    <div className="relative">
+      {/* Sidebar */}
       <div
-        className="sidebar fixed top-0 left-0 z-50 h-screen transition-all duration-200 border-r border-[var(--border-color)] flex flex-col gap-4 py-2 bg-sidebar"
+        className="fixed top-0 left-0 z-50 h-screen transition-all duration-200 border-r border-[var(--border-color)] flex flex-col gap-4 py-2 bg-sidebar"
         style={{
           width: sidebarOpen ? "220px" : "48px",
           alignItems: sidebarOpen ? "flex-start" : "center",
@@ -225,6 +223,7 @@ export default function DevicePage() {
           </button>
           <ThemeToggle />
         </div>
+
         <div className="flex flex-col items-center">
           <h1
             className={`px-4 py-3 text-[1.2rem] max-w-[150px] break-all whitespace-normal overflow-hidden ${
@@ -234,6 +233,7 @@ export default function DevicePage() {
             {sysName || hostname || "Unnamed Device"}
           </h1>
         </div>
+
         <div className="w-full flex flex-col">
           {tabs.map((tab, idx) => (
             <button
@@ -252,12 +252,10 @@ export default function DevicePage() {
         </div>
       </div>
 
-      {/* Main Content - Adjusted for fixed sidebar */}
+      {/* Main content */}
       <div
-        className="flex-1 flex flex-col relative transition-all duration-200 min-h-screen"
-        style={{
-          marginLeft: sidebarOpen ? "220px" : "48px",
-        }}
+        className="ml-[48px] transition-all duration-200 min-h-screen overflow-y-auto"
+        style={{ marginLeft: sidebarOpen ? "220px" : "48px" }}
       >
         <button
           onClick={() => router.push("/")}
@@ -266,8 +264,9 @@ export default function DevicePage() {
         >
           <FiHome />
         </button>
-        <div className="max-w-full flex items-center justify-center w-full min-h-screen">
-          {tabs[clamp(activeTab, 0, tabs.length - 1)]?.content}
+
+        <div className="max-w-full flex items-center justify-center min-h-screen">
+          {tabs[activeTab]?.content}
         </div>
       </div>
     </div>
