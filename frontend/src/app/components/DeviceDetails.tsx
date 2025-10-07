@@ -47,7 +47,6 @@ function MetadataRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-// Type for device metrics returned from GraphQL
 type DeviceData = {
   hostname: string;
   uptime?: number;
@@ -75,7 +74,6 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
   const [uptimeData, setUptimeData] = useState<
     { lastPolled: string; value: number }[]
   >([]);
-
   const [cpuUsageData, setCpuUsageData] = useState<
     { lastPolled: string; value: number }[]
   >([]);
@@ -83,14 +81,14 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
     { lastPolled: string; value: number }[]
   >([]);
   const [deviceMetrics, setDeviceMetrics] = useState<DeviceData | null>(null);
-
   const [selectedRange, setSelectedRange] = useState<number>(1);
-  const [errorMsg, setErrorMsg] = useState("");
   const [customRange, setCustomRange] = useState<{
     start: string;
     end: string;
   }>({ start: "", end: "" });
-  const [open, setOpen] = useState<boolean>(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [open, setOpen] = useState(false);
+
   const topologyChartMemo = useMemo(
     () => (
       <Suspense
@@ -107,11 +105,12 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         />
       </Suspense>
     ),
-    [device] // only re-render if device changes
+    [device]
   );
+
   const metadataTableMemo = useMemo(
     () => (
-      <div className="max-w-full min-h-[350px] h-auto min-w-[300px] w-auto md:w-[50vw] p-5 mx-4 bg-content-bg items-center justify-center border border-border-subtle rounded-lg xl:w-[35vw]">
+      <div className="max-w-full min-h-[350px] h-auto min-w-[300px] w-auto md:w-[50vw] p-5 mx-4 bg-content-bg border border-border-subtle rounded-lg xl:w-[35vw]">
         <table
           className={`table-auto w-fit m-top-0 text-left ${styles.tableCustom}`}
         >
@@ -127,11 +126,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
             <MetadataRow label="Hostname" value={device.hostname} />
             <MetadataRow
               label="Status"
-              value={
-                typeof device.sysUptime === "number" && device.sysUptime > 0
-                  ? "Up"
-                  : "Down"
-              }
+              value={device.sysUptime && device.sysUptime > 0 ? "Up" : "Down"}
             />
             <MetadataRow
               label="Uptime"
@@ -150,28 +145,31 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
         </table>
       </div>
     ),
-    [device, deviceMetrics] // only re-render if device or deviceMetrics change
+    [device, deviceMetrics]
   );
 
   const query = `
-      query SystemStats($hostname: String!) {
-        systemstats(filter: {
-          device: { hostname: { eq: $hostname } }
-        }) {
+query SystemStats($hostname: String!) {
+  deviceByHostname(hostname: $hostname) {
+    edges {
+      node {
+        id
+        hostname
+        systemstats {
           edges {
             node {
               idxSystemstat
               cpu5min
               memUsed
               memFree
-              device {
-                hostname
-              }
             }
           }
         }
       }
-      `;
+    }
+  }
+}
+`;
 
   useEffect(() => {
     const ac = new AbortController();
@@ -190,23 +188,20 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
             signal: ac.signal,
           }
         );
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const json = await res.json();
-        if (json?.errors?.length) {
+        if (json?.errors?.length)
           throw new Error(json.errors[0]?.message || "GraphQL error");
-        }
-        if (!json?.data?.systemstats?.edges) {
-          throw new Error("Malformed response");
-        }
 
-        const hostMetrics: DeviceData[] = json.data.systemstats.edges.map(
-          ({ node }: any): DeviceData => ({
-            hostname: node.device?.hostname ?? "",
+        const node = json.data.deviceByHostname.edges[0]?.node;
+        if (!node?.systemstats?.edges) throw new Error("Malformed response");
+
+        const hostMetrics: DeviceData[] = node.systemstats.edges.map(
+          ({ node }: any) => ({
+            hostname: node.device?.hostname ?? device.hostname,
             uptime: undefined,
             cpuUtilization: Number(node.cpu5min) ?? 0,
-            memoryUtilization: Number(node.memUsed) ?? 0,
+            memoryUtilization: Number(node.memUsed ?? 0), // memUsed
             lastPolled: Number(node.idxSystemstat),
             sysName: undefined,
             sysDescription: undefined,
@@ -214,62 +209,45 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           })
         );
 
-        // Sort now works with proper typing
-        hostMetrics.sort(
-          (a: DeviceData, b: DeviceData) => a.lastPolled - b.lastPolled
-        );
+        hostMetrics.sort((a, b) => a.lastPolled - b.lastPolled);
 
-        if (hostMetrics.length === 0) {
+        if (!hostMetrics.length) {
           setUptimeData([]);
           setCpuUsageData([]);
           setMemoryUsageData([]);
           setDeviceMetrics(null);
           return;
         }
-        hostMetrics.sort((a, b) => Number(a.lastPolled) - Number(b.lastPolled));
+
         setDeviceMetrics(hostMetrics[hostMetrics.length - 1]);
 
         setUptimeData(
-          hostMetrics.map((m) => {
-            const uptime = Number(m.uptime);
-            return {
-              lastPolled: new Date(m.lastPolled * 1000).toISOString(),
-              value: Number.isFinite(uptime) && uptime > 0 ? 1 : 0,
-            };
-          })
+          hostMetrics.map((m) => ({
+            lastPolled: new Date(m.lastPolled * 1000).toISOString(),
+            value: m.uptime && m.uptime > 0 ? 1 : 0,
+          }))
         );
 
         setCpuUsageData(
-          hostMetrics.map((m) => {
-            const cpu = Number.isFinite(Number(m.cpuUtilization))
-              ? Number(m.cpuUtilization)
-              : 0;
-            return {
-              lastPolled: new Date(Number(m.lastPolled) * 1000).toISOString(),
-              value: Math.max(0, Math.min(100, cpu)),
-            };
-          })
+          hostMetrics.map((m) => ({
+            lastPolled: new Date(m.lastPolled * 1000).toISOString(),
+            value: Math.max(0, Math.min(100, Number(m.cpuUtilization))),
+          }))
         );
 
         setMemoryUsageData(
-          hostMetrics.map((m) => {
-            const mem = Number.isFinite(Number(m.memoryUtilization))
-              ? Number(m.memoryUtilization)
-              : 0;
-            return {
-              lastPolled: new Date(Number(m.lastPolled) * 1000).toISOString(),
-              value: Math.max(0, Math.min(100, mem)),
-            };
-          })
+          hostMetrics.map((m) => ({
+            lastPolled: new Date(m.lastPolled * 1000).toISOString(),
+            value: Math.max(0, Math.min(100, Number(m.memoryUtilization))),
+          }))
         );
       } catch (error: any) {
-        if (error.name === "AbortError") return; // ignore aborted fetch
+        if (error.name === "AbortError") return;
         console.error("Error fetching device metrics:", error);
         setErrorMsg("Failed to load device metrics.");
         setTimeout(() => setErrorMsg(""), 3000);
       }
     }
-
     fetchData();
     return () => ac.abort();
   }, [device.hostname]);
@@ -278,12 +256,10 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
     (data: { lastPolled: string; value: number }[]) => {
       const now = new Date();
       let startDate: Date;
-
       if (selectedRange === 0 && customRange.start && customRange.end) {
         startDate = new Date(customRange.start);
         startDate.setHours(0, 0, 0, 0);
         const endDate = new Date(customRange.end);
-        // include entire end day
         endDate.setHours(23, 59, 59, 999);
         return data.filter(
           (d) =>
@@ -313,8 +289,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
   );
 
   return (
-    <div className="p-8 w-[80vw] flex flex-col gap-4 h-full ">
-      {/* Centralized error alert */}
+    <div className="p-8 w-[80vw] flex flex-col gap-4 h-full">
       {errorMsg && (
         <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
           <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
@@ -322,6 +297,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
           </div>
         </div>
       )}
+
       <h2 className="text-xl font-semibold mb-2">Device Overview</h2>
       <div
         className={`flex flex-col md:flex-row md:self-center gap-2 h-fit ${styles.deviceChartWrapper}`}

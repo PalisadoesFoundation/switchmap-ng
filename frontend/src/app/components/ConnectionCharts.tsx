@@ -40,7 +40,7 @@ interface ConnectionChartsProps {
 
 const QUERY = (hostname: string) => `
 {
-  devices(hostname: "${hostname}") {
+  deviceByHostname(hostname: "${hostname}") {
     edges {
       node {
         id
