@@ -7,7 +7,7 @@ import {
   within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import ConfigPage from "./page";
+import ConfigPage, { __resetConfigCache } from "./page";
 
 // Mock the Sidebar component
 vi.mock("../components/Sidebar", () => ({
@@ -81,10 +81,12 @@ describe("ConfigPage", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
+    __resetConfigCache();
     vi.clearAllMocks();
   });
 
   afterEach(() => {
+    __resetConfigCache();
     vi.restoreAllMocks();
   });
 
@@ -166,14 +168,9 @@ describe("ConfigPage", () => {
     });
 
     it("switches between tabs", async () => {
-      // Initially on zones tab
       expect(screen.getByText("test-zone-1")).toBeInTheDocument();
-
-      // Switch to SNMP tab
       await user.click(screen.getByRole("button", { name: "SNMP Groups" }));
       expect(screen.getByText("Test Group 1")).toBeInTheDocument();
-
-      // Switch to Advanced tab
       await user.click(screen.getByRole("button", { name: "Advanced" }));
       expect(screen.getByText("Core")).toBeInTheDocument();
       expect(screen.getByText("Server")).toBeInTheDocument();
@@ -216,8 +213,6 @@ describe("ConfigPage", () => {
     it("enters edit mode for zones", async () => {
       const editButton = screen.getAllByTestId("edit-icon")[0];
       await user.click(editButton);
-
-      // Click + Add Device to reveal inputs
       const addDeviceButton = screen.getByText("+ Add Device");
       await user.click(addDeviceButton);
 
@@ -356,8 +351,6 @@ describe("ConfigPage", () => {
     it("enters edit mode for SNMP group", async () => {
       const editButton = screen.getByTestId("edit-icon");
       await user.click(editButton);
-
-      // Should expand and show editable fields
       await waitFor(() => {
         const groupNameInput = screen.getByDisplayValue("Test Group 1");
         expect(groupNameInput).not.toHaveAttribute("readOnly");
@@ -527,26 +520,21 @@ describe("ConfigPage", () => {
     });
 
     it("handles save error gracefully", async () => {
-      (fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ poller: { zones: [] } }),
-      });
-
-      render(<ConfigPage />);
-
-      const saveButton = screen.getByText("Save Configuration");
-
+      // Mock failing fetch
       (fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 500,
         json: async () => ({}),
       });
 
+      const saveButton = screen.getByText("Save Configuration");
       await user.click(saveButton);
 
-      await waitFor(() => {
-        expect(screen.queryByText("Saved!")).not.toBeInTheDocument();
-      });
+      await waitFor(() =>
+        expect(screen.queryByText("Saving...")).not.toBeInTheDocument()
+      );
+
+      expect(screen.queryByText("Saved!")).not.toBeInTheDocument();
     });
 
     it("disables save button while saving", async () => {
@@ -605,7 +593,7 @@ describe("ConfigPage", () => {
     });
   });
 
-  // ---------- Accessibility ----------
+  // ---------- Error Boundaries ----------
 
   describe("Error Boundaries", () => {
     it("handles missing config sections gracefully", async () => {
@@ -621,8 +609,6 @@ describe("ConfigPage", () => {
       await waitFor(() => {
         expect(screen.queryByText("Loading…")).not.toBeInTheDocument();
       });
-
-      // Should not crash and should show empty state
       expect(screen.getByText("+ Add Zone")).toBeInTheDocument();
     });
   });

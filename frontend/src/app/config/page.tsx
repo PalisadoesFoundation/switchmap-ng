@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useMemo } from "react";
+import { useCallback, useEffect, useState, useMemo, useRef } from "react";
 import { Sidebar } from "../components/Sidebar";
 import {
   FiCheck,
@@ -73,14 +73,18 @@ interface CacheEntry {
 let configCache: CacheEntry | null = null;
 const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
 
+// Export cache reset function for testing
+export const __resetConfigCache = () => {
+  configCache = null;
+};
+
 /**
  * ConfigPage component for managing Switchmap configuration.
  *
  * Optimizations:
  * - In-memory caching of config data with TTL
- * - Debounced save operations
  * - Memoized computed values
- * - Request cancellation with AbortController
+ * - Request cancellation with AbortController using useRef
  * - Optimistic UI updates
  */
 export default function ConfigPage() {
@@ -90,9 +94,9 @@ export default function ConfigPage() {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("zones");
-  const [ongoingRequest, setOngoingRequest] = useState<AbortController | null>(
-    null
-  );
+
+  // Use ref for AbortController to avoid dependency issues
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Edit states
   const [draftZone, setDraftZone] = useState<string | null>(null);
@@ -141,13 +145,13 @@ export default function ConfigPage() {
       return;
     }
 
-    // Cancel ongoing request
-    if (ongoingRequest) {
-      ongoingRequest.abort();
+    // Cancel ongoing request using ref
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
 
     const abortController = new AbortController();
-    setOngoingRequest(abortController);
+    abortControllerRef.current = abortController;
 
     try {
       const response = await fetch(API_BASE_URL, {
@@ -175,11 +179,11 @@ export default function ConfigPage() {
       console.error("Failed to fetch config:", error);
     } finally {
       setLoading(false);
-      setOngoingRequest(null);
+      abortControllerRef.current = null;
     }
   }, [getCachedConfig]);
 
-  // Debounced save with optimistic updates
+  // Save handler
   const handleSave = useCallback(async () => {
     if (!config) return;
 
@@ -198,16 +202,12 @@ export default function ConfigPage() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Update cache with saved config
-      configCache = {
-        data: config,
-        timestamp: Date.now(),
-      };
-
+      // Only mark as saved on successful response
       setSaved(true);
       setTimeout(() => setSaved(false), SAVE_SUCCESS_DURATION);
     } catch (error) {
       console.error("Failed to save config:", error);
+      setSaved(false);
     } finally {
       setSaving(false);
     }
@@ -235,7 +235,6 @@ export default function ConfigPage() {
         const isCurrentlyEditing = prev[zoneIndex];
 
         if (isCurrentlyEditing && config?.poller?.zones) {
-          // Clean up empty hostnames when exiting edit mode
           const filteredHostnames = config.poller.zones[
             zoneIndex
           ].hostnames.filter((hostname) => hostname.trim() !== "");
@@ -397,12 +396,16 @@ export default function ConfigPage() {
     [config]
   );
 
-  // Effects
   useEffect(() => {
     fetchConfig();
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
+      }
+    };
   }, [fetchConfig]);
 
-  // Early returns for loading/empty states
   if (loading || !config) {
     return (
       <div className="flex h-screen overflow-y-auto">

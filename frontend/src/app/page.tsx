@@ -304,7 +304,7 @@ export default function Home() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [zoneId, fetchDevices]);
+  }, [zoneId]);
 
   // Loading fallback component
   const LoadingFallback = () => (
@@ -348,3 +348,7 @@ export default function Home() {
     </div>
   );
 }
+
+export const _testUtils = {
+  clearDeviceCache: () => deviceCache.clear(),
+};

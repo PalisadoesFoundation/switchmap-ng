@@ -322,7 +322,7 @@ export default function DeviceHistoryChart() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [fetchDevices]);
+  }, []);
 
   const uniqueHostnames = useMemo(() => {
     return Array.from(new Set(allDevices.map((d) => d.hostname)));
