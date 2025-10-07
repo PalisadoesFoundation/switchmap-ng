@@ -223,7 +223,11 @@ def resolve_device_by_hostname(obj, info, hostname=None):
 
     # Convert hostname to bytes for comparison
     hostname_bytes = hostname.encode("utf-8")
-    return Device.query.filter(Device.hostname == hostname_bytes).first()
+    query = Device.query.filter(
+        Device.hostname == hostname_bytes,
+        Device.enabled == 1,
+    ).order_by(Device.ts_created.desc())
+    return query.first()
 
 
 def resolve_name(obj, _):
