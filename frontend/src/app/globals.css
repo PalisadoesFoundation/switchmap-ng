@@ -14,11 +14,12 @@
   --color-hover-bg: var(--hover-bg);
   --color-select-bg: var(--select-bg);
   --color-primary: var(--primary-color);
+  --color-sidebar: var(--sidebar-color);
 }
 
 
 :root {
-  --primary-color: #8C09BC;
+  --primary-color: #081028;
   --bg-color: white;
   --content-bg: white;
   --text-color: #081028;
@@ -30,12 +31,11 @@
   --bottom-border-color: #081028;
   --hover-bg: rgba(140, 9, 188, 0.1);
   --select-bg: rgba(140, 9, 188, 0.2);
-  --h1-color: #8C09BC;
+  --h1-color: #081028;
   --edge-color-light: #bbb;
   --node-color-light: #1e90ff;
-  --font-color-light: black;
+  --font-color-light: #081028;
   --border-subtle: #343B4F;
-
 }
 
 .dark {
@@ -72,6 +72,19 @@ body {
 a {
   color: var(--link-color);
   text-decoration: none;
+}
+
+.sidebar a,
+.sidebar span,
+.sidebar h1,
+.sidebar h2,
+.sidebar button {
+  color: white !important;
+  text-decoration: none;
+}
+
+.sidebar{
+  background-color: #081028;
 }
 
 button {

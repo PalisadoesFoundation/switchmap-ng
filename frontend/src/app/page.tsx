@@ -206,7 +206,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1">
+      <main className="flex-1 lg:ml-60">
         <div className="sticky top-0 z-10 bg-bg lg:bg-blend-soft-light flex justify-end p-4">
           <ZoneDropdown selectedZoneId={zoneId} onChange={setZoneId} />
         </div>

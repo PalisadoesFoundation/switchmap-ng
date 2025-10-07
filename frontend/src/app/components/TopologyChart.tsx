@@ -547,7 +547,7 @@ export function TopologyChart({
                 setSuggestions(filtered);
               }}
             />
-            <button className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit topology-search-btn">
+            <button className="border text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit topology-search-btn">
               Search
             </button>
           </form>
@@ -579,8 +579,7 @@ export function TopologyChart({
           </button>
           <button
             onClick={handleExportImage}
-            className="text-white rounded px-4 py-2 cursor-pointer transition-colors duration-300 topology-export-btn"
-            style={{ backgroundColor: "#CB3CFF" }}
+            className="bg-primary text-white rounded px-4 py-2 cursor-pointer transition-colors duration-300 topology-export-btn"
           >
             Export
           </button>

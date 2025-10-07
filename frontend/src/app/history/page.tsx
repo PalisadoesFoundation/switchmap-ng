@@ -287,7 +287,7 @@ export default function DeviceHistoryChart() {
   };
 
   return (
-    <div className="flex h-screen max-w-full">
+    <div className="flex h-screen max-w-full lg:ml-60">
       {/* Centralized error alert */}
       {errorMsg && (
         <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">

@@ -405,8 +405,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                   <>
                     <div className="flex gap-6 border-b border-border-subtle mt-4 mb-4">
                       <button
-                        className="absolute top-2 right-2 md:top-4 md:right-4 px-3 py-1 md:py-2 rounded-md text-white"
-                        style={{ backgroundColor: "#CB3CFF" }}
+                        className="absolute top-2 right-2 md:top-4 md:right-4 px-3 py-1 md:py-2 rounded-md text-white bg-primary"
                         onClick={() =>
                           downloadCSV(
                             filteredData,

@@ -329,7 +329,7 @@ export default function ConfigPage() {
     return (
       <div className="flex h-screen overflow-y-auto">
         <Sidebar />
-        <div className="p-4 w-full max-w-full flex flex-col gap-6 h-fit min-w-[400px]">
+        <div className="p-4 w-full max-w-full flex flex-col gap-6 h-fit min-w-[400px] lg:ml-60">
           <div className="m-4 lg:ml-0">
             <h1 className="text-xl font-semibold">Switchmap Config</h1>
             <p className="text-sm pt-2 text-gray-600">
@@ -347,7 +347,7 @@ export default function ConfigPage() {
   return (
     <div className="flex h-screen overflow-y-auto">
       <Sidebar />
-      <div className="p-4 w-full max-w-full flex flex-col gap-6 h-fit min-w-[400px]">
+      <div className="p-4 w-full max-w-full flex flex-col gap-6 h-fit min-w-[400px] lg:ml-60">
         <header className="m-4 lg:ml-0">
           <h1 className="text-xl font-semibold">Switchmap Config</h1>
           <p className="text-sm pt-2 text-gray-600">

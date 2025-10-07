@@ -112,7 +112,7 @@ export function Sidebar() {
     <>
       {/* Hamburger button */}
       <button
-        className="p-3 text-2xl lg:hidden h-fit sticky top-4 left-4 z-50 bg-bg border border-border rounded"
+        className="p-3 text-2xl lg:hidden h-fit sticky top-4 left-4 z-50 border border-border rounded bg-[#081028] text-white"
         onClick={() => setOpen(true)}
         aria-label="Open sidebar"
       >
@@ -120,7 +120,7 @@ export function Sidebar() {
       </button>
 
       {/* Static sidebar for large screens */}
-      <aside className="hidden lg:block sticky top-0 left-0 w-60 h-screen border-r border-border lg:p-4 flex-shrink-0">
+      <aside className="sidebar hidden lg:block fixed top-0 left-0 w-60 h-screen border-r border-border lg:p-4 flex-shrink-0">
         {sidebarContent}
       </aside>
 
@@ -131,7 +131,7 @@ export function Sidebar() {
           <aside
             data-testid="slide-in-sidebar"
             ref={sidebarRef}
-            className="fixed top-0 left-0 w-60 h-full bg-bg border-r border-border z-50 p-4 shadow-md transition-transform transform lg:hidden"
+            className="sidebar fixed top-0 left-0 w-60 h-full border-r border-border z-50 p-4 shadow-md transition-transform transform lg:hidden"
           >
             {sidebarContent}
           </aside>

@@ -203,7 +203,7 @@ export default function DevicePage() {
     <div className="flex min-h-screen">
       {/* Sidebar - Fixed */}
       <div
-        className="fixed top-0 left-0 z-50 h-screen transition-all duration-200 border-r border-[var(--border-color)] flex flex-col gap-4 py-2 bg-bg"
+        className="sidebar fixed top-0 left-0 z-50 h-screen transition-all duration-200 border-r border-[var(--border-color)] flex flex-col gap-4 py-2 bg-sidebar"
         style={{
           width: sidebarOpen ? "220px" : "48px",
           alignItems: sidebarOpen ? "flex-start" : "center",
