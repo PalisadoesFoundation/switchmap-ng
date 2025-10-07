@@ -201,7 +201,7 @@ query SystemStats($hostname: String!) {
             hostname: node.device?.hostname ?? device.hostname,
             uptime: undefined,
             cpuUtilization: Number(node.cpu5min) ?? 0,
-            memoryUtilization: Number(node.memUsed ?? 0), // memUsed
+            memoryUtilization: Number(node.memUsed ?? 0),
             lastPolled: Number(node.idxSystemstat),
             sysName: undefined,
             sysDescription: undefined,

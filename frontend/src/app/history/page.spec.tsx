@@ -2,6 +2,16 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import DeviceHistoryChart from "@/app/history/page";
+import { toMs } from "@/app/history/page";
+import { filterDevicesByTimeRange, DeviceNode } from "../utils/deviceUtils";
+
+const nowMs = Date.now();
+
+const devices = [
+  { hostname: "dev1", lastPolledMs: nowMs - 1000 },
+  { hostname: "dev2", lastPolledMs: nowMs - 100000000 },
+  { hostname: "dev3", lastPolledMs: undefined },
+];
 
 // Mock fetch
 beforeEach(() => {
@@ -239,5 +249,60 @@ describe("DeviceHistoryChart", () => {
     expect(
       await screen.findByText(/start date must be before end date/i)
     ).toBeInTheDocument();
+  });
+  it("correctly converts different values to milliseconds", () => {
+    expect(toMs(null)).toBeNull();
+    expect(toMs(undefined)).toBeNull();
+    expect(toMs(12345)).toBe(12345 * 1000);
+    expect(toMs(1e12)).toBe(1e12);
+    const dateStr = "2025-10-08T00:00:00Z";
+    expect(toMs(dateStr)).toBe(Date.parse(dateStr));
+    expect(toMs("invalid-date")).toBeNull();
+  });
+});
+
+describe("filterDevicesByTimeRange", () => {
+  it("filters devices for custom range", () => {
+    const today = new Date();
+    const start = `${today.getFullYear()}-${String(
+      today.getMonth() + 1
+    ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const end = start;
+
+    const devices = [
+      { hostname: "dev1", lastPolledMs: Date.now() },
+      { hostname: "dev2", lastPolledMs: Date.now() - 100000000 },
+      { hostname: "dev3", lastPolledMs: undefined },
+    ];
+
+    const result = filterDevicesByTimeRange(devices, "custom", start, end);
+    expect(result.map((d) => d.hostname)).toContain("dev1");
+    expect(result.map((d) => d.hostname)).not.toContain("dev2");
+    expect(result.map((d) => d.hostname)).not.toContain("dev3");
+  });
+
+  it("filters devices for 1d range", () => {
+    const result = filterDevicesByTimeRange(devices, "1d");
+    expect(result.map((d) => d.hostname)).toContain("dev1");
+  });
+
+  it("filters devices for 1w range", () => {
+    const result = filterDevicesByTimeRange(devices, "1w");
+    expect(result.map((d) => d.hostname)).toContain("dev1");
+  });
+
+  it("filters devices for 1m range", () => {
+    const result = filterDevicesByTimeRange(devices, "1m");
+    expect(result.map((d) => d.hostname)).toContain("dev1");
+  });
+
+  it("filters devices for 6m range", () => {
+    const result = filterDevicesByTimeRange(devices, "6m");
+    expect(result.map((d) => d.hostname)).toContain("dev1");
+  });
+
+  it("returns unfiltered devices if timeRange is invalid", () => {
+    const result = filterDevicesByTimeRange(devices, "invalid");
+    expect(result.length).toBe(devices.length);
   });
 });

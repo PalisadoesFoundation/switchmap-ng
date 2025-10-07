@@ -30,7 +30,6 @@ export function Sidebar() {
   const [open, setOpen] = useState<boolean>(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  // Close sidebar on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
       const target = e.target as Node;
@@ -48,7 +47,6 @@ export function Sidebar() {
     };
   }, [open]);
 
-  // Sidebar content
   const sidebarContent = (
     <nav className="space-y-6">
       <div className="flex flex-row items-center justify-between gap-1">

@@ -146,11 +146,9 @@ describe("DeviceDetails", () => {
     it("filters data correctly when custom range is selected", async () => {
       const { startInput, endInput } = openCustomRange();
 
-      // Set a range that includes mockDevice.lastPolled (1693305600 → 2023-08-30 UTC)
       fireEvent.change(startInput, { target: { value: "2023-08-29" } });
       fireEvent.change(endInput, { target: { value: "2023-08-31" } });
 
-      // Wait for chart to render
       await waitFor(() => {
         expect(screen.getByText("System Status")).toBeInTheDocument();
         expect(screen.getByText("Up")).toBeInTheDocument();

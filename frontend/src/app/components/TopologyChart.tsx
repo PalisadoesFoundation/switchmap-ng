@@ -144,7 +144,6 @@ export function TopologyChart({
     const edgesArray: Edge[] = [];
     let edgeSeq = 0;
     // Iterate over each device to build nodes and edges
-    // We use `sysName` as the unique identifier for each device
     devices.forEach((device) => {
       const sysName = device?.sysName;
       if (!sysName) return;
@@ -484,7 +483,6 @@ export function TopologyChart({
     // Clear selection
     networkRef.current.unselectAll();
 
-    // Instead of clear + add, do update
     const originalNodes = initialGraph.current.nodes;
     const originalEdges = initialGraph.current.edges;
 

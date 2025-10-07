@@ -31,7 +31,7 @@ describe("DevicesOverview", () => {
     expect(screen.getByText(/devices overview/i)).toBeInTheDocument();
     expect(screen.getByText(/device 1/i)).toBeInTheDocument();
     expect(screen.getByText(/host1/i)).toBeInTheDocument();
-    expect(screen.getByText(/1\/1/i)).toBeInTheDocument(); // active/total ports
+    expect(screen.getByText(/1\/1/i)).toBeInTheDocument();
   });
 
   // ---------- Interactions ----------
@@ -49,7 +49,6 @@ describe("DevicesOverview", () => {
       <DevicesOverview devices={[mockDevice]} loading={false} error={null} />
     );
 
-    // Get all tables and pick the first (monitored devices)
     const tables = screen.getAllByRole("table");
     const monitoredTable = tables[0];
 

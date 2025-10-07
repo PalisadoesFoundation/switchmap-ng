@@ -116,7 +116,6 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Determine the selected zone object
   const selected =
     selectedZoneId === "all"
       ? { name: "All", idxZone: "all", id: "all", tsCreated: "" }
