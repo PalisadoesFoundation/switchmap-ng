@@ -1454,6 +1454,12 @@ class TestPollUpdateTopologyClasses(unittest.TestCase):
                     ifout_ucast_pkts=0,
                     ifin_errors=0,
                     ifin_discards=0,
+                    ifin_nucast_pkts=0,
+                    ifout_nucast_pkts=0,
+                    ifout_errors=0,
+                    ifout_discards=0,
+                    ifin_octets=0,
+                    ifout_octets=0,
                     cdpcachedeviceid=(
                         None
                         if row.cdpcachedeviceid is None

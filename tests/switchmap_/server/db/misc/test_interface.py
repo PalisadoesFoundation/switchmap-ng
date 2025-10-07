@@ -169,6 +169,8 @@ class TestInterface(unittest.TestCase):
                 ifout_nucast_pkts=0,
                 ifout_errors=0,
                 ifout_discards=0,
+                ifin_octets=0,
+                ifout_octets=0,
                 ts_idle=0,
                 cdpcachedeviceid=data.random_string(),
                 cdpcachedeviceport=data.random_string(),
@@ -177,8 +179,6 @@ class TestInterface(unittest.TestCase):
                 lldpremsyscapenabled=data.random_string(),
                 lldpremsysdesc=data.random_string(),
                 lldpremsysname=data.random_string(),
-                ifin_octets=12345,
-                ifout_octets=67890,
                 enabled=1,
             )
             l1interface.insert_row(interface)
