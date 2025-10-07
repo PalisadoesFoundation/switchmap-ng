@@ -398,8 +398,8 @@ describe("ConfigPage", () => {
 
       expect(screen.getByText("New SNMP Group")).toBeInTheDocument();
     });
+
     it("renders correct input types for SNMP group fields", async () => {
-      render(<ConfigPage />);
       await user.click(screen.getByRole("button", { name: "SNMP Groups" }));
 
       await user.click(screen.getByTestId("chevron-down"));

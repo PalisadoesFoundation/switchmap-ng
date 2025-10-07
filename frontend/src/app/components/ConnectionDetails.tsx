@@ -13,10 +13,10 @@ export function ConnectionDetails({ device }: { device: DeviceNode }) {
 
   const interfaces = useMemo(
     () =>
-      device.l1interfaces?.edges
+      device?.l1interfaces?.edges
         ?.map(({ node }: InterfaceEdge) => node)
         .filter(Boolean) ?? [],
-    [device.l1interfaces]
+    [device]
   );
 
   const totalPages = Math.ceil(interfaces.length / itemsPerPage);

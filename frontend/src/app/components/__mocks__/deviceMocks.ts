@@ -59,27 +59,32 @@ export const mockDevice: DeviceNode = {
 
 export const mockMetricsForHost = {
   data: {
-    systemstats: {
+    deviceByHostname: {
       edges: [
         {
           node: {
-            idxSystemstat: 1693305600,
-            cpu5min: 55,
-            memUsed: 40,
-            memFree: 60,
-            device: {
-              hostname: "host1",
-            },
-          },
-        },
-        {
-          node: {
-            idxSystemstat: Math.floor(Date.now() / 1000) - 3600,
-            cpu5min: 20,
-            memUsed: 30,
-            memFree: 70,
-            device: {
-              hostname: "host1",
+            hostname: "host1",
+            systemstats: {
+              edges: [
+                {
+                  node: {
+                    idxSystemstat: 1693305600,
+                    cpu5min: 55,
+                    memUsed: 40,
+                    memFree: 60,
+                    device: { hostname: "host1" },
+                  },
+                },
+                {
+                  node: {
+                    idxSystemstat: Math.floor(Date.now() / 1000) - 3600,
+                    cpu5min: 20,
+                    memUsed: 30,
+                    memFree: 70,
+                    device: { hostname: "host1" },
+                  },
+                },
+              ],
             },
           },
         },
@@ -87,6 +92,7 @@ export const mockMetricsForHost = {
     },
   },
 };
+
 
 export const mockInterfaceLLDP: InterfaceNode = {
   ...mockInterface,

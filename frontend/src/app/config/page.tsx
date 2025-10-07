@@ -177,7 +177,7 @@ export default function ConfigPage() {
       setLoading(false);
       setOngoingRequest(null);
     }
-  }, [getCachedConfig, ongoingRequest]);
+  }, [getCachedConfig]);
 
   // Debounced save with optimistic updates
   const handleSave = useCallback(async () => {

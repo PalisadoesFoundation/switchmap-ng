@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import { describe, it, expect, vi } from "vitest";
 import { DevicesOverview } from "./DevicesOverview";
 import { mockDevice } from "./__mocks__/deviceMocks";
@@ -44,30 +44,37 @@ describe("DevicesOverview", () => {
     expect((input as HTMLInputElement).value).toBe("Device 1");
   });
 
-  it("calls sorting handler on Enter and Space key press", () => {
-    render(
-      <DevicesOverview devices={[mockDevice]} loading={false} error={null} />
-    );
-
-    const headerCell = screen.getByRole("button", {
-      name: /sort by device name/i,
-    });
-
-    fireEvent.keyDown(headerCell, { key: "Enter" });
-    fireEvent.keyDown(headerCell, { key: " " });
-    expect(headerCell).toBeInTheDocument();
-  });
-
   it("calls sorting handler on mouse click", () => {
     render(
       <DevicesOverview devices={[mockDevice]} loading={false} error={null} />
     );
 
-    const headerCell = screen.getByRole("button", {
-      name: /sort by device name/i,
+    // Get all tables and pick the first (monitored devices)
+    const tables = screen.getAllByRole("table");
+    const monitoredTable = tables[0];
+
+    const headerCell = within(monitoredTable).getByRole("columnheader", {
+      name: /device name/i,
     });
 
     fireEvent.click(headerCell);
+    expect(headerCell).toBeInTheDocument();
+  });
+
+  it("calls sorting handler on Enter and Space key press", () => {
+    render(
+      <DevicesOverview devices={[mockDevice]} loading={false} error={null} />
+    );
+
+    const tables = screen.getAllByRole("table");
+    const monitoredTable = tables[0];
+
+    const headerCell = within(monitoredTable).getByRole("columnheader", {
+      name: /device name/i,
+    });
+
+    fireEvent.keyDown(headerCell, { key: "Enter" });
+    fireEvent.keyDown(headerCell, { key: " " });
     expect(headerCell).toBeInTheDocument();
   });
 });
