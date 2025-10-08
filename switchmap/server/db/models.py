@@ -39,12 +39,7 @@ class Oui(BASE):
     __tablename__ = "smap_oui"
     __table_args__ = {"mysql_engine": "InnoDB"}
 
-    idx_oui = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
-    )
+    idx_oui = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     oui = Column(
         VARBINARY(256), unique=True, nullable=True, index=True, default=None
     )
@@ -69,12 +64,7 @@ class Event(BASE):
     __tablename__ = "smap_event"
     __table_args__ = {"mysql_engine": "InnoDB"}
 
-    idx_event = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
-    )
+    idx_event = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     name = Column(VARBINARY(256), unique=True)
     epoch_utc = Column(BIGINT(20, unsigned=True))
     enabled = Column(BIT(1), default=1)
@@ -95,12 +85,7 @@ class Root(BASE):
     __tablename__ = "smap_root"
     __table_args__ = {"mysql_engine": "InnoDB"}
 
-    idx_root = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
-    )
+    idx_root = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_event = Column(
         ForeignKey(Event.idx_event, ondelete="CASCADE"),
         nullable=True,
@@ -138,12 +123,7 @@ class Zone(BASE):
     __tablename__ = "smap_zone"
     __table_args__ = {"mysql_engine": "InnoDB"}
 
-    idx_zone = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
-    )
+    idx_zone = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_event = Column(
         ForeignKey(Event.idx_event, ondelete="CASCADE"),
         nullable=True,
@@ -183,10 +163,7 @@ class Device(BASE):
     __table_args__ = {"mysql_engine": "InnoDB"}
 
     idx_device = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_zone = Column(
         ForeignKey(Zone.idx_zone, ondelete="CASCADE"),
@@ -231,10 +208,7 @@ class SystemStat(BASE):
     __tablename__ = "smap_systemstat"
 
     idx_systemstat = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_device = Column(
         ForeignKey(Device.idx_device, ondelete="CASCADE"),
@@ -266,10 +240,7 @@ class L1Interface(BASE):
     )
 
     idx_l1interface = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_device = Column(
         ForeignKey(Device.idx_device, ondelete="CASCADE"),
@@ -346,12 +317,7 @@ class Vlan(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_vlan = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
-    )
+    idx_vlan = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_device = Column(
         ForeignKey(Device.idx_device, ondelete="CASCADE"),
         nullable=True,
@@ -397,10 +363,7 @@ class VlanPort(BASE):
     )
 
     idx_vlanport = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_l1interface = Column(
         ForeignKey(L1Interface.idx_l1interface, ondelete="CASCADE"),
@@ -457,12 +420,7 @@ class Mac(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_mac = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
-    )
+    idx_mac = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_oui = Column(
         ForeignKey(Oui.idx_oui, ondelete="CASCADE"),
         nullable=True,
@@ -515,10 +473,7 @@ class MacPort(BASE):
     )
 
     idx_macport = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_l1interface = Column(
         ForeignKey(L1Interface.idx_l1interface, ondelete="CASCADE"),
@@ -575,12 +530,7 @@ class Ip(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_ip = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
-    )
+    idx_ip = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_zone = Column(
         ForeignKey(Zone.idx_zone, ondelete="CASCADE"),
         nullable=True,
@@ -624,10 +574,7 @@ class IpPort(BASE):
     )
 
     idx_ipport = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
+        BIGINT(20, unsigned=True), primary_key=True, unique=True
     )
     idx_l1interface = Column(
         ForeignKey(L1Interface.idx_l1interface, ondelete="CASCADE"),
@@ -684,12 +631,7 @@ class MacIp(BASE):
         {"mysql_engine": "InnoDB"},
     )
 
-    idx_macip = Column(
-        BIGINT(20, unsigned=True),
-        primary_key=True,
-        autoincrement=True,
-        unique=True,
-    )
+    idx_macip = Column(BIGINT(20, unsigned=True), primary_key=True, unique=True)
     idx_ip = Column(
         ForeignKey(Ip.idx_ip, ondelete="CASCADE"),
         nullable=True,
