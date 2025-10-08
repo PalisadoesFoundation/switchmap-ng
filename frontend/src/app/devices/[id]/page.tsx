@@ -12,6 +12,20 @@ import { FiHome, FiMonitor, FiLink, FiBarChart2 } from "react-icons/fi";
 import { ThemeToggle } from "@/app/theme-toggle";
 import useSWR from "swr";
 
+/**
+ * DevicePage component displays detailed information about a specific device.
+ *
+ * @remarks
+ * This component fetches device data based on the device ID from the URL parameters.
+ * It provides a sidebar for navigation between different tabs: Device Overview,
+ * Connection Details, and Connection Charts. The sidebar can be toggled between
+ * these tabs to display the corresponding content.
+ * @returns The DevicePage component.
+ * @see {@link useSWR} for data fetching and caching.
+ * @see {@link ThemeToggle} for theme switching functionality.
+ * @see {@link DeviceDetails}, {@link ConnectionDetails}, and {@link ConnectionCharts} for tab content.
+ */
+
 const DeviceDetails = lazy(() =>
   import("@/app/components/DeviceDetails").then((m) => ({
     default: m.DeviceDetails,

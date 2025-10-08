@@ -5,24 +5,19 @@ import { ThemeProvider } from "next-themes";
 import Footer from "./components/Footer";
 
 /**
- * Root layout for the application.
- * This component sets up global styles and the theme provider.
- * It uses the Geist and Geist Mono fonts from Google Fonts.
- * The layout wraps the entire application and provides a consistent theme
- * across all pages.
+ * RootLayout component that wraps the entire application.
  *
  * @remarks
- * The `ThemeProvider` manages the theme state,
- * allowing users to switch between light and dark modes.
- * The `metadata` object defines the application's title and description.
- * `RootLayout` is the main entry point for the app layout,
- * ensuring fonts are applied globally and theme is set correctly.
+ * This component sets up the HTML structure, including the `<html>` and `<body>` tags.
+ * It integrates the `next-themes` library to provide theme switching capabilities
+ * and applies global fonts using the `next/font` package. The layout also includes
+ * a footer component for consistent page structure.
  *
- * @returns The rendered component.
+ * @returns The root layout component.
  *
- * @see {@link ThemeProvider} for managing themes in Next.js.
- * @see {@link Geist} and {@link Geist_Mono} for the fonts used in the layout.
- * @see {@link Metadata} for defining the page metadata.
+ * @see {@link ThemeProvider} from `next-themes` for theme management.
+ * @see {@link Geist} and {@link Geist_Mono} from `next/font/google` for font integration.
+ * @see {@link Footer} for the footer component displayed on all pages.
  *
  */
 

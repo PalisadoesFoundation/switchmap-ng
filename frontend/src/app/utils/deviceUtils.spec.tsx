@@ -10,7 +10,7 @@ describe("parseDateOnlyLocal", () => {
   it("parses YYYY-MM-DD correctly", () => {
     const date = parseDateOnlyLocal("2025-10-08");
     expect(date.getFullYear()).toBe(2025);
-    expect(date.getMonth()).toBe(9); // 0-indexed
+    expect(date.getMonth()).toBe(9);
     expect(date.getDate()).toBe(8);
   });
 });
@@ -43,7 +43,7 @@ describe("filterDevicesByTimeRange", () => {
   it("filters devices for 1d, 1w, 1m, 6m ranges", () => {
     ["1d", "1w", "1m", "6m"].forEach((range) => {
       const result = filterDevicesByTimeRange(devices, range);
-      expect(result).toContainEqual(devices[0]); // dev1 is always recent
+      expect(result).toContainEqual(devices[0]);
     });
   });
 

@@ -90,7 +90,6 @@ describe("DevicesOverview", () => {
       <DevicesOverview devices={manyDevices} loading={false} error={null} />
     );
 
-    // Pagination controls
     expect(screen.getByText(/page 1 of 2/i)).toBeInTheDocument();
 
     const prev = screen.getByRole("button", { name: /previous/i });
@@ -180,7 +179,6 @@ describe("DevicesOverview", () => {
     render(
       <DevicesOverview devices={manyDevices} loading={false} error={null} />
     );
-    // Initially should show "Page 1 of 2"
     expect(screen.getByText(/page 1 of 2/i)).toBeInTheDocument();
 
     const input = screen.getByPlaceholderText(/search/i);
@@ -188,7 +186,6 @@ describe("DevicesOverview", () => {
 
     expect(screen.getByText("Device 12")).toBeInTheDocument();
     expect(screen.queryByText("Device 1")).not.toBeInTheDocument();
-    // Pagination should be hidden when only one result matches filter
     expect(screen.queryByText(/page 1 of 1/i)).not.toBeInTheDocument();
   });
 });

@@ -7,6 +7,21 @@ import {
   MacPort,
 } from "@/app/types/graphql/GetDeviceInterfaces";
 
+/**
+ * ConnectionDetails component displays detailed information about a device's network interfaces.
+ *
+ * @remarks
+ * This component is designed to show the list of network interfaces for a specific device,
+ * including their status, speed, and other relevant details. It allows users to view and
+ * manage the network connections of the device.
+ *
+ * @param device - The device object containing interface details.
+ * @returns The ConnectionDetails component.
+ *
+ * @see {@link useState}, {@link useMemo}, {@link useCallback} for React hooks used in the component.
+ * @see {@link DeviceNode}, {@link InterfaceNode}, {@link MacPort} for the types used in the component.
+ */
+
 export function ConnectionDetails({ device }: { device: DeviceNode }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 15;

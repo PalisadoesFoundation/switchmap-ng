@@ -222,7 +222,7 @@ describe("Home page", () => {
     );
   });
   it("handles non-error, non-string failures", async () => {
-    global.fetch = vi.fn(() => Promise.reject({ some: "object" })); // Not Error, not string
+    global.fetch = vi.fn(() => Promise.reject({ some: "object" }));
 
     render(<Home />);
     const dropdown = screen.getByTestId("zone-dropdown");

@@ -1,3 +1,16 @@
+/**
+ * Utility functions for device management, including date parsing and filtering.
+ * 
+ * @remarks
+ * This module provides functions to parse date strings and filter devices based on their last polled time.
+ * It includes a type definition for device nodes used in the application.
+ * 
+ * @see {@link DeviceNode} for the device node structure.
+ * @see {@link parseDateOnlyLocal} for parsing date strings.
+ * @see {@link filterDevicesByTimeRange} for filtering devices by time range.
+ */
+
+
 export type DeviceNode = {
   hostname: string;
   lastPolledMs?: number | null;

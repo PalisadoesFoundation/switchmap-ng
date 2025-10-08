@@ -4,20 +4,17 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { FiSun, FiMoon } from "react-icons/fi";
 /**
- * ThemeToggle component allows users to switch between light and dark themes.
- * It uses the Next.js `useTheme` hook to manage the theme state.
- * The component renders a button that toggles the theme when clicked.
+ * A toggle button to switch between light and dark themes.
  *
  * @remarks
- * This component is designed for client-side use only because it relies on
- * the `useTheme` hook, which is not available during server-side rendering.
- * It also ensures the component is mounted before rendering to avoid SSR mismatches.
- * The icons used for the toggle come from the `react-icons` library.
+ * This component uses the `next-themes` library to manage theme state and
+ * persists the user's preference in local storage. It displays a sun icon
+ * when the dark theme is active and a moon icon when the light theme is active.
  *
- * @returns The rendered component.
+ * @returns A button element that toggles the theme on click.
  *
- * @see {@link useTheme} for managing themes in Next.js.
- * @see {@link FiSun} and {@link FiMoon} for the icons used in the toggle button.
+ * @see {@link useTheme} from `next-themes` for theme management.
+ * @see {@link FiSun} and {@link FiMoon} from `react-icons/fi` for the icons used.
  */
 
 export function ThemeToggle() {
@@ -29,7 +26,7 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  if (!mounted) return null; // prevent SSR mismatch
+  if (!mounted) return null;
 
   return (
     <button

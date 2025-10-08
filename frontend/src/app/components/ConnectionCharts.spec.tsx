@@ -296,7 +296,7 @@ describe("ConnectionCharts", () => {
           {
             node: {
               ...mockDevice.l1interfaces.edges[0].node,
-              ifspeed: 0, // Use a number to satisfy the type
+              ifspeed: 0,
             },
           },
         ],

@@ -15,6 +15,21 @@ import { DeviceNode, InterfaceEdge } from "@/app/types/graphql/GetZoneDevices";
 import { InterfaceNode } from "@/app/types/graphql/GetDeviceInterfaces";
 import { formatUptime } from "@/app/utils/time";
 
+/**
+ * DevicesOverview component displays a table of devices with sorting, filtering, and pagination.
+ *
+ * @remarks
+ * This component is designed for client-side use only because it relies on the `useState` and `useEffect` hooks
+ * to manage state and handle side effects like data fetching. It also includes interactive elements like
+ * search input and dropdowns that require client-side rendering.
+ *
+ * @returns The DevicesOverview component.
+ *
+ * @see {@link useEffect}, {@link useState} for React hooks used in the component.
+ * @see {@link useReactTable} from `@tanstack/react-table` for table management.
+ * @see {@link DevicesOverview} for the devices overview component itself.
+ */
+
 interface DevicesOverviewProps {
   devices: DeviceNode[];
   loading: boolean;
@@ -98,7 +113,6 @@ export function DevicesOverview({
     getFilteredRowModel: getFilteredRowModel(),
   });
 
-  // Paginated rows
   const paginatedRows = useMemo(() => {
     const start = (currentPage - 1) * PAGE_SIZE;
     return table.getRowModel().rows.slice(start, start + PAGE_SIZE);

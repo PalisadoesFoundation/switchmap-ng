@@ -37,32 +37,20 @@ const deviceCache = new Map<string, CacheEntry>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 /**
- * Main entry point for the application.
- *
- * This component renders the sidebar and main content area,
- * including the network topology and devices overview sections.
- * It also manages the selected zone state and persists it in localStorage.
- *
- * Optimizations include:
- * - Lazy loading of heavy components (TopologyChart, DevicesOverview)
- * - In-memory caching of device data with TTL
- * - Debounced fetch to prevent rapid API calls
- * - Memoized GraphQL queries
- * - Request deduplication
+ * Home page component displaying network topology and devices overview.
  *
  * @remarks
- * This component is the main page of the application.
- * It initializes the zone ID from localStorage and updates it
- * whenever the user selects a different zone.
- * It also handles scrolling to elements based on the URL hash.
- * It uses the `Sidebar` component for navigation and the `ZoneDropdown`
- * component for selecting zones.
+ * This component fetches and displays devices based on the selected zone.
+ * It includes a sidebar, a zone selection dropdown, a topology chart, and
+ * a devices overview section. The component uses caching to minimize
+ * unnecessary API calls and improve performance.
  *
- * @returns The rendered component.
+ * @returns The main home page component.
  *
- * @see {@link Sidebar} for the sidebar component.
- * @see {@link ZoneDropdown} for the zone selection dropdown.
- * @see {@link DevicesOverview} for displaying devices in the selected zone.
+ * @see {@link Sidebar} for the navigation sidebar.
+ * @see {@link ZoneDropdown} for selecting network zones.
+ * @see {@link TopologyChart} for visualizing network topology.
+ * @see {@link DevicesOverview} for listing devices in a tabular format.
  */
 export default function Home() {
   const [zoneId, setZoneId] = useState<string>("");
@@ -271,7 +259,7 @@ export default function Home() {
         setDevices(rawDevices);
       } catch (err: any) {
         if (err.name === "AbortError") {
-          return; // Request was cancelled, don't update state
+          return;
         }
 
         const message =

@@ -1,8 +1,13 @@
 /**
- * Converts a Unix timestamp (in seconds) to a human-readable date and time string.
- * If the timestamp is invalid or not provided, it returns "Unknown".
- * @param timestamp - The Unix timestamp in seconds (string or number).
- * @returns A formatted date and time string or "Unknown".
+ * Formats a Unix timestamp (in seconds) into a human-readable date and time string.
+ * 
+ * @param timestamp - The Unix timestamp in seconds. Can be a number or a string.
+ * 
+ * @remarks
+ * If the timestamp is invalid, undefined, null, or non-positive, the function returns "Unknown".
+ * Otherwise, it converts the timestamp to a Date object and formats it using the
+ * user's local date and time settings.
+ * @returns A formatted date and time string or "Unknown" for invalid inputs.
  */
 export const formatUnixTimestamp = (timestamp?: string | number | null): string => {
   if (!timestamp) return "Unknown";

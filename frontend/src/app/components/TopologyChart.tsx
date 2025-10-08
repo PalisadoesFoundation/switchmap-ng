@@ -31,7 +31,6 @@ interface TopologyChartProps {
   clickToUse?: boolean;
 }
 
-// vis-network Node plus our custom field for navigation
 type VisNode = Node & { idxDevice?: string };
 
 export function TopologyChart({
@@ -41,7 +40,6 @@ export function TopologyChart({
   zoomView,
   clickToUse,
 }: TopologyChartProps) {
-  // React state to hold current graph structure: array of nodes and edges
   const [graph, setGraph] = useState<{ nodes: VisNode[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
@@ -273,12 +271,8 @@ export function TopologyChart({
       }
     });
 
-    // Set the new graph
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
-
-    // (Lines 255–262 have been removed; the fit()/moveTo() reset now lives
-    // in the Network-creation useEffect so it always runs on a fresh instance.)
   }, [devices]);
 
   useEffect(() => {
@@ -430,7 +424,7 @@ export function TopologyChart({
 
     const filtered = allNodeLabels
       .filter((label) => label.toLowerCase().includes(inputTerm.toLowerCase()))
-      .slice(0, 5); // limit to top 5
+      .slice(0, 5);
 
     setSuggestions(filtered);
   }, [inputTerm, allNodeLabels]);
@@ -480,7 +474,6 @@ export function TopologyChart({
 
     if (!networkRef.current || !nodesData.current || !edgesData.current) return;
 
-    // Clear selection
     networkRef.current.unselectAll();
 
     const originalNodes = initialGraph.current.nodes;
@@ -492,7 +485,6 @@ export function TopologyChart({
     nodesData.current.add(originalNodes);
     edgesData.current.add(originalEdges);
 
-    // Reset view
     networkRef.current.fit();
   };
 

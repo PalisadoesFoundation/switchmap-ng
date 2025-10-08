@@ -1,3 +1,17 @@
+/**
+ * Footer component that displays the footer section of the application.
+ *
+ * @remarks
+ * This component is a simple footer that includes copyright information
+ * and links to the documentation and GitHub repository. It is designed to be
+ * used across all pages of the application to provide consistent footer content.
+ *
+ * @returns The Footer component.
+ *
+ * @see {@link useEffect}, {@link useState} for React hooks used in the component.
+ * @see {@link Footer} for the footer component itself.
+ */
+
 export function Footer() {
   return (
     <footer className="bg-bg py-4 text-center ml-8">

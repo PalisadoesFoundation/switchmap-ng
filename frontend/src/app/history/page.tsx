@@ -96,7 +96,7 @@ interface CacheEntry {
 }
 
 export const deviceCache = new Map<string, CacheEntry>();
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 5 * 60 * 1000;
 
 export function toMs(value: number | string | null | undefined): number | null {
   if (value == null) return null;

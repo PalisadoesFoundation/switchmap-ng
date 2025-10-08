@@ -17,25 +17,18 @@ const TopologyChart = React.lazy(() =>
 );
 
 /**
- * DeviceDetails component displays detailed information about a specific device,
- * including its metadata and historical performance charts.
- * It fetches device metrics from a GraphQL API and allows users to filter
- * the displayed data by predefined time ranges or a custom date range.
- * It also includes a topology chart to visualize the device's connections.
- * @remarks
- * This component is designed for client-side use only because it relies on
- * the `useEffect` hook for fetching data and managing state.
- * It also uses `useMemo` to optimize rendering of static parts of the UI.
- * @param device - The device object containing basic information like hostname and sysName.
- * @returns The rendered device details component.
+ * DeviceDetails component displays detailed information about a specific device.
  *
- * @see {@link DeviceResponse} for the structure of the device data response.
- * @see {@link DeviceNode} for the structure of the device data.
- * @see {@link HistoricalChart} for the chart component used to display historical data.
- * @see {@link TopologyChart} for the topology visualization component.
- * @see {@link useState} for managing component state.
- * @see {@link useEffect} for fetching data and handling side effects.
- * @see {@link useMemo} for optimizing rendering of static UI parts.
+ * @remarks
+ * This component shows metadata about the device, including its name, description,
+ * hostname, status, uptime, system ID, and last polled time. It also includes
+ * historical charts for system status, CPU usage, and memory usage. The component
+ * allows users to filter the historical data by predefined time ranges or a custom range.
+ * @param device - The device object containing its details.
+ * @returns The DeviceDetails component.
+ *
+ * @see {@link HistoricalChart} for displaying historical data charts.
+ * @see {@link TopologyChart} for displaying the device in a network topology.
  */
 
 function MetadataRow({ label, value }: { label: string; value: string }) {

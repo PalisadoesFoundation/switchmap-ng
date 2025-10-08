@@ -11,6 +11,15 @@ import {
   FiChevronUp,
 } from "react-icons/fi";
 
+/**
+ * ConfigPage component for managing Switchmap configuration.
+ *
+ * @remarks This component provides an interface for viewing and editing the Switchmap configuration.
+ * @returns The ConfigPage component.
+ * @see {@link Sidebar} for the navigation sidebar.
+ * @see {@link useRef}, {@link useState}, {@link useEffect}, {@link useCallback}, {@link useMemo} for React hooks used in the component.
+ */
+
 // Type definitions
 interface Zone {
   zone: string;
@@ -71,7 +80,7 @@ interface CacheEntry {
 }
 
 let configCache: CacheEntry | null = null;
-const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
+const CACHE_DURATION = 2 * 60 * 1000;
 
 // Export cache reset function for testing
 export const __resetConfigCache = () => {
@@ -88,24 +97,20 @@ export const __resetConfigCache = () => {
  * - Optimistic UI updates
  */
 export default function ConfigPage() {
-  // State management
   const [config, setConfig] = useState<Config | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("zones");
 
-  // Use ref for AbortController to avoid dependency issues
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // Edit states
   const [draftZone, setDraftZone] = useState<string | null>(null);
   const [draftGroupName, setDraftGroupName] = useState<string | null>(null);
   const [editIdx, setEditIdx] = useState<number | null>(null);
   const [editSection, setEditSection] = useState<SectionType | null>(null);
   const [authPasswordEdit, setAuthPasswordEdit] = useState(false);
 
-  // Expansion states
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
   >({});
@@ -117,7 +122,6 @@ export default function ConfigPage() {
     {}
   );
 
-  // Memoized values
   const zones = useMemo(
     () => config?.poller?.zones ?? [],
     [config?.poller?.zones]
@@ -127,7 +131,6 @@ export default function ConfigPage() {
     [config?.poller?.snmp_groups]
   );
 
-  // Check cache validity
   const getCachedConfig = useCallback((): Config | null => {
     if (configCache && Date.now() - configCache.timestamp < CACHE_DURATION) {
       return configCache.data;
@@ -135,9 +138,7 @@ export default function ConfigPage() {
     return null;
   }, []);
 
-  // API functions with caching
   const fetchConfig = useCallback(async () => {
-    // Check cache first
     const cached = getCachedConfig();
     if (cached) {
       setConfig(cached);
@@ -145,7 +146,6 @@ export default function ConfigPage() {
       return;
     }
 
-    // Cancel ongoing request using ref
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -165,7 +165,6 @@ export default function ConfigPage() {
 
       const data = await response.json();
 
-      // Cache the result
       configCache = {
         data,
         timestamp: Date.now(),
@@ -183,7 +182,6 @@ export default function ConfigPage() {
     }
   }, [getCachedConfig]);
 
-  // Save handler
   const handleSave = useCallback(async () => {
     if (!config) return;
 
@@ -202,7 +200,6 @@ export default function ConfigPage() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Only mark as saved on successful response
       setSaved(true);
       setTimeout(() => setSaved(false), SAVE_SUCCESS_DURATION);
     } catch (error) {
@@ -213,7 +210,6 @@ export default function ConfigPage() {
     }
   }, [config]);
 
-  // Zone management functions - memoized
   const updateZoneHostnames = useCallback(
     (zoneIndex: number, hostnames: string[]) => {
       setConfig((prev) => {
@@ -256,7 +252,6 @@ export default function ConfigPage() {
     [config, updateZoneHostnames]
   );
 
-  // Reindex helper - memoized
   const reindexState = useCallback(
     (
       state: Record<number, boolean>,
@@ -307,7 +302,6 @@ export default function ConfigPage() {
     setDraftZone(null);
   }, []);
 
-  // SNMP group management functions - memoized
   const updateSNMPGroup = useCallback(
     (groupIndex: number, updates: Partial<SNMPGroup>) => {
       setConfig((prev) => {
@@ -365,7 +359,6 @@ export default function ConfigPage() {
     setDraftGroupName(null);
   }, []);
 
-  // Advanced section management - memoized
   const updateConfigSection = useCallback(
     (section: SectionType, key: string, value: any) => {
       setConfig((prev) => {

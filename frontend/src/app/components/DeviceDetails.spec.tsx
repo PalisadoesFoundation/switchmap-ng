@@ -23,7 +23,7 @@ const openCustomRange = () => {
 
 describe("DeviceDetails", () => {
   beforeEach(() => {
-    vi.resetModules(); // clear imported module cache
+    vi.resetModules();
     global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
@@ -33,7 +33,7 @@ describe("DeviceDetails", () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks(); // restore original fetch
+    vi.restoreAllMocks();
   });
 
   // ---------- UI interactions ----------
@@ -41,23 +41,18 @@ describe("DeviceDetails", () => {
     it("toggles time range dropdown", async () => {
       render(<DeviceDetails device={mockDevice} />);
 
-      // initial button text
       const button = screen.getByRole("button", { name: /Past 1 day/i });
       fireEvent.click(button);
 
-      // dropdown opens
       const option = screen.getByText("Past 1 week");
       expect(option).toBeInTheDocument();
 
-      // select "Past 1 week"
       fireEvent.click(option);
 
-      // button text updates
       expect(
         screen.getByRole("button", { name: /Past 1 week/i })
       ).toBeInTheDocument();
 
-      // dropdown closed
       expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     });
   });
@@ -215,7 +210,6 @@ describe("DeviceDetails", () => {
     });
 
     it("handles empty metrics and sets CPU/memory to 0 when values are invalid", async () => {
-      // Helper to stub fetch with empty metrics
       const stubEmptyMetrics = vi.fn(() =>
         Promise.resolve({
           ok: true,

@@ -300,7 +300,6 @@ describe("DeviceHistoryChart", () => {
     );
     expect(screen.getByText("SysName History")).toBeInTheDocument();
 
-    // No history
     const singleDeviceResponse = {
       data: {
         zones: {
@@ -497,28 +496,6 @@ describe("DeviceHistoryChart", () => {
       ).not.toBeInTheDocument()
     );
   });
-
-  // it("processes devices and sets allDeviceHostnames correctly", async () => {
-  //   render(<DeviceHistoryChart />);
-
-  //   await waitFor(() =>
-  //     expect(
-  //       screen.queryByText(byTextContent("loading devices"))
-  //     ).not.toBeInTheDocument()
-  //   );
-
-  //   const input = screen.getByPlaceholderText("Search device hostname...");
-
-  //   fireEvent.change(input, { target: { value: "host" } });
-
-  //   const suggestionsList = await screen.findByTestId(
-  //     "suggestions-list",
-  //     {},
-  //     { timeout: 1000 }
-  //   );
-
-  //   expect(suggestionsList.children.length).toBeGreaterThan(0);
-  // });
 });
 
 describe("toMs function", () => {

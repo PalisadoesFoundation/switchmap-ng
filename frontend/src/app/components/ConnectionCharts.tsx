@@ -5,20 +5,15 @@ import HistoricalChart from "./HistoricalChart";
 import { DeviceNode } from "../types/graphql/GetZoneDevices";
 import { InterfaceNode } from "../types/graphql/GetDeviceInterfaces";
 /**
- * Tabs available for chart display.
+ * ConnectionCharts component displays historical charts for a device's network interfaces.
+ *
  * @remarks
- * - "Traffic": Displays total traffic (in and out) in octets.
- * - "Unicast": Displays unicast packet flow.
- * - "NonUnicast": Displays non-unicast packet flow.
- * - "Errors": Displays error packets.
- * - "Discards": Displays discarded packets.
- * - "Speed": Displays interface speed in Mbps.
- * @typedef {("Traffic" | "Unicast" | "NonUnicast" | "Errors" | "Discards" | "Speed")} ChartTab
- * @enum {ChartTab}
+ * This component allows users to view historical data for various metrics related to network interfaces.
+ * Users can select different time ranges, expand/collapse interface sections, and switch between different chart types.
+ * The component fetches data from a GraphQL endpoint and renders charts using the HistoricalChart component.
  * @see {@link HistoricalChart} for rendering the charts.
- * @see {@link ConnectionChartsProps} for component props.
- * @interface ConnectionChartsProps
- * @property {DeviceNode} device - The device for which to display connection charts.
+ * @see {@link useState}, {@link useEffect}, {@link useMemo} for React hooks used in the component.
+ * @see {@link DeviceNode}, {@link InterfaceNode} for the types used in the component.
  */
 
 type ChartTab =
