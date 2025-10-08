@@ -41,7 +41,7 @@ describe("DeviceDetails", () => {
       render(<DeviceDetails device={mockDevice} />);
 
       await waitFor(() => {
-        expect(screen.getByText("System Status")).toBeInTheDocument();
+        expect(screen.getByText(/system status/i)).toBeInTheDocument();
         expect(screen.getByText("CPU Usage (%)")).toBeInTheDocument();
         expect(screen.getByText("Memory Usage (%)")).toBeInTheDocument();
       });
@@ -150,7 +150,7 @@ describe("DeviceDetails", () => {
       fireEvent.change(endInput, { target: { value: "2023-08-31" } });
 
       await waitFor(() => {
-        expect(screen.getByText("System Status")).toBeInTheDocument();
+        expect(screen.getByText(/system status/i)).toBeInTheDocument();
         expect(screen.getByText("Up")).toBeInTheDocument();
       });
     });

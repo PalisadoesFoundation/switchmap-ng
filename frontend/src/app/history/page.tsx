@@ -237,7 +237,8 @@ export default function DeviceHistoryChart() {
 
     setLoading(true);
     setError(null);
-
+    setAllDevices([]);
+    setSearchTerm("");
     try {
       const endpoint =
         process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
@@ -312,17 +313,15 @@ export default function DeviceHistoryChart() {
     searchTerm,
     getCachedDevices,
     filterDevicesByTimeRange,
-    ongoingRequest,
   ]);
 
-  // Debounced fetch
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       fetchDevices();
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [fetchDevices]);
 
   const uniqueHostnames = useMemo(() => {
     return Array.from(new Set(allDevices.map((d) => d.hostname)));
@@ -630,6 +629,7 @@ export default function DeviceHistoryChart() {
                 <Suspense fallback={<LoadingFallback />}>
                   {zoneChartData.length > 0 && (
                     <LineChartWrapper
+                      data-testid="device-chart"
                       data={zoneChartData}
                       xAxisKey="timestamp"
                       lines={[
