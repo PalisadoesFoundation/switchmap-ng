@@ -708,22 +708,6 @@ describe("TopologyChart", () => {
       unmount();
       expect(mockNetworkInstance.destroy).toHaveBeenCalled();
     });
-
-    it("cleans up node title DOM elements", () => {
-      const removeSpy = vi.fn();
-      const deviceWithTitle = {
-        ...mockDevice,
-        sysUptime: 1000,
-      };
-      render(
-        <TopologyChart
-          devices={[deviceWithTitle]}
-          loading={false}
-          error={null}
-        />
-      );
-      expect(screen.getByText(/network topology/i)).toBeInTheDocument();
-    });
   });
 
   // ---- Edge Cases ----

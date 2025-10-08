@@ -94,6 +94,9 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
       ),
     [device.l1interfaces.edges, currentPage]
   );
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(Math.max(prev, 1), totalPages));
+  }, [totalPages]);
 
   const TIME_RANGES = [
     { value: "24h", label: "Past 1 day" },

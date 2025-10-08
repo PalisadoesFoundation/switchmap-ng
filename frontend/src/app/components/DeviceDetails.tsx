@@ -426,7 +426,7 @@ query SystemStats($hostname: String!) {
       </div>
 
       <div className="p-4 w-full min-w-[350px] flex flex-col xl:flex-row gap-4">
-        {filterByRange(uptimeData)?.length ? (
+        {filteredUptime?.length ? (
           <Suspense
             fallback={
               <div className="text-center text-gray-400 py-4">
@@ -454,7 +454,7 @@ query SystemStats($hostname: String!) {
           </div>
         )}
 
-        {filterByRange(cpuUsageData)?.length ? (
+        {filteredCpu?.length ? (
           <Suspense
             fallback={
               <div className="text-center text-gray-400 py-4">
@@ -475,7 +475,7 @@ query SystemStats($hostname: String!) {
           </div>
         )}
 
-        {filterByRange(memoryUsageData)?.length ? (
+        {filteredMemory?.length ? (
           <Suspense
             fallback={
               <div className="text-center text-gray-400 py-4">
