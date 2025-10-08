@@ -215,7 +215,7 @@ export default function DevicePage() {
     <div className="relative">
       {/* Sidebar */}
       <div
-        className="fixed top-0 left-0 z-50 h-screen transition-all duration-200 border-r border-[var(--border-color)] flex flex-col gap-4 py-2 bg-sidebar"
+        className="sidebar fixed top-0 left-0 z-50 h-screen transition-all duration-200 border-r border-[var(--border-color)] flex flex-col gap-4 py-2"
         style={{
           width: sidebarOpen ? "220px" : "48px",
           alignItems: sidebarOpen ? "flex-start" : "center",

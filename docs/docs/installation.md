@@ -204,22 +204,22 @@ The dashboard is a modern Next.js application.
 
     Ubuntu / Debian / Mint   
     ```bash
-    $ sudo apt-get install nodejs npm
+    sudo apt-get install nodejs npm
     ```
     CentOS / Fedora      
     ```bash
-    $ sudo dnf install nodejs npm
+    sudo dnf install nodejs npm
     ```
 
 2. Navigate to the frontend directory and install dependencies:
     ```bash
-    $ cd frontend
-    $ npm install
+    cd frontend
+    npm install
     ```
 
 3. Start the frontend development server:
     ```bash
-    $ npm run dev
+    npm run dev
     ```
     By default, the dashboard will be available at  
     [http://localhost:3000/](http://localhost:3000/)  
@@ -233,13 +233,13 @@ The frontend uses **Vitest** for testing.
 
 - To run tests in watch mode:
     ```bash
-    $ cd frontend
-    $ npm run test:watch
+    cd frontend
+    npm run test:watch
     ```
 - To generate a coverage report:
     ```bash
-    $ cd frontend
-    $ npm run coverage
+    cd frontend
+    npm run coverage
     ```
   The coverage report will be available in the `frontend/coverage` directory.
 
@@ -250,21 +250,21 @@ The documentation site is built with Docusaurus.
 1. **Install pnpm (if not already installed):**
     ```bash
     # Option 1: Enable via corepack (recommended for Node.js >=16.13)
-    $ corepack enable pnpm
+    corepack enable pnpm
 
     # Option 2: Install globally with npm
-    $ npm install -g pnpm
+    npm install -g pnpm
     ```
 
 2. **Install dependencies in the docs directory:**
     ```bash
-    $ cd docs
-    $ pnpm install
+    cd docs
+    pnpm install
     ```
 
 3. **Start the documentation site:**
     ```bash
-    $ pnpm start
+    pnpm start
     ```
     By default, the documentation site will be available at  
     [http://localhost:3001/](http://localhost:3001/)
