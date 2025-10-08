@@ -200,31 +200,31 @@ Daemon is running - <bound method Agent.name of <switchmap.core.agent.Agent obje
 
 The dashboard is a modern Next.js application.
 
-1. **Install Node.js and npm** (if not already installed):
+1. Install Node.js and npm (if not already installed):
 
-    **Ubuntu / Debian / Mint**  
+    Ubuntu / Debian / Mint   
     ```bash
     $ sudo apt-get install nodejs npm
     ```
-    **CentOS / Fedora**  
+    CentOS / Fedora      
     ```bash
     $ sudo dnf install nodejs npm
     ```
 
-2. **Navigate to the frontend directory and install dependencies:**
+2. Navigate to the frontend directory and install dependencies:
     ```bash
     $ cd frontend
     $ npm install
     ```
 
-3. **Start the frontend development server:**
+3. Start the frontend development server:
     ```bash
     $ npm run dev
     ```
     By default, the dashboard will be available at  
     [http://localhost:3000/](http://localhost:3000/)  
 
-4. **API connectivity:**  
+4. API connectivity:  
     Ensure your switchmap-ng API server is running and accessible from the frontend.
 
 ### Frontend Testing
@@ -247,13 +247,13 @@ The frontend uses **Vitest** for testing.
 
 The documentation site is built with docusaurus.
 
-1. **Navigate to the docs directory and install dependencies:**
+1. Navigate to the docs directory and install dependencies:
     ```bash
     $ cd docs
-    $ pnpm install
+    $ pnpm add docusaurus
     ```
 
-2. **Start the documentation site:**
+2. Start the documentation site:
     ```bash
     $ pnpm start
     ```

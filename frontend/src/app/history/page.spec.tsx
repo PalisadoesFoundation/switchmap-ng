@@ -14,7 +14,7 @@ import DeviceHistoryChart, {
 
 import { deviceCache } from "@/app/history/page";
 
-type DeviceNode = {
+type MockDeviceNode = {
   idxDevice: number;
   hostname: string;
   sysName: string;
@@ -514,7 +514,7 @@ describe("toMs function", () => {
 
 describe("filterDevicesByTimeRange", () => {
   const msNow = Date.now();
-  const devices: DeviceNode[] = [
+  const devices: MockDeviceNode[] = [
     { idxDevice: 1, hostname: "dev1", sysName: "a", lastPolledMs: msNow },
     { idxDevice: 2, hostname: "dev2", sysName: "b", lastPolledMs: undefined },
     { idxDevice: 3, hostname: "dev3", sysName: "c", lastPolledMs: NaN },
@@ -543,7 +543,7 @@ describe("filterDevicesByTimeRange", () => {
   });
 
   it("filters devices with null lastPolledMs", () => {
-    const testDevices: DeviceNode[] = [
+    const testDevices: MockDeviceNode[] = [
       { idxDevice: 4, hostname: "devNull", sysName: "t", lastPolledMs: null },
       {
         idxDevice: 5,
@@ -558,7 +558,7 @@ describe("filterDevicesByTimeRange", () => {
   });
 
   it("handles devices outside time range", () => {
-    const oldDevices: DeviceNode[] = [
+    const oldDevices: MockDeviceNode[] = [
       {
         idxDevice: 6,
         hostname: "old",
@@ -579,7 +579,7 @@ describe("filterDevicesByTimeRange", () => {
 
   it("handles empty devices and unknown range", () => {
     expect(filterDevicesByTimeRange([], "unknown")).toEqual([]);
-    const many: DeviceNode[] = [
+    const many: MockDeviceNode[] = [
       { idxDevice: 8, hostname: "a", sysName: "na", lastPolledMs: undefined },
       { idxDevice: 9, hostname: "b", sysName: "nb", lastPolledMs: null },
       { idxDevice: 10, hostname: "c", sysName: "nc", lastPolledMs: NaN },
