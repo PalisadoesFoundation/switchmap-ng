@@ -245,15 +245,24 @@ The frontend uses **Vitest** for testing.
 
 ## Documentation Site
 
-The documentation site is built with docusaurus.
+The documentation site is built with Docusaurus.
 
-1. Navigate to the docs directory and install dependencies:
+1. **Install pnpm (if not already installed):**
     ```bash
-    $ cd docs
-    $ pnpm add docusaurus
+    # Option 1: Enable via corepack (recommended for Node.js >=16.13)
+    $ corepack enable pnpm
+
+    # Option 2: Install globally with npm
+    $ npm install -g pnpm
     ```
 
-2. Start the documentation site:
+2. **Install dependencies in the docs directory:**
+    ```bash
+    $ cd docs
+    $ pnpm install
+    ```
+
+3. **Start the documentation site:**
     ```bash
     $ pnpm start
     ```
