@@ -317,7 +317,6 @@ describe("ConfigPage", () => {
   });
 
   // ---------- SNMP Groups Tab ----------
-
   describe("SNMP Groups Tab", () => {
     beforeEach(async () => {
       mockFetch.mockResolvedValueOnce({
@@ -414,6 +413,21 @@ describe("ConfigPage", () => {
       expect(input).toHaveAttribute("readOnly");
       await user.type(input, "New Name");
       expect(input).toHaveValue("Test Group 1");
+    });
+
+    it("allows editing snmp_secname as a string in SNMP group", async () => {
+      const expandButton = screen.getByTestId("chevron-down");
+      await user.click(expandButton);
+
+      const editBtn = screen.getByTestId("edit-icon");
+      await user.click(editBtn);
+
+      const secnameInput = screen.getByDisplayValue("testuser");
+      expect(secnameInput).not.toHaveAttribute("readOnly");
+
+      await user.clear(secnameInput);
+      await user.type(secnameInput, "newuser");
+      expect(secnameInput).toHaveValue("newuser");
     });
   });
 

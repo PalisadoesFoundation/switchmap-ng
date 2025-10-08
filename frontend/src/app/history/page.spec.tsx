@@ -99,6 +99,8 @@ vi.mock("@/app/components/LineChartWrapper", () => ({
 }));
 
 beforeEach(() => {
+  vi.restoreAllMocks();
+  vi.resetModules();
   global.fetch = vi.fn().mockResolvedValue({
     ok: true,
     json: async () => mockDeviceResponse,
