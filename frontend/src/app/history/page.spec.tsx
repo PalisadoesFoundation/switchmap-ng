@@ -115,7 +115,7 @@ afterEach(() => {
 
 function byTextContent(text: string) {
   return (_: string, node: Element | null): boolean =>
-    !!node && node.textContent?.toLowerCase().includes(text.toLowerCase());
+    !!node && !!node.textContent?.toLowerCase().includes(text.toLowerCase());
 }
 
 describe("DeviceHistoryChart", () => {

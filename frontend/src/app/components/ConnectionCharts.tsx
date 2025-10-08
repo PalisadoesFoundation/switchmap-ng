@@ -462,7 +462,13 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                               ? "#FF5733"
                               : "#82ca9d"
                           }
-                          unit={currentTab === "Speed" ? " Mbps" : " pkts"}
+                          unit={
+                            currentTab === "Speed"
+                              ? " Mbps"
+                              : currentTab === "Traffic"
+                              ? " octets"
+                              : " pkts"
+                          }
                         />
                       </div>
                     ) : (

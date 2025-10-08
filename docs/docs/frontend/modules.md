@@ -42,6 +42,8 @@
 - [theme-toggle.spec](theme-toggle.spec.md)
 - [types/graphql/GetDeviceInterfaces](types/graphql/GetDeviceInterfaces.md)
 - [types/graphql/GetZoneDevices](types/graphql/GetZoneDevices.md)
+- [utils/deviceUtils](utils/deviceUtils.md)
+- [utils/deviceUtils.spec](utils/deviceUtils.spec.md)
 - [utils/stringUtils](utils/stringUtils.md)
 - [utils/stringUtils.spec](utils/stringUtils.spec.md)
 - [utils/time](utils/time.md)

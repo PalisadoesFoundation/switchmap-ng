@@ -12,7 +12,7 @@
 
 > `const` **metadata**: `Metadata`
 
-Defined in: [layout.tsx:39](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/layout.tsx#L39)
+Defined in: [layout.tsx:34](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/layout.tsx#L34)
 
 ## Functions
 
@@ -20,7 +20,7 @@ Defined in: [layout.tsx:39](https://github.com/PalisadoesFoundation/switchmap-ng
 
 > **default**(`__namedParameters`): `Element`
 
-Defined in: [layout.tsx:47](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/layout.tsx#L47)
+Defined in: [layout.tsx:42](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/layout.tsx#L42)
 
 #### Parameters
 
