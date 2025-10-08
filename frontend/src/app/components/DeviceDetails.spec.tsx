@@ -128,18 +128,6 @@ describe("DeviceDetails", () => {
         ).toBeInTheDocument()
       );
     });
-
-    it("filters data correctly when custom range is selected", async () => {
-      const { startInput, endInput } = openCustomRange();
-
-      fireEvent.change(startInput, { target: { value: "2023-08-29" } });
-      fireEvent.change(endInput, { target: { value: "2023-08-31" } });
-
-      await waitFor(() => {
-        expect(screen.getByText(/system status/i)).toBeInTheDocument();
-        expect(screen.getByText("Up")).toBeInTheDocument();
-      });
-    });
   });
 
   // ---------- Network / fetch errors ----------

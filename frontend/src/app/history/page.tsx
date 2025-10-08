@@ -95,7 +95,7 @@ interface CacheEntry {
   timestamp: number;
 }
 
-const deviceCache = new Map<string, CacheEntry>();
+export const deviceCache = new Map<string, CacheEntry>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export function toMs(value: number | string | null | undefined): number | null {
@@ -110,6 +110,63 @@ export function toMs(value: number | string | null | undefined): number | null {
 function parseDateOnlyLocal(yyyyMmDd: string): Date {
   const [y, m, d] = yyyyMmDd.split("-").map(Number);
   return new Date(y, (m ?? 1) - 1, d ?? 1);
+}
+
+export function filterDevicesByTimeRange(
+  devices: DeviceNode[],
+  timeRange: string,
+  start?: string,
+  end?: string
+): DeviceNode[] {
+  const now = new Date();
+
+  function parseDateOnlyLocal(yyyyMmDd: string): Date {
+    const [y, m, d] = yyyyMmDd.split("-").map(Number);
+    return new Date(y, (m ?? 1) - 1, d ?? 1);
+  }
+
+  if (timeRange === "custom" && start && end) {
+    const startDate = parseDateOnlyLocal(start);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = parseDateOnlyLocal(end);
+    endDate.setHours(23, 59, 59, 999);
+
+    return devices.filter((d) => {
+      if (typeof d.lastPolledMs !== "number") return false;
+      const t = d.lastPolledMs;
+      return t >= startDate.getTime() && t <= endDate.getTime();
+    });
+  }
+
+  let startDate: Date | null = null;
+  switch (timeRange) {
+    case "1d":
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - 1);
+      break;
+    case "1w":
+      startDate = new Date(now);
+      startDate.setDate(now.getDate() - 7);
+      break;
+    case "1m":
+      startDate = new Date(now);
+      startDate.setMonth(now.getMonth() - 1);
+      break;
+    case "6m":
+      startDate = new Date(now);
+      startDate.setMonth(now.getMonth() - 6);
+      break;
+  }
+
+  if (startDate) {
+    const startMs = startDate.getTime();
+    return devices.filter((d) => {
+      if (typeof d.lastPolledMs !== "number") return false;
+      return d.lastPolledMs >= startMs;
+    });
+  }
+
+  return devices;
 }
 
 export default function DeviceHistoryChart() {
@@ -148,62 +205,6 @@ export default function DeviceHistoryChart() {
         return cached.data;
       }
       return null;
-    },
-    []
-  );
-
-  // Memoized filter function
-  const filterDevicesByTimeRange = useCallback(
-    (
-      devices: DeviceNode[],
-      timeRange: string,
-      start?: string,
-      end?: string
-    ): DeviceNode[] => {
-      const now = new Date();
-
-      if (timeRange === "custom" && start && end) {
-        const startDate = parseDateOnlyLocal(start);
-        startDate.setHours(0, 0, 0, 0);
-        const endDate = parseDateOnlyLocal(end);
-        endDate.setHours(23, 59, 59, 999);
-
-        return devices.filter((d) => {
-          if (typeof d.lastPolledMs !== "number") return false;
-          const t = d.lastPolledMs;
-          return t >= startDate.getTime() && t <= endDate.getTime();
-        });
-      }
-
-      let startDate: Date | null = null;
-      switch (timeRange) {
-        case "1d":
-          startDate = new Date(now);
-          startDate.setDate(now.getDate() - 1);
-          break;
-        case "1w":
-          startDate = new Date(now);
-          startDate.setDate(now.getDate() - 7);
-          break;
-        case "1m":
-          startDate = new Date(now);
-          startDate.setMonth(now.getMonth() - 1);
-          break;
-        case "6m":
-          startDate = new Date(now);
-          startDate.setMonth(now.getMonth() - 6);
-          break;
-      }
-
-      if (startDate) {
-        const startMs = startDate.getTime();
-        return devices.filter((d) => {
-          if (typeof d.lastPolledMs !== "number") return false;
-          return d.lastPolledMs >= startMs;
-        });
-      }
-
-      return devices;
     },
     []
   );
@@ -406,9 +407,13 @@ export default function DeviceHistoryChart() {
   }, [history]);
 
   const renderFallback = useCallback(() => {
-    if (loading) return <p>Loading devices...</p>;
-    if (error) return <p>Error loading history: {error}</p>;
-    if (allDevices.length === 0) {
+    if (loading)
+      return (
+        <div className="flex flex-col items-center justify-center h-64">
+          <p className="text-gray-700">Loading devices...</p>
+        </div>
+      );
+    if (error || allDevices.length === 0) {
       return (
         <div className="flex flex-col items-center justify-center h-64">
           <p className="text-gray-700">No results found.</p>
