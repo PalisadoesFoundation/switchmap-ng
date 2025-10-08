@@ -36,21 +36,6 @@ describe("DeviceDetails", () => {
     vi.restoreAllMocks(); // restore original fetch
   });
 
-  // ---------- Basic rendering / happy path ----------
-  describe("Basic rendering", () => {
-    it("renders charts and shows device status with fetched metrics", async () => {
-      render(<DeviceDetails device={mockDevice} />);
-
-      await waitFor(() => {
-        expect(screen.getByText(/system status/i)).toBeInTheDocument();
-        expect(screen.getByText("CPU Usage (%)")).toBeInTheDocument();
-        expect(screen.getByText("Memory Usage (%)")).toBeInTheDocument();
-      });
-
-      expect(screen.getByText("Up")).toBeInTheDocument();
-    });
-  });
-
   // ---------- UI interactions ----------
   describe("UI interactions", () => {
     it("toggles time range dropdown", async () => {

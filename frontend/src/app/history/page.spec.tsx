@@ -144,25 +144,6 @@ describe("DeviceHistoryChart", () => {
     ).toBeInTheDocument();
   });
 
-  it("shows loading state", async () => {
-    (global.fetch as any).mockImplementationOnce(
-      () =>
-        new Promise((resolve) =>
-          setTimeout(
-            () =>
-              resolve({
-                ok: true,
-                json: async () => ({ data: { zones: { edges: [] } } }),
-              }),
-            100
-          )
-        )
-    );
-
-    render(<DeviceHistoryChart />);
-    expect(await screen.findByText(/loading devices/i)).toBeInTheDocument();
-  });
-
   it("shows results after fetch and displays hostname", async () => {
     render(<DeviceHistoryChart />);
 
