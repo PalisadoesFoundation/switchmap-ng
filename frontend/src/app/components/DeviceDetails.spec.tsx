@@ -23,6 +23,7 @@ const openCustomRange = () => {
 
 describe("DeviceDetails", () => {
   beforeEach(() => {
+    vi.resetModules(); // clear imported module cache
     global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
@@ -32,7 +33,7 @@ describe("DeviceDetails", () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
+    vi.restoreAllMocks(); // restore original fetch
   });
 
   // ---------- Basic rendering / happy path ----------
