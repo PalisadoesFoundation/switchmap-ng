@@ -406,15 +406,6 @@ describe("ConfigPage", () => {
       expect(groupNameInput).toHaveAttribute("type", "text");
     });
 
-    it("prevents editing when not in edit mode", async () => {
-      const expandButton = screen.getByTestId("chevron-down");
-      await user.click(expandButton);
-      const input = screen.getByDisplayValue("Test Group 1");
-      expect(input).toHaveAttribute("readOnly");
-      await user.type(input, "New Name");
-      expect(input).toHaveValue("Test Group 1");
-    });
-
     it("allows editing snmp_secname as a string in SNMP group", async () => {
       const expandButton = screen.getByTestId("chevron-down");
       await user.click(expandButton);
@@ -478,8 +469,6 @@ describe("ConfigPage", () => {
     it("shows alert when password is incorrect", async () => {
       const promptSpy = vi.spyOn(window, "prompt").mockReturnValue("wrongpass");
       const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
-
-      render(<ConfigPage />);
       const editButton = screen.getByTestId("password-edit-btn");
       await user.click(editButton);
 

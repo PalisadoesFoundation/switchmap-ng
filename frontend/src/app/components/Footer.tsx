@@ -8,7 +8,6 @@
  *
  * @returns The Footer component.
  *
- * @see {@link useEffect}, {@link useState} for React hooks used in the component.
  * @see {@link Footer} for the footer component itself.
  */
 

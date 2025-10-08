@@ -113,12 +113,23 @@ export function DevicesOverview({
     getFilteredRowModel: getFilteredRowModel(),
   });
 
+  const rows = table.getRowModel().rows;
+  const totalPages = Math.ceil(rows.length / PAGE_SIZE);
+
+  useEffect(() => {
+    if (totalPages === 0) {
+      currentPage !== 1 && setCurrentPage(1);
+      return;
+    }
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [totalPages, currentPage]);
+
   const paginatedRows = useMemo(() => {
     const start = (currentPage - 1) * PAGE_SIZE;
-    return table.getRowModel().rows.slice(start, start + PAGE_SIZE);
-  }, [table.getRowModel().rows, currentPage]);
-
-  const totalPages = Math.ceil(table.getRowModel().rows.length / PAGE_SIZE);
+    return rows.slice(start, start + PAGE_SIZE);
+  }, [rows, currentPage]);
 
   if (loading) return <p>Loading devices...</p>;
   if (error) return <p>Error loading devices: {error}</p>;

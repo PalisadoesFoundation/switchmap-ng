@@ -193,8 +193,23 @@ query SystemStats($hostname: String!) {
           ({ node }: any) => ({
             hostname: node.device?.hostname ?? device.hostname,
             uptime: undefined,
-            cpuUtilization: Number(node.cpu5min) ?? 0,
-            memoryUtilization: Number(node.memUsed ?? 0),
+            cpuUtilization: (() => {
+              const raw = Number(node.cpu5min ?? 0);
+              return Number.isFinite(raw) ? raw : 0;
+            })(),
+            memoryUtilization: (() => {
+              const used = Number(node.memUsed ?? 0);
+              const free = Number(node.memFree ?? 0);
+              const total = used + free;
+              if (
+                !Number.isFinite(used) ||
+                !Number.isFinite(free) ||
+                total <= 0
+              ) {
+                return 0;
+              }
+              return (used / total) * 100;
+            })(),
             lastPolled: Number(node.idxSystemstat),
             sysName: undefined,
             sysDescription: undefined,

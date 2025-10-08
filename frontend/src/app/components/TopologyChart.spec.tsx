@@ -294,17 +294,19 @@ describe("TopologyChart", () => {
       const mockClick = vi.fn();
 
       const originalCreateElement = document.createElement.bind(document);
-      vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
-        if (tag === "a") {
-          const anchor = originalCreateElement("a") as HTMLAnchorElement;
-          Object.defineProperty(anchor, "click", {
-            value: mockClick,
-            writable: true,
-          });
-          return anchor;
-        }
-        return originalCreateElement(tag);
-      });
+      const createSpy = vi
+        .spyOn(document, "createElement")
+        .mockImplementation((tag: string) => {
+          if (tag === "a") {
+            const anchor = originalCreateElement("a") as HTMLAnchorElement;
+            Object.defineProperty(anchor, "click", {
+              value: mockClick,
+              writable: true,
+            });
+            return anchor;
+          }
+          return originalCreateElement(tag);
+        });
 
       render(
         <TopologyChart devices={[mockDevice]} loading={false} error={null} />
@@ -320,6 +322,8 @@ describe("TopologyChart", () => {
 
       fireEvent.click(screen.getByText(/export/i));
       expect(mockToDataURL).toHaveBeenCalledWith("image/png");
+      expect(mockClick).toHaveBeenCalled();
+      createSpy.mockRestore();
     });
   });
 
@@ -346,9 +350,17 @@ describe("TopologyChart", () => {
     });
 
     it("does not navigate on double-click without idxDevice", () => {
-      mockDataSetInstance.get.mockReturnValue({ id: "Device 1" });
+      // Re-render with a device missing idxDevice to simulate the case
+      cleanup();
+      render(
+        <TopologyChart
+          devices={[{ ...mockDevice, idxDevice: undefined } as any]}
+          loading={false}
+          error={null}
+        />
+      );
       callbacks["doubleClick"]({ nodes: ["Device 1"] });
-      expect(mockRouterPush).toHaveBeenCalled();
+      expect(mockRouterPush).not.toHaveBeenCalled();
     });
 
     it("does not navigate when no node is double-clicked", () => {

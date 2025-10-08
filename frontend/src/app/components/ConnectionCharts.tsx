@@ -82,7 +82,10 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  const totalPages = Math.ceil(device.l1interfaces.edges.length / pageSize);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(device.l1interfaces.edges.length / pageSize)
+  );
   const paginatedIfaces = useMemo(
     () =>
       device.l1interfaces.edges.slice(
