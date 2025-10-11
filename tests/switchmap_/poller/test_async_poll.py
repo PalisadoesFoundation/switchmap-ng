@@ -270,3 +270,358 @@ class TestAsyncPoll:
                         # Should create Device instance and call process
                         mock_device_class.assert_called_once()
                         mock_device_instance.process.assert_called_once()
+
+    @pytest.mark.asyncio
+    async def test_devices_with_exceptions(self, mock_config_setup):
+        """Test devices() when asyncio.gather returns exceptions."""
+        with patch("switchmap.poller.poll.ConfigPoller") as mock_config:
+            mock_config.return_value = mock_config_setup
+            with patch(
+                "switchmap.poller.poll.device", new_callable=AsyncMock
+            ) as mock_device:
+                # Make one device return an exception
+                mock_device.side_effect = [True, Exception("Test error")]
+
+                with patch(
+                    "switchmap.poller.poll.log.log2warning"
+                ) as mock_log_warning:
+                    await devices()
+
+                    # Should log the exception error
+                    mock_log_warning.assert_called()
+                    # Check that the warning was called with the correct message pattern
+                    call_args = mock_log_warning.call_args[0]
+                    assert "Device device2 polling error:" in call_args[1]
+
+    @pytest.mark.asyncio
+    async def test_device_http_post_success(self, mock_poll_meta):
+        """Test device() HTTP POST success scenario (lines 163-191)."""
+        mock_skip_file_path = "/path/to/skip/file"
+        with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
+            mock_skip_file.return_value = mock_skip_file_path
+            with patch("switchmap.poller.poll.os.path.isfile") as mock_isfile:
+                mock_isfile.return_value = False
+                with patch(
+                    "switchmap.poller.poll.poller.Poll"
+                ) as mock_poll_cls:
+                    mock_poll_instance = AsyncMock()
+                    mock_poll_instance.initialize_snmp.return_value = True
+                    mock_poll_instance.query.return_value = {"test": "data"}
+                    mock_poll_cls.return_value = mock_poll_instance
+
+                    mock_semaphore = asyncio.Semaphore(1)
+                    mock_session = MagicMock()
+                    mock_response = AsyncMock()
+                    mock_response.status = 200
+
+                    # Properly mock the async context manager
+                    mock_session.post.return_value.__aenter__ = AsyncMock(
+                        return_value=mock_response
+                    )
+                    mock_session.post.return_value.__aexit__ = AsyncMock(
+                        return_value=None
+                    )
+
+                    with patch(
+                        "switchmap.poller.poll.udevice.Device"
+                    ) as mock_device_class:
+                        mock_device_instance = MagicMock()
+                        mock_device_instance.process.return_value = {
+                            "misc": {},
+                            "test": "data",
+                        }
+                        mock_device_class.return_value = mock_device_instance
+
+                        with patch(
+                            "switchmap.poller.poll.log.log2debug"
+                        ) as mock_log_debug:
+                            result = await device(
+                                mock_poll_meta,
+                                mock_semaphore,
+                                mock_session,
+                                post=True,
+                            )
+
+                            # Should return True for successful POST
+                            assert result is True
+                            # Should log successful posting
+                            mock_log_debug.assert_called()
+
+    @pytest.mark.asyncio
+    async def test_device_http_post_failure_status(self, mock_poll_meta):
+        """Test device() HTTP POST failure with bad status code (lines 163-191)."""
+        mock_skip_file_path = "/path/to/skip/file"
+        with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
+            mock_skip_file.return_value = mock_skip_file_path
+            with patch("switchmap.poller.poll.os.path.isfile") as mock_isfile:
+                mock_isfile.return_value = False
+                with patch(
+                    "switchmap.poller.poll.poller.Poll"
+                ) as mock_poll_cls:
+                    mock_poll_instance = AsyncMock()
+                    mock_poll_instance.initialize_snmp.return_value = True
+                    mock_poll_instance.query.return_value = {"test": "data"}
+                    mock_poll_cls.return_value = mock_poll_instance
+
+                    mock_semaphore = asyncio.Semaphore(1)
+                    mock_session = MagicMock()
+                    mock_response = AsyncMock()
+                    mock_response.status = 500
+
+                    # Properly mock the async context manager
+                    mock_session.post.return_value.__aenter__ = AsyncMock(
+                        return_value=mock_response
+                    )
+                    mock_session.post.return_value.__aexit__ = AsyncMock(
+                        return_value=None
+                    )
+
+                    with patch(
+                        "switchmap.poller.poll.udevice.Device"
+                    ) as mock_device_class:
+                        mock_device_instance = MagicMock()
+                        mock_device_instance.process.return_value = {
+                            "misc": {},
+                            "test": "data",
+                        }
+                        mock_device_class.return_value = mock_device_instance
+
+                        with patch(
+                            "switchmap.poller.poll.log.log2warning"
+                        ) as mock_log_warning:
+                            result = await device(
+                                mock_poll_meta,
+                                mock_semaphore,
+                                mock_session,
+                                post=True,
+                            )
+
+                            # Should return False for failed POST
+                            assert result is False
+                            # Should log failure warning
+                            mock_log_warning.assert_called()
+
+    @pytest.mark.asyncio
+    async def test_device_http_post_client_error(self, mock_poll_meta):
+        """Test device() HTTP POST with aiohttp.ClientError (lines 163-191)."""
+        import aiohttp
+
+        mock_skip_file_path = "/path/to/skip/file"
+        with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
+            mock_skip_file.return_value = mock_skip_file_path
+            with patch("switchmap.poller.poll.os.path.isfile") as mock_isfile:
+                mock_isfile.return_value = False
+                with patch(
+                    "switchmap.poller.poll.poller.Poll"
+                ) as mock_poll_cls:
+                    mock_poll_instance = AsyncMock()
+                    mock_poll_instance.initialize_snmp.return_value = True
+                    mock_poll_instance.query.return_value = {"test": "data"}
+                    mock_poll_cls.return_value = mock_poll_instance
+
+                    mock_semaphore = asyncio.Semaphore(1)
+                    mock_session = MagicMock()
+                    mock_session.post.side_effect = aiohttp.ClientError(
+                        "Connection failed"
+                    )
+
+                    with patch(
+                        "switchmap.poller.poll.udevice.Device"
+                    ) as mock_device_class:
+                        mock_device_instance = MagicMock()
+                        mock_device_instance.process.return_value = {
+                            "misc": {},
+                            "test": "data",
+                        }
+                        mock_device_class.return_value = mock_device_instance
+
+                        with patch(
+                            "switchmap.poller.poll.log.log2warning"
+                        ) as mock_log_warning:
+                            result = await device(
+                                mock_poll_meta,
+                                mock_semaphore,
+                                mock_session,
+                                post=True,
+                            )
+
+                            # Should return False for client error
+                            assert result is False
+                            # Should log client error warning
+                            mock_log_warning.assert_called()
+
+    @pytest.mark.asyncio
+    async def test_device_no_snmp_data(self, mock_poll_meta):
+        """Test device() when SNMP returns no data (lines 198-208)."""
+        mock_skip_file_path = "/path/to/skip/file"
+        with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
+            mock_skip_file.return_value = mock_skip_file_path
+            with patch("switchmap.poller.poll.os.path.isfile") as mock_isfile:
+                mock_isfile.return_value = False
+                with patch(
+                    "switchmap.poller.poll.poller.Poll"
+                ) as mock_poll_cls:
+                    mock_poll_instance = AsyncMock()
+                    mock_poll_instance.initialize_snmp.return_value = True
+                    mock_poll_instance.query.return_value = {}  # Empty data
+                    mock_poll_cls.return_value = mock_poll_instance
+
+                    mock_semaphore = asyncio.Semaphore(1)
+                    mock_session = MagicMock()
+
+                    with patch(
+                        "switchmap.poller.poll.log.log2debug"
+                    ) as mock_log_debug:
+                        result = await device(
+                            mock_poll_meta, mock_semaphore, mock_session
+                        )
+
+                        # Should return False for no data
+                        assert result is False
+                        # Should log no data message
+                        mock_log_debug.assert_called()
+
+    @pytest.mark.asyncio
+    async def test_device_timeout_error(self, mock_poll_meta):
+        """Test device() with TimeoutError exception (lines 198-208)."""
+        mock_skip_file_path = "/path/to/skip/file"
+        with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
+            mock_skip_file.return_value = mock_skip_file_path
+            with patch("switchmap.poller.poll.os.path.isfile") as mock_isfile:
+                mock_isfile.return_value = False
+                with patch(
+                    "switchmap.poller.poll.poller.Poll"
+                ) as mock_poll_cls:
+                    mock_poll_instance = AsyncMock()
+                    mock_poll_instance.initialize_snmp.return_value = True
+                    mock_poll_instance.query.side_effect = asyncio.TimeoutError(
+                        "Timeout"
+                    )
+                    mock_poll_cls.return_value = mock_poll_instance
+
+                    mock_semaphore = asyncio.Semaphore(1)
+                    mock_session = MagicMock()
+
+                    with patch(
+                        "switchmap.poller.poll.log.log2warning"
+                    ) as mock_log_warning:
+                        result = await device(
+                            mock_poll_meta, mock_semaphore, mock_session
+                        )
+
+                        # Should return False for timeout
+                        assert result is False
+                        # Should log timeout warning
+                        mock_log_warning.assert_called()
+
+    @pytest.mark.asyncio
+    async def test_device_key_error(self, mock_poll_meta):
+        """Test device() with KeyError exception (lines 198-208)."""
+        mock_skip_file_path = "/path/to/skip/file"
+        with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
+            mock_skip_file.return_value = mock_skip_file_path
+            with patch("switchmap.poller.poll.os.path.isfile") as mock_isfile:
+                mock_isfile.return_value = False
+                with patch(
+                    "switchmap.poller.poll.poller.Poll"
+                ) as mock_poll_cls:
+                    mock_poll_instance = AsyncMock()
+                    mock_poll_instance.initialize_snmp.return_value = True
+                    mock_poll_instance.query.side_effect = KeyError(
+                        "Missing key"
+                    )
+                    mock_poll_cls.return_value = mock_poll_instance
+
+                    mock_semaphore = asyncio.Semaphore(1)
+                    mock_session = MagicMock()
+
+                    with patch(
+                        "switchmap.poller.poll.log.log2warning"
+                    ) as mock_log_warning:
+                        result = await device(
+                            mock_poll_meta, mock_semaphore, mock_session
+                        )
+
+                        # Should return False for key error
+                        assert result is False
+                        # Should log key error warning
+                        mock_log_warning.assert_called()
+
+    @pytest.mark.asyncio
+    async def test_devices_empty_zones_continue(self):
+        """Test devices() with zones that have empty hostnames (line 236)."""
+        mock_config_instance = MagicMock()
+        mock_zone1 = MagicMock()
+        mock_zone1.name = "empty_zone"
+        mock_zone1.hostnames = []  # Empty hostnames - should continue
+        mock_zone2 = MagicMock()
+        mock_zone2.name = "filled_zone"
+        mock_zone2.hostnames = ["device1"]
+        mock_config_instance.zones.return_value = [mock_zone1, mock_zone2]
+        mock_config_instance.agent_subprocesses.return_value = 2
+
+        with patch("switchmap.poller.poll.ConfigPoller") as mock_config:
+            mock_config.return_value = mock_config_instance
+            with patch(
+                "switchmap.poller.poll.device", new_callable=AsyncMock
+            ) as mock_device:
+                mock_device.return_value = True
+                await devices()
+                # Should only call device once (for filled_zone)
+                assert mock_device.call_count == 1
+
+    @pytest.mark.asyncio
+    async def test_cli_device_all_zones_fail(self):
+        """Test cli_device when all zone attempts fail (lines 267-268)."""
+        mock_config_instance = MagicMock()
+        mock_zone = MagicMock()
+        mock_zone.name = "zone1"
+        mock_zone.hostnames = ["device1"]
+        mock_config_instance.zones.return_value = [mock_zone]
+
+        with patch("switchmap.poller.poll.ConfigPoller") as mock_config:
+            mock_config.return_value = mock_config_instance
+            with patch(
+                "switchmap.poller.poll.device", new_callable=AsyncMock
+            ) as mock_device:
+                mock_device.return_value = False
+
+                with patch(
+                    "switchmap.poller.poll.log.log2warning"
+                ) as mock_log_warning:
+                    await cli_device("device1")
+
+                    # Should log failure warning when all zones fail
+                    mock_log_warning.assert_called()
+                    call_args = mock_log_warning.call_args[0]
+                    assert (
+                        "Failed to poll device1 from any configured zone"
+                        in call_args[1]
+                    )
+
+    def test_run_devices_with_none_concurrency(self):
+        """Test run_devices() with None concurrency parameter (lines 286-290)."""
+        with patch("switchmap.poller.poll.ConfigPoller") as mock_config_cls:
+            mock_config_instance = MagicMock()
+            mock_config_instance.agent_subprocesses.return_value = 5
+            mock_config_cls.return_value = mock_config_instance
+
+            with patch("switchmap.poller.poll.asyncio.run") as mock_asyncio_run:
+                from switchmap.poller.poll import run_devices
+
+                run_devices(max_concurrent_devices=None)
+
+                # Should call asyncio.run with devices function
+                mock_asyncio_run.assert_called_once()
+                # Should use config's agent_subprocesses value (5)
+                mock_config_cls.assert_called_once()
+
+    def test_run_cli_device(self):
+        """Test run_cli_device() function (line 302)."""
+        with patch("switchmap.poller.poll.asyncio.run") as mock_asyncio_run:
+            from switchmap.poller.poll import run_cli_device
+
+            run_cli_device("test_hostname")
+
+            # Should call asyncio.run with cli_device function
+            mock_asyncio_run.assert_called_once()
