@@ -123,6 +123,7 @@ class TestSnmpManagerFunctions(unittest.TestCase):
 
     def test__convert_exception_handling(self):
         """Test _convert exception handling."""
+
         # Test object that raises an exception
         class ExceptionObj:
             def __str__(self):
