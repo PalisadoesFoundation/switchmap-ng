@@ -289,7 +289,8 @@ class TestAsyncPoll:
 
                     # Should log the exception error
                     mock_log_warning.assert_called()
-                    # Check that the warning was called with the correct message pattern
+                    # Check that the warning was called with the correct
+                    # message pattern
                     call_args = mock_log_warning.call_args[0]
                     assert "Device device2 polling error:" in call_args[1]
 
@@ -349,7 +350,17 @@ class TestAsyncPoll:
 
     @pytest.mark.asyncio
     async def test_device_http_post_failure_status(self, mock_poll_meta):
-        """Test device() HTTP POST failure with bad status code (lines 163-191)."""
+        """Test device() function handles HTTP POST failures gracefully.
+
+        This test verifies that when an HTTP POST request to the polling API
+        fails with a bad status code (e.g., 500 Internal Server Error), the
+        device() function returns False and logs an appropriate warning message
+        instead of crashing or throwing an exception.
+
+        Args:
+            mock_poll_meta: Mock containing device metadata and polling
+                configuration used for the test.
+        """
         mock_skip_file_path = "/path/to/skip/file"
         with patch("switchmap.poller.poll.files.skip_file") as mock_skip_file:
             mock_skip_file.return_value = mock_skip_file_path
@@ -591,7 +602,8 @@ class TestAsyncPoll:
                 ) as mock_log_warning:
                     await cli_device("device1")
 
-                    # Should log failure warning when all zones fail
+                    # Should log failure warning when all zones
+                    # fail
                     mock_log_warning.assert_called()
                     call_args = mock_log_warning.call_args[0]
                     assert (
@@ -600,7 +612,15 @@ class TestAsyncPoll:
                     )
 
     def test_run_devices_with_none_concurrency(self):
-        """Test run_devices() with None concurrency parameter (lines 286-290)."""
+        """Test run_devices() when max_concurrent_devices is None.
+
+        When max_concurrent_devices is None, run_devices() should
+        use the
+        configured agent_subprocesses value from ConfigPoller
+        instead of
+        the None value. This test verifies that asyncio.run is called and
+        the configuration is properly consulted.
+        """
         with patch("switchmap.poller.poll.ConfigPoller") as mock_config_cls:
             mock_config_instance = MagicMock()
             mock_config_instance.agent_subprocesses.return_value = 5

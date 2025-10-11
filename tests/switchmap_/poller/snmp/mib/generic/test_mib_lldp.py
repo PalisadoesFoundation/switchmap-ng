@@ -350,7 +350,7 @@ class TestMibLldp(unittest.TestCase):
             asyncio.set_event_loop(loop)
 
             try:
-                result = loop.run_until_complete(query._ensure_bridge_data())
+                loop.run_until_complete(query._ensure_bridge_data())
 
                 # Verify bridge was set up
                 self.assertEqual(query._baseportifindex, {1: 10, 2: 20})

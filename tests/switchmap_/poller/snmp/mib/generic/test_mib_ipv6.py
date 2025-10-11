@@ -243,14 +243,16 @@ class TestMibIpv6(unittest.TestCase):
 
         # Mock the swalk response
         mock_swalk_data = {
-            ".1.3.6.1.2.1.55.1.12.1.2.1.4.32.1.13.224.0.0.251.1.6.0.0.0.0.0.0.0.0": b"\x00\x1b!\x3c\x9c\x7f",
+            ".1.3.6.1.2.1.55.1.12.1.2.1.4.32.1.13.224.0.0.251.1.6.0.0.0.0.0.0."
+            "0.0": b"\x00\x1b!\x3c\x9c\x7f",
         }
         mock_snmp_object.swalk = AsyncMock(return_value=mock_swalk_data)
 
         with patch(
             "switchmap.poller.snmp.mib.generic.mib_ipv6.Query.__init__"
         ), patch(
-            "switchmap.poller.snmp.mib.generic.mib_ipv6.general.octetstr_2_string"
+            "switchmap.poller.snmp.mib.generic.mib_ipv6.general."
+            "octetstr_2_string"
         ) as mock_octet_convert:
 
             mock_octet_convert.return_value = "00:1b:21:3c:9c:7f"

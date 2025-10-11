@@ -713,7 +713,16 @@ class TestSnmpInfo(unittest.TestCase):
 
     @patch("switchmap.poller.snmp.snmp_info.get_queries")
     def test_system_no_supported_items_after_check(self, mock_get_queries):
-        """Testing function system with queries that don't pass support check."""
+        """Test system() method when queries don't pass support check.
+
+        This test verifies that when queries exist but fail the
+        supported() check,
+        the system() method returns None instead of attempting to execute them.
+
+        Args:
+            mock_get_queries: Mock for get_queries function that returns
+                query classes that will fail the support check.
+        """
         mock_snmp_object = MagicMock()
 
         # Mock query class

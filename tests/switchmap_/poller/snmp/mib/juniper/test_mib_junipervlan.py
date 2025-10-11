@@ -417,7 +417,8 @@ class TestJuniperVlan(unittest.IsolatedAsyncioTestCase):
                 ".1.3.6.1.4.1.2636.3.40.1.5.1.5.1.2", normalized=True
             )
 
-            # Check result - should be dict with vlan_tag as key and string name as value
+            # Check result - should be dict with vlan_tag as key and
+            # string name as value
             self.assertIsInstance(result, dict)
             expected_result = {10: "VLAN_100", 20: "VLAN_200"}
             self.assertEqual(result, expected_result)

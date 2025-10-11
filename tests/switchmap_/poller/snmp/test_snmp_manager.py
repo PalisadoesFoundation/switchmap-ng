@@ -123,7 +123,6 @@ class TestSnmpManagerFunctions(unittest.TestCase):
 
     def test__convert_exception_handling(self):
         """Test _convert exception handling."""
-
         # Test object that raises an exception
         class ExceptionObj:
             def __str__(self):
@@ -516,7 +515,17 @@ class TestSnmpManagerSession(unittest.TestCase):
 
     @patch("switchmap.poller.snmp.snmp_manager.UdpTransportTarget")
     def test__session_walk_operation_timeouts(self, mock_udp_transport):
-        """Test _session method with walk_operation parameter affecting timeouts."""
+        """Test _session method timeout behavior with walk operations.
+
+        This test verifies that when walk_operation=True is passed to the
+        _session method, it uses shorter timeout values (5 seconds) compared
+        to the default timeout, optimizing for SNMP walk operations which
+        typically require less time per request.
+
+        Args:
+            mock_udp_transport: Mock for UdpTransportTarget to verify timeout
+                parameters are set correctly.
+        """
         # Setup basic authorization
         self.mock_poll.authorization.version = 2
         self.mock_poll.authorization.community = "public"
@@ -551,7 +560,17 @@ class TestSnmpManagerSession(unittest.TestCase):
     def test__session_v3_unknown_protocols(
         self, mock_usm_user_data, mock_udp_transport, mock_log
     ):
-        """Test _session method with unknown auth/priv protocols logs warnings."""
+        """Test _session method handles unknown SNMPv3 protocols gracefully.
+
+        This test verifies that when SNMPv3 authentication or privacy protocols
+        are set to unknown/unsupported values, the system logs appropriate
+        warnings but continues to function rather than crashing.
+
+        Args:
+            mock_usm_user_data: Mock for UsmUserData to verify SNMPv3 setup
+            mock_udp_transport: Mock for UdpTransportTarget to verify connection
+            mock_log: Mock for logging to verify warning messages are logged
+        """
         # Setup v3 authorization with unknown protocols
         self.mock_poll.authorization.version = 3
         self.mock_poll.authorization.securityname = "testuser"
