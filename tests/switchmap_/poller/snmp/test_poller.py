@@ -238,8 +238,7 @@ class TestSnmpPoller(unittest.TestCase):
 
     @patch("switchmap.poller.snmp.poller.snmp_info.Query")
     @patch("switchmap.poller.snmp.poller.log.log2info")
-    @patch("switchmap.poller.snmp.poller.log.log2warning")
-    def test_query_success(self, mock_log_warning, mock_log_info, mock_query):
+    def test_query_success(self, mock_log_info, mock_query):
         """Testing function query with successful data retrieval."""
         # Setup mocks
         mock_snmp_object = MagicMock()
