@@ -169,9 +169,6 @@ class TestSnmpManagerFunctions(unittest.TestCase):
         # Valid OIDs (must start with .)
         self.assertTrue(test_module._oid_valid_format(".1.3.6.1.2.1.1.1.0"))
         self.assertTrue(test_module._oid_valid_format(".1"))
-        self.assertTrue(
-            test_module._oid_valid_format(".1.3.6.1 .2.1.1.1.0")
-        )  # Spaces allowed
 
         # Invalid OIDs
         self.assertFalse(
@@ -180,6 +177,9 @@ class TestSnmpManagerFunctions(unittest.TestCase):
         self.assertFalse(
             test_module._oid_valid_format(".1.3.6.1.2.1.1.1.0.")
         )  # Trailing dot
+        self.assertFalse(
+            test_module._oid_valid_format(".1.3.6.1 .2.1.1.1.0")
+        )  # Embedded spaces not allowed (RFC compliant)
         self.assertFalse(
             test_module._oid_valid_format(".1.3.6.1.abc.1.1.0")
         )  # Non-numeric
@@ -301,7 +301,7 @@ class TestSnmpManagerSession(unittest.TestCase):
         """Test _session method with SNMPv3 no authentication."""
         # Setup v3 authorization without auth
         self.mock_poll.authorization.version = 3
-        self.mock_poll.authorization.securityname = "testuser"
+        self.mock_poll.authorization.secname = "testuser"
         self.mock_poll.authorization.authprotocol = None
         self.mock_poll.authorization.privprotocol = None
 
@@ -338,7 +338,7 @@ class TestSnmpManagerSession(unittest.TestCase):
         """Test _session method with SNMPv3 MD5 authentication."""
         # Setup v3 authorization with MD5
         self.mock_poll.authorization.version = 3
-        self.mock_poll.authorization.securityname = "testuser"
+        self.mock_poll.authorization.secname = "testuser"
         self.mock_poll.authorization.authprotocol = "md5"
         self.mock_poll.authorization.authpassword = "authpass"
         self.mock_poll.authorization.privprotocol = None
@@ -378,7 +378,7 @@ class TestSnmpManagerSession(unittest.TestCase):
         """Test _session method with SNMPv3 SHA auth and DES privacy."""
         # Setup v3 authorization with SHA and DES
         self.mock_poll.authorization.version = 3
-        self.mock_poll.authorization.securityname = "testuser"
+        self.mock_poll.authorization.secname = "testuser"
         self.mock_poll.authorization.authprotocol = "sha"
         self.mock_poll.authorization.authpassword = "authpass"
         self.mock_poll.authorization.privprotocol = "des"
@@ -414,7 +414,7 @@ class TestSnmpManagerSession(unittest.TestCase):
         """Test _session method with SNMPv3 and AES privacy."""
         # Setup v3 authorization with AES
         self.mock_poll.authorization.version = 3
-        self.mock_poll.authorization.securityname = "testuser"
+        self.mock_poll.authorization.secname = "testuser"
         self.mock_poll.authorization.authprotocol = "sha"
         self.mock_poll.authorization.authpassword = "authpass"
         self.mock_poll.authorization.privprotocol = "aes128"
@@ -452,7 +452,7 @@ class TestSnmpManagerSession(unittest.TestCase):
         """Test _session method with SNMPv3 and AES192 privacy."""
         # Setup v3 authorization with AES192
         self.mock_poll.authorization.version = 3
-        self.mock_poll.authorization.securityname = "testuser"
+        self.mock_poll.authorization.secname = "testuser"
         self.mock_poll.authorization.authprotocol = "sha"
         self.mock_poll.authorization.authpassword = "authpass"
         self.mock_poll.authorization.privprotocol = "aes192"
@@ -490,7 +490,7 @@ class TestSnmpManagerSession(unittest.TestCase):
         """Test _session method with SNMPv3 and AES256 privacy."""
         # Setup v3 authorization with AES256
         self.mock_poll.authorization.version = 3
-        self.mock_poll.authorization.securityname = "testuser"
+        self.mock_poll.authorization.secname = "testuser"
         self.mock_poll.authorization.authprotocol = "sha"
         self.mock_poll.authorization.authpassword = "authpass"
         self.mock_poll.authorization.privprotocol = "aes256"
@@ -576,7 +576,7 @@ class TestSnmpManagerSession(unittest.TestCase):
         """
         # Setup v3 authorization with unknown protocols
         self.mock_poll.authorization.version = 3
-        self.mock_poll.authorization.securityname = "testuser"
+        self.mock_poll.authorization.secname = "testuser"
         self.mock_poll.authorization.authprotocol = "unknown_auth"
         self.mock_poll.authorization.authpassword = "authpass"
         self.mock_poll.authorization.privprotocol = "unknown_priv"

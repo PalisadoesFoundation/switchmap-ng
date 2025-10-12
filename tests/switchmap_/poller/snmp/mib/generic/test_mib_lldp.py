@@ -306,19 +306,6 @@ class TestMibLldp(unittest.TestCase):
         # to focus on achieving high coverage with reliable tests
         pass
 
-    def test__normalize_mac_formats(self):
-        """Testing _normalize_mac helper method."""
-        mock_snmp_object = MagicMock()
-
-        with patch("switchmap.poller.snmp.mib.generic.mib_lldp.Query.__init__"):
-            query = testimport.LldpQuery(mock_snmp_object)
-
-            # Verify the method exists and is callable
-            self.assertTrue(hasattr(query, "_normalize_mac_formats"))
-            self.assertTrue(
-                callable(getattr(query, "_normalize_mac_formats", None))
-            )
-
     def test__ensure_bridge_data_supported(self):
         """Testing _ensure_bridge_data when supported."""
         # Test _ensure_bridge_data method
@@ -345,18 +332,11 @@ class TestMibLldp(unittest.TestCase):
 
             import asyncio
 
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+            asyncio.run(query._ensure_bridge_data())
 
-            try:
-                loop.run_until_complete(query._ensure_bridge_data())
-
-                # Verify bridge was set up
-                self.assertEqual(query._baseportifindex, {1: 10, 2: 20})
-                self.assertEqual(query._use_ifindex, True)
-
-            finally:
-                loop.close()
+            # Verify bridge was set up
+            self.assertEqual(query._baseportifindex, {1: 10, 2: 20})
+            self.assertEqual(query._use_ifindex, True)
 
     def test_layer1(self):
         """Testing method / function layer1."""
