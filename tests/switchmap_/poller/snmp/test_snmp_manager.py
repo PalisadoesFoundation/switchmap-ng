@@ -63,7 +63,17 @@ class ExceptionObj:
     """Test class that raises an exception in __str__ method."""
 
     def __str__(self):
-        """Raise an exception for testing purposes."""
+        """Raise an exception for testing purposes.
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: Always raises this exception for testing purposes.
+        """
         raise ValueError("Test exception")
 
 
