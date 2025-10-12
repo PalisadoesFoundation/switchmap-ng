@@ -297,11 +297,8 @@ class TestSnmpPoller(unittest.TestCase):
     def test_close_without_close_method(self):
         """Testing function close when SNMP object has no close method."""
         # Setup mock SNMP object without close method
-        mock_snmp_object = MagicMock()
-        del mock_snmp_object.close
-
         poller = test_module.Poll("test_host")
-        poller.snmp_object = mock_snmp_object
+        poller.snmp_object = object()
 
         poller.close()
 

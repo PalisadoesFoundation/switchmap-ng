@@ -308,17 +308,16 @@ class TestMibLldp(unittest.TestCase):
 
     def test__normalize_mac_formats(self):
         """Testing _normalize_mac helper method."""
-        # Test various MAC address formats
         mock_snmp_object = MagicMock()
 
         with patch("switchmap.poller.snmp.mib.generic.mib_lldp.Query.__init__"):
             query = testimport.LldpQuery(mock_snmp_object)
 
-            # Test various MAC formats that the method handles
-            # This method normalizes different MAC address representations
+            # Verify the method exists and is callable
+            self.assertTrue(hasattr(query, "_normalize_mac_formats"))
             self.assertTrue(
-                hasattr(query, "_normalize_mac_formats") or True
-            )  # Basic check
+                callable(getattr(query, "_normalize_mac_formats", None))
+            )
 
     def test__ensure_bridge_data_supported(self):
         """Testing _ensure_bridge_data when supported."""

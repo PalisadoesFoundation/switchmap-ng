@@ -298,9 +298,10 @@ class TestSnmpInfo(unittest.TestCase):
         async def run_test():
             result = await query.layer1()
 
-            # Should have partial data and log error
+            # Should return data with successful results, not None
             self.assertIsNotNone(result)
             self.assertIn("interface", result)
+            self.assertEqual(result["interface"]["1"]["data"], "test")
             mock_log.assert_called()
 
         asyncio.run(run_test())
@@ -334,8 +335,9 @@ class TestSnmpInfo(unittest.TestCase):
         async def run_test():
             result = await query.layer2()
 
-            # Should return empty dict due to no successful processing
+            # Should return empty defaultdict, not None (when all queries fail)
             self.assertIsNotNone(result)
+            # Result should be empty defaultdict since no successful data
             self.assertEqual(len(result), 0)
             mock_log.assert_called()
 
@@ -370,8 +372,9 @@ class TestSnmpInfo(unittest.TestCase):
         async def run_test():
             result = await query.layer3()
 
-            # Should return empty dict due to no successful processing
+            # Should return empty defaultdict, not None (when all queries fail)
             self.assertIsNotNone(result)
+            # Result should be empty defaultdict since no successful data
             self.assertEqual(len(result), 0)
             mock_log.assert_called()
 

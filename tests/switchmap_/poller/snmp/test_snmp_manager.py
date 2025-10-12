@@ -5,6 +5,8 @@ import unittest
 import os
 import sys
 
+from sqlalchemy.exc import ObjectNotExecutableError
+
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
 ROOT_DIR = os.path.abspath(
@@ -47,6 +49,7 @@ CONFIG.save()
 
 # Import other required libraries
 from unittest.mock import patch, MagicMock
+from pysnmp.proto.rfc1902 import OctetString, Integer, ObjectIdentifier
 import tempfile
 
 from switchmap.poller.snmp import snmp_manager as test_module
@@ -54,6 +57,14 @@ from switchmap.poller import POLL
 
 # Import pysnmp objects for testing
 from pysnmp.proto.rfc1905 import EndOfMibView, NoSuchInstance, NoSuchObject
+
+
+class ExceptionObj:
+    """Test class that raises an exception in __str__ method."""
+
+    def __str__(self):
+        """Raise an exception for testing purposes."""
+        raise ValueError("Test exception")
 
 
 class TestSnmpManagerFunctions(unittest.TestCase):
@@ -92,43 +103,27 @@ class TestSnmpManagerFunctions(unittest.TestCase):
         self.assertIsNone(result)
 
         # Test mock object with prettyPrint method - OctetString type
-        mock_obj = MagicMock()
-        mock_obj.prettyPrint.return_value = "test_value"
-        type(mock_obj).__name__ = "OctetString"
-        result = test_module._convert(mock_obj)
+        result = test_module._convert(OctetString("test_value"))
         self.assertEqual(result, b"test_value")
 
         # Test mock object with prettyPrint method - Integer type
-        mock_obj = MagicMock()
-        mock_obj.prettyPrint.return_value = "42"
-        type(mock_obj).__name__ = "Integer"
-        # For integer types, the function returns actual int
-        result = test_module._convert(mock_obj)
+        result = test_module._convert(Integer(42))
         self.assertEqual(result, 42)
 
         # Test mock object with prettyPrint method - ObjectIdentifier type
-        mock_obj = MagicMock()
-        mock_obj.prettyPrint.return_value = "1.3.6.1.2.1.1.1.0"
-        type(mock_obj).__name__ = "ObjectIdentifier"
-        result = test_module._convert(mock_obj)
+        result = test_module._convert(ObjectIdentifier("1.3.6.1.2.1.1.1.0"))
         self.assertEqual(result, b"1.3.6.1.2.1.1.1.0")
 
         # Test object with 'value' attribute
-        mock_obj = MagicMock()
-        mock_obj.value = "test_value_attr"
+        value_obj = MagicMock()
+        value_obj.value = "test_value_attr"
         # Remove prettyPrint to test fallback
-        delattr(mock_obj, "prettyPrint")
-        result = test_module._convert(mock_obj)
+        delattr(value_obj, "prettyPrint")
+        result = test_module._convert(value_obj)
         self.assertEqual(result, b"test_value_attr")
 
     def test__convert_exception_handling(self):
         """Test _convert exception handling."""
-
-        # Test object that raises an exception
-        class ExceptionObj:
-            def __str__(self):
-                raise ValueError("Test exception")
-
         result = test_module._convert(ExceptionObj())
         self.assertIsNone(result)
 
