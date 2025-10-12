@@ -5,8 +5,6 @@ import unittest
 import os
 import sys
 
-from sqlalchemy.exc import ObjectNotExecutableError
-
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
 ROOT_DIR = os.path.abspath(
@@ -53,7 +51,6 @@ from pysnmp.proto.rfc1902 import OctetString, Integer, ObjectIdentifier
 import tempfile
 
 from switchmap.poller.snmp import snmp_manager as test_module
-from switchmap.poller import POLL
 
 # Import pysnmp objects for testing
 from pysnmp.proto.rfc1905 import EndOfMibView, NoSuchInstance, NoSuchObject

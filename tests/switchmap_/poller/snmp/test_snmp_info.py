@@ -49,7 +49,6 @@ CONFIG.save()
 import asyncio
 from unittest.mock import patch, MagicMock, AsyncMock
 from collections import defaultdict
-import time
 
 from switchmap.poller.snmp import snmp_info as test_module
 
