@@ -204,8 +204,7 @@ class TestSnmpInfo(unittest.TestCase):
         asyncio.run(run_test())
 
     @patch("switchmap.poller.snmp.snmp_info.get_queries")
-    @patch("switchmap.poller.snmp.snmp_info.asyncio.gather")
-    def test_system_success(self, mock_gather, mock_get_queries):
+    def test_system_success(self, mock_get_queries):
         """Testing function system with successful results."""
         # Setup mocks
         mock_snmp_object = MagicMock()
@@ -214,18 +213,12 @@ class TestSnmpInfo(unittest.TestCase):
         mock_query_class = MagicMock()
         mock_query_instance = MagicMock()
         mock_query_instance.supported = AsyncMock(return_value=True)
+        mock_query_instance.system = AsyncMock(
+            return_value={"device": {"info": {"sysName": "test"}}}
+        )
         mock_query_class.return_value = mock_query_instance
         mock_query_class.__name__ = "TestSystemQuery"
         mock_get_queries.return_value = [mock_query_class]
-
-        # Mock support check and results
-        async def async_gather_side_effect(*args, **kwargs):
-            if mock_gather.call_count == 1:
-                return [True]
-            else:
-                return [{"device": {"info": {"sysName": "test"}}}]
-
-        mock_gather.side_effect = async_gather_side_effect
 
         query = test_module.Query(mock_snmp_object)
 
@@ -238,7 +231,8 @@ class TestSnmpInfo(unittest.TestCase):
 
             # Verify method calls
             mock_get_queries.assert_called_once_with("system")
-            self.assertEqual(mock_gather.call_count, 2)
+            mock_query_instance.supported.assert_called_once()
+            mock_query_instance.system.assert_called_once()
 
         asyncio.run(run_test())
 
@@ -257,11 +251,8 @@ class TestSnmpInfo(unittest.TestCase):
         asyncio.run(run_test())
 
     @patch("switchmap.poller.snmp.snmp_info.get_queries")
-    @patch("switchmap.poller.snmp.snmp_info.asyncio.gather")
     @patch("switchmap.poller.snmp.snmp_info.log.log2warning")
-    def test_layer1_with_exceptions(
-        self, mock_log, mock_gather, mock_get_queries
-    ):
+    def test_layer1_with_exceptions(self, mock_log, mock_get_queries):
         """Testing function layer1 with exceptions in processing."""
         mock_snmp_object = MagicMock()
 
@@ -270,27 +261,21 @@ class TestSnmpInfo(unittest.TestCase):
         mock_query_class1.__name__ = "TestLayer1Query1"
         mock_query_instance1 = MagicMock()
         mock_query_instance1.supported = AsyncMock(return_value=True)
+        mock_query_instance1.layer1 = AsyncMock(
+            return_value={"interface": {"1": {"data": "test"}}}
+        )
         mock_query_class1.return_value = mock_query_instance1
 
         mock_query_class2 = MagicMock()
         mock_query_class2.__name__ = "TestLayer1Query2"
         mock_query_instance2 = MagicMock()
         mock_query_instance2.supported = AsyncMock(return_value=True)
+        mock_query_instance2.layer1 = AsyncMock(
+            side_effect=Exception("Layer1 failed")
+        )
         mock_query_class2.return_value = mock_query_instance2
 
         mock_get_queries.return_value = [mock_query_class1, mock_query_class2]
-
-        # Mock support check and results
-        async def async_gather_side_effect(*args, **kwargs):
-            if mock_gather.call_count == 1:
-                return [True, True]
-            else:
-                return [
-                    {"interface": {"1": {"data": "test"}}},
-                    Exception("Layer1 failed"),
-                ]
-
-        mock_gather.side_effect = async_gather_side_effect
 
         query = test_module.Query(mock_snmp_object)
 
@@ -306,28 +291,19 @@ class TestSnmpInfo(unittest.TestCase):
         asyncio.run(run_test())
 
     @patch("switchmap.poller.snmp.snmp_info.get_queries")
-    @patch("switchmap.poller.snmp.snmp_info.asyncio.gather")
     @patch("switchmap.poller.snmp.snmp_info.log.log2warning")
-    def test_layer2_with_exceptions(
-        self, mock_log, mock_gather, mock_get_queries
-    ):
+    def test_layer2_with_exceptions(self, mock_log, mock_get_queries):
         """Testing function layer2 with exceptions in processing."""
         mock_snmp_object = MagicMock()
         mock_query_class = MagicMock()
         mock_query_class.__name__ = "TestLayer2Query"
         mock_query_instance = MagicMock()
         mock_query_instance.supported = AsyncMock(return_value=True)
+        mock_query_instance.layer2 = AsyncMock(
+            side_effect=Exception("Layer2 processing failed")
+        )
         mock_query_class.return_value = mock_query_instance
         mock_get_queries.return_value = [mock_query_class]
-
-        # Mock support and exception in processing
-        async def async_gather_side_effect(*args, **kwargs):
-            if mock_gather.call_count == 1:
-                return [True]
-            else:
-                return [Exception("Layer2 processing failed")]
-
-        mock_gather.side_effect = async_gather_side_effect
 
         query = test_module.Query(mock_snmp_object)
 
@@ -343,28 +319,19 @@ class TestSnmpInfo(unittest.TestCase):
         asyncio.run(run_test())
 
     @patch("switchmap.poller.snmp.snmp_info.get_queries")
-    @patch("switchmap.poller.snmp.snmp_info.asyncio.gather")
     @patch("switchmap.poller.snmp.snmp_info.log.log2warning")
-    def test_layer3_with_exceptions(
-        self, mock_log, mock_gather, mock_get_queries
-    ):
+    def test_layer3_with_exceptions(self, mock_log, mock_get_queries):
         """Testing function layer3 with exceptions in processing."""
         mock_snmp_object = MagicMock()
         mock_query_class = MagicMock()
         mock_query_class.__name__ = "TestLayer3Query"
         mock_query_instance = MagicMock()
         mock_query_instance.supported = AsyncMock(return_value=True)
+        mock_query_instance.layer3 = AsyncMock(
+            side_effect=Exception("Layer3 processing failed")
+        )
         mock_query_class.return_value = mock_query_instance
         mock_get_queries.return_value = [mock_query_class]
-
-        # Mock support and exception in processing
-        async def async_gather_side_effect(*args, **kwargs):
-            if mock_gather.call_count == 1:
-                return [True]
-            else:
-                return [Exception("Layer3 processing failed")]
-
-        mock_gather.side_effect = async_gather_side_effect
 
         query = test_module.Query(mock_snmp_object)
 
