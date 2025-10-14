@@ -15,7 +15,7 @@ describe("formatUnixTimestamp", () => {
   });
 
   it("formats valid numeric timestamps correctly", () => {
-    const ts = 1693574400; // Example timestamp
+    const ts = 1693574400;
     const formatted = formatUnixTimestamp(ts);
     expect(new Date(ts * 1000).toLocaleString()).toBe(formatted);
   });

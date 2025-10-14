@@ -7,7 +7,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 const config: Config = {
   title: "Switchmap-NG",
   tagline: "Inventory, Status & Visualization of Your Network Devices.",
-  favicon: 'img/icons/favicon_palisadoes.ico',
+  favicon: 'img/logo/switchmap-logo-modified.svg',
 
   url: "https://docs.switchmap-ng.io/",
   baseUrl: '/',
@@ -54,12 +54,11 @@ const config: Config = {
     },
     navbar: {
       title: "Switchmap-NG",
-      //To Do: Update the logo when available
-      // logo: {
-      //   alt: "Palisadoes logo",
-      //   src: "img/icons/favicon_palisadoes.ico",
-      //   className: "LogoAnimation",
-      // },
+      logo: {
+        alt: "SwitchMap-NG logo",
+        src: "img/logo/switchmap-logo-modified.svg",
+        className: "LogoAnimation",
+      },
       items: [
         {
           label: "Docs",

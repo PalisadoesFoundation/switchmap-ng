@@ -116,10 +116,10 @@ describe("ZoneDropdown - Unit Tests", () => {
     renderDropdown();
     const button = screen.getByRole("button");
 
-    fireEvent.click(button); // open dropdown
+    fireEvent.click(button);
     expect(button.querySelector("svg")).toHaveClass("rotate-180");
 
-    fireEvent.mouseDown(document.body); // click outside
+    fireEvent.mouseDown(document.body);
     await waitFor(() =>
       expect(button.querySelector("svg")).not.toHaveClass("rotate-180")
     );
@@ -150,7 +150,7 @@ describe("ZoneDropdown - Unit Tests", () => {
     fireEvent.click(await within(menu).findByTestId("zone-button-1"));
     expect(onChange).toHaveBeenCalledWith("1");
 
-    fireEvent.click(dropdownButton); // re-open
+    fireEvent.click(dropdownButton);
     const updatedMenu = await screen.findByTestId("zone-dropdown-menu");
     fireEvent.click(await within(updatedMenu).findByTestId("zone-button-all"));
     expect(onChange).toHaveBeenCalledWith("all");

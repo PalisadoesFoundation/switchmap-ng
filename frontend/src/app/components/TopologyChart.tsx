@@ -31,7 +31,6 @@ interface TopologyChartProps {
   clickToUse?: boolean;
 }
 
-// vis-network Node plus our custom field for navigation
 type VisNode = Node & { idxDevice?: string };
 
 export function TopologyChart({
@@ -41,7 +40,6 @@ export function TopologyChart({
   zoomView,
   clickToUse,
 }: TopologyChartProps) {
-  // React state to hold current graph structure: array of nodes and edges
   const [graph, setGraph] = useState<{ nodes: VisNode[]; edges: Edge[] }>({
     nodes: [],
     edges: [],
@@ -144,7 +142,6 @@ export function TopologyChart({
     const edgesArray: Edge[] = [];
     let edgeSeq = 0;
     // Iterate over each device to build nodes and edges
-    // We use `sysName` as the unique identifier for each device
     devices.forEach((device) => {
       const sysName = device?.sysName;
       if (!sysName) return;
@@ -274,12 +271,8 @@ export function TopologyChart({
       }
     });
 
-    // Set the new graph
     initialGraph.current = { nodes: nodesArray, edges: edgesArray };
     setGraph({ nodes: nodesArray, edges: edgesArray });
-
-    // (Lines 255–262 have been removed; the fit()/moveTo() reset now lives
-    // in the Network-creation useEffect so it always runs on a fresh instance.)
   }, [devices]);
 
   useEffect(() => {
@@ -431,7 +424,7 @@ export function TopologyChart({
 
     const filtered = allNodeLabels
       .filter((label) => label.toLowerCase().includes(inputTerm.toLowerCase()))
-      .slice(0, 5); // limit to top 5
+      .slice(0, 5);
 
     setSuggestions(filtered);
   }, [inputTerm, allNodeLabels]);
@@ -481,10 +474,8 @@ export function TopologyChart({
 
     if (!networkRef.current || !nodesData.current || !edgesData.current) return;
 
-    // Clear selection
     networkRef.current.unselectAll();
 
-    // Instead of clear + add, do update
     const originalNodes = initialGraph.current.nodes;
     const originalEdges = initialGraph.current.edges;
 
@@ -494,7 +485,6 @@ export function TopologyChart({
     nodesData.current.add(originalNodes);
     edgesData.current.add(originalEdges);
 
-    // Reset view
     networkRef.current.fit();
   };
 
@@ -547,7 +537,7 @@ export function TopologyChart({
                 setSuggestions(filtered);
               }}
             />
-            <button className="border-2 text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit topology-search-btn">
+            <button className="border text-button rounded px-4 py-2 cursor-pointer transition-colors duration-300 align-middle h-fit topology-search-btn">
               Search
             </button>
           </form>
@@ -579,8 +569,7 @@ export function TopologyChart({
           </button>
           <button
             onClick={handleExportImage}
-            className="text-white rounded px-4 py-2 cursor-pointer transition-colors duration-300 topology-export-btn"
-            style={{ backgroundColor: "#CB3CFF" }}
+            className="bg-primary text-white rounded px-4 py-2 cursor-pointer transition-colors duration-300 topology-export-btn"
           >
             Export
           </button>

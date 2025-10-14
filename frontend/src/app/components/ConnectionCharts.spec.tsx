@@ -10,9 +10,11 @@ const renderConnectionCharts = () =>
   render(<ConnectionCharts device={mockDevice} />);
 
 const openCustomRange = () => {
-  const button = screen.getByRole("button", { name: /Past 1 day/i });
+  const button = screen.getByRole("button", {
+    name: /Past 1 day|Select Range/i,
+  });
   fireEvent.click(button);
-  fireEvent.click(screen.getByText("Custom range"));
+  fireEvent.click(screen.getByText(/Custom range/i));
 
   const startInput = screen.getByLabelText(/start date/i) as HTMLInputElement;
   const endInput = screen.getByLabelText(/end date/i) as HTMLInputElement;
@@ -130,6 +132,21 @@ describe("ConnectionCharts", () => {
     expect(revokeObjectURLSpy).toHaveBeenCalled();
   });
 
+  it("downloads empty CSV with empty data", async () => {
+    const createObjectURLSpy = vi.fn(() => "blob:mock");
+    const revokeObjectURLSpy = vi.fn();
+    vi.stubGlobal("URL", {
+      createObjectURL: createObjectURLSpy,
+      revokeObjectURL: revokeObjectURLSpy,
+    });
+
+    renderConnectionCharts();
+    await expandInterface();
+    fireEvent.click(screen.getByText("Download"));
+    expect(createObjectURLSpy).toHaveBeenCalled();
+    expect(revokeObjectURLSpy).toHaveBeenCalled();
+  });
+
   // ---------- Time ranges ----------
   it("covers 24h, 7d, 30d timeRange branches", async () => {
     renderConnectionCharts();
@@ -157,7 +174,6 @@ describe("ConnectionCharts", () => {
     it("shows error message if custom range exceeds 180 days", async () => {
       const { startInput, endInput } = openCustomRange();
 
-      // Input range > 180 days
       fireEvent.change(startInput, { target: { value: "2025-01-01" } });
       fireEvent.change(endInput, { target: { value: "2025-09-01" } });
 
@@ -214,5 +230,98 @@ describe("ConnectionCharts", () => {
         ).toBeInTheDocument()
       );
     });
+  });
+
+  // ---------- Error Overlay Dismissal ----------
+  it("shows and auto-dismisses error overlay", async () => {
+    (fetch as unknown as Mock).mockRejectedValueOnce(new Error("Test Error"));
+    renderConnectionCharts();
+    await waitFor(() =>
+      expect(screen.queryByText(/Test Error|Network Error/i)).toBeTruthy()
+    );
+  });
+
+  // ---------- Pagination ----------
+  it("shows and changes pages with pagination", async () => {
+    const manyIfaces = {
+      ...mockDevice,
+      l1interfaces: {
+        edges: Array.from({ length: 15 }).map((_, i) => ({
+          node: {
+            ...mockDevice.l1interfaces.edges[0].node,
+            ifname: `Gig1/0/${i + 1}`,
+          },
+        })),
+      },
+    };
+    render(<ConnectionCharts device={manyIfaces} />);
+    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+    const nextBtn = screen.getByRole("button", { name: "Next" });
+    fireEvent.click(nextBtn);
+    expect(screen.getByText("Page 2 of 2")).toBeInTheDocument();
+    const prevBtn = screen.getByRole("button", { name: "Previous" });
+    fireEvent.click(prevBtn);
+    expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+  });
+
+  // ---------- fetch not ok ----------
+  it("sets error if fetch returns with ok false", async () => {
+    (fetch as unknown as Mock).mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({}),
+    });
+    renderConnectionCharts();
+    await waitFor(() =>
+      expect(screen.getByText(/HTTP 500/)).toBeInTheDocument()
+    );
+  });
+
+  // ---------- Tab switching and Speed chart ----------
+  it("switches chart tabs and renders Speed chart", async () => {
+    renderConnectionCharts();
+    await expandInterface();
+    fireEvent.click(screen.getByRole("button", { name: "Speed" }));
+    expect(screen.getByText(/Speed/)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Unicast" }));
+    expect(screen.getByText(/Errors/)).toBeInTheDocument();
+  });
+
+  // ---------- No data available for chart tab ----------
+  it("shows 'No data available' for empty chart tab data", async () => {
+    const device = {
+      ...mockDevice,
+      l1interfaces: {
+        edges: [
+          {
+            node: {
+              ...mockDevice.l1interfaces.edges[0].node,
+              ifspeed: 0,
+            },
+          },
+        ],
+      },
+    };
+    render(<ConnectionCharts device={device} />);
+    await expandInterface(device.l1interfaces.edges[0].node.ifname);
+    fireEvent.click(screen.getByRole("button", { name: "Speed" }));
+    expect(screen.getByText(/No data available/i)).toBeInTheDocument();
+  });
+
+  it("renders HistoricalChart when filteredData is not empty", async () => {
+    renderConnectionCharts();
+    await expandInterface("Gig1/0/1");
+    expect(screen.getByText(/Traffic/)).toBeInTheDocument();
+  });
+
+  // ---------- Dropdown toggle closed and fallback label ----------
+  it("toggles dropdown closed and fallback label works", async () => {
+    const { rerender } = renderConnectionCharts();
+    const button = screen.getByRole("button", { name: /Past 1 day/i });
+    fireEvent.click(button);
+    expect(screen.getByText("Past 7 days")).toBeInTheDocument();
+    fireEvent.click(button);
+    expect(screen.queryByText("Past 7 days")).not.toBeInTheDocument();
+    rerender(<ConnectionCharts device={mockDevice} />);
   });
 });

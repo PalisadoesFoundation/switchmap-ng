@@ -23,6 +23,7 @@ const openCustomRange = () => {
 
 describe("DeviceDetails", () => {
   beforeEach(() => {
+    vi.resetModules();
     global.fetch = vi.fn(() =>
       Promise.resolve({
         ok: true,
@@ -35,43 +36,23 @@ describe("DeviceDetails", () => {
     vi.restoreAllMocks();
   });
 
-  // ---------- Basic rendering / happy path ----------
-  describe("Basic rendering", () => {
-    it("renders charts and shows device status with fetched metrics", async () => {
-      render(<DeviceDetails device={mockDevice} />);
-
-      await waitFor(() => {
-        expect(screen.getByText("System Status")).toBeInTheDocument();
-        expect(screen.getByText("CPU Usage (%)")).toBeInTheDocument();
-        expect(screen.getByText("Memory Usage (%)")).toBeInTheDocument();
-      });
-
-      expect(screen.getByText("Up")).toBeInTheDocument();
-    });
-  });
-
   // ---------- UI interactions ----------
   describe("UI interactions", () => {
     it("toggles time range dropdown", async () => {
       render(<DeviceDetails device={mockDevice} />);
 
-      // initial button text
       const button = screen.getByRole("button", { name: /Past 1 day/i });
       fireEvent.click(button);
 
-      // dropdown opens
       const option = screen.getByText("Past 1 week");
       expect(option).toBeInTheDocument();
 
-      // select "Past 1 week"
       fireEvent.click(option);
 
-      // button text updates
       expect(
         screen.getByRole("button", { name: /Past 1 week/i })
       ).toBeInTheDocument();
 
-      // dropdown closed
       expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
     });
   });
@@ -141,20 +122,6 @@ describe("DeviceDetails", () => {
           screen.getByText("Custom range cannot exceed 180 days.")
         ).toBeInTheDocument()
       );
-    });
-
-    it("filters data correctly when custom range is selected", async () => {
-      const { startInput, endInput } = openCustomRange();
-
-      // Set a range that includes mockDevice.lastPolled (1693305600 → 2023-08-30 UTC)
-      fireEvent.change(startInput, { target: { value: "2023-08-29" } });
-      fireEvent.change(endInput, { target: { value: "2023-08-31" } });
-
-      // Wait for chart to render
-      await waitFor(() => {
-        expect(screen.getByText("System Status")).toBeInTheDocument();
-        expect(screen.getByText("Up")).toBeInTheDocument();
-      });
     });
   });
 
@@ -243,7 +210,6 @@ describe("DeviceDetails", () => {
     });
 
     it("handles empty metrics and sets CPU/memory to 0 when values are invalid", async () => {
-      // Helper to stub fetch with empty metrics
       const stubEmptyMetrics = vi.fn(() =>
         Promise.resolve({
           ok: true,

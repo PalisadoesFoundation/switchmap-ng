@@ -2,7 +2,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { describe, it, vi, expect, beforeEach, afterEach } from "vitest";
-import Home from "./page";
+import Home, { _testUtils } from "./page";
 
 // ----- Mock Child Components -----
 vi.mock("./components/Sidebar", () => ({
@@ -59,6 +59,7 @@ describe("Home page", () => {
 
   // ----- Setup & Teardown -----
   beforeEach(() => {
+    _testUtils.clearDeviceCache();
     originalFetch = global.fetch;
     vi.spyOn(window, "localStorage", "get").mockReturnValue(localStorageMock);
     localStorageMock.clear();
@@ -221,7 +222,7 @@ describe("Home page", () => {
     );
   });
   it("handles non-error, non-string failures", async () => {
-    global.fetch = vi.fn(() => Promise.reject({ some: "object" })); // Not Error, not string
+    global.fetch = vi.fn(() => Promise.reject({ some: "object" }));
 
     render(<Home />);
     const dropdown = screen.getByTestId("zone-dropdown");
@@ -238,7 +239,7 @@ describe("Home page", () => {
   });
 
   // ----- Scroll Behavior -----
-  it("scrolls to element if hash exists", () => {
+  it("scrolls to element if hash exists", async () => {
     window.location.hash = "#devices-overview";
 
     const element = document.createElement("div");
@@ -248,7 +249,12 @@ describe("Home page", () => {
     element.scrollIntoView = vi.fn();
 
     render(<Home />);
-    expect(element.scrollIntoView).toHaveBeenCalledWith({ behavior: "smooth" });
+
+    await waitFor(() => {
+      expect(element.scrollIntoView).toHaveBeenCalledWith({
+        behavior: "smooth",
+      });
+    });
 
     document.body.removeChild(element);
     window.location.hash = "";

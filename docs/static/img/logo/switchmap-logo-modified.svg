@@ -1,0 +1,119 @@
+<svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="-100 -100 500 500"
+    >
+      {/* Central Circle */}
+      <circle cx="127.5" cy="127.5" r="120" fill="#F59E0B" />
+
+      {/* Primary Geometric Rays */}
+      <g transform="rotate(0 127.5 127.5)">
+        <path
+          d="M127.5 7.5 L202.5 -97.5 L262.5 -37.5 L187.5 67.5 Z"
+          fill="#FBBF24"
+        />
+      </g>
+      <g transform="rotate(45 127.5 127.5)">
+        <path
+          d="M127.5 7.5 L202.5 -97.5 L262.5 -37.5 L187.5 67.5 Z"
+          fill="#F59E0B"
+        />
+      </g>
+      <g transform="rotate(90 127.5 127.5)">
+        <path
+          d="M127.5 7.5 L202.5 -97.5 L262.5 -37.5 L187.5 67.5 Z"
+          fill="#FBBF24"
+        />
+      </g>
+      <g transform="rotate(135 127.5 127.5)">
+        <path
+          d="M127.5 7.5 L202.5 -97.5 L262.5 -37.5 L187.5 67.5 Z"
+          fill="#F59E0B"
+        />
+      </g>
+      <g transform="rotate(180 127.5 127.5)">
+        <path
+          d="M127.5 7.5 L202.5 -97.5 L262.5 -37.5 L187.5 67.5 Z"
+          fill="#FBBF24"
+        />
+      </g>
+      <g transform="rotate(225 127.5 127.5)">
+        <path
+          d="M127.5 7.5 L202.5 -97.5 L262.5 -37.5 L187.5 67.5 Z"
+          fill="#F59E0B"
+        />
+      </g>
+      <g transform="rotate(270 127.5 127.5)">
+        <path
+          d="M127.5 7.5 L202.5 -97.5 L262.5 -37.5 L187.5 67.5 Z"
+          fill="#FBBF24"
+        />
+      </g>
+      <g transform="rotate(315 127.5 127.5)">
+        <path
+          d="M127.5 7.5 L202.5 -97.5 L262.5 -37.5 L187.5 67.5 Z"
+          fill="#F59E0B"
+        />
+      </g>
+
+      {/* Secondary Geometric Rays */}
+      <g transform="rotate(22.5 127.5 127.5)">
+        <path
+          d="M127.5 30 L172.5 -45 L202.5 -15 L157.5 60 Z"
+          fill="#FCD34D"
+          opacity="0.7"
+        />
+      </g>
+      <g transform="rotate(67.5 127.5 127.5)">
+        <path
+          d="M127.5 30 L172.5 -45 L202.5 -15 L157.5 60 Z"
+          fill="#FCD34D"
+          opacity="0.7"
+        />
+      </g>
+      <g transform="rotate(112.5 127.5 127.5)">
+        <path
+          d="M127.5 30 L172.5 -45 L202.5 -15 L157.5 60 Z"
+          fill="#FCD34D"
+          opacity="0.7"
+        />
+      </g>
+      <g transform="rotate(157.5 127.5 127.5)">
+        <path
+          d="M127.5 30 L172.5 -45 L202.5 -15 L157.5 60 Z"
+          fill="#FCD34D"
+          opacity="0.7"
+        />
+      </g>
+      <g transform="rotate(202.5 127.5 127.5)">
+        <path
+          d="M127.5 30 L172.5 -45 L202.5 -15 L157.5 60 Z"
+          fill="#FCD34D"
+          opacity="0.7"
+        />
+      </g>
+      <g transform="rotate(247.5 127.5 127.5)">
+        <path
+          d="M127.5 30 L172.5 -45 L202.5 -15 L157.5 60 Z"
+          fill="#FCD34D"
+          opacity="0.7"
+        />
+      </g>
+      <g transform="rotate(292.5 127.5 127.5)">
+        <path
+          d="M127.5 30 L172.5 -45 L202.5 -15 L157.5 60 Z"
+          fill="#FCD34D"
+          opacity="0.7"
+        />
+      </g>
+      <g transform="rotate(337.5 127.5 127.5)">
+        <path
+          d="M127.5 30 L172.5 -45 L202.5 -15 L157.5 60 Z"
+          fill="#FCD34D"
+          opacity="0.7"
+        />
+      </g>
+
+      {/* Inner Accent Circle */}
+      <circle cx="127.5" cy="127.5" r="105" fill="#FBBF24" />
+      <circle cx="127.5" cy="127.5" r="75" fill="#F59E0B" />
+    </svg>

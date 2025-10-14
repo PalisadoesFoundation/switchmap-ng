@@ -1,24 +1,19 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { FiPlus, FiMinus, FiDownload } from "react-icons/fi";
 import HistoricalChart from "./HistoricalChart";
 import { DeviceNode } from "../types/graphql/GetZoneDevices";
 import { InterfaceNode } from "../types/graphql/GetDeviceInterfaces";
 /**
- * Tabs available for chart display.
+ * ConnectionCharts component displays historical charts for a device's network interfaces.
+ *
  * @remarks
- * - "Traffic": Displays total traffic (in and out) in packets.
- * - "Unicast": Displays unicast packet flow.
- * - "NonUnicast": Displays non-unicast packet flow.
- * - "Errors": Displays error packets.
- * - "Discards": Displays discarded packets.
- * - "Speed": Displays interface speed in Mbps.
- * @typedef {("Traffic" | "Unicast" | "NonUnicast" | "Errors" | "Discards" | "Speed")} ChartTab
- * @enum {ChartTab}
+ * This component allows users to view historical data for various metrics related to network interfaces.
+ * Users can select different time ranges, expand/collapse interface sections, and switch between different chart types.
+ * The component fetches data from a GraphQL endpoint and renders charts using the HistoricalChart component.
  * @see {@link HistoricalChart} for rendering the charts.
- * @see {@link ConnectionChartsProps} for component props.
- * @interface ConnectionChartsProps
- * @property {DeviceNode} device - The device for which to display connection charts.
+ * @see {@link useState}, {@link useEffect}, {@link useMemo} for React hooks used in the component.
+ * @see {@link DeviceNode}, {@link InterfaceNode} for the types used in the component.
  */
 
 type ChartTab =
@@ -40,7 +35,7 @@ interface ConnectionChartsProps {
 
 const QUERY = (hostname: string) => `
 {
-  devices(hostname: "${hostname}") {
+  deviceByHostname(hostname: "${hostname}") {
     edges {
       node {
         id
@@ -52,6 +47,16 @@ const QUERY = (hostname: string) => `
             node {
               ifname
               ifspeed
+              ifinOctets
+              ifoutOctets
+              ifinUcastPkts
+              ifoutUcastPkts
+              ifinNUcastPkts
+              ifoutNUcastPkts
+              ifinErrors
+              ifoutErrors
+              ifinDiscards
+              ifoutDiscards
             }
           }
         }
@@ -75,14 +80,24 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   >({});
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 10; // number of interfaces per page
+  const pageSize = 10;
 
-  // pagination logic
-  const totalPages = Math.ceil(device.l1interfaces.edges.length / pageSize);
-  const paginatedIfaces = device.l1interfaces.edges.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
+  const totalPages = Math.max(
+    1,
+    Math.ceil(device.l1interfaces.edges.length / pageSize)
   );
+  const paginatedIfaces = useMemo(
+    () =>
+      device.l1interfaces.edges.slice(
+        (currentPage - 1) * pageSize,
+        currentPage * pageSize
+      ),
+    [device.l1interfaces.edges, currentPage]
+  );
+  useEffect(() => {
+    setCurrentPage((prev) => Math.min(Math.max(prev, 1), totalPages));
+  }, [totalPages]);
+
   const TIME_RANGES = [
     { value: "24h", label: "Past 1 day" },
     { value: "7d", label: "Past 7 days" },
@@ -90,7 +105,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
     { value: "custom", label: "Custom range" },
   ];
 
-  // Expand All / Collapse All
   const expandAll = () => {
     const newState = device.l1interfaces.edges.reduce((acc, { node }) => {
       acc[node.ifname] = true;
@@ -165,7 +179,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
 
             newData[ifname].Traffic.push({
               lastPolled: lastPolled.toISOString(),
-              value: (iface.ifinUcastPkts ?? 0) + (iface.ifoutUcastPkts ?? 0),
+              value: (iface.ifinOctets ?? 0) + (iface.ifoutOctets ?? 0),
             });
             newData[ifname].Unicast.push({
               lastPolled: lastPolled.toISOString(),
@@ -220,8 +234,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   };
 
   return (
-    <div className="p-8 w-[85vw] flex flex-col gap-6 h-full bg-bg">
-      {/* Centralized error alert */}
+    <div className="p-8 w-[80vw] flex flex-col gap-6 h-full bg-bg">
       {error && (
         <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
           <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
@@ -235,9 +248,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           View bandwidth, packet flow, errors, and discards per interface.
         </p>
 
-        {/* Filters */}
         <div className="flex flex-wrap gap-4 items-end mb-4 mt-4">
-          {/* Dropdown */}
           <div className="relative w-[160px]">
             <button
               type="button"
@@ -282,7 +293,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             )}
           </div>
 
-          {/* Custom date inputs */}
           {timeRange === "custom" && (
             <div className="flex gap-4 items-end">
               <div>
@@ -356,7 +366,6 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             </div>
           )}
 
-          {/* Expand / Collapse */}
           <div className="flex gap-4 sm:ml-auto mr-0">
             <button
               className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 transition-colors"
@@ -373,8 +382,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           </div>
         </div>
 
-        {/* Interfaces with Pagination */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 m-2">
           {paginatedIfaces.map(({ node }: { node: InterfaceNode }) => {
             const ifname = node.ifname;
             const isExpanded = expandedIfaces[ifname];
@@ -403,8 +411,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                   <>
                     <div className="flex gap-6 border-b border-border-subtle mt-4 mb-4">
                       <button
-                        className="absolute top-2 right-2 md:top-4 md:right-4 px-3 py-1 md:py-2 rounded-md text-white"
-                        style={{ backgroundColor: "#CB3CFF" }}
+                        className="absolute top-2 right-2 md:top-4 md:right-4 px-3 py-1 md:py-2 rounded-md text-white bg-primary"
                         onClick={() =>
                           downloadCSV(
                             filteredData,
@@ -455,7 +462,13 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                               ? "#FF5733"
                               : "#82ca9d"
                           }
-                          unit={currentTab === "Speed" ? " Mbps" : " pkts"}
+                          unit={
+                            currentTab === "Speed"
+                              ? " Mbps"
+                              : currentTab === "Traffic"
+                              ? " octets"
+                              : " pkts"
+                          }
                         />
                       </div>
                     ) : (
@@ -469,8 +482,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             );
           })}
 
-          {/* Pagination Controls */}
-          <div className="flex justify-center gap-4 mt-4 mb-4">
+          <div className="flex justify-center items-center gap-4 mt-4 mb-4">
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}

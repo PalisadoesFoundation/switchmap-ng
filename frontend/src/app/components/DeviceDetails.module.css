@@ -1,7 +1,8 @@
 .deviceChartWrapper :global(.topology-chart-container) h2,
 .deviceChartWrapper :global(.topology-chart-container) form,
-.deviceChartWrapper :global(.topology-chart-container) button,
-.deviceChartWrapper :global(.topology-chart-container .topology-instructions) {
+.deviceChartWrapper :global(.topology-chart-container .topology-search-container),
+.deviceChartWrapper :global(.topology-chart-container .topology-instructions),
+.deviceChartWrapper :global(.topology-chart-container) button {
   display: none;
 }
 
@@ -18,7 +19,6 @@
   max-height: 500px;
 }
 .deviceChartWrapper{
-  max-height: 100vh;
   width: fit-content;
   min-width: 350px;
 }

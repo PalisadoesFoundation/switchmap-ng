@@ -30,7 +30,6 @@ export function Sidebar() {
   const [open, setOpen] = useState<boolean>(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  // Close sidebar on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent): void => {
       const target = e.target as Node;
@@ -48,10 +47,15 @@ export function Sidebar() {
     };
   }, [open]);
 
-  // Sidebar content
   const sidebarContent = (
     <nav className="space-y-6">
-      <div className="flex flex-row items-center justify-between gap-2">
+      <div className="flex flex-row items-center justify-between gap-1">
+        <img
+          src="/images/switchmap-logo-modified.svg"
+          alt="logo"
+          className="w-6 h-6"
+        />
+
         <h2 className="text-xl font-semibold">Switchmap-NG</h2>
         <ThemeToggle />
       </div>
@@ -106,7 +110,7 @@ export function Sidebar() {
     <>
       {/* Hamburger button */}
       <button
-        className="p-3 text-2xl lg:hidden fixed top-4 left-4 z-50 bg-bg border border-border rounded"
+        className="p-3 text-2xl lg:hidden h-fit sticky top-4 left-4 z-50 border border-border rounded bg-[#081028] text-white"
         onClick={() => setOpen(true)}
         aria-label="Open sidebar"
       >
@@ -114,7 +118,7 @@ export function Sidebar() {
       </button>
 
       {/* Static sidebar for large screens */}
-      <aside className="hidden lg:block sticky top-0 left-0 w-60 h-screen border-r border-border lg:p-4 flex-shrink-0">
+      <aside className="sidebar hidden lg:block fixed top-0 left-0 w-60 h-screen border-r border-border lg:p-4 flex-shrink-0">
         {sidebarContent}
       </aside>
 
@@ -125,7 +129,7 @@ export function Sidebar() {
           <aside
             data-testid="slide-in-sidebar"
             ref={sidebarRef}
-            className="fixed top-0 left-0 w-60 h-full bg-bg border-r border-border z-50 p-4 shadow-md transition-transform transform lg:hidden"
+            className="sidebar fixed top-0 left-0 w-60 h-full border-r border-border z-50 p-4 shadow-md transition-transform transform lg:hidden"
           >
             {sidebarContent}
           </aside>
