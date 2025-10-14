@@ -11,6 +11,7 @@ Based on the pages at:
 
 # PIP3 imports
 import graphene
+from switchmap.server.db.models import Device
 
 
 ###############################################################################
@@ -204,6 +205,29 @@ def resolve_organization(obj, _):
         str: Decoded organization string or empty string
     """
     return obj.organization.decode() if bool(obj.organization) else ""
+
+
+def resolve_device_by_hostname(obj, info, hostname=None):
+    """Resolve device by hostname with proper encoding handling.
+
+    Args:
+        obj: Root object passed by Graphene (unused in this resolver)
+        info: GraphQL execution context (unused in this resolver)
+        hostname: Hostname to search for
+
+    Returns:
+        Device: Device object matching hostname
+    """
+    if not hostname:
+        return None
+
+    # Convert hostname to bytes for comparison
+    hostname_bytes = hostname.encode("utf-8")
+    query = Device.query.filter(
+        Device.hostname == hostname_bytes,
+        Device.enabled == 1,
+    ).order_by(Device.ts_created.desc())
+    return query.first()
 
 
 def resolve_name(obj, _):
@@ -476,6 +500,21 @@ class L1InterfaceAttribute:
     )
     ifin_errors = graphene.Float(description="Interface inbound errors")
     ifin_discards = graphene.Float(description="Interface inbound discards")
+    ifin_octets = graphene.Float(description="Interface inbound octets (bytes)")
+    ifout_octets = graphene.Float(
+        description="Interface outbound octets (bytes)"
+    )
+    ifin_nucast_pkts = graphene.Float(
+        description="Interface inbound non-unicast packets \
+        (broadcast/multicast)"
+    )
+    ifout_nucast_pkts = graphene.Float(
+        description="Interface outbound non-unicast packets \
+        (broadcast/multicast)"
+    )
+    ifout_errors = graphene.Float(description="Interface outbound errors")
+    ifout_discards = graphene.Float(description="Interface outbound discards")
+
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")

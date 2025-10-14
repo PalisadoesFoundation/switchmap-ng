@@ -133,6 +133,10 @@ class IfQuery(Query):
             (self.ifOutUcastPkts, "ifOutUcastPkts"),
             (self.ifInErrors, "ifInErrors"),
             (self.ifInDiscards, "ifInDiscards"),
+            (self.ifOutDiscards, "ifOutDiscards"),
+            (self.ifOutErrors, "ifOutErrors"),
+            (self.ifInNUcastPkts, "ifInNUcastPkts"),
+            (self.ifOutNUcastPkts, "ifOutNUcastPkts"),
         ]
 
         # Execute all queries concurrently with rate limit
@@ -783,6 +787,28 @@ class IfQuery(Query):
 
         return data_dict
 
+    async def ifOutErrors(self, oidonly=False):
+        """Return dict of IFMIB ifOutErrors for each ifIndex for device.
+
+        Args:
+            oidonly: Return OID's value, not results, if True
+        Returns:
+            data_dict: Dict of ifOutErrors. Key = OID's last node.
+        """
+        data_dict = defaultdict(dict)
+
+        oid = ".1.3.6.1.2.1.2.2.1.20"
+
+        if oidonly is True:
+            return oid
+
+        # Process results
+        results = await self.snmp_object.swalk(oid, normalized=True)
+        for key, value in results.items():
+            data_dict[int(key)] = value
+
+        return data_dict
+
     async def ifInDiscards(self, oidonly=False):
         """Return dict of IFMIB ifInDiscards for each ifIndex for device.
 
@@ -795,6 +821,75 @@ class IfQuery(Query):
         data_dict = defaultdict(dict)
 
         oid = ".1.3.6.1.2.1.2.2.1.13"
+
+        if oidonly is True:
+            return oid
+
+        # Process results
+        results = await self.snmp_object.swalk(oid, normalized=True)
+        for key, value in results.items():
+            data_dict[int(key)] = value
+
+        return data_dict
+
+    async def ifOutDiscards(self, oidonly=False):
+        """Return dict of IFMIB ifOutDiscards for each ifIndex for device.
+
+        Args:
+            oidonly: Return OID's value, not results, if True
+        Returns:
+            data_dict: Dict of ifOutDiscards. Key = OID's last node.
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+
+        oid = ".1.3.6.1.2.1.2.2.1.19"
+
+        if oidonly is True:
+            return oid
+
+        # Process results
+        results = await self.snmp_object.swalk(oid, normalized=True)
+        for key, value in results.items():
+            data_dict[int(key)] = value
+
+        return data_dict
+
+    async def ifInNUcastPkts(self, oidonly=False):
+        """Return dict of IFMIB ifInNUcastPkts for each ifIndex for device.
+
+        Args:
+            oidonly: Return OID's value, not results, if True
+        Returns:
+            data_dict: Dict of ifInNUcastPkts. Key = OID's last node.
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+
+        oid = ".1.3.6.1.2.1.2.2.1.12"
+
+        if oidonly is True:
+            return oid
+
+        # Process results
+        results = await self.snmp_object.swalk(oid, normalized=True)
+        for key, value in results.items():
+            data_dict[int(key)] = value
+
+        return data_dict
+
+    async def ifOutNUcastPkts(self, oidonly=False):
+        """Return dict of IFMIB ifOutNUcastPkts for each ifIndex for device.
+
+        Args:
+            oidonly: Return OID's value, not results, if True
+        Returns:
+            data_dict: Dict of ifOutNUcastPkts. Key = OID's last node.
+        """
+        # Initialize key variables
+        data_dict = defaultdict(dict)
+
+        oid = ".1.3.6.1.2.1.2.2.1.18"
 
         if oidonly is True:
             return oid

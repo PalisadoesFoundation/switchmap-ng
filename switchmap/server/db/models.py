@@ -44,7 +44,7 @@ class Oui(BASE):
         VARBINARY(256), unique=True, nullable=True, index=True, default=None
     )
     organization = Column(
-        VARBINARY(256), nullable=True, default=Null, index=True
+        VARBINARY(256), nullable=True, default=None, index=True
     )
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
@@ -270,6 +270,16 @@ class L1Interface(BASE):
     )
     ifin_errors = Column(BIGINT(unsigned=True), nullable=True, default=None)
     ifin_discards = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifout_errors = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifout_discards = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifin_nucast_pkts = Column(
+        BIGINT(unsigned=True), nullable=True, default=None
+    )
+    ifout_nucast_pkts = Column(
+        BIGINT(unsigned=True), nullable=True, default=None
+    )
+    ifin_octets = Column(BIGINT(unsigned=True), nullable=True, default=None)
+    ifout_octets = Column(BIGINT(unsigned=True), nullable=True, default=None)
     cdpcacheplatform = Column(VARBINARY(256), nullable=True, default=None)
     lldpremportdesc = Column(VARBINARY(256), nullable=True, default=None)
     lldpremsyscapenabled = Column(VARBINARY(256), nullable=True, default=None)
@@ -425,7 +435,7 @@ class Mac(BASE):
         default=1,
         server_default=text("1"),
     )
-    mac = Column(VARBINARY(256), nullable=True, default=Null, index=True)
+    mac = Column(VARBINARY(256), nullable=True, default=None, index=True)
     enabled = Column(BIT(1), default=1)
     ts_modified = Column(
         DateTime,

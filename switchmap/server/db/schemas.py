@@ -49,6 +49,7 @@ from switchmap.server.db.attributes import (
     ZoneAttribute,
     IpAttribute,
     IpPortAttribute,
+    resolve_device_by_hostname,
 )
 
 ###############################################################################
@@ -204,6 +205,11 @@ class Query(graphene.ObjectType):
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
     devices = BatchSQLAlchemyConnectionField(Device.connection)
+
+    # Custom resolver for device by hostname
+    deviceByHostname = graphene.Field(
+        Device, hostname=graphene.String(), resolver=resolve_device_by_hostname
+    )
 
     # Results as a single entry filtered by 'id' and as a list
     systemstat = graphene.relay.Node.Field(SystemStat)

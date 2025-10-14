@@ -53,18 +53,21 @@ RL1Interface = namedtuple(
     "RL1Interface",
     """idx_l1interface idx_device ifindex duplex ethernet nativevlan trunk \
 ifspeed iftype ifalias ifdescr ifname ifadminstatus ifoperstatus \
-ifin_ucast_pkts ifout_ucast_pkts ifin_errors ifin_discards ts_idle \
+ifin_ucast_pkts ifout_ucast_pkts ifin_errors ifin_discards \
+ifin_nucast_pkts ifout_nucast_pkts ifout_errors ifout_discards ts_idle \
 cdpcachedeviceid cdpcachedeviceport cdpcacheplatform lldpremportdesc \
 lldpremsyscapenabled lldpremsysdesc lldpremsysname enabled ts_modified \
-ts_created""",
+ifin_octets ifout_octets ts_created""",
 )
+
 IL1Interface = namedtuple(
     "IL1Interface",
     """idx_device ifindex duplex ethernet nativevlan trunk ifspeed iftype \
 ifalias ifdescr ifname ifadminstatus ifoperstatus ifin_ucast_pkts \
-ifout_ucast_pkts ifin_errors ifin_discards ts_idle cdpcachedeviceid \
+ifout_ucast_pkts ifin_errors ifin_discards ifin_nucast_pkts \
+ifout_nucast_pkts ifout_errors ifout_discards ts_idle cdpcachedeviceid \
 cdpcachedeviceport cdpcacheplatform lldpremportdesc lldpremsyscapenabled \
-lldpremsysdesc lldpremsysname enabled""",
+lldpremsysdesc lldpremsysname enabled ifin_octets ifout_octets""",
 )
 
 RVlan = namedtuple(
