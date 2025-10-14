@@ -226,6 +226,28 @@ def insert_row(rows):
                 "ifin_discards": (
                     None if row.ifin_discards is None else row.ifin_discards
                 ),
+                "ifin_nucast_pkts": (
+                    None
+                    if row.ifin_nucast_pkts is None
+                    else row.ifin_nucast_pkts
+                ),
+                "ifout_nucast_pkts": (
+                    None
+                    if row.ifout_nucast_pkts is None
+                    else row.ifout_nucast_pkts
+                ),
+                "ifout_errors": (
+                    None if row.ifout_errors is None else row.ifout_errors
+                ),
+                "ifout_discards": (
+                    None if row.ifout_discards is None else row.ifout_discards
+                ),
+                "ifin_octets": (
+                    None if row.ifin_octets is None else row.ifin_octets
+                ),
+                "ifout_octets": (
+                    None if row.ifout_octets is None else row.ifout_octets
+                ),
                 "enabled": int(bool(row.enabled) is True),
             }
         )
@@ -324,6 +346,28 @@ def update_row(idx, row):
                 ),
                 "ifin_discards": (
                     None if row.ifin_discards is None else row.ifin_discards
+                ),
+                "ifin_nucast_pkts": (
+                    None
+                    if row.ifin_nucast_pkts is None
+                    else row.ifin_nucast_pkts
+                ),
+                "ifout_nucast_pkts": (
+                    None
+                    if row.ifout_nucast_pkts is None
+                    else row.ifout_nucast_pkts
+                ),
+                "ifout_errors": (
+                    None if row.ifout_errors is None else row.ifout_errors
+                ),
+                "ifout_discards": (
+                    None if row.ifout_discards is None else row.ifout_discards
+                ),
+                "ifin_octets": (
+                    None if row.ifin_octets is None else row.ifin_octets
+                ),
+                "ifout_octets": (
+                    None if row.ifout_octets is None else row.ifout_octets
                 ),
                 "enabled": int(bool(row.enabled) is True),
             }

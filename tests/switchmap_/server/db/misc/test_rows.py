@@ -204,7 +204,7 @@ class TestRowsMethods(unittest.TestCase):
     def test_l1interface(self):
         """Test the l1interface() function for correct tuple conversion.
 
-        Verifies that the function returns a tuple of length 29
+        Verifies that the function returns a tuple of length 35
         when given an L1Interface row from the database.
         """
         row = self.session.query(L1Interface).first()
@@ -214,7 +214,7 @@ class TestRowsMethods(unittest.TestCase):
 
         result = rows.l1interface(row)
         self.assertIsInstance(result, tuple)
-        self.assertEqual(len(result), 29)
+        self.assertEqual(len(result), 35)
 
         self.compare_row_to_expected(row, result._asdict())
 
