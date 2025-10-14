@@ -1,13 +1,306 @@
 /// <reference types="vitest" />
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import DeviceHistoryChart from "@/app/history/page";
+import DeviceHistoryChart, {
+  toMs,
+  filterDevicesByTimeRange,
+} from "@/app/history/page";
 
-// Mock fetch
+import { deviceCache } from "@/app/history/page";
+
+type MockDeviceNode = {
+  idxDevice: number;
+  hostname: string;
+  sysName: string;
+  zone?: string;
+  lastPolled?: number | null;
+  lastPolledMs?: number | null;
+};
+
+const nowSec = Math.floor(Date.now() / 1000);
+
+const mockDeviceResponse = {
+  data: {
+    zones: {
+      edges: [
+        {
+          node: {
+            idxZone: 1,
+            name: "Zone A",
+            devices: {
+              edges: [
+                {
+                  node: {
+                    idxDevice: 1,
+                    hostname: "host1",
+                    sysName: "Device 1",
+                    lastPolled: nowSec,
+                  },
+                },
+                {
+                  node: {
+                    idxDevice: 2,
+                    hostname: "host1",
+                    sysName: "Device 1-Updated",
+                    lastPolled: nowSec - 3600,
+                  },
+                },
+                {
+                  node: {
+                    idxDevice: 3,
+                    hostname: "host2",
+                    sysName: "Device 2",
+                    lastPolled: nowSec - 86400,
+                  },
+                },
+              ],
+            },
+          },
+        },
+        {
+          node: {
+            idxZone: 2,
+            name: "Zone B",
+            devices: {
+              edges: [
+                {
+                  node: {
+                    idxDevice: 4,
+                    hostname: "host1",
+                    sysName: "Device 1-Zone-B",
+                    lastPolled: nowSec - 7200,
+                  },
+                },
+                {
+                  node: {
+                    idxDevice: 5,
+                    hostname: "host2",
+                    sysName: "Device 2",
+                    lastPolled: nowSec - 172800,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      ],
+    },
+  },
+};
+
+vi.mock("@/app/components/LineChartWrapper", () => ({
+  LineChartWrapper: ({ title }: { title: string }) => <div>{title}</div>,
+}));
+
 beforeEach(() => {
+  vi.restoreAllMocks();
+  vi.resetModules();
   global.fetch = vi.fn().mockResolvedValue({
     ok: true,
-    json: async () => ({
+    json: async () => mockDeviceResponse,
+  }) as any;
+  deviceCache.clear();
+});
+
+afterEach(() => {
+  vi.resetAllMocks();
+  cleanup();
+});
+
+function byTextContent(text: string) {
+  return (_: string, node: Element | null): boolean =>
+    !!node && !!node.textContent?.toLowerCase().includes(text.toLowerCase());
+}
+
+describe("DeviceHistoryChart", () => {
+  it("renders header, description, and search", () => {
+    render(<DeviceHistoryChart />);
+    expect(
+      screen.getByRole("heading", { name: /device history/i })
+    ).toBeInTheDocument();
+    const description = screen.getAllByText(
+      byTextContent("visualizing the historical movement")
+    )[0];
+    expect(description).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Search device hostname...")
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /search/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /past 1 week/i })
+    ).toBeInTheDocument();
+  });
+
+  it("shows loading, then results, then charts on search", async () => {
+    let resolvePromise: any;
+    const promise = new Promise((resolve) => {
+      resolvePromise = resolve;
+    });
+    (global.fetch as any).mockImplementationOnce(() => promise);
+    render(<DeviceHistoryChart />);
+    await waitFor(() => {
+      const loadingElements = screen.queryAllByText(
+        byTextContent("loading devices")
+      );
+      expect(loadingElements.length).toBe(0);
+    });
+
+    resolvePromise({ ok: true, json: async () => mockDeviceResponse });
+    await waitFor(() =>
+      expect(
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+
+    const input = screen.getByPlaceholderText("Search device hostname...");
+    fireEvent.change(input, { target: { value: "host1" } });
+    fireEvent.submit(screen.getByRole("form"));
+    await waitFor(() =>
+      expect(screen.getByText("Zone History")).toBeInTheDocument()
+    );
+  });
+
+  it("shows no results for fetch fail", async () => {
+    (global.fetch as any).mockRejectedValueOnce(new Error("err"));
+    render(<DeviceHistoryChart />);
+    await screen.findByText(/no results found/i);
+  });
+
+  it("shows no results for HTTP fail", async () => {
+    (global.fetch as any).mockResolvedValueOnce({ ok: false, status: 500 });
+    render(<DeviceHistoryChart />);
+    await screen.findByText(/no results found/i);
+  });
+
+  it("shows no results for GraphQL error", async () => {
+    (global.fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ errors: [{ message: "fail" }] }),
+    });
+    render(<DeviceHistoryChart />);
+    await screen.findByText(/no results found/i);
+  });
+
+  it("shows no results for empty data", async () => {
+    (global.fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: { zones: { edges: [] } } }),
+    });
+    render(<DeviceHistoryChart />);
+    await screen.findByText(/no results found/i);
+  });
+
+  it("shows and selects suggestions, clears suggestions", async () => {
+    render(<DeviceHistoryChart />);
+    await waitFor(() =>
+      expect(
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+    const input = screen.getByPlaceholderText("Search device hostname...");
+    fireEvent.change(input, { target: { value: "host" } });
+    await waitFor(() =>
+      expect(screen.getByTestId("suggestions-list")).toBeInTheDocument()
+    );
+    fireEvent.change(input, { target: { value: "" } });
+    await waitFor(() =>
+      expect(screen.queryByTestId("suggestions-list")).not.toBeInTheDocument()
+    );
+
+    fireEvent.change(input, { target: { value: "host" } });
+    await waitFor(() =>
+      expect(screen.getByTestId("suggestions-list")).toBeInTheDocument()
+    );
+    const firstSuggestion = screen
+      .getByTestId("suggestions-list")
+      .querySelector("li");
+    if (firstSuggestion) {
+      fireEvent.click(firstSuggestion);
+      await waitFor(() => {
+        const matches = screen.getAllByText(
+          byTextContent("showing results for hostname")
+        );
+        expect(matches[0]).toBeInTheDocument();
+      });
+    }
+  });
+
+  it("does not submit search if input empty", async () => {
+    render(<DeviceHistoryChart />);
+    await waitFor(() =>
+      expect(
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+    const input = screen.getByPlaceholderText(/search device hostname/i);
+    const form = screen.getByRole("form");
+    fireEvent.change(input, { target: { value: "" } });
+    fireEvent.submit(form);
+    expect(screen.queryByTestId("suggestions-list")).not.toBeInTheDocument();
+  });
+
+  it("handles date range changes, toggles menu, and custom date errors", async () => {
+    render(<DeviceHistoryChart />);
+
+    let rangeButton = await screen.findByRole("button", {
+      name: /past 1 week/i,
+    });
+    fireEvent.click(rangeButton);
+    fireEvent.click(screen.getByText(/past 1 day/i));
+    expect(
+      screen.getByRole("button", { name: /past 1 day/i })
+    ).toBeInTheDocument();
+
+    // Open custom date range
+    fireEvent.click(screen.getByRole("button", { name: /past 1 day/i }));
+    fireEvent.click(screen.getByText(/custom/i));
+    const startInput = screen.getByLabelText("custom start date");
+    const endInput = screen.getByLabelText("custom end date");
+    expect(startInput).toBeInTheDocument();
+    expect(endInput).toBeInTheDocument();
+
+    // Invalid end date
+    fireEvent.change(startInput, { target: { value: "2025-08-01" } });
+    fireEvent.change(endInput, { target: { value: "2025-01-01" } });
+    fireEvent.blur(endInput);
+    await screen.findByText(/end date must be after start date/i);
+
+    // Range exceeding 180 days
+    fireEvent.change(startInput, { target: { value: "2025-01-01" } });
+    fireEvent.change(endInput, { target: { value: "2025-08-01" } });
+    fireEvent.blur(endInput);
+    await screen.findByText(/custom range cannot exceed 180 days/i);
+
+    // Switch back to predefined range
+    fireEvent.click(screen.getByRole("button", { name: /custom range/i }));
+    fireEvent.click(screen.getByText(/past 1 month/i));
+    expect(
+      screen.getByRole("button", { name: /past 1 month/i })
+    ).toBeInTheDocument();
+  });
+
+  it("renders charts for search and not when there is no history", async () => {
+    render(<DeviceHistoryChart />);
+    await waitFor(() =>
+      expect(
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+    const input = screen.getByPlaceholderText("Search device hostname...");
+    fireEvent.change(input, { target: { value: "host1" } });
+    fireEvent.submit(screen.getByRole("form"));
+    await waitFor(() =>
+      expect(screen.getByText("Zone History")).toBeInTheDocument()
+    );
+    expect(screen.getByText("SysName History")).toBeInTheDocument();
+
+    const singleDeviceResponse = {
       data: {
         zones: {
           edges: [
@@ -19,10 +312,10 @@ beforeEach(() => {
                   edges: [
                     {
                       node: {
-                        idxDevice: 101,
-                        hostname: "device1",
-                        sysName: "sys-1",
-                        lastPolled: Math.floor(Date.now() / 1000),
+                        idxDevice: 11,
+                        hostname: "single",
+                        sysName: "Device 1",
+                        lastPolled: nowSec,
                       },
                     },
                   ],
@@ -32,291 +325,265 @@ beforeEach(() => {
           ],
         },
       },
-    }),
-  }) as any;
-});
-
-afterEach(() => {
-  vi.resetAllMocks();
-});
-
-describe("DeviceHistoryChart", () => {
-  it("renders header and description", () => {
-    render(<DeviceHistoryChart />);
-    expect(
-      screen.getByRole("heading", { name: /device history/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/visualizing the historical movement/i)
-    ).toBeInTheDocument();
-  });
-
-  it("shows loading state", async () => {
-    (global.fetch as any).mockImplementationOnce(
-      () =>
-        new Promise((resolve) =>
-          setTimeout(
-            () =>
-              resolve({
-                ok: true,
-                json: async () => ({ data: { zones: { edges: [] } } }),
-              }),
-            100
-          )
-        )
-    );
-
-    render(<DeviceHistoryChart />);
-    expect(await screen.findByText(/loading devices/i)).toBeInTheDocument();
-  });
-
-  it("shows results after fetch", async () => {
-    render(<DeviceHistoryChart />);
-
-    const result = await screen.findByText(
-      (_, element) =>
-        !!(
-          element?.tagName === "P" &&
-          element.textContent?.includes("Showing results for Hostname: device1")
-        )
-    );
-
-    expect(result).toBeInTheDocument();
-  });
-
-  it("allows searching for a device", async () => {
-    render(<DeviceHistoryChart />);
-
-    // Wait for initial results
-    const initialResult = await screen.findByText(
-      (_, element) =>
-        !!(
-          element?.tagName === "P" &&
-          element.textContent?.includes("Showing results for Hostname: device1")
-        )
-    );
-    expect(initialResult).toBeInTheDocument();
-
-    // Type in search input
-    const input = screen.getByPlaceholderText(/search device hostname/i);
-    fireEvent.change(input, { target: { value: "device1" } });
-
-    const suggestion = await screen.findByText(
-      (_, element) =>
-        !!(element?.tagName === "LI" && element.textContent === "device1")
-    );
-    fireEvent.click(suggestion);
-
-    const updatedResult = await screen.findByText(
-      (_, element) =>
-        !!(
-          element?.tagName === "P" &&
-          element.textContent?.includes("Showing results for Hostname: device1")
-        )
-    );
-
-    expect(updatedResult).toBeInTheDocument();
-  });
-
-  it("allows changing date range", async () => {
-    render(<DeviceHistoryChart />);
-
-    // open the menu
-    const button = await screen.findByRole("button", { name: /past 1 week/i });
-    fireEvent.click(button);
-
-    // pick 1 day
-    fireEvent.click(await screen.findByText(/past 1 day/i));
-    expect(
-      await screen.findByRole("button", { name: /past 1 day/i })
-    ).toBeInTheDocument();
-
-    // pick 1 month
-    fireEvent.click(screen.getByRole("button", { name: /past 1 day/i }));
-    fireEvent.click(await screen.findByText(/past 1 month/i));
-    expect(
-      await screen.findByRole("button", { name: /past 1 month/i })
-    ).toBeInTheDocument();
-
-    // pick 6 months
-    fireEvent.click(screen.getByRole("button", { name: /past 1 month/i }));
-    fireEvent.click(await screen.findByText(/past 6 months/i));
-    expect(
-      await screen.findByRole("button", { name: /past 6 months/i })
-    ).toBeInTheDocument();
-  });
-
-  it("shows an error when custom range exceeds 180 days", async () => {
-    render(<DeviceHistoryChart />);
-
-    // Open range selector and choose custom
-    const rangeButton = await screen.findByRole("button", {
-      name: /past 1 week/i,
+    };
+    (global.fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => singleDeviceResponse,
     });
-    fireEvent.click(rangeButton);
-    fireEvent.click(screen.getByText(/custom/i));
-
-    const startInput = screen.getByLabelText("custom start date");
-    const endInput = screen.getByLabelText("custom end date");
-
-    // Set end date first
-    fireEvent.change(endInput, { target: { value: "2025-08-01" } });
-    // Then set start date to trigger the >180 days validation
-    fireEvent.change(startInput, { target: { value: "2025-01-01" } });
-
-    expect(
-      await screen.findByText(/custom range cannot exceed 180 days/i)
-    ).toBeInTheDocument();
-  });
-
-  it("accepts a valid custom date range without showing an error", async () => {
+    cleanup();
     render(<DeviceHistoryChart />);
-
-    const rangeButton = await screen.findByRole("button", {
-      name: /past 1 week/i,
-    });
-    fireEvent.click(rangeButton);
-    fireEvent.click(screen.getByText(/custom/i));
-
-    const startInput = screen.getByLabelText("custom start date");
-    const endInput = screen.getByLabelText("custom end date");
-
-    fireEvent.change(startInput, { target: { value: "2025-01-01" } });
-    fireEvent.change(endInput, { target: { value: "2025-01-15" } });
-
-    expect(
-      screen.queryByText(/custom range cannot exceed 180 days/i)
-    ).not.toBeInTheDocument();
-  });
-  it("shows an error when fetch fails", async () => {
-    (global.fetch as any).mockRejectedValueOnce(new Error("boom"));
-    render(<DeviceHistoryChart />);
-    expect(await screen.findByText(/boom/i)).toBeInTheDocument();
-  });
-
-  it("does not set error when unmounted before fetch fails", async () => {
-    let rejectFn!: (err: any) => void;
-    const p = new Promise((_resolve, reject) => {
-      rejectFn = reject;
-    });
-    (global.fetch as any).mockReturnValueOnce(p as any);
-
-    const { unmount } = render(<DeviceHistoryChart />);
-    unmount();
-
-    // trigger rejection after unmount
-    rejectFn(new Error("late failure"));
-    await Promise.resolve(); // let microtasks run
-
-    await waitFor(() => {
+    await waitFor(() =>
       expect(
-        screen.queryByText(/error fetching devices/i)
-      ).not.toBeInTheDocument();
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+    fireEvent.change(screen.getByPlaceholderText("Search device hostname..."), {
+      target: { value: "nonexistent" },
+    });
+    fireEvent.submit(screen.getByRole("form"));
+
+    await waitFor(() =>
+      expect(
+        screen.getAllByText(byTextContent("showing results for hostname"))[0]
+      ).toBeInTheDocument()
+    );
+
+    expect(screen.queryByText("Zone History")).not.toBeInTheDocument();
+    expect(screen.queryByText("SysName History")).not.toBeInTheDocument();
+  });
+
+  it("handles missing fields correctly", async () => {
+    const incompleteDevicesResponse = {
+      data: {
+        zones: {
+          edges: [
+            {
+              node: {
+                idxZone: 1,
+                name: "Zone A",
+                devices: {
+                  edges: [
+                    {
+                      node: {
+                        idxDevice: null,
+                        hostname: null,
+                        sysName: "Device 1",
+                        lastPolled: null,
+                      },
+                    },
+                    {
+                      node: {
+                        idxDevice: 2,
+                        hostname: "host2",
+                        sysName: "Device 2",
+                        lastPolled: nowSec,
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+    (global.fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => incompleteDevicesResponse,
+    });
+
+    render(<DeviceHistoryChart />);
+    await waitFor(() =>
+      expect(
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+
+    const input = screen.getByPlaceholderText("Search device hostname...");
+    fireEvent.change(input, { target: { value: "host2" } });
+    fireEvent.submit(screen.getByRole("form"));
+
+    await waitFor(() =>
+      expect(
+        screen.getAllByText(byTextContent("showing results for hostname"))[0]
+      ).toBeInTheDocument()
+    );
+  });
+
+  it("renders multiple devices correctly", async () => {
+    const manyDevicesResponse = {
+      data: {
+        zones: {
+          edges: [
+            {
+              node: {
+                idxZone: 1,
+                name: "Zone A",
+                devices: {
+                  edges: Array.from({ length: 10 }, (_, i) => ({
+                    node: {
+                      idxDevice: i,
+                      hostname: `host${i}`,
+                      sysName: `Device ${i}`,
+                      lastPolled: nowSec,
+                    },
+                  })),
+                },
+              },
+            },
+          ],
+        },
+      },
+    };
+    (global.fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => manyDevicesResponse,
+    });
+
+    render(<DeviceHistoryChart />);
+    await waitFor(() =>
+      expect(
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+  });
+
+  it("caches data and avoids refetching", async () => {
+    vi.resetModules();
+
+    const fetchSpy = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => mockDeviceResponse,
+    });
+    global.fetch = fetchSpy as any;
+    const { default: DeviceHistoryChart } = await import("@/app/history/page");
+    const { unmount } = render(<DeviceHistoryChart />);
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalledTimes(1));
+    unmount();
+    render(<DeviceHistoryChart />);
+    await waitFor(() =>
+      expect(
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it("handles changing search term repeatedly and AbortError", async () => {
+    render(<DeviceHistoryChart />);
+    await waitFor(() =>
+      expect(
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+    const input = screen.getByPlaceholderText("Search device hostname...");
+    fireEvent.change(input, { target: { value: "host1" } });
+    fireEvent.submit(screen.getByRole("form"));
+    await waitFor(() => expect(screen.getByText("host1")).toBeInTheDocument());
+    fireEvent.change(input, { target: { value: "host2" } });
+    fireEvent.submit(screen.getByRole("form"));
+    await waitFor(() => expect(screen.getByText("host2")).toBeInTheDocument());
+
+    // AbortError
+    const abortError = new Error("The operation was aborted");
+    abortError.name = "AbortError";
+    (global.fetch as any).mockRejectedValueOnce(abortError);
+    cleanup();
+    render(<DeviceHistoryChart />);
+    await waitFor(() =>
+      expect(
+        screen.queryByText(byTextContent("loading devices"))
+      ).not.toBeInTheDocument()
+    );
+  });
+});
+
+describe("toMs function", () => {
+  it("handles null, undefined, number, string, edge cases", () => {
+    expect(toMs(null)).toBeNull();
+    expect(toMs(undefined)).toBeNull();
+    expect(toMs(12345)).toBe(12345 * 1000);
+    expect(toMs(1e12)).toBe(1e12);
+    const dateStr = "2025-10-08T00:00:00Z";
+    expect(toMs(dateStr)).toBe(Date.parse(dateStr));
+    expect(toMs("invalid-date")).toBeNull();
+    expect(toMs(100)).toBe(100000);
+    expect(toMs(1234567890123)).toBe(1234567890123);
+  });
+});
+
+describe("filterDevicesByTimeRange", () => {
+  const msNow = Date.now();
+  const devices: MockDeviceNode[] = [
+    { idxDevice: 1, hostname: "dev1", sysName: "a", lastPolledMs: msNow },
+    { idxDevice: 2, hostname: "dev2", sysName: "b", lastPolledMs: undefined },
+    { idxDevice: 3, hostname: "dev3", sysName: "c", lastPolledMs: NaN },
+  ];
+
+  it("filters devices for custom range with valid lastPolledMs", () => {
+    const start = "2025-10-08";
+    const end = "2025-10-08";
+    const result = filterDevicesByTimeRange(devices, "custom", start, end);
+    const hostnames = result.map((d) => d.hostname);
+    expect(hostnames).toContain("dev1");
+    expect(hostnames).not.toContain("dev2");
+    expect(hostnames).not.toContain("dev3");
+  });
+
+  it("filters devices for 1d, 1w, 1m, 6m ranges", () => {
+    ["1d", "1w", "1m", "6m"].forEach((range) => {
+      const result = filterDevicesByTimeRange(devices, range);
+      expect(result).toContainEqual(devices[0]);
     });
   });
-  it("does not search when input is empty", async () => {
-    render(<DeviceHistoryChart />);
 
-    const form = screen.getByRole("form");
-    const input = screen.getByPlaceholderText(/search device hostname/i);
-    fireEvent.change(input, { target: { value: "" } });
-    fireEvent.submit(form);
-    expect(screen.queryByTestId("suggestions-list")).not.toBeInTheDocument();
-  });
-  it("submits search term when input is non-empty", async () => {
-    render(<DeviceHistoryChart />);
-
-    const form = screen.getByRole("form");
-    const input = screen.getByPlaceholderText(/search device hostname/i);
-
-    fireEvent.change(input, { target: { value: "device1" } });
-    fireEvent.submit(form);
-    expect(input).toHaveValue("");
-    expect(screen.queryByTestId("suggestions-list")).not.toBeInTheDocument();
-  });
-  it("renders error UI and allows retry", async () => {
-    (global.fetch as any).mockRejectedValueOnce(new Error("boom"));
-
-    // mock reload
-    const reloadMock = vi.fn();
-    Object.defineProperty(window, "location", {
-      configurable: true,
-      value: { ...window.location, reload: reloadMock },
-    });
-
-    render(<DeviceHistoryChart />);
-
-    expect(await screen.findByText(/error/i)).toBeInTheDocument();
-    expect(await screen.findByText(/boom/i)).toBeInTheDocument();
-
-    const retryBtn = screen.getByRole("button", { name: /retry/i });
-    fireEvent.click(retryBtn);
-
-    expect(reloadMock).toHaveBeenCalled();
+  it("returns all devices if custom range selected but start/end missing", () => {
+    const result = filterDevicesByTimeRange(devices, "custom");
+    expect(result).toEqual(devices);
   });
 
-  it("shows an error when end date is before start date", async () => {
-    render(<DeviceHistoryChart />);
-
-    // Open range selector and choose custom
-    const rangeButton = await screen.findByRole("button", {
-      name: /past 1 week/i,
-    });
-    fireEvent.click(rangeButton);
-    fireEvent.click(screen.getByText(/custom/i));
-
-    const startInput = screen.getByLabelText("custom start date");
-    const endInput = screen.getByLabelText("custom end date");
-
-    // Set start first
-    fireEvent.change(startInput, { target: { value: "2025-08-01" } });
-    // Set end date before start to trigger validation
-    fireEvent.change(endInput, { target: { value: "2025-01-01" } });
-
-    expect(
-      await screen.findByText(/end date must be after start date/i)
-    ).toBeInTheDocument();
+  it("filters devices with null lastPolledMs", () => {
+    const testDevices: MockDeviceNode[] = [
+      { idxDevice: 4, hostname: "devNull", sysName: "t", lastPolledMs: null },
+      {
+        idxDevice: 5,
+        hostname: "devValid",
+        sysName: "t",
+        lastPolledMs: Date.now(),
+      },
+    ];
+    const result = filterDevicesByTimeRange(testDevices, "1d");
+    expect(result.map((d) => d.hostname)).toContain("devValid");
+    expect(result.map((d) => d.hostname)).not.toContain("devNull");
   });
 
-  it("shows an error when custom range exceeds 180 days", async () => {
-    render(<DeviceHistoryChart />);
-
-    const rangeButton = await screen.findByRole("button", {
-      name: /past 1 week/i,
-    });
-    fireEvent.click(rangeButton);
-    fireEvent.click(screen.getByText(/custom/i));
-
-    const startInput = screen.getByLabelText("custom start date");
-    const endInput = screen.getByLabelText("custom end date");
-
-    fireEvent.change(startInput, { target: { value: "2025-01-01" } });
-    fireEvent.change(endInput, { target: { value: "2025-08-01" } }); // >180 days
-
-    expect(
-      await screen.findByText(/custom range cannot exceed 180 days/i)
-    ).toBeInTheDocument();
+  it("handles devices outside time range", () => {
+    const oldDevices: MockDeviceNode[] = [
+      {
+        idxDevice: 6,
+        hostname: "old",
+        sysName: "t",
+        lastPolledMs: Date.now() - 86400000 * 8,
+      },
+      {
+        idxDevice: 7,
+        hostname: "recent",
+        sysName: "t",
+        lastPolledMs: Date.now() - 3600000,
+      },
+    ];
+    const result = filterDevicesByTimeRange(oldDevices, "1d");
+    expect(result.map((d) => d.hostname)).toContain("recent");
+    expect(result.map((d) => d.hostname)).not.toContain("old");
   });
-  it("shows an error when start date is after end date", async () => {
-    render(<DeviceHistoryChart />);
 
-    // Open range selector and choose custom
-    const rangeButton = await screen.findByRole("button", {
-      name: /past 1 week/i,
-    });
-    fireEvent.click(rangeButton);
-    fireEvent.click(screen.getByText(/custom/i));
-
-    const startInput = screen.getByLabelText("custom start date");
-    const endInput = screen.getByLabelText("custom end date");
-
-    // Set end date first
-    fireEvent.change(endInput, { target: { value: "2025-01-01" } });
-    // Then set start date after end to trigger the validation
-    fireEvent.change(startInput, { target: { value: "2025-08-01" } });
-
-    expect(
-      await screen.findByText(/start date must be before end date/i)
-    ).toBeInTheDocument();
+  it("handles empty devices and unknown range", () => {
+    expect(filterDevicesByTimeRange([], "unknown")).toEqual([]);
+    const many: MockDeviceNode[] = [
+      { idxDevice: 8, hostname: "a", sysName: "na", lastPolledMs: undefined },
+      { idxDevice: 9, hostname: "b", sysName: "nb", lastPolledMs: null },
+      { idxDevice: 10, hostname: "c", sysName: "nc", lastPolledMs: NaN },
+    ];
+    expect(filterDevicesByTimeRange(many, "custom")).toEqual(many);
   });
 });

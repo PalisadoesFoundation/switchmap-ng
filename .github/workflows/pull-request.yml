@@ -280,7 +280,7 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
           path: frontend/coverage/lcov.info
-          min_coverage: 80.0
+          min_coverage: 95.0
 
 
   Test-Docusaurus-Deployment:

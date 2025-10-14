@@ -12,26 +12,23 @@
 
 > **ThemeToggle**(): `null` \| `Element`
 
-Defined in: [theme-toggle.tsx:23](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/theme-toggle.tsx#L23)
+Defined in: [theme-toggle.tsx:20](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/theme-toggle.tsx#L20)
 
-ThemeToggle component allows users to switch between light and dark themes.
-It uses the Next.js `useTheme` hook to manage the theme state.
-The component renders a button that toggles the theme when clicked.
+A toggle button to switch between light and dark themes.
 
 #### Returns
 
 `null` \| `Element`
 
-The rendered component.
+A button element that toggles the theme on click.
 
 #### Remarks
 
-This component is designed for client-side use only because it relies on
-the `useTheme` hook, which is not available during server-side rendering.
-It also ensures the component is mounted before rendering to avoid SSR mismatches.
-The icons used for the toggle come from the `react-icons` library.
+This component uses the `next-themes` library to manage theme state and
+persists the user's preference in local storage. It displays a sun icon
+when the dark theme is active and a moon icon when the light theme is active.
 
 #### See
 
- - [useTheme](#) for managing themes in Next.js.
- - [FiSun](#) and [FiMoon](#) for the icons used in the toggle button.
+ - [useTheme](#) from `next-themes` for theme management.
+ - [FiSun](#) and [FiMoon](#) from `react-icons/fi` for the icons used.

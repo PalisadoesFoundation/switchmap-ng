@@ -7,7 +7,7 @@ import {
   within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import ConfigPage from "./page";
+import ConfigPage, { __resetConfigCache } from "./page";
 
 // Mock the Sidebar component
 vi.mock("../components/Sidebar", () => ({
@@ -81,10 +81,12 @@ describe("ConfigPage", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
+    __resetConfigCache();
     vi.clearAllMocks();
   });
 
   afterEach(() => {
+    __resetConfigCache();
     vi.restoreAllMocks();
   });
 
@@ -109,7 +111,7 @@ describe("ConfigPage", () => {
       render(<ConfigPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("No config loaded")).toBeInTheDocument();
+        expect(screen.getByText("Error loading config")).toBeInTheDocument();
       });
 
       expect(consoleSpy).toHaveBeenCalledWith(
@@ -132,7 +134,7 @@ describe("ConfigPage", () => {
       render(<ConfigPage />);
 
       await waitFor(() => {
-        expect(screen.getByText("No config loaded")).toBeInTheDocument();
+        expect(screen.getByText("Error loading config")).toBeInTheDocument();
       });
 
       expect(consoleSpy).toHaveBeenCalled();
@@ -166,14 +168,9 @@ describe("ConfigPage", () => {
     });
 
     it("switches between tabs", async () => {
-      // Initially on zones tab
       expect(screen.getByText("test-zone-1")).toBeInTheDocument();
-
-      // Switch to SNMP tab
       await user.click(screen.getByRole("button", { name: "SNMP Groups" }));
       expect(screen.getByText("Test Group 1")).toBeInTheDocument();
-
-      // Switch to Advanced tab
       await user.click(screen.getByRole("button", { name: "Advanced" }));
       expect(screen.getByText("Core")).toBeInTheDocument();
       expect(screen.getByText("Server")).toBeInTheDocument();
@@ -216,8 +213,6 @@ describe("ConfigPage", () => {
     it("enters edit mode for zones", async () => {
       const editButton = screen.getAllByTestId("edit-icon")[0];
       await user.click(editButton);
-
-      // Click + Add Device to reveal inputs
       const addDeviceButton = screen.getByText("+ Add Device");
       await user.click(addDeviceButton);
 
@@ -322,7 +317,6 @@ describe("ConfigPage", () => {
   });
 
   // ---------- SNMP Groups Tab ----------
-
   describe("SNMP Groups Tab", () => {
     beforeEach(async () => {
       mockFetch.mockResolvedValueOnce({
@@ -356,8 +350,6 @@ describe("ConfigPage", () => {
     it("enters edit mode for SNMP group", async () => {
       const editButton = screen.getByTestId("edit-icon");
       await user.click(editButton);
-
-      // Should expand and show editable fields
       await waitFor(() => {
         const groupNameInput = screen.getByDisplayValue("Test Group 1");
         expect(groupNameInput).not.toHaveAttribute("readOnly");
@@ -398,6 +390,36 @@ describe("ConfigPage", () => {
 
       expect(screen.getByText("New SNMP Group")).toBeInTheDocument();
     });
+
+    it("renders correct input types for SNMP group fields", async () => {
+      await user.click(screen.getByRole("button", { name: "SNMP Groups" }));
+
+      await user.click(screen.getByTestId("chevron-down"));
+
+      const snmpVersionInput = screen.getByDisplayValue("3");
+      expect(snmpVersionInput).toHaveAttribute("type", "number");
+
+      const authPasswordInput = screen.getByDisplayValue("testpass");
+      expect(authPasswordInput).toHaveAttribute("type", "password");
+
+      const groupNameInput = screen.getByDisplayValue("Test Group 1");
+      expect(groupNameInput).toHaveAttribute("type", "text");
+    });
+
+    it("allows editing snmp_secname as a string in SNMP group", async () => {
+      const expandButton = screen.getByTestId("chevron-down");
+      await user.click(expandButton);
+
+      const editBtn = screen.getByTestId("edit-icon");
+      await user.click(editBtn);
+
+      const secnameInput = screen.getByDisplayValue("testuser");
+      expect(secnameInput).not.toHaveAttribute("readOnly");
+
+      await user.clear(secnameInput);
+      await user.type(secnameInput, "newuser");
+      expect(secnameInput).toHaveValue("newuser");
+    });
   });
 
   // ---------- Advanced Tab ----------
@@ -428,8 +450,8 @@ describe("ConfigPage", () => {
 
       await user.click(expandButton);
 
-      expect(screen.getByDisplayValue("false")).toBeInTheDocument(); // debug field
-      expect(screen.getByDisplayValue("info")).toBeInTheDocument(); // log_level field
+      expect(screen.getByDisplayValue("false")).toBeInTheDocument();
+      expect(screen.getByDisplayValue("info")).toBeInTheDocument();
     });
 
     it("enters edit mode for sections", async () => {
@@ -442,6 +464,29 @@ describe("ConfigPage", () => {
         const debugInput = screen.getByDisplayValue("false");
         expect(debugInput).not.toHaveAttribute("readOnly");
       });
+    });
+
+    it("shows alert when password is incorrect", async () => {
+      const promptSpy = vi.spyOn(window, "prompt").mockReturnValue("wrongpass");
+      const alertSpy = vi.spyOn(window, "alert").mockImplementation(() => {});
+      const editButton = screen.getByTestId("password-edit-btn");
+      await user.click(editButton);
+
+      expect(alertSpy).toHaveBeenCalledWith("Incorrect password");
+
+      promptSpy.mockRestore();
+      alertSpy.mockRestore();
+    });
+    it("updates core section field when editing", async () => {
+      const coreSection = screen.getByText("Core").closest("details");
+      const editButton = within(coreSection!).getByTestId("edit-icon");
+      await user.click(editButton);
+
+      const debugInput = screen.getByDisplayValue("false");
+      await user.clear(debugInput);
+      await user.type(debugInput, "true");
+
+      expect(debugInput).toHaveValue("true");
     });
   });
 
@@ -478,26 +523,21 @@ describe("ConfigPage", () => {
     });
 
     it("handles save error gracefully", async () => {
-      (fetch as any).mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ poller: { zones: [] } }),
-      });
-
-      render(<ConfigPage />);
-
-      const saveButton = screen.getByText("Save Configuration");
-
+      // Mock failing fetch
       (fetch as any).mockResolvedValueOnce({
         ok: false,
         status: 500,
         json: async () => ({}),
       });
 
+      const saveButton = screen.getByText("Save Configuration");
       await user.click(saveButton);
 
-      await waitFor(() => {
-        expect(screen.queryByText("Saved!")).not.toBeInTheDocument();
-      });
+      await waitFor(() =>
+        expect(screen.queryByText("Saving...")).not.toBeInTheDocument()
+      );
+
+      expect(screen.queryByText("Saved!")).not.toBeInTheDocument();
     });
 
     it("disables save button while saving", async () => {
@@ -556,7 +596,7 @@ describe("ConfigPage", () => {
     });
   });
 
-  // ---------- Accessibility ----------
+  // ---------- Error Boundaries ----------
 
   describe("Error Boundaries", () => {
     it("handles missing config sections gracefully", async () => {
@@ -572,8 +612,6 @@ describe("ConfigPage", () => {
       await waitFor(() => {
         expect(screen.queryByText("Loading…")).not.toBeInTheDocument();
       });
-
-      // Should not crash and should show empty state
       expect(screen.getByText("+ Add Zone")).toBeInTheDocument();
     });
   });

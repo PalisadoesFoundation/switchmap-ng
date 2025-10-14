@@ -51,11 +51,8 @@ describe("Sidebar", () => {
     render(<Sidebar />);
     const button = screen.getByLabelText(/open sidebar/i);
     fireEvent.click(button);
-
-    // Click outside
     fireEvent.mouseDown(document.body);
 
-    // Slide-in sidebar should be removed
     expect(screen.queryByTestId("slide-in-sidebar")).toBeNull();
   });
 });

@@ -1,35 +1,56 @@
 "use client";
 
-import { DevicesOverview } from "@/app/components/DevicesOverview";
-import { ZoneDropdown } from "@/app/components/ZoneDropdown";
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  lazy,
+  Suspense,
+} from "react";
 import { Sidebar } from "@/app/components/Sidebar";
-import { TopologyChart } from "@/app/components/TopologyChart";
+import { ZoneDropdown } from "@/app/components/ZoneDropdown";
 import {
   DeviceNode,
   GetZoneDevicesData,
 } from "@/app/types/graphql/GetZoneDevices";
 
+// Lazy load heavy components
+const TopologyChart = lazy(() =>
+  import("@/app/components/TopologyChart").then((mod) => ({
+    default: mod.TopologyChart,
+  }))
+);
+const DevicesOverview = lazy(() =>
+  import("@/app/components/DevicesOverview").then((mod) => ({
+    default: mod.DevicesOverview,
+  }))
+);
+
+// Cache for device data with timestamp
+interface CacheEntry {
+  data: DeviceNode[];
+  timestamp: number;
+}
+
+const deviceCache = new Map<string, CacheEntry>();
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 /**
- * Main entry point for the application.
- *
- * This component renders the sidebar and main content area,
- * including the network topology and devices overview sections.
- * It also manages the selected zone state and persists it in localStorage.
+ * Home page component displaying network topology and devices overview.
  *
  * @remarks
- * This component is the main page of the application.
- * It initializes the zone ID from localStorage and updates it
- * whenever the user selects a different zone.
- * It also handles scrolling to elements based on the URL hash.
- * It uses the `Sidebar` component for navigation and the `ZoneDropdown`
- * component for selecting zones.
+ * This component fetches and displays devices based on the selected zone.
+ * It includes a sidebar, a zone selection dropdown, a topology chart, and
+ * a devices overview section. The component uses caching to minimize
+ * unnecessary API calls and improve performance.
  *
- * @returns The rendered component.
+ * @returns The main home page component.
  *
- * @see {@link Sidebar} for the sidebar component.
- * @see {@link ZoneDropdown} for the zone selection dropdown.
- * @see {@link DevicesOverview} for displaying devices in the selected zone.
+ * @see {@link Sidebar} for the navigation sidebar.
+ * @see {@link ZoneDropdown} for selecting network zones.
+ * @see {@link TopologyChart} for visualizing network topology.
+ * @see {@link DevicesOverview} for listing devices in a tabular format.
  */
 export default function Home() {
   const [zoneId, setZoneId] = useState<string>("");
@@ -38,45 +59,36 @@ export default function Home() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setZoneId(localStorage.getItem("zoneId") || "");
-    const hash = window.location.hash;
-    if (hash) {
-      const el = document.querySelector(hash);
-      if (el) el.scrollIntoView({ behavior: "smooth" });
-    }
-  }, []);
+  // Track ongoing requests to prevent duplicates
+  const [ongoingRequest, setOngoingRequest] = useState<AbortController | null>(
+    null
+  );
 
-  useEffect(() => {
-    if (zoneId) {
-      localStorage.setItem("zoneId", zoneId);
-      setZoneSelected(!!zoneId);
-    }
-  }, [zoneId]);
-
-  // New: fetch devices when zoneId changes
-  const GET_ZONE_DEVICES = `
-  query GetZoneDevices($id: ID!) {
-    zone(id: $id) {
-      devices {
-        edges {
-          node {
-            idxDevice
-            sysObjectid
-            sysUptime
-            sysDescription
-            sysName
-            hostname
-            l1interfaces {
-              edges {
-                node {
-                  ifoperstatus
-                  cdpcachedeviceid
-                  cdpcachedeviceport
-                  lldpremportdesc
-                  lldpremsysname
-                  lldpremsysdesc
-                  lldpremsyscapenabled 
+  // Memoize GraphQL queries
+  const GET_ZONE_DEVICES = useMemo(
+    () => `
+    query GetZoneDevices($id: ID!) {
+      zone(id: $id) {
+        devices {
+          edges {
+            node {
+              idxDevice
+              sysObjectid
+              sysUptime
+              sysDescription
+              sysName
+              hostname
+              l1interfaces {
+                edges {
+                  node {
+                    ifoperstatus
+                    cdpcachedeviceid
+                    cdpcachedeviceport
+                    lldpremportdesc
+                    lldpremsysname
+                    lldpremsysdesc
+                    lldpremsyscapenabled 
+                  }
                 }
               }
             }
@@ -84,27 +96,14 @@ export default function Home() {
         }
       }
     }
-  }
-`;
+  `,
+    []
+  );
 
-  useEffect(() => {
-    if (!zoneId) {
-      setDevices([]);
-      setLoading(false);
-      setError("Waiting for zone selection to load devices.");
-      return;
-    }
-
-    const fetchDevices = async (retryCount = 0) => {
-      try {
-        setLoading(true);
-        setError(null);
-
-        const query =
-          zoneId === "all"
-            ? `
-          query GetAllZonesDevices {
-          events(last: 1) {
+  const GET_ALL_ZONES_DEVICES = useMemo(
+    () => `
+    query GetAllZonesDevices {
+      events(last: 1) {
         edges {
           node {
             zones {
@@ -114,34 +113,111 @@ export default function Home() {
                     edges {
                       node {
                         idxDevice
-            sysObjectid
-            sysUptime
-            sysDescription
-            sysName
-            hostname
-            l1interfaces {
-              edges {
-                node {
-                  ifoperstatus
-                  cdpcachedeviceid
-                  cdpcachedeviceport
-                }
-              }
-            }
+                        sysObjectid
+                        sysUptime
+                        sysDescription
+                        sysName
+                        hostname
+                        l1interfaces {
+                          edges {
+                            node {
+                              ifoperstatus
+                              cdpcachedeviceid
+                              cdpcachedeviceport
+                            }
+                          }
+                        }
                       }
                     }
                   }
                 }
               }
             }
-      }
-      }
-      }
           }
-        `
-            : GET_ZONE_DEVICES;
+        }
+      }
+    }
+  `,
+    []
+  );
 
-        const variables = zoneId === "all" ? {} : { id: zoneId };
+  // Initialize from localStorage
+  useEffect(() => {
+    const storedZoneId = localStorage.getItem("zoneId") || "";
+    setZoneId(storedZoneId);
+
+    const hash = window.location.hash;
+    if (hash) {
+      setTimeout(() => {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: "smooth" });
+      }, 100);
+    }
+  }, []);
+
+  // Persist zone selection
+  useEffect(() => {
+    if (zoneId) {
+      localStorage.setItem("zoneId", zoneId);
+      setZoneSelected(!!zoneId);
+    }
+  }, [zoneId]);
+
+  // Check cache validity
+  const getCachedDevices = useCallback(
+    (zoneKey: string): DeviceNode[] | null => {
+      const cached = deviceCache.get(zoneKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        return cached.data;
+      }
+      return null;
+    },
+    []
+  );
+
+  // Deduplicate devices by hostname
+  const deduplicateDevices = useCallback((devices: any[]): DeviceNode[] => {
+    const seen = new Map<string, any>();
+    devices.forEach((dev: any) => {
+      if (dev.hostname) seen.set(dev.hostname, dev);
+    });
+    return Array.from(seen.values()) as DeviceNode[];
+  }, []);
+
+  // Optimized fetch with caching and deduplication
+  const fetchDevices = useCallback(
+    async (currentZoneId: string) => {
+      if (!currentZoneId) {
+        setDevices([]);
+        setLoading(false);
+        setError("Waiting for zone selection to load devices.");
+        return;
+      }
+
+      // Cancel any ongoing request
+      if (ongoingRequest) {
+        ongoingRequest.abort();
+      }
+
+      // Check cache first
+      const cached = getCachedDevices(currentZoneId);
+      if (cached) {
+        setDevices(cached);
+        setLoading(false);
+        setError(null);
+        return;
+      }
+
+      const abortController = new AbortController();
+      setOngoingRequest(abortController);
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        const query =
+          currentZoneId === "all" ? GET_ALL_ZONES_DEVICES : GET_ZONE_DEVICES;
+        const variables = currentZoneId === "all" ? {} : { id: currentZoneId };
 
         const res = await fetch(
           process.env.NEXT_PUBLIC_API_URL ||
@@ -150,6 +226,7 @@ export default function Home() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ query, variables }),
+            signal: abortController.signal,
           }
         );
 
@@ -161,31 +238,30 @@ export default function Home() {
 
         let rawDevices: DeviceNode[] = [];
 
-        if (zoneId === "all") {
-          const devices =
+        if (currentZoneId === "all") {
+          const allDevices =
             json?.data?.events?.edges?.[0]?.node?.zones?.edges?.flatMap(
               (z: any) => z?.node?.devices?.edges?.map((d: any) => d.node) ?? []
             ) ?? [];
-
-          // Deduplicate by hostname
-          const seen = new Map<string, any>();
-          devices.forEach((dev: any) => {
-            if (dev.hostname) seen.set(dev.hostname, dev);
-          });
-          rawDevices = Array.from(seen.values()) as DeviceNode[];
+          rawDevices = deduplicateDevices(allDevices);
         } else {
-          const devices =
+          const zoneDevices =
             json?.data?.zone?.devices?.edges?.map((d: any) => d.node) ?? [];
-
-          // Deduplicate by hostname
-          const seen = new Map<string, any>();
-          devices.forEach((dev: any) => {
-            if (dev.hostname) seen.set(dev.hostname, dev);
-          });
-          rawDevices = Array.from(seen.values()) as DeviceNode[];
+          rawDevices = deduplicateDevices(zoneDevices);
         }
+
+        // Cache the results
+        deviceCache.set(currentZoneId, {
+          data: rawDevices,
+          timestamp: Date.now(),
+        });
+
         setDevices(rawDevices);
       } catch (err: any) {
+        if (err.name === "AbortError") {
+          return;
+        }
+
         const message =
           err instanceof Error
             ? err.message
@@ -197,36 +273,70 @@ export default function Home() {
         setError(message);
       } finally {
         setLoading(false);
+        setOngoingRequest(null);
       }
-    };
+    },
+    [
+      GET_ZONE_DEVICES,
+      GET_ALL_ZONES_DEVICES,
+      getCachedDevices,
+      deduplicateDevices,
+      ongoingRequest,
+    ]
+  );
 
-    fetchDevices();
+  // Debounce device fetching
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchDevices(zoneId);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
   }, [zoneId]);
 
+  // Loading fallback component
+  const LoadingFallback = () => (
+    <div className="flex items-center justify-center h-64">
+      <div className="text-gray-500">Loading component...</div>
+    </div>
+  );
+
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       <Sidebar />
-      <main className="flex-1 overflow-y-auto overflow-x-hidden">
+      <main className="flex-1 lg:ml-60">
         <div className="sticky top-0 z-10 bg-bg lg:bg-blend-soft-light flex justify-end p-4">
           <ZoneDropdown selectedZoneId={zoneId} onChange={setZoneId} />
         </div>
 
         <div id="network-topology" className="h-screen mb-8 p-8">
           {zoneSelected && (
-            <TopologyChart devices={devices} loading={loading} error={error} />
+            <Suspense fallback={<LoadingFallback />}>
+              <TopologyChart
+                devices={devices}
+                loading={loading}
+                error={error}
+              />
+            </Suspense>
           )}
         </div>
 
-        <div id="devices-overview" className="h-screen p-8">
+        <div id="devices-overview" className="h-fit p-8">
           {zoneSelected && (
-            <DevicesOverview
-              devices={devices}
-              loading={loading}
-              error={error}
-            />
+            <Suspense fallback={<LoadingFallback />}>
+              <DevicesOverview
+                devices={devices}
+                loading={loading}
+                error={error}
+              />
+            </Suspense>
           )}
         </div>
       </main>
     </div>
   );
 }
+
+export const _testUtils = {
+  clearDeviceCache: () => deviceCache.clear(),
+};

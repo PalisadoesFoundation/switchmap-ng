@@ -6,37 +6,50 @@
 
 # page
 
+## Variables
+
+### \_testUtils
+
+> `const` **\_testUtils**: `object`
+
+Defined in: [page.tsx:340](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/page.tsx#L340)
+
+#### Type declaration
+
+##### clearDeviceCache()
+
+> **clearDeviceCache**: () => `void`
+
+###### Returns
+
+`void`
+
 ## Functions
 
 ### default()
 
 > **default**(): `Element`
 
-Defined in: [page.tsx:34](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/page.tsx#L34)
+Defined in: [page.tsx:55](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/page.tsx#L55)
 
-Main entry point for the application.
-
-This component renders the sidebar and main content area,
-including the network topology and devices overview sections.
-It also manages the selected zone state and persists it in localStorage.
+Home page component displaying network topology and devices overview.
 
 #### Returns
 
 `Element`
 
-The rendered component.
+The main home page component.
 
 #### Remarks
 
-This component is the main page of the application.
-It initializes the zone ID from localStorage and updates it
-whenever the user selects a different zone.
-It also handles scrolling to elements based on the URL hash.
-It uses the `Sidebar` component for navigation and the `ZoneDropdown`
-component for selecting zones.
+This component fetches and displays devices based on the selected zone.
+It includes a sidebar, a zone selection dropdown, a topology chart, and
+a devices overview section. The component uses caching to minimize
+unnecessary API calls and improve performance.
 
 #### See
 
- - [Sidebar](components/Sidebar.md#sidebar) for the sidebar component.
- - [ZoneDropdown](components/ZoneDropdown.md#zonedropdown) for the zone selection dropdown.
- - [DevicesOverview](components/DevicesOverview.md#devicesoverview) for displaying devices in the selected zone.
+ - [Sidebar](components/Sidebar.md#sidebar) for the navigation sidebar.
+ - [ZoneDropdown](components/ZoneDropdown.md#zonedropdown) for selecting network zones.
+ - TopologyChart for visualizing network topology.
+ - DevicesOverview for listing devices in a tabular format.

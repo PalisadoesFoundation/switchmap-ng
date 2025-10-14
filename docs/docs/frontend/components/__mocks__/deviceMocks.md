@@ -20,7 +20,7 @@ Defined in: [components/\_\_mocks\_\_/deviceMocks.ts:46](https://github.com/Pali
 
 > `const` **mockDeviceLLDP**: [`DeviceNode`](../../types/graphql/GetZoneDevices.md#devicenode)
 
-Defined in: [components/\_\_mocks\_\_/deviceMocks.ts:97](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/__mocks__/deviceMocks.ts#L97)
+Defined in: [components/\_\_mocks\_\_/deviceMocks.ts:107](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/__mocks__/deviceMocks.ts#L107)
 
 ***
 
@@ -28,7 +28,7 @@ Defined in: [components/\_\_mocks\_\_/deviceMocks.ts:97](https://github.com/Pali
 
 > `const` **mockInterfaceLLDP**: [`InterfaceNode`](../../types/graphql/GetDeviceInterfaces.md#interfacenode)
 
-Defined in: [components/\_\_mocks\_\_/deviceMocks.ts:87](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/__mocks__/deviceMocks.ts#L87)
+Defined in: [components/\_\_mocks\_\_/deviceMocks.ts:97](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/__mocks__/deviceMocks.ts#L97)
 
 ***
 
@@ -44,10 +44,10 @@ Defined in: [components/\_\_mocks\_\_/deviceMocks.ts:60](https://github.com/Pali
 
 > **data**: `object`
 
-###### data.deviceMetrics
+###### data.deviceByHostname
 
-> **deviceMetrics**: `object`
+> **deviceByHostname**: `object`
 
-###### data.deviceMetrics.edges
+###### data.deviceByHostname.edges
 
 > **edges**: `object`[]

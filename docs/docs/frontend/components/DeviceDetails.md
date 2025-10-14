@@ -12,7 +12,7 @@
 
 > **DeviceDetailsProps** = `object`
 
-Defined in: [components/DeviceDetails.tsx:53](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/DeviceDetails.tsx#L53)
+Defined in: [components/DeviceDetails.tsx:54](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/DeviceDetails.tsx#L54)
 
 #### Properties
 
@@ -20,7 +20,7 @@ Defined in: [components/DeviceDetails.tsx:53](https://github.com/PalisadoesFound
 
 > **device**: [`DeviceNode`](../types/graphql/GetZoneDevices.md#devicenode)
 
-Defined in: [components/DeviceDetails.tsx:54](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/DeviceDetails.tsx#L54)
+Defined in: [components/DeviceDetails.tsx:55](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/DeviceDetails.tsx#L55)
 
 ## Functions
 
@@ -28,7 +28,7 @@ Defined in: [components/DeviceDetails.tsx:54](https://github.com/PalisadoesFound
 
 > **DeviceDetails**(`__namedParameters`): `Element`
 
-Defined in: [components/DeviceDetails.tsx:65](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/DeviceDetails.tsx#L65)
+Defined in: [components/DeviceDetails.tsx:66](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/DeviceDetails.tsx#L66)
 
 #### Parameters
 
