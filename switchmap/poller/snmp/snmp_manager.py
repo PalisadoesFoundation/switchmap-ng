@@ -1010,6 +1010,9 @@ def _oid_valid_format(oid):
     # Remove the first element of the list
     octets.pop(0)
     for value in octets:
+        # Check for spaces or other whitespace (strict validation)
+        if value != value.strip():
+            return False
         try:
             int(value)
         except (ValueError, TypeError):
