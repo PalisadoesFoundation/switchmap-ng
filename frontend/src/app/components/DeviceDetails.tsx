@@ -42,7 +42,7 @@ function MetadataRow({ label, value }: { label: string; value: string }) {
 
 type DeviceData = {
   hostname: string;
-  uptime?: number;
+  sysUptime?: number;
   cpuUtilization: number;
   memoryUtilization: number;
   lastPolled: number;
@@ -124,7 +124,7 @@ export function DeviceDetails({ device }: DeviceDetailsProps) {
             <MetadataRow
               label="Uptime"
               value={formatUptime(
-                device.sysUptime ?? (deviceMetrics?.uptime ?? 0) * 100
+                device.sysUptime ?? (deviceMetrics?.sysUptime ?? 0) * 100
               )}
             />
             <MetadataRow label="System ID" value={device.sysObjectid ?? "-"} />
@@ -148,6 +148,8 @@ query SystemStats($hostname: String!) {
       node {
         id
         hostname
+        lastPolled
+        sysUptime
         systemstats {
           edges {
             node {
@@ -186,36 +188,48 @@ query SystemStats($hostname: String!) {
         if (json?.errors?.length)
           throw new Error(json.errors[0]?.message || "GraphQL error");
 
-        const node = json.data.deviceByHostname.edges[0]?.node;
-        if (!node?.systemstats?.edges) throw new Error("Malformed response");
+        const deviceEdges = json.data.deviceByHostname?.edges;
 
-        const hostMetrics: DeviceData[] = node.systemstats.edges.map(
-          ({ node }: any) => ({
-            hostname: node.device?.hostname ?? device.hostname,
-            uptime: undefined,
-            cpuUtilization: (() => {
-              const raw = Number(node.cpu5min ?? 0);
-              return Number.isFinite(raw) ? raw : 0;
-            })(),
-            memoryUtilization: (() => {
-              const used = Number(node.memUsed ?? 0);
-              const free = Number(node.memFree ?? 0);
-              const total = used + free;
-              if (
-                !Number.isFinite(used) ||
-                !Number.isFinite(free) ||
-                total <= 0
-              ) {
-                return 0;
-              }
-              return (used / total) * 100;
-            })(),
-            lastPolled: Number(node.idxSystemstat),
-            sysName: undefined,
-            sysDescription: undefined,
-            sysObjectid: undefined,
-          })
-        );
+        if (!deviceEdges || deviceEdges.length === 0)
+          throw new Error("No devices found");
+
+        const hostMetrics: DeviceData[] = [];
+
+        deviceEdges.forEach(({ node: deviceData }: any) => {
+          if (deviceData.hostname !== device.hostname) {
+            return;
+          }
+
+          if (deviceData?.systemstats?.edges) {
+            deviceData.systemstats.edges.forEach(({ node: statNode }: any) => {
+              hostMetrics.push({
+                hostname: deviceData.hostname,
+                sysUptime: deviceData.sysUptime,
+                cpuUtilization: (() => {
+                  const raw = Number(statNode.cpu5min ?? 0);
+                  return Number.isFinite(raw) ? raw : 0;
+                })(),
+                memoryUtilization: (() => {
+                  const used = Number(statNode.memUsed ?? 0);
+                  const free = Number(statNode.memFree ?? 0);
+                  const total = used + free;
+                  if (
+                    !Number.isFinite(used) ||
+                    !Number.isFinite(free) ||
+                    total <= 0
+                  ) {
+                    return 0;
+                  }
+                  return (used / total) * 100;
+                })(),
+                lastPolled: Number(deviceData.lastPolled),
+                sysName: undefined,
+                sysDescription: undefined,
+                sysObjectid: undefined,
+              });
+            });
+          }
+        });
 
         hostMetrics.sort((a, b) => a.lastPolled - b.lastPolled);
 
@@ -232,7 +246,7 @@ query SystemStats($hostname: String!) {
         setUptimeData(
           hostMetrics.map((m) => ({
             lastPolled: new Date(m.lastPolled * 1000).toISOString(),
-            value: m.uptime && m.uptime > 0 ? 1 : 0,
+            value: m.sysUptime && m.sysUptime > 0 ? 1 : 0,
           }))
         );
 

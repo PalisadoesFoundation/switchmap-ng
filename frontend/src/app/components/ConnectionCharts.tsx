@@ -17,11 +17,14 @@ import { InterfaceNode } from "../types/graphql/GetDeviceInterfaces";
  */
 
 type ChartTab =
-  | "Traffic"
-  | "Unicast"
-  | "NonUnicast"
-  | "Errors"
-  | "Discards"
+  | "TrafficIn"
+  | "TrafficOut"
+  | "UnicastIn"
+  | "UnicastOut"
+  | "NonUnicastIn"
+  | "NonUnicastOut"
+  | "ErrorsTotal"
+  | "DiscardsTotal"
   | "Speed";
 
 interface ChartDataPoint {
@@ -51,8 +54,8 @@ const QUERY = (hostname: string) => `
               ifoutOctets
               ifinUcastPkts
               ifoutUcastPkts
-              ifinNUcastPkts
-              ifoutNUcastPkts
+              ifinNucastPkts
+              ifoutNucastPkts
               ifinErrors
               ifoutErrors
               ifinDiscards
@@ -143,7 +146,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
         const json = await res.json();
         if (cancelled) return;
 
-        const edges = json?.data?.devices?.edges || [];
+        const edges = json?.data?.deviceByHostname?.edges || [];
         const newData: Record<string, Record<ChartTab, ChartDataPoint[]>> = {};
         const now = new Date();
         let rangeStart: Date;
@@ -169,39 +172,85 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             const ifname = iface.ifname;
             if (!newData[ifname])
               newData[ifname] = {
-                Traffic: [],
-                Unicast: [],
-                NonUnicast: [],
-                Errors: [],
-                Discards: [],
+                TrafficIn: [],
+                TrafficOut: [],
+                UnicastIn: [],
+                UnicastOut: [],
+                NonUnicastIn: [],
+                NonUnicastOut: [],
+                ErrorsTotal: [],
+                DiscardsTotal: [],
                 Speed: [],
               };
 
-            newData[ifname].Traffic.push({
-              lastPolled: lastPolled.toISOString(),
-              value: (iface.ifinOctets ?? 0) + (iface.ifoutOctets ?? 0),
-            });
-            newData[ifname].Unicast.push({
-              lastPolled: lastPolled.toISOString(),
-              value: (iface.ifinUcastPkts ?? 0) + (iface.ifoutUcastPkts ?? 0),
-            });
-            newData[ifname].NonUnicast.push({
-              lastPolled: lastPolled.toISOString(),
-              value: (iface.ifinNUcastPkts ?? 0) + (iface.ifoutNUcastPkts ?? 0),
-            });
-            newData[ifname].Errors.push({
-              lastPolled: lastPolled.toISOString(),
-              value: (iface.ifinErrors ?? 0) + (iface.ifoutErrors ?? 0),
-            });
-            newData[ifname].Discards.push({
-              lastPolled: lastPolled.toISOString(),
-              value: (iface.ifinDiscards ?? 0) + (iface.ifoutDiscards ?? 0),
-            });
-            if (iface.ifspeed != null)
+            // Traffic data - separate input and output
+            if (iface.ifinOctets != null) {
+              newData[ifname].TrafficIn.push({
+                lastPolled: lastPolled.toISOString(),
+                value: iface.ifinOctets,
+              });
+            }
+
+            if (iface.ifoutOctets != null) {
+              newData[ifname].TrafficOut.push({
+                lastPolled: lastPolled.toISOString(),
+                value: iface.ifoutOctets,
+              });
+            }
+
+            // Unicast packets data - separate input and output
+            if (iface.ifinUcastPkts != null) {
+              newData[ifname].UnicastIn.push({
+                lastPolled: lastPolled.toISOString(),
+                value: iface.ifinUcastPkts,
+              });
+            }
+
+            if (iface.ifoutUcastPkts != null) {
+              newData[ifname].UnicastOut.push({
+                lastPolled: lastPolled.toISOString(),
+                value: iface.ifoutUcastPkts,
+              });
+            }
+
+            // Non-unicast packets data - separate input and output
+            if (iface.ifinNucastPkts != null) {
+              newData[ifname].NonUnicastIn.push({
+                lastPolled: lastPolled.toISOString(),
+                value: iface.ifinNucastPkts,
+              });
+            }
+
+            if (iface.ifoutNucastPkts != null) {
+              newData[ifname].NonUnicastOut.push({
+                lastPolled: lastPolled.toISOString(),
+                value: iface.ifoutNucastPkts,
+              });
+            }
+
+            // Errors data - total makes sense here
+            if (iface.ifinErrors != null || iface.ifoutErrors != null) {
+              newData[ifname].ErrorsTotal.push({
+                lastPolled: lastPolled.toISOString(),
+                value: (iface.ifinErrors ?? 0) + (iface.ifoutErrors ?? 0),
+              });
+            }
+
+            // Discards data - total makes sense here
+            if (iface.ifinDiscards != null || iface.ifoutDiscards != null) {
+              newData[ifname].DiscardsTotal.push({
+                lastPolled: lastPolled.toISOString(),
+                value: (iface.ifinDiscards ?? 0) + (iface.ifoutDiscards ?? 0),
+              });
+            }
+
+            // Speed data
+            if (iface.ifspeed != null) {
               newData[ifname].Speed.push({
                 lastPolled: lastPolled.toISOString(),
                 value: iface.ifspeed,
               });
+            }
           });
         });
 
@@ -231,6 +280,42 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
     a.download = filename;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const getTabDisplayName = (tab: ChartTab): string => {
+    switch (tab) {
+      case "TrafficIn":
+        return "Traffic In";
+      case "TrafficOut":
+        return "Traffic Out";
+      case "UnicastIn":
+        return "Unicast In";
+      case "UnicastOut":
+        return "Unicast Out";
+      case "NonUnicastIn":
+        return "Non-Unicast In";
+      case "NonUnicastOut":
+        return "Non-Unicast Out";
+      case "ErrorsTotal":
+        return "Total Errors";
+      case "DiscardsTotal":
+        return "Total Discards";
+      case "Speed":
+        return "Speed";
+      default:
+        return tab;
+    }
+  };
+
+  const formatLargeNumber = (value: number): string => {
+    if (value >= 1e9) {
+      return (value / 1e9).toFixed(1) + "G";
+    } else if (value >= 1e6) {
+      return (value / 1e6).toFixed(1) + "M";
+    } else if (value >= 1e3) {
+      return (value / 1e3).toFixed(1) + "K";
+    }
+    return value.toString();
   };
 
   return (
@@ -386,7 +471,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           {paginatedIfaces.map(({ node }: { node: InterfaceNode }) => {
             const ifname = node.ifname;
             const isExpanded = expandedIfaces[ifname];
-            const currentTab = activeTabs[ifname] || "Traffic";
+            const currentTab = activeTabs[ifname] || "TrafficIn";
             const filteredData = data[ifname]?.[currentTab] || [];
 
             return (
@@ -423,11 +508,14 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                       </button>
                       {(
                         [
-                          "Traffic",
-                          "Unicast",
-                          "NonUnicast",
-                          "Errors",
-                          "Discards",
+                          "TrafficIn",
+                          "TrafficOut",
+                          "UnicastIn",
+                          "UnicastOut",
+                          "NonUnicastIn",
+                          "NonUnicastOut",
+                          "ErrorsTotal",
+                          "DiscardsTotal",
                           "Speed",
                         ] as ChartTab[]
                       ).map((tab) => (
@@ -445,7 +533,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                             }))
                           }
                         >
-                          {tab}
+                          {getTabDisplayName(tab)}
                         </button>
                       ))}
                     </div>
@@ -454,20 +542,41 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
                       <div className="relative  min-h-[300px] mr-2">
                         <HistoricalChart
                           data={filteredData}
-                          title={`${ifname} - ${currentTab}`}
+                          title={`${ifname} - ${getTabDisplayName(currentTab)}`}
                           color={
-                            currentTab === "Traffic"
+                            currentTab.startsWith("Traffic")
                               ? "#8884d8"
                               : currentTab === "Speed"
                               ? "#FF5733"
+                              : currentTab.startsWith("Unicast")
+                              ? "#82ca9d"
+                              : currentTab.startsWith("NonUnicast")
+                              ? "#ffc658"
+                              : currentTab.includes("Errors")
+                              ? "#ff7300"
+                              : currentTab.includes("Discards")
+                              ? "#ff0000"
                               : "#82ca9d"
                           }
                           unit={
                             currentTab === "Speed"
                               ? " Mbps"
-                              : currentTab === "Traffic"
+                              : currentTab.startsWith("Traffic")
                               ? " octets"
+                              : currentTab.includes("Errors") ||
+                                currentTab.includes("Discards")
+                              ? " errors"
                               : " pkts"
+                          }
+                          yAxisConfig={
+                            currentTab.startsWith("Traffic") ||
+                            currentTab.startsWith("Unicast") ||
+                            currentTab.startsWith("NonUnicast")
+                              ? {
+                                  tickFormatter: formatLargeNumber,
+                                  allowDecimals: false,
+                                }
+                              : undefined
                           }
                         />
                       </div>
