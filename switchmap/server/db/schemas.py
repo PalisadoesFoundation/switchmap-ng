@@ -207,9 +207,11 @@ class Query(graphene.ObjectType):
     devices = BatchSQLAlchemyConnectionField(Device.connection)
 
     # Custom resolver for device by hostname
-    deviceByHostname = graphene.Field(
-        Device, hostname=graphene.String(), resolver=resolve_device_by_hostname
+    device_by_hostname = BatchSQLAlchemyConnectionField(
+        Device.connection, hostname=graphene.String()
     )
+
+    resolve_device_by_hostname = resolve_device_by_hostname
 
     # Results as a single entry filtered by 'id' and as a list
     systemstat = graphene.relay.Node.Field(SystemStat)

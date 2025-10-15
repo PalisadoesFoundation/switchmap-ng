@@ -13,7 +13,6 @@ Based on the pages at:
 import graphene
 from switchmap.server.db.models import Device
 
-
 ###############################################################################
 # Define Resolvers
 ###############################################################################
@@ -207,27 +206,16 @@ def resolve_organization(obj, _):
     return obj.organization.decode() if bool(obj.organization) else ""
 
 
-def resolve_device_by_hostname(obj, info, hostname=None):
-    """Resolve device by hostname with proper encoding handling.
-
-    Args:
-        obj: Root object passed by Graphene (unused in this resolver)
-        info: GraphQL execution context (unused in this resolver)
-        hostname: Hostname to search for
-
-    Returns:
-        Device: Device object matching hostname
-    """
+def resolve_device_by_hostname(self, info, hostname=None, **kwargs):
+    """Resolve all devices by hostname for historical data."""
     if not hostname:
-        return None
-
-    # Convert hostname to bytes for comparison
+        return Device.query.filter(Device.enabled == 1)
     hostname_bytes = hostname.encode("utf-8")
     query = Device.query.filter(
         Device.hostname == hostname_bytes,
         Device.enabled == 1,
     ).order_by(Device.ts_created.desc())
-    return query.first()
+    return query
 
 
 def resolve_name(obj, _):
