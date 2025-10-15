@@ -283,7 +283,7 @@ describe("ConnectionCharts", () => {
     await expandInterface();
     fireEvent.click(screen.getByRole("button", { name: "Speed" }));
     expect(screen.getByText(/Speed/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Unicast" }));
+    fireEvent.click(screen.getByRole("button", { name: "Unicast In" }));
     expect(screen.getByText(/Errors/)).toBeInTheDocument();
   });
 
@@ -311,7 +311,7 @@ describe("ConnectionCharts", () => {
   it("renders HistoricalChart when filteredData is not empty", async () => {
     renderConnectionCharts();
     await expandInterface("Gig1/0/1");
-    expect(screen.getByText(/Traffic/)).toBeInTheDocument();
+    expect(screen.getByText(/Traffic In/)).toBeInTheDocument();
   });
 
   // ---------- Dropdown toggle closed and fallback label ----------

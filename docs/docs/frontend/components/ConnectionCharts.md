@@ -12,7 +12,7 @@
 
 > **ConnectionCharts**(`__namedParameters`): `Element`
 
-Defined in: [components/ConnectionCharts.tsx:69](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ConnectionCharts.tsx#L69)
+Defined in: [components/ConnectionCharts.tsx:72](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/components/ConnectionCharts.tsx#L72)
 
 #### Parameters
 

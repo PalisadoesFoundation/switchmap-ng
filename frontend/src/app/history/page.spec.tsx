@@ -515,9 +515,26 @@ describe("toMs function", () => {
 describe("filterDevicesByTimeRange", () => {
   const msNow = Date.now();
   const devices: MockDeviceNode[] = [
-    { idxDevice: 1, hostname: "dev1", sysName: "a", lastPolledMs: msNow },
-    { idxDevice: 2, hostname: "dev2", sysName: "b", lastPolledMs: undefined },
-    { idxDevice: 3, hostname: "dev3", sysName: "c", lastPolledMs: NaN },
+    {
+      hostname: "dev1",
+      lastPolledMs:
+        new Date("2025-10-08T12:00:00").getTime() +
+        new Date().getTimezoneOffset() * 60 * 1000,
+      idxDevice: 0,
+      sysName: "",
+    },
+    {
+      hostname: "dev2",
+      lastPolledMs: new Date("2025-10-07T12:00:00").getTime(),
+      idxDevice: 1,
+      sysName: "",
+    }, // before range
+    {
+      hostname: "dev3",
+      lastPolledMs: new Date("2025-10-09T12:00:00").getTime(),
+      idxDevice: 2,
+      sysName: "",
+    }, // after range
   ];
 
   it("filters devices for custom range with valid lastPolledMs", () => {
@@ -531,9 +548,20 @@ describe("filterDevicesByTimeRange", () => {
   });
 
   it("filters devices for 1d, 1w, 1m, 6m ranges", () => {
+    const now = Date.now();
+    const testDevices: MockDeviceNode[] = [
+      { hostname: "dev1", idxDevice: 0, lastPolledMs: now, sysName: "" }, // always in range
+      {
+        hostname: "dev2",
+        idxDevice: 1,
+        lastPolledMs: now - 10 * 24 * 60 * 60 * 1000,
+        sysName: "",
+      }, // outside 1d
+    ];
+
     ["1d", "1w", "1m", "6m"].forEach((range) => {
-      const result = filterDevicesByTimeRange(devices, range);
-      expect(result).toContainEqual(devices[0]);
+      const result = filterDevicesByTimeRange(testDevices, range);
+      expect(result).toContainEqual(testDevices[0]);
     });
   });
 
