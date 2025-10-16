@@ -259,12 +259,12 @@ The documentation site is built with Docusaurus.
 2. **Install dependencies in the docs directory:**
     ```bash
     cd docs
-    pnpm install
+    npm install
     ```
 
 3. **Start the documentation site:**
     ```bash
-    pnpm start
+    npm start
     ```
     By default, the documentation site will be available at  
     [http://localhost:3001/](http://localhost:3001/)
