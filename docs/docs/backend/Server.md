@@ -2299,38 +2299,6 @@ Upadate a Device table entry.
 
   None
 
-<a id="db.table.metrics"></a>
-
-# db.table.metrics
-
-Database table operations for metrics.
-
-<a id="db.table.metrics.insert_row"></a>
-
-#### insert\_row
-
-```python
-def insert_row(rows)
-```
-
-Insert rows into smap_device_metrics_history (historical metrics).
-
-**Arguments**:
-
-- `rows` _list or object_ - Single row or list of rows to insert. Each row is
-  expected to have the following attributes:
-  - hostname (str | bytes): Device hostname (required; UTF-8
-  encoded to VARBINARY, ≤256 bytes)
-  - last_polled (int, float, datetime, str, or None):
-  Timestamp of last poll
-  - uptime (int or None): Device uptime in seconds
-  - cpu_utilization (float or None): CPU utilization percentage
-  - memory_utilization (float or None): Memory utilization in %
-
-**Returns**:
-
-  None
-
 <a id="db.table.systemstat"></a>
 
 # db.table.systemstat
