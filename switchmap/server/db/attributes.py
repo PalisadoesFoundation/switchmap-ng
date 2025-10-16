@@ -207,7 +207,19 @@ def resolve_organization(obj, _):
 
 
 def resolve_device_by_hostname(self, info, hostname=None, **kwargs):
-    """Resolve all devices by hostname for historical data."""
+    """Resolve devices by hostname for historical data.
+
+    If no hostname is provided, returns all enabled devices.
+
+    Args:
+        info (Any): GraphQL info context.
+        hostname (str, optional): The hostname of the device to filter by.
+            Defaults to None.
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        sqlalchemy.orm.query.Query: Query object with the matching devices.
+    """
     if not hostname:
         return Device.query.filter(Device.enabled == 1)
     hostname_bytes = hostname.encode("utf-8")

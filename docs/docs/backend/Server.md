@@ -4481,7 +4481,21 @@ Convert 'organization' from bytes to string.
 def resolve_device_by_hostname(self, info, hostname=None, **kwargs)
 ```
 
-Resolve all devices by hostname for historical data.
+Resolve devices by hostname for historical data.
+
+If no hostname is provided, returns all enabled devices.
+
+**Arguments**:
+
+- `info` _Any_ - GraphQL info context.
+- `hostname` _str, optional_ - The hostname of the device to filter by.
+  Defaults to None.
+- `**kwargs` - Additional keyword arguments.
+  
+
+**Returns**:
+
+- `sqlalchemy.orm.query.Query` - Query object with the matching devices.
 
 <a id="db.attributes.resolve_name"></a>
 
@@ -4976,7 +4990,7 @@ def patch_config()
 Partially update the SwitchMap configuration.
 
 Handles the db_pass secret:
-- Expects {"new": "..."}.
+- Expects a dictionary with a key "new".
 - Updates db_pass directly.
 - Other non-secret fields are merged directly.
 
@@ -4985,7 +4999,8 @@ Handles the db_pass secret:
   None
   
   The request JSON body can contain:
-  - "db_pass" (dict, optional): {"new": "<new_password>"}
+  - "db_pass" (dict, optional): a dictionary with a key "new"
+  containing the new password
   - Other configuration keys to update.
   
 
@@ -4993,7 +5008,7 @@ Handles the db_pass secret:
 
 - `Response` - JSON response indicating success or failure:
   - 400 if the request JSON is invalid or db_pass format is incorrect.
-  - 200 with {"status": "success"} on successful update.
+  - 200 with a JSON response: status set to "success"
 
 <a id="api.routes.post"></a>
 

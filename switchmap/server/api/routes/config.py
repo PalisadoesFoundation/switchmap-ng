@@ -247,7 +247,7 @@ def patch_config():
     """Partially update the SwitchMap configuration.
 
     Handles the db_pass secret:
-      - Expects {"new": "..."}.
+      - Expects a dictionary with a key "new".
       - Updates db_pass directly.
       - Other non-secret fields are merged directly.
 
@@ -255,13 +255,15 @@ def patch_config():
         None
 
     The request JSON body can contain:
-      - "db_pass" (dict, optional): {"new": "<new_password>"}
+      - "db_pass" (dict, optional): a dictionary with a key "new"
+        containing the new password
       - Other configuration keys to update.
 
     Returns:
         Response: JSON response indicating success or failure:
           - 400 if the request JSON is invalid or db_pass format is incorrect.
-          - 200 with {"status": "success"} on successful update.
+          - 200 with a JSON response: status set to "success"
+
     """
     data = request.get_json()
     if not data:
