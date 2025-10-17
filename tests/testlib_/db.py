@@ -268,6 +268,14 @@ def populate():
             ifdescr="IfDescr_{}".format(data.random_string()),
             ifadminstatus=random.randint(0, 1000000),
             ifoperstatus=random.randint(0, 1000000),
+            ifin_ucast_pkts=random.randint(0, 1000000),
+            ifout_ucast_pkts=random.randint(0, 1000000),
+            ifin_errors=random.randint(0, 1000000),
+            ifin_discards=random.randint(0, 1000000),
+            ifin_nucast_pkts=random.randint(0, 1000000),
+            ifout_nucast_pkts=random.randint(0, 1000000),
+            ifout_errors=random.randint(0, 1000000),
+            ifout_discards=random.randint(0, 1000000),
             ts_idle=random.randint(0, 1000000),
             cdpcachedeviceid="cdpcachedeviceid_{}".format(data.random_string()),
             cdpcachedeviceport="cdpcachedeviceport_{}".format(
@@ -281,6 +289,8 @@ def populate():
             lldpremsysdesc="lldpremsysdesc_{}".format(data.random_string()),
             lldpremsysname="lldpremsysname_{}".format(data.random_string()),
             enabled=1,
+            ifin_octets=random.randint(0, 10**12),
+            ifout_octets=random.randint(0, 10**12),
         )
         for _ in range(maximum)
     ]

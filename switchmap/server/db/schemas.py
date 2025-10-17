@@ -14,6 +14,10 @@ import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.fields import BatchSQLAlchemyConnectionField
+from graphene.relay import Connection
+from graphene import ConnectionField
+from graphene import ObjectType, String  # <- add String here
+
 
 # Import models
 from switchmap.server.db.models import (
@@ -23,6 +27,7 @@ from switchmap.server.db.models import (
     L1Interface as L1InterfaceModel,
     Zone as ZoneModel,
     MacIp as MacIpModel,
+    SystemStat as SystemStatModel,
     Oui as OuiModel,
     Vlan as VlanModel,
     Mac as MacModel,
@@ -44,9 +49,11 @@ from switchmap.server.db.attributes import (
     OuiAttribute,
     VlanAttribute,
     VlanPortAttribute,
+    SystemStatAttribute,
     ZoneAttribute,
     IpAttribute,
     IpPortAttribute,
+    resolve_device_by_hostname,
 )
 
 ###############################################################################
@@ -81,6 +88,16 @@ class Device(SQLAlchemyObjectType, DeviceAttribute):
         """Define the metadata."""
 
         model = DeviceModel
+        interfaces = (graphene.relay.Node,)
+
+
+class SystemStat(SQLAlchemyObjectType, SystemStatAttribute):
+    """SystemStat node."""
+
+    class Meta:
+        """Define the metadata."""
+
+        model = SystemStatModel
         interfaces = (graphene.relay.Node,)
 
 
@@ -191,7 +208,39 @@ class Query(graphene.ObjectType):
 
     # Results as a single entry filtered by 'id' and as a list
     device = graphene.relay.Node.Field(Device)
-    devices = BatchSQLAlchemyConnectionField(Device.connection)
+    devices = BatchSQLAlchemyConnectionField(
+        Device.connection, hostname=graphene.String()
+    )
+
+    def resolve_devices(root, info, hostname=None, **kwargs):
+        """Resolve and return devices from the database.
+
+        Args:
+            root: The root object (not used here).
+            info: GraphQL resolver info, used to get the query context.
+            hostname (str, optional): If provided, filters by this hostname.
+            **kwargs: Additional arguments (ignored).
+
+        Returns:
+             sqlalchemy.orm.Query: A query object for the matching Device.
+        """
+        query = Device.get_query(info)
+
+        if hostname:
+            query = query.filter(DeviceModel.hostname == hostname.encode())
+
+        return query
+
+    # Custom resolver for device by hostname
+    device_by_hostname = BatchSQLAlchemyConnectionField(
+        Device.connection, hostname=graphene.String()
+    )
+
+    resolve_device_by_hostname = resolve_device_by_hostname
+
+    # Results as a single entry filtered by 'id' and as a list
+    systemstat = graphene.relay.Node.Field(SystemStat)
+    systemstats = BatchSQLAlchemyConnectionField(SystemStat.connection)
 
     # Results as a single entry filtered by 'id' and as a list
     l1interface = graphene.relay.Node.Field(L1Interface)

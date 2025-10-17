@@ -2,3 +2,6 @@
 # python black formatting
 [tool.black]
 line-length = 80
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

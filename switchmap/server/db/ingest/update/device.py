@@ -8,6 +8,7 @@ from operator import attrgetter
 # Application imports
 from switchmap.core import log
 from switchmap.core import general
+from switchmap.core.mac_utils import decode_mac_address
 from switchmap.server.db.ingest.query import device as _misc_device
 from switchmap.server.db.misc import interface as _historical
 from switchmap.server.db.table import device as _device
@@ -18,6 +19,7 @@ from switchmap.server.db.table import vlanport as _vlanport
 from switchmap.server.db.table import ipport as _ipport
 from switchmap.server.db.table import mac as _mac
 from switchmap.server.db.table import macip as _macip
+from switchmap.server.db.table import systemstat as _systemstat
 from switchmap.server.db.table import (
     IVlan,
     IDevice,
@@ -25,6 +27,8 @@ from switchmap.server.db.table import (
     IIpPort,
     IVlanPort,
     IL1Interface,
+    SystemStat,
+    ISystemStat,
 )
 
 
@@ -131,16 +135,27 @@ class Status:
         self._macport = False
         self._l1interface = False
         self._ipport = False
+        self._systemstat = False
 
     @property
     def l1interface(self):
-        """Provide the value of  the 'l1interface' property."""
+        """Provide the value of the 'l1interface' property."""
         return self._l1interface
 
     @l1interface.setter
     def l1interface(self, value):
         """Set the 'l1interface' property."""
         self._l1interface = value
+
+    @property
+    def systemstat(self):
+        """Provide the value of the 'systemstat' property."""
+        return self._systemstat
+
+    @systemstat.setter
+    def systemstat(self, value):
+        """Set the 'systemstat' property."""
+        self._systemstat = value
 
     @property
     def ipport(self):
@@ -225,6 +240,7 @@ class Topology:
         self.vlanport()
         self.macport()
         self.ipport()
+        self.systemstat()
 
     def l1interface(self, test=False):
         """Update the L1interface DB table.
@@ -300,6 +316,16 @@ No interfaces detected for for host {self._device.hostname}"""
                     lldpremsyscapenabled=interface.get("lldpRemSysCapEnabled"),
                     lldpremsysdesc=interface.get("lldpRemSysDesc"),
                     lldpremsysname=interface.get("lldpRemSysName"),
+                    ifin_ucast_pkts=interface.get("ifInUcastPkts"),
+                    ifout_ucast_pkts=interface.get("ifOutUcastPkts"),
+                    ifin_errors=interface.get("ifInErrors"),
+                    ifin_discards=interface.get("ifInDiscards"),
+                    ifin_octets=interface.get("ifInOctets"),
+                    ifout_octets=interface.get("ifOutOctets"),
+                    ifin_nucast_pkts=interface.get("ifInNUcastPkts"),
+                    ifout_nucast_pkts=interface.get("ifOutNUcastPkts"),
+                    ifout_errors=interface.get("ifOutErrors"),
+                    ifout_discards=interface.get("ifOutDiscards"),
                     ts_idle=ts_idle,
                     enabled=1,
                 )
@@ -505,13 +531,20 @@ Updating MAC address to interface {ifindex} mapping in the DB for device \
 {self._device.hostname} based on SNMP MIB-BRIDGE entries"""
                 log.log2debug(1065, log_message)
 
-                # Iterate over the MACs found
                 for next_mac in sorted(_macs):
-                    # Initialize loop variables
+                    # Initialize variables
                     valid_mac = None
 
-                    # Create lowercase version of MAC address
-                    mactest = general.mac(next_mac)
+                    # Normalize possible bytes OctetString to hex
+                    raw_mac = (
+                        next_mac.hex()
+                        if isinstance(next_mac, (bytes, bytearray))
+                        else next_mac
+                    )
+
+                    # Handle double-encoded MAC addresses from async poller
+                    decoded_mac = decode_mac_address(raw_mac)
+                    mactest = general.mac(decoded_mac)
                     if bool(mactest.valid) is False:
                         continue
                     else:
@@ -592,8 +625,18 @@ Getting MAC addresses for interface {ifindex} in the DB for device \
 
                 # Iterate over the MACs found
                 for item in sorted(_macs):
+                    # Normalize possible bytes OctetString to hex and decode
+                    raw_mac = (
+                        item.hex()
+                        if isinstance(item, (bytes, bytearray))
+                        else item
+                    )
+                    decoded = decode_mac_address(raw_mac)
+                    mtest = general.mac(decoded)
+                    if bool(mtest.valid) is False:
+                        continue
                     # Ensure the MAC exists in the database
-                    mac_exists = _mac.exists(self._device.idx_zone, item)
+                    mac_exists = _mac.exists(self._device.idx_zone, mtest.mac)
                     if bool(mac_exists) is True:
                         # Get all the IP addresses for the mac
                         found = _macip.idx_ips_exist(mac_exists.idx_mac)
@@ -627,6 +670,85 @@ Getting MAC addresses for interface {ifindex} in the DB for device \
 
         # Everything is completed
         self._status.ipport = True
+
+    def systemstat(self, test=False):
+        """Update the SystemStat DB table.
+
+        Args:
+            test: Test mode if True
+
+        Returns:
+            None
+        """
+        # Initialize key variables
+        inserts = []
+
+        # Log start
+        self.log("SystemStat")
+
+        # Extract vendor-specific MIB data from system section
+        system_data = self._data.get("system", {})
+
+        # Initialize variables
+        cpu_5min = None
+        mem_used = None
+        mem_free = None
+
+        # Get CPU and Memory data from CISCO-PROCESS-MIB
+        cisco_process = system_data.get("CISCO-PROCESS-MIB", {})
+        if cisco_process:
+            # Get CPU data
+            cpu_total_5min = cisco_process.get("cpmCPUTotal5minRev", {})
+            if cpu_total_5min:
+                # Get the first CPU value (usually CPU '1')
+                cpu_5min = next(iter(cpu_total_5min.values()), None)
+
+            # Get Memory data from CISCO-PROCESS-MIB
+            if not mem_used:
+                mem_used = cisco_process.get("ciscoMemoryPoolUsed")
+            if not mem_free:
+                mem_free = cisco_process.get("ciscoMemoryPoolFree")
+
+        # Get CPU and Memory data from JUNIPER-MIB
+        juniper_process = system_data.get("JUNIPER-MIB", {})
+        if juniper_process:
+            # Get CPU data
+            juniper_cpu = juniper_process.get("jnxOperatingCPU", {})
+            if juniper_cpu and cpu_5min is None:
+                # Get the first CPU value
+                cpu_5min = next(iter(juniper_cpu.values()), None)
+
+            # Get Memory data
+            if not mem_used:
+                mem_used = juniper_process.get("jnxOperatingMemoryUsed")
+            if not mem_free:
+                mem_free = juniper_process.get("jnxOperatingMemoryFree")
+
+        # Only create record if we have some data
+        if cpu_5min is not None or mem_used is not None or mem_free is not None:
+            row = ISystemStat(
+                idx_device=self._device.idx_device,
+                cpu_5min=cpu_5min,
+                mem_used=mem_used,
+                mem_free=mem_free,
+            )
+            inserts.append(row)
+
+            # Check if a record already exists for this device.
+            existing = _systemstat.device_exists(self._device.idx_device)
+            if existing:
+                # Update the existing records.
+                # Unlike bulk-insert tables, SystemStat only handles one row.
+                _systemstat.update_row(existing.idx_systemstat, row)
+            else:
+                # Insert a new record.
+                # Test mode is ignored, since only one row is ever written.
+                _systemstat.insert_row(row)
+
+        self.log("SystemStat", updated=True)
+
+        # Mark as completed
+        self._status.systemstat = True
 
     def log(self, table, updated=False):
         """Create standardized log messaging.

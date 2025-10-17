@@ -115,7 +115,7 @@ class Query:
         pass
 
 
-class TestMibEntityFunctions(unittest.TestCase):
+class TestMibEntityFunctions(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################
@@ -151,7 +151,7 @@ class TestMibEntityFunctions(unittest.TestCase):
         pass
 
 
-class TestMibEntity(unittest.TestCase):
+class TestMibEntity(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################

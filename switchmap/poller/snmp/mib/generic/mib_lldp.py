@@ -6,8 +6,9 @@ import binascii
 # Import project libraries
 from switchmap.poller.snmp.base_query import Query
 from switchmap.poller.snmp import BridgeQuery
-from switchmap.core import general
+from switchmap.core import general, log
 from . import mib_if
+import asyncio
 
 
 def get_query():
@@ -65,24 +66,32 @@ class LldpQuery(Query):
 
         """
         # Define query object
-        self._snmp_object = snmp_object
-        self._use_ifindex = False
+        self.snmp_object = snmp_object
+        self._use_ifindex = None
+        self._baseportifindex = None
+        self._bridge_mib = None
 
         # Get one OID entry in MIB (lldpRemSysName)
         test_oid = ".1.0.8802.1.1.2.1.4.1.1.9"
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-        # Load the ifindex baseport map if this mib is supported
-        bridge_mib = BridgeQuery(self._snmp_object)
+    async def _ensure_bridge_data(self):
+        """Lazy load bridge data when needed."""
+        if self._baseportifindex is None:
+            # Create bridge MIB and check if it's supported
+            self._bridge_mib = BridgeQuery(self.snmp_object)
 
-        if self.supported() and bridge_mib.supported():
-            self._baseportifindex = bridge_mib.dot1dbaseport_2_ifindex()
-            self._use_ifindex = self._use_ifindex_check()
-        else:
-            self._baseportifindex = None
+            if await self.supported() and await self._bridge_mib.supported():
+                self._baseportifindex = (
+                    await self._bridge_mib.dot1dbaseport_2_ifindex()
+                )
+                self._use_ifindex = await self._use_ifindex_check()
+            else:
+                self._baseportifindex = {}
+                self._use_ifindex = False
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -95,32 +104,38 @@ class LldpQuery(Query):
         # Initialize key variables
         final = defaultdict(lambda: defaultdict(dict))
 
-        # Get interface lldpRemSysName data
-        values = self.lldpremsysname()
-        for key, value in values.items():
-            final[key]["lldpRemSysName"] = value
+        # Ensure dependencies are loaded
+        await self._ensure_bridge_data()
 
-        # Get interface lldpRemSysDesc data
-        values = self.lldpremsysdesc()
-        for key, value in values.items():
-            final[key]["lldpRemSysDesc"] = value
+        # Run all LLDP queries concurrently
 
-        # Get interface lldpRemPortDesc data
-        values = self.lldpremportdesc()
-        if values is not None:
-            for key, value in values.items():
-                final[key]["lldpRemPortDesc"] = value
+        results = await asyncio.gather(
+            self.lldpremsysname(),
+            self.lldpremsysdesc(),
+            self.lldpremportdesc(),
+            self.lldpremsyscapenabled(),
+            return_exceptions=True,
+        )
 
-        # Get interface lldpRemSysCapEnabled data
-        values = self.lldpremsyscapenabled()
-        if values is not None:
-            for key, value in values.items():
-                final[key]["lldpRemSysCapEnabled"] = value
+        method_names = [
+            "lldpRemSysName",
+            "lldpRemSysDesc",
+            "lldpRemPortDesc",
+            "lldpRemSysCapEnabled",
+        ]
 
-        # Return
+        for method_name, values in zip(method_names, results):
+            if isinstance(values, Exception):
+                log.log2warning(1301, f"Error in {method_name}: {values}")
+                continue
+
+            if values:
+                for key, value in values.items():
+                    final[key][method_name] = value
+
         return final
 
-    def lldpremsysname(self, oidonly=False):
+    async def lldpremsysname(self, oidonly=False):
         """Return dict of LLDP-MIB lldpRemSysName for each port.
 
         Args:
@@ -141,20 +156,21 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
-            ifindex = self._ifindex(key)
+            ifindex = await self._ifindex(key)
 
             # We have seen issues where self._baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
-            if bool(ifindex) is True:
+            # checking if ifindex might be returning 0
+            if ifindex:
                 data_dict[ifindex] = str(bytes(value), encoding="utf-8")
 
         # Return the interface descriptions
         return data_dict
 
-    def lldpremsyscapenabled(self, oidonly=False):
+    async def lldpremsyscapenabled(self, oidonly=False):
         """Return dict of LLDP-MIB lldpRemSysCapEnabled for each port.
 
         Args:
@@ -177,10 +193,10 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
-            ifindex = self._ifindex(key)
+            ifindex = await self._ifindex(key)
 
             # We have seen issues where self._baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
@@ -197,7 +213,7 @@ class LldpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def lldpremsysdesc(self, oidonly=False):
+    async def lldpremsysdesc(self, oidonly=False):
         """Return dict of LLDP-MIB lldpRemSysDesc for each port.
 
         Args:
@@ -218,10 +234,10 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
-            ifindex = self._ifindex(key)
+            ifindex = await self._ifindex(key)
 
             # We have seen issues where self._baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
@@ -233,7 +249,7 @@ class LldpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def lldpremportdesc(self, oidonly=False):
+    async def lldpremportdesc(self, oidonly=False):
         """Return dict of LLDP-MIB lldpRemPortDesc for each port.
 
         Args:
@@ -254,10 +270,10 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
-            ifindex = self._ifindex(key)
+            ifindex = await self._ifindex(key)
 
             # We have seen issues where self._baseportifindex doesn't always
             # return a complete dict of values that include all ifindexes
@@ -269,7 +285,7 @@ class LldpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def lldplocportdesc(self, oidonly=False):
+    async def lldplocportdesc(self, oidonly=False):
         """Return dict of LLDP-MIB lldpLocPortDesc for each port.
 
         Args:
@@ -290,7 +306,7 @@ class LldpQuery(Query):
             return oid
 
         # Process results
-        results = self._snmp_object.swalk(oid, normalized=False)
+        results = await self.snmp_object.swalk(oid, normalized=False)
         for key, value in results.items():
             # Check if this OID is indexed using iFindex or dot1dBasePort
             key_index = int(key.split(".")[-1])
@@ -314,7 +330,7 @@ class LldpQuery(Query):
         # Return the interface descriptions
         return data_dict
 
-    def _use_ifindex_check(self):
+    async def _use_ifindex_check(self):
         """Return if LLDP OIDs are keyed by ifIndex or dot1dBasePortIfIndex.
 
         Args:
@@ -326,13 +342,15 @@ class LldpQuery(Query):
         """
         # Initialize key variables
         use_ifindex = False
-        ifdescr = mib_if.IfQuery(self._snmp_object).ifdescr()
+
+        if_query = mib_if.IfQuery(self.snmp_object)
+        ifdescr = await if_query.ifdescr()
 
         # Use the well known lldplocportdesc OID that must be supported
         oid = ".1.0.8802.1.1.2.1.3.7.1.4"
 
         # Process results
-        lldpdescr = self._snmp_object.swalk(oid, normalized=False)
+        lldpdescr = await self.snmp_object.swalk(oid, normalized=False)
         for oid_key in sorted(lldpdescr.keys()):
             # Check if this OID is indexed using iFindex or dot1dBasePort
             lldp_key = int(oid_key.split(".")[-1])
@@ -346,7 +364,7 @@ class LldpQuery(Query):
         # Return
         return use_ifindex
 
-    def _ifindex(self, key):
+    async def _ifindex(self, key):
         """Return ifindex of port.
 
         Args:
@@ -356,19 +374,21 @@ class LldpQuery(Query):
             ifindex: The ifindex of the port
 
         """
+        # Ensure bridge data is loaded
+        await self._ensure_bridge_data()
+
         # Initialize key variables
         ifindex = None
 
         # Check if this OID is indexed using iFindex or dot1dBasePort
-        if bool(self._baseportifindex) is True:
-            if self._use_ifindex is True:
+        if self._baseportifindex:
+            if self._use_ifindex:
                 ifindex = _penultimate_node(key)
             else:
                 bridgeport = _penultimate_node(key)
-                ifindex = self._baseportifindex[bridgeport]
+                ifindex = self._baseportifindex.get(bridgeport)
         else:
             ifindex = _penultimate_node(key)
-
         # Return
         return ifindex
 

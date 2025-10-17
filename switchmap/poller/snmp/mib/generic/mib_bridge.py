@@ -5,6 +5,7 @@ from collections import defaultdict
 from switchmap.poller.snmp.base_query import Query
 from switchmap.core import general
 from . import mib_if
+import asyncio
 
 
 def get_query():
@@ -61,7 +62,7 @@ class BridgeQuery(Query):
 
         """
         # Assign SNMP object
-        self._snmp_object = snmp_object
+        self.snmp_object = snmp_object
 
         # Get one OID entry in MIB (dot1dBasePortIfIndex)
         test_oid = ".1.3.6.1.2.1.17.4.3.1.2"
@@ -69,11 +70,11 @@ class BridgeQuery(Query):
         # Determine whether LLDP is keyed on ifIndex or BasePortIndex
         # If the ifindex method is being used, all the lldpLocPortIds
         # will match the ifindex values
-        self._ifindex = mib_if.IfQuery(snmp_object).ifindex()
+        self._ifindex = None
 
         super().__init__(snmp_object, test_oid, tags=["layer1"])
 
-    def layer1(self):
+    async def layer1(self):
         """Get layer 1 data from device.
 
         Args:
@@ -84,9 +85,9 @@ class BridgeQuery(Query):
 
         """
         # Return
-        return self._macaddresstable()
+        return await self._macaddresstable()
 
-    def _macaddresstable(self):
+    async def _macaddresstable(self):
         """Return dict of the devices MAC address table.
 
         Args:
@@ -102,22 +103,24 @@ class BridgeQuery(Query):
 
         # Check if Cisco VLANS are supported
         oid_vtpvlanstate = ".1.3.6.1.4.1.9.9.46.1.3.1.1.2"
-        oid_exists = self._snmp_object.oid_exists(oid_vtpvlanstate)
+        oid_exists = await self.snmp_object.oid_exists(oid_vtpvlanstate)
         if bool(oid_exists) is True:
-            final = self._macaddresstable_cisco()
+            final = await self._macaddresstable_cisco()
             done = True
 
         # Check if Juniper VLANS are supported
         if done is False:
             oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
-            oid_exists = self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
+            oid_exists = await self.snmp_object.oid_exists(
+                oid_dot1qvlanstaticname
+            )
             if bool(oid_exists) is True:
-                final = self._macaddresstable_juniper()
+                final = await self._macaddresstable_juniper()
 
         # Return
         return final
 
-    def _macaddresstable_cisco(self):
+    async def _macaddresstable_cisco(self):
         """Return dict of the Cisco device's MAC address table.
 
         Args:
@@ -135,23 +138,23 @@ class BridgeQuery(Query):
 
         # Check if Cisco VLANS are supported
         oid_vtpvlanstate = ".1.3.6.1.4.1.9.9.46.1.3.1.1.2"
-        oid_exists = self._snmp_object.oid_exists(oid_vtpvlanstate)
+        oid_exists = await self.snmp_object.oid_exists(oid_vtpvlanstate)
         if bool(oid_exists) is True:
             # Get the vlantype
             oid_vtpvlantype = ".1.3.6.1.4.1.9.9.46.1.3.1.1.3"
-            vtpvlantype = self._snmp_object.swalk(
+            vtpvlantype = await self.snmp_object.swalk(
                 oid_vtpvlantype, normalized=True
             )
 
             # Get VLANs and their states
-            vtpvlanstate = self._snmp_object.swalk(
+            vtpvlanstate = await self.snmp_object.swalk(
                 oid_vtpvlanstate, normalized=True
             )
 
             # Get the style of context name to be used for this type of device
             for vlan, state in vtpvlanstate.items():
                 if int(state) == 1 and int(vtpvlantype[vlan]) == 1:
-                    context_style = self._cisco_context_style(vlan)
+                    context_style = await self._cisco_context_style(vlan)
                     break
 
             # Append additional vlan context names to query.
@@ -161,10 +164,13 @@ class BridgeQuery(Query):
                     cisco_context = _cisco_vlan_context(vlan, context_style)
                     context_names.append(cisco_context)
 
-        # Get key information
-        macs = self._dot1dtpfdbaddress(context_names=context_names)
-        dot1dtpfdbport = self._dot1dtpfdbport(context_names=context_names)
-        baseportifindex = self.dot1dbaseport_2_ifindex()
+        tasks = [
+            self._dot1dtpfdbaddress(context_names=context_names),
+            self._dot1dtpfdbport(context_names=context_names),
+            self.dot1dbaseport_2_ifindex(),
+        ]
+
+        macs, dot1dtpfdbport, baseportifindex = await asyncio.gather(*tasks)
 
         # Create a dict keyed by ifIndex
         for decimal_macaddress, hex_macaddress in macs.items():
@@ -197,7 +203,7 @@ class BridgeQuery(Query):
         # Return
         return final
 
-    def _macaddresstable_juniper(self):
+    async def _macaddresstable_juniper(self):
         """Return dict of the Juniper device's MAC address table.
 
         Args:
@@ -213,10 +219,10 @@ class BridgeQuery(Query):
 
         # Check if Juniper VLANS are supported
         oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
-        oid_exists = self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
+        oid_exists = await self.snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
             # Create a dict of MAC addresses found
-            mac_dict = self._dot1qtpfdbport()
+            mac_dict = await self._dot1qtpfdbport()
             for decimal_macaddress, dot1dbaseport in mac_dict.items():
                 # Convert decimal mac to hex
                 # (Only use the last 6 digits in the decimal_macaddress, first
@@ -235,7 +241,7 @@ class BridgeQuery(Query):
                     dot1dbaseport_macs[dot1dbaseport] = [hex_macaddress]
 
             # Assign MACs to ifindex
-            baseportifindex = self.dot1dbaseport_2_ifindex()
+            baseportifindex = await self.dot1dbaseport_2_ifindex()
             for dot1dbaseport, ifindex in baseportifindex.items():
                 if dot1dbaseport in dot1dbaseport_macs:
                     final[ifindex]["l1_macs"] = dot1dbaseport_macs[
@@ -245,7 +251,7 @@ class BridgeQuery(Query):
         # Return
         return final
 
-    def _dot1dtpfdbport(self, context_names=None):
+    async def _dot1dtpfdbport(self, context_names=None):
         """Return dict of BRIDGE-MIB dot1dTpFdbPort data.
 
         Args:
@@ -264,7 +270,7 @@ class BridgeQuery(Query):
         # Process values
         oid = ".1.3.6.1.2.1.17.4.3.1.2"
         for context_name in context_names:
-            results = self._snmp_object.swalk(
+            results = await self.snmp_object.swalk(
                 oid, normalized=False, context_name=context_name
             )
             for key, value in results.items():
@@ -274,7 +280,7 @@ class BridgeQuery(Query):
         # Return data
         return data_dict
 
-    def _dot1qtpfdbport(self):
+    async def _dot1qtpfdbport(self):
         """Return dict of BRIDGE-MIB dot1qTpFdbPort data.
 
         Args:
@@ -292,9 +298,9 @@ class BridgeQuery(Query):
 
         # Process dot1qvlanstaticname OID
         oid_dot1qvlanstaticname = ".1.3.6.1.2.1.17.7.1.4.3.1.1"
-        oid_exists = self._snmp_object.oid_exists(oid_dot1qvlanstaticname)
+        oid_exists = await self.snmp_object.oid_exists(oid_dot1qvlanstaticname)
         if bool(oid_exists) is True:
-            results = self._snmp_object.swalk(
+            results = await self.snmp_object.swalk(
                 oid_dot1qvlanstaticname, normalized=True
             )
             for key, value in results.items():
@@ -306,7 +312,9 @@ class BridgeQuery(Query):
             oid = ".1.3.6.1.2.1.17.7.1.2.2.1.2"
             for vlan in vlans:
                 new_oid = "{}.{}".format(oid, vlan)
-                results = self._snmp_object.swalk(new_oid, normalized=False)
+                results = await self.snmp_object.swalk(
+                    new_oid, normalized=False
+                )
                 for key, value in results.items():
                     new_key = key[len(oid) :]
                     data_dict[new_key] = value
@@ -314,7 +322,7 @@ class BridgeQuery(Query):
         # Return data
         return data_dict
 
-    def _dot1dtpfdbaddress(self, context_names=None):
+    async def _dot1dtpfdbaddress(self, context_names=None):
         """Return dict of BRIDGE-MIB dot1dTpFdbAddress data.
 
         Args:
@@ -333,7 +341,7 @@ class BridgeQuery(Query):
         # Process values
         oid = ".1.3.6.1.2.1.17.4.3.1.1"
         for context_name in context_names:
-            results = self._snmp_object.swalk(
+            results = await self.snmp_object.swalk(
                 oid, normalized=False, context_name=context_name
             )
             for key, mac_value in results.items():
@@ -344,7 +352,7 @@ class BridgeQuery(Query):
         # Return data
         return data_dict
 
-    def dot1dbaseport_2_ifindex(self, context_names=None):
+    async def dot1dbaseport_2_ifindex(self, context_names=None):
         """Return dict of BRIDGE-MIB dot1dBasePortIfIndex data.
 
         Args:
@@ -360,23 +368,27 @@ class BridgeQuery(Query):
             context_names = [""]
         data_dict = defaultdict(dict)
 
+        # Get ifindex data directly
+        oid = ".1.3.6.1.2.1.2.2.1.1"
+        ifindex_results = await self.snmp_object.swalk(oid, normalized=True)
+        ifindex_data = {int(k): v for k, v in ifindex_results.items()}
         # Get the difference between ifIndex and dot1dBasePortIfIndex
         oid = ".1.3.6.1.2.1.17.1.4.1.2"
-        results = self._snmp_object.swalk(oid, normalized=True)
+        results = await self.snmp_object.swalk(oid, normalized=True)
         for _bridge_index, ifindex in results.items():
             bridge_index = int(_bridge_index)
             offset = int(ifindex) - bridge_index
             break
 
         # Populate the dictionary keyed by dot1dBasePortIfIndex
-        for ifindex, _ in sorted(self._ifindex.items()):
+        for ifindex, _ in sorted(ifindex_data.items()):
             bridge_index = ifindex - offset
             data_dict[bridge_index] = ifindex
 
         # Return data
         return data_dict
 
-    def _cisco_context_style(self, vlan):
+    async def _cisco_context_style(self, vlan):
         """Return style value to use to query VLAN data on a cisco switch.
 
         Args:
@@ -393,7 +405,7 @@ class BridgeQuery(Query):
         # Try all available styles
         for style in styles:
             context_names = [_cisco_vlan_context(vlan, style)]
-            result = self._dot1dtpfdbaddress(context_names=context_names)
+            result = await self._dot1dtpfdbaddress(context_names=context_names)
             if bool(result) is True:
                 cisco_style = style
                 break

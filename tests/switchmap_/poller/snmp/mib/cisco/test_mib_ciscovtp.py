@@ -5,7 +5,7 @@ import os
 import sys
 import binascii
 import unittest
-from mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -118,7 +118,7 @@ class Query:
         pass
 
 
-class TestMibCiscoVTPFunctions(unittest.TestCase):
+class TestMibCiscoVTPFunctions(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################
@@ -154,7 +154,7 @@ class TestMibCiscoVTPFunctions(unittest.TestCase):
         pass
 
 
-class TestMibCiscoVTP(unittest.TestCase):
+class TestMibCiscoVTP(unittest.IsolatedAsyncioTestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -168,33 +168,24 @@ class TestMibCiscoVTP(unittest.TestCase):
 
     # Set the stage for SNMPwalk for integer results
     snmpobj_integer = Mock(spec=Query)
-    mock_spec_integer = {
-        "swalk.return_value": nwalk_results_integer,
-        "walk.return_value": nwalk_results_integer,
-    }
-    snmpobj_integer.configure_mock(**mock_spec_integer)
+    snmpobj_integer.swalk = AsyncMock(return_value=nwalk_results_integer)
+    snmpobj_integer.walk = AsyncMock(return_value=nwalk_results_integer)
 
     # Normalized walk returning integers for the ifIndex
     nwalk_results_ifindex = {100: 100, 200: 200}
 
     # Set the stage for SNMPwalk for integer results for the ifIndex
     snmpobj_ifindex = Mock(spec=Query)
-    mock_spec_ifindex = {
-        "swalk.return_value": nwalk_results_ifindex,
-        "walk.return_value": nwalk_results_ifindex,
-    }
-    snmpobj_ifindex.configure_mock(**mock_spec_ifindex)
+    snmpobj_ifindex.swalk = AsyncMock(return_value=nwalk_results_ifindex)
+    snmpobj_ifindex.walk = AsyncMock(return_value=nwalk_results_ifindex)
 
     # Normalized walk returning strings
     nwalk_results_bytes = {100: b"1234", 200: b"5678"}
 
     # Set the stage for SNMPwalk for string results
     snmpobj_bytes = Mock(spec=Query)
-    mock_spec_bytes = {
-        "swalk.return_value": nwalk_results_bytes,
-        "walk.return_value": nwalk_results_bytes,
-    }
-    snmpobj_bytes.configure_mock(**mock_spec_bytes)
+    snmpobj_bytes.swalk = AsyncMock(return_value=nwalk_results_bytes)
+    snmpobj_bytes.walk = AsyncMock(return_value=nwalk_results_bytes)
 
     # Normalized walk returning binary data
     nwalk_results_binary = {
@@ -204,11 +195,8 @@ class TestMibCiscoVTP(unittest.TestCase):
 
     # Set the stage for SNMPwalk for binary results
     snmpobj_binary = Mock(spec=Query)
-    mock_spec_binary = {
-        "swalk.return_value": nwalk_results_binary,
-        "walk.return_value": nwalk_results_binary,
-    }
-    snmpobj_binary.configure_mock(**mock_spec_binary)
+    snmpobj_binary.swalk = AsyncMock(return_value=nwalk_results_binary)
+    snmpobj_binary.walk = AsyncMock(return_value=nwalk_results_binary)
 
     # Initializing key variables
     expected_dict = {
@@ -218,7 +206,7 @@ class TestMibCiscoVTP(unittest.TestCase):
             "vlanTrunkPortNativeVlan": 1234,
             "vlanTrunkPortEncapsulationType": 1234,
             "vlanTrunkPortVlansEnabled": 1234,
-            "vtpVlanType": 1234,
+            "vtpVlanType": "1234",
             "vtpVlanName": "1234",
             "vtpVlanState": 1234,
         },
@@ -228,7 +216,7 @@ class TestMibCiscoVTP(unittest.TestCase):
             "vlanTrunkPortNativeVlan": 5678,
             "vlanTrunkPortEncapsulationType": 5678,
             "vlanTrunkPortVlansEnabled": 5678,
-            "vtpVlanType": 5678,
+            "vtpVlanType": "5678",
             "vtpVlanName": "5678",
             "vtpVlanState": 5678,
         },
@@ -275,7 +263,7 @@ class TestMibCiscoVTP(unittest.TestCase):
         # the same type of results (eg. int, string, hex)
         pass
 
-    def test_vlantrunkportencapsulationtype(self):
+    async def test_vlantrunkportencapsulationtype(self):
         """Testing function vlantrunkportencapsulationtype."""
         # Initialize key variables
         oid_key = "vlanTrunkPortEncapsulationType"
@@ -283,7 +271,7 @@ class TestMibCiscoVTP(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.vlantrunkportencapsulationtype()
+        results = await testobj.vlantrunkportencapsulationtype()
 
         # Basic testing of results
         for key, value in results.items():
@@ -291,10 +279,10 @@ class TestMibCiscoVTP(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.vlantrunkportencapsulationtype(oidonly=True)
+        results = await testobj.vlantrunkportencapsulationtype(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_vlantrunkportnativevlan(self):
+    async def test_vlantrunkportnativevlan(self):
         """Testing function vlantrunkportnativevlan."""
         # Initialize key variables
         oid_key = "vlanTrunkPortNativeVlan"
@@ -302,7 +290,7 @@ class TestMibCiscoVTP(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.vlantrunkportnativevlan()
+        results = await testobj.vlantrunkportnativevlan()
 
         # Basic testing of results
         for key, value in results.items():
@@ -310,10 +298,10 @@ class TestMibCiscoVTP(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.vlantrunkportnativevlan(oidonly=True)
+        results = await testobj.vlantrunkportnativevlan(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_vlantrunkportdynamicstatus(self):
+    async def test_vlantrunkportdynamicstatus(self):
         """Testing function vlantrunkportdynamicstatus."""
         # Initialize key variables
         oid_key = "vlanTrunkPortDynamicStatus"
@@ -321,7 +309,7 @@ class TestMibCiscoVTP(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.vlantrunkportdynamicstatus()
+        results = await testobj.vlantrunkportdynamicstatus()
 
         # Basic testing of results
         for key, value in results.items():
@@ -329,10 +317,10 @@ class TestMibCiscoVTP(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.vlantrunkportdynamicstatus(oidonly=True)
+        results = await testobj.vlantrunkportdynamicstatus(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_vlantrunkportdynamicstate(self):
+    async def test_vlantrunkportdynamicstate(self):
         """Testing function vlantrunkportdynamicstate."""
         # Initialize key variables
         oid_key = "vlanTrunkPortDynamicState"
@@ -340,7 +328,7 @@ class TestMibCiscoVTP(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.vlantrunkportdynamicstate()
+        results = await testobj.vlantrunkportdynamicstate()
 
         # Basic testing of results
         for key, value in results.items():
@@ -348,10 +336,10 @@ class TestMibCiscoVTP(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.vlantrunkportdynamicstate(oidonly=True)
+        results = await testobj.vlantrunkportdynamicstate(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_vtpvlanname(self):
+    async def test_vtpvlanname(self):
         """Testing function vtpvlanname."""
         # Initialize key variables
         oid_key = "vtpVlanName"
@@ -359,7 +347,7 @@ class TestMibCiscoVTP(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_bytes)
-        results = testobj.vtpvlanname()
+        results = await testobj.vtpvlanname()
 
         # Basic testing of results
         for key, value in results.items():
@@ -367,10 +355,10 @@ class TestMibCiscoVTP(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.vtpvlanname(oidonly=True)
+        results = await testobj.vtpvlanname(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_vtpvlantype(self):
+    async def test_vtpvlantype(self):
         """Testing function vtpvlantype."""
         # Initialize key variables
         oid_key = "vtpVlanType"
@@ -378,7 +366,7 @@ class TestMibCiscoVTP(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.vtpvlantype()
+        results = await testobj.vtpvlantype()
 
         # Basic testing of results
         for key, value in results.items():
@@ -386,10 +374,10 @@ class TestMibCiscoVTP(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.vtpvlantype(oidonly=True)
+        results = await testobj.vtpvlantype(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_vtpvlanstate(self):
+    async def test_vtpvlanstate(self):
         """Testing function vtpvlanstate."""
         # Initialize key variables
         oid_key = "vtpVlanState"
@@ -397,7 +385,7 @@ class TestMibCiscoVTP(unittest.TestCase):
 
         # Get results
         testobj = testimport.init_query(self.snmpobj_integer)
-        results = testobj.vtpvlanstate()
+        results = await testobj.vtpvlanstate()
 
         # Basic testing of results
         for key, value in results.items():
@@ -405,7 +393,7 @@ class TestMibCiscoVTP(unittest.TestCase):
             self.assertEqual(value, self.expected_dict[key][oid_key])
 
         # Test that we are getting the correct OID
-        results = testobj.vtpvlanstate(oidonly=True)
+        results = await testobj.vtpvlanstate(oidonly=True)
         self.assertEqual(results, oid)
 
     def test_vlantrunkportvlansenabled(self):

@@ -1,35 +1,61 @@
-"""SNMP manager class."""
+"""Async SNMP manager class."""
 
 import os
-import sys
+import asyncio
 
-import easysnmp
-from easysnmp import exceptions
 
-# Import project libraries
-from switchmap.poller.configuration import ConfigPoller
-from switchmap.poller import POLL
+# import project libraries
 from switchmap.core import log
 from switchmap.core import files
+from switchmap.poller import POLL
+from switchmap.poller.configuration import ConfigPoller
+
 from . import iana_enterprise
+
+from pysnmp.hlapi.asyncio import (
+    SnmpEngine,
+    CommunityData,
+    UdpTransportTarget,
+    ContextData,
+    ObjectType,
+    ObjectIdentity,
+    getCmd,
+    nextCmd,
+    bulkCmd,
+    UsmUserData,
+    # Authentication protocols
+    usmHMACMD5AuthProtocol,
+    usmHMACSHAAuthProtocol,
+    usmHMAC128SHA224AuthProtocol,
+    usmHMAC192SHA256AuthProtocol,
+    usmHMAC256SHA384AuthProtocol,
+    usmHMAC384SHA512AuthProtocol,
+    # Privacy protocols
+    usmDESPrivProtocol,
+    usmAesCfb128Protocol,
+    usmAesCfb192Protocol,
+    usmAesCfb256Protocol,
+)
+
+from pysnmp.error import PySnmpError
+from pysnmp.proto.rfc1905 import EndOfMibView, NoSuchInstance, NoSuchObject
 
 
 class Validate:
-    """Class Verify SNMP data."""
+    """Class to validate SNMP data asynchronously."""
 
     def __init__(self, options):
         """Initialize the Validate class.
 
         Args:
-            options: POLLING_OPTIONS object containing SNMP configuration
+            options: POLLING_OPTIONS object containing SNMP configuration.
 
         Returns:
-            None
+           None
         """
-        # Initialize key variables
         self._options = options
 
-    def credentials(self):
+    async def credentials(self):
         """Determine valid SNMP credentials for a host.
 
         Args:
@@ -41,47 +67,42 @@ class Validate:
         """
         # Initialize key variables
         cache_exists = False
-
-        # Create cache directory / file if not yet created
         filename = files.snmp_file(self._options.hostname, ConfigPoller())
-        if os.path.exists(filename) is True:
+        if os.path.exists(filename):
             cache_exists = True
+        group = None
 
-        # Create file if necessary
         if cache_exists is False:
-            # Get credentials
-            authentication = self.validation()
+            authentication = await self.validation()
 
             # Save credentials if successful
             if bool(authentication):
                 _update_cache(filename, authentication.group)
-
         else:
             # Read credentials from cache
             if os.path.isfile(filename):
                 with open(filename) as f_handle:
-                    group = f_handle.readline()
+                    group = f_handle.readline().strip() or None
 
-            # Get credentials
-            authentication = self.validation(group)
+            # Get Credentials
+            authentication = await self.validation(group)
 
-            # Try the rest if these credentials fail
+            # Try the rest if the credentials fail
             if bool(authentication) is False:
-                authentication = self.validation()
+                authentication = await self.validation()
 
-            # Update cache if found
+            # update cache if found
             if bool(authentication):
                 _update_cache(filename, authentication.group)
 
-        # Return
         return authentication
 
-    def validation(self, group=None):
+    async def validation(self, group=None):
         """Determine valid SNMP authorization for a host.
 
         Args:
             group: String containing SNMP group name to try, or None to try all
-                groups
+               groups
 
         Returns:
             result: SNMP authorization object if valid credentials found,
@@ -99,24 +120,19 @@ class Validate:
             # Setup contact with the remote device
             device = Interact(
                 POLL(
-                    hostname=self._options.hostname,
-                    authorization=authorization,
+                    hostname=self._options.hostname, authorization=authorization
                 )
             )
-
-            # Try successive groups
+            # Try successive groups check if device is contactable
             if group is None:
-                # Verify connectivity
-                if device.contactable() is True:
+                if await device.contactable() is True:
                     result = authorization
                     break
             else:
                 if authorization.group == group:
-                    # Verify connectivity
-                    if device.contactable() is True:
+                    if await device.contactable() is True:
                         result = authorization
 
-        # Return
         return result
 
 
@@ -134,15 +150,20 @@ class Interact:
         """
         # Initialize key variables
         self._poll = _poll
+        self._engine = SnmpEngine()
+
+        # Rate Limiting
+        self._semaphore = asyncio.Semaphore(10)
 
         # Fail if there is no authentication
         if bool(self._poll.authorization) is False:
             log_message = (
-                "SNMP parameters provided are blank. " "Non existent host?"
+                "SNMP parameters provided are either blank or missing."
+                "Non existent host?"
             )
             log.log2die(1045, log_message)
 
-    def enterprise_number(self):
+    async def enterprise_number(self):
         """Get SNMP enterprise number for the device.
 
         Args:
@@ -152,13 +173,12 @@ class Interact:
             int: SNMP enterprise number identifying the device vendor
         """
         # Get the sysObjectID.0 value of the device
-        sysid = self.sysobjectid()
+        sysid = await self.sysobjectid()
 
         # Get the vendor ID
         enterprise_obj = iana_enterprise.Query(sysobjectid=sysid)
         enterprise = enterprise_obj.enterprise()
 
-        # Return
         return enterprise
 
     def hostname(self):
@@ -170,48 +190,62 @@ class Interact:
         Returns:
             str: Hostname of the target device
         """
-        # Initialize key variables
-        hostname = self._poll.hostname
+        return self._poll.hostname
 
-        # Return
-        return hostname
+    def close(self):
+        """Clean up SNMP engine resources.
 
-    def contactable(self):
+        This method should be called when the Interact object is no longer
+        needed to ensure proper cleanup of SNMP engine resources.
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        if hasattr(self, "_engine") and self._engine:
+            dispatcher = getattr(self._engine, "transportDispatcher", None)
+            if dispatcher is not None:
+                try:
+                    dispatcher.closeDispatcher()
+                except (PySnmpError, AttributeError) as exc:
+                    log.log2debug(
+                        1219,
+                        f"Failed to close SNMP dispatcher for "
+                        f"{self.hostname()}: {exc}",
+                    )
+            # Always clear the engine reference
+            self._engine = None
+
+    async def contactable(self):
         """Check if device is reachable via SNMP.
 
         Args:
             None
 
         Returns:
-            bool: True if device responds to SNMP queries, False otherwise
+           bool: True if device responds to SNMP queries, False otherwise
         """
-        # Define key variables
+        # key variables
         contactable = False
         result = None
 
         # Try to reach device
         try:
-            # If we can poll the SNMP sysObjectID,
-            # then the device is contactable
-            result = self.sysobjectid(check_reachability=True)
+            # Test if we can poll the SNMP sysObjectID
+            # if true, then the device is contactable
+            result = await self.sysobjectid(check_reachability=True)
             if bool(result) is True:
                 contactable = True
 
-        except Exception:
-            # Not contactable
+        except (PySnmpError, asyncio.TimeoutError):
+            # Expected: device not contactable or timeout
             contactable = False
 
-        except:
-            # Log a message
-            log_message = "Unexpected SNMP error for device {}" "".format(
-                self._poll.hostname
-            )
-            log.log2die(1008, log_message)
-
-        # Return
         return contactable
 
-    def sysobjectid(self, check_reachability=False):
+    async def sysobjectid(self, check_reachability=False):
         """Get the sysObjectID of the device.
 
         Args:
@@ -226,14 +260,22 @@ class Interact:
         object_id = None
 
         # Get sysObjectID
-        results = self.get(oid, check_reachability=check_reachability)
+        results = await self.get(oid, check_reachability)
+        # Pysnmp already returns out value as value unlike easysnmp
         if bool(results) is True:
-            object_id = results[oid].decode("utf-8")
+            # Both formats: with and without leading dot
+            object_id = results.get(oid)
+            if object_id is None:
+                oid_without_dot = oid.lstrip(".")
+                object_id = results.get(oid_without_dot)
 
-        # Return
+            # Convert bytes to string if needed
+            if isinstance(object_id, bytes):
+                object_id = object_id.decode("utf-8")
+
         return object_id
 
-    def oid_exists(self, oid_to_get, context_name=""):
+    async def oid_exists(self, oid_to_get, context_name=""):
         """Determine if an OID exists on the device.
 
         Args:
@@ -244,24 +286,35 @@ class Interact:
         Returns:
             bool: True if OID exists, False otherwise
         """
-        # Initialize key variables
-        validity = False
+        try:
+            # Initialize key
+            validity = False
 
-        # Validate OID
-        if self._oid_exists_get(oid_to_get, context_name=context_name) is True:
-            validity = True
-
-        if validity is False:
+            # Validate OID
             if (
-                self._oid_exists_walk(oid_to_get, context_name=context_name)
+                await self._oid_exists_get(
+                    oid_to_get, context_name=context_name
+                )
                 is True
             ):
                 validity = True
+            if validity is False:
+                if (
+                    await self._oid_exists_walk(
+                        oid_to_get, context_name=context_name
+                    )
+                    is True
+                ):
+                    validity = True
 
-        # Return
-        return validity
+            return validity
+        except Exception as e:
+            log.log2warning(
+                1305, f"OID existence check failed for {oid_to_get}: {e}"
+            )
+            return False
 
-    def _oid_exists_get(self, oid_to_get, context_name=""):
+    async def _oid_exists_get(self, oid_to_get, context_name=""):
         """Determine existence of OID on device.
 
         Args:
@@ -272,142 +325,70 @@ class Interact:
 
         Returns:
             validity: True if exists
-
         """
-        # Initialize key variables
-        validity = False
-
-        # Process
-        (_, validity, result) = self.query(
-            oid_to_get,
-            get=True,
-            check_reachability=True,
-            context_name=context_name,
-            check_existence=True,
-        )
-
-        # If we get no result, then override validity
-        if bool(result) is False:
+        try:
             validity = False
-        elif isinstance(result, dict) is True:
-            if result[oid_to_get] is None:
-                validity = False
 
-        # Return
-        return validity
+            (_, exists, result) = await self.query(
+                oid_to_get,
+                get=True,
+                check_reachability=True,
+                check_existence=True,
+                context_name=context_name,
+            )
 
-    def _oid_exists_walk(self, oid_to_get, context_name=""):
-        """Determine existence of OID on device.
+            if exists and bool(result):
+                # Make sure the OID key exists in result
+                exact_key = oid_to_get
+                alt_key = oid_to_get.lstrip(".")
+                if isinstance(result, dict) and oid_to_get in result:
+                    if (
+                        result.get(exact_key) is not None
+                        or result.get(alt_key) is not None
+                    ):
+                        validity = True
+                elif isinstance(result, dict) and result:
+                    # If result has data but not exact OID, still consider valid
+                    validity = True
 
-        Args:
+            return validity
+        except Exception as e:
+            log.log2warning(
+                1305, f"OID existence check failed for {oid_to_get}: {e}"
+            )
+            return False
+
+    async def _oid_exists_walk(self, oid_to_get, context_name=""):
+        """Check OID existence on device using WALK.
+
+         Args:
             oid_to_get: OID to get
             context_name: Set the contextName used for SNMPv3 messages.
                 The default contextName is the empty string "".  Overrides the
                 defContext token in the snmp.conf file.
 
         Returns:
-            validity: True if exists
-
+            validity: True if exist
         """
-        # Initialize key variables
-        validity = False
+        try:
+            (_, exists, results) = await self.query(
+                oid_to_get,
+                get=False,
+                check_existence=True,
+                context_name=context_name,
+                check_reachability=True,
+            )
+            # Check if we get valid results
+            if exists and isinstance(results, dict) and results:
+                return True
+            return False
+        except Exception as e:
+            log.log2warning(
+                1306, f"Walk existence check failed for {oid_to_get}: {e}"
+            )
+            return False
 
-        # Process
-        (_, validity, results) = self.query(
-            oid_to_get,
-            get=False,
-            check_reachability=True,
-            context_name=context_name,
-            check_existence=True,
-        )
-
-        # If we get no result, then override validity
-        if isinstance(results, dict) is True:
-            for _, value in results.items():
-                if value is None:
-                    validity = False
-                    break
-
-        # Return
-        return validity
-
-    def swalk(self, oid_to_get, normalized=False, context_name=""):
-        """Perform a safe SNMPwalk that handles errors gracefully.
-
-        Args:
-            oid_to_get: OID to get
-            normalized: If True, then return results as a dict keyed by
-                only the last node of an OID, otherwise return results
-                keyed by the entire OID string. Normalization is useful
-                when trying to create multidimensional dicts where the
-                primary key is a universal value such as IF-MIB::ifIndex
-                or BRIDGE-MIB::dot1dBasePort
-            context_name: Set the contextName used for SNMPv3 messages.
-                The default contextName is the empty string "".  Overrides the
-                defContext token in the snmp.conf file.
-
-        Returns:
-            dict: Results of SNMP walk as OID-value pairs
-        """
-        # Process data
-        results = self.walk(
-            oid_to_get,
-            normalized=normalized,
-            check_reachability=True,
-            check_existence=True,
-            context_name=context_name,
-            safe=True,
-        )
-
-        # Return
-        return results
-
-    def walk(
-        self,
-        oid_to_get,
-        normalized=False,
-        check_reachability=False,
-        check_existence=False,
-        context_name="",
-        safe=False,
-    ):
-        """Do an SNMPwalk.
-
-        Args:
-            oid_to_get: OID to walk
-            normalized: If True, then return results as a dict keyed by
-                only the last node of an OID, otherwise return results
-                keyed by the entire OID string. Normalization is useful
-                when trying to create multidimensional dicts where the
-                primary key is a universal value such as IF-MIB::ifIndex
-                or BRIDGE-MIB::dot1dBasePort
-            check_reachability:
-                Set if testing for connectivity. Some session
-                errors are ignored so that a null result is returned
-            check_existence:
-                Set if checking for the existence of the OID
-            context_name: Set the contextName used for SNMPv3 messages.
-                The default contextName is the empty string "".  Overrides the
-                defContext token in the snmp.conf file.
-            safe: Safe query if true. If there is an exception, then return \
-                blank values.
-
-        Returns:
-            result: Dictionary of tuples (OID, value)
-
-        """
-        (_, _, result) = self.query(
-            oid_to_get,
-            get=False,
-            check_reachability=check_reachability,
-            check_existence=check_existence,
-            normalized=normalized,
-            context_name=context_name,
-            safe=safe,
-        )
-        return result
-
-    def get(
+    async def get(
         self,
         oid_to_get,
         check_reachability=False,
@@ -433,10 +414,9 @@ class Interact:
                 defContext token in the snmp.conf file.
 
         Returns:
-           result: Dictionary of tuples (OID, value)
-
+           result: Dictionary of {OID: value} pairs
         """
-        (_, _, result) = self.query(
+        (_, _, result) = await self.query(
             oid_to_get,
             get=True,
             check_reachability=check_reachability,
@@ -446,7 +426,80 @@ class Interact:
         )
         return result
 
-    def query(
+    async def walk(
+        self,
+        oid_to_get,
+        normalized=False,
+        check_reachability=False,
+        check_existence=False,
+        context_name="",
+        safe=False,
+    ):
+        """Do an async SNMPwalk.
+
+        Args:
+            oid_to_get: OID to walk
+            normalized: If True, then return results as a dict keyed by
+                only the last node of an OID, otherwise return results
+                keyed by the entire OID string. Normalization is useful
+                when trying to create multidimensional dicts where the
+                primary key is a universal value such as IF-MIB::ifIndex
+                or BRIDGE-MIB::dot1dBasePort
+            check_reachability:
+                Set if testing for connectivity. Some session
+                errors are ignored so that a null result is returned
+            check_existence:
+                Set if checking for the existence of the OID
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
+            safe: Safe query if true. If there is an exception, then return \
+                blank values.
+
+        Returns:
+            result: Dictionary of {OID: value} pairs
+        """
+        (_, _, result) = await self.query(
+            oid_to_get,
+            get=False,
+            check_reachability=check_reachability,
+            check_existence=check_existence,
+            normalized=normalized,
+            context_name=context_name,
+            safe=safe,
+        )
+
+        return result
+
+    async def swalk(self, oid_to_get, normalized=False, context_name=""):
+        """Perform a safe async SNMPwalk that handles errors gracefully.
+
+        Args:
+            oid_to_get: OID to get
+            normalized: If True, then return results as a dict keyed by
+                only the last node of an OID, otherwise return results
+                keyed by the entire OID string. Normalization is useful
+                when trying to create multidimensional dicts where the
+                primary key is a universal value such as IF-MIB::ifIndex
+                or BRIDGE-MIB::dot1dBasePort
+            context_name: Set the contextName used for SNMPv3 messages.
+                The default contextName is the empty string "".  Overrides the
+                defContext token in the snmp.conf file.
+
+        Returns:
+            dict: Results of SNMP walk as OID-value pairs
+        """
+        # Process data
+        return await self.walk(
+            oid_to_get,
+            normalized=normalized,
+            check_reachability=True,
+            check_existence=True,
+            context_name=context_name,
+            safe=True,
+        )
+
+    async def query(
         self,
         oid_to_get,
         get=False,
@@ -477,466 +530,468 @@ class Interact:
                 blank values.
 
         Returns:
-            return_value: List of tuples (_contactable, exists, values)
-
+            return_value: Tuple of (_contactable, exists, values)
         """
         # Initialize variables
         _contactable = True
         exists = True
         results = []
+        # Initialize formatted_result to avoid undefined variable error
+        formatted_result = {}
 
         # Check if OID is valid
         if _oid_valid_format(oid_to_get) is False:
             log_message = "OID {} has an invalid format".format(oid_to_get)
             log.log2die(1057, log_message)
 
-        # Create SNMP session
-        session = _Session(self._poll, context_name=context_name).session
+        # Get session parameters
+        async with self._semaphore:
+            try:
+                # Create SNMP session
+                session = Session(
+                    self._poll, self._engine, context_name=context_name
+                )
 
-        # Fill the results object by getting OID data
-        try:
-            # Get the data
-            if get is True:
-                results = [session.get(oid_to_get)]
+                # Use shorter timeouts for walk operations
+                auth_data, transport_target = await session._session(
+                    walk_operation=(not get)
+                )
+                context_data = ContextData(contextName=context_name)
 
-            else:
-                if self._poll.authorization.version != 1:
-                    # Bulkwalk for SNMPv2 and SNMPv3
-                    results = session.bulkwalk(
-                        oid_to_get, non_repeaters=0, max_repetitions=25
+                # Perform the SNMP operation
+                if get is True:
+                    results = await session._do_async_get(
+                        oid_to_get, auth_data, transport_target, context_data
                     )
                 else:
-                    # Bulkwalk not supported in SNMPv1
-                    results = session.walk(oid_to_get)
+                    results = await session._do_async_walk(
+                        oid_to_get, auth_data, transport_target, context_data
+                    )
 
-        # Crash on error, return blank results if doing certain types of
-        # connectivity checks
-        except (
-            exceptions.EasySNMPConnectionError,
-            exceptions.EasySNMPTimeoutError,
-            exceptions.EasySNMPUnknownObjectIDError,
-            exceptions.EasySNMPNoSuchNameError,
-            exceptions.EasySNMPNoSuchObjectError,
-            exceptions.EasySNMPNoSuchInstanceError,
-            exceptions.EasySNMPUndeterminedTypeError,
-        ) as exception_error:
-            # Update the error message
-            log_message = _exception_message(
-                self._poll.hostname,
-                oid_to_get,
-                context_name,
-                sys.exc_info(),
-            )
+                formatted_result = _format_results(
+                    results, oid_to_get, normalized=normalized
+                )
 
-            # Process easysnmp errors
-            (_contactable, exists) = _process_error(
-                log_message,
-                exception_error,
-                check_reachability,
-                check_existence,
-            )
+            except PySnmpError as exception_error:
+                # Handle PySNMP errors similar to sync version
+                if check_reachability is True:
+                    _contactable = False
+                    exists = False
+                elif check_existence is True:
+                    exists = False
+                elif safe is True:
+                    _contactable = None
+                    exists = None
+                    log_message = (
+                        f"Async SNMP error for {self._poll.hostname}: "
+                        f"{exception_error}"
+                    )
+                    log.log2info(1209, log_message)
+                else:
+                    log_message = (
+                        f"Async SNMP error for {self._poll.hostname}: "
+                        f"{exception_error}"
+                    )
+                    log.log2die(1003, log_message)
+                # Ensure formatted_result is set for exception cases
+                formatted_result = {}
 
-        except SystemError as exception_error:
-            log_message = _exception_message(
-                self._poll.hostname,
-                oid_to_get,
-                context_name,
-                sys.exc_info(),
-            )
-
-            # Process easysnmp errors
-            (_contactable, exists) = _process_error(
-                log_message,
-                exception_error,
-                check_reachability,
-                check_existence,
-                system_error=True,
-            )
-
-        except:
-            # Update the error message
-            log_message = _exception_message(
-                self._poll.hostname,
-                oid_to_get,
-                context_name,
-                sys.exc_info(),
-            )
-            if bool(safe):
-                _contactable = None
-                exists = None
-                log.log2info(1209, log_message)
-            else:
-                log.log2die(1003, log_message)
-
-        # Format results
-        values = _format_results(results, oid_to_get, normalized=normalized)
+            except Exception as exception_error:
+                # Handle unexpected errors
+                if safe is True:
+                    _contactable = None
+                    exists = None
+                    log_message = (
+                        f"Unexpected async SNMP error for "
+                        f"{self._poll.hostname}: {exception_error}"
+                    )
+                    log.log2info(1041, log_message)
+                else:
+                    log_message = (
+                        f"Unexpected async SNMP error for "
+                        f"{self._poll.hostname}: {exception_error}"
+                    )
+                    log.log2die(1023, log_message)
+                # Ensure formatted_result is set for exception cases
+                formatted_result = {}
 
         # Return
-        return_value = (_contactable, exists, values)
-        return return_value
+        values = (_contactable, exists, formatted_result)
+        return values
 
 
-class _Session:
-    """Class to create an SNMP session with a device."""
+class Session:
+    """Class to create a SNMP session with a device."""
 
-    def __init__(self, _poll, context_name=""):
+    def __init__(self, _poll, engine, context_name=""):
         """Initialize the _Session class.
 
         Args:
             _poll: POLL object containing SNMP configuration
+            engine: SNMP engine object
             context_name: String containing SNMPv3 context name.
                 Default is empty string.
 
         Returns:
             session: SNMP session
-
         """
-        # Initialize key variables
-        self._context_name = context_name
-
         # Assign variables
+        self.context_name = context_name
         self._poll = _poll
+        self._engine = engine
 
         # Fail if there is no authentication
         if bool(self._poll.authorization) is False:
             log_message = (
-                "SNMP parameters provided are blank. " "Non existent host?"
+                "SNMP parameters provided are blank. None existent host? "
             )
             log.log2die(1046, log_message)
 
-        # Create SNMP session
-        self.session = self._session()
-
-    def _session(self):
-        """Create an SNMP session for queries.
-
-        Args:
-            None
+    async def _session(self, walk_operation=False):
+        """Create SNMP session parameters based on configuration.
 
         Returns:
-            session: SNMP session
-
-        """
-        # Create session
-        if self._poll.authorization.version != 3:
-            session = easysnmp.Session(
-                community=self._poll.authorization.community,
-                hostname=self._poll.hostname,
-                version=self._poll.authorization.version,
-                remote_port=self._poll.authorization.port,
-                use_numeric=True,
-                context=self._context_name,
-            )
-        else:
-            session = easysnmp.Session(
-                hostname=self._poll.hostname,
-                version=self._poll.authorization.version,
-                remote_port=self._poll.authorization.port,
-                use_numeric=True,
-                context=self._context_name,
-                security_level=self._security_level(),
-                security_username=self._poll.authorization.secname,
-                privacy_protocol=self._priv_protocol(),
-                privacy_password=self._poll.authorization.privpassword,
-                auth_protocol=self._auth_protocol(),
-                auth_password=self._poll.authorization.authpassword,
-            )
-
-        # Return
-        return session
-
-    def _security_level(self):
-        """Determine SNMPv3 security level string.
-
-        Args:
-            None
-
-        Returns:
-            result: Security level
-        """
-        # Determine the security level
-        if bool(self._poll.authorization.authprotocol) is True:
-            if bool(self._poll.authorization.privprotocol) is True:
-                result = "authPriv"
-            else:
-                result = "authNoPriv"
-        else:
-            result = "noAuthNoPriv"
-
-        # Return
-        return result
-
-    def _auth_protocol(self):
-        """Get SNMPv3 authentication protocol.
-
-        Args:
-            None
-
-        Returns:
-            str: Authentication protocol string ('MD5', 'SHA', or 'DEFAULT')
+            Tuple of (auth_data, transport_target)
         """
         # Initialize key variables
-        protocol = self._poll.authorization.authprotocol
+        auth = self._poll.authorization
 
-        # Setup AuthProtocol (Default SHA)
-        if bool(protocol) is False:
-            result = "DEFAULT"
+        # Use shorter timeouts for walk operations to prevent hanging
+        if walk_operation:
+            timeout = 5
+            retries = 2
         else:
-            if protocol.lower() == "md5":
-                result = "MD5"
-            else:
-                result = "SHA"
+            # Normal timeout for GET operations
+            timeout = 10
+            retries = 3
 
-        # Return
-        return result
+        # Create transport target
+        transport_target = UdpTransportTarget(
+            (self._poll.hostname, auth.port), timeout=timeout, retries=retries
+        )
 
-    def _priv_protocol(self):
-        """Get SNMPv3 privacy protocol.
+        # Create authentication data based on SNMP version
+        if auth.version == 3:
+            # SNMPv3 with USM
+            # If authprotocol/privprotocol is None/False/Empty, leave as None
+            auth_protocol = None
+            priv_protocol = None
 
-        Args:
-            None
+            # Set auth protocol only if authprotocol is specified
+            if auth.authprotocol:
+                auth_proto = auth.authprotocol.lower()
+                if auth_proto == "md5":
+                    auth_protocol = usmHMACMD5AuthProtocol
+                elif auth_proto == "sha1" or auth_proto == "sha":
+                    auth_protocol = usmHMACSHAAuthProtocol
+                elif auth_proto == "sha224":
+                    auth_protocol = usmHMAC128SHA224AuthProtocol
+                elif auth_proto == "sha256":
+                    auth_protocol = usmHMAC192SHA256AuthProtocol
+                elif auth_proto == "sha384":
+                    auth_protocol = usmHMAC256SHA384AuthProtocol
+                elif auth_proto == "sha512":
+                    auth_protocol = usmHMAC384SHA512AuthProtocol
+                else:
+                    log.log2warning(
+                        1218,
+                        f"Unknown auth protocol '{auth.authprotocol}',"
+                        f"leaving unset",
+                    )
+                    auth_protocol = None
 
-        Returns:
-            str: Privacy protocol string ('DES', 'AES', or 'DEFAULT')
-        """
+            # Set privacy protocol only if privprotocol is specified
+            # Also if we have authentication (privacy requires authentication)
+            if auth.privprotocol and auth_protocol is not None:
+                priv_proto = auth.privprotocol.lower()
+                if priv_proto == "des":
+                    priv_protocol = usmDESPrivProtocol
+                elif priv_proto == "aes128" or priv_proto == "aes":
+                    priv_protocol = usmAesCfb128Protocol
+                elif priv_proto == "aes192":
+                    priv_protocol = usmAesCfb192Protocol
+                elif priv_proto == "aes256":
+                    priv_protocol = usmAesCfb256Protocol
+                else:
+                    log.log2warning(
+                        1218,
+                        f"Unknown privacy protocol '{auth.privprotocol}',"
+                        f"leaving unset",
+                    )
+                    priv_protocol = None
+
+            auth_data = UsmUserData(
+                userName=auth.secname,
+                authKey=auth.authpassword,
+                privKey=auth.privpassword,
+                authProtocol=auth_protocol,
+                privProtocol=priv_protocol,
+            )
+        else:
+            # SNMPv1/v2c with community
+            mp_model = 0 if auth.version == 1 else 1
+            auth_data = CommunityData(auth.community, mpModel=mp_model)
+
+        return auth_data, transport_target
+
+    async def _do_async_get(
+        self, oid, auth_data, transport_target, context_data
+    ):
+        """Pure async SNMP GET using pysnmp."""
+        error_indication, error_status, _error_index, var_binds = await getCmd(
+            self._engine,
+            auth_data,
+            transport_target,
+            context_data,
+            ObjectType(ObjectIdentity(oid)),
+        )
+
+        if error_indication:
+            raise PySnmpError(str(error_indication))
+        elif error_status:
+            raise PySnmpError(error_status.prettyPrint())
+
+        # Return in object format expected by _format_results
+        results = []
+        for var_bind in var_binds:
+            oid_str = str(var_bind[0])
+            value = var_bind[1]
+            results.append((oid_str, value))
+
+        return results
+
+    async def _do_async_walk(
+        self, oid_prefix, auth_data, transport_target, context_data
+    ):
+        """Pure async SNMP WALK using pysnmp async capabilities."""
         # Initialize key variables
-        protocol = self._poll.authorization.privprotocol
+        results = []
 
-        # Setup privProtocol (Default AES256)
-        if bool(protocol) is False:
-            result = "DEFAULT"
+        # Use correct walk method based on SNMP version
+        if hasattr(auth_data, "mpModel") and auth_data.mpModel == 0:
+            # SNMPv1 - use nextCMD
+            results = await self._async_walk_v1(
+                oid_prefix, auth_data, transport_target, context_data
+            )
         else:
-            if protocol.lower() == "des":
-                result = "DES"
-            else:
-                result = "AES"
+            # SNMPv2c/v3 - use bulkCmd
 
-        # Return
-        return result
-
-
-def _exception_message(hostname, oid, context, exc_info):
-    """Create standardized exception message for SNMP errors.
-
-    Args:
-        hostname: Hostname
-        oid: OID being polled
-        context: SNMP context
-        exc_info: Exception information
-
-    Returns:
-        str: Formatted error message
-    """
-    # Create failure log message
-    try_log_message = (
-        "Error occurred during SNMP query on host "
-        'OID {} from {} for context "{}"'
-        "".format(oid, hostname, context)
-    )
-
-    # Add exception information
-    result = """\
-{}: [{}, {}, {}]""".format(
-        try_log_message,
-        exc_info[0],
-        exc_info[1],
-        exc_info[2],
-    )
-
-    # Return
-    return result
-
-
-def _process_error(
-    log_message,
-    exception_error,
-    check_reachability,
-    check_existence,
-    system_error=False,
-):
-    """Process the SNMP error.
-
-    Args:
-        log_message: Log message
-        exception_error: Exception error object
-        check_reachability: Attempt to contact the device if True
-        check_existence: Check existence of the device if True
-        system_error: True if a System error
-
-    Returns:
-        alive: True if contactable
-
-    """
-    # Initialize key varialbes
-    _contactable = True
-    exists = True
-    if system_error is False:
-        error_name = "EasySNMPError"
-    else:
-        error_name = "SystemError"
-
-    # Check existence of OID
-    if check_existence is True:
-        if system_error is False:
-            if (
-                isinstance(
-                    exception_error,
-                    easysnmp.exceptions.EasySNMPUnknownObjectIDError,
+            try:
+                results = await asyncio.wait_for(
+                    self._async_walk_v2(
+                        oid_prefix, auth_data, transport_target, context_data
+                    ),
+                    timeout=60.0,
                 )
-                is True
-            ):
-                exists = False
-                return (_contactable, exists)
-            elif (
-                isinstance(
-                    exception_error,
-                    easysnmp.exceptions.EasySNMPNoSuchNameError,
+            except asyncio.TimeoutError:
+                log.log2info(
+                    1011, f"bulk walk timeout after 60s for prefix {oid_prefix}"
                 )
-                is True
-            ):
-                exists = False
-                return (_contactable, exists)
-            elif (
-                isinstance(
-                    exception_error,
-                    easysnmp.exceptions.EasySNMPNoSuchObjectError,
+                # Fallback to SNMPv1 walk which would be more reliable
+                results = await self._async_walk_v1(
+                    oid_prefix, auth_data, transport_target, context_data
                 )
-                is True
+
+        return results
+
+    async def _async_walk_v1(
+        self, oid_prefix, auth_data, transport_target, context_data
+    ):
+        """Pure async walk for SNMPv1 using nextCmd."""
+        # Initialize key variables
+        results = []
+
+        try:
+            async for (
+                error_indication,
+                error_status,
+                error_index,
+                var_binds,
+            ) in nextCmd(
+                self._engine,
+                auth_data,
+                transport_target,
+                context_data,
+                ObjectType(ObjectIdentity(oid_prefix)),
+                lexicographicMode=False,
             ):
-                exists = False
-                return (_contactable, exists)
-            elif (
-                isinstance(
-                    exception_error,
-                    easysnmp.exceptions.EasySNMPNoSuchInstanceError,
+                # Handle errors first
+                if error_indication:
+                    log.log2warning(
+                        1216,
+                        f"SNMP v1 walk network error for {oid_prefix}: "
+                        f"{error_indication}.",
+                    )
+                    break
+
+                elif error_status:
+                    log.log2info(
+                        1217,
+                        f"SNMP v1 walk protocol error for {oid_prefix}: "
+                        f"{error_status} at index {error_index}",
+                    )
+
+                    # Handle specific SNMP errors
+                    error_msg = error_status.prettyPrint()
+                    if error_msg == "noSuchName":
+                        # This OID doesn't exist, try next
+                        continue
+                    else:
+                        # Other errors are usually fatal
+                        break
+
+                # Process successful response
+                for oid, value in var_binds:
+                    oid_str = str(oid)
+                    prefix_normalized = str(oid_prefix).lstrip(".")
+                    oid_normalized = oid_str.lstrip(".")
+                    if not oid_normalized.startswith(prefix_normalized):
+                        log.log2debug(
+                            1220,
+                            f"Reached end of OID tree for prefix {oid_prefix}",
+                        )
+                        return results
+                    results.append((oid_str, value))
+
+            # Return results after the loop completes
+            return results
+
+        except Exception as e:
+            log.log2warning(
+                1222, f"Unexpected error in SNMP v1 walk for {oid_prefix}: {e}."
+            )
+            return results
+
+    async def _async_walk_v2(
+        self, oid_prefix, auth_data, transport_target, context_data
+    ):
+        """Async walk for SNMPv2c/v3 using bulkCmd."""
+        # Initialize key variables
+        results = []
+        current_oids = [ObjectType(ObjectIdentity(oid_prefix))]
+
+        try:
+            # !checking for 50, 100 would be too long to prevent from hanging
+            max_iterations = 50
+            iterations = 0
+            consecutive_empty_responses = 0
+            # Stop after 3 consecutive empty responses
+            max_empty_responses = 3
+
+            while current_oids and iterations < max_iterations:
+                iterations += 1
+                # non-repeaters = 0 , max_repetitions = 25
+                error_indication, error_status, error_index, var_bind_table = (
+                    await bulkCmd(
+                        self._engine,
+                        auth_data,
+                        transport_target,
+                        context_data,
+                        0,
+                        25,
+                        *current_oids,
+                    )
                 )
-                is True
-            ):
-                exists = False
-                return (_contactable, exists)
-        else:
-            exists = False
-            return (_contactable, exists)
 
-    # Checking if the device is reachable
-    if check_reachability is True:
-        _contactable = False
-        exists = False
-        return (_contactable, exists)
+                if error_indication:
+                    log.log2info(
+                        1211, f"BULK error indication: {error_indication}"
+                    )
+                    break
+                elif error_status:
+                    log.log2info(
+                        1212,
+                        f"BULK error status: {error_status.prettyPrint()} "
+                        f"at {error_index}",
+                    )
+                    break
 
-    # Die an agonizing death!
-    log_message = "{}: {}".format(error_name, log_message)
-    log.log2die(1023, log_message)
+                # Check if we got any response
+                if not var_bind_table:
+                    consecutive_empty_responses += 1
+                    if consecutive_empty_responses >= max_empty_responses:
+                        break
+                    continue
+                else:
+                    consecutive_empty_responses = 0
 
+                # Process the response
+                found_valid_data = False
+                prefix_normalized = str(oid_prefix).lstrip(".")
 
-def _format_results(results, mock_filter, normalized=False):
-    """Normalize and format SNMP walk results.
+                for var_bind in var_bind_table:
+                    if not var_bind or len(var_bind) == 0:
+                        continue
 
-    Args:
-        results: List of lists of results
-        mock_filter: The original OID to get. Facilitates unittesting by
-            filtering Mock values.
-        normalized: If True, then return results as a dict keyed by
-            only the last node of an OID, otherwise return results
-            keyed by the entire OID string. Normalization is useful
-            when trying to create multidimensional dicts where the
-            primary key is a universal value such as IF-MIB::ifIndex
-            or BRIDGE-MIB::dot1dBasePort
+                    # Get the ObjectType from the list
+                    for obj_type in var_bind:
+                        oid, value = obj_type[0], obj_type[1]
 
-    Returns:
-        dict: Formatted results as OID-value pairs
-    """
-    # Initialize key variables
-    return_results = {}
+                        # Check for end of MIB
+                        if isinstance(value, EndOfMibView):
+                            continue
+                        oid_str = str(oid)
 
-    for result in results:
-        # Recreate the OID
-        oid = "{}.{}".format(result.oid, result.oid_index)
+                        oid_normalized = oid_str.lstrip(".")
+                        if not oid_normalized.startswith(prefix_normalized):
+                            continue
+                        results.append((oid_str, value))
+                        found_valid_data = True
 
-        # Ignore unwanted OIDs
-        if mock_filter not in oid:
-            continue
+                # Advance the walk using only the last row's OIDs
+                next_oids = []
+                if var_bind_table:
+                    last_row = var_bind_table[-1]
+                    for obj_type in last_row:
+                        oid, value = obj_type[0], obj_type[1]
+                        if isinstance(value, EndOfMibView):
+                            continue
+                        oid_str = str(oid)
+                        if oid_str.lstrip(".").startswith(prefix_normalized):
+                            next_oids.append(ObjectType(ObjectIdentity(oid)))
 
-        # Process the rest
-        if normalized is True:
-            return_results[result.oid_index] = _convert(result)
-        else:
-            return_results[oid] = _convert(result)
+                if not found_valid_data:
+                    log.log2info(
+                        1213,
+                        f"BULK walk: No more valid data for prefix "
+                        f"{oid_prefix}",
+                    )
+                    break
 
-    # Return
-    return return_results
+                current_oids = next_oids
 
+                # In case, we get too many results
+                if len(results) > 10000:
+                    log.log2warning(
+                        1214,
+                        f"Stopping after collecting {len(results)} results "
+                        f"(safety limit)",
+                    )
+                    break
 
-def _convert(result):
-    """Convert SNMP value from pysnmp object to Python type.
+        except Exception as e:
+            log.log2warning(1215, f"BULK walk error: {e}")
+            return await self._async_walk_v1(
+                oid_prefix, auth_data, transport_target, context_data
+            )
 
-    Args:
-        result: Named tuple containing SNMP result
-
-    Returns:
-        converted: Value converted to appropriate Python type (bytes or int),
-            or None for null/empty values
-    """
-    # Initialieze key values
-    converted = None
-    value = result.value
-    snmp_type = result.snmp_type
-
-    # Convert string type values to bytes
-    if snmp_type.upper() == "OCTETSTR":
-        converted = bytes(value, "utf-8")
-    elif snmp_type.upper() == "OPAQUE":
-        converted = bytes(value, "utf-8")
-    elif snmp_type.upper() == "BITS":
-        converted = bytes(value, "utf-8")
-    elif snmp_type.upper() == "IPADDR":
-        converted = bytes(value, "utf-8")
-    elif snmp_type.upper() == "NETADDR":
-        converted = bytes(value, "utf-8")
-    elif snmp_type.upper() == "OBJECTID":
-        # DO NOT CHANGE !!!
-        converted = bytes(str(value), "utf-8")
-    elif snmp_type.upper() == "NOSUCHOBJECT":
-        # Nothing if OID not found
-        converted = None
-    elif snmp_type.upper() == "NOSUCHINSTANCE":
-        # Nothing if OID not found
-        converted = None
-    elif snmp_type.upper() == "ENDOFMIBVIEW":
-        # Nothing
-        converted = None
-    elif snmp_type.upper() == "NULL":
-        # Nothing
-        converted = None
-    else:
-        # Convert everything else into integer values
-        # rfc1902.Integer
-        # rfc1902.Integer32
-        # rfc1902.Counter32
-        # rfc1902.Gauge32
-        # rfc1902.Unsigned32
-        # rfc1902.TimeTicks
-        # rfc1902.Counter64
-        converted = int(value)
-
-    # Return
-    return converted
+        return results
 
 
 def _oid_valid_format(oid):
-    """Validate OID string format.
+    """Validate OID string format matching sync version.
 
     Args:
-        oid: String containing OID to validate
+       oid: String containing OID to validate
 
     Returns:
-        bool: True if OID format is valid, False otherwise
+       bool: True if OID format is valid, False otherwise
     """
     # oid cannot be numeric
     if isinstance(oid, str) is False:
         return False
 
-    # Make sure the oid is not blank
+    # Make sure that oid is not blank
     stripped_oid = oid.strip()
     if not stripped_oid:
         return False
@@ -955,13 +1010,146 @@ def _oid_valid_format(oid):
     # Remove the first element of the list
     octets.pop(0)
     for value in octets:
+        # Check for spaces or other whitespace (strict validation)
+        if value != value.strip():
+            return False
         try:
             int(value)
-        except:
+        except (ValueError, TypeError):
             return False
 
     # Otherwise valid
     return True
+
+
+def _convert(value):
+    """Convert SNMP value from pysnmp object to Python type.
+
+    Args:
+        value: pysnmp value object
+
+    Returns:
+        converted: Value converted to appropriate Python type (bytes or int),
+            or None for null/empty values
+    """
+    # Handle pysnmp exception values
+    if isinstance(value, NoSuchObject):
+        return None
+    if isinstance(value, NoSuchInstance):
+        return None
+    if isinstance(value, EndOfMibView):
+        return None
+
+    if hasattr(value, "prettyPrint"):
+        value_str = value.prettyPrint()
+
+        # Determine type based on pysnmp object type
+        value_type = type(value).__name__
+
+        # Handle string-like types - Convert to types for MIB compatibility
+        if any(
+            t in value_type
+            for t in [
+                "OctetString",
+                "DisplayString",
+                "Opaque",
+                "Bits",
+                "IpAddress",
+                "ObjectIdentifier",
+            ]
+        ):
+            # For objectID, convert to string first then to bytes
+            if "ObjectIdentifier" in value_type:
+                return bytes(str(value_str), "utf-8")
+            else:
+                return bytes(value_str, "utf-8")
+
+        # Handle integer types
+        elif any(
+            t in value_type
+            for t in ["Integer", "Counter", "Gauge", "TimeTicks", "Unsigned"]
+        ):
+            try:
+                return int(value_str)
+            except ValueError:
+                # Direct int conversion of the obj if prettyPrint fails
+                if hasattr(value, "__int__"):
+                    try:
+                        return int(value)
+                    except (ValueError, TypeError):
+                        pass
+
+                # Accessing .value attr directly
+                if hasattr(value, "value"):
+                    try:
+                        return int(value.value)
+                    except (ValueError, TypeError):
+                        pass
+
+                log_message = (
+                    f"Failed to convert pysnmp integer value: "
+                    f"{value_type}, prettyPrint'{value_str}"
+                )
+                log.log2warning(1036, log_message)
+                return None
+
+    # Handle direct access to value (for objects without prettyPrint)
+    if hasattr(value, "value"):
+        try:
+            return int(value.value)
+        except (ValueError, TypeError):
+            return bytes(str(value.value), "utf-8")
+
+    # Default Fallback - convert to string then to bytes
+    try:
+        return bytes(str(value), "utf-8")
+    except Exception:
+        return None
+
+
+def _format_results(results, mock_filter, normalized=False):
+    """Normalize and format SNMP results.
+
+    Args:
+        results: List of (OID, value) tuples from pysnmp
+        mock_filter: The original OID to get. Facilitates unittesting by
+            filtering Mock values.
+        normalized: If True, then return results as a dict keyed by
+            only the last node of an OID, otherwise return results
+            keyed by the entire OID string. Normalization is useful
+            when trying to create multidimensional dicts where the
+            primary key is a universal value such as IF-MIB::ifIndex
+            or BRIDGE-MIB::dot1dBasePort
+
+    Returns:
+        dict: Formatted results as OID-value pairs
+    """
+    # Initialize key variables
+    formatted = {}
+
+    for oid_str, value in results:
+
+        # Normalize both OIDs for comparison to handle leading dot mismatch
+        if mock_filter:
+            # Remove leading dots for comparison
+            filter_normalized = mock_filter.lstrip(".")
+            oid_normalized = oid_str.lstrip(".")
+
+            if not oid_normalized.startswith(filter_normalized):
+                continue
+
+        # convert value using proper type conversion
+        converted_value = _convert(value=value)
+
+        if normalized is True:
+            # use only the last node of the OID
+            key = oid_str.split(".")[-1]
+        else:
+            key = oid_str
+
+        formatted[key] = converted_value
+
+    return formatted
 
 
 def _update_cache(filename, group):
@@ -974,6 +1162,9 @@ def _update_cache(filename, group):
     Returns:
         None
     """
-    # Do update
-    with open(filename, "w+") as env:
-        env.write(group)
+    try:
+        with open(filename, "w+") as f_handle:
+            f_handle.write(group)
+    except Exception as e:
+        log_message = f"Failed to update cache file {filename}: {e}"
+        log.log2warning(1025, log_message)

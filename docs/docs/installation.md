@@ -196,32 +196,81 @@ Daemon is running - <bound method Agent.name of <switchmap.core.agent.AgentAPI o
 Daemon is running - <bound method Agent.name of <switchmap.core.agent.Agent object at>>
 ```
 
-### Testing the Web Dashboard
+## Frontend (Web Dashboard)
 
-You can test whether the web dashboard API is working by
+The dashboard is a modern Next.js application.
 
-1)  Correctly configuring and starting the API server as shown above
-2)  Starting the web dashboard as shown below.
+1. Install Node.js and npm (if not already installed):
 
-```bash
-(venv) $ bin/systemd/switchmap_dashboard --start
-(venv) $ bin/systemd/switchmap_dashboard --status
-```
+    Ubuntu / Debian / Mint   
+    ```bash
+    sudo apt-get install nodejs npm
+    ```
+    CentOS / Fedora      
+    ```bash
+    sudo dnf install nodejs npm
+    ```
 
-The result of the status check should look like this:
+2. Navigate to the frontend directory and install dependencies:
+    ```bash
+    cd frontend
+    npm install
+    ```
 
-```
-Daemon is running - <bound method Agent.name of <switchmap.core.agent.AgentAPI object at>>
-Daemon is running - <bound method Agent.name of <switchmap.core.agent.Agent object at>>
-```
+3. Start the frontend development server:
+    ```bash
+    npm run dev
+    ```
+    By default, the dashboard will be available at  
+    [http://localhost:3000/](http://localhost:3000/)  
 
-You can then visit the dashboard URL. (You will need to make adjustments
-if you installed the application on a remote server):
+4. API connectivity:  
+    Ensure your switchmap-ng API server is running and accessible from the frontend.
 
-    http://localhost:7001/switchmap/
+### Frontend Testing
 
-The Webserver help page provides the necessary steps to view switchmap
-on port 80 using Apache or Nginx
+The frontend uses **Vitest** for testing.
+
+- To run tests in watch mode:
+    ```bash
+    cd frontend
+    npm run test:watch
+    ```
+- To generate a coverage report:
+    ```bash
+    cd frontend
+    npm run coverage
+    ```
+  The coverage report will be available in the `frontend/coverage` directory.
+
+## Documentation Site
+
+The documentation site is built with Docusaurus.
+
+1. **Install pnpm (if not already installed):**
+    ```bash
+    # Option 1: Enable via corepack (recommended for Node.js >=16.13)
+    corepack enable pnpm
+
+    # Option 2: Install globally with npm
+    npm install -g pnpm
+    ```
+
+2. **Install dependencies in the docs directory:**
+    ```bash
+    cd docs
+    npm install
+    ```
+
+3. **Start the documentation site:**
+    ```bash
+    npm start
+    ```
+    By default, the documentation site will be available at  
+    [http://localhost:3001/](http://localhost:3001/)
+
+> **Note:**  
+> The code documentation is generated automatically and should not be edited manually.
 
 ## Testing Setup for Developers
 

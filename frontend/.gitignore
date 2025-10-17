@@ -1,0 +1,148 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+/.next/
+/out/
+.next/cache
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+*.log
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+.env.*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Mac system files
+.AppleDouble
+.LSOverride
+
+# npm package files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# local build artifacts
+dist/
+tmp/
+temp/
+.cache/
+.nyc_output/
+bower_components/
+
+# Storybook
+storybook-static/
+
+# Svelte
+.svelte-kit/
+
+# Misc
+*.swp
+*.swo
+*.bak
+*.orig
+*.rej
+*.tmp
+*.temp
+*.pid
+*.seed
+*.pid.lock
+*.tgz
+
+# JetBrains IDEs
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code settings
+.vscode/
+.history/
+
+# Next.js build output
+.next/
+out/
+.next/cache/
+
+# Next.js static export
+out/
+
+# Next.js serverless functions output
+.next/server/
+
+# Next.js telemetry
+.next/telemetry/
+
+# Next.js build manifests
+.next/static/
+
+# Next.js cache
+.next/cache/
+
+# Next.js build traces
+.next/trace
+
+# Next.js build logs
+.next/build-manifest.json
+.next/prerender-manifest.json
+.next/routes-manifest.json
+.next/export-marker.json
+.next/BUILD_ID
+
+# Next.js image optimization cache
+/public/_next/image/
+
+# Local env files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# npm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

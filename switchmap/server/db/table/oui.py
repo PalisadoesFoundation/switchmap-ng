@@ -103,17 +103,19 @@ def insert_row(rows):
 
     # Create objects
     for row in rows:
-        inserts.append(
-            {
-                "oui": (None if bool(row.oui) is False else row.oui.encode()),
-                "organization": (
-                    None
-                    if bool(row.organization) is False
-                    else row.organization.encode()
-                ),
-                "enabled": int(bool(row.enabled) is True),
-            }
-        )
+        insert_dict = {
+            "enabled": int(bool(row.enabled) is True),
+        }
+
+        # Only add oui if it's not None
+        if bool(row.oui) is True:
+            insert_dict["oui"] = row.oui.encode()
+
+        # Only add organization if it's not None
+        if bool(row.organization) is True:
+            insert_dict["organization"] = row.organization.encode()
+
+        inserts.append(insert_dict)
 
     # Insert
     if bool(inserts):
@@ -131,22 +133,21 @@ def update_row(idx, row):
         None
 
     """
+    # Build update dictionary
+    update_dict = {
+        "enabled": int(bool(row.enabled) is True),
+    }
+
+    # Only add oui if it's not None
+    if bool(row.oui) is True:
+        update_dict["oui"] = row.oui.encode()
+
+    # Only add organization if it's not None
+    if bool(row.organization) is True:
+        update_dict["organization"] = row.organization.encode()
+
     # Update
-    statement = (
-        update(Oui)
-        .where(Oui.idx_oui == idx)
-        .values(
-            {
-                "organization": (
-                    None
-                    if bool(row.organization) is False
-                    else row.organization.encode()
-                ),
-                "oui": (None if bool(row.oui) is False else row.oui.encode()),
-                "enabled": int(bool(row.enabled) is True),
-            }
-        )
-    )
+    statement = update(Oui).where(Oui.idx_oui == idx).values(update_dict)
     db.db_update(1118, statement)
 
 

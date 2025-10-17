@@ -212,6 +212,42 @@ def insert_row(rows):
                     if row.lldpremsysname is None
                     else row.lldpremsysname.encode()
                 ),
+                "ifin_ucast_pkts": (
+                    None if row.ifin_ucast_pkts is None else row.ifin_ucast_pkts
+                ),
+                "ifout_ucast_pkts": (
+                    None
+                    if row.ifout_ucast_pkts is None
+                    else row.ifout_ucast_pkts
+                ),
+                "ifin_errors": (
+                    None if row.ifin_errors is None else row.ifin_errors
+                ),
+                "ifin_discards": (
+                    None if row.ifin_discards is None else row.ifin_discards
+                ),
+                "ifin_nucast_pkts": (
+                    None
+                    if row.ifin_nucast_pkts is None
+                    else row.ifin_nucast_pkts
+                ),
+                "ifout_nucast_pkts": (
+                    None
+                    if row.ifout_nucast_pkts is None
+                    else row.ifout_nucast_pkts
+                ),
+                "ifout_errors": (
+                    None if row.ifout_errors is None else row.ifout_errors
+                ),
+                "ifout_discards": (
+                    None if row.ifout_discards is None else row.ifout_discards
+                ),
+                "ifin_octets": (
+                    None if row.ifin_octets is None else row.ifin_octets
+                ),
+                "ifout_octets": (
+                    None if row.ifout_octets is None else row.ifout_octets
+                ),
                 "enabled": int(bool(row.enabled) is True),
             }
         )
@@ -222,7 +258,7 @@ def insert_row(rows):
 
 
 def update_row(idx, row):
-    """Upadate a L1Interface table entry.
+    """Update a L1Interface table entry.
 
     Args:
         idx: idx_l1interface value
@@ -296,6 +332,42 @@ def update_row(idx, row):
                     None
                     if row.lldpremsysname is None
                     else row.lldpremsysname.encode()
+                ),
+                "ifin_ucast_pkts": (
+                    None if row.ifin_ucast_pkts is None else row.ifin_ucast_pkts
+                ),
+                "ifout_ucast_pkts": (
+                    None
+                    if row.ifout_ucast_pkts is None
+                    else row.ifout_ucast_pkts
+                ),
+                "ifin_errors": (
+                    None if row.ifin_errors is None else row.ifin_errors
+                ),
+                "ifin_discards": (
+                    None if row.ifin_discards is None else row.ifin_discards
+                ),
+                "ifin_nucast_pkts": (
+                    None
+                    if row.ifin_nucast_pkts is None
+                    else row.ifin_nucast_pkts
+                ),
+                "ifout_nucast_pkts": (
+                    None
+                    if row.ifout_nucast_pkts is None
+                    else row.ifout_nucast_pkts
+                ),
+                "ifout_errors": (
+                    None if row.ifout_errors is None else row.ifout_errors
+                ),
+                "ifout_discards": (
+                    None if row.ifout_discards is None else row.ifout_discards
+                ),
+                "ifin_octets": (
+                    None if row.ifin_octets is None else row.ifin_octets
+                ),
+                "ifout_octets": (
+                    None if row.ifout_octets is None else row.ifout_octets
                 ),
                 "enabled": int(bool(row.enabled) is True),
             }

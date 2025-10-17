@@ -104,7 +104,7 @@ class Query:
         pass
 
 
-class TestCiscoIetfIpQueryFunctions(unittest.TestCase):
+class TestCiscoIetfIpQueryFunctions(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################
@@ -140,7 +140,7 @@ class TestCiscoIetfIpQueryFunctions(unittest.TestCase):
         pass
 
 
-class TestCiscoIetfIpQuery(unittest.TestCase):
+class TestCiscoIetfIpQuery(unittest.IsolatedAsyncioTestCase):
     """Checks all functions and methods."""
 
     #########################################################################

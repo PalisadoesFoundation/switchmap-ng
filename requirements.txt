@@ -10,9 +10,15 @@ gunicorn==20.0.4
 
 # Posting
 requests
+aiohttp
+aiohttp
 
 # Polling
 easysnmp==0.2.5
+
+#Async SNMP polling 
+pysnmp==6.2.6
+# pysnmp 7.x also availble but 6.2.6 is more stable as of now
 
 # Data and Database
 PyMySQL==1.0.2
@@ -27,6 +33,7 @@ graphql_server==3.0.0b5
 # Testing
 mock
 pytest
+pytest-asyncio>=0.24,<0.25
 
 # Other
 more-itertools
@@ -40,3 +47,6 @@ black
 #Document Generation
 pydoc-markdown
 pre-commit
+
+# CORS and SQLAlchemy extensions
+flask-cors==4.0.0  

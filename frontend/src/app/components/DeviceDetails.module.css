@@ -1,0 +1,28 @@
+.deviceChartWrapper :global(.topology-chart-container) h2,
+.deviceChartWrapper :global(.topology-chart-container) form,
+.deviceChartWrapper :global(.topology-chart-container .topology-search-container),
+.deviceChartWrapper :global(.topology-chart-container .topology-instructions),
+.deviceChartWrapper :global(.topology-chart-container) button {
+  display: none;
+}
+
+.deviceChartWrapper :global(.topology-network-canvas) {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  min-height: 300px;
+  border-width: 0;
+}
+.deviceChartWrapper :global(.topology-chart-container) {
+  display: flex;
+  flex-direction: column-reverse;
+  max-height: 500px;
+}
+.deviceChartWrapper{
+  width: fit-content;
+  min-width: 350px;
+}
+.tableCustom *{
+  border: none ;
+  border-width: 0 ;
+}

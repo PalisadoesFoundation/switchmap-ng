@@ -43,20 +43,31 @@ IDevice = namedtuple(
 sys_description sys_objectid sys_uptime last_polled enabled""",
 )
 
+SystemStat = namedtuple(
+    "SystemStat", "idx_systemstat idx_device cpu_5min mem_used mem_free"
+)
+
+ISystemStat = namedtuple("ISystemStat", "idx_device cpu_5min mem_used mem_free")
+
 RL1Interface = namedtuple(
     "RL1Interface",
     """idx_l1interface idx_device ifindex duplex ethernet nativevlan trunk \
-ifspeed iftype ifalias ifdescr ifname ifadminstatus ifoperstatus ts_idle \
+ifspeed iftype ifalias ifdescr ifname ifadminstatus ifoperstatus \
+ifin_ucast_pkts ifout_ucast_pkts ifin_errors ifin_discards \
+ifin_nucast_pkts ifout_nucast_pkts ifout_errors ifout_discards ts_idle \
 cdpcachedeviceid cdpcachedeviceport cdpcacheplatform lldpremportdesc \
 lldpremsyscapenabled lldpremsysdesc lldpremsysname enabled ts_modified \
-ts_created""",
+ifin_octets ifout_octets ts_created""",
 )
+
 IL1Interface = namedtuple(
     "IL1Interface",
     """idx_device ifindex duplex ethernet nativevlan trunk ifspeed iftype \
-ifalias ifdescr ifname ifadminstatus ifoperstatus ts_idle cdpcachedeviceid \
+ifalias ifdescr ifname ifadminstatus ifoperstatus ifin_ucast_pkts \
+ifout_ucast_pkts ifin_errors ifin_discards ifin_nucast_pkts \
+ifout_nucast_pkts ifout_errors ifout_discards ts_idle cdpcachedeviceid \
 cdpcachedeviceport cdpcacheplatform lldpremportdesc lldpremsyscapenabled \
-lldpremsysdesc lldpremsysname enabled""",
+lldpremsysdesc lldpremsysname enabled ifin_octets ifout_octets""",
 )
 
 RVlan = namedtuple(

@@ -4,7 +4,7 @@
 import os
 import sys
 import unittest
-from mock import Mock
+from unittest.mock import Mock, AsyncMock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -106,7 +106,7 @@ class Query:
         pass
 
 
-class TestCiscoCDPFunctions(unittest.TestCase):
+class TestCiscoCDPFunctions(unittest.IsolatedAsyncioTestCase):
     """Checks all methods."""
 
     #########################################################################
@@ -142,7 +142,7 @@ class TestCiscoCDPFunctions(unittest.TestCase):
         pass
 
 
-class TestCiscoCDP(unittest.TestCase):
+class TestCiscoCDP(unittest.IsolatedAsyncioTestCase):
     """Checks all functions and methods."""
 
     #########################################################################
@@ -174,26 +174,24 @@ class TestCiscoCDP(unittest.TestCase):
         # Cleanup the
         CONFIG.cleanup()
 
-    def test_supported(self):
+    async def test_supported(self):
         """Testing method / function supported."""
         # Set the stage for oid_exists returning True
         snmpobj = Mock(spec=Query)
-        mock_spec = {"oid_exists.return_value": True}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.oid_exists = AsyncMock(return_value=True)
 
         # Test supported
         testobj = testimport.init_query(snmpobj)
-        self.assertEqual(testobj.supported(), True)
+        self.assertEqual(await testobj.supported(), True)
 
         # Set the stage for oid_exists returning False
-        mock_spec = {"oid_exists.return_value": False}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.oid_exists = AsyncMock(return_value=False)
 
         # Test unsupported
         testobj = testimport.init_query(snmpobj)
-        self.assertEqual(testobj.supported(), False)
+        self.assertEqual(await testobj.supported(), False)
 
-    def test_layer1(self):
+    async def test_layer1(self):
         """Testing method / function layer1."""
         # Initializing key variables
         expected_dict = {
@@ -211,12 +209,11 @@ class TestCiscoCDP(unittest.TestCase):
 
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {"swalk.return_value": self.walk_results_string}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.swalk = AsyncMock(return_value=self.walk_results_string)
 
         # Get results
         testobj = testimport.init_query(snmpobj)
-        results = testobj.layer1()
+        results = await testobj.layer1()
 
         # Basic testing of results
         for primary in results.keys():
@@ -226,61 +223,58 @@ class TestCiscoCDP(unittest.TestCase):
                     expected_dict[primary][secondary],
                 )
 
-    def test_cdpcachedeviceid(self):
+    async def test_cdpcachedeviceid(self):
         """Testing method / function cdpcachedeviceid."""
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {"swalk.return_value": self.walk_results_string}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.swalk = AsyncMock(return_value=self.walk_results_string)
 
         # Get results
         testobj = testimport.init_query(snmpobj)
-        results = testobj.cdpcachedeviceid()
+        results = await testobj.cdpcachedeviceid()
 
         # Basic testing of results
         for key in results.keys():
             self.assertEqual(isinstance(key, int), True)
 
         # Test that we are getting the correct OID
-        results = testobj.cdpcachedeviceid(oidonly=True)
+        results = await testobj.cdpcachedeviceid(oidonly=True)
         self.assertEqual(results, ".1.3.6.1.4.1.9.9.23.1.2.1.1.6")
 
-    def test_cdpcacheplatform(self):
+    async def test_cdpcacheplatform(self):
         """Testing method / function cdpcacheplatform."""
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {"swalk.return_value": self.walk_results_string}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.swalk = AsyncMock(return_value=self.walk_results_string)
 
         # Get results
         testobj = testimport.init_query(snmpobj)
-        results = testobj.cdpcacheplatform()
+        results = await testobj.cdpcacheplatform()
 
         # Basic testing of results
         for key in results.keys():
             self.assertEqual(isinstance(key, int), True)
 
         # Test that we are getting the correct OID
-        results = testobj.cdpcacheplatform(oidonly=True)
+        results = await testobj.cdpcacheplatform(oidonly=True)
         self.assertEqual(results, ".1.3.6.1.4.1.9.9.23.1.2.1.1.8")
 
-    def test_cdpcachedeviceport(self):
+    async def test_cdpcachedeviceport(self):
         """Testing method / function cdpcachedeviceport."""
         # Set the stage for SNMPwalk
         snmpobj = Mock(spec=Query)
-        mock_spec = {"swalk.return_value": self.walk_results_string}
-        snmpobj.configure_mock(**mock_spec)
+        snmpobj.swalk = AsyncMock(return_value=self.walk_results_string)
 
         # Get results
         testobj = testimport.init_query(snmpobj)
-        results = testobj.cdpcachedeviceport()
+        results = await testobj.cdpcachedeviceport()
 
         # Basic testing of results
         for key in results.keys():
             self.assertEqual(isinstance(key, int), True)
 
         # Test that we are getting the correct OID
-        results = testobj.cdpcachedeviceport(oidonly=True)
+        results = await testobj.cdpcachedeviceport(oidonly=True)
         self.assertEqual(results, ".1.3.6.1.4.1.9.9.23.1.2.1.1.7")
 
     def test__ifindex(self):

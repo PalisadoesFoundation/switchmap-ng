@@ -11,7 +11,7 @@ Based on the pages at:
 
 # PIP3 imports
 import graphene
-
+from switchmap.server.db.models import Device
 
 ###############################################################################
 # Define Resolvers
@@ -204,6 +204,30 @@ def resolve_organization(obj, _):
         str: Decoded organization string or empty string
     """
     return obj.organization.decode() if bool(obj.organization) else ""
+
+
+def resolve_device_by_hostname(self, info, hostname=None, **kwargs):
+    """Resolve devices by hostname for historical data.
+
+    If no hostname is provided, returns all enabled devices.
+
+    Args:
+        info (Any): GraphQL info context.
+        hostname (str, optional): The hostname of the device to filter by.
+            Defaults to None.
+        **kwargs: Additional keyword arguments.
+
+    Returns:
+        sqlalchemy.orm.query.Query: Query object with the matching devices.
+    """
+    if not hostname:
+        return Device.query.filter(Device.enabled == 1)
+    hostname_bytes = hostname.encode("utf-8")
+    query = Device.query.filter(
+        Device.hostname == hostname_bytes,
+        Device.enabled == 1,
+    ).order_by(Device.ts_created.desc())
+    return query
 
 
 def resolve_name(obj, _):
@@ -403,6 +427,20 @@ class DeviceAttribute:
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
 
 
+class SystemStatAttribute:
+    """Descriptive attributes of the SystemStat table.
+
+    A generic class to mutualize description of attributes for both queries
+    and mutations.
+    """
+
+    idx_systemstat = graphene.Int(description="Primary key index")
+    idx_device = graphene.Int(description="Device Index Foreign key ")
+    cpu_5min = graphene.Int(description=" Device cpu_5min_usage")
+    mem_used = graphene.Float(description="Device memory_used (bytes)")
+    mem_free = graphene.Float(description="Device memory_free (bytes)")
+
+
 class L1InterfaceAttribute:
     """Descriptive attributes of the L1Interface table.
 
@@ -454,6 +492,29 @@ class L1InterfaceAttribute:
     lldpremsysname = graphene.String(
         resolver=resolve_lldpremsysname, description="LLDP system name"
     )
+    ifin_ucast_pkts = graphene.Float(
+        description="Interface inbound unicast packets"
+    )
+    ifout_ucast_pkts = graphene.Float(
+        description="Interface outbound unicast packets"
+    )
+    ifin_errors = graphene.Float(description="Interface inbound errors")
+    ifin_discards = graphene.Float(description="Interface inbound discards")
+    ifin_octets = graphene.Float(description="Interface inbound octets (bytes)")
+    ifout_octets = graphene.Float(
+        description="Interface outbound octets (bytes)"
+    )
+    ifin_nucast_pkts = graphene.Float(
+        description="Interface inbound non-unicast packets \
+        (broadcast/multicast)"
+    )
+    ifout_nucast_pkts = graphene.Float(
+        description="Interface outbound non-unicast packets \
+        (broadcast/multicast)"
+    )
+    ifout_errors = graphene.Float(description="Interface outbound errors")
+    ifout_discards = graphene.Float(description="Interface outbound discards")
+
     enabled = graphene.Boolean(description="Enabled")
     ts_modified = graphene.DateTime(description="Row Modification Timestamp")
     ts_created = graphene.DateTime(description="Row Creation Timestamp")
