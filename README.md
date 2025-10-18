@@ -1,6 +1,6 @@
 # Switchmap-NG
 
-[💬 Join the community on Slack](https://github.com/PalisadoesFoundation/)
+💬 Join our [community forum](https://community.talawa.io/) to meet others using and improving our code!
 
 [![N|Solid](docs/static/img/markdown/misc/logo.png)](https://github.com/PalisadoesFoundation/switchmap-ng)
 
