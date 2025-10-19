@@ -130,7 +130,7 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
         onChange(zones[0].id);
       }
     }
-  }, [zones, selectedZoneId]);
+  }, [zones, selectedZoneId, onChange]);
 
   return (
     <div

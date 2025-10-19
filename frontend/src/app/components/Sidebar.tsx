@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { FiLayout, FiClock, FiSettings } from "react-icons/fi";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { ThemeToggle } from "@/app/theme-toggle";
@@ -50,10 +51,11 @@ export function Sidebar() {
   const sidebarContent = (
     <nav className="space-y-6">
       <div className="flex flex-row items-center justify-between gap-1">
-        <img
+        <Image
           src="/images/switchmap-logo-modified.svg"
           alt="logo"
-          className="w-6 h-6"
+          width={24}
+          height={24}
         />
 
         <h2 className="text-xl font-semibold">Switchmap-NG</h2>

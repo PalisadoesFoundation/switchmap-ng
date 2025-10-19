@@ -109,7 +109,7 @@ export default function ConfigPage() {
   const [draftGroupName, setDraftGroupName] = useState<string | null>(null);
   const [editIdx, setEditIdx] = useState<number | null>(null);
   const [editSection, setEditSection] = useState<SectionType | null>(null);
-  const [authPasswordEdit, setAuthPasswordEdit] = useState(false);
+  const [_authPasswordEdit, setAuthPasswordEdit] = useState(false);
 
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>

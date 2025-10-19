@@ -12,7 +12,6 @@ import { Sidebar } from "@/app/components/Sidebar";
 import { ZoneDropdown } from "@/app/components/ZoneDropdown";
 import {
   DeviceNode,
-  GetZoneDevicesData,
   ZoneEdge,
 } from "@/app/types/graphql/GetZoneDevices";
 
@@ -316,7 +315,7 @@ export default function Home() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [zoneId]);
+  }, [zoneId, fetchDevices]);
 
   // Loading fallback component
   const LoadingFallback = () => (

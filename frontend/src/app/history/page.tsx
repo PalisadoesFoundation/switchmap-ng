@@ -258,21 +258,17 @@ export default function DeviceHistoryChart() {
       if (json.errors?.length) throw new Error(json.errors[0].message);
 
       const zones = json.data?.zones?.edges || [];
-      let devicesWithZones: DeviceNode[] = [];
-
-      zones.forEach((zoneEdge) => {
+      const devicesWithZones: DeviceNode[] = zones.flatMap((zoneEdge) => {
         const zone = zoneEdge.node;
         const deviceEdges = zone?.devices?.edges ?? [];
-        deviceEdges.forEach((deviceEdge) => {
-          const device = deviceEdge.node;
-          if (device?.hostname && device?.idxDevice) {
-            devicesWithZones.push({
-              ...device,
-              zone: zone.name,
-              lastPolledMs: toMs(device.lastPolled ?? null),
-            });
-          }
-        });
+        return deviceEdges
+          .map((deviceEdge) => deviceEdge.node)
+          .filter((device) => device?.hostname && device?.idxDevice)
+          .map((device) => ({
+            ...device,
+            zone: zone.name,
+            lastPolledMs: toMs(device.lastPolled ?? null),
+          }));
       });
 
       // Store all hostnames (unfiltered)
@@ -314,6 +310,7 @@ export default function DeviceHistoryChart() {
     searchTerm,
     getCachedDevices,
     filterDevicesByTimeRange,
+    ongoingRequest,
   ]);
 
   useEffect(() => {
@@ -323,10 +320,6 @@ export default function DeviceHistoryChart() {
 
     return () => clearTimeout(timeoutId);
   }, [fetchDevices]);
-
-  const uniqueHostnames = useMemo(() => {
-    return Array.from(new Set(allDevices.map((d) => d.hostname)));
-  }, [allDevices]);
 
   // Debounced suggestions
   useEffect(() => {
