@@ -55,14 +55,6 @@ interface YAxisConfig {
     | ((props: TickProps) => React.ReactElement<SVGElement>);
 }
 
-interface TooltipFormatterProps {
-  value?: unknown;
-  name?: string;
-  payload?: Record<string, unknown>;
-  dataKey?: string;
-  color?: string;
-}
-
 interface LineChartWrapperProps<T = Record<string, unknown>> {
   data: T[];
   xAxisKey: keyof T;

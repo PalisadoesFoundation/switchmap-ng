@@ -299,7 +299,7 @@ query SystemStats($hostname: String!) {
     }
     fetchData();
     return () => ac.abort();
-  }, [device.hostname]);
+  }, [device.hostname, query]);
 
   const filterByRange = useCallback(
     (data: { lastPolled: string; value: number }[]) => {

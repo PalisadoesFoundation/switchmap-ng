@@ -75,7 +75,7 @@ export function DevicesOverview({
       columnHelper.accessor("ports", { header: "Active Ports" }),
       columnHelper.accessor("uptime", { header: "Uptime" }),
     ],
-    []
+    [columnHelper]
   );
 
   const data = useMemo(() => {
