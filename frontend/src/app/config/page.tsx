@@ -46,8 +46,8 @@ interface PollerConfig {
 
 interface Config {
   poller?: PollerConfig;
-  core: Record<string, any>;
-  server: Record<string, any>;
+  core: Record<string, unknown>;
+  server: Record<string, unknown>;
 }
 
 type TabType = "zones" | "snmp" | "advanced";
@@ -171,8 +171,8 @@ export default function ConfigPage() {
       };
 
       setConfig(data);
-    } catch (error: any) {
-      if (error.name === "AbortError") {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === "AbortError") {
         return;
       }
       console.error("Failed to fetch config:", error);
@@ -360,7 +360,7 @@ export default function ConfigPage() {
   }, []);
 
   const updateConfigSection = useCallback(
-    (section: SectionType, key: string, value: any) => {
+    (section: SectionType, key: string, value: unknown) => {
       setConfig((prev) => {
         if (!prev) return prev;
         return {

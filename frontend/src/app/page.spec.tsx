@@ -98,8 +98,8 @@ describe("Home page", () => {
         ok: true,
         json: async () => ({
           data: {
-            events: {
-              edges: [{ node: { zones: { edges: mockZones } } }],
+            zones: {
+              edges: mockZones,
             },
           },
         }),

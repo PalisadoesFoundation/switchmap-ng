@@ -1,6 +1,6 @@
 "use client";
 
-import { DeviceNode } from "@/app/types/graphql/GetZoneDevices";
+import { DeviceNode, InterfaceEdge } from "@/app/types/graphql/GetZoneDevices";
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   Network,
@@ -153,7 +153,7 @@ export function TopologyChart({
       nodesSet.add(device.sysName);
 
       (device.l1interfaces?.edges ?? []).forEach(
-        ({ node: iface }: { node: any }) => {
+        ({ node: iface }: InterfaceEdge) => {
           const targetCDP = iface?.cdpcachedeviceid;
           const portCDP = iface?.cdpcachedeviceport;
           const targetLLDP = iface?.lldpremsysname;
@@ -298,9 +298,9 @@ export function TopologyChart({
         const node = Array.isArray(nodeData) ? nodeData[0] : nodeData;
 
         // Only navigate if idxDevice exists
-        if ((node as any)?.idxDevice) {
-          const idxDevice = (node as any).idxDevice;
-          const sysName = (node as any)?.label ?? "";
+        if ((node as VisNode)?.idxDevice) {
+          const idxDevice = (node as VisNode).idxDevice!;
+          const sysName = (node as VisNode)?.label ?? "";
           const url = `/devices/${encodeURIComponent(
             idxDevice
           )}?sysName=${encodeURIComponent(sysName)}#devices-overview`;
@@ -400,8 +400,8 @@ export function TopologyChart({
     const labels =
       nodesData.current
         ?.get()
-        ?.map((node: any) => node.label)
-        .filter(Boolean) || [];
+        ?.map((node: VisNode) => node.label)
+        .filter((label): label is string => Boolean(label)) || [];
     setAllNodeLabels(labels);
 
     // Cleanup previous Network instance to avoid leaks & duplicate handlers

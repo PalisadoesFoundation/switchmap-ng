@@ -51,8 +51,8 @@ export type InterfaceNode = {
   ifspeed: number;  
   ifinUcastPkts: number|null;
   ifoutUcastPkts: number|null;
-  ifinNUcastPkts: number|null;
-  ifoutNUcastPkts: number|null;
+  ifinNucastPkts: number|null;
+  ifoutNucastPkts: number|null;
   ifinOctets: number|null;
   ifoutOctets: number|null;
   ifinErrors: number|null;

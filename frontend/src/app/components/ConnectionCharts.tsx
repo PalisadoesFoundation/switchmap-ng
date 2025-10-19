@@ -171,100 +171,112 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           rangeStart = new Date(now.getTime() - 30 * 24 * 3600 * 1000);
         else rangeStart = new Date(0);
 
-        edges.forEach(({ node }: any) => {
-          const lastPolled = new Date(node.lastPolled * 1000);
-          if (
-            lastPolled < rangeStart ||
-            (startDate && lastPolled < new Date(startDate)) ||
-            (endDate && lastPolled > new Date(endDate))
-          )
-            return;
+        edges.forEach(
+          ({
+            node,
+          }: {
+            node: Partial<DeviceNode> & {
+              lastPolled: number;
+              l1interfaces: { edges: { node: InterfaceNode }[] };
+            };
+          }) => {
+            const lastPolled = new Date(node.lastPolled * 1000);
+            if (
+              lastPolled < rangeStart ||
+              (startDate && lastPolled < new Date(startDate)) ||
+              (endDate && lastPolled > new Date(endDate))
+            )
+              return;
 
-          node.l1interfaces.edges.forEach(({ node: iface }: any) => {
-            const ifname = iface.ifname;
-            if (!newData[ifname])
-              newData[ifname] = {
-                TrafficIn: [],
-                TrafficOut: [],
-                UnicastIn: [],
-                UnicastOut: [],
-                NonUnicastIn: [],
-                NonUnicastOut: [],
-                ErrorsTotal: [],
-                DiscardsTotal: [],
-                Speed: [],
-              };
+            node.l1interfaces.edges.forEach(
+              ({ node: iface }: { node: InterfaceNode }) => {
+                const ifname = iface.ifname;
+                if (!newData[ifname])
+                  newData[ifname] = {
+                    TrafficIn: [],
+                    TrafficOut: [],
+                    UnicastIn: [],
+                    UnicastOut: [],
+                    NonUnicastIn: [],
+                    NonUnicastOut: [],
+                    ErrorsTotal: [],
+                    DiscardsTotal: [],
+                    Speed: [],
+                  };
 
-            // Traffic data - separate input and output
-            if (iface.ifinOctets != null) {
-              newData[ifname].TrafficIn.push({
-                lastPolled: lastPolled.toISOString(),
-                value: iface.ifinOctets,
-              });
-            }
+                // Traffic data - separate input and output
+                if (iface.ifinOctets != null) {
+                  newData[ifname].TrafficIn.push({
+                    lastPolled: lastPolled.toISOString(),
+                    value: iface.ifinOctets,
+                  });
+                }
 
-            if (iface.ifoutOctets != null) {
-              newData[ifname].TrafficOut.push({
-                lastPolled: lastPolled.toISOString(),
-                value: iface.ifoutOctets,
-              });
-            }
+                if (iface.ifoutOctets != null) {
+                  newData[ifname].TrafficOut.push({
+                    lastPolled: lastPolled.toISOString(),
+                    value: iface.ifoutOctets,
+                  });
+                }
 
-            // Unicast packets data - separate input and output
-            if (iface.ifinUcastPkts != null) {
-              newData[ifname].UnicastIn.push({
-                lastPolled: lastPolled.toISOString(),
-                value: iface.ifinUcastPkts,
-              });
-            }
+                // Unicast packets data - separate input and output
+                if (iface.ifinUcastPkts != null) {
+                  newData[ifname].UnicastIn.push({
+                    lastPolled: lastPolled.toISOString(),
+                    value: iface.ifinUcastPkts,
+                  });
+                }
 
-            if (iface.ifoutUcastPkts != null) {
-              newData[ifname].UnicastOut.push({
-                lastPolled: lastPolled.toISOString(),
-                value: iface.ifoutUcastPkts,
-              });
-            }
+                if (iface.ifoutUcastPkts != null) {
+                  newData[ifname].UnicastOut.push({
+                    lastPolled: lastPolled.toISOString(),
+                    value: iface.ifoutUcastPkts,
+                  });
+                }
 
-            // Non-unicast packets data - separate input and output
-            if (iface.ifinNucastPkts != null) {
-              newData[ifname].NonUnicastIn.push({
-                lastPolled: lastPolled.toISOString(),
-                value: iface.ifinNucastPkts,
-              });
-            }
+                // Non-unicast packets data - separate input and output
+                if (iface.ifinNucastPkts != null) {
+                  newData[ifname].NonUnicastIn.push({
+                    lastPolled: lastPolled.toISOString(),
+                    value: iface.ifinNucastPkts,
+                  });
+                }
 
-            if (iface.ifoutNucastPkts != null) {
-              newData[ifname].NonUnicastOut.push({
-                lastPolled: lastPolled.toISOString(),
-                value: iface.ifoutNucastPkts,
-              });
-            }
+                if (iface.ifoutNucastPkts != null) {
+                  newData[ifname].NonUnicastOut.push({
+                    lastPolled: lastPolled.toISOString(),
+                    value: iface.ifoutNucastPkts,
+                  });
+                }
 
-            // Errors data - total makes sense here
-            if (iface.ifinErrors != null || iface.ifoutErrors != null) {
-              newData[ifname].ErrorsTotal.push({
-                lastPolled: lastPolled.toISOString(),
-                value: (iface.ifinErrors ?? 0) + (iface.ifoutErrors ?? 0),
-              });
-            }
+                // Errors data - total makes sense here
+                if (iface.ifinErrors != null || iface.ifoutErrors != null) {
+                  newData[ifname].ErrorsTotal.push({
+                    lastPolled: lastPolled.toISOString(),
+                    value: (iface.ifinErrors ?? 0) + (iface.ifoutErrors ?? 0),
+                  });
+                }
 
-            // Discards data - total makes sense here
-            if (iface.ifinDiscards != null || iface.ifoutDiscards != null) {
-              newData[ifname].DiscardsTotal.push({
-                lastPolled: lastPolled.toISOString(),
-                value: (iface.ifinDiscards ?? 0) + (iface.ifoutDiscards ?? 0),
-              });
-            }
+                // Discards data - total makes sense here
+                if (iface.ifinDiscards != null || iface.ifoutDiscards != null) {
+                  newData[ifname].DiscardsTotal.push({
+                    lastPolled: lastPolled.toISOString(),
+                    value:
+                      (iface.ifinDiscards ?? 0) + (iface.ifoutDiscards ?? 0),
+                  });
+                }
 
-            // Speed data
-            if (iface.ifspeed != null) {
-              newData[ifname].Speed.push({
-                lastPolled: lastPolled.toISOString(),
-                value: iface.ifspeed,
-              });
-            }
-          });
-        });
+                // Speed data
+                if (iface.ifspeed != null) {
+                  newData[ifname].Speed.push({
+                    lastPolled: lastPolled.toISOString(),
+                    value: iface.ifspeed,
+                  });
+                }
+              }
+            );
+          }
+        );
 
         // Sort all data arrays chronologically by lastPolled timestamp
         Object.keys(newData).forEach((ifname) => {
@@ -278,9 +290,14 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
         });
 
         setData(newData);
-      } catch (err: any) {
-        if (err.name === "AbortError") return;
-        setError(err.message);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          if (err.name === "AbortError") return;
+          setError(err.message);
+        } else {
+          // handle non-Error cases if needed
+          setError(String(err));
+        }
       }
     };
 

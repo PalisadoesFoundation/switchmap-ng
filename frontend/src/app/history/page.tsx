@@ -298,11 +298,11 @@ export default function DeviceHistoryChart() {
       if (!searchTerm && filteredDevices.length > 0) {
         setSearchTerm(filteredDevices[0].hostname);
       }
-    } catch (err: any) {
-      if (err.name === "AbortError") {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") {
         return; // Request was cancelled
       }
-      setError(err.message || "Error fetching devices");
+      setError(err instanceof Error ? err.message : "Error fetching devices");
     } finally {
       setLoading(false);
       setOngoingRequest(null);
