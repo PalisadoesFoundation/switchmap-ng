@@ -576,7 +576,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
 
                     {filteredData.length > 0 ? (
                       <div className="w-full">
-                        <div className="relative min-h-[250px] sm:min-h-[300px] lg:min-h-[400px] w-full max-w-full overflow-hidden border border-gray-200 rounded-lg bg-white">
+                        <div className="relative min-h-[250px] sm:min-h-[300px] lg:min-h-[400px] w-full max-w-full overflow-hidden border border-gray-200 rounded-lg bg-bg">
                           <div className="absolute inset-0 p-2 sm:p-4">
                             <HistoricalChart
                               data={filteredData}
