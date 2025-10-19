@@ -73,9 +73,9 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   const [timeRange, setTimeRange] = useState("24h");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [expandedIfaces, setExpandedIfaces] = useState<Record<string, boolean>>(
-    {}
-  );
+  const [expandedIfaces, setExpandedIfaces] = useState<
+    Record<number, Record<string, boolean>>
+  >({});
   const [activeTabs, setActiveTabs] = useState<Record<string, ChartTab>>({});
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [data, setData] = useState<
@@ -109,19 +109,31 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   ];
 
   const expandAll = () => {
-    const newState = device.l1interfaces.edges.reduce((acc, { node }) => {
-      acc[node.ifname] = true;
-      return acc;
-    }, {} as Record<string, boolean>);
-    setExpandedIfaces(newState);
+    const newState = device.l1interfaces.edges
+      .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      .reduce((acc, { node }) => {
+        acc[node.ifname] = true;
+        return acc;
+      }, {} as Record<string, boolean>);
+
+    setExpandedIfaces((prev) => ({
+      ...prev,
+      [currentPage]: newState,
+    }));
   };
 
   const collapseAll = () => {
-    const newState = device.l1interfaces.edges.reduce((acc, { node }) => {
-      acc[node.ifname] = false;
-      return acc;
-    }, {} as Record<string, boolean>);
-    setExpandedIfaces(newState);
+    const newState = device.l1interfaces.edges
+      .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+      .reduce((acc, { node }) => {
+        acc[node.ifname] = false;
+        return acc;
+      }, {} as Record<string, boolean>);
+
+    setExpandedIfaces((prev) => ({
+      ...prev,
+      [currentPage]: newState,
+    }));
   };
 
   useEffect(() => {
@@ -254,6 +266,17 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           });
         });
 
+        // Sort all data arrays chronologically by lastPolled timestamp
+        Object.keys(newData).forEach((ifname) => {
+          Object.keys(newData[ifname]).forEach((chartType) => {
+            newData[ifname][chartType as ChartTab].sort(
+              (a, b) =>
+                new Date(a.lastPolled).getTime() -
+                new Date(b.lastPolled).getTime()
+            );
+          });
+        });
+
         setData(newData);
       } catch (err: any) {
         if (err.name === "AbortError") return;
@@ -319,7 +342,7 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
   };
 
   return (
-    <div className="p-8 w-[80vw] flex flex-col gap-6 h-full bg-bg">
+    <div className="p-4 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto flex flex-col gap-6 h-full bg-bg">
       {error && (
         <div className="fixed inset-0 flex mt-2 items-start justify-center z-50 pointer-events-none">
           <div className="bg-gray-300 text-gray-900 px-6 py-3 rounded shadow-lg animate-fade-in pointer-events-auto">
@@ -327,14 +350,14 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           </div>
         </div>
       )}
-      <div className=" min-w-[400px]">
+      <div className="min-w-0 w-full">
         <h2 className="text-xl font-semibold mb-2">Connection Charts</h2>
         <p className="text-sm">
           View bandwidth, packet flow, errors, and discards per interface.
         </p>
 
-        <div className="flex flex-wrap gap-4 items-end mb-4 mt-4">
-          <div className="relative w-[160px]">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-end mb-4 mt-4">
+          <div className="relative w-full sm:w-[160px]">
             <button
               type="button"
               className="flex justify-between items-end w-full border border-gray-300 rounded px-3 py-1 bg-bg transition-colors"
@@ -379,8 +402,8 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           </div>
 
           {timeRange === "custom" && (
-            <div className="flex gap-4 items-end">
-              <div>
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end w-full sm:w-auto">
+              <div className="w-full sm:w-auto">
                 <label htmlFor="startDate" className="text-sm block mb-1">
                   Start Date
                 </label>
@@ -411,10 +434,10 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
 
                     setStartDate(e.target.value);
                   }}
-                  className="border border-gray-300 rounded px-2 py-1 bg-bg"
+                  className="border border-gray-300 rounded px-2 py-1 bg-bg w-full sm:w-auto"
                 />
               </div>
-              <div>
+              <div className="w-full sm:w-auto">
                 <label htmlFor="endDate" className="text-sm block mb-1">
                   End Date
                 </label>
@@ -445,21 +468,21 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
 
                     setEndDate(e.target.value);
                   }}
-                  className="border border-gray-300 rounded px-2 py-1 bg-bg"
+                  className="border border-gray-300 rounded px-2 py-1 bg-bg w-full sm:w-auto"
                 />
               </div>
             </div>
           )}
 
-          <div className="flex gap-4 sm:ml-auto mr-0">
+          <div className="flex gap-2 sm:gap-4 w-full sm:w-auto sm:ml-auto justify-start sm:justify-end">
             <button
-              className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 transition-colors"
+              className="inline-flex justify-center items-center bg-bg px-3 sm:px-4 py-2 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 transition-colors text-sm"
               onClick={expandAll}
             >
               Expand All
             </button>
             <button
-              className="inline-flex justify-between items-center bg-bg px-4 py-2 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 transition-colors"
+              className="inline-flex justify-center items-center bg-bg px-3 sm:px-4 py-2 border border-gray-300 rounded-md shadow-sm hover:border-gray-400 transition-colors text-sm"
               onClick={collapseAll}
             >
               Collapse All
@@ -467,118 +490,137 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 m-2">
+        <div className="flex flex-col gap-4 mx-1 sm:mx-2">
           {paginatedIfaces.map(({ node }: { node: InterfaceNode }) => {
             const ifname = node.ifname;
-            const isExpanded = expandedIfaces[ifname];
+            const currentPageState = expandedIfaces[currentPage] || {};
+            const isExpanded = currentPageState[ifname] || false;
             const currentTab = activeTabs[ifname] || "TrafficIn";
             const filteredData = data[ifname]?.[currentTab] || [];
 
             return (
               <div
                 key={ifname}
-                className="border border-gray-300 rounded-lg p-2 bg-content-bg relative mb-2 overflow-auto"
+                className="border border-gray-300 rounded-lg p-2 sm:p-3 lg:p-4 bg-content-bg relative mb-2"
               >
-                <div
-                  className="flex items-center gap-2 cursor-pointer ml-2"
-                  onClick={() =>
-                    setExpandedIfaces((prev) => ({
-                      ...prev,
-                      [ifname]: !prev[ifname],
-                    }))
-                  }
-                >
-                  {isExpanded ? <FiMinus /> : <FiPlus />}
-                  <p className="font-medium">{ifname}</p>
+                <div className="flex items-center justify-between">
+                  <div
+                    className="flex items-center gap-2 cursor-pointer ml-2"
+                    onClick={() =>
+                      setExpandedIfaces((prev) => ({
+                        ...prev,
+                        [currentPage]: {
+                          ...(prev[currentPage] || {}),
+                          [ifname]: !(prev[currentPage] || {})[ifname],
+                        },
+                      }))
+                    }
+                  >
+                    {isExpanded ? <FiMinus /> : <FiPlus />}
+                    <p className="font-medium">{ifname}</p>
+                  </div>
+
+                  {isExpanded && (
+                    <button
+                      className="px-2 py-1 rounded text-white bg-primary text-xs hover:bg-primary/90 transition-colors flex items-center gap-1"
+                      onClick={() =>
+                        downloadCSV(filteredData, `${ifname}-${currentTab}.csv`)
+                      }
+                    >
+                      <FiDownload className="w-3 h-3" />
+                      <span className="hidden sm:inline">CSV</span>
+                    </button>
+                  )}
                 </div>
 
                 {isExpanded && (
                   <>
-                    <div className="flex gap-6 border-b border-border-subtle mt-4 mb-4">
-                      <button
-                        className="absolute top-2 right-2 md:top-4 md:right-4 px-3 py-1 md:py-2 rounded-md text-white bg-primary"
-                        onClick={() =>
-                          downloadCSV(
-                            filteredData,
-                            `${ifname}-${currentTab}.csv`
-                          )
-                        }
-                      >
-                        <FiDownload className="inline mr-1" /> Download
-                      </button>
-                      {(
-                        [
-                          "TrafficIn",
-                          "TrafficOut",
-                          "UnicastIn",
-                          "UnicastOut",
-                          "NonUnicastIn",
-                          "NonUnicastOut",
-                          "ErrorsTotal",
-                          "DiscardsTotal",
-                          "Speed",
-                        ] as ChartTab[]
-                      ).map((tab) => (
-                        <button
-                          key={tab}
-                          className={`pb-2 text-sm font-medium transition-colors duration-150 ${
-                            currentTab === tab
-                              ? "border-b-2 border-primary text-primary"
-                              : "text-gray-500 hover:text-primary"
-                          }`}
-                          onClick={() =>
-                            setActiveTabs((prev) => ({
-                              ...prev,
-                              [ifname]: tab,
-                            }))
-                          }
-                        >
-                          {getTabDisplayName(tab)}
-                        </button>
-                      ))}
+                    <div className="mt-4 mb-4">
+                      <div className="w-full">
+                        <div className="w-full overflow-x-auto overflow-y-hidden tab-scrollbar">
+                          <div className="flex gap-2 sm:gap-4 lg:gap-6 border-b border-border-subtle pb-2 min-w-max">
+                            {(
+                              [
+                                "TrafficIn",
+                                "TrafficOut",
+                                "UnicastIn",
+                                "UnicastOut",
+                                "NonUnicastIn",
+                                "NonUnicastOut",
+                                "ErrorsTotal",
+                                "DiscardsTotal",
+                                "Speed",
+                              ] as ChartTab[]
+                            ).map((tab) => (
+                              <button
+                                key={tab}
+                                className={`pb-2 text-xs sm:text-sm font-medium transition-colors duration-150 whitespace-nowrap flex-shrink-0 ${
+                                  currentTab === tab
+                                    ? "border-b-2 border-primary text-primary"
+                                    : "text-gray-500 hover:text-primary"
+                                }`}
+                                onClick={() =>
+                                  setActiveTabs((prev) => ({
+                                    ...prev,
+                                    [ifname]: tab,
+                                  }))
+                                }
+                              >
+                                {getTabDisplayName(tab)}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     {filteredData.length > 0 ? (
-                      <div className="relative  min-h-[300px] mr-2">
-                        <HistoricalChart
-                          data={filteredData}
-                          title={`${ifname} - ${getTabDisplayName(currentTab)}`}
-                          color={
-                            currentTab.startsWith("Traffic")
-                              ? "#8884d8"
-                              : currentTab === "Speed"
-                              ? "#FF5733"
-                              : currentTab.startsWith("Unicast")
-                              ? "#82ca9d"
-                              : currentTab.startsWith("NonUnicast")
-                              ? "#ffc658"
-                              : currentTab.includes("Errors")
-                              ? "#ff7300"
-                              : currentTab.includes("Discards")
-                              ? "#ff0000"
-                              : "#82ca9d"
-                          }
-                          unit={
-                            currentTab === "Speed"
-                              ? " Mbps"
-                              : currentTab.startsWith("Traffic")
-                              ? " octets"
-                              : currentTab.includes("Errors") ||
-                                currentTab.includes("Discards")
-                              ? " errors"
-                              : " pkts"
-                          }
-                          yAxisConfig={
-                            currentTab.startsWith("Traffic") ||
-                            currentTab.startsWith("Unicast") ||
-                            currentTab.startsWith("NonUnicast")
-                              ? {
-                                  tickFormatter: formatLargeNumber,
-                                  allowDecimals: false,
-                                }
-                              : undefined
-                          }
-                        />
+                      <div className="w-full">
+                        <div className="relative min-h-[250px] sm:min-h-[300px] lg:min-h-[400px] w-full max-w-full overflow-hidden border border-gray-200 rounded-lg bg-white">
+                          <div className="absolute inset-0 p-2 sm:p-4">
+                            <HistoricalChart
+                              data={filteredData}
+                              title={`${ifname} - ${getTabDisplayName(
+                                currentTab
+                              )}`}
+                              color={
+                                currentTab.startsWith("Traffic")
+                                  ? "#8884d8"
+                                  : currentTab === "Speed"
+                                  ? "#FF5733"
+                                  : currentTab.startsWith("Unicast")
+                                  ? "#82ca9d"
+                                  : currentTab.startsWith("NonUnicast")
+                                  ? "#ffc658"
+                                  : currentTab.includes("Errors")
+                                  ? "#ff7300"
+                                  : currentTab.includes("Discards")
+                                  ? "#ff0000"
+                                  : "#82ca9d"
+                              }
+                              unit={
+                                currentTab === "Speed"
+                                  ? " Mbps"
+                                  : currentTab.startsWith("Traffic")
+                                  ? " octets"
+                                  : currentTab.includes("Errors") ||
+                                    currentTab.includes("Discards")
+                                  ? " errors"
+                                  : " pkts"
+                              }
+                              yAxisConfig={
+                                currentTab.startsWith("Traffic") ||
+                                currentTab.startsWith("Unicast") ||
+                                currentTab.startsWith("NonUnicast")
+                                  ? {
+                                      tickFormatter: formatLargeNumber,
+                                      allowDecimals: false,
+                                    }
+                                  : undefined
+                              }
+                            />
+                          </div>
+                        </div>
                       </div>
                     ) : (
                       <p className="text-sm text-gray-500 mt-4">
@@ -591,21 +633,21 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             );
           })}
 
-          <div className="flex justify-center items-center gap-4 mt-4 mb-4">
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-4 mb-4">
             <button
               disabled={currentPage === 1}
               onClick={() => setCurrentPage((p) => p - 1)}
-              className="px-3 py-1 border rounded disabled:opacity-50"
+              className="px-4 py-2 border rounded disabled:opacity-50 hover:bg-gray-50 transition-colors w-full sm:w-auto"
             >
               Previous
             </button>
-            <span className="text-sm">
+            <span className="text-sm text-center">
               Page {currentPage} of {totalPages}
             </span>
             <button
               disabled={currentPage === totalPages}
               onClick={() => setCurrentPage((p) => p + 1)}
-              className="px-3 py-1 border rounded disabled:opacity-50"
+              className="px-4 py-2 border rounded disabled:opacity-50 hover:bg-gray-50 transition-colors w-full sm:w-auto"
             >
               Next
             </button>
