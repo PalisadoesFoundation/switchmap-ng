@@ -7,7 +7,8 @@ import {
   within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import ConfigPage, { __resetConfigCache } from "./page";
+import { __resetConfigCache } from "./cache";
+import ConfigPage from "./page";
 
 // Mock the Sidebar component
 vi.mock("../components/Sidebar", () => ({

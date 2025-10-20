@@ -7,12 +7,12 @@ import {
   cleanup,
 } from "@testing-library/react";
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import DeviceHistoryChart, {
+import DeviceHistoryChart from "@/app/history/page";
+import {
   toMs,
   filterDevicesByTimeRange,
-} from "@/app/history/page";
-
-import { deviceCache } from "@/app/history/page";
+  deviceCache,
+} from "@/app/history/utils";
 
 type MockDeviceNode = {
   idxDevice: number;

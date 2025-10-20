@@ -275,6 +275,10 @@ export function TopologyChart({
     setGraph({ nodes: nodesArray, edges: edgesArray });
   }, [devices]);
 
+  // The router is intentionally excluded from dependencies.
+  // Including it causes this effect to re-run and rebind all vis-network events,
+  // leading to performance issues and test timeouts.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     // If no graph data is available, do not render the network
     if (!containerRef.current || graph.nodes.length === 0) return;
@@ -385,7 +389,7 @@ export function TopologyChart({
       });
     });
 
-    networkRef.current.on("deselectEdge", (params) => {
+    networkRef.current.on("deselectEdge", () => {
       if (!edgesData.current) return;
 
       initialGraph.current.edges.forEach((originalEdge) => {
@@ -414,7 +418,7 @@ export function TopologyChart({
         edgesData.current = null;
       }
     };
-  }, [graph, options]);
+  }, [graph, options, isDark]);
 
   useEffect(() => {
     if (!inputTerm || inputTerm.trim() === "") {

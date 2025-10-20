@@ -10,10 +10,8 @@ import {
 } from "react";
 import { Sidebar } from "@/app/components/Sidebar";
 import { ZoneDropdown } from "@/app/components/ZoneDropdown";
-import {
-  DeviceNode,
-  ZoneEdge,
-} from "@/app/types/graphql/GetZoneDevices";
+import { DeviceNode, ZoneEdge } from "@/app/types/graphql/GetZoneDevices";
+import { deviceCache, CacheEntry, __resetDeviceCache } from "./cache";
 
 interface GraphQLError {
   message: string;
@@ -45,13 +43,6 @@ const DevicesOverview = lazy(() =>
   }))
 );
 
-// Cache for device data with timestamp
-interface CacheEntry {
-  data: DeviceNode[];
-  timestamp: number;
-}
-
-const deviceCache = new Map<string, CacheEntry>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 /**
@@ -359,7 +350,3 @@ export default function Home() {
     </div>
   );
 }
-
-export const _testUtils = {
-  clearDeviceCache: () => deviceCache.clear(),
-};
