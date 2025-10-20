@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useCallback,
+  useRef,
   lazy,
   Suspense,
 } from "react";
@@ -110,9 +111,7 @@ export default function DeviceHistoryChart() {
   const [customEnd, setCustomEnd] = useState("");
   const [open, setOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [ongoingRequest, setOngoingRequest] = useState<AbortController | null>(
-    null
-  );
+  const ongoingRequest = useRef<AbortController | null>(null);
 
   const ranges = useMemo(
     () => [
@@ -157,12 +156,12 @@ export default function DeviceHistoryChart() {
     }
 
     // Cancel ongoing request
-    if (ongoingRequest) {
-      ongoingRequest.abort();
+    if (ongoingRequest.current) {
+      ongoingRequest.current.abort();
     }
 
     const abortController = new AbortController();
-    setOngoingRequest(abortController);
+    ongoingRequest.current = abortController;
 
     setLoading(true);
     setError(null);
@@ -231,16 +230,9 @@ export default function DeviceHistoryChart() {
       setError(err instanceof Error ? err.message : "Error fetching devices");
     } finally {
       setLoading(false);
-      setOngoingRequest(null);
+      ongoingRequest.current = null;
     }
-  }, [
-    range,
-    customStart,
-    customEnd,
-    searchTerm,
-    getCachedDevices,
-    ongoingRequest,
-  ]);
+  }, [range, customStart, customEnd, searchTerm, getCachedDevices]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {

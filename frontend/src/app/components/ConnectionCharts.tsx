@@ -171,6 +171,21 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
           rangeStart = new Date(now.getTime() - 30 * 24 * 3600 * 1000);
         else rangeStart = new Date(0);
 
+        // Helpers: local day bounds and precomputed ms thresholds
+        const dayBounds = (dateStr: string) => {
+          const [y, m, d] = dateStr.split("-").map(Number);
+          if (!y || !m || !d) return [undefined, undefined] as const;
+          return [
+            new Date(y, m - 1, d, 0, 0, 0, 0).getTime(),
+            new Date(y, m - 1, d, 23, 59, 59, 999).getTime(),
+          ] as const;
+        };
+        const [startMsBound] = startDate ? dayBounds(startDate) : [undefined];
+        const [, endMsBound] = endDate
+          ? dayBounds(endDate)
+          : [undefined, undefined];
+        const rangeStartMs = rangeStart.getTime();
+
         edges.forEach(
           ({
             node,
@@ -190,9 +205,9 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             if (Number.isNaN(ms)) return;
             const lastPolled = new Date(ms);
             if (
-              lastPolled < rangeStart ||
-              (startDate && lastPolled < new Date(startDate)) ||
-              (endDate && lastPolled > new Date(endDate))
+              ms < rangeStartMs ||
+              (startMsBound !== undefined && ms < startMsBound) ||
+              (endMsBound !== undefined && ms > endMsBound)
             )
               return;
 
