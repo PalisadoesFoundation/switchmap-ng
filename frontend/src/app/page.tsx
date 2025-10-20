@@ -11,7 +11,7 @@ import {
 import { Sidebar } from "@/app/components/Sidebar";
 import { ZoneDropdown } from "@/app/components/ZoneDropdown";
 import { DeviceNode, ZoneEdge } from "@/app/types/graphql/GetZoneDevices";
-import { deviceCache, CacheEntry, __resetDeviceCache } from "./cache";
+import { deviceCache } from "./cache";
 
 interface GraphQLError {
   message: string;
