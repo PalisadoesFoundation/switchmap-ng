@@ -25,7 +25,7 @@ const openCustomRange = () => {
 const expandInterface = async (ifaceName = "Gig1/0/1") => {
   const toggle = screen.getByText(ifaceName).closest("div")!;
   fireEvent.click(toggle);
-  await waitFor(() => expect(screen.getByText("Download")).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByText("CSV")).toBeInTheDocument());
 };
 
 const createMockResponse = (overrides = {}) => ({
@@ -106,13 +106,11 @@ describe("ConnectionCharts", () => {
     const toggle = screen.getByText("Gig1/0/1").closest("div")!;
     fireEvent.click(toggle);
 
-    await waitFor(() =>
-      expect(screen.getByText("Download")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText("CSV")).toBeInTheDocument());
 
     fireEvent.click(toggle);
     await waitFor(() =>
-      expect(screen.queryByText("Download")).not.toBeInTheDocument()
+      expect(screen.queryByText("CSV")).not.toBeInTheDocument()
     );
 
     expect(screen.getByText("Gig1/0/1")).toBeInTheDocument();
@@ -121,13 +119,11 @@ describe("ConnectionCharts", () => {
   it("expands all and collapses all buttons", async () => {
     renderConnectionCharts();
     fireEvent.click(screen.getByText("Expand All"));
-    await waitFor(() =>
-      expect(screen.getByText("Download")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(screen.getByText("CSV")).toBeInTheDocument());
 
     fireEvent.click(screen.getByText("Collapse All"));
     await waitFor(() =>
-      expect(screen.queryByText("Download")).not.toBeInTheDocument()
+      expect(screen.queryByText("CSV")).not.toBeInTheDocument()
     );
   });
 
@@ -168,7 +164,7 @@ describe("ConnectionCharts", () => {
     renderConnectionCharts();
     await expandInterface();
 
-    fireEvent.click(screen.getByText("Download"));
+    fireEvent.click(screen.getByText("CSV"));
     expect(createObjectURLSpy).toHaveBeenCalled();
     expect(revokeObjectURLSpy).toHaveBeenCalled();
   });
@@ -183,7 +179,7 @@ describe("ConnectionCharts", () => {
 
     renderConnectionCharts();
     await expandInterface();
-    fireEvent.click(screen.getByText("Download"));
+    fireEvent.click(screen.getByText("CSV"));
     expect(createObjectURLSpy).toHaveBeenCalled();
     expect(revokeObjectURLSpy).toHaveBeenCalled();
   });

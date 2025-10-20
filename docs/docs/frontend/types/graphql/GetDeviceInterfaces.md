@@ -136,9 +136,9 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:60](https://github.com/Palisad
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:58](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L58)
 
-##### ifinNUcastPkts
+##### ifinNucastPkts
 
-> **ifinNUcastPkts**: `number` \| `null`
+> **ifinNucastPkts**: `number` \| `null`
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:54](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L54)
 
@@ -178,9 +178,9 @@ Defined in: [types/graphql/GetDeviceInterfaces.ts:61](https://github.com/Palisad
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:59](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L59)
 
-##### ifoutNUcastPkts
+##### ifoutNucastPkts
 
-> **ifoutNUcastPkts**: `number` \| `null`
+> **ifoutNucastPkts**: `number` \| `null`
 
 Defined in: [types/graphql/GetDeviceInterfaces.ts:55](https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L55)
 

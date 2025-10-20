@@ -146,3 +146,27 @@ td{
   white-space: normal !important;
   max-width: 300px !important;
 }
+
+/* Custom scrollbar for tab containers */
+.tab-scrollbar::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tab-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tab-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 2px;
+}
+
+.tab-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #a0adb8;
+}
+
+/* Firefox scrollbar styling */
+.tab-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 transparent;
+}

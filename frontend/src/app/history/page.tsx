@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useMemo,
   useCallback,
+  useRef,
   lazy,
   Suspense,
 } from "react";
@@ -16,6 +17,7 @@ const LineChartWrapper = lazy(() =>
     default: mod.LineChartWrapper,
   }))
 );
+import { toMs, filterDevicesByTimeRange, deviceCache } from "./utils";
 
 /**
  * DeviceHistoryChart component fetches and visualizes the historical movement and status changes of devices within the network.
@@ -66,7 +68,7 @@ type DeviceNode = {
   hostname: string;
   sysName: string;
   zone?: string;
-  lastPolled?: number | null;
+  lastPolled?: number | string | null;
   lastPolledMs?: number | null;
 };
 
@@ -89,84 +91,11 @@ type GraphQLResponse = {
   errors?: { message: string }[];
 };
 
-// Cache for device data
-interface CacheEntry {
-  data: DeviceNode[];
-  timestamp: number;
-}
-
-export const deviceCache = new Map<string, CacheEntry>();
 const CACHE_DURATION = 5 * 60 * 1000;
-
-export function toMs(value: number | string | null | undefined): number | null {
-  if (value == null) return null;
-  if (typeof value === "number") {
-    return value < 1e12 ? value * 1000 : value;
-  }
-  const ms = Date.parse(value);
-  return Number.isNaN(ms) ? null : ms;
-}
 
 function parseDateOnlyLocal(yyyyMmDd: string): Date {
   const [y, m, d] = yyyyMmDd.split("-").map(Number);
   return new Date(y, (m ?? 1) - 1, d ?? 1);
-}
-
-export function filterDevicesByTimeRange(
-  devices: DeviceNode[],
-  timeRange: string,
-  start?: string,
-  end?: string
-): DeviceNode[] {
-  const now = new Date();
-
-  function parseDateOnlyLocal(yyyyMmDd: string): Date {
-    const [y, m, d] = yyyyMmDd.split("-").map(Number);
-    return new Date(y, (m ?? 1) - 1, d ?? 1);
-  }
-
-  if (timeRange === "custom" && start && end) {
-    const startDate = parseDateOnlyLocal(start);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = parseDateOnlyLocal(end);
-    endDate.setHours(23, 59, 59, 999);
-
-    return devices.filter((d) => {
-      if (typeof d.lastPolledMs !== "number") return false;
-      const t = d.lastPolledMs;
-      return t >= startDate.getTime() && t <= endDate.getTime();
-    });
-  }
-
-  let startDate: Date | null = null;
-  switch (timeRange) {
-    case "1d":
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - 1);
-      break;
-    case "1w":
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - 7);
-      break;
-    case "1m":
-      startDate = new Date(now);
-      startDate.setMonth(now.getMonth() - 1);
-      break;
-    case "6m":
-      startDate = new Date(now);
-      startDate.setMonth(now.getMonth() - 6);
-      break;
-  }
-
-  if (startDate) {
-    const startMs = startDate.getTime();
-    return devices.filter((d) => {
-      if (typeof d.lastPolledMs !== "number") return false;
-      return d.lastPolledMs >= startMs;
-    });
-  }
-
-  return devices;
 }
 
 export default function DeviceHistoryChart() {
@@ -182,9 +111,7 @@ export default function DeviceHistoryChart() {
   const [customEnd, setCustomEnd] = useState("");
   const [open, setOpen] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [ongoingRequest, setOngoingRequest] = useState<AbortController | null>(
-    null
-  );
+  const ongoingRequest = useRef<AbortController | null>(null);
 
   const ranges = useMemo(
     () => [
@@ -229,12 +156,12 @@ export default function DeviceHistoryChart() {
     }
 
     // Cancel ongoing request
-    if (ongoingRequest) {
-      ongoingRequest.abort();
+    if (ongoingRequest.current) {
+      ongoingRequest.current.abort();
     }
 
     const abortController = new AbortController();
-    setOngoingRequest(abortController);
+    ongoingRequest.current = abortController;
 
     setLoading(true);
     setError(null);
@@ -258,21 +185,19 @@ export default function DeviceHistoryChart() {
       if (json.errors?.length) throw new Error(json.errors[0].message);
 
       const zones = json.data?.zones?.edges || [];
-      let devicesWithZones: DeviceNode[] = [];
-
-      zones.forEach((zoneEdge) => {
+      const devicesWithZones: DeviceNode[] = zones.flatMap((zoneEdge) => {
         const zone = zoneEdge.node;
         const deviceEdges = zone?.devices?.edges ?? [];
-        deviceEdges.forEach((deviceEdge) => {
-          const device = deviceEdge.node;
-          if (device?.hostname && device?.idxDevice) {
-            devicesWithZones.push({
-              ...device,
-              zone: zone.name,
-              lastPolledMs: toMs(device.lastPolled ?? null),
-            });
-          }
-        });
+        return deviceEdges
+          .map((deviceEdge) => deviceEdge.node)
+          .filter(
+            (device) => Boolean(device?.hostname) && device?.idxDevice != null
+          )
+          .map((device) => ({
+            ...device,
+            zone: zone.name,
+            lastPolledMs: toMs(device.lastPolled ?? null),
+          }));
       });
 
       // Store all hostnames (unfiltered)
@@ -298,23 +223,16 @@ export default function DeviceHistoryChart() {
       if (!searchTerm && filteredDevices.length > 0) {
         setSearchTerm(filteredDevices[0].hostname);
       }
-    } catch (err: any) {
-      if (err.name === "AbortError") {
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") {
         return; // Request was cancelled
       }
-      setError(err.message || "Error fetching devices");
+      setError(err instanceof Error ? err.message : "Error fetching devices");
     } finally {
       setLoading(false);
-      setOngoingRequest(null);
+      ongoingRequest.current = null;
     }
-  }, [
-    range,
-    customStart,
-    customEnd,
-    searchTerm,
-    getCachedDevices,
-    filterDevicesByTimeRange,
-  ]);
+  }, [range, customStart, customEnd, searchTerm, getCachedDevices]);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -323,10 +241,6 @@ export default function DeviceHistoryChart() {
 
     return () => clearTimeout(timeoutId);
   }, [fetchDevices]);
-
-  const uniqueHostnames = useMemo(() => {
-    return Array.from(new Set(allDevices.map((d) => d.hostname)));
-  }, [allDevices]);
 
   // Debounced suggestions
   useEffect(() => {

@@ -10,6 +10,7 @@ import {
   FiChevronDown,
   FiChevronUp,
 } from "react-icons/fi";
+import { configCache, setConfigCache } from "./cache";
 
 /**
  * ConfigPage component for managing Switchmap configuration.
@@ -25,7 +26,6 @@ interface Zone {
   zone: string;
   hostnames: string[];
 }
-
 interface SNMPGroup {
   enabled: boolean;
   group_name: string;
@@ -38,7 +38,6 @@ interface SNMPGroup {
   snmp_privpassword: string;
   snmp_community: string;
 }
-
 interface PollerConfig {
   zones?: Zone[];
   snmp_groups?: SNMPGroup[];
@@ -46,10 +45,9 @@ interface PollerConfig {
 
 interface Config {
   poller?: PollerConfig;
-  core: Record<string, any>;
-  server: Record<string, any>;
+  core: Record<string, unknown>;
+  server: Record<string, unknown>;
 }
-
 type TabType = "zones" | "snmp" | "advanced";
 type SectionType = "core" | "server";
 
@@ -72,20 +70,7 @@ const DEFAULT_SNMP_GROUP: Omit<SNMPGroup, "group_name"> = {
   snmp_privpassword: "",
   snmp_community: "",
 };
-
-// Cache for config data
-interface CacheEntry {
-  data: Config;
-  timestamp: number;
-}
-
-let configCache: CacheEntry | null = null;
 const CACHE_DURATION = 2 * 60 * 1000;
-
-// Export cache reset function for testing
-export const __resetConfigCache = () => {
-  configCache = null;
-};
 
 /**
  * ConfigPage component for managing Switchmap configuration.
@@ -109,7 +94,6 @@ export default function ConfigPage() {
   const [draftGroupName, setDraftGroupName] = useState<string | null>(null);
   const [editIdx, setEditIdx] = useState<number | null>(null);
   const [editSection, setEditSection] = useState<SectionType | null>(null);
-  const [authPasswordEdit, setAuthPasswordEdit] = useState(false);
 
   const [expandedSections, setExpandedSections] = useState<
     Record<string, boolean>
@@ -165,14 +149,14 @@ export default function ConfigPage() {
 
       const data = await response.json();
 
-      configCache = {
+      setConfigCache({
         data,
         timestamp: Date.now(),
-      };
+      });
 
       setConfig(data);
-    } catch (error: any) {
-      if (error.name === "AbortError") {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === "AbortError") {
         return;
       }
       console.error("Failed to fetch config:", error);
@@ -360,7 +344,7 @@ export default function ConfigPage() {
   }, []);
 
   const updateConfigSection = useCallback(
-    (section: SectionType, key: string, value: any) => {
+    (section: SectionType, key: string, value: unknown) => {
       setConfig((prev) => {
         if (!prev) return prev;
         return {
@@ -381,7 +365,7 @@ export default function ConfigPage() {
       const auth = window.prompt("Enter current password to edit:");
 
       if (auth === currentValue) {
-        setAuthPasswordEdit(true);
+        setEditSection(section);
       } else {
         alert("Incorrect password");
       }
@@ -828,10 +812,8 @@ export default function ConfigPage() {
                       onClick={(e) => {
                         e.preventDefault();
                         if (editSection === section) {
-                          setAuthPasswordEdit(false);
                           setEditSection(null);
                         } else {
-                          setAuthPasswordEdit(false);
                           setEditSection(section);
                         }
                         setExpandedSections((prev) => ({

@@ -1,6 +1,10 @@
 "use client";
 import React from "react";
 import type { AxisDomain } from "recharts/types/util/types";
+import type {
+  Payload,
+  ValueType,
+} from "recharts/types/component/DefaultTooltipContent";
 import {
   ResponsiveContainer,
   LineChart,
@@ -10,6 +14,21 @@ import {
   Line,
 } from "recharts";
 
+interface DotProps {
+  cx?: number;
+  cy?: number;
+  payload?: unknown;
+  value?: unknown;
+}
+
+interface TickProps {
+  x?: number;
+  y?: number;
+  payload?: {
+    value?: unknown;
+  };
+}
+
 interface LineConfig {
   dataKey: string;
   stroke: string;
@@ -18,7 +37,7 @@ interface LineConfig {
     | boolean
     | object
     | React.ReactElement<SVGElement>
-    | ((props: any) => React.ReactNode);
+    | ((props: DotProps) => React.ReactNode);
   isAnimationActive?: boolean;
   strokeWidth?: number;
 }
@@ -27,13 +46,13 @@ interface YAxisConfig {
   type?: "number" | "category";
   domain?: AxisDomain;
   ticks?: Array<number | string>;
-  tickFormatter?: (value: any, index: number) => string;
+  tickFormatter?: (value: number | string, index: number) => string;
   width?: number;
   tick?:
     | boolean
     | object
     | React.ReactElement<SVGElement>
-    | ((props: any) => React.ReactElement<SVGElement>);
+    | ((props: TickProps) => React.ReactElement<SVGElement>);
 }
 
 interface LineChartWrapperProps<T = Record<string, unknown>> {
@@ -44,9 +63,9 @@ interface LineChartWrapperProps<T = Record<string, unknown>> {
   title?: string;
   height?: number;
   tooltipFormatter?: (
-    value: unknown,
+    value: ValueType,
     name: string,
-    props: any
+    props: Payload<ValueType, string>
   ) => React.ReactNode | [React.ReactNode, string];
 }
 
@@ -90,9 +109,9 @@ export function LineChartWrapper({
             labelFormatter={(label) => new Date(label).toLocaleString()}
             formatter={
               tooltipFormatter as (
-                value: unknown,
+                value: ValueType,
                 name: string,
-                props: any
+                props: Payload<ValueType, string>
               ) => React.ReactNode | [React.ReactNode, string]
             }
           />

@@ -75,7 +75,7 @@ export function DevicesOverview({
       columnHelper.accessor("ports", { header: "Active Ports" }),
       columnHelper.accessor("uptime", { header: "Uptime" }),
     ],
-    []
+    [columnHelper]
   );
 
   const data = useMemo(() => {
@@ -118,7 +118,9 @@ export function DevicesOverview({
 
   useEffect(() => {
     if (totalPages === 0) {
-      currentPage !== 1 && setCurrentPage(1);
+      if (currentPage !== 1) {
+        setCurrentPage(1);
+      }
       return;
     }
     if (currentPage > totalPages) {

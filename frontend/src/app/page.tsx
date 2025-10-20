@@ -10,10 +10,32 @@ import {
 } from "react";
 import { Sidebar } from "@/app/components/Sidebar";
 import { ZoneDropdown } from "@/app/components/ZoneDropdown";
-import {
-  DeviceNode,
-  GetZoneDevicesData,
-} from "@/app/types/graphql/GetZoneDevices";
+import { DeviceNode, ZoneEdge } from "@/app/types/graphql/GetZoneDevices";
+import { deviceCache } from "./cache";
+
+interface GraphQLError {
+  message: string;
+}
+
+interface GraphQLResponse {
+  data?: {
+    events?: {
+      edges: Array<{
+        node: {
+          zones: {
+            edges: ZoneEdge[];
+          };
+        };
+      }>;
+    };
+    zone?: {
+      devices: {
+        edges: Array<{ node: DeviceNode }>;
+      };
+    };
+  };
+  errors?: GraphQLError[];
+}
 
 // Lazy load heavy components
 const TopologyChart = lazy(() =>
@@ -27,13 +49,6 @@ const DevicesOverview = lazy(() =>
   }))
 );
 
-// Cache for device data with timestamp
-interface CacheEntry {
-  data: DeviceNode[];
-  timestamp: number;
-}
-
-const deviceCache = new Map<string, CacheEntry>();
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 /**
@@ -176,13 +191,16 @@ export default function Home() {
   );
 
   // Deduplicate devices by hostname
-  const deduplicateDevices = useCallback((devices: any[]): DeviceNode[] => {
-    const seen = new Map<string, any>();
-    devices.forEach((dev: any) => {
-      if (dev.hostname) seen.set(dev.hostname, dev);
-    });
-    return Array.from(seen.values()) as DeviceNode[];
-  }, []);
+  const deduplicateDevices = useCallback(
+    (devices: DeviceNode[]): DeviceNode[] => {
+      const seen = new Map<string, DeviceNode>();
+      devices.forEach((dev: DeviceNode) => {
+        if (dev.hostname) seen.set(dev.hostname, dev);
+      });
+      return Array.from(seen.values());
+    },
+    []
+  );
 
   // Optimized fetch with caching and deduplication
   const fetchDevices = useCallback(
@@ -231,22 +249,28 @@ export default function Home() {
         );
 
         if (!res.ok) throw new Error(`Network error: ${res.statusText}`);
-        const json = await res.json();
+        const json: GraphQLResponse = await res.json();
 
         if (json.errors)
-          throw new Error(json.errors.map((e: any) => e.message).join(", "));
+          throw new Error(
+            json.errors.map((e: GraphQLError) => e.message).join(", ")
+          );
 
         let rawDevices: DeviceNode[] = [];
 
         if (currentZoneId === "all") {
           const allDevices =
-            json?.data?.events?.edges?.[0]?.node?.zones?.edges?.flatMap(
-              (z: any) => z?.node?.devices?.edges?.map((d: any) => d.node) ?? []
+            json?.data?.events?.edges?.flatMap(
+              (evt) =>
+                evt?.node?.zones?.edges?.flatMap(
+                  (z: ZoneEdge) =>
+                    z?.node?.devices?.edges?.map((d) => d.node) ?? []
+                ) ?? []
             ) ?? [];
           rawDevices = deduplicateDevices(allDevices);
         } else {
           const zoneDevices =
-            json?.data?.zone?.devices?.edges?.map((d: any) => d.node) ?? [];
+            json?.data?.zone?.devices?.edges?.map((d) => d.node) ?? [];
           rawDevices = deduplicateDevices(zoneDevices);
         }
 
@@ -257,8 +281,8 @@ export default function Home() {
         });
 
         setDevices(rawDevices);
-      } catch (err: any) {
-        if (err.name === "AbortError") {
+      } catch (err: unknown) {
+        if (err instanceof Error && err.name === "AbortError") {
           return;
         }
 
@@ -292,7 +316,7 @@ export default function Home() {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [zoneId]);
+  }, [zoneId, fetchDevices]);
 
   // Loading fallback component
   const LoadingFallback = () => (
@@ -336,7 +360,3 @@ export default function Home() {
     </div>
   );
 }
-
-export const _testUtils = {
-  clearDeviceCache: () => deviceCache.clear(),
-};

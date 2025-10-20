@@ -265,8 +265,8 @@ def patch_config():
           - 200 with a JSON response: status set to "success"
 
     """
-    data = request.get_json()
-    if not data:
+    data = request.get_json(silent=True)
+    if data is None:
         return jsonify({"error": "Invalid JSON"}), 400
 
     current_config = read_config()
