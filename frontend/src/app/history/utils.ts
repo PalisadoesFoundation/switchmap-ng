@@ -3,7 +3,7 @@ type DeviceNode = {
   hostname: string;
   sysName: string;
   zone?: string;
-  lastPolled?: number | null;
+  lastPolled?: number | string | null;
   lastPolledMs?: number | null;
 };
 

@@ -176,11 +176,19 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
             node,
           }: {
             node: Partial<DeviceNode> & {
-              lastPolled: number;
+              lastPolled: number | string;
               l1interfaces: { edges: { node: InterfaceNode }[] };
             };
           }) => {
-            const lastPolled = new Date(node.lastPolled * 1000);
+            const lp = node.lastPolled as number | string;
+            const ms =
+              typeof lp === "number"
+                ? lp < 1e12
+                  ? lp * 1000
+                  : lp
+                : Date.parse(lp);
+            if (Number.isNaN(ms)) return;
+            const lastPolled = new Date(ms);
             if (
               lastPolled < rangeStart ||
               (startDate && lastPolled < new Date(startDate)) ||

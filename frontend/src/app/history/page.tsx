@@ -67,7 +67,7 @@ type DeviceNode = {
   hostname: string;
   sysName: string;
   zone?: string;
-  lastPolled?: number | null;
+  lastPolled?: number | string | null;
   lastPolledMs?: number | null;
 };
 
@@ -191,7 +191,9 @@ export default function DeviceHistoryChart() {
         const deviceEdges = zone?.devices?.edges ?? [];
         return deviceEdges
           .map((deviceEdge) => deviceEdge.node)
-          .filter((device) => device?.hostname && device?.idxDevice)
+          .filter(
+            (device) => Boolean(device?.hostname) && device?.idxDevice != null
+          )
           .map((device) => ({
             ...device,
             zone: zone.name,

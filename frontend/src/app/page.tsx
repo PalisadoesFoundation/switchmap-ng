@@ -19,8 +19,14 @@ interface GraphQLError {
 
 interface GraphQLResponse {
   data?: {
-    zones?: {
-      edges: ZoneEdge[];
+    events?: {
+      edges: Array<{
+        node: {
+          zones: {
+            edges: ZoneEdge[];
+          };
+        };
+      }>;
     };
     zone?: {
       devices: {
@@ -254,8 +260,12 @@ export default function Home() {
 
         if (currentZoneId === "all") {
           const allDevices =
-            json?.data?.zones?.edges?.flatMap(
-              (z: ZoneEdge) => z?.node?.devices?.edges?.map((d) => d.node) ?? []
+            json?.data?.events?.edges?.flatMap(
+              (evt) =>
+                evt?.node?.zones?.edges?.flatMap(
+                  (z: ZoneEdge) =>
+                    z?.node?.devices?.edges?.map((d) => d.node) ?? []
+                ) ?? []
             ) ?? [];
           rawDevices = deduplicateDevices(allDevices);
         } else {
