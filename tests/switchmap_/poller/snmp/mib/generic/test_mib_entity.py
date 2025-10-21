@@ -4,6 +4,7 @@
 import unittest
 import os
 import sys
+from unittest.mock import Mock, AsyncMock
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -41,8 +42,6 @@ _EXPECTED = """\
     os.sep
 )
 if EXEC_DIR.endswith(_EXPECTED) is True:
-    # We need to prepend the path in case the repo has been installed
-    # elsewhere on the system using PIP. This could corrupt expected results
     sys.path.insert(0, ROOT_DIR)
 else:
     print(
@@ -53,13 +52,12 @@ else:
     )
     sys.exit(2)
 
-# Create the necessary configuration to load the module
 from tests.testlib_ import setup
 
 CONFIG = setup.config()
 CONFIG.save()
 
-# Import other required libraries
+from switchmap.poller.snmp.mib.generic import mib_entity as testimport
 
 
 class Query:
@@ -128,27 +126,25 @@ class TestMibEntityFunctions(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        # Load the configuration in case it's been deleted after loading the
-        # configuration above. Sometimes this happens when running
-        # `python3 -m unittest discover` where another the tearDownClass of
-        # another test module prematurely deletes the configuration required
-        # for this module
         config = setup.config()
         config.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        # Cleanup the
         CONFIG.cleanup()
 
     def test_get_query(self):
         """Testing function get_query."""
-        pass
+        result = testimport.get_query()
+        self.assertEqual(result, testimport.EntityQuery)
 
     def test_init_query(self):
         """Testing function init_query."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        result = testimport.init_query(mock_snmp)
+        self.assertIsInstance(result, testimport.EntityQuery)
+        self.assertEqual(result.snmp_object, mock_snmp)
 
 
 class TestMibEntity(unittest.IsolatedAsyncioTestCase):
@@ -164,61 +160,155 @@ class TestMibEntity(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        # Load the configuration in case it's been deleted after loading the
-        # configuration above. Sometimes this happens when running
-        # `python3 -m unittest discover` where another the tearDownClass of
-        # another test module prematurely deletes the configuration required
-        # for this module
         config = setup.config()
         config.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        # Cleanup the
         CONFIG.cleanup()
 
     def test___init__(self):
         """Testing function __init__."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        entity = testimport.EntityQuery(mock_snmp)
+        self.assertEqual(entity.snmp_object, mock_snmp)
 
-    def test_system(self):
+    async def test_system(self):
         """Testing function system."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        entity = testimport.EntityQuery(mock_snmp)
 
-    def test_entphysicaldescr(self):
+        # Mock all the entity methods
+        entity.entphysicalhardwarerev = AsyncMock(return_value={1: "1.0", 2: ""})
+        entity.entphysicalfirmwarerev = AsyncMock(return_value={1: "2.0", 2: ""})
+        entity.entphysicalsoftwarerev = AsyncMock(return_value={1: "3.0", 2: ""})
+        entity.entphysicalname = AsyncMock(return_value={1: "Chassis", 2: ""})
+        entity.entphysicalmodelname = AsyncMock(return_value={1: "Model-X", 2: ""})
+        entity.entphysicalserialnum = AsyncMock(return_value={1: "SN123", 2: ""})
+        entity.entphysicalclass = AsyncMock(return_value={1: 3, 2: 0})
+        entity.entphysicaldescr = AsyncMock(return_value={1: "Chassis", 2: ""})
+
+        result = await entity.system()
+
+        self.assertIn("ENTITY-MIB", result)
+        data = result["ENTITY-MIB"]
+        self.assertIn("entPhysicalSerialNum", data)
+        self.assertEqual(data["entPhysicalSerialNum"][0], "SN123")
+        self.assertEqual(data["entPhysicalName"][0], "Chassis")
+
+    async def test_system_no_serial(self):
+        """Testing function system with no serial numbers."""
+        mock_snmp = Mock(spec=Query)
+        entity = testimport.EntityQuery(mock_snmp)
+
+        # Mock all methods with empty serial numbers
+        entity.entphysicalhardwarerev = AsyncMock(return_value={1: ""})
+        entity.entphysicalfirmwarerev = AsyncMock(return_value={1: ""})
+        entity.entphysicalsoftwarerev = AsyncMock(return_value={1: ""})
+        entity.entphysicalname = AsyncMock(return_value={1: ""})
+        entity.entphysicalmodelname = AsyncMock(return_value={1: ""})
+        entity.entphysicalserialnum = AsyncMock(return_value={1: ""})
+        entity.entphysicalclass = AsyncMock(return_value={1: 0})
+        entity.entphysicaldescr = AsyncMock(return_value={1: ""})
+
+        result = await entity.system()
+
+        self.assertIn("ENTITY-MIB", result)
+        self.assertEqual(len(result["ENTITY-MIB"]), 0)
+
+    async def test_entphysicaldescr(self):
         """Testing function entphysicaldescr."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        mock_snmp.swalk = AsyncMock(
+            return_value={1: b"Chassis", 2: b"Module 1"}
+        )
 
-    def test_entphysicalclass(self):
+        entity = testimport.EntityQuery(mock_snmp)
+        result = await entity.entphysicaldescr()
+
+        self.assertEqual(result[1], "Chassis")
+        self.assertEqual(result[2], "Module 1")
+
+    async def test_entphysicalclass(self):
         """Testing function entphysicalclass."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        mock_snmp.swalk = AsyncMock(return_value={1: 3, 2: 9})
 
-    def test_entphysicalsoftwarerev(self):
+        entity = testimport.EntityQuery(mock_snmp)
+        result = await entity.entphysicalclass()
+
+        self.assertEqual(result[1], 3)
+        self.assertEqual(result[2], 9)
+
+    async def test_entphysicalsoftwarerev(self):
         """Testing function entphysicalsoftwarerev."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        mock_snmp.swalk = AsyncMock(return_value={1: b"1.0.0", 2: b"2.1.0"})
 
-    def test_entphysicalserialnum(self):
+        entity = testimport.EntityQuery(mock_snmp)
+        result = await entity.entphysicalsoftwarerev()
+
+        self.assertEqual(result[1], "1.0.0")
+        self.assertEqual(result[2], "2.1.0")
+
+    async def test_entphysicalserialnum(self):
         """Testing function entphysicalserialnum."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        mock_snmp.swalk = AsyncMock(return_value={1: b"ABC123", 2: b"DEF456"})
 
-    def test_entphysicalmodelname(self):
+        entity = testimport.EntityQuery(mock_snmp)
+        result = await entity.entphysicalserialnum()
+
+        self.assertEqual(result[1], "ABC123")
+        self.assertEqual(result[2], "DEF456")
+
+    async def test_entphysicalmodelname(self):
         """Testing function entphysicalmodelname."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        mock_snmp.swalk = AsyncMock(return_value={1: b"Model-A", 2: b"Model-B"})
 
-    def test_entphysicalname(self):
+        entity = testimport.EntityQuery(mock_snmp)
+        result = await entity.entphysicalmodelname()
+
+        self.assertEqual(result[1], "Model-A")
+        self.assertEqual(result[2], "Model-B")
+
+    async def test_entphysicalname(self):
         """Testing function entphysicalname."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        mock_snmp.swalk = AsyncMock(
+            return_value={1: b"Chassis 1", 2: b"PSU 1"}
+        )
 
-    def test_entphysicalhardwarerev(self):
+        entity = testimport.EntityQuery(mock_snmp)
+        result = await entity.entphysicalname()
+
+        self.assertEqual(result[1], "Chassis 1")
+        self.assertEqual(result[2], "PSU 1")
+
+    async def test_entphysicalhardwarerev(self):
         """Testing function entphysicalhardwarerev."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        mock_snmp.swalk = AsyncMock(return_value={1: b"1.0", 2: b"2.0"})
 
-    def test_entphysicalfirmwarerev(self):
+        entity = testimport.EntityQuery(mock_snmp)
+        result = await entity.entphysicalhardwarerev()
+
+        self.assertEqual(result[1], "1.0")
+        self.assertEqual(result[2], "2.0")
+
+    async def test_entphysicalfirmwarerev(self):
         """Testing function entphysicalfirmwarerev."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        mock_snmp.swalk = AsyncMock(return_value={1: b"FW1.0", 2: b"FW2.0"})
+
+        entity = testimport.EntityQuery(mock_snmp)
+        result = await entity.entphysicalfirmwarerev()
+
+        self.assertEqual(result[1], "FW1.0")
+        self.assertEqual(result[2], "FW2.0")
 
 
 if __name__ == "__main__":
-    # Do the unit test
     unittest.main()
