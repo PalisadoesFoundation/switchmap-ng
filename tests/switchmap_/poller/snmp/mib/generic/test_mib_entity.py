@@ -180,12 +180,22 @@ class TestMibEntity(unittest.IsolatedAsyncioTestCase):
         entity = testimport.EntityQuery(mock_snmp)
 
         # Mock all the entity methods
-        entity.entphysicalhardwarerev = AsyncMock(return_value={1: "1.0", 2: ""})
-        entity.entphysicalfirmwarerev = AsyncMock(return_value={1: "2.0", 2: ""})
-        entity.entphysicalsoftwarerev = AsyncMock(return_value={1: "3.0", 2: ""})
+        entity.entphysicalhardwarerev = AsyncMock(
+            return_value={1: "1.0", 2: ""}
+        )
+        entity.entphysicalfirmwarerev = AsyncMock(
+            return_value={1: "2.0", 2: ""}
+        )
+        entity.entphysicalsoftwarerev = AsyncMock(
+            return_value={1: "3.0", 2: ""}
+        )
         entity.entphysicalname = AsyncMock(return_value={1: "Chassis", 2: ""})
-        entity.entphysicalmodelname = AsyncMock(return_value={1: "Model-X", 2: ""})
-        entity.entphysicalserialnum = AsyncMock(return_value={1: "SN123", 2: ""})
+        entity.entphysicalmodelname = AsyncMock(
+            return_value={1: "Model-X", 2: ""}
+        )
+        entity.entphysicalserialnum = AsyncMock(
+            return_value={1: "SN123", 2: ""}
+        )
         entity.entphysicalclass = AsyncMock(return_value={1: 3, 2: 0})
         entity.entphysicaldescr = AsyncMock(return_value={1: "Chassis", 2: ""})
 
@@ -277,9 +287,7 @@ class TestMibEntity(unittest.IsolatedAsyncioTestCase):
     async def test_entphysicalname(self):
         """Testing function entphysicalname."""
         mock_snmp = Mock(spec=Query)
-        mock_snmp.swalk = AsyncMock(
-            return_value={1: b"Chassis 1", 2: b"PSU 1"}
-        )
+        mock_snmp.swalk = AsyncMock(return_value={1: b"Chassis 1", 2: b"PSU 1"})
 
         entity = testimport.EntityQuery(mock_snmp)
         result = await entity.entphysicalname()

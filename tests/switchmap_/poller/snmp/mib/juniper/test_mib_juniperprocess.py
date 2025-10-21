@@ -238,9 +238,7 @@ class TestMibJuniperProcess(unittest.IsolatedAsyncioTestCase):
         juniper.operatingmemoryfree = AsyncMock(return_value=None)
 
         result = await juniper.system()
-        # Verify result structure - empty defaultdict when all methods return None
-        # The "JUNIPER-MIB" key will only be created if we access it
-        # Since no valid data is returned, the dict should be empty
+        # Empty defaultdict when all methods return None
         self.assertEqual(len(result), 0)
 
     async def test_system_with_exceptions(self):
@@ -272,8 +270,9 @@ class TestMibJuniperProcess(unittest.IsolatedAsyncioTestCase):
         juniper = testimport.JuniperProcessQuery(mock_snmp)
 
         # Mock asyncio.gather to raise an exception
+        juniper_path = "switchmap.poller.snmp.mib.juniper.mib_juniperprocess"
         with patch(
-            "switchmap.poller.snmp.mib.juniper.mib_juniperprocess.asyncio.gather",
+            f"{juniper_path}.asyncio.gather",
             side_effect=Exception("Gather failed"),
         ):
             result = await juniper.system()

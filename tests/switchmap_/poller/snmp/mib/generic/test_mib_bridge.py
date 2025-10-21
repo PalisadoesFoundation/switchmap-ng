@@ -241,8 +241,8 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
         mock_snmp.oid_exists = AsyncMock(return_value=True)
         mock_snmp.swalk = AsyncMock(
             side_effect=[
-                {1: 1, 10: 1},  # vtpvlantype
-                {1: 1, 10: 1},  # vtpvlanstate
+                {1: 1, 10: 1},
+                {1: 1, 10: 1},
             ]
         )
 
@@ -255,20 +255,18 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
                 ".1.2.3.4.5.6": "010203040506",
                 ".7.8.9.10.11.12": "0708090a0b0c",
                 ".13.14.15.16.17.18": "0d0e0f101112",
-                ".19.20.21.22.23.24": "131415161718",  # MAC with no port entry
+                ".19.20.21.22.23.24": "131415161718",
             }
         )
         bridge._dot1dtpfdbport = AsyncMock(
             return_value={
                 ".1.2.3.4.5.6": 1,
-                ".7.8.9.10.11.12": 1,  # Same port, different MAC (line 195)
-                ".13.14.15.16.17.18": 2,  # Port 2 maps to zero ifindex (line 189)
-                ".19.20.21.22.23.24": 0,  # Zero port (line 181)
+                ".7.8.9.10.11.12": 1,
+                ".13.14.15.16.17.18": 2,
+                ".19.20.21.22.23.24": 0,
             }
         )
-        bridge.dot1dbaseport_2_ifindex = AsyncMock(
-            return_value={1: 10, 2: 0}  # Port 2 has zero ifindex (line 189)
-        )
+        bridge.dot1dbaseport_2_ifindex = AsyncMock(return_value={1: 10, 2: 0})
 
         result = await bridge._macaddresstable_cisco()
 
@@ -285,11 +283,10 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
 
         bridge = testimport.BridgeQuery(mock_snmp)
 
-        # Mock helper methods - multiple MACs on same port (line 239)
         bridge._dot1qtpfdbport = AsyncMock(
             return_value={
                 ".1.0.1.2.3.4.5.6": 1,
-                ".1.0.7.8.9.10.11.12": 1,  # Same port
+                ".1.0.7.8.9.10.11.12": 1,
             }
         )
         bridge.dot1dbaseport_2_ifindex = AsyncMock(return_value={1: 10})
@@ -332,8 +329,8 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
         mock_snmp.oid_exists = AsyncMock(return_value=True)
         mock_snmp.swalk = AsyncMock(
             side_effect=[
-                {1: b"default"},  # vlan names
-                {".1.3.6.1.2.1.17.7.1.2.2.1.2.1.10.20.30.40.50.60": 2},  # fdb
+                {1: b"default"},
+                {".1.3.6.1.2.1.17.7.1.2.2.1.2.1.10.20.30.40.50.60": 2},
             ]
         )
 
@@ -355,13 +352,15 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
     async def test__dot1dtpfdbaddress(self):
         """Testing function _dot1dtpfdbaddress."""
         mock_snmp = Mock(spec=Query)
+        oid_key = ".1.3.6.1.2.1.17.4.3.1.1.1.2.3.4.5.6"
         mock_snmp.swalk = AsyncMock(
-            return_value={".1.3.6.1.2.1.17.4.3.1.1.1.2.3.4.5.6": b"\x01\x02\x03\x04\x05\x06"}
+            return_value={oid_key: b"\x01\x02\x03\x04\x05\x06"}
         )
 
         bridge = testimport.BridgeQuery(mock_snmp)
 
-        with patch("switchmap.poller.snmp.mib.generic.mib_bridge.general.octetstr_2_string") as mock_convert:
+        patch_path = "switchmap.poller.snmp.mib.generic.mib_bridge.general"
+        with patch(f"{patch_path}.octetstr_2_string") as mock_convert:
             mock_convert.return_value = "010203040506"
             result = await bridge._dot1dtpfdbaddress()
 
@@ -371,13 +370,15 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
     async def test__dot1dtpfdbaddress_with_contexts(self):
         """Testing function _dot1dtpfdbaddress with contexts."""
         mock_snmp = Mock(spec=Query)
+        oid_key = ".1.3.6.1.2.1.17.4.3.1.1.6.5.4.3.2.1"
         mock_snmp.swalk = AsyncMock(
-            return_value={".1.3.6.1.2.1.17.4.3.1.1.6.5.4.3.2.1": b"\x06\x05\x04\x03\x02\x01"}
+            return_value={oid_key: b"\x06\x05\x04\x03\x02\x01"}
         )
 
         bridge = testimport.BridgeQuery(mock_snmp)
 
-        with patch("switchmap.poller.snmp.mib.generic.mib_bridge.general.octetstr_2_string") as mock_convert:
+        patch_path = "switchmap.poller.snmp.mib.generic.mib_bridge.general"
+        with patch(f"{patch_path}.octetstr_2_string") as mock_convert:
             mock_convert.return_value = "060504030201"
             result = await bridge._dot1dtpfdbaddress(context_names=["10"])
 
@@ -388,8 +389,8 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
         mock_snmp = Mock(spec=Query)
         mock_snmp.swalk = AsyncMock(
             side_effect=[
-                {1: 1, 2: 2, 3: 3},  # ifindex results
-                {1: 1},  # baseport mapping (bridge port 1 -> ifindex 1)
+                {1: 1, 2: 2, 3: 3},
+                {1: 1},
             ]
         )
 
@@ -406,8 +407,8 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
         mock_snmp = Mock(spec=Query)
         mock_snmp.swalk = AsyncMock(
             side_effect=[
-                {1: 1, 2: 2},  # ifindex results
-                {1: 1},  # baseport mapping
+                {1: 1, 2: 2},
+                {1: 1},
             ]
         )
 
@@ -422,7 +423,9 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
         bridge = testimport.BridgeQuery(mock_snmp)
 
         # Mock _dot1dtpfdbaddress to return data on first style
-        bridge._dot1dtpfdbaddress = AsyncMock(side_effect=[{".1.2.3": "mac"}, {}])
+        bridge._dot1dtpfdbaddress = AsyncMock(
+            side_effect=[{".1.2.3": "mac"}, {}]
+        )
 
         result = await bridge._cisco_context_style(10)
 
@@ -434,7 +437,9 @@ class TestMibBridge(unittest.IsolatedAsyncioTestCase):
         bridge = testimport.BridgeQuery(mock_snmp)
 
         # Return empty first, then data
-        bridge._dot1dtpfdbaddress = AsyncMock(side_effect=[{}, {".1.2.3": "mac"}])
+        bridge._dot1dtpfdbaddress = AsyncMock(
+            side_effect=[{}, {".1.2.3": "mac"}]
+        )
 
         result = await bridge._cisco_context_style(10)
 

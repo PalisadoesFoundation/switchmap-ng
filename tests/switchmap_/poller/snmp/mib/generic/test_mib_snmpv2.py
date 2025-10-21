@@ -258,11 +258,10 @@ class TestMibSnmpV2(unittest.IsolatedAsyncioTestCase):
         mock_snmp = Mock(spec=Query)
 
         # Create mock responses with special characters and extra whitespace
+        special_chars = b"Test  Device\nWith\tSpecial\rCharacters  "
         mock_responses = [
             {},
-            {
-                ".1.3.6.1.2.1.1.1.0": b"Test  Device\nWith\tSpecial\rCharacters  "
-            },
+            {".1.3.6.1.2.1.1.1.0": special_chars},
             {".1.3.6.1.2.1.1.2.0": b"1.3.6.1.4.1.1"},
             {".1.3.6.1.2.1.1.3.0": 999},
             {".1.3.6.1.2.1.1.4.0": b"contact"},
