@@ -3,11 +3,10 @@
 # Switchmap-NG Automated Setup Script
 # ==============================================================================
 # This script automates the entire setup process for Switchmap-NG
-# Usage: ./setup.sh [OPTIONS]
+# Usage: scripts/setup.sh [OPTIONS]
 # Options:
 #   --docker-mysql    Use Docker for MySQL (recommended)
 #   --local-mysql     Use local MySQL installation
-#   --skip-frontend   Skip frontend setup
 #   --help           Show this help message
 # ==============================================================================
 
@@ -19,13 +18,13 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 CYAN='\033[0;36m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 # Configuration
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 USE_DOCKER_MYSQL=false
 USE_LOCAL_MYSQL=false
-SKIP_FRONTEND=false
 
 # MySQL Configuration
 MYSQL_ROOT_PASSWORD="switchmap_root_2024"
@@ -41,11 +40,7 @@ MYSQL_PORT="3306"
 
 print_header() {
     echo -e "${CYAN}"
-    echo "╔════════════════════════════════════════════════════════════════╗"
-    echo "║                                                                ║"
-    echo "║           Switchmap-NG Automated Setup v1.0                   ║"
-    echo "║                                                                ║"
-    echo "╚════════════════════════════════════════════════════════════════╝"
+    echo "|           Switchmap-NG Automated Setup v1.0             |"
     echo -e "${NC}"
 }
 
@@ -378,6 +373,37 @@ start_daemons() {
     
     # Clean up old PID files
     rm -f var/daemon/pid/*.pid 2>/dev/null || true
+
+    print_step "Setting up frontend..."
+    
+    cd "$PROJECT_ROOT/frontend"
+    
+    # Install dependencies
+    print_info "Installing frontend dependencies (this may take a few minutes)..."
+    npm install --silent
+    
+    print_success "Frontend dependencies installed"
+    
+    # Start dev server in background
+    print_info "Starting frontend dev server..."
+    npm run dev > ../var/log/frontend.log 2>&1 &
+    FRONTEND_PID=$!
+    
+    # Save PID
+    echo $FRONTEND_PID > ../var/daemon/pid/frontend.pid
+    
+    # Wait for frontend to be ready
+    print_info "Waiting for frontend to be ready..."
+    for i in {1..30}; do
+        if curl -s http://localhost:3000 > /dev/null 2>&1; then
+            print_success "Frontend is ready at http://localhost:3000"
+            break
+        fi
+        sleep 1
+    done
+    
+    cd "$PROJECT_ROOT"
+    echo ""
     
     # Start server
     print_info "Starting server daemon..."
@@ -448,8 +474,8 @@ setup_frontend() {
     # Wait for frontend to be ready
     print_info "Waiting for frontend to be ready..."
     for i in {1..30}; do
-        if curl -s http://localhost:7011 > /dev/null 2>&1; then
-            print_success "Frontend is ready at http://localhost:7011"
+        if curl -s http://localhost:3000 > /dev/null 2>&1; then
+            print_success "Frontend is ready at http://localhost:3000"
             break
         fi
         sleep 1
@@ -465,7 +491,7 @@ setup_frontend() {
 
 show_usage() {
     cat << EOF
-Usage: ./setup.sh [OPTIONS]
+Usage: scripts/setup.sh [OPTIONS]
 
 Automated setup script for Switchmap-NG
 
@@ -476,9 +502,9 @@ Options:
     --help           Show this help message
 
 Examples:
-    ./setup.sh --docker-mysql           # Use Docker MySQL (recommended)
-    ./setup.sh --local-mysql            # Use local MySQL
-    ./setup.sh --docker-mysql --skip-frontend  # Skip frontend
+    scripts/setup.sh --docker-mysql           # Use Docker MySQL (recommended)
+    scripts/setup.sh --local-mysql            # Use local MySQL
+    scripts/setup.sh --docker-mysql --skip-frontend  # Skip frontend
 
 EOF
 }
@@ -492,10 +518,6 @@ parse_args() {
                 ;;
             --local-mysql)
                 USE_LOCAL_MYSQL=true
-                shift
-                ;;
-            --skip-frontend)
-                SKIP_FRONTEND=true
                 shift
                 ;;
             --help)
@@ -528,53 +550,42 @@ parse_args() {
 
 show_completion_message() {
     echo ""
-    echo -e "${GREEN}╔════════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${GREEN}║                                                                ║${NC}"
-    echo -e "${GREEN}║                 ✓ Setup Complete!                              ║${NC}"
-    echo -e "${GREEN}║                                                                ║${NC}"
-    echo -e "${GREEN}╚════════════════════════════════════════════════════════════════╝${NC}"
+    echo -e "${GREEN}|<---     ✓ Setup Complete!      --->|${NC}"
     echo ""
     echo -e "${CYAN}Services Running:${NC}"
     echo -e "  ${GREEN}▶${NC} Server:   http://localhost:7010 (API + GraphQL)"
-    if ! $SKIP_FRONTEND; then
-        echo -e "  ${GREEN}▶${NC} Frontend: http://localhost:7011 (Web UI)"
-    fi
+    echo -e "  ${GREEN}▶${NC} Frontend: http://localhost:3000 (Web UI)"
     echo ""
     echo -e "${CYAN}Useful Commands:${NC}"
-    echo -e "  ${BLUE}./start.sh${NC}    - Start all services"
-    echo -e "  ${BLUE}./stop.sh${NC}     - Stop all services"
-    echo -e "  ${BLUE}./status.sh${NC}   - Check service status"
-    echo -e "  ${BLUE}./logs.sh${NC}     - View logs"
-    echo -e "  ${BLUE}./restart.sh${NC}  - Restart all services"
+    echo -e "  ${BLUE}scripts/start.sh${NC}    - Start all services"
+    echo -e "  ${BLUE}scripts/stop.sh${NC}     - Stop all services"
+    echo -e "  ${BLUE}scripts/status.sh${NC}   - Check service status"
+    echo -e "  ${BLUE}scripts/logs.sh${NC}     - View logs"
+    echo -e "  ${BLUE}scripts/restart.sh${NC}  - Restart all services"
     echo ""
     echo -e "${CYAN}Log Files:${NC}"
     echo -e "  ${BLUE}var/log/switchmap.log${NC}        - Main application log"
     echo -e "  ${BLUE}var/log/switchmap-server.log${NC} - Server daemon log"
-    if ! $SKIP_FRONTEND; then
-        echo -e "  ${BLUE}var/log/frontend.log${NC}         - Frontend log"
-    fi
+    echo -e "  ${BLUE}var/log/frontend.log${NC}         - Frontend log"
+
     echo ""
-    
-    if ! $SKIP_FRONTEND; then
-        echo -e "${GREEN}🎉 Open your browser to http://localhost:7011 to get started!${NC}"
-        echo ""
+    echo -e "${GREEN} Open your browser to http://localhost:3000 to get started!${NC}"
+    echo ""
         
-        # Try to open browser
-        if command -v open &> /dev/null; then
-            # macOS
-            sleep 2
-            open http://localhost:7011
-        elif command -v xdg-open &> /dev/null; then
-            # Linux
-            sleep 2
-            xdg-open http://localhost:7011
-        fi
+    # Try to open browser
+    if command -v open &> /dev/null; then
+        # macOS
+        sleep 2
+        open http://localhost:3000
+    elif command -v xdg-open &> /dev/null; then
+        # Linux
+        sleep 2
+        xdg-open http://localhost:3000
     fi
 }
 
 main() {
     print_header
-    
     parse_args "$@"
     
     check_prerequisites
@@ -590,8 +601,6 @@ main() {
     setup_config
     init_database
     start_daemons
-    setup_frontend
-    
     show_completion_message
 }
 

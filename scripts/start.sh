@@ -4,8 +4,6 @@
 # ==============================================================================
 # Starts all Switchmap-NG services
 # Usage: ./start.sh [OPTIONS]
-# Options:
-#   --skip-frontend   Skip starting frontend
 # ==============================================================================
 
 set -e
@@ -17,21 +15,13 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m'
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SKIP_FRONTEND=false
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 print_success() { echo -e "${GREEN}✓${NC} $1"; }
 print_info() { echo -e "${BLUE}▶${NC} $1"; }
 print_warning() { echo -e "${YELLOW}⚠${NC} $1"; }
 print_error() { echo -e "${RED}✗${NC} $1"; }
-
-# Parse arguments
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        --skip-frontend) SKIP_FRONTEND=true; shift ;;
-        *) print_error "Unknown option: $1"; exit 1 ;;
-    esac
-done
 
 cd "$PROJECT_ROOT"
 
@@ -43,7 +33,7 @@ echo ""
 if [ -d "venv" ]; then
     source venv/bin/activate
 else
-    print_error "Virtual environment not found. Run ./setup.sh first."
+    print_error "Virtual environment not found. Run scripts/setup.sh first."
     exit 1
 fi
 
@@ -91,43 +81,41 @@ else
 fi
 
 # Start frontend
-if ! $SKIP_FRONTEND; then
-    print_info "Starting frontend..."
-    cd frontend
+
+print_info "Starting frontend..."
+cd frontend
     
-    # Kill existing frontend process if any
-    if [ -f ../var/daemon/pid/frontend.pid ]; then
-        OLD_PID=$(cat ../var/daemon/pid/frontend.pid)
-        if ps -p $OLD_PID > /dev/null 2>&1; then
-            kill $OLD_PID 2>/dev/null || true
-        fi
+# Kill existing frontend process if any
+if [ -f ../var/daemon/pid/frontend.pid ]; then
+    OLD_PID=$(cat ../var/daemon/pid/frontend.pid)
+    if ps -p $OLD_PID > /dev/null 2>&1; then
+        kill $OLD_PID 2>/dev/null || true
     fi
-    
-    # Start new frontend
-    npm run dev > ../var/log/frontend.log 2>&1 &
-    FRONTEND_PID=$!
-    echo $FRONTEND_PID > ../var/daemon/pid/frontend.pid
-    
-    sleep 3
-    if ps -p $FRONTEND_PID > /dev/null 2>&1; then
-        print_success "Frontend started (port 7011)"
-    else
-        print_warning "Frontend may not have started correctly"
-    fi
-    
-    cd "$PROJECT_ROOT"
 fi
+    
+# Start new frontend
+npm run dev > ../var/log/frontend.log 2>&1 &
+FRONTEND_PID=$!
+echo $FRONTEND_PID > ../var/daemon/pid/frontend.pid
+    
+sleep 3
+if ps -p $FRONTEND_PID > /dev/null 2>&1; then
+    print_success "Frontend started (port 7011)"
+else
+    print_warning "Frontend may not have started correctly"
+fi
+    
+cd "$PROJECT_ROOT"
+
 
 echo ""
 print_success "All services started!"
 echo ""
 echo -e "${BLUE}Access Points:${NC}"
 echo -e "  Server:   ${GREEN}http://localhost:7010${NC}"
-if ! $SKIP_FRONTEND; then
-    echo -e "  Frontend: ${GREEN}http://localhost:7011${NC}"
-fi
+echo -e "  Frontend: ${GREEN}http://localhost:3000${NC}"
 echo ""
-echo -e "Run ${BLUE}./status.sh${NC} to check service status"
-echo -e "Run ${BLUE}./logs.sh${NC} to view logs"
+echo -e "Run ${BLUE}scripts/status.sh${NC} to check service status"
+echo -e "Run ${BLUE}scripts/logs.sh${NC} to view logs"
 echo ""
 

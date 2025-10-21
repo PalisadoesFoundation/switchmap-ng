@@ -14,7 +14,8 @@ YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
-PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 print_running() { echo -e "  ${GREEN}● RUNNING${NC}   $1"; }
 print_stopped() { echo -e "  ${RED}● STOPPED${NC}   $1"; }
@@ -30,7 +31,7 @@ echo ""
 if [ -d "venv" ]; then
     source venv/bin/activate
 else
-    echo -e "${RED}Virtual environment not found. Run ./setup.sh first.${NC}"
+    echo -e "${RED}Virtual environment not found. Run scripts/setup.sh first.${NC}"
     exit 1
 fi
 
@@ -136,9 +137,9 @@ fi
 
 echo ""
 echo -e "${BLUE}Quick Actions:${NC}"
-echo -e "  ${GREEN}./start.sh${NC}   - Start all services"
-echo -e "  ${GREEN}./stop.sh${NC}    - Stop all services"
-echo -e "  ${GREEN}./restart.sh${NC} - Restart all services"
-echo -e "  ${GREEN}./logs.sh${NC}    - View live logs"
+echo -e "  ${GREEN}scripts/start.sh${NC}   - Start all services"
+echo -e "  ${GREEN}scripts/stop.sh${NC}    - Stop all services"
+echo -e "  ${GREEN}scripts/restart.sh${NC} - Restart all services"
+echo -e "  ${GREEN}scripts/logs.sh${NC}    - View live logs"
 echo ""
 

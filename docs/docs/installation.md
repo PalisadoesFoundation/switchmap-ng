@@ -8,6 +8,40 @@ sidebar_label: Installation
 This section outlines how to install and do basic configuration of
 `switchmap-ng`.
 
+## Quick Start (Automated Setup)
+
+For a one-command automated setup, use the setup script:
+
+```bash
+git clone https://github.com/PalisadoesFoundation/switchmap-ng
+cd switchmap-ng
+
+scripts/setup.sh --docker-mysql
+```
+
+This will automatically:
+- Set up MySQL database (Docker or local)
+- Create virtual environment and install Python dependencies
+- Configure the application
+- Initialize database tables and OUI data
+- Start all services (server, poller, ingester, frontend)
+
+**Management commands:**
+```bash
+scripts/start.sh
+scripts/stop.sh    
+scripts/status.sh   
+scripts/logs.sh   
+```
+
+For detailed documentation, see `scripts/SETUP_GUIDE.md` in the repository.
+
+---
+
+## Manual Installation
+
+If you prefer manual setup or need more control, follow the steps below.
+
 ## Setup and Configure MySQL Database Server
 
 `switchmap-ng` uses a MySQL database to store data. This section
@@ -140,7 +174,7 @@ Make the required changes.
 Run the following command to set up the pre-commit hook for automatically generating documentation:
 
 ```bash
-python scripts/setup_hooks.py
+python hooks/setup_hooks.py
 ```
 
 ### Run Installation Script
