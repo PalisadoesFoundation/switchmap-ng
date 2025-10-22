@@ -65,7 +65,7 @@ class TestDbSelect(unittest.TestCase):
         wrong_statement = "SELECT * FROM table"
 
         with self.assertRaises(SystemExit):
-            testimport.db_select(1001, wrong_statement)
+            testimport.db_select(9001, wrong_statement)
 
     def test_db_select_exception(self):
         """Test db_select when database operation fails."""
@@ -82,7 +82,7 @@ class TestDbSelect(unittest.TestCase):
             patch_path = "switchmap.server.db.db.Session"
             with patch(patch_path, return_value=mock_session):
                 with self.assertRaises(Exception):
-                    testimport.db_select(1002, statement)
+                    testimport.db_select(9002, statement)
 
 
 class TestDbSelectRow(unittest.TestCase):
@@ -104,7 +104,7 @@ class TestDbSelectRow(unittest.TestCase):
         wrong_statement = "SELECT * FROM table"
 
         with self.assertRaises(SystemExit):
-            testimport.db_select_row(1003, wrong_statement)
+            testimport.db_select_row(9003, wrong_statement)
 
     def test_db_select_row_exception(self):
         """Test db_select_row when database operation fails."""
@@ -125,7 +125,7 @@ class TestDbSelectRow(unittest.TestCase):
             patch_path = "switchmap.server.db.db.Session"
             with patch(patch_path, return_value=mock_session):
                 with self.assertRaises(Exception):
-                    testimport.db_select_row(1004, statement)
+                    testimport.db_select_row(9004, statement)
 
 
 class TestDbUpdate(unittest.TestCase):
@@ -147,7 +147,7 @@ class TestDbUpdate(unittest.TestCase):
         wrong_statement = "UPDATE table SET column = value"
 
         with self.assertRaises(SystemExit):
-            testimport.db_update(1005, wrong_statement)
+            testimport.db_update(9005, wrong_statement)
 
     def test_db_update_execute_exception(self):
         """Test db_update when execute fails."""
@@ -168,7 +168,7 @@ class TestDbUpdate(unittest.TestCase):
             patch_path = "switchmap.server.db.db.Session"
             with patch(patch_path, return_value=mock_session):
                 with self.assertRaises(Exception):
-                    testimport.db_update(1006, statement)
+                    testimport.db_update(9006, statement)
 
     def test_db_update_commit_exception(self):
         """Test db_update when commit fails."""
@@ -190,7 +190,7 @@ class TestDbUpdate(unittest.TestCase):
             patch_path = "switchmap.server.db.db.Session"
             with patch(patch_path, return_value=mock_session):
                 with self.assertRaises(Exception):
-                    testimport.db_update(1007, statement)
+                    testimport.db_update(9007, statement)
 
     def test_db_update_with_values(self):
         """Test db_update with values parameter."""
@@ -206,7 +206,7 @@ class TestDbUpdate(unittest.TestCase):
 
             patch_path = "switchmap.server.db.db.Session"
             with patch(patch_path, return_value=mock_session):
-                result = testimport.db_update(1008, statement, values)
+                result = testimport.db_update(9008, statement, values)
                 self.assertTrue(result)
                 mock_session.execute.assert_called_once_with(statement, values)
 
