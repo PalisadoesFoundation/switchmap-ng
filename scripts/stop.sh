@@ -8,18 +8,10 @@
 
 set -e
 
-# Colors
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-print_success() { echo -e "${GREEN}✓${NC} $1"; }
-print_info() { echo -e "${BLUE}▶${NC} $1"; }
-print_warning() { echo -e "${YELLOW}⚠${NC} $1"; }
+source "$SCRIPT_DIR/common.sh"
 
 cd "$PROJECT_ROOT"
 

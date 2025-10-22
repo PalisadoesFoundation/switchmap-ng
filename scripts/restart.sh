@@ -8,15 +8,12 @@
 
 set -e
 
-# Colors
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-cd "$PROJECT_ROOT"
+source "$SCRIPT_DIR/common.sh"
+
+cd "$PROJECT_ROOT" || exit 1;
 
 echo ""
 echo -e "${BLUE}Restarting Switchmap-NG Services...${NC}"

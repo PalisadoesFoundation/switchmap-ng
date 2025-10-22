@@ -8,20 +8,11 @@
 
 set -e
 
-# Colors
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-NC='\033[0m'
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-print_success() { echo -e "${GREEN}✓${NC} $1"; }
-print_info() { echo -e "${BLUE}▶${NC} $1"; }
-print_warning() { echo -e "${YELLOW}⚠${NC} $1"; }
-print_error() { echo -e "${RED}✗${NC} $1"; }
+# Load common print helpers
+source "$SCRIPT_DIR/common.sh"
 
 cd "$PROJECT_ROOT"
 
@@ -65,6 +56,7 @@ if python3 bin/systemd/switchmap_poller --start; then
     fi
 else
     print_error "Failed to start poller"
+    exit 1
 fi
 
 # Start ingester
@@ -78,6 +70,7 @@ if python3 bin/systemd/switchmap_ingester --start; then
     fi
 else
     print_error "Failed to start ingester"
+    exit 1
 fi
 
 # Start frontend
@@ -100,12 +93,13 @@ echo $FRONTEND_PID > ../var/daemon/pid/frontend.pid
     
 sleep 3
 if ps -p $FRONTEND_PID > /dev/null 2>&1; then
-    print_success "Frontend started (port 7011)"
+    print_success "Frontend started (port 3000)"
 else
     print_warning "Frontend may not have started correctly"
+    exit 1
 fi
     
-cd "$PROJECT_ROOT"
+cd "$PROJECT_ROOT" || exit 1;
 
 
 echo ""

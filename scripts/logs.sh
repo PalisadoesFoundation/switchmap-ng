@@ -7,18 +7,12 @@
 #   SERVICE: server, poller, ingester, frontend, all (default)
 # ==============================================================================
 
-# Colors
-GREEN='\033[0;32m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SERVICE="${1:-all}"
 
-cd "$PROJECT_ROOT"
+cd "$PROJECT_ROOT" || exit 1;
 
 case $SERVICE in
     server)
@@ -27,11 +21,11 @@ case $SERVICE in
         ;;
     poller)
         echo -e "${CYAN}=== Poller Logs ===${NC}"
-        tail -f var/log/switchmap.log | grep -i "poll"
+        tail -f var/log/switchmap.log | grep -i --line-buffered "poll"
         ;;
     ingester)
         echo -e "${CYAN}=== Ingester Logs ===${NC}"
-        tail -f var/log/switchmap.log | grep -i "ingest"
+        tail -f var/log/switchmap.log | grep -i --line-buffered "ingest"
         ;;
     frontend)
         echo -e "${CYAN}=== Frontend Logs ===${NC}"

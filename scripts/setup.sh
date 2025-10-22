@@ -12,14 +12,6 @@
 
 set -e  # Exit on error
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-NC='\033[0m'
-
 # Configuration
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -48,21 +40,7 @@ print_step() {
     echo -e "${BLUE}[$(date +'%H:%M:%S')]${NC} ${GREEN}▶${NC} $1"
 }
 
-print_success() {
-    echo -e "${GREEN}✓${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}✗${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}⚠${NC} $1"
-}
-
-print_info() {
-    echo -e "${CYAN}ℹ${NC} $1"
-}
+source "$SCRIPT_DIR/common.sh"
 
 # ==============================================================================
 # Prerequisite Checks
@@ -91,23 +69,21 @@ check_prerequisites() {
     fi
     
     # Check Node.js
-    if ! $SKIP_FRONTEND; then
-        if command -v node &> /dev/null; then
-            NODE_VERSION=$(node --version)
-            print_success "Node.js found: $NODE_VERSION"
-        else
-            missing_deps+=("node")
-            print_error "Node.js not found"
-        fi
+    if command -v node &> /dev/null; then
+        NODE_VERSION=$(node --version)
+        print_success "Node.js found: $NODE_VERSION"
+    else
+        missing_deps+=("node")
+        print_error "Node.js not found"
+    fi
         
-        # Check npm
-        if command -v npm &> /dev/null; then
-            NPM_VERSION=$(npm --version)
-            print_success "npm found: $NPM_VERSION"
-        else
-            missing_deps+=("npm")
-            print_error "npm not found"
-        fi
+    # Check npm
+    if command -v npm &> /dev/null; then
+        NPM_VERSION=$(npm --version)
+        print_success "npm found: $NPM_VERSION"
+    else
+        missing_deps+=("npm")
+        print_error "npm not found"
     fi
     
     # Check Docker if needed
@@ -212,7 +188,7 @@ setup_mysql_local() {
     
     print_info "Please enter your MySQL root password when prompted."
     
-    mysql -u root -p << EOF
+    mysql -u root << EOF
 CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
 CREATE USER IF NOT EXISTS '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';
 GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'localhost';
@@ -306,8 +282,11 @@ setup_config() {
         sed -i "s/db_name:.*/db_name: $MYSQL_DATABASE/" etc/config.yaml
         sed -i "s/db_user:.*/db_user: $MYSQL_USER/" etc/config.yaml
         sed -i "s/db_pass:.*/db_pass: $MYSQL_PASSWORD/" etc/config.yaml
+
         # Update usernames (server and poller) - replace any existing username
+        # Using current system username
         sed -i "s/username:.*/username: $CURRENT_USER/" etc/config.yaml
+
         # Update server addresses for local setup (not Docker)
         sed -i "s/server_address: switchmap-server/server_address: localhost/g" etc/config.yaml
         sed -i "s/server_address: switchmap-mysql/server_address: localhost/g" etc/config.yaml
@@ -441,48 +420,7 @@ start_daemons() {
     fi
     
     echo ""
-}
 
-# ==============================================================================
-# Frontend Setup
-# ==============================================================================
-
-setup_frontend() {
-    if $SKIP_FRONTEND; then
-        print_info "Skipping frontend setup (--skip-frontend)"
-        return
-    fi
-    
-    print_step "Setting up frontend..."
-    
-    cd "$PROJECT_ROOT/frontend"
-    
-    # Install dependencies
-    print_info "Installing frontend dependencies (this may take a few minutes)..."
-    npm install --silent
-    
-    print_success "Frontend dependencies installed"
-    
-    # Start dev server in background
-    print_info "Starting frontend dev server..."
-    npm run dev > ../var/log/frontend.log 2>&1 &
-    FRONTEND_PID=$!
-    
-    # Save PID
-    echo $FRONTEND_PID > ../var/daemon/pid/frontend.pid
-    
-    # Wait for frontend to be ready
-    print_info "Waiting for frontend to be ready..."
-    for i in {1..30}; do
-        if curl -s http://localhost:3000 > /dev/null 2>&1; then
-            print_success "Frontend is ready at http://localhost:3000"
-            break
-        fi
-        sleep 1
-    done
-    
-    cd "$PROJECT_ROOT"
-    echo ""
 }
 
 # ==============================================================================
@@ -498,13 +436,11 @@ Automated setup script for Switchmap-NG
 Options:
     --docker-mysql    Use Docker for MySQL (recommended)
     --local-mysql     Use local MySQL installation
-    --skip-frontend   Skip frontend setup
     --help           Show this help message
 
 Examples:
     scripts/setup.sh --docker-mysql           # Use Docker MySQL (recommended)
     scripts/setup.sh --local-mysql            # Use local MySQL
-    scripts/setup.sh --docker-mysql --skip-frontend  # Skip frontend
 
 EOF
 }

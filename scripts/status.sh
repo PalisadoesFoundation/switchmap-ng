@@ -6,14 +6,6 @@
 # Usage: ./status.sh
 # ==============================================================================
 
-# Colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-YELLOW='\033[1;33m'
-CYAN='\033[0;36m'
-NC='\033[0m'
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -21,7 +13,10 @@ print_running() { echo -e "  ${GREEN}● RUNNING${NC}   $1"; }
 print_stopped() { echo -e "  ${RED}● STOPPED${NC}   $1"; }
 print_header() { echo -e "${CYAN}$1${NC}"; }
 
-cd "$PROJECT_ROOT"
+# Load common print helpers
+source "$SCRIPT_DIR/common.sh"
+
+cd "$PROJECT_ROOT" || exit 1;
 
 echo ""
 print_header " |<---            Switchmap-NG Service Status              --->|"
@@ -112,10 +107,10 @@ if command -v lsof &> /dev/null; then
         echo -e "  ${YELLOW}○${NC} Port 7010 (Server) - FREE"
     fi
     
-    if lsof -i :7011 > /dev/null 2>&1; then
-        echo -e "  ${GREEN}✓${NC} Port 7011 (Frontend) - IN USE"
+    if lsof -i :3000 > /dev/null 2>&1; then
+        echo -e "  ${GREEN}✓${NC} Port 3000 (Frontend) - IN USE"
     else
-        echo -e "  ${YELLOW}○${NC} Port 7011 (Frontend) - FREE"
+        echo -e "  ${YELLOW}○${NC} Port 3000 (Frontend) - FREE"
     fi
     
     if lsof -i :3306 > /dev/null 2>&1; then

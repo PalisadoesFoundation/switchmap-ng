@@ -10,23 +10,11 @@
 #   --full            Complete cleanup (removes everything)
 # ==============================================================================
 
-# Colors
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 KEEP_MYSQL=false
 KEEP_VENV=false
 FULL_CLEANUP=false
-
-print_success() { echo -e "${GREEN}✓${NC} $1"; }
-print_info() { echo -e "${BLUE}▶${NC} $1"; }
-print_warning() { echo -e "${YELLOW}⚠${NC} $1"; }
-print_error() { echo -e "${RED}✗${NC} $1"; }
 
 # Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -38,7 +26,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-cd "$PROJECT_ROOT"
+cd "$PROJECT_ROOT" || exit 1
 
 echo ""
 echo -e "${RED}╔════════════════════════════════════════════════════════════╗${NC}"
@@ -121,7 +109,7 @@ fi
 if $FULL_CLEANUP; then
     if docker volume ls --format '{{.Name}}' 2>/dev/null | grep -q 'switchmap'; then
         print_info "Removing MySQL data volume..."
-        docker volume rm $(docker volume ls --format '{{.Name}}' | grep switchmap) 2>/dev/null || true
+        docker volume rm "$(docker volume ls --format '{{.Name}}' | grep switchmap)" 2>/dev/null || true
         print_success "MySQL data volume removed"
     fi
 fi
