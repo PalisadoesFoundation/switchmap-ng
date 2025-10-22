@@ -38,8 +38,8 @@ else:
 # Create the necessary configuration to load the module
 from tests.testlib_ import setup
 
-CONFIG = setup.config()
-CONFIG.save()
+# CONFIG = setup.config()
+# CONFIG.save()
 
 # Import module to test
 from switchmap.server.db import db as testimport
@@ -52,13 +52,13 @@ class TestDbSelect(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        config = setup.config()
-        config.save()
+        cls.CONFIG = setup.config()
+        cls.CONFIG.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        CONFIG.cleanup()
+        cls.CONFIG.cleanup()
 
     def test_db_select_wrong_type(self):
         """Test db_select with wrong statement type."""
@@ -91,13 +91,13 @@ class TestDbSelectRow(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        config = setup.config()
-        config.save()
+        cls.CONFIG = setup.config()
+        cls.CONFIG.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        CONFIG.cleanup()
+        cls.CONFIG.cleanup()
 
     def test_db_select_row_wrong_type(self):
         """Test db_select_row with wrong statement type."""
@@ -134,13 +134,13 @@ class TestDbUpdate(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        config = setup.config()
-        config.save()
+        cls.CONFIG = setup.config()
+        cls.CONFIG.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        CONFIG.cleanup()
+        cls.CONFIG.cleanup()
 
     def test_db_update_wrong_type(self):
         """Test db_update with wrong statement type."""
@@ -217,20 +217,20 @@ class TestDbDelete(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        config = setup.config()
-        config.save()
+        cls.CONFIG = setup.config()
+        cls.CONFIG.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        CONFIG.cleanup()
+        cls.CONFIG.cleanup()
 
     def test_db_delete_wrong_type(self):
         """Test db_delete with wrong statement type."""
         wrong_statement = "DELETE FROM table"
 
         with self.assertRaises(SystemExit):
-            testimport.db_delete(1009, wrong_statement)
+            testimport.db_delete(1123, wrong_statement)
 
     def test_db_delete_execute_exception(self):
         """Test db_delete when execute fails."""
@@ -247,7 +247,7 @@ class TestDbDelete(unittest.TestCase):
             patch_path = "switchmap.server.db.db.Session"
             with patch(patch_path, return_value=mock_session):
                 with self.assertRaises(Exception):
-                    testimport.db_delete(1010, statement)
+                    testimport.db_delete(1100, statement)
 
     def test_db_delete_commit_exception(self):
         """Test db_delete when commit fails."""
@@ -267,7 +267,7 @@ class TestDbDelete(unittest.TestCase):
             patch_path = "switchmap.server.db.db.Session"
             with patch(patch_path, return_value=mock_session):
                 with self.assertRaises(Exception):
-                    testimport.db_delete(1011, statement)
+                    testimport.db_delete(1116, statement)
 
 
 class TestDbDeleteRow(unittest.TestCase):
@@ -276,20 +276,20 @@ class TestDbDeleteRow(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        config = setup.config()
-        config.save()
+        cls.CONFIG = setup.config()
+        cls.CONFIG.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        CONFIG.cleanup()
+        cls.CONFIG.cleanup()
 
     def test_db_delete_row_wrong_type(self):
         """Test db_delete_row with wrong statement type."""
         wrong_statement = "DELETE FROM table"
 
         with self.assertRaises(SystemExit):
-            testimport.db_delete_row(1012, wrong_statement)
+            testimport.db_delete_row(1094, wrong_statement)
 
     def test_db_delete_row_execute_exception(self):
         """Test db_delete_row when execute fails."""
@@ -309,7 +309,7 @@ class TestDbDeleteRow(unittest.TestCase):
             patch_path = "switchmap.server.db.db.Session"
             with patch(patch_path, return_value=mock_session):
                 with self.assertRaises(Exception):
-                    testimport.db_delete_row(1013, statement)
+                    testimport.db_delete_row(1093, statement)
 
     def test_db_delete_row_commit_exception(self):
         """Test db_delete_row when commit fails."""
@@ -330,7 +330,7 @@ class TestDbDeleteRow(unittest.TestCase):
             patch_path = "switchmap.server.db.db.Session"
             with patch(patch_path, return_value=mock_session):
                 with self.assertRaises(Exception):
-                    testimport.db_delete_row(1014, statement)
+                    testimport.db_delete_row(1119, statement)
 
 
 class TestDbInsertRow(unittest.TestCase):
@@ -339,13 +339,13 @@ class TestDbInsertRow(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        config = setup.config()
-        config.save()
+        cls.CONFIG = setup.config()
+        cls.CONFIG.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        CONFIG.cleanup()
+        cls.CONFIG.cleanup()
 
     def test_db_insert_row_execute_exception_die(self):
         """Test db_insert_row when execute fails and die=True."""

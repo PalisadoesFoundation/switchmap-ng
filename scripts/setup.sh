@@ -188,7 +188,7 @@ setup_mysql_local() {
     
     print_info "Please enter your MySQL root password when prompted."
     
-    mysql -u root << EOF
+    mysql -u root -p<< EOF
 CREATE DATABASE IF NOT EXISTS $MYSQL_DATABASE;
 CREATE USER IF NOT EXISTS '$MYSQL_USER'@'localhost' IDENTIFIED BY '$MYSQL_PASSWORD';
 GRANT ALL PRIVILEGES ON $MYSQL_DATABASE.* TO '$MYSQL_USER'@'localhost';

@@ -111,7 +111,11 @@ class TestAPIRoutes(unittest.TestCase):
         self.assertEqual(response.data.decode(), "OK")
 
     @patch("switchmap.server.api.routes.post.ConfigServer")
-    def test_post_device_data_missing_hostname(self, mock_config):
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("switchmap.server.api.routes.post.os.path.exists")
+    def test_post_device_data_missing_hostname(
+        self, mock_exists, mock_file, mock_config
+    ):
         """Test posting device data without hostname."""
         mock_config_instance = MagicMock()
         mock_config_instance.cache_directory.return_value = "/tmp"
@@ -120,10 +124,17 @@ class TestAPIRoutes(unittest.TestCase):
         test_data = {"misc": {"zone": "test-zone"}}
 
         response = self.client.post(API_POLLER_POST_URI, json=test_data)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data.decode(), "OK")
+        mock_exists.assert_not_called()
+        mock_file.assert_not_called()
 
     @patch("switchmap.server.api.routes.post.ConfigServer")
-    def test_post_device_data_missing_misc(self, mock_config):
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("switchmap.server.api.routes.post.os.path.exists")
+    def test_post_device_data_missing_misc(
+        self, mock_exists, mock_file, mock_config
+    ):
         """Test posting device data without misc section."""
         mock_config_instance = MagicMock()
         mock_config_instance.cache_directory.return_value = "/tmp"
@@ -132,7 +143,10 @@ class TestAPIRoutes(unittest.TestCase):
         test_data = {}
 
         response = self.client.post(API_POLLER_POST_URI, json=test_data)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data.decode(), "OK")
+        mock_exists.assert_not_called()
+        mock_file.assert_not_called()
 
 
 if __name__ == "__main__":
