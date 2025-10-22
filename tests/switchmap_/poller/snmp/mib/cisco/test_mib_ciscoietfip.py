@@ -4,6 +4,7 @@
 import os
 import sys
 import unittest
+from unittest.mock import Mock, AsyncMock, patch
 
 # Try to create a working PYTHONPATH
 EXEC_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -60,6 +61,7 @@ CONFIG = setup.config()
 CONFIG.save()
 
 # Import other required libraries
+from switchmap.poller.snmp.mib.cisco import mib_ciscoietfip as testimport
 
 
 class Query:
@@ -133,11 +135,15 @@ class TestCiscoIetfIpQueryFunctions(unittest.IsolatedAsyncioTestCase):
 
     def test_get_query(self):
         """Testing function get_query."""
-        pass
+        result = testimport.get_query()
+        self.assertEqual(result, testimport.CiscoIetfIpQuery)
 
     def test_init_query(self):
         """Testing function init_query."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        result = testimport.init_query(mock_snmp)
+        self.assertIsInstance(result, testimport.CiscoIetfIpQuery)
+        self.assertEqual(result.snmp_object, mock_snmp)
 
 
 class TestCiscoIetfIpQuery(unittest.IsolatedAsyncioTestCase):
@@ -168,15 +174,56 @@ class TestCiscoIetfIpQuery(unittest.IsolatedAsyncioTestCase):
 
     def test___init__(self):
         """Testing function __init__."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        cisco_ietf_ip = testimport.CiscoIetfIpQuery(mock_snmp)
+        self.assertEqual(cisco_ietf_ip.snmp_object, mock_snmp)
 
-    def test_layer3(self):
+    async def test_layer3(self):
         """Testing function layer3."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        cisco_ietf_ip = testimport.CiscoIetfIpQuery(mock_snmp)
 
-    def test_cinetnettomediaphysaddress(self):
+        cisco_ietf_ip.cinetnettomediaphysaddress = AsyncMock(
+            return_value={
+                "2001:0db8:85a3:0000:0000:8a2e:0370:7334": "aabbccddeeff00",
+                "2001:0db8:85a3:0000:0000:8a2e:0370:7335": "112233445566",
+            }
+        )
+
+        result = await cisco_ietf_ip.layer3()
+
+        self.assertIn("cInetNetToMediaPhysAddress", result)
+        # MAC should be truncated to 12 chars
+        mac1 = result["cInetNetToMediaPhysAddress"][
+            "2001:0db8:85a3:0000:0000:8a2e:0370:7334"
+        ]
+        self.assertEqual(mac1, "aabbccddeeff")
+        mac2 = result["cInetNetToMediaPhysAddress"][
+            "2001:0db8:85a3:0000:0000:8a2e:0370:7335"
+        ]
+        self.assertEqual(mac2, "112233445566")
+
+    async def test_cinetnettomediaphysaddress(self):
         """Testing function cinetnettomediaphysaddress."""
-        pass
+        mock_snmp = Mock(spec=Query)
+
+        # IPv6 in decimal: 2001:0db8::1 = 32.1.13.184.0.0...0.1
+        oid_suffix = ".2.16.32.1.13.184.0.0.0.0.0.0.0.0.0.0.0.1"
+        full_oid = f".1.3.6.1.4.1.9.10.86.1.1.3.1.3{oid_suffix}"
+        mock_snmp.swalk = AsyncMock(
+            return_value={full_oid: b"\xaa\xbb\xcc\xdd\xee\xff"}
+        )
+
+        cisco_ietf_ip = testimport.CiscoIetfIpQuery(mock_snmp)
+
+        patch_path = "switchmap.poller.snmp.mib.cisco.mib_ciscoietfip.general"
+        with patch(f"{patch_path}.octetstr_2_string") as mock_convert:
+            mock_convert.return_value = "aabbccddeeff"
+            result = await cisco_ietf_ip.cinetnettomediaphysaddress()
+
+            ipv6 = "20:01:0d:b8:00:00:00:00:00:00:00:00:00:00:00:01"
+            self.assertIn(ipv6, result)
+            self.assertEqual(result[ipv6], "aabbccddeeff")
 
 
 if __name__ == "__main__":
