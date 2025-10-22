@@ -29,9 +29,7 @@ done
 cd "$PROJECT_ROOT" || exit 1
 
 echo ""
-echo -e "${RED}╔════════════════════════════════════════════════════════════╗${NC}"
-echo -e "${RED}║               Switchmap-NG Cleanup                         ║${NC}"
-echo -e "${RED}╚════════════════════════════════════════════════════════════╝${NC}"
+echo -e "${RED}|              Switchmap-NG Cleanup                |${NC}"
 echo ""
 
 print_warning "This will remove generated files and stop all services"
