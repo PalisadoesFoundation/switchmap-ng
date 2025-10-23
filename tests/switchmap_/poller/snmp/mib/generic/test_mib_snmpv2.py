@@ -117,7 +117,7 @@ class Query:
         pass
 
     async def get(self, oid, normalized=False):
-        """Do a SNMPget
+        """Do a SNMPget.
 
         Args:
             None
