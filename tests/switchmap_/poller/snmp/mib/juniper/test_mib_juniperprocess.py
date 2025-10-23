@@ -141,7 +141,7 @@ class TestMibJuniperProcessFunctions(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        # Cleanup the
+        # Cleanup the configuration
         CONFIG.cleanup()
 
     def test_get_query(self):

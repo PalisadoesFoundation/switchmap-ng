@@ -16,6 +16,8 @@ KEEP_MYSQL=false
 KEEP_VENV=false
 FULL_CLEANUP=false
 
+source "$SCRIPT_DIR/common.sh"
+
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in

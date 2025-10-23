@@ -116,6 +116,17 @@ class Query:
         """
         pass
 
+    async def get(self, oid, normalized=False):
+        """Do a SNMPget
+
+        Args:
+            None
+
+        Returns:
+            None
+        """
+        pass
+
 
 class TestMibSnmpV2Functions(unittest.TestCase):
     """Checks all methods."""

@@ -354,7 +354,7 @@ class TestMibQBridge(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(result), 2)
         self.assertEqual(result[10], 100)
         self.assertEqual(result[20], 200)
-        self.assertNotIn(500, result)
+        self.assertNotIn(500, result.values())
 
     async def test_dot1qvlanstaticname(self):
         """Testing function dot1qvlanstaticname."""
