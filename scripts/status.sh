@@ -3,7 +3,7 @@
 # Switchmap-NG Status Script
 # ==============================================================================
 # Shows status of all Switchmap-NG services
-# Usage: ./status.sh
+# Usage: scripts/status.sh
 # ==============================================================================
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

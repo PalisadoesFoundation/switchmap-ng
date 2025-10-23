@@ -3,7 +3,7 @@
 # Switchmap-NG Cleanup Script
 # ==============================================================================
 # Removes all generated files and resets to clean state
-# Usage: ./cleanup.sh [OPTIONS]
+# Usage: scripts/cleanup.sh [OPTIONS]
 # Options:
 #   --keep-mysql      Keep MySQL data
 #   --keep-venv       Keep Python virtual environment
@@ -53,7 +53,7 @@ echo ""
 
 # Stop all services
 print_info "Stopping all services..."
-./stop.sh 2>/dev/null || true
+"$SCRIPT_DIR/stop.sh" 2>/dev/null || true
 
 # Remove var directory (logs, cache, pid files)
 print_info "Removing var directory..."
@@ -125,9 +125,9 @@ print_success "Cleanup complete!"
 echo ""
 
 if $FULL_CLEANUP; then
-    print_info "To setup again, run: ./setup.sh --docker-mysql"
+    print_info "To setup again, run: scripts/setup.sh --docker-mysql"
 else
-    print_info "Removed temporary files. Run ./setup.sh to reinitialize."
+    print_info "Removed temporary files. Run scripts/setup.sh to reinitialize."
 fi
 
 echo ""

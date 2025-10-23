@@ -3,7 +3,7 @@
 # Switchmap-NG Stop Script
 # ==============================================================================
 # Stops all Switchmap-NG services
-# Usage: ./stop.sh
+# Usage: scripts/stop.sh
 # ==============================================================================
 
 set -e

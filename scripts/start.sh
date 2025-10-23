@@ -3,7 +3,7 @@
 # Switchmap-NG Start Script
 # ==============================================================================
 # Starts all Switchmap-NG services
-# Usage: ./start.sh [OPTIONS]
+# Usage: scripts./start.sh [OPTIONS]
 # ==============================================================================
 
 set -e

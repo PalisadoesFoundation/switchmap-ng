@@ -3,7 +3,7 @@
 # Switchmap-NG Logs Script
 # ==============================================================================
 # Tails logs from all Switchmap-NG services
-# Usage: ./logs.sh [SERVICE]
+# Usage: scripts/logs.sh [SERVICE]
 #   SERVICE: server, poller, ingester, frontend, all (default)
 # ==============================================================================
 
@@ -51,7 +51,7 @@ case $SERVICE in
         fi
         ;;
     *)
-        echo -e "${BLUE}Usage: ./logs.sh [SERVICE]${NC}"
+        echo -e "${BLUE}Usage: scripts/logs.sh [SERVICE]${NC}"
         echo ""
         echo "Available services:"
         echo "  server    - Server daemon logs"
