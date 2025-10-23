@@ -3,7 +3,7 @@
 # Switchmap-NG Restart Script
 # ==============================================================================
 # Restarts all Switchmap-NG services
-# Usage: ./restart.sh
+# Usage: scripts/restart.sh
 # ==============================================================================
 
 set -e

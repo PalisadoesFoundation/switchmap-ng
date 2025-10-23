@@ -107,10 +107,11 @@ fi
 
 # Remove MySQL data volume (if full cleanup)
 if $FULL_CLEANUP; then
-    if docker volume ls --format '{{.Name}}' 2>/dev/null | grep -q 'switchmap'; then
-        print_info "Removing MySQL data volume..."
-        docker volume rm "$(docker volume ls --format '{{.Name}}' | grep switchmap)" 2>/dev/null || true
-        print_success "MySQL data volume removed"
+    VOLUMES=$(docker volume ls --format '{{.Name}}' 2>/dev/null | grep -E '^switchmap(-|$)' || true)
+    if [ -n "$VOLUMES" ]; then
+        print_info "Removing MySQL data volumes..."
+        echo "$VOLUMES" | xargs -r docker volume rm 2>/dev/null || true
+        print_success "MySQL data volumes removed"
     fi
 fi
 
