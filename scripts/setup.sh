@@ -380,6 +380,10 @@ start_daemons() {
         fi
         sleep 1
     done
+
+    if ! $FRONTEND_READY; then
+    print_warning "Frontend may not have started correctly"
+    fi
     
     cd "$PROJECT_ROOT"
     echo ""
