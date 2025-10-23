@@ -202,7 +202,7 @@ poller:
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| **Frontend** | http://localhost:7011 | Web UI |
+| **Frontend** | http://localhost:3000 | Web UI |
 | **GraphQL** | http://localhost:7010/switchmap/graphql | GraphQL API |
 | **REST API** | http://localhost:7010/switchmap/api | REST endpoints |
 

@@ -50,10 +50,6 @@ else:
 
 # Create the necessary configuration to load the module
 from tests.testlib_ import setup
-
-CONFIG = setup.config()
-CONFIG.save()
-
 from switchmap.server.db.table import systemstat as testimport
 from switchmap.server.db.table import ISystemStat
 from switchmap.server.db.table import device
@@ -80,8 +76,8 @@ class TestDbTableSystemStat(unittest.TestCase):
         # `python3 -m unittest discover` where another the tearDownClass of
         # another test module prematurely deletes the configuration required
         # for this module
-        config = setup.config()
-        config.save()
+        cls.CONFIG = setup.config()
+        cls.CONFIG.save()
 
         # Create database tables
         models.create_all_tables()
@@ -96,8 +92,8 @@ class TestDbTableSystemStat(unittest.TestCase):
         database = db.Database()
         database.drop()
 
-        # Cleanup the
-        CONFIG.cleanup()
+        # Cleanup the config created in setUpClass
+        cls.CONFIG.cleanup()
 
     def test_idx_exists(self):
         """Testing function idx_exists."""
