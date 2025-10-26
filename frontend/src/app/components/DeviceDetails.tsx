@@ -357,6 +357,9 @@ query SystemStats($hostname: String!) {
       {/* Time Range Dropdown */}
       <div className="mt-8 md:mt-2 flex flex-col lg:flex-row gap-4 text-left justify-start xl:items-center">
         <div className="relative">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Time Range
+          </label>
           <button
             type="button"
             className="flex justify-between items-center border rounded px-4 py-2 w-48"

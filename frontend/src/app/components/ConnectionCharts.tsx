@@ -398,6 +398,9 @@ export function ConnectionCharts({ device }: ConnectionChartsProps) {
 
         <div className="flex flex-col sm:flex-row flex-wrap gap-4 items-start sm:items-end mb-4 mt-4">
           <div className="relative w-full sm:w-[160px]">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Time Range
+            </label>
             <button
               type="button"
               className="flex justify-between items-end w-full border border-gray-300 rounded px-3 py-1 bg-bg transition-colors"

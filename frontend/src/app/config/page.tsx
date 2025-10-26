@@ -403,7 +403,7 @@ export default function ConfigPage() {
   }
 
   return (
-    <div className="flex h-screen overflow-y-auto">
+    <div className="flex min-h-screen">
       <Sidebar />
       <div className="p-4 w-full max-w-full flex flex-col gap-6 h-fit min-w-[400px] lg:ml-60">
         <header className="m-4 lg:ml-0">

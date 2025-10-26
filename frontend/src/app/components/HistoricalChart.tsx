@@ -54,7 +54,7 @@ export function HistoricalChart({
   lineType = "monotone",
 }: HistoricalChartProps) {
   return (
-    <div className="w-full h-64 m-2">
+    <div className="w-full h-32 md:h-64 m-2">
       <h2 className="m-2 text-lg font-semibold">{title}</h2>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
