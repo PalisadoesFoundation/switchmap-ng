@@ -25,7 +25,7 @@ This document provides instructions on how to set up and start a running instanc
 
 The contents of the `switchmap-ng` repo is used to automatically create [the switchmap-ng Documentation website](https://docs.switchmap-ng.io/). The automation uses [Docusaurus](https://docusaurus.io/docs/), a modern static website generator.
 
-We recommend that you follow these steps before beginning development work in this repository.
+We recommend that you follow these steps before  beginning development work in this repository.
 
 ### Install the Required NPM Package Manager
 
