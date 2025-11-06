@@ -137,6 +137,9 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
       className="relative inline-block text-left rounded-md"
       ref={dropdownRef}
     >
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Zone
+      </label>
       <button
         type="button"
         onClick={() => setOpen(!open)}
@@ -163,7 +166,7 @@ export function ZoneDropdown({ selectedZoneId, onChange }: ZoneDropdownProps) {
           />
         </svg>
       </button>
-      <p className="text-sm text-gray-700 pt-2 text-right">
+      <p className="text-sm text-gray-700 pt-2 text-center">
         {selected?.tsCreated || ""}
       </p>
 
