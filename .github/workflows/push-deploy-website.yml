@@ -35,7 +35,7 @@ jobs:
       # menu. The branch "name" must match the branch in the
       # "on.push.branches" section at the top of this file
       name: develop
-      url: https://docs.switchmap-ng.io
+      url: https://docs.switchmap-ng.io/
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
