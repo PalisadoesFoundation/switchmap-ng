@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-frontend/types/graphql/GetDeviceInterfaces" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.9.2">
+<title data-rh="true">GetDeviceInterfaces | Switchmap-NG</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://docs.switchmap-ng.io/docs/frontend/types/graphql/GetDeviceInterfaces"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="GetDeviceInterfaces | Switchmap-NG"><meta data-rh="true" name="description" content="frontend"><meta data-rh="true" property="og:description" content="frontend"><link data-rh="true" rel="icon" href="/img/logo/switchmap-logo-modified.svg"><link data-rh="true" rel="canonical" href="https://docs.switchmap-ng.io/docs/frontend/types/graphql/GetDeviceInterfaces"><link data-rh="true" rel="alternate" href="https://docs.switchmap-ng.io/docs/frontend/types/graphql/GetDeviceInterfaces" hreflang="en"><link data-rh="true" rel="alternate" href="https://docs.switchmap-ng.io/docs/frontend/types/graphql/GetDeviceInterfaces" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"GetDeviceInterfaces","item":"https://docs.switchmap-ng.io/docs/frontend/types/graphql/GetDeviceInterfaces"}]}</script><link rel="stylesheet" href="/assets/css/styles.23120518.css">
+<script src="/assets/js/runtime~main.263e0a59.js" defer="defer"></script>
+<script src="/assets/js/main.c2814ab7.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/"><div class="navbar__logo"><img src="/img/logo/switchmap-logo-modified.svg" alt="SwitchMap-NG logo" class="LogoAnimation themedComponent_mlkZ themedComponent--light_NVdE"><img src="/img/logo/switchmap-logo-modified.svg" alt="SwitchMap-NG logo" class="LogoAnimation themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Switchmap-NG</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" target="_self" href="/docs">Docs</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://github.com/PalisadoesFoundation" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link header-github-link" aria-label="GitHub repository"></a><a href="https://www.youtube.com/@PalisadoesOrganization" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link header-youtube-link" aria-label="Palisadoes Youtube channel"></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/"><span title="Introduction" class="linkLabel_WmDU">Introduction</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/installation"><span title="Installation" class="linkLabel_WmDU">Installation</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/configuration"><span title="Configuration" class="linkLabel_WmDU">Configuration</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/operation"><span title="Operation" class="linkLabel_WmDU">Operation</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/cli"><span title="CLI" class="linkLabel_WmDU">CLI</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/webserver"><span title="Webserver" class="linkLabel_WmDU">Webserver</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/architecture"><span title="Architecture" class="linkLabel_WmDU">Architecture</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/community"><span title="Community" class="linkLabel_WmDU">Community</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/testing"><span title="Testing" class="linkLabel_WmDU">Testing</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/troubleshooting"><span title="Troubleshooting" class="linkLabel_WmDU">Troubleshooting</span></a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" href="/docs/backend/Server"><span title="Code Documentation" class="categoryLinkLabel_W154">Code Documentation</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-2 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" tabindex="0" href="/docs/backend/Server"><span title="Backend" class="categoryLinkLabel_W154">Backend</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-2 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" tabindex="0" href="/docs/frontend/"><span title="Frontend" class="categoryLinkLabel_W154">Frontend</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/frontend/"><span title="README" class="linkLabel_WmDU">README</span></a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-3 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" tabindex="0" href="/docs/frontend/components/ConnectionCharts"><span title="components" class="categoryLinkLabel_W154">components</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-3 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" tabindex="0" href="/docs/frontend/config/page"><span title="config" class="categoryLinkLabel_W154">config</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-3 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" tabindex="0" href="/docs/frontend/devices/[id]/page"><span title="devices" class="categoryLinkLabel_W154">devices</span></a></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-3 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" tabindex="0" href="/docs/frontend/history/page"><span title="history" class="categoryLinkLabel_W154">history</span></a></div></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/frontend/layout"><span title="layout" class="linkLabel_WmDU">layout</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/frontend/layout.spec"><span title="layout.spec" class="linkLabel_WmDU">layout.spec</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/frontend/modules"><span title="modules" class="linkLabel_WmDU">modules</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/frontend/page"><span title="page" class="linkLabel_WmDU">page</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/frontend/page.spec"><span title="page.spec" class="linkLabel_WmDU">page.spec</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/frontend/theme-toggle"><span title="theme-toggle" class="linkLabel_WmDU">theme-toggle</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/frontend/theme-toggle.spec"><span title="theme-toggle.spec" class="linkLabel_WmDU">theme-toggle.spec</span></a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-3 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" tabindex="0" href="/docs/frontend/types/graphql/GetDeviceInterfaces"><span title="types" class="categoryLinkLabel_W154">types</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-4 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" tabindex="0" href="/docs/frontend/types/graphql/GetDeviceInterfaces"><span title="graphql" class="categoryLinkLabel_W154">graphql</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-5 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/docs/frontend/types/graphql/GetDeviceInterfaces"><span title="GetDeviceInterfaces" class="linkLabel_WmDU">GetDeviceInterfaces</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-5 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/frontend/types/graphql/GetZoneDevices"><span title="GetZoneDevices" class="linkLabel_WmDU">GetZoneDevices</span></a></li></ul></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-3 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" tabindex="0" href="/docs/frontend/utils/deviceUtils"><span title="utils" class="categoryLinkLabel_W154">utils</span></a></div></li></ul></li></ul></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">Code Documentation</span></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">Frontend</span></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">types</span></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">graphql</span></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">GetDeviceInterfaces</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>GetDeviceInterfaces</h1></header><p><a class="" href="/docs/frontend/"><strong>frontend</strong></a></p>
+<hr>
+<p><a class="" href="/docs/frontend/modules">frontend</a> / types/graphql/GetDeviceInterfaces</p>
+<h1>types/graphql/GetDeviceInterfaces</h1>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="type-aliases">Type Aliases<a href="#type-aliases" class="hash-link" aria-label="Direct link to Type Aliases" title="Direct link to Type Aliases" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="getdeviceinterfacesdata">GetDeviceInterfacesData<a href="#getdeviceinterfacesdata" class="hash-link" aria-label="Direct link to GetDeviceInterfacesData" title="Direct link to GetDeviceInterfacesData" translate="no">​</a></h3>
+<blockquote>
+<p><strong>GetDeviceInterfacesData</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L83" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:83</a></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties">Properties<a href="#properties" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="data">data<a href="#data" class="hash-link" aria-label="Direct link to data" title="Direct link to data" translate="no">​</a></h5>
+<blockquote>
+<p><strong>data</strong>: <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L84" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:84</a></p>
+<h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="device">device<a href="#device" class="hash-link" aria-label="Direct link to device" title="Direct link to device" translate="no">​</a></h6>
+<blockquote>
+<p><strong>device</strong>: <code>object</code></p>
+</blockquote>
+<h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="devicel1interfaces">device.l1interfaces<a href="#devicel1interfaces" class="hash-link" aria-label="Direct link to device.l1interfaces" title="Direct link to device.l1interfaces" translate="no">​</a></h6>
+<blockquote>
+<p><strong>l1interfaces</strong>: <a href="#l1interfaces" class=""><code>L1Interfaces</code></a></p>
+</blockquote>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="errors">errors?<a href="#errors" class="hash-link" aria-label="Direct link to errors?" title="Direct link to errors?" translate="no">​</a></h5>
+<blockquote>
+<p><code>optional</code> <strong>errors</strong>: <code>object</code>[]</p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L89" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:89</a></p>
+<h6 class="anchor anchorTargetStickyNavbar_Vzrq" id="message">message<a href="#message" class="hash-link" aria-label="Direct link to message" title="Direct link to message" translate="no">​</a></h6>
+<blockquote>
+<p><strong>message</strong>: <code>string</code></p>
+</blockquote>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="getdeviceinterfacesvars">GetDeviceInterfacesVars<a href="#getdeviceinterfacesvars" class="hash-link" aria-label="Direct link to GetDeviceInterfacesVars" title="Direct link to GetDeviceInterfacesVars" translate="no">​</a></h3>
+<blockquote>
+<p><strong>GetDeviceInterfacesVars</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L92" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:92</a></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties-1">Properties<a href="#properties-1" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="id">id<a href="#id" class="hash-link" aria-label="Direct link to id" title="Direct link to id" translate="no">​</a></h5>
+<blockquote>
+<p><strong>id</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L93" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:93</a></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="interfaceedge">InterfaceEdge<a href="#interfaceedge" class="hash-link" aria-label="Direct link to InterfaceEdge" title="Direct link to InterfaceEdge" translate="no">​</a></h3>
+<blockquote>
+<p><strong>InterfaceEdge</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L75" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:75</a></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties-2">Properties<a href="#properties-2" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="node">node<a href="#node" class="hash-link" aria-label="Direct link to node" title="Direct link to node" translate="no">​</a></h5>
+<blockquote>
+<p><strong>node</strong>: <a href="#interfacenode" class=""><code>InterfaceNode</code></a></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L76" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:76</a></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="interfacenode">InterfaceNode<a href="#interfacenode" class="hash-link" aria-label="Direct link to InterfaceNode" title="Direct link to InterfaceNode" translate="no">​</a></h3>
+<blockquote>
+<p><strong>InterfaceNode</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L44" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:44</a></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties-3">Properties<a href="#properties-3" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="cdpcachedeviceid">cdpcachedeviceid?<a href="#cdpcachedeviceid" class="hash-link" aria-label="Direct link to cdpcachedeviceid?" title="Direct link to cdpcachedeviceid?" translate="no">​</a></h5>
+<blockquote>
+<p><code>optional</code> <strong>cdpcachedeviceid</strong>: <code>string</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L65" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:65</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="cdpcachedeviceport">cdpcachedeviceport<a href="#cdpcachedeviceport" class="hash-link" aria-label="Direct link to cdpcachedeviceport" title="Direct link to cdpcachedeviceport" translate="no">​</a></h5>
+<blockquote>
+<p><strong>cdpcachedeviceport</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L66" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:66</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="cdpcacheplatform">cdpcacheplatform<a href="#cdpcacheplatform" class="hash-link" aria-label="Direct link to cdpcacheplatform" title="Direct link to cdpcacheplatform" translate="no">​</a></h5>
+<blockquote>
+<p><strong>cdpcacheplatform</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L67" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:67</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="duplex">duplex<a href="#duplex" class="hash-link" aria-label="Direct link to duplex" title="Direct link to duplex" translate="no">​</a></h5>
+<blockquote>
+<p><strong>duplex</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L62" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:62</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="idxdevice">idxDevice<a href="#idxdevice" class="hash-link" aria-label="Direct link to idxDevice" title="Direct link to idxDevice" translate="no">​</a></h5>
+<blockquote>
+<p><strong>idxDevice</strong>: <code>number</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L46" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:46</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="idxl1interface">idxL1interface<a href="#idxl1interface" class="hash-link" aria-label="Direct link to idxL1interface" title="Direct link to idxL1interface" translate="no">​</a></h5>
+<blockquote>
+<p><strong>idxL1interface</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L45" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:45</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifalias">ifalias?<a href="#ifalias" class="hash-link" aria-label="Direct link to ifalias?" title="Direct link to ifalias?" translate="no">​</a></h5>
+<blockquote>
+<p><code>optional</code> <strong>ifalias</strong>: <code>string</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L63" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:63</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifindiscards">ifinDiscards<a href="#ifindiscards" class="hash-link" aria-label="Direct link to ifinDiscards" title="Direct link to ifinDiscards" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifinDiscards</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L60" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:60</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifinerrors">ifinErrors<a href="#ifinerrors" class="hash-link" aria-label="Direct link to ifinErrors" title="Direct link to ifinErrors" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifinErrors</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L58" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:58</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifinnucastpkts">ifinNucastPkts<a href="#ifinnucastpkts" class="hash-link" aria-label="Direct link to ifinNucastPkts" title="Direct link to ifinNucastPkts" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifinNucastPkts</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L54" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:54</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifinoctets">ifinOctets<a href="#ifinoctets" class="hash-link" aria-label="Direct link to ifinOctets" title="Direct link to ifinOctets" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifinOctets</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L56" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:56</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifinucastpkts">ifinUcastPkts<a href="#ifinucastpkts" class="hash-link" aria-label="Direct link to ifinUcastPkts" title="Direct link to ifinUcastPkts" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifinUcastPkts</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L52" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:52</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifname">ifname<a href="#ifname" class="hash-link" aria-label="Direct link to ifname" title="Direct link to ifname" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifname</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L47" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:47</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifoperstatus">ifoperstatus<a href="#ifoperstatus" class="hash-link" aria-label="Direct link to ifoperstatus" title="Direct link to ifoperstatus" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifoperstatus</strong>: <code>number</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L49" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:49</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifoutdiscards">ifoutDiscards<a href="#ifoutdiscards" class="hash-link" aria-label="Direct link to ifoutDiscards" title="Direct link to ifoutDiscards" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifoutDiscards</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L61" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:61</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifouterrors">ifoutErrors<a href="#ifouterrors" class="hash-link" aria-label="Direct link to ifoutErrors" title="Direct link to ifoutErrors" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifoutErrors</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L59" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:59</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifoutnucastpkts">ifoutNucastPkts<a href="#ifoutnucastpkts" class="hash-link" aria-label="Direct link to ifoutNucastPkts" title="Direct link to ifoutNucastPkts" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifoutNucastPkts</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L55" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:55</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifoutoctets">ifoutOctets<a href="#ifoutoctets" class="hash-link" aria-label="Direct link to ifoutOctets" title="Direct link to ifoutOctets" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifoutOctets</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L57" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:57</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifoutucastpkts">ifoutUcastPkts<a href="#ifoutucastpkts" class="hash-link" aria-label="Direct link to ifoutUcastPkts" title="Direct link to ifoutUcastPkts" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifoutUcastPkts</strong>: <code>number</code> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L53" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:53</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="ifspeed">ifspeed<a href="#ifspeed" class="hash-link" aria-label="Direct link to ifspeed" title="Direct link to ifspeed" translate="no">​</a></h5>
+<blockquote>
+<p><strong>ifspeed</strong>: <code>number</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L51" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:51</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="lldpremportdesc">lldpremportdesc<a href="#lldpremportdesc" class="hash-link" aria-label="Direct link to lldpremportdesc" title="Direct link to lldpremportdesc" translate="no">​</a></h5>
+<blockquote>
+<p><strong>lldpremportdesc</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L68" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:68</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="lldpremsyscapenabled">lldpremsyscapenabled<a href="#lldpremsyscapenabled" class="hash-link" aria-label="Direct link to lldpremsyscapenabled" title="Direct link to lldpremsyscapenabled" translate="no">​</a></h5>
+<blockquote>
+<p><strong>lldpremsyscapenabled</strong>: <code>string</code>[]</p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L71" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:71</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="lldpremsysdesc">lldpremsysdesc<a href="#lldpremsysdesc" class="hash-link" aria-label="Direct link to lldpremsysdesc" title="Direct link to lldpremsysdesc" translate="no">​</a></h5>
+<blockquote>
+<p><strong>lldpremsysdesc</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L70" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:70</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="lldpremsysname">lldpremsysname<a href="#lldpremsysname" class="hash-link" aria-label="Direct link to lldpremsysname" title="Direct link to lldpremsysname" translate="no">​</a></h5>
+<blockquote>
+<p><strong>lldpremsysname</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L69" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:69</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="macports">macports<a href="#macports" class="hash-link" aria-label="Direct link to macports" title="Direct link to macports" translate="no">​</a></h5>
+<blockquote>
+<p><strong>macports</strong>: <a href="#macport" class=""><code>MacPort</code></a></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L72" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:72</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="nativevlan">nativevlan<a href="#nativevlan" class="hash-link" aria-label="Direct link to nativevlan" title="Direct link to nativevlan" translate="no">​</a></h5>
+<blockquote>
+<p><strong>nativevlan</strong>: <code>number</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L48" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:48</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="trunk">trunk<a href="#trunk" class="hash-link" aria-label="Direct link to trunk" title="Direct link to trunk" translate="no">​</a></h5>
+<blockquote>
+<p><strong>trunk</strong>: <code>boolean</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L64" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:64</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="tsidle">tsIdle<a href="#tsidle" class="hash-link" aria-label="Direct link to tsIdle" title="Direct link to tsIdle" translate="no">​</a></h5>
+<blockquote>
+<p><strong>tsIdle</strong>: <code>number</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L50" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:50</a></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="l1interfaces">L1Interfaces<a href="#l1interfaces" class="hash-link" aria-label="Direct link to L1Interfaces" title="Direct link to L1Interfaces" translate="no">​</a></h3>
+<blockquote>
+<p><strong>L1Interfaces</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L79" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:79</a></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties-4">Properties<a href="#properties-4" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="edges">edges<a href="#edges" class="hash-link" aria-label="Direct link to edges" title="Direct link to edges" translate="no">​</a></h5>
+<blockquote>
+<p><strong>edges</strong>: <a href="#interfaceedge" class=""><code>InterfaceEdge</code></a>[]</p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L80" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:80</a></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="mac">Mac<a href="#mac" class="hash-link" aria-label="Direct link to Mac" title="Direct link to Mac" translate="no">​</a></h3>
+<blockquote>
+<p><strong>Mac</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L27" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:27</a></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties-5">Properties<a href="#properties-5" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="mac-1">mac<a href="#mac-1" class="hash-link" aria-label="Direct link to mac" title="Direct link to mac" translate="no">​</a></h5>
+<blockquote>
+<p><strong>mac</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L28" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:28</a></p>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="oui">oui<a href="#oui" class="hash-link" aria-label="Direct link to oui" title="Direct link to oui" translate="no">​</a></h5>
+<blockquote>
+<p><strong>oui</strong>: <a href="#organizationoui" class=""><code>OrganizationOui</code></a> | <code>null</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L29" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:29</a></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="macport">MacPort<a href="#macport" class="hash-link" aria-label="Direct link to MacPort" title="Direct link to MacPort" translate="no">​</a></h3>
+<blockquote>
+<p><strong>MacPort</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L40" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:40</a></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties-6">Properties<a href="#properties-6" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="edges-1">edges<a href="#edges-1" class="hash-link" aria-label="Direct link to edges" title="Direct link to edges" translate="no">​</a></h5>
+<blockquote>
+<p><strong>edges</strong>: <a href="#macsedge" class=""><code>MacsEdge</code></a>[]</p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L41" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:41</a></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="macsedge">MacsEdge<a href="#macsedge" class="hash-link" aria-label="Direct link to MacsEdge" title="Direct link to MacsEdge" translate="no">​</a></h3>
+<blockquote>
+<p><strong>MacsEdge</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L36" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:36</a></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties-7">Properties<a href="#properties-7" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="node-1">node<a href="#node-1" class="hash-link" aria-label="Direct link to node" title="Direct link to node" translate="no">​</a></h5>
+<blockquote>
+<p><strong>node</strong>: <a href="#macsnode" class=""><code>MacsNode</code></a></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L37" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:37</a></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="macsnode">MacsNode<a href="#macsnode" class="hash-link" aria-label="Direct link to MacsNode" title="Direct link to MacsNode" translate="no">​</a></h3>
+<blockquote>
+<p><strong>MacsNode</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L32" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:32</a></p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties-8">Properties<a href="#properties-8" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="macs">macs<a href="#macs" class="hash-link" aria-label="Direct link to macs" title="Direct link to macs" translate="no">​</a></h5>
+<blockquote>
+<p><strong>macs</strong>: <a href="#mac" class=""><code>Mac</code></a>[]</p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L33" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:33</a></p>
+<hr>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="organizationoui">OrganizationOui<a href="#organizationoui" class="hash-link" aria-label="Direct link to OrganizationOui" title="Direct link to OrganizationOui" translate="no">​</a></h3>
+<blockquote>
+<p><strong>OrganizationOui</strong> = <code>object</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L23" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:23</a></p>
+<p>Type definitions for GraphQL queries related to device interfaces.
+These types are used to structure the data returned from the GraphQL API.
+They include definitions for MAC addresses, OUI (Organizationally Unique Identifier),
+and device interfaces.</p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="remarks">Remarks<a href="#remarks" class="hash-link" aria-label="Direct link to Remarks" title="Direct link to Remarks" translate="no">​</a></h4>
+<p>This file defines the types used in the GraphQL queries for fetching device interfaces.
+It includes types for MAC addresses, OUI, and the structure of device interfaces.
+The types are used to ensure type safety when working with the data returned from the API.
+The <code>Oui</code> type represents the organization associated with a MAC address,
+while the <code>Mac</code> type represents a MAC address and its associated OUI.
+The <code>MacsNode</code> type represents a collection of MAC addresses,
+and the <code>MacPorts</code> type represents the edges of MAC addresses.
+The <code>InterfaceNode</code> type represents a device interface with various properties,
+including its name, status, speed, and associated MAC addresses.
+The <code>InterfaceEdge</code> type represents an edge in the list of interfaces,
+and the <code>L1Interfaces</code> type represents a collection of these edges.
+Finally, the <code>GetDeviceInterfacesData</code> type represents the overall structure of the data returned
+from the GraphQL query for device interfaces, including any potential errors.
+The <code>GetDeviceInterfacesVars</code> type defines the variables required for the GraphQL query,
+specifically the device ID.</p>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="properties-9">Properties<a href="#properties-9" class="hash-link" aria-label="Direct link to Properties" title="Direct link to Properties" translate="no">​</a></h4>
+<h5 class="anchor anchorTargetStickyNavbar_Vzrq" id="organization">organization<a href="#organization" class="hash-link" aria-label="Direct link to organization" title="Direct link to organization" translate="no">​</a></h5>
+<blockquote>
+<p><strong>organization</strong>: <code>string</code></p>
+</blockquote>
+<p>Defined in: <a href="https://github.com/PalisadoesFoundation/switchmap-ng/blob/develop/frontend/src/app/types/graphql/GetDeviceInterfaces.ts#L24" target="_blank" rel="noopener noreferrer" class="">types/graphql/GetDeviceInterfaces.ts:24</a></p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/PalisadoesFoundation/switchmap-ng/tree/develop/docs/docs/frontend/types/graphql/GetDeviceInterfaces.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/docs/frontend/theme-toggle.spec"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">theme-toggle.spec</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/docs/frontend/types/graphql/GetZoneDevices"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">GetZoneDevices</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#type-aliases" class="table-of-contents__link toc-highlight">Type Aliases</a><ul><li><a href="#getdeviceinterfacesdata" class="table-of-contents__link toc-highlight">GetDeviceInterfacesData</a></li><li><a href="#getdeviceinterfacesvars" class="table-of-contents__link toc-highlight">GetDeviceInterfacesVars</a></li><li><a href="#interfaceedge" class="table-of-contents__link toc-highlight">InterfaceEdge</a></li><li><a href="#interfacenode" class="table-of-contents__link toc-highlight">InterfaceNode</a></li><li><a href="#l1interfaces" class="table-of-contents__link toc-highlight">L1Interfaces</a></li><li><a href="#mac" class="table-of-contents__link toc-highlight">Mac</a></li><li><a href="#macport" class="table-of-contents__link toc-highlight">MacPort</a></li><li><a href="#macsedge" class="table-of-contents__link toc-highlight">MacsEdge</a></li><li><a href="#macsnode" class="table-of-contents__link toc-highlight">MacsNode</a></li><li><a href="#organizationoui" class="table-of-contents__link toc-highlight">OrganizationOui</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/PalisadoesFoundation" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__slack"> Slack</a></li><li class="footer__item"><a href="https://www.palisadoes.org/news/" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__news"> News</a></li><li class="footer__item"><a href="https://www.palisadoes.org/contact/" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__contact"> Contact Us</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Social Media</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://twitter.com/palisadoesorg?lang=en" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__twitter"> Twitter</a></li><li class="footer__item"><a href="https://www.facebook.com/palisadoesproject/" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__facebook"> Facebook</a></li><li class="footer__item"><a href="https://www.instagram.com/palisadoes/?hl=en" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__instagram"> Instagram</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Development</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/PalisadoesFoundation" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__github"> GitHub</a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 The Palisadoes Foundation, LLC. Built with Docusaurus.</div></div></div></footer></div>
+</body>
+</html>

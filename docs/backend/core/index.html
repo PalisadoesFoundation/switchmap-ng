@@ -1,0 +1,1334 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-backend/core" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.9.2">
+<title data-rh="true">core | Switchmap-NG</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://docs.switchmap-ng.io/docs/backend/core"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="core | Switchmap-NG"><meta data-rh="true" name="description" content="Module to manage Agent classes."><meta data-rh="true" property="og:description" content="Module to manage Agent classes."><link data-rh="true" rel="icon" href="/img/logo/switchmap-logo-modified.svg"><link data-rh="true" rel="canonical" href="https://docs.switchmap-ng.io/docs/backend/core"><link data-rh="true" rel="alternate" href="https://docs.switchmap-ng.io/docs/backend/core" hreflang="en"><link data-rh="true" rel="alternate" href="https://docs.switchmap-ng.io/docs/backend/core" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"core","item":"https://docs.switchmap-ng.io/docs/backend/core"}]}</script><link rel="stylesheet" href="/assets/css/styles.23120518.css">
+<script src="/assets/js/runtime~main.263e0a59.js" defer="defer"></script>
+<script src="/assets/js/main.c2814ab7.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><div role="region" aria-label="Skip to main content"><a class="skipToContent_fXgn" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/"><div class="navbar__logo"><img src="/img/logo/switchmap-logo-modified.svg" alt="SwitchMap-NG logo" class="LogoAnimation themedComponent_mlkZ themedComponent--light_NVdE"><img src="/img/logo/switchmap-logo-modified.svg" alt="SwitchMap-NG logo" class="LogoAnimation themedComponent_mlkZ themedComponent--dark_xIcU"></div><b class="navbar__title text--truncate">Switchmap-NG</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" target="_self" href="/docs">Docs</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://github.com/PalisadoesFoundation" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link header-github-link" aria-label="GitHub repository"></a><a href="https://www.youtube.com/@PalisadoesOrganization" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link header-youtube-link" aria-label="Palisadoes Youtube channel"></a><div class="toggle_vylO colorModeToggle_DEke"><button class="clean-btn toggleButton_gllP toggleButtonDisabled_aARS" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP lightToggleIcon_pyhR"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP darkToggleIcon_wfgR"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_g3eP systemToggleIcon_QzmC"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_Bca1"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_z2l0"><div class="docsWrapper_hBAB"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_sjWU" type="button"></button><div class="docRoot_UBD9"><aside class="theme-doc-sidebar-container docSidebarContainer_YfHR"><div class="sidebarViewport_aRkj"><div class="sidebar_njMd"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_SIkG"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/"><span title="Introduction" class="linkLabel_WmDU">Introduction</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/installation"><span title="Installation" class="linkLabel_WmDU">Installation</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/configuration"><span title="Configuration" class="linkLabel_WmDU">Configuration</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/operation"><span title="Operation" class="linkLabel_WmDU">Operation</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/cli"><span title="CLI" class="linkLabel_WmDU">CLI</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/webserver"><span title="Webserver" class="linkLabel_WmDU">Webserver</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/architecture"><span title="Architecture" class="linkLabel_WmDU">Architecture</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/community"><span title="Community" class="linkLabel_WmDU">Community</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/testing"><span title="Testing" class="linkLabel_WmDU">Testing</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/troubleshooting"><span title="Troubleshooting" class="linkLabel_WmDU">Troubleshooting</span></a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" href="/docs/backend/Server"><span title="Code Documentation" class="categoryLinkLabel_W154">Code Documentation</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-2 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret menu__link--active" role="button" aria-expanded="true" tabindex="0" href="/docs/backend/Server"><span title="Backend" class="categoryLinkLabel_W154">Backend</span></a></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/backend/Server"><span title="Server" class="linkLabel_WmDU">Server</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/docs/backend/core"><span title="core" class="linkLabel_WmDU">core</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/backend/dashboard"><span title="dashboard" class="linkLabel_WmDU">dashboard</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-3 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/backend/poller"><span title="poller" class="linkLabel_WmDU">poller</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-2 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_byQd menu__link menu__link--sublist menu__link--sublist-caret" role="button" aria-expanded="false" tabindex="0" href="/docs/frontend/"><span title="Frontend" class="categoryLinkLabel_W154">Frontend</span></a></div></li></ul></li></ul></nav></div></div></aside><main class="docMainContainer_TBSr"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_VOVn"><div class="docItemContainer_Djhp"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_Z_bl" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_YNFT"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">Code Documentation</span></li><li class="breadcrumbs__item"><span class="breadcrumbs__link">Backend</span></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">core</span></li></ul></nav><div class="tocCollapsible_ETCw theme-doc-toc-mobile tocMobile_ITEo"><button type="button" class="clean-btn tocCollapsibleButton_TO0P">On this page</button></div><div class="theme-doc-markdown markdown"><a id="agent"></a>
+<header><h1>agent</h1></header>
+<p>Module to manage Agent classes.</p>
+<p>Description:</p>
+<p>This module:</p>
+<ol>
+<li class="">Processes a variety of information from agents</li>
+<li class="">Posts the data using HTTP to a server listed
+in the configuration file</li>
+</ol>
+<a id="agent.Agent"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="agent-objects">Agent Objects<a href="#agent-objects" class="hash-link" aria-label="Direct link to Agent Objects" title="Direct link to Agent Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">Agent</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Agent class for daemons.</p>
+<a id="agent.Agent.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__">__init__<a href="#__init__" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">parent</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> child</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">None</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> config</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">None</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>parent</code> - Name of parent daemon</li>
+<li class=""><code>child</code> - Name of child daemon</li>
+<li class=""><code>config</code> - ConfigCore object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent.Agent.name"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="name">name<a href="#name" class="hash-link" aria-label="Direct link to name" title="Direct link to name" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">name</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Return agent name.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - Name of agent</li>
+</ul>
+<a id="agent.Agent.query"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="query">query<a href="#query" class="hash-link" aria-label="Direct link to query" title="Direct link to query" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">query</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Create placeholder method. Do not delete.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent._AgentRun"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="_agentrun-objects">_AgentRun Objects<a href="#_agentrun-objects" class="hash-link" aria-label="Direct link to _AgentRun Objects" title="Direct link to _AgentRun Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">_AgentRun</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class that defines basic run function for AgentDaemons.</p>
+<a id="agent._AgentRun.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-1">__init__<a href="#__init__-1" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">agent</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>agent</code> - agent object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent._AgentRun.run"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="run">run<a href="#run" class="hash-link" aria-label="Direct link to run" title="Direct link to run" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">run</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Start Polling.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent.AgentDaemon"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="agentdaemon-objects">AgentDaemon Objects<a href="#agentdaemon-objects" class="hash-link" aria-label="Direct link to AgentDaemon Objects" title="Direct link to AgentDaemon Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">AgentDaemon</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">_AgentRun</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> Daemon</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class that manages base agent daemonization.</p>
+<a id="agent.AgentDaemon.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-2">__init__<a href="#__init__-2" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">agent</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>agent</code> - agent object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent.GracefulAgentDaemon"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="gracefulagentdaemon-objects">GracefulAgentDaemon Objects<a href="#gracefulagentdaemon-objects" class="hash-link" aria-label="Direct link to GracefulAgentDaemon Objects" title="Direct link to GracefulAgentDaemon Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">GracefulAgentDaemon</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">_AgentRun</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> GracefulDaemon</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class that manages graceful agent daemonization.</p>
+<a id="agent.GracefulAgentDaemon.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-3">__init__<a href="#__init__-3" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">agent</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> timeout</span><span class="token operator" style="color:#393A34">=</span><span class="token number" style="color:#36acaa">30</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>agent</code> - agent object</li>
+<li class=""><code>timeout</code> - agent timeout</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent.AgentCLI"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="agentcli-objects">AgentCLI Objects<a href="#agentcli-objects" class="hash-link" aria-label="Direct link to AgentCLI Objects" title="Direct link to AgentCLI Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">AgentCLI</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class that manages the agent CLI.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent.AgentCLI.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-4">__init__<a href="#__init__-4" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">graceful</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">False</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>graceful</code> - True if graceful restart is required</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent.AgentCLI.process"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="process">process<a href="#process" class="hash-link" aria-label="Direct link to process" title="Direct link to process" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">process</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">additional_help</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">None</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Return all the CLI options.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>additional_help</code> - CLI additional help string for argparse</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>args</code> - Namespace() containing all of our CLI arguments as objects<!-- -->
+<ul>
+<li class="">filename: Path to the configuration file</li>
+</ul>
+</li>
+</ul>
+<a id="agent.AgentCLI.control"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="control">control<a href="#control" class="hash-link" aria-label="Direct link to control" title="Direct link to control" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">control</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">agent</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> timeout</span><span class="token operator" style="color:#393A34">=</span><span class="token number" style="color:#36acaa">60</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Control the agent from the CLI.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>agent</code> - Agent object</li>
+<li class=""><code>timeout</code> - Agent timeout</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent.AgentAPI"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="agentapi-objects">AgentAPI Objects<a href="#agentapi-objects" class="hash-link" aria-label="Direct link to AgentAPI Objects" title="Direct link to AgentAPI Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">AgentAPI</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">Agent</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Applcication API agent that serves web pages.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent.AgentAPI.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-5">__init__<a href="#__init__-5" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">parent</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> child</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> app</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> config</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">None</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>parent</code> - Name of parent daemon</li>
+<li class=""><code>child</code> - Name of child daemon</li>
+<li class=""><code>app</code> - Flask App</li>
+<li class=""><code>config</code> - ConfigCore object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent.AgentAPI.query"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="query-1">query<a href="#query-1" class="hash-link" aria-label="Direct link to query" title="Direct link to query" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">query</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Query all remote targets for data.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent._StandaloneApplication"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="_standaloneapplication-objects">_StandaloneApplication Objects<a href="#_standaloneapplication-objects" class="hash-link" aria-label="Direct link to _StandaloneApplication Objects" title="Direct link to _StandaloneApplication Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">_StandaloneApplication</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">BaseApplication</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class to integrate the Gunicorn WSGI with the Flask application.</p>
+<p>Modified from: <a href="http://docs.gunicorn.org/en/latest/custom.html" target="_blank" rel="noopener noreferrer" class="">http://docs.gunicorn.org/en/latest/custom.html</a></p>
+<a id="agent._StandaloneApplication.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-6">__init__<a href="#__init__-6" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">app</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> parent</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> options</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">None</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>app</code> - Flask application object of type Flask(<strong>name</strong>)</li>
+<li class=""><code>parent</code> - Name of parent process that is invoking the API</li>
+<li class=""><code>options</code> - Gunicorn CLI options</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent._StandaloneApplication.load_config"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="load_config">load_config<a href="#load_config" class="hash-link" aria-label="Direct link to load_config" title="Direct link to load_config" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">load_config</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Load the configuration.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="agent._StandaloneApplication.load"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="load">load<a href="#load" class="hash-link" aria-label="Direct link to load" title="Direct link to load" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">load</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Run the Flask application throught the Gunicorn WSGI.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>self.application</code> - Flask application object</li>
+</ul>
+<a id="configuration"></a>
+<h1>configuration</h1>
+<p>switchmap classes that manage various configurations.</p>
+<a id="configuration._Config"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="_config-objects">_Config Objects<a href="#_config-objects" class="hash-link" aria-label="Direct link to _Config Objects" title="Direct link to _Config Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">_Config</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class gathers all configuration information.</p>
+<a id="configuration._Config.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-7">__init__<a href="#__init__-7" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Intialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="configuration.ConfigCore"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="configcore-objects">ConfigCore Objects<a href="#configcore-objects" class="hash-link" aria-label="Direct link to ConfigCore Objects" title="Direct link to ConfigCore Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">ConfigCore</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">_Config</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class gathers all configuration information.</p>
+<a id="configuration.ConfigCore.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-8">__init__<a href="#__init__-8" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Intialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="configuration.ConfigCore.agent_subprocesses"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="agent_subprocesses">agent_subprocesses<a href="#agent_subprocesses" class="hash-link" aria-label="Direct link to agent_subprocesses" title="Direct link to agent_subprocesses" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">agent_subprocesses</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get agent_subprocesses.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigCore.api_log_file"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="api_log_file">api_log_file<a href="#api_log_file" class="hash-link" aria-label="Direct link to api_log_file" title="Direct link to api_log_file" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">api_log_file</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">daemon</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get api_log_file.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>daemon</code> - Name of API daemon</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigCore.daemon_directory"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="daemon_directory">daemon_directory<a href="#daemon_directory" class="hash-link" aria-label="Direct link to daemon_directory" title="Direct link to daemon_directory" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">daemon_directory</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Determine the daemon_directory.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - daemon_directory</li>
+</ul>
+<a id="configuration.ConfigCore.log_directory"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log_directory">log_directory<a href="#log_directory" class="hash-link" aria-label="Direct link to log_directory" title="Direct link to log_directory" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log_directory</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Determine the log_directory.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - configured log_directory</li>
+</ul>
+<a id="configuration.ConfigCore.log_file"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log_file">log_file<a href="#log_file" class="hash-link" aria-label="Direct link to log_file" title="Direct link to log_file" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log_file</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get log_file.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigCore.log_level"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log_level">log_level<a href="#log_level" class="hash-link" aria-label="Direct link to log_level" title="Direct link to log_level" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log_level</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get log_level.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigCore.multiprocessing"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="multiprocessing">multiprocessing<a href="#multiprocessing" class="hash-link" aria-label="Direct link to multiprocessing" title="Direct link to multiprocessing" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">multiprocessing</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get multiprocessing.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigCore.system_directory"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="system_directory">system_directory<a href="#system_directory" class="hash-link" aria-label="Direct link to system_directory" title="Direct link to system_directory" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">system_directory</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Determine the system_directory.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - configured system_directory</li>
+</ul>
+<a id="configuration.ConfigAPIClient"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="configapiclient-objects">ConfigAPIClient Objects<a href="#configapiclient-objects" class="hash-link" aria-label="Direct link to ConfigAPIClient Objects" title="Direct link to ConfigAPIClient Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">ConfigAPIClient</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">ConfigCore</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class gathers all configuration information.</p>
+<a id="configuration.ConfigAPIClient.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-9">__init__<a href="#__init__-9" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">section</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Intialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>section</code> - Section of the config file to read</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="configuration.ConfigAPIClient.server_address"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="server_address">server_address<a href="#server_address" class="hash-link" aria-label="Direct link to server_address" title="Direct link to server_address" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">server_address</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get server_address.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPIClient.server_bind_port"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="server_bind_port">server_bind_port<a href="#server_bind_port" class="hash-link" aria-label="Direct link to server_bind_port" title="Direct link to server_bind_port" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">server_bind_port</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get server_bind_port.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPIClient.server_https"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="server_https">server_https<a href="#server_https" class="hash-link" aria-label="Direct link to server_https" title="Direct link to server_https" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">server_https</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get server_https.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPIClient.server_password"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="server_password">server_password<a href="#server_password" class="hash-link" aria-label="Direct link to server_password" title="Direct link to server_password" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">server_password</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get server_password.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPIClient.server_username"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="server_username">server_username<a href="#server_username" class="hash-link" aria-label="Direct link to server_username" title="Direct link to server_username" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">server_username</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get server_username.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPIClient.server_url_root"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="server_url_root">server_url_root<a href="#server_url_root" class="hash-link" aria-label="Direct link to server_url_root" title="Direct link to server_url_root" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">server_url_root</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Return server_url_root value.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - server_url_root value</li>
+</ul>
+<a id="configuration.ConfigAPI"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="configapi-objects">ConfigAPI Objects<a href="#configapi-objects" class="hash-link" aria-label="Direct link to ConfigAPI Objects" title="Direct link to ConfigAPI Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">ConfigAPI</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">ConfigCore</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class gathers all configuration information.</p>
+<a id="configuration.ConfigAPI.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-10">__init__<a href="#__init__-10" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">section</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Intialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>section</code> - Section of the config file to read</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="configuration.ConfigAPI.api_bind_port"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="api_bind_port">api_bind_port<a href="#api_bind_port" class="hash-link" aria-label="Direct link to api_bind_port" title="Direct link to api_bind_port" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">api_bind_port</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get api_bind_port.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPI.api_listen_address"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="api_listen_address">api_listen_address<a href="#api_listen_address" class="hash-link" aria-label="Direct link to api_listen_address" title="Direct link to api_listen_address" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">api_listen_address</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get api_listen_address.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPI.api_https"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="api_https">api_https<a href="#api_https" class="hash-link" aria-label="Direct link to api_https" title="Direct link to api_https" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">api_https</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get api_https.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPI.api_password"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="api_password">api_password<a href="#api_password" class="hash-link" aria-label="Direct link to api_password" title="Direct link to api_password" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">api_password</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get api_password.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPI.api_username"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="api_username">api_username<a href="#api_username" class="hash-link" aria-label="Direct link to api_username" title="Direct link to api_username" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">api_username</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get api_username.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - result</li>
+</ul>
+<a id="configuration.ConfigAPI.api_url_root"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="api_url_root">api_url_root<a href="#api_url_root" class="hash-link" aria-label="Direct link to api_url_root" title="Direct link to api_url_root" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">api_url_root</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Return api_url_root value.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - api_url_root value</li>
+</ul>
+<a id="log"></a>
+<h1>log</h1>
+<p>Logging module.</p>
+<a id="log.ExceptionWrapper"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="exceptionwrapper-objects">ExceptionWrapper Objects<a href="#exceptionwrapper-objects" class="hash-link" aria-label="Direct link to ExceptionWrapper Objects" title="Direct link to ExceptionWrapper Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">ExceptionWrapper</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class to handle unexpected exceptions with multiprocessing.</p>
+<p>Based on:
+<a href="https://stackoverflow.com/questions/6126007/python-getting-a-traceback-from-a-multiprocessing-process" target="_blank" rel="noopener noreferrer" class="">https://stackoverflow.com/questions/6126007/python-getting-a-traceback-from-a-multiprocessing-process</a></p>
+<p><em>NOTE</em> The subprocess needs to return a value for this to work.
+Returning an implicit &quot;None&quot; isn&#x27;t sufficient</p>
+<a id="log.ExceptionWrapper.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-11">__init__<a href="#__init__-11" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">error_exception</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>error_exception</code> - Exception object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.ExceptionWrapper.re_raise"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="re_raise">re_raise<a href="#re_raise" class="hash-link" aria-label="Direct link to re_raise" title="Direct link to re_raise" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">re_raise</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Extend the re_raise method.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log._GetLog"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="_getlog-objects">_GetLog Objects<a href="#_getlog-objects" class="hash-link" aria-label="Direct link to _GetLog Objects" title="Direct link to _GetLog Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">_GetLog</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Class to manage the logging without duplicates.</p>
+<a id="log._GetLog.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-12">__init__<a href="#__init__-12" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log._GetLog.logfile"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="logfile">logfile<a href="#logfile" class="hash-link" aria-label="Direct link to logfile" title="Direct link to logfile" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">logfile</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Return logger for file IO.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - Value of logger</li>
+</ul>
+<a id="log._GetLog.stdout"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="stdout">stdout<a href="#stdout" class="hash-link" aria-label="Direct link to stdout" title="Direct link to stdout" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">stdout</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Return logger for terminal IO.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - Value of logger</li>
+</ul>
+<a id="log.log2console"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log2console">log2console<a href="#log2console" class="hash-link" aria-label="Direct link to log2console" title="Direct link to log2console" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log2console</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">code</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> message</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Log message to STDOUT only and die.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>code</code> - Message code</li>
+<li class=""><code>message</code> - Message text</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.log2die_safe"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log2die_safe">log2die_safe<a href="#log2die_safe" class="hash-link" aria-label="Direct link to log2die_safe" title="Direct link to log2die_safe" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log2die_safe</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">code</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> message</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Log message to STDOUT only and die.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>code</code> - Message code</li>
+<li class=""><code>message</code> - Message text</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.log2warning"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log2warning">log2warning<a href="#log2warning" class="hash-link" aria-label="Direct link to log2warning" title="Direct link to log2warning" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log2warning</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">code</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> message</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Log warning message to file only, but don&#x27;t die.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>code</code> - Message code</li>
+<li class=""><code>message</code> - Message text</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.log2debug"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log2debug">log2debug<a href="#log2debug" class="hash-link" aria-label="Direct link to log2debug" title="Direct link to log2debug" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log2debug</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">code</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> message</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Log debug message to file only, but don&#x27;t die.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>code</code> - Message code</li>
+<li class=""><code>message</code> - Message text</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.log2info"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log2info">log2info<a href="#log2info" class="hash-link" aria-label="Direct link to log2info" title="Direct link to log2info" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log2info</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">code</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> message</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Log status message to file only, but don&#x27;t die.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>code</code> - Message code</li>
+<li class=""><code>message</code> - Message text</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.log2see"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log2see">log2see<a href="#log2see" class="hash-link" aria-label="Direct link to log2see" title="Direct link to log2see" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log2see</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">code</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> message</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Log message to file and STDOUT, but don&#x27;t die.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>code</code> - Message code</li>
+<li class=""><code>message</code> - Message text</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.log2die"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log2die">log2die<a href="#log2die" class="hash-link" aria-label="Direct link to log2die" title="Direct link to log2die" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log2die</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">code</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> message</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Log to STDOUT and file, then die.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>code</code> - Error number</li>
+<li class=""><code>message</code> - Descriptive error string</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.log2exception_die"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log2exception_die">log2exception_die<a href="#log2exception_die" class="hash-link" aria-label="Direct link to log2exception_die" title="Direct link to log2exception_die" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log2exception_die</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">code</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> sys_exc_info</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> message</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">None</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Log trace message to file and STDOUT, but don&#x27;t die.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>code</code> - Message code</li>
+<li class=""><code>sys_exc_info</code> - Tuple from exception from sys.exc_info</li>
+<li class=""><code>message</code> - Descriptive error string</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.log2exception"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="log2exception">log2exception<a href="#log2exception" class="hash-link" aria-label="Direct link to log2exception" title="Direct link to log2exception" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">log2exception</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">code</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> sys_exc_info</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> message</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">None</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> die</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">False</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Log trace message to file and STDOUT, but don&#x27;t die.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>code</code> - Message code</li>
+<li class=""><code>sys_exc_info</code> - Tuple from exception from sys.exc_info</li>
+<li class=""><code>message</code> - Message to log</li>
+<li class=""><code>die</code> - Die if True</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="log.check_environment"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="check_environment">check_environment<a href="#check_environment" class="hash-link" aria-label="Direct link to check_environment" title="Direct link to check_environment" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">check_environment</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Check environmental variables. Die if incorrect.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>path</code> - Path to the configurtion directory</li>
+</ul>
+<a id="log.root_directory"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="root_directory">root_directory<a href="#root_directory" class="hash-link" aria-label="Direct link to root_directory" title="Direct link to root_directory" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">root_directory</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Determine the root directory in which switchmap is installed.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Root directory</li>
+</ul>
+<a id="graphene"></a>
+<h1>graphene</h1>
+<p>Module with graphene functions.</p>
+<a id="graphene.normalize"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="normalize">normalize<a href="#normalize" class="hash-link" aria-label="Direct link to normalize" title="Direct link to normalize" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">normalize</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">data</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Remove all &#x27;edges&#x27; and &#x27;node&#x27; keys from graphene results.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>data</code> - Dict of graphene results</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Dict withoug &#x27;edges&#x27; and &#x27;node&#x27; keys</li>
+</ul>
+<a id="graphene.nodes"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="nodes">nodes<a href="#nodes" class="hash-link" aria-label="Direct link to nodes" title="Direct link to nodes" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">nodes</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">_nodes</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Strip the &#x27;node&#x27; key from a list of graphene nodes.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>_nodes</code> - List of graphene node dicts</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - List without the &#x27;node&#x27; key</li>
+</ul>
+<a id="daemon"></a>
+<h1>daemon</h1>
+<p>Generic linux daemon base class for python 3.x.</p>
+<a id="daemon.Daemon"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="daemon-objects">Daemon Objects<a href="#daemon-objects" class="hash-link" aria-label="Direct link to Daemon Objects" title="Direct link to Daemon Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">Daemon</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>A generic daemon class.</p>
+<p>Usage: subclass the daemon class and override the run() method.</p>
+<p>Modified from <a href="http://www.jejik.com/files/examples/daemon3x.py" target="_blank" rel="noopener noreferrer" class="">http://www.jejik.com/files/examples/daemon3x.py</a></p>
+<a id="daemon.Daemon.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-13">__init__<a href="#__init__-13" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">agent</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>agent</code> - Agent object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.Daemon.delpid"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="delpid">delpid<a href="#delpid" class="hash-link" aria-label="Direct link to delpid" title="Direct link to delpid" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">delpid</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Delete the PID file.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.Daemon.delskip"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="delskip">delskip<a href="#delskip" class="hash-link" aria-label="Direct link to delskip" title="Direct link to delskip" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">delskip</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Delete the skip file.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.Daemon.dellock"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="dellock">dellock<a href="#dellock" class="hash-link" aria-label="Direct link to dellock" title="Direct link to dellock" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">dellock</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Delete the lock file.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.Daemon.start"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="start">start<a href="#start" class="hash-link" aria-label="Direct link to start" title="Direct link to start" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">start</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Start the daemon.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.Daemon.force"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="force">force<a href="#force" class="hash-link" aria-label="Direct link to force" title="Direct link to force" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">force</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Stop the daemon by deleting the lock file first.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.Daemon.stop"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="stop">stop<a href="#stop" class="hash-link" aria-label="Direct link to stop" title="Direct link to stop" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">stop</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Stop the daemon.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.Daemon.restart"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="restart">restart<a href="#restart" class="hash-link" aria-label="Direct link to restart" title="Direct link to restart" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">restart</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Restart the daemon.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.Daemon.status"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="status">status<a href="#status" class="hash-link" aria-label="Direct link to status" title="Direct link to status" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">status</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get daemon status.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - True if the PID and PID file exists</li>
+</ul>
+<a id="daemon.Daemon.run"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="run-1">run<a href="#run-1" class="hash-link" aria-label="Direct link to run" title="Direct link to run" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">run</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Override this method when you subclass Daemon.</p>
+<p>This method will be called after the process has been daemonized by
+start() or restart(). The base implementation does nothing and should
+be overridden in derived classes to add actual daemon functionality.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.GracefulDaemon"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="gracefuldaemon-objects">GracefulDaemon Objects<a href="#gracefuldaemon-objects" class="hash-link" aria-label="Direct link to GracefulDaemon Objects" title="Direct link to GracefulDaemon Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">GracefulDaemon</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">Daemon</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Daemon that allows for graceful shutdown.</p>
+<p>This daemon should allow for stop/restart commands to perform graceful
+shutdown of a given process. A graceful shutdown involves checking that
+whether a current process is running and only ending the process once the
+current process has completed its currently running task.</p>
+<a id="daemon.GracefulDaemon.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-14">__init__<a href="#__init__-14" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">agent</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> timeout</span><span class="token operator" style="color:#393A34">=</span><span class="token number" style="color:#36acaa">30</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>agent</code> - Agent object</li>
+<li class=""><code>timeout</code> - Timeout for graceful shutdown</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.GracefulDaemon.graceful_shutdown"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="graceful_shutdown">graceful_shutdown<a href="#graceful_shutdown" class="hash-link" aria-label="Direct link to graceful_shutdown" title="Direct link to graceful_shutdown" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">graceful_shutdown</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">callback</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initializes the wrapper with the callback function <code>fn</code>.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>callback</code> - callback method</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>wrapper</code> - Wrapper function</li>
+</ul>
+<a id="daemon.GracefulDaemon.stop"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="stop-1">stop<a href="#stop-1" class="hash-link" aria-label="Direct link to stop" title="Direct link to stop" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">stop</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Stop the daemon gracefully.</p>
+<p>Uses parent class stop method after checking that daemon is no longer
+processing data or making use of a resource.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="daemon.GracefulDaemon.restart"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="restart-1">restart<a href="#restart-1" class="hash-link" aria-label="Direct link to restart" title="Direct link to restart" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">restart</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Restarts the daemon gracefully.</p>
+<p>Uses parent class restart method after checking that daemon is not
+processing data or making use of a resource.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="data"></a>
+<h1>data</h1>
+<p>Module for data handling.</p>
+<a id="data.hashstring"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="hashstring">hashstring<a href="#hashstring" class="hash-link" aria-label="Direct link to hashstring" title="Direct link to hashstring" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">hashstring</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">string</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> sha</span><span class="token operator" style="color:#393A34">=</span><span class="token number" style="color:#36acaa">256</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> utf8</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">False</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Create a UTF encoded SHA hash string.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>string</code> - String to hash</li>
+<li class=""><code>sha</code> - Length of SHA hash</li>
+<li class=""><code>utf8</code> - Return utf8 encoded string if true</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Result of hash</li>
+</ul>
+<a id="data.dictify"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="dictify">dictify<a href="#dictify" class="hash-link" aria-label="Direct link to dictify" title="Direct link to dictify" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">dictify</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">data</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Convert NamedTuple to dict.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>data</code> - NamedTuple</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Dict representation of object</li>
+</ul>
+<a id="general"></a>
+<h1>general</h1>
+<p>Module with general purpose functions.</p>
+<a id="general.check_user"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="check_user">check_user<a href="#check_user" class="hash-link" aria-label="Direct link to check_user" title="Direct link to check_user" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">check_user</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">config</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Check to make sure the user environment is correct.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>config</code> - Config object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="general.check_sudo"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="check_sudo">check_sudo<a href="#check_sudo" class="hash-link" aria-label="Direct link to check_sudo" title="Direct link to check_sudo" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">check_sudo</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Check user isn&#x27;t running as sudo.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="general.cleanstring"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="cleanstring">cleanstring<a href="#cleanstring" class="hash-link" aria-label="Direct link to cleanstring" title="Direct link to cleanstring" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">cleanstring</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">data</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Remove multiple whitespaces and linefeeds from string.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>data</code> - String to process</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Stipped data</li>
+</ul>
+<a id="general.octetstr_2_string"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="octetstr_2_string">octetstr_2_string<a href="#octetstr_2_string" class="hash-link" aria-label="Direct link to octetstr_2_string" title="Direct link to octetstr_2_string" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">octetstr_2_string</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">bytes_string</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Convert SNMP OCTETSTR to string.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>bytes_string</code> - Binary value to convert</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - String equivalent of bytes_string</li>
+</ul>
+<a id="general.random_hash"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="random_hash">random_hash<a href="#random_hash" class="hash-link" aria-label="Direct link to random_hash" title="Direct link to random_hash" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">random_hash</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Create a random Hex hash.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Hex hash</li>
+</ul>
+<a id="general.mac"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="mac">mac<a href="#mac" class="hash-link" aria-label="Direct link to mac" title="Direct link to mac" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">mac</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">_mac</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Convert MAC address to a standardized format.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>_mac</code> - MAC address</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - MacAddress object</li>
+</ul>
+<a id="general.root_directory"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="root_directory-1">root_directory<a href="#root_directory-1" class="hash-link" aria-label="Direct link to root_directory" title="Direct link to root_directory" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">root_directory</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Determine the root directory in which switchmap is installed.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Root directory</li>
+</ul>
+<a id="general.ipaddress"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="ipaddress">ipaddress<a href="#ipaddress" class="hash-link" aria-label="Direct link to ipaddress" title="Direct link to ipaddress" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">ipaddress</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">_ip</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Validate an IP address.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>_ip</code> - IP address</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - IP Object</li>
+</ul>
+<a id="general.make_bool"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="make_bool">make_bool<a href="#make_bool" class="hash-link" aria-label="Direct link to make_bool" title="Direct link to make_bool" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">make_bool</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">result</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Create a boolean version of the argument.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Object to transform</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - boolean</li>
+</ul>
+<a id="general.consistent_keys"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="consistent_keys">consistent_keys<a href="#consistent_keys" class="hash-link" aria-label="Direct link to consistent_keys" title="Direct link to consistent_keys" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">consistent_keys</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">_data</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Convert dict keys to ints if possible.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>_data</code> - Multidimensional dict</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - dict</li>
+</ul>
+<a id="general.group_consecutive"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="group_consecutive">group_consecutive<a href="#group_consecutive" class="hash-link" aria-label="Direct link to group_consecutive" title="Direct link to group_consecutive" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">group_consecutive</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">data</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Group consecutive numbers in a list.</p>
+<p><a href="https://stackoverflow.com/questions/2154249/" target="_blank" rel="noopener noreferrer" class="">https://stackoverflow.com/questions/2154249/</a>
+identify-groups-of-consecutive-numbers-in-a-list</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>data</code> - list</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>ranges</code> - List of lists</li>
+</ul>
+<a id="general.human_readable"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="human_readable">human_readable<a href="#human_readable" class="hash-link" aria-label="Direct link to human_readable" title="Direct link to human_readable" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">human_readable</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">num</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> suffix</span><span class="token operator" style="color:#393A34">=</span><span class="token string" style="color:#e3116c">&quot;B&quot;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> storage</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">False</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Convert number to human readable value.</p>
+<p><a href="https://stackoverflow.com/questions/1094841/" target="_blank" rel="noopener noreferrer" class="">https://stackoverflow.com/questions/1094841/</a>
+get-human-readable-version-of-file-size</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>num</code> - Number to convert</li>
+<li class=""><code>suffix</code> - The suffix for the human readable output</li>
+<li class=""><code>storage</code> - Use binary 1024 for evaluating storage
+otherwise use regular decimal.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Numeric string</li>
+</ul>
+<a id="general.padded_list_of_lists"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="padded_list_of_lists">padded_list_of_lists<a href="#padded_list_of_lists" class="hash-link" aria-label="Direct link to padded_list_of_lists" title="Direct link to padded_list_of_lists" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">padded_list_of_lists</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">data</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> width</span><span class="token operator" style="color:#393A34">=</span><span class="token number" style="color:#36acaa">4</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> pad</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">None</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Create a padded list of list.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>data</code> - List to process</li>
+<li class=""><code>width</code> - Width of the list of lists</li>
+<li class=""><code>pad</code> - Value to pad the last row of the list of lists with</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - list of lists</li>
+</ul>
+<a id="rest"></a>
+<h1>rest</h1>
+<p>Functions for creating URIs.</p>
+<a id="rest.post"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="post">post<a href="#post" class="hash-link" aria-label="Direct link to post" title="Direct link to post" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">post</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">uri</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> data</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> config</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> server</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">True</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Create URI for datacenter RRD and oid_id data.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>uri</code> - URI for posting</li>
+<li class=""><code>data</code> - Data to post</li>
+<li class=""><code>config</code> - ConfitAPIClient object</li>
+<li class=""><code>server</code> - Posting to a server if True, API if False</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>data</code> - Post named tuple</li>
+</ul>
+<a id="rest.get"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="get">get<a href="#get" class="hash-link" aria-label="Direct link to get" title="Direct link to get" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">get</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">uri</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> config</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> server</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">True</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> die</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">True</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get data fro URI from API server.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>uri</code> - URI for posting</li>
+<li class=""><code>config</code> - ConfigAPIClient object</li>
+<li class=""><code>server</code> - True if getting data from an database API server</li>
+<li class=""><code>die</code> - Die if the connection fails if True</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>success</code> - True if successful</li>
+</ul>
+<a id="rest.get_graphql"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="get_graphql">get_graphql<a href="#get_graphql" class="hash-link" aria-label="Direct link to get_graphql" title="Direct link to get_graphql" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">get_graphql</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">query</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> config</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> die</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">True</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get data fro URI from API server.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>query</code> - Query string from GraphQL server</li>
+<li class=""><code>config</code> - ConfigAPIClient object</li>
+<li class=""><code>die</code> - Die if the connection fails if True</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>success</code> - True if successful</li>
+</ul>
+<a id="files"></a>
+<h1>files</h1>
+<p>Switchmap files library.</p>
+<a id="files._Directory"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="_directory-objects">_Directory Objects<a href="#_directory-objects" class="hash-link" aria-label="Direct link to _Directory Objects" title="Direct link to _Directory Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">_Directory</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>A class for creating the names of system directories.</p>
+<a id="files._Directory.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-15">__init__<a href="#__init__-15" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">config</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>config</code> - Config object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="files._Directory.pid"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="pid">pid<a href="#pid" class="hash-link" aria-label="Direct link to pid" title="Direct link to pid" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">pid</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Define the system pid directory.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - pid directory</li>
+</ul>
+<a id="files._Directory.lock"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="lock">lock<a href="#lock" class="hash-link" aria-label="Direct link to lock" title="Direct link to lock" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">lock</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Define the system lock directory.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - lock directory</li>
+</ul>
+<a id="files._Directory.snmp"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="snmp">snmp<a href="#snmp" class="hash-link" aria-label="Direct link to snmp" title="Direct link to snmp" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">snmp</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Define the system snmp directory.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - snmp directory</li>
+</ul>
+<a id="files._File"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="_file-objects">_File Objects<a href="#_file-objects" class="hash-link" aria-label="Direct link to _File Objects" title="Direct link to _File Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">_File</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>A class for creating the names of system files.</p>
+<a id="files._File.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-16">__init__<a href="#__init__-16" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">config</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>config</code> - Config object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="files._File.pid"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="pid-1">pid<a href="#pid-1" class="hash-link" aria-label="Direct link to pid" title="Direct link to pid" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">pid</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">prefix</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Define the pid file.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>prefix</code> - Prefix of file</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - pid directory</li>
+</ul>
+<a id="files._File.lock"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="lock-1">lock<a href="#lock-1" class="hash-link" aria-label="Direct link to lock" title="Direct link to lock" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">lock</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">prefix</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Define the lock file.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>prefix</code> - Prefix of file</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - lock directory</li>
+</ul>
+<a id="files._File.skip"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="skip">skip<a href="#skip" class="hash-link" aria-label="Direct link to skip" title="Direct link to skip" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">skip</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">prefix</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Define the skip file.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>prefix</code> - Prefix of file</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - skip directory</li>
+</ul>
+<a id="files._File.snmp"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="snmp-1">snmp<a href="#snmp-1" class="hash-link" aria-label="Direct link to snmp" title="Direct link to snmp" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">snmp</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">prefix</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> create</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">True</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Define the system snmp directory.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>prefix</code> - Prefix of file</li>
+<li class=""><code>create</code> - Create file if True</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>value</code> - snmp directory</li>
+</ul>
+<a id="files.move_yaml_files"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="move_yaml_files">move_yaml_files<a href="#move_yaml_files" class="hash-link" aria-label="Direct link to move_yaml_files" title="Direct link to move_yaml_files" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">move_yaml_files</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">src</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> dst</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Move all yaml files from source to destination directory.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>src</code> - Source directory</li>
+<li class=""><code>dst</code> - Destination directory</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="files.read_yaml_files"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="read_yaml_files">read_yaml_files<a href="#read_yaml_files" class="hash-link" aria-label="Direct link to read_yaml_files" title="Direct link to read_yaml_files" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">read_yaml_files</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">directories</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Read the contents of all yaml files in a directory.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>directories</code> - List of directory names with configuration files</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>config_dict</code> - Dict of yaml read</li>
+</ul>
+<a id="files.read_yaml_file"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="read_yaml_file">read_yaml_file<a href="#read_yaml_file" class="hash-link" aria-label="Direct link to read_yaml_file" title="Direct link to read_yaml_file" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">read_yaml_file</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">filepath</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> as_string</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">False</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> die</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">True</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Read the contents of a YAML file.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>filepath</code> - Path to file to be read</li>
+<li class=""><code>as_string</code> - Return a string if True</li>
+<li class=""><code>die</code> - Die if there is an error</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Dict of yaml read</li>
+</ul>
+<a id="files.mkdir"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="mkdir">mkdir<a href="#mkdir" class="hash-link" aria-label="Direct link to mkdir" title="Direct link to mkdir" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">mkdir</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">directory</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Create a directory if it doesn&#x27;t already exist.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>directory</code> - Directory name</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="files.pid_file"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="pid_file">pid_file<a href="#pid_file" class="hash-link" aria-label="Direct link to pid_file" title="Direct link to pid_file" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">pid_file</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">agent_name</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> config</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get the pidfile for an agent.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>agent_name</code> - Agent name</li>
+<li class=""><code>config</code> - Config object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Name of pid file</li>
+</ul>
+<a id="files.lock_file"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="lock_file">lock_file<a href="#lock_file" class="hash-link" aria-label="Direct link to lock_file" title="Direct link to lock_file" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">lock_file</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">agent_name</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> config</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get the lockfile for an agent.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>agent_name</code> - Agent name</li>
+<li class=""><code>config</code> - Config object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Name of lock file</li>
+</ul>
+<a id="files.skip_file"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="skip_file">skip_file<a href="#skip_file" class="hash-link" aria-label="Direct link to skip_file" title="Direct link to skip_file" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">skip_file</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">agent_name</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> config</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get the skip file for an agent.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>agent_name</code> - Agent name</li>
+<li class=""><code>config</code> - Config object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Name of skip file</li>
+</ul>
+<a id="files.snmp_file"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="snmp_file">snmp_file<a href="#snmp_file" class="hash-link" aria-label="Direct link to snmp_file" title="Direct link to snmp_file" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">snmp_file</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">hostname</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> config</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get the snmpfile for an agent.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>hostname</code> - hostname</li>
+<li class=""><code>config</code> - Config object</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Name of snmp file</li>
+</ul>
+<a id="files.execute"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="execute">execute<a href="#execute" class="hash-link" aria-label="Direct link to execute" title="Direct link to execute" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">execute</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">command</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> die</span><span class="token operator" style="color:#393A34">=</span><span class="token boolean" style="color:#36acaa">True</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Run the command UNIX CLI command and record output.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>command</code> - CLI command to execute</li>
+<li class=""><code>die</code> - Die if errors found</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>returncode</code> - Return code of command execution</li>
+</ul>
+<a id="files.config_filepath"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="config_filepath">config_filepath<a href="#config_filepath" class="hash-link" aria-label="Direct link to config_filepath" title="Direct link to config_filepath" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">config_filepath</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Get the configuration filename.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - Filename</li>
+</ul>
+<a id="variables"></a>
+<h1>variables</h1>
+<p>Module for classes that format variables.</p>
+<a id="variables.AgentAPIVariable"></a>
+<h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="agentapivariable-objects">AgentAPIVariable Objects<a href="#agentapivariable-objects" class="hash-link" aria-label="Direct link to AgentAPIVariable Objects" title="Direct link to AgentAPIVariable Objects" translate="no">​</a></h2>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">class</span><span class="token plain"> </span><span class="token class-name">AgentAPIVariable</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Variable representation for data required by the AgentAPI.</p>
+<a id="variables.AgentAPIVariable.__init__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__init__-17">__init__<a href="#__init__-17" class="hash-link" aria-label="Direct link to __init__" title="Direct link to __init__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__init__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">ip_bind_port</span><span class="token operator" style="color:#393A34">=</span><span class="token number" style="color:#36acaa">20201</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> ip_listen_address</span><span class="token operator" style="color:#393A34">=</span><span class="token string" style="color:#e3116c">&quot;0.0.0.0&quot;</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Initialize the class.</p>
+<p><strong>Arguments</strong>:</p>
+<ul>
+<li class=""><code>ip_bind_port</code> - ip_bind_port</li>
+<li class=""><code>ip_listen_address</code> - TCP/IP address on which the API is listening.</li>
+</ul>
+<p><strong>Returns</strong>:</p>
+<p>None</p>
+<a id="variables.AgentAPIVariable.__repr__"></a>
+<h4 class="anchor anchorTargetStickyNavbar_Vzrq" id="__repr__">__repr__<a href="#__repr__" class="hash-link" aria-label="Direct link to __repr__" title="Direct link to __repr__" translate="no">​</a></h4>
+<div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">__repr__</span><span class="token punctuation" style="color:#393A34">(</span><span class="token punctuation" style="color:#393A34">)</span><br></span></code></pre></div></div>
+<p>Return a representation of the attributes of the class.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<ul>
+<li class=""><code>result</code> - String representation.</li>
+</ul>
+<a id="__init__"></a>
+<h1>__init__</h1>
+<p>Define the switchmap.core package.</p>
+<p><strong>Arguments</strong>:</p>
+<p>None</p>
+<p><strong>Returns</strong>:</p>
+<p>None</p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/PalisadoesFoundation/switchmap-ng/tree/develop/docs/docs/backend/core.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/docs/backend/Server"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Server</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/docs/backend/dashboard"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">dashboard</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#agent-objects" class="table-of-contents__link toc-highlight">Agent Objects</a></li><li><a href="#_agentrun-objects" class="table-of-contents__link toc-highlight">_AgentRun Objects</a></li><li><a href="#agentdaemon-objects" class="table-of-contents__link toc-highlight">AgentDaemon Objects</a></li><li><a href="#gracefulagentdaemon-objects" class="table-of-contents__link toc-highlight">GracefulAgentDaemon Objects</a></li><li><a href="#agentcli-objects" class="table-of-contents__link toc-highlight">AgentCLI Objects</a></li><li><a href="#agentapi-objects" class="table-of-contents__link toc-highlight">AgentAPI Objects</a></li><li><a href="#_standaloneapplication-objects" class="table-of-contents__link toc-highlight">_StandaloneApplication Objects</a></li><li><a href="#_config-objects" class="table-of-contents__link toc-highlight">_Config Objects</a></li><li><a href="#configcore-objects" class="table-of-contents__link toc-highlight">ConfigCore Objects</a></li><li><a href="#configapiclient-objects" class="table-of-contents__link toc-highlight">ConfigAPIClient Objects</a></li><li><a href="#configapi-objects" class="table-of-contents__link toc-highlight">ConfigAPI Objects</a></li><li><a href="#exceptionwrapper-objects" class="table-of-contents__link toc-highlight">ExceptionWrapper Objects</a></li><li><a href="#_getlog-objects" class="table-of-contents__link toc-highlight">_GetLog Objects</a></li><li><a href="#daemon-objects" class="table-of-contents__link toc-highlight">Daemon Objects</a></li><li><a href="#gracefuldaemon-objects" class="table-of-contents__link toc-highlight">GracefulDaemon Objects</a></li><li><a href="#_directory-objects" class="table-of-contents__link toc-highlight">_Directory Objects</a></li><li><a href="#_file-objects" class="table-of-contents__link toc-highlight">_File Objects</a></li><li><a href="#agentapivariable-objects" class="table-of-contents__link toc-highlight">AgentAPIVariable Objects</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/PalisadoesFoundation" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__slack"> Slack</a></li><li class="footer__item"><a href="https://www.palisadoes.org/news/" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__news"> News</a></li><li class="footer__item"><a href="https://www.palisadoes.org/contact/" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__contact"> Contact Us</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Social Media</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://twitter.com/palisadoesorg?lang=en" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__twitter"> Twitter</a></li><li class="footer__item"><a href="https://www.facebook.com/palisadoesproject/" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__facebook"> Facebook</a></li><li class="footer__item"><a href="https://www.instagram.com/palisadoes/?hl=en" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__instagram"> Instagram</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Development</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/PalisadoesFoundation" target="_blank" rel="noopener noreferrer" class="footer__link-item footer__icon footer__github"> GitHub</a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 The Palisadoes Foundation, LLC. Built with Docusaurus.</div></div></div></footer></div>
+</body>
+</html>
