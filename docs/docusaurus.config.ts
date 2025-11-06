@@ -14,7 +14,7 @@ const config: Config = {
   deploymentBranch: "gh-pages",
 
   organizationName: "PalisadoesFoundation", // GitHub org
-  projectName: "switchmap-ng-docs", // repo name
+  projectName: "switchmap-ng", // repo name
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
