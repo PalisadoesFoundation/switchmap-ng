@@ -3,18 +3,15 @@
 
 # Production
 /build
-/.docusaurus-debug.log
-/build-stats.json
-docs/.docusaurus-debug.log
-docs/build-stats.json
 
 # Generated files
 .docusaurus
 .cache-loader
+.package-lock.json
 package-lock.json
-.eslintcache
-tsconfig.tsbuildinfo
+package-lock.json
 pnpm-lock.yaml
+yarn.lock
 
 # Misc
 .DS_Store
