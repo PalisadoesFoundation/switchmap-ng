@@ -5,6 +5,7 @@ import os
 import sys
 import binascii
 import unittest
+import asyncio
 from unittest.mock import Mock, AsyncMock
 
 # Try to create a working PYTHONPATH
@@ -131,27 +132,25 @@ class TestMibCiscoVTPFunctions(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         """Execute these steps before starting tests."""
-        # Load the configuration in case it's been deleted after loading the
-        # configuration above. Sometimes this happens when running
-        # `python3 -m unittest discover` where another the tearDownClass of
-        # another test module prematurely deletes the configuration required
-        # for this module
         config = setup.config()
         config.save()
 
     @classmethod
     def tearDownClass(cls):
         """Execute these steps when all tests are completed."""
-        # Cleanup the
         CONFIG.cleanup()
 
     def test_get_query(self):
         """Testing function get_query."""
-        pass
+        result = testimport.get_query()
+        self.assertEqual(result, testimport.CiscoVtpQuery)
 
     def test_init_query(self):
         """Testing function init_query."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        result = testimport.init_query(mock_snmp)
+        self.assertIsInstance(result, testimport.CiscoVtpQuery)
+        self.assertEqual(result.snmp_object, mock_snmp)
 
 
 class TestMibCiscoVTP(unittest.IsolatedAsyncioTestCase):
@@ -241,27 +240,65 @@ class TestMibCiscoVTP(unittest.IsolatedAsyncioTestCase):
 
     def test_get_query(self):
         """Testing function get_query."""
-        pass
+        result = testimport.get_query()
+        self.assertEqual(result, testimport.CiscoVtpQuery)
 
     def test_init_query(self):
         """Testing function init_query."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        result = testimport.init_query(mock_snmp)
+        self.assertIsInstance(result, testimport.CiscoVtpQuery)
+        self.assertEqual(result.snmp_object, mock_snmp)
 
     def test___init__(self):
         """Testing function __init__."""
-        pass
+        mock_snmp = Mock(spec=Query)
+        cisco_vtp = testimport.CiscoVtpQuery(mock_snmp)
+        self.assertEqual(cisco_vtp.snmp_object, mock_snmp)
 
-    def test_layer2(self):
+    async def test_layer2(self):
         """Testing function layer2."""
-        # Layer 2 testing only seems to work when all the methods return
-        # the same type of results (eg. int, string, hex)
-        pass
+        mock_snmp = Mock(spec=Query)
+        cisco_vtp = testimport.CiscoVtpQuery(mock_snmp)
 
-    def test_layer1(self):
+        cisco_vtp.vtpvlanname = AsyncMock(
+            return_value={1: "default", 10: "vlan10"}
+        )
+        cisco_vtp.vtpvlanstate = AsyncMock(return_value={1: 1, 10: 1})
+        cisco_vtp.vtpvlantype = AsyncMock(return_value={1: 1, 10: 1})
+
+        result = await cisco_vtp.layer2()
+
+        self.assertIn(1, result)
+        self.assertIn(10, result)
+        self.assertEqual(result[1]["vtpVlanName"], "default")
+        self.assertEqual(result[10]["vtpVlanName"], "vlan10")
+        self.assertEqual(result[1]["vtpVlanState"], 1)
+        self.assertEqual(result[10]["vtpVlanType"], 1)
+
+    async def test_layer1(self):
         """Testing function layer1."""
-        # Layer 1 testing only seems to work when all the methods return
-        # the same type of results (eg. int, string, hex)
-        pass
+        mock_snmp = Mock(spec=Query)
+        cisco_vtp = testimport.CiscoVtpQuery(mock_snmp)
+
+        cisco_vtp.vlantrunkportdynamicstate = AsyncMock(return_value={1: 1})
+        cisco_vtp.vlantrunkportdynamicstatus = AsyncMock(return_value={1: 1})
+        cisco_vtp.vlantrunkportnativevlan = AsyncMock(return_value={1: 1})
+        cisco_vtp.vlantrunkportencapsulationtype = AsyncMock(
+            return_value={1: 4}
+        )
+        cisco_vtp.vlantrunkportvlansenabled = AsyncMock(
+            return_value={1: b"\xff"}
+        )
+
+        result = await cisco_vtp.layer1()
+
+        self.assertIn(1, result)
+        self.assertIn("vlanTrunkPortDynamicState", result[1])
+        self.assertIn("vlanTrunkPortDynamicStatus", result[1])
+        self.assertIn("vlanTrunkPortNativeVlan", result[1])
+        self.assertIn("vlanTrunkPortEncapsulationType", result[1])
+        self.assertIn("vlanTrunkPortVlansEnabled", result[1])
 
     async def test_vlantrunkportencapsulationtype(self):
         """Testing function vlantrunkportencapsulationtype."""
@@ -396,9 +433,126 @@ class TestMibCiscoVTP(unittest.IsolatedAsyncioTestCase):
         results = await testobj.vtpvlanstate(oidonly=True)
         self.assertEqual(results, oid)
 
-    def test_vlantrunkportvlansenabled(self):
+    async def test_vlantrunkportvlansenabled(self):
         """Testing function vlantrunkportvlansenabled."""
-        pass
+        mock_snmp = Mock(spec=Query)
+
+        # Create binary data for VLANs 1, 2, and 10 (bits 0, 1, 9)
+        binary_str = "1" + "1" + ("0" * 7) + "1" + ("0" * 1013)
+        hex_value = hex(int(binary_str, 2))[2:].zfill(256)
+        vlan_data = binascii.unhexlify(hex_value)
+
+        mock_snmp.swalk = AsyncMock(return_value={100: vlan_data})
+
+        cisco_vtp = testimport.CiscoVtpQuery(mock_snmp)
+        cisco_vtp.vlantrunkportdynamicstatus = AsyncMock(return_value={100: 1})
+
+        result = await cisco_vtp.vlantrunkportvlansenabled()
+
+        self.assertIn(100, result)
+        self.assertIn(1, result[100])
+        self.assertIn(2, result[100])
+        self.assertIn(10, result[100])
+
+    async def test_vlantrunkportvlansenabled_oidonly(self):
+        """Testing function vlantrunkportvlansenabled with oidonly=True."""
+        mock_snmp = Mock(spec=Query)
+        mock_snmp.swalk = AsyncMock(return_value={})
+        cisco_vtp = testimport.CiscoVtpQuery(mock_snmp)
+
+        result = await cisco_vtp.vlantrunkportvlansenabled(oidonly=True)
+        self.assertEqual(result, ".1.3.6.1.4.1.9.9.46.1.6.1.1.4")
+
+    async def test_vlantrunkportvlansenabled_not_trunk(self):
+        """Testing vlantrunkportvlansenabled when port is not trunk."""
+        mock_snmp = Mock(spec=Query)
+
+        binary_str = "1" * 10 + ("0" * 1014)
+        hex_value = hex(int(binary_str, 2))[2:].zfill(256)
+        vlan_data = binascii.unhexlify(hex_value)
+
+        mock_snmp.swalk = AsyncMock(return_value={100: vlan_data})
+
+        cisco_vtp = testimport.CiscoVtpQuery(mock_snmp)
+        cisco_vtp.vlantrunkportdynamicstatus = AsyncMock(return_value={100: 0})
+
+        result = await cisco_vtp.vlantrunkportvlansenabled()
+
+        self.assertNotIn(100, result)
+
+    async def test_layer2_with_exceptions(self):
+        """Testing function layer2 when methods raise exceptions."""
+        mock_snmp = Mock(spec=Query)
+        cisco_vtp = testimport.CiscoVtpQuery(mock_snmp)
+
+        exception_msg = "VlanName error"
+        cisco_vtp.vtpvlanname = AsyncMock(side_effect=Exception(exception_msg))
+        cisco_vtp.vtpvlanstate = AsyncMock(return_value={1: 1})
+        cisco_vtp.vtpvlantype = AsyncMock(return_value={1: 1})
+
+        result = await cisco_vtp.layer2()
+
+        self.assertIn(1, result)
+        self.assertNotIn("vtpVlanName", result[1])
+        self.assertIn("vtpVlanState", result[1])
+        self.assertIn("vtpVlanType", result[1])
+
+    async def test_layer1_with_exceptions(self):
+        """Testing function layer1 when methods raise exceptions."""
+        mock_snmp = Mock(spec=Query)
+        cisco_vtp = testimport.CiscoVtpQuery(mock_snmp)
+
+        exception_msg = "DynamicState error"
+        dynamic_state = AsyncMock(side_effect=Exception(exception_msg))
+        cisco_vtp.vlantrunkportdynamicstate = dynamic_state
+        cisco_vtp.vlantrunkportdynamicstatus = AsyncMock(return_value={1: 1})
+        cisco_vtp.vlantrunkportnativevlan = AsyncMock(return_value={1: 1})
+        cisco_vtp.vlantrunkportencapsulationtype = AsyncMock(
+            return_value={1: 4}
+        )
+        cisco_vtp.vlantrunkportvlansenabled = AsyncMock(
+            return_value={1: [1, 2]}
+        )
+
+        result = await cisco_vtp.layer1()
+
+        self.assertIn(1, result)
+        self.assertNotIn("vlanTrunkPortDynamicState", result[1])
+        self.assertIn("vlanTrunkPortDynamicStatus", result[1])
+
+    async def test_layer1_with_gather_exception(self):
+        """Testing function layer1 when asyncio.gather returns Exception."""
+        from unittest.mock import patch
+
+        mock_snmp = Mock(spec=Query)
+        cisco_vtp = testimport.CiscoVtpQuery(mock_snmp)
+
+        async def mock_gather(*args, **kwargs):
+            results = []
+            for coro in args:
+                try:
+                    result = await coro
+                    results.append(result)
+                except Exception as e:
+                    results.append(e)
+            # Inject an Exception into results
+            results[0] = Exception("Gather exception")
+            return results
+
+        cisco_vtp.vlantrunkportdynamicstate = AsyncMock(return_value={1: 1})
+        cisco_vtp.vlantrunkportdynamicstatus = AsyncMock(return_value={1: 1})
+        cisco_vtp.vlantrunkportnativevlan = AsyncMock(return_value={1: 1})
+        cisco_vtp.vlantrunkportencapsulationtype = AsyncMock(
+            return_value={1: 4}
+        )
+        cisco_vtp.vlantrunkportvlansenabled = AsyncMock(
+            return_value={1: [1, 2]}
+        )
+
+        with patch("asyncio.gather", side_effect=mock_gather):
+            result = await cisco_vtp.layer1()
+
+        self.assertIn(1, result)
 
 
 if __name__ == "__main__":

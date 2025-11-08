@@ -258,7 +258,7 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@v3
         with:
           path: ./coverage/coverage.lcov
-          min_coverage: 0.0
+          min_coverage: 80.0
 
   Test-Frontend:
     name: Test Frontend and Coverage

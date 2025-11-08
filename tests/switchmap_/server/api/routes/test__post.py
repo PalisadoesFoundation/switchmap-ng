@@ -8,14 +8,20 @@ ensuring correctness and expected behavior under different scenarios.
 import os
 import sys
 import unittest
+import tempfile
+import yaml
 from flask import Flask
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, mock_open
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../.."))
 )
 
-from switchmap.server.api.routes.post import API_POST, API_POLLER_SEARCH_URI
+from switchmap.server.api.routes.post import (
+    API_POST,
+    API_POLLER_SEARCH_URI,
+    API_POLLER_POST_URI,
+)
 
 
 class TestAPIRoutes(unittest.TestCase):
@@ -60,6 +66,87 @@ class TestAPIRoutes(unittest.TestCase):
         response = self.client.post(API_POLLER_SEARCH_URI, json=test_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json, [])
+
+    def test_post_searchterm_missing_data(self):
+        """Test searching when data is missing."""
+        response = self.client.post(API_POLLER_SEARCH_URI, json={})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, [])
+
+    @patch("switchmap.server.api.routes.post.ConfigServer")
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("switchmap.server.api.routes.post.os.path.exists")
+    @patch("switchmap.server.api.routes.post.yaml.dump")
+    def test_post_device_data_success(
+        self, mock_yaml_dump, mock_exists, mock_file, mock_config
+    ):
+        """Test posting device data successfully."""
+        mock_config_instance = MagicMock()
+        mock_config_instance.cache_directory.return_value = "/tmp"
+        mock_config.return_value = mock_config_instance
+        mock_exists.return_value = False
+
+        test_data = {
+            "misc": {"host": "test-device", "zone": "test-zone"},
+            "data": {"key": "value"},
+        }
+
+        response = self.client.post(API_POLLER_POST_URI, json=test_data)
+        self.assertEqual(response.data.decode(), "OK")
+        mock_file.assert_called_once()
+        mock_yaml_dump.assert_called_once()
+
+    @patch("switchmap.server.api.routes.post.ConfigServer")
+    @patch("switchmap.server.api.routes.post.os.path.exists")
+    def test_post_device_data_file_exists(self, mock_exists, mock_config):
+        """Test posting device data when file already exists."""
+        mock_config_instance = MagicMock()
+        mock_config_instance.cache_directory.return_value = "/tmp"
+        mock_config.return_value = mock_config_instance
+        mock_exists.return_value = True
+
+        test_data = {"misc": {"host": "test-device", "zone": "test-zone"}}
+
+        response = self.client.post(API_POLLER_POST_URI, json=test_data)
+        self.assertEqual(response.data.decode(), "OK")
+
+    @patch("switchmap.server.api.routes.post.ConfigServer")
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("switchmap.server.api.routes.post.os.path.exists")
+    def test_post_device_data_missing_hostname(
+        self, mock_exists, mock_file, mock_config
+    ):
+        """Test posting device data without hostname."""
+        mock_config_instance = MagicMock()
+        mock_config_instance.cache_directory.return_value = "/tmp"
+        mock_config.return_value = mock_config_instance
+
+        test_data = {"misc": {"zone": "test-zone"}}
+
+        response = self.client.post(API_POLLER_POST_URI, json=test_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.decode(), "OK")
+        mock_exists.assert_not_called()
+        mock_file.assert_not_called()
+
+    @patch("switchmap.server.api.routes.post.ConfigServer")
+    @patch("builtins.open", new_callable=mock_open)
+    @patch("switchmap.server.api.routes.post.os.path.exists")
+    def test_post_device_data_missing_misc(
+        self, mock_exists, mock_file, mock_config
+    ):
+        """Test posting device data without misc section."""
+        mock_config_instance = MagicMock()
+        mock_config_instance.cache_directory.return_value = "/tmp"
+        mock_config.return_value = mock_config_instance
+
+        test_data = {}
+
+        response = self.client.post(API_POLLER_POST_URI, json=test_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data.decode(), "OK")
+        mock_exists.assert_not_called()
+        mock_file.assert_not_called()
 
 
 if __name__ == "__main__":
