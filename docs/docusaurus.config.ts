@@ -147,6 +147,11 @@ const config: Config = {
       ],
       copyright: `Copyright © ${new Date().getFullYear()} The Palisadoes Foundation, LLC. Built with Docusaurus.`,
     },
+    colorMode: {
+      defaultMode: "light",
+      disableSwitch: false,
+      respectPrefersColorScheme: true,
+    },         
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
