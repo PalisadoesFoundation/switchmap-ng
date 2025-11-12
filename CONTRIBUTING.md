@@ -58,6 +58,7 @@ Unfortunately, because of recent abuse, we will only be assigning issues to pers
 
 1. At least a year of GitHub history
 1. Consistent code updates throughout their GitHub life, especially the most recent 12 months.
+1. If we cannot validate these criteria, you won’t be assigned.
 
 This is a new policy triggered by newly created accounts that: 
 
