@@ -1,16 +1,14 @@
 ---
+id: community
 title: Community
-sidebar_label: Community
-sidebar_position: 10
+sidebar_position: 100
 ---
-# Community
 
 Use these channels to communicate about the project.
 
-## Slack
+## Forums
 
-Visit the [Palisadoes Foundation GitHub
-site](https://github.com/PalisadoesFoundation) to find the link to our Slack community.
+Visit the [Palisadoes Foundation Forum](https://community.talawa.io).
 
 ## Mailing list
 

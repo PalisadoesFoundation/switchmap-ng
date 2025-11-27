@@ -1,8 +1,9 @@
 ---
 title: Troubleshooting
 sidebar_label: Troubleshooting
-sidebar_position: 8
+sidebar_position: 90
 ---
+
 # Troubleshooting
 
 Here\'s how you can test your installation of `switchmap-ng`.
@@ -17,7 +18,7 @@ before putting `switchmap-ng` into production.
 
 Start the `switchmap-ng` API interactively.
 
-``` bash
+```bash
 (venv) $ bin/switchmap_dashboard --start
 ```
 
@@ -25,7 +26,7 @@ Start the `switchmap-ng` API interactively.
 
 The poller will need to be running prior to testing.
 
-``` bash
+```bash
 (venv) $ bin/switchmap_poller --start
 ```
 
@@ -34,7 +35,7 @@ The poller will need to be running prior to testing.
 You can test your SNMP configuration and connectivity to your devices
 using the `switchmap_poller_test.py` utility like this:
 
-``` bash
+```bash
 (venv) $ bin/tools/switchmap_poller_test.py --hostname HOSTNAME
 ```
 
@@ -42,7 +43,7 @@ If you have setup switchmap-ng as a system daemon with a
 `daemon_directory:` value `/var/run` you will need to specify the `venv`
 path to `python3` first.
 
-``` bash
+```bash
 (venv) $ sudo venv/bin/python3 bin/tools/switchmap_poller_test.py --hostname HOSTNAME
 ```
 
@@ -68,6 +69,7 @@ following command:
 ```bash
 $ tail -f etc/switchmap.log
 ```
+
 ## Troubleshooting Using System Logs
 
 There are different log files to check.
@@ -82,6 +84,7 @@ following command:
 ```bash
 $ tail -f etc/switchmap_dashboard.log
 ```
+
 ### Troubleshooting the Poller
 
 There will be no visible output when the `Poller` is running. The

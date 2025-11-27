@@ -1,9 +1,8 @@
 ---
-title: Command Line Interface (CLI)
-sidebar_label: CLI
-sidebar_position: 4
+id: cli
+title: CLI
+sidebar_position: 50
 ---
-# The CLI
 
 This page outlines how to use the `switchmap-ng` command line interface
 (CLI)
@@ -12,19 +11,19 @@ This page outlines how to use the `switchmap-ng` command line interface
 
 There are a few important `switchmap-ng` daemons.
 
-1)  **Dashboard** Displays device data on web pages
-2)  **poller:** Gets data from devices
-3)  **server:** An API server that interacts with a backend database. It
+1.  **Dashboard** Displays device data on web pages
+2.  **poller:** Gets data from devices
+3.  **server:** An API server that interacts with a backend database. It
     accepts data from the poller and stores it in a cache. It also
     provides data to the dashboard.
-4)  **ingester:** Updates the database with data from the cache.
+4.  **ingester:** Updates the database with data from the cache.
 
 You can get the status of each daemon using the following CLI commands:
 
 **NOTE:** Remember before running any of these commands to first
 activate `venv`
 
-``` bash
+```bash
 $ source venv/bin/activate
 ```
 
@@ -32,7 +31,7 @@ $ source venv/bin/activate
 
 You can get the status of the poller using this command:
 
-``` bash
+```bash
 (venv) $ bin/systemd/switchmap_poller --status
 ```
 
@@ -40,7 +39,7 @@ You can get the status of the poller using this command:
 
 You can get the status of the API server using this command:
 
-``` bash
+```bash
 (venv) $ bin/systemd/switchmap_server --status
 ```
 
@@ -48,7 +47,7 @@ You can get the status of the API server using this command:
 
 You can get the status of the ingester using this command:
 
-``` bash
+```bash
 (venv) $ bin/systemd/switchmap_ingester --status
 ```
 
@@ -56,7 +55,7 @@ You can get the status of the ingester using this command:
 
 You can get the status of the dashboard using this command:
 
-``` bash
+```bash
 (venv) $ bin/systemd/switchmap_dashboard --status
 ```
 
@@ -70,7 +69,7 @@ configuration parameter.
 The poller can be started, stopped and restarted using the following
 commands. Use the `--force` option only if the daemon may be hung.
 
-``` bash
+```bash
 (venv) $ bin/systemd/switchmap_poller --start
 
 (venv) $ bin/systemd/switchmap_poller --stop
@@ -85,7 +84,7 @@ commands. Use the `--force` option only if the daemon may be hung.
 The server can be started, stopped and restarted using the following
 commands. Use the `--force` option only if the daemon may be hung.
 
-``` bash
+```bash
 (venv) $ bin/systemd/switchmap_server --start
 
 (venv) $ bin/systemd/switchmap_server --stop
@@ -100,7 +99,7 @@ commands. Use the `--force` option only if the daemon may be hung.
 The ingester can be started, stopped and restarted using the following
 commands. Use the `--force` option only if the daemon may be hung.
 
-``` bash
+```bash
 (venv) $ bin/systemd/switchmap_ingester --start
 
 (venv) $ bin/systemd/switchmap_ingester --stop
@@ -115,7 +114,7 @@ commands. Use the `--force` option only if the daemon may be hung.
 The dashboard can be started, stopped and restarted using the following
 commands. Use the `--force` option only if the daemon may be hung.
 
-``` bash
+```bash
 (venv) $ bin/systemd/switchmap_dashboard --start
 
 (venv) $ bin/systemd/switchmap_dashboard --stop
@@ -131,7 +130,7 @@ You may want to verify that the poller can access the hosts in the
 configuration. This can be done using the `switchmap_poller_test.py`
 command.
 
-``` bash
+```bash
 (venv) $ bin/tools/switchmap_poller_test.py --hostname HOSTNAME
 ```
 
@@ -143,8 +142,8 @@ log files.
 These can be found in the directory configured with the `log_directory`
 in the configuration. The default is in the `logs/` directory.
 
-1)  `switchmap.log`: The general log file
-2)  `switchmap-server.log`: The log file used by the API server
-3)  `switchmap-poller.log`: The log file used by the poller
-4)  `switchmap-ingester.log`: The log file used by the ingester
-5)  `switchmap-dashboard.log`: The log file used by the dashboard
+1.  `switchmap.log`: The general log file
+2.  `switchmap-server.log`: The log file used by the API server
+3.  `switchmap-poller.log`: The log file used by the poller
+4.  `switchmap-ingester.log`: The log file used by the ingester
+5.  `switchmap-dashboard.log`: The log file used by the dashboard
