@@ -1,8 +1,9 @@
 ---
+id: installation
 title: Installation
-sidebar_position: 2
-sidebar_label: Installation
+sidebar_position: 20
 ---
+
 # Installation
 
 This section outlines how to install and do basic configuration of
@@ -20,6 +21,7 @@ scripts/setup.sh --docker-mysql
 ```
 
 This will automatically:
+
 - Set up MySQL database (Docker or local)
 - Create virtual environment and install Python dependencies
 - Configure the application
@@ -27,11 +29,12 @@ This will automatically:
 - Start all services (server, poller, ingester, frontend)
 
 **Management commands:**
+
 ```bash
 scripts/start.sh
-scripts/stop.sh    
-scripts/status.sh   
-scripts/logs.sh   
+scripts/stop.sh
+scripts/status.sh
+scripts/logs.sh
 ```
 
 For detailed documentation, see `scripts/SETUP_GUIDE.md` in the repository.
@@ -60,6 +63,7 @@ case both the database and the database user are named `switchmap`.
 ```bash
 $ sudo mysql
 ```
+
 ```sql
 CREATE DATABASE switchmap;
 CREATE USER 'switchmap'@'localhost' IDENTIFIED BY 'CHANGE_ME_NOW';
@@ -67,12 +71,13 @@ GRANT ALL PRIVILEGES ON switchmap.* TO 'switchmap'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
 ```
+
 ## Install Prerequisite Supporting Operating System Packages
 
 `switchmap-ng` has the following requirements:
 
--   python \>= 3.5
--   python3-pip
+- python \>= 3.5
+- python3-pip
 
 It will not work with lower versions.
 
@@ -118,9 +123,9 @@ improves reliability and simplifies troubleshooting.
 
 The following commands will:
 
-1)  create a directory named `venv/` in the top most `switchmap-ng`
+1.  create a directory named `venv/` in the top most `switchmap-ng`
     directory.
-2)  copy your systems python files there
+2.  copy your systems python files there
 
 Here are the commands:
 
@@ -132,9 +137,9 @@ $ python3 -m venv venv
 You will now need to activate the use of these copied python files by
 `switchmap-ng`.
 
-1)  This can be done using the `source` command referencing a script
+1.  This can be done using the `source` command referencing a script
     that will do the activation.
-2)  Your command prompt will change to have a `(venv)` prefix
+2.  Your command prompt will change to have a `(venv)` prefix
 
 Here are the commands:
 
@@ -236,45 +241,51 @@ The dashboard is a modern Next.js application.
 
 1. Install Node.js and npm (if not already installed):
 
-    Ubuntu / Debian / Mint   
-    ```bash
-    sudo apt-get install nodejs npm
-    ```
-    CentOS / Fedora      
-    ```bash
-    sudo dnf install nodejs npm
-    ```
+   Ubuntu / Debian / Mint
+
+   ```bash
+   sudo apt-get install nodejs npm
+   ```
+
+   CentOS / Fedora
+
+   ```bash
+   sudo dnf install nodejs npm
+   ```
 
 2. Navigate to the frontend directory and install dependencies:
-    ```bash
-    cd frontend
-    npm install
-    ```
+
+   ```bash
+   cd frontend
+   npm install
+   ```
 
 3. Start the frontend development server:
-    ```bash
-    npm run dev
-    ```
-    By default, the dashboard will be available at  
-    [http://localhost:3000/](http://localhost:3000/)  
+
+   ```bash
+   npm run dev
+   ```
+
+   By default, the dashboard will be available at  
+   [http://localhost:3000/](http://localhost:3000/)
 
 4. API connectivity:  
-    Ensure your switchmap-ng API server is running and accessible from the frontend.
+   Ensure your switchmap-ng API server is running and accessible from the frontend.
 
 ### Frontend Testing
 
 The frontend uses **Vitest** for testing.
 
 - To run tests in watch mode:
-    ```bash
-    cd frontend
-    npm run test:watch
-    ```
+  ```bash
+  cd frontend
+  npm run test:watch
+  ```
 - To generate a coverage report:
-    ```bash
-    cd frontend
-    npm run coverage
-    ```
+  ```bash
+  cd frontend
+  npm run coverage
+  ```
   The coverage report will be available in the `frontend/coverage` directory.
 
 ## Documentation Site
@@ -282,26 +293,28 @@ The frontend uses **Vitest** for testing.
 The documentation site is built with Docusaurus.
 
 1. **Install pnpm (if not already installed):**
-    ```bash
-    # Option 1: Enable via corepack (recommended for Node.js >=16.13)
-    corepack enable pnpm
 
-    # Option 2: Install globally with npm
-    npm install -g pnpm
-    ```
+   ```bash
+   # Option 1: Enable via corepack (recommended for Node.js >=16.13)
+   corepack enable pnpm
+
+   # Option 2: Install globally with npm
+   npm install -g pnpm
+   ```
 
 2. **Install dependencies in the docs directory:**
-    ```bash
-    cd docs
-    npm install
-    ```
+
+   ```bash
+   cd docs
+   npm install
+   ```
 
 3. **Start the documentation site:**
-    ```bash
-    npm start
-    ```
-    By default, the documentation site will be available at  
-    [http://localhost:3001/](http://localhost:3001/)
+   ```bash
+   npm start
+   ```
+   By default, the documentation site will be available at  
+   [http://localhost:3001/](http://localhost:3001/)
 
 > **Note:**  
 > The code documentation is generated automatically and should not be edited manually.
@@ -319,6 +332,7 @@ Create the `switchmap_unittest` database, and grant privileges to a
 ```bash
 $ sudo mysql
 ```
+
 ```sql
 CREATE DATABASE switchmap_unittest;
 GRANT ALL PRIVILEGES ON switchmap_unittest.* TO 'switchmap_unittest'@'localhost' IDENTIFIED BY 'switchmap_unittest';
@@ -338,14 +352,19 @@ directory in `$HOME`
 ### Run the Test Suite
 
 You can run all the tests with this command.
+
 ```
 (venv) $ tests/bin/_do_all_tests.py
 ```
+
 An alternative method is to use pytest.
+
 ```
 (venv) $ pytest tests/switchmap_
 ```
+
 You can run individual tests with this command.
+
 ```
 (venv) $ tests/switchmap_/path/to/test.py
 ```

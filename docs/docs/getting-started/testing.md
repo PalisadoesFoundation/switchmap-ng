@@ -1,8 +1,9 @@
 ---
+id: testing
 title: Testing
-sidebar_label: Testing
-sidebar_position: 7
+sidebar_position: 80
 ---
+
 # Testing
 
 Follow the installation steps above to have the application ready, then
@@ -18,62 +19,67 @@ Switchmap uses SNMP to gather data from network devices. As a developer it may b
 Here are some links to get you started:
 
 1. Windows 11:
-    1. SNMP Server:
-        1. Setting up the Server: [Enable SNMP on Windows](https://blog.paessler.com/how-to-enable-snmp-on-your-operating-system)
-    1. SNMP Client:
-        1. Software: [Net-SNMP Download](http://www.net-snmp.org/download.html)
-        1. Tutorial: [SNMP Walk Examples for Windows](https://www.itprc.com/snmpwalk-examples-for-windows/)
+   1. SNMP Server:
+      1. Setting up the Server: [Enable SNMP on Windows](https://blog.paessler.com/how-to-enable-snmp-on-your-operating-system)
+   1. SNMP Client:
+      1. Software: [Net-SNMP Download](http://www.net-snmp.org/download.html)
+      1. Tutorial: [SNMP Walk Examples for Windows](https://www.itprc.com/snmpwalk-examples-for-windows/)
 1. Ubuntu:
-    1. This page includes both server and client setup.
-        1. [Ubuntu SNMP Setup Guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring-the-snmp-agent-server)
-    1. Testing configuration example for the `/etc/snmp/snmpd.conf` file.
-        1. Add this sample SNMPv2 configuration in the `/etc/snmp/snmpd.conf` file adding the community string `switchmap` with the ability to scan the entire SNMP tree.
-            ```
-            view switchmap-view  included   .1
-            rocommunity  switchmap default -V switchmap-view
-            rocommunity6 switchmap default -V switchmap-view
-            ```
-        1. Restart the `snmpd` daemon.
-            ```bash
-            $ systemctl restart snmpd
-            ```
-        1. Test by running this command.
-            ```bash
-            $ snmpwalk -v2c -c switchmap localhost .1.3.6.1.2.1.2
-            ```
-        1. You can get more useful information by commenting out the `mibs:` line in the `/etc/snmp/snmp.conf` file. The output of the previous command will be more complete.
-            ```
-            # Contents of file etc/snmp/snmp.conf
-            #mibs :
-            ```
-        1. Run the command again.
-            ```bash
-            $ snmpwalk -v2c -c switchmap localhost .1.3.6.1.2.1.2
-            ```
-        1. Add these configuration parameters to the `etc/config.yaml` file
-            ```yaml
-                zones:
-                    - zone: TEST
-                    hostnames:
-                        - localhost
 
-                snmp_groups:
+   1. This page includes both server and client setup.
+      1. [Ubuntu SNMP Setup Guide](https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-an-snmp-daemon-and-client-on-ubuntu-18-04#step-3-configuring-the-snmp-agent-server)
+   1. Testing configuration example for the `/etc/snmp/snmpd.conf` file.
 
-                    - group_name: Localhost-Test
-                        snmp_version: 2
-                        snmp_secname:
-                        snmp_community: switchmap
-                        snmp_port: 161
-                        snmp_authprotocol:
-                        snmp_authpassword:
-                        snmp_privprotocol:
-                        snmp_privpassword:
-                        enabled: True
-            ```
-        1. This testing command for the new `localhost` entry will show results.
-            ```bash
-            sudo venv/bin/python3 bin/tools/switchmap_poller_test.py --hostname localhost
-            ```
+      1. Add this sample SNMPv2 configuration in the `/etc/snmp/snmpd.conf` file adding the community string `switchmap` with the ability to scan the entire SNMP tree.
+         ```
+         view switchmap-view  included   .1
+         rocommunity  switchmap default -V switchmap-view
+         rocommunity6 switchmap default -V switchmap-view
+         ```
+      1. Restart the `snmpd` daemon.
+         ```bash
+         $ systemctl restart snmpd
+         ```
+      1. Test by running this command.
+         ```bash
+         $ snmpwalk -v2c -c switchmap localhost .1.3.6.1.2.1.2
+         ```
+      1. You can get more useful information by commenting out the `mibs:` line in the `/etc/snmp/snmp.conf` file. The output of the previous command will be more complete.
+         ```
+         # Contents of file etc/snmp/snmp.conf
+         #mibs :
+         ```
+      1. Run the command again.
+         ```bash
+         $ snmpwalk -v2c -c switchmap localhost .1.3.6.1.2.1.2
+         ```
+      1. Add these configuration parameters to the `etc/config.yaml` file
+
+         ```yaml
+             zones:
+                 - zone: TEST
+                 hostnames:
+                     - localhost
+
+             snmp_groups:
+
+                 - group_name: Localhost-Test
+                     snmp_version: 2
+                     snmp_secname:
+                     snmp_community: switchmap
+                     snmp_port: 161
+                     snmp_authprotocol:
+                     snmp_authpassword:
+                     snmp_privprotocol:
+                     snmp_privpassword:
+                     enabled: True
+         ```
+
+      1. This testing command for the new `localhost` entry will show results.
+         ```bash
+         sudo venv/bin/python3 bin/tools/switchmap_poller_test.py --hostname localhost
+         ```
+
 ## SwitchMap-NG Setup for Developers
 
 Follow the installation steps above to have the application ready, then
@@ -87,12 +93,14 @@ Create the `switchmap_unittest` database, and grant privileges to a
 ```bash
 $ sudo mysql
 ```
-``` sql
+
+```sql
 CREATE DATABASE switchmap_unittest;
 GRANT ALL PRIVILEGES ON switchmap_unittest.* TO 'switchmap_unittest'@'localhost' IDENTIFIED BY 'switchmap_unittest';
 FLUSH PRIVILEGES;
 EXIT;
 ```
+
 ### Setup the Test Config File
 
 Create the testing configuration file which will be stored in a hidden
@@ -101,20 +109,21 @@ directory in `$HOME`
 ```bash
 (venv) $ tests/bin/test_db_config_setup.py
 ```
+
 ## API Interactive GraphQL Interaction
 
 This is useful for:
 
-1)  Developing queries for API clients.
-2)  Troubleshooting your code.
-3)  Creating new features.
+1.  Developing queries for API clients.
+2.  Troubleshooting your code.
+3.  Creating new features.
 
 On the API server you\'ll be able to make GraphQL queries in an easy to
 use interactive web page.
 
-1)  Enter your query in the left hand panel
-2)  Press the `Play` button
-3)  Observe the results
+1.  Enter your query in the left hand panel
+2.  Press the `Play` button
+3.  Observe the results
 
 ### Interactive GraphQL URL
 
@@ -126,7 +135,7 @@ http://localhost:7000/switchmap/api/igraphql
 
 Here is a sample of what to you can do with interactive queries.
 
-![image](../src/img/screenshots/igraphql-screenshot.png)
+![image](../../src/img/screenshots/igraphql-screenshot.png)
 
 ## Important File Locations
 
@@ -136,21 +145,21 @@ These locations are important for developers:
 
 Modules are arranged like this:
 
-1)  The API modules are located in `switchmap/server`
-2)  The Poller modules are located in `switchmap/poller`
-3)  The Web UI modules are located in `switchmap/dashboard`
-4)  Modules that are shared with all three are located in
+1.  The API modules are located in `switchmap/server`
+2.  The Poller modules are located in `switchmap/poller`
+3.  The Web UI modules are located in `switchmap/dashboard`
+4.  Modules that are shared with all three are located in
     `switchmap/core`
 
 ### Database and GraphQL
 
 Reviewing these files will be important.
 
-1)  The Database SQLAlchemy ORM definitions can be found in the
+1.  The Database SQLAlchemy ORM definitions can be found in the
     `switchmap/server/db/models.py` file.
-2)  The GraphQL schema are located in the
+2.  The GraphQL schema are located in the
     `switchmap/server/db/schema.py` file.
-3)  The GraphQL schema attributes are located in the
+3.  The GraphQL schema attributes are located in the
     `switchmap/server/db/attributes.py` file.
 
 ## Run the Test Suite
@@ -165,12 +174,14 @@ You can run all the tests with this command.
 (venv) $ cd /path/to/switchmap
 (venv) $ pytest tests/switchmap_
 ```
-```
+
+````
 You can run individual tests with this command.
 ```bash
 (venv) $ cd /path/to/switchmap
 (venv) $ pytest tests/switchmap_/path/to/test.py
-```
+````
+
 ### Populating the Database Using the Ingester
 
 Pollers post network data to the Switchmap-NG server. The Ingester
@@ -181,11 +192,11 @@ test data data that can be imported using the ingester.
 
 An easy way to populate the database using this data is to:
 
-1)  Configure switchmap
-2)  Copy the test files in `tests/testdata_` to the configure
+1.  Configure switchmap
+2.  Copy the test files in `tests/testdata_` to the configure
     `cache_directory`
-3)  Start or restart the poller daemon or app
-4)  The updated data should now be visible in the web UI
+3.  Start or restart the poller daemon or app
+4.  The updated data should now be visible in the web UI
 
 ## Running Tests with Coverage Report
 
