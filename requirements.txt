@@ -5,7 +5,7 @@ PyYAML
 Flask==2.0.3
 Flask-Table==0.5.0
 Flask-Testing==0.8.1
-Werkzeug==2.2.2
+Werkzeug==3.1.4
 gunicorn==20.0.4
 
 # Posting
