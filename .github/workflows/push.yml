@@ -24,7 +24,7 @@ env:
 jobs:
   Test-Application:
     name: Test Application
-    needs: [Linting-and-Formatting]
+    needs: [Linting-and-Formatting, Merge-Conflict-Check]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -102,3 +102,11 @@ jobs:
       - name: Run Pydocstyle for Docstring Style
         run: |
           pydocstyle switchmap setup bin tests --convention=google --add-ignore=D415,D205
+
+  Merge-Conflict-Check:
+    runs-on: ubuntu-latest
+    name: Find merge conflicts
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge conflict finder
+        uses: olivernybroe/action-conflict-finder@v4
