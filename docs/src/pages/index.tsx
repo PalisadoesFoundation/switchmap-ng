@@ -24,6 +24,8 @@ function HomepageHeader() {
             className={`${styles.button} button button--secondary button--lg`}
             href="https://github.com/PalisadoesFoundation/switchmap-ng/"
             aria-label="View SwitchMap-NG on GitHub"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             GitHub
           </a>
