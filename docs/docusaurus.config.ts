@@ -1,50 +1,50 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
-import type * as Preset from '@docusaurus/preset-classic';
+import { themes as prismThemes } from "prism-react-renderer";
+import type { Config } from "@docusaurus/types";
+import type * as Preset from "@docusaurus/preset-classic";
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
 const config: Config = {
   title: "Switchmap-NG",
   tagline: "Inventory, Status & Visualization of Your Network Devices.",
-  favicon: 'img/logo/switchmap-logo-modified.svg',
+  favicon: "img/logo/switchmap-logo-modified.svg",
 
   url: "https://docs.switchmap-ng.io/",
-  baseUrl: '/',
+  baseUrl: "/",
   deploymentBranch: "gh-pages",
 
   organizationName: "PalisadoesFoundation", // GitHub org
   projectName: "switchmap-ng", // repo name
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: "throw",
   markdown: {
     hooks: {
-      onBrokenMarkdownLinks: 'warn', // Or 'throw', 'ignore'
+      onBrokenMarkdownLinks: "warn", // Or 'throw', 'ignore'
     },
   },
-  
+
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: "en",
+    locales: ["en"],
   },
 
   presets: [
     [
-      'classic',
+      "classic",
       {
         docs: {
-          sidebarPath: './sidebars.ts',
+          sidebarPath: "./sidebars.ts",
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/PalisadoesFoundation/switchmap-ng/tree/develop/docs/',
-          exclude: ['**/node_modules/**'],
+            "https://github.com/PalisadoesFoundation/switchmap-ng/tree/develop/docs/",
+          exclude: ["**/node_modules/**"],
         },
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: "./src/css/custom.css",
         },
       } satisfies Preset.Options,
     ],
@@ -70,14 +70,14 @@ const config: Config = {
           to: "/docs",
           target: "_self",
         },
-        
+
         {
           to: "https://github.com/PalisadoesFoundation",
           position: "right",
           className: "header-github-link",
           "aria-label": "GitHub repository",
         },
-        
+
         {
           to: "https://www.youtube.com/@PalisadoesOrganization",
           position: "right",
@@ -98,9 +98,9 @@ const config: Config = {
           title: "Community",
           items: [
             {
-              label: " Slack",
-              to: "https://github.com/PalisadoesFoundation",
-              className: "footer__icon footer__slack",
+              label: " Forums",
+              to: "https://community.talawa.io/",
+              className: "footer__icon footer__news",
             },
             {
               label: " News",
@@ -151,7 +151,7 @@ const config: Config = {
       defaultMode: "light",
       disableSwitch: false,
       respectPrefersColorScheme: true,
-    },         
+    },
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
