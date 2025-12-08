@@ -15,17 +15,17 @@ function HomepageHeader() {
         <div className="buttons_AeoN">
           <a
             className={`${styles.button} button button--primary button--lg`}
-            href="/docs/installation"
+            href="/docs"
             aria-label="Get started with Switchmap-NG"
           >
             Get Started
           </a>
           <a
             className={`${styles.button} button button--secondary button--lg`}
-            href="/docs/community"
-            aria-label="Join the community"
+            href="https://github.com/PalisadoesFoundation/switchmap-ng/"
+            aria-label="View SwitchMap-NG on GitHub"
           >
-            Community
+            GitHub
           </a>
         </div>
       </div>
