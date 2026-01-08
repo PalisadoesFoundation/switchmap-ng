@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   mysql:
@@ -21,7 +21,17 @@ services:
     ports:
       - "3307:3306"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "switchmap-mysql", "-u", "switchmap", "--password=${MYSQL_PASSWORD}"]
+      test:
+        [
+          "CMD",
+          "mysqladmin",
+          "ping",
+          "-h",
+          "switchmap-mysql",
+          "-u",
+          "switchmap",
+          "--password=${MYSQL_PASSWORD}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5

@@ -36,80 +36,79 @@ poller:
         - localhost
 
   snmp_groups:
+    - group_name: Localhost-Test
+      snmp_version: 2
+      snmp_secname:
+      snmp_community: switchmap
+      snmp_port: 161
+      snmp_authprotocol:
+      snmp_authpassword:
+      snmp_privprotocol:
+      snmp_privpassword:
+      enabled: True
 
-      - group_name: Localhost-Test
-        snmp_version: 2
-        snmp_secname:
-        snmp_community: switchmap
-        snmp_port: 161
-        snmp_authprotocol:
-        snmp_authpassword:
-        snmp_privprotocol:
-        snmp_privpassword:
-        enabled: True
+    - group_name: V2
+      snmp_version: 2
+      snmp_secname:
+      snmp_community: CHANGE_ME_NOW
+      snmp_port: 161
+      snmp_authprotocol:
+      snmp_authpassword:
+      snmp_privprotocol:
+      snmp_privpassword:
+      enabled: True
 
-      - group_name: V2
-        snmp_version: 2
-        snmp_secname:
-        snmp_community: CHANGE_ME_NOW
-        snmp_port: 161
-        snmp_authprotocol:
-        snmp_authpassword:
-        snmp_privprotocol:
-        snmp_privpassword:
-        enabled: True
+    - group_name: HOME
+      snmp_version: 2
+      snmp_secname:
+      snmp_community: CHANGE_ME_NOW
+      snmp_port: 161
+      snmp_authprotocol:
+      snmp_authpassword:
+      snmp_privprotocol:
+      snmp_privpassword:
+      enabled: True
 
-      - group_name: HOME
-        snmp_version: 2
-        snmp_secname:
-        snmp_community: CHANGE_ME_NOW
-        snmp_port: 161
-        snmp_authprotocol:
-        snmp_authpassword:
-        snmp_privprotocol:
-        snmp_privpassword:
-        enabled: True
+    - group_name: AUTH_PRIV_01
+      snmp_version: 3
+      snmp_secname: user_priv_01
+      snmp_community:
+      snmp_port: 161
+      snmp_authprotocol: md5
+      snmp_authpassword: CHANGE_ME_NOW
+      snmp_privprotocol: des
+      snmp_privpassword: CHANGE_ME_NOW
+      enabled: True
 
-      - group_name: AUTH_PRIV_01
-        snmp_version: 3
-        snmp_secname: user_priv_01
-        snmp_community:
-        snmp_port: 161
-        snmp_authprotocol: md5
-        snmp_authpassword: CHANGE_ME_NOW
-        snmp_privprotocol: des
-        snmp_privpassword: CHANGE_ME_NOW
-        enabled: True
+    - group_name: AUTH_PRIV_02
+      snmp_version: 3
+      snmp_secname: user_priv_00
+      snmp_community:
+      snmp_port: 161
+      snmp_authprotocol: sha
+      snmp_authpassword: CHANGE_ME_NOW
+      snmp_privprotocol: aes
+      snmp_privpassword: CHANGE_ME_NOW
+      enabled: True
 
-      - group_name: AUTH_PRIV_02
-        snmp_version: 3
-        snmp_secname: user_priv_00
-        snmp_community:
-        snmp_port: 161
-        snmp_authprotocol: sha
-        snmp_authpassword: CHANGE_ME_NOW
-        snmp_privprotocol: aes
-        snmp_privpassword: CHANGE_ME_NOW
-        enabled: True
+    - group_name: AUTH_NOPRIV
+      snmp_version: 3
+      snmp_secname: user_auth_00
+      snmp_community:
+      snmp_port: 161
+      snmp_authprotocol: sha
+      snmp_authpassword: CHANGE_ME_NOW
+      snmp_privprotocol:
+      snmp_privpassword:
+      enabled: True
 
-      - group_name: AUTH_NOPRIV
-        snmp_version: 3
-        snmp_secname: user_auth_00
-        snmp_community:
-        snmp_port: 161
-        snmp_authprotocol: sha
-        snmp_authpassword: CHANGE_ME_NOW
-        snmp_privprotocol:
-        snmp_privpassword:
-        enabled: True
-
-      - group_name: NOAUTH_NOPRIV
-        snmp_version: 3
-        snmp_secname: user_noauth
-        snmp_community:
-        snmp_port: 161
-        snmp_authprotocol:
-        snmp_authpassword:
-        snmp_privprotocol:
-        snmp_privpassword:
-        enabled: True
+    - group_name: NOAUTH_NOPRIV
+      snmp_version: 3
+      snmp_secname: user_noauth
+      snmp_community:
+      snmp_port: 161
+      snmp_authprotocol:
+      snmp_authpassword:
+      snmp_privprotocol:
+      snmp_privpassword:
+      enabled: True
