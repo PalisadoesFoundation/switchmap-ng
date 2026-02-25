@@ -20,19 +20,24 @@ def hashstring(string, sha=256, utf8=False):
     # Initialize key variables
     listing = [1, 224, 384, 256, 512]
 
+    # Validate sha value before use
+    if sha not in listing:
+        raise ValueError(
+            "Invalid sha value '{}'. Must be one of {}.".format(sha, listing)
+        )
+
     # Select SHA type
-    if sha in listing:
-        index = listing.index(sha)
-        if listing[index] == 1:
-            hasher = hashlib.sha1()
-        elif listing[index] == 224:
-            hasher = hashlib.sha224()
-        elif listing[index] == 384:
-            hasher = hashlib.sha384()
-        elif listing[index] == 512:
-            hasher = hashlib.sha512()
-        else:
-            hasher = hashlib.sha256()
+    index = listing.index(sha)
+    if listing[index] == 1:
+        hasher = hashlib.sha1()
+    elif listing[index] == 224:
+        hasher = hashlib.sha224()
+    elif listing[index] == 384:
+        hasher = hashlib.sha384()
+    elif listing[index] == 512:
+        hasher = hashlib.sha512()
+    else:
+        hasher = hashlib.sha256()
 
     # Encode the string
     hasher.update(bytes(string.encode()))

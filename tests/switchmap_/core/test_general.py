@@ -196,6 +196,37 @@ class TestFunctions(unittest.TestCase):
             result = general.ipaddress(item)
             self.assertEqual(expected[index], result)
 
+    def test_validate_ip_network(self):
+        """Testing function validate_ip_network."""
+        # Initializing key variables
+        expected = [
+            # Valid IPv4 network
+            IP(address="192.168.1.0/24", version=4),
+            # Valid IPv6 network
+            IP(address="2001:db8::/32", version=6),
+            # Invalid string: not an IP address at all
+            None,
+            # Host bits set — not a valid network address (strict=True)
+            None,
+            # Non-string input
+            None,
+            # None input
+            None,
+        ]
+        inputs = [
+            "192.168.1.0/24",
+            "2001:db8::/32",
+            "not-an-ip",
+            "192.168.1.1/24",
+            12345,
+            None,
+        ]
+
+        # Test
+        for index, item in enumerate(inputs):
+            result = general.validate_ip_network(item)
+            self.assertEqual(expected[index], result)
+
     def test_make_bool(self):
         """Testing function make_bool."""
         # Initializing key variables

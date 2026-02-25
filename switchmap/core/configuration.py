@@ -14,7 +14,7 @@ class _Config:
     """Class gathers all configuration information."""
 
     def __init__(self):
-        """Intialize the class.
+        """Initialize the class.
 
         Args:
             None
@@ -234,7 +234,7 @@ class ConfigAPIClient(ConfigCore):
     """Class gathers all configuration information."""
 
     def __init__(self, section):
-        """Intialize the class.
+        """Initialize the class.
 
         Args:
             section: Section of the config file to read
@@ -371,7 +371,7 @@ class ConfigAPI(ConfigCore):
     """Class gathers all configuration information."""
 
     def __init__(self, section):
-        """Intialize the class.
+        """Initialize the class.
 
         Args:
             section: Section of the config file to read

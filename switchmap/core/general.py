@@ -141,7 +141,7 @@ def mac(_mac):
             try:
                 # Test if Hex
                 valid = bool(int(mac_check, 16))
-            except:
+            except ValueError:
                 valid = False
 
         # Make sure the result is 12 characters
@@ -192,8 +192,6 @@ def ipaddress(_ip):
         valid = True
     except ValueError:
         valid = False
-    except:
-        valid = False
 
     # Return
     if bool(valid) is False:
@@ -202,6 +200,33 @@ def ipaddress(_ip):
         # Create IP record
         address = meta.exploded.lower()
         result = IP(address=address, version=meta.version)
+    return result
+
+
+def validate_ip_network(_network):
+    """Validate an IP network in CIDR notation.
+
+    Args:
+        _network: IP network string in CIDR notation (e.g. '192.168.1.0/24')
+
+    Returns:
+        result: IP namedtuple on success, None if invalid
+
+    """
+    # Initialize key variables
+    result = None
+
+    if not isinstance(_network, str):
+        return result
+
+    # Strict=True ensures host bits must be zero (i.e. a proper network address)
+    try:
+        meta = ipaddress_.ip_network(_network, strict=True)
+    except ValueError:
+        return result
+
+    address = meta.with_prefixlen
+    result = IP(address=address, version=meta.version)
     return result
 
 

@@ -246,7 +246,7 @@ def read_yaml_file(filepath, as_string=False, die=True):
             try:
                 with open(filepath, "r") as yaml_from_file:
                     result = yaml.safe_load(yaml_from_file)
-            except:
+            except Exception:
                 log_message = (
                     "Error reading file {}. Check permissions, "
                     "existence and file syntax."
@@ -262,7 +262,7 @@ def read_yaml_file(filepath, as_string=False, die=True):
             try:
                 with open(filepath, "r") as file_handle:
                     result = file_handle.read()
-            except:
+            except Exception:
                 log_message = (
                     "Error reading file {}. Check permissions, "
                     "existence and file syntax."
@@ -308,7 +308,7 @@ def mkdir(directory):
     if os.path.exists(directory) is False:
         try:
             os.makedirs(directory, mode=0o775)
-        except:
+        except Exception:
             log_message = "Cannot create directory {}." "".format(directory)
             log.log2die(1121, log_message)
 

@@ -100,6 +100,15 @@ class TestFunctions(unittest.TestCase):
             result = data.hashstring(_string, sha=sha, utf8=True)
             self.assertEqual(result, expecteds[key].encode())
 
+    def test_hashstring_invalid_sha(self):
+        """Testing that hashstring raises ValueError for an invalid sha value."""
+        _string = "some test string"
+
+        # An unrecognized sha value must raise ValueError instead of
+        # crashing with an unhandled NameError (the previous behaviour)
+        with self.assertRaises(ValueError):
+            data.hashstring(_string, sha=999)
+
     def test_check_dictify(self):
         """Testing method / function check_dictify."""
         # Initializing key variables
