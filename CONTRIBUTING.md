@@ -4,16 +4,11 @@ Thank you for your interest in contributing to the repository. Regardless of the
 
 If you are new to contributing to open source, please read the Open Source Guides on [How to Contribute to Open Source](https://opensource.guide/how-to-contribute/).
 
+
 ## Table of Contents
 
-<!-- TOC -->
-
-- [Contributing](#contributing)
-  - [Table of Contents](#table-of-contents)
-  - [General](#general)
-  - [Contributing Code](#contributing-code)
-
-<!-- /TOC -->
+- [General](#general)
+- [Contributing Code](#contributing-code)
 
 
 ## General
@@ -22,7 +17,7 @@ Please read the [Palisadoes Contributing Guidelines](https://github.com/Palisado
 
 ## Contributing Code
 
-Code contributions come in the form of pull requests. These are done by forking the repo and making changes locally.
+Code contributions come in the form of pull requests. Pull requests are created by forking the repository and making changes locally.
 
 Make sure you have read the [Documentation for Setting up the Project](https://github.com/PalisadoesFoundation/switchmap-ng#project-setup)
 
@@ -51,7 +46,7 @@ The process of proposing a change to the repository can be summarized as:
 
       2. Debug tests in browser
 
-         You can see the output of failing tests in broswer by running `jest-preview` package before running your tests
+         You can see the output of failing tests in browser by running `jest-preview` package before running your tests
 
          ```
          npm install
@@ -73,7 +68,7 @@ The process of proposing a change to the repository can be summarized as:
             npm run test --watchAll=false --coverage
             genhtml coverage/lcov.info -o coverage
             ```
-         3. The output of the `npm run test` command will give you a tablular coverage report per file
+         3. The output of the `npm run test` command will give you a tabular coverage report per file
          4. The overall coverage rate will be visible on the penultimate line of the `genhtml` command's output.
          5. The `genhtml` command is part of the Linux `lcov` package. Similar packages can be found for Windows and MacOS.
          6. The currently acceptable coverage rate can be found in the [GitHub Pull Request file](.github/workflows/pull-requests.yml). Search for the value below the line containing `min_coverage`.
@@ -106,7 +101,7 @@ The process of proposing a change to the repository can be summarized as:
 7. After making changes you can add them to git locally using `git add <file_name>`(to add changes only in a particular file) or `git add .` (to add all changes).
 8. Before making a commit, run all hooks manually to catch and fix issues early using: `pre-commit run --all-files`. Some hooks (like formatters) may auto-fix code. If so, re-add the fixed files using: `git add .`.
 9. After adding the changes you need to commit them using `git commit -m '<commit message>'`(look at the commit guidelines below for commit messages).
-10. Once you have successfully commited your changes, you need to push the changes to the forked repo on github using: `git push origin <branch_name>`.(Here branch name must be name of the branch you want to push the changes to.)
+10. Once you have successfully committed your changes, you need to push the changes to the forked repo on GitHub using: `git push origin <branch_name>`.(Here branch name must be name of the branch you want to push the changes to.)
 11. Now create a pull request to the repository from your forked repo. Open an issue regarding the same and link your PR to it.
 12. Ensure the test suite passes, either locally or on CI once a PR has been created.
 13. Review and address comments on your pull request if requested.
